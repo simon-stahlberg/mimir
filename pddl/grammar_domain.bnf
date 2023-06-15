@@ -1,0 +1,291 @@
+<domain> ::= (define (domain <name>)
+    [<require-def>]
+    [<types-def>]
+    [<constants-def>]
+    [<predicates-def>]
+    [<functions-def>]
+    [<constraints>]
+    <structure-def>*)
+
+<require-def> ::= (:requirements <require-key>+)
+
+<require-key> ::= :strips | :typing | :negative-preconditions
+
+<types-def> ::= (:types <typed list (name)>)
+
+<constants-def> ::= (:constants <typed list (name)>)
+
+<predicates-def> ::= (:predicates <atomic formula skeleton>+)
+
+<atomic formula skeleton> ::= (<predicate> <typed list (variable)>)
+
+<predicate> ::= <name>
+
+<variable> ::= ?<name>
+
+<atomic function skeleton> ::= (<function-symbol> <typed list (variable)>)
+
+<function-symbol> ::= <name>
+
+<functions-def> ::= (:functions <function typed list (atomic function skeleton)>)
+
+<function typed list (x)> ::= x+ - <function type> <function typed list(x)>
+
+<function typed list (x)> ::=
+
+<function typed list (x)> ::= x+
+
+<function type> ::= number
+
+<function type> ::= <type>
+
+<constraints> ::= (:constraints <con-GD>)
+
+<structure-def> ::= <action-def>
+
+<structure-def> ::= <durative-action-def>
+
+<structure-def> ::= <derived-def>
+
+<typed list (x)> ::= x*
+
+<typed list (x)> ::= x+ - <type> <typed list(x)>
+
+<primitive-type> ::= <name>
+
+<primitive-type> ::= object
+
+<type> ::= (either <primitive-type>+)
+
+<type> ::= <primitive-type>
+
+<emptyOr (x)> ::= ()
+
+<emptyOr (x)> ::= x
+
+<action-def> ::= (:action <action-symbol>
+    :parameters (<typed list (variable)>)
+    <action-def body>)
+
+<action-symbol> ::= <name>
+
+<action-def body> ::= [:precondition <emptyOr (pre-GD)>]
+    [:effect <emptyOr (effect)>]
+
+<pre-GD> ::= <pref-GD>
+
+<pre-GD> ::= (and <pre-GD>*)
+
+<pre-GD> ::= (forall (<typed list(variable)>) <pre-GD>)
+
+<pref-GD> ::= (preference [<pref-name>] <GD>)
+
+<pref-GD> ::= <GD>
+
+<pref-name> ::= <name>
+
+<GD> ::= <atomic formula(term)>
+
+<GD> ::= <literal(term)>
+
+<GD> ::= (and <GD>*)
+
+<GD> ::= (or <GD>*)
+
+<GD> ::= (not <GD>)
+
+<GD> ::= (imply <GD> <GD>)
+
+<GD> ::= (exists (<typed list(variable)>) <GD> )
+
+<GD> ::= (forall (<typed list(variable)>) <GD> )
+
+<GD> ::= <f-comp>
+
+<f-comp> ::= (<binary-comp> <f-exp> <f-exp>)
+
+<literal(t)> ::= <atomic formula(t)>
+
+<literal(t)> ::= (not <atomic formula(t)>)
+
+<atomic formula(t)> ::= (<predicate> t*)
+
+<atomic formula(t)> ::= (= t t)
+
+<term> ::= <name>
+
+<term> ::= <variable>
+
+<term> ::= <function-term>
+
+<function-term> ::= (<function-symbol> <term>*)
+
+<f-exp> ::= <number>
+
+<f-exp> ::= (<binary-op> <f-exp> <f-exp>)
+
+<f-exp> ::= (<multi-op> <f-exp> <f-exp>+)
+
+<f-exp> ::= (- <f-exp>)
+
+<f-exp> ::= <f-head>
+
+<f-head> ::= (<function-symbol> <term>*)
+
+<f-head> ::= <function-symbol>
+
+<binary-op> ::= <multi-op>
+
+<binary-op> ::= -
+
+<binary-op> ::= /
+
+<multi-op> ::= *
+
+<multi-op> ::= +
+
+<binary-comp> ::= >
+
+<binary-comp> ::= <
+
+<binary-comp> ::= =
+
+<binary-comp> ::= >=
+
+<binary-comp> ::= <=
+
+<name> ::= <letter> <any char>*
+
+<letter> ::= a..z | A..Z
+
+<any char> ::= <letter> | <digit> | - | _
+
+<number> ::= <digit>+ [<decimal>]
+
+<digit> ::= 0..9
+
+<decimal> ::= .<digit>+
+
+<effect> ::= (and <c-effect>*)
+
+<effect> ::= <c-effect>
+
+<c-effect> ::= (forall (<typed list (variable)>) <effect>)
+
+<c-effect> ::= (when <GD> <cond-effect>)
+
+<c-effect> ::= <p-effect>
+
+<p-effect> ::= (not <atomic formula(term)>)
+
+<p-effect> ::= <atomic formula(term)>
+
+<p-effect> ::= (<assign-op> <f-head> <f-exp>)
+
+<p-effect> ::= (assign <function-term> <term>)
+
+<p-effect> ::= (assign <function-term> undefined)
+
+<cond-effect> ::= (and <p-effect>*)
+
+<cond-effect> ::= <p-effect>
+
+<assign-op> ::= assign
+
+<assign-op> ::= scale-up
+
+<assign-op> ::= scale-down
+
+<assign-op> ::= increase
+
+<assign-op> ::= decrease
+
+<durative-action-def> ::= (:durative-action <da-symbol>
+    :parameters (<typed list (variable)>)
+    <da-def body>)
+
+<da-symbol> ::= <name>
+
+<da-def body> ::= <duration-constraint>
+
+:condition <emptyOr (da-GD)>
+
+:effect <emptyOr (da-effect)>
+
+<da-GD> ::= <pref-timed-GD>
+
+<da-GD> ::= (and <da-GD>*)
+
+<da-GD> ::= (forall (<typed-list (variable)>) <da-GD>)
+
+<pref-timed-GD> ::= <timed-GD>
+
+<pref-timed-GD> ::= :preferences (preference [<pref-name>] <timed-GD>)
+
+<timed-GD> ::= (at <time-specifier> <GD>)
+
+<timed-GD> ::= (over <interval> <GD>)
+
+<time-specifier> ::= start
+
+<time-specifier> ::= end
+
+<interval> ::= all
+
+<duration-constraint> ::= (and <simple-duration-constraint>+)
+
+<duration-constraint> ::= ()
+
+<duration-constraint> ::= <simple-duration-constraint>
+
+<simple-duration-constraint> ::= (<d-op> ?duration <d-value>)
+
+<simple-duration-constraint> ::= (at <time-specifier> <simple-duration-constraint>)
+
+<d-op> ::= <=
+
+<d-op> ::= >=
+
+<d-op> ::= =
+
+<d-value> ::= <number>
+
+<d-value> ::= <f-exp>
+
+<da-effect> ::= (and <da-effect>*)
+
+<da-effect> ::= <timed-effect>
+
+<da-effect> ::= (forall (<typed list (variable)>) <da-effect>)
+
+<da-effect> ::= (when <da-GD> <timed-effect>)
+
+<timed-effect> ::= (at <time-specifier> <cond-effect>)
+
+<timed-effect> ::= (at <time-specifier> <f-assign-da>)
+
+<timed-effect> ::= (<assign-op-t> <f-head> <f-exp-t>)
+
+<f-assign-da> ::= (<assign-op> <f-head> <f-exp-da>)
+
+<f-exp-da> ::= (<binary-op> <f-exp-da> <f-exp-da>)
+
+<f-exp-da> ::= (<multi-op> <f-exp-da> <f-exp-da>+)
+
+<f-exp-da> ::= (- <f-exp-da>)
+
+<f-exp-da> ::= ?duration
+
+<f-exp-da> ::= <f-exp>
+
+<assign-op-t> ::= increase
+
+<assign-op-t> ::= decrease
+
+<f-exp-t> ::= (* <f-exp> #t)
+
+<f-exp-t> ::= (* #t <f-exp>)
+
+<f-exp-t> ::= #t
+
+<derived-def> ::= (:derived <atomic formula skeleton> <GD>)
