@@ -26,12 +26,8 @@ add_custom_target(generate_pyi_files ALL
 # Make generate_pyi_files target dependent on mimir target
 add_dependencies(generate_pyi_files mimir)
 
-add_subdirectory(algorithms)
-add_subdirectory(formalism)
-add_subdirectory(generators)
-add_subdirectory(pddl)
-
-add_library(mimir MODULE mimir.cpp)
+add_subdirectory(mimir)
+add_library(mimir MODULE mimir/mimir.cpp)
 install(TARGETS mimir LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX})
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 target_link_libraries(mimir -static-libstdc++ -lstdc++fs -static-libgcc)
