@@ -1,3 +1,9 @@
+# Python build artefacts
+MANIFEST.in
+_skbuild
+dist
+mimir.egg-info
+
 # Profiling
 perf*
 gmon*
