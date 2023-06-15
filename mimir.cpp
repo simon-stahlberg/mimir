@@ -96,8 +96,8 @@ PYBIND11_MODULE(mimir, m)
         .def_readonly("precondition", &formalism::ActionSchemaImpl::precondition)
         .def_readonly("effect", &formalism::ActionSchemaImpl::effect)
         .def("__repr__",
-             [](const formalism::ActionSchemaImpl& ActionSchema)
-             { return "<ActionSchema '" + ActionSchema.name + "/" + std::to_string(ActionSchema.arity) + "'>"; });
+             [](const formalism::ActionSchemaImpl& action_schema)
+             { return "<ActionSchema '" + action_schema.name + "/" + std::to_string(action_schema.arity) + "'>"; });
 
     py::class_<formalism::DomainImpl, formalism::DomainDescription>(m, "Domain")
         .def_readonly("name", &formalism::DomainImpl::name)
@@ -127,7 +127,7 @@ PYBIND11_MODULE(mimir, m)
         .def_readonly("cost", &formalism::ActionImpl::cost)
         .def("get_precondition", &formalism::ActionImpl::get_precondition)
         .def("get_effect", &formalism::ActionImpl::get_effect)
-        .def("__repr__", [](const formalism::ActionImpl& action) { return "<Action '" + action.schema->name + "(...)'>"; });
+        .def("__repr__", [](const formalism::ActionImpl& action) { return "<Action '" + to_string(action) + "'>"; });
 
     py::class_<formalism::ProblemImpl, formalism::ProblemDescription>(m, "Problem")
         .def_readonly("name", &formalism::ProblemImpl::name)
