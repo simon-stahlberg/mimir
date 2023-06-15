@@ -1,4 +1,5 @@
 # Python build artefacts
+__pycache__
 MANIFEST.in
 _skbuild
 dist

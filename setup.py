@@ -9,8 +9,8 @@ setup(
     name='mimir',
     version='0.1.0',
     description='Mimir: Lifted PDDL parsing and expansion library.',
-    author='Simon',
-    author_email='your@email.com',
+    author='Simon Stahlberg',
+    author_email='simon.stahlberg@gmail.com',
     cmake_args=[
         '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' +
             os.path.join(cmake_dir, 'mimir')
