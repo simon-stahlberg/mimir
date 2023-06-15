@@ -33,6 +33,8 @@ namespace planners
         root_ = build_decision_tree(problem, ground_actions);
     }
 
+    formalism::ProblemDescription GroundedSuccessorGenerator::get_problem() const { return problem_; }
+
     formalism::ActionList GroundedSuccessorGenerator::get_applicable_actions(const formalism::State& state) const
     {
         if (problem_ != state->get_problem())

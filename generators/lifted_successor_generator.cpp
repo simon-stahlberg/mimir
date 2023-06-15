@@ -47,6 +47,8 @@ namespace planners
         return applicable_actions;
     }
 
+    formalism::ProblemDescription LiftedSuccessorGenerator::get_problem() const { return problem_; }
+
     bool LiftedSuccessorGenerator::get_actions(int32_t timeout_s, formalism::ActionList& out_actions) const
     {
         formalism::ActionList actions;

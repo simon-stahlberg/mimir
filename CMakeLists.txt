@@ -33,10 +33,8 @@ add_subdirectory(pddl)
 add_library(mimir MODULE mimir.cpp)
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 target_link_libraries(mimir -static-libstdc++ -lstdc++fs -static-libgcc)
-
-# target_link_libraries(mimir algorithms)
-# target_link_libraries(mimir formalism)
-# target_link_libraries(mimir generators)
+target_link_libraries(mimir formalism)
+target_link_libraries(mimir generators)
 target_link_libraries(mimir pddl)
 
 # Add pybind11 include directory

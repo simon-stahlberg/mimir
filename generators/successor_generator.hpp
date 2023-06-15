@@ -13,6 +13,8 @@ namespace planners
       public:
         virtual ~SuccessorGeneratorBase() = default;
 
+        virtual formalism::ProblemDescription get_problem() const = 0;
+
         virtual formalism::ActionList get_applicable_actions(const formalism::State& state) const = 0;
     };
 

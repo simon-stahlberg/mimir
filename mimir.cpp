@@ -1,4 +1,8 @@
 #include "formalism/declarations.hpp"
+#include "generators/grounded_successor_generator.hpp"
+#include "generators/lifted_successor_generator.hpp"
+#include "generators/state_space.hpp"
+#include "generators/successor_generator.hpp"
 #include "pddl/parsers.hpp"
 
 #include <Python.h>
@@ -7,6 +11,7 @@
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
+using namespace py::literals;
 
 std::string to_string(const formalism::ActionImpl& action)
 {
@@ -42,9 +47,20 @@ std::string to_string(const formalism::AtomImpl& state)
     return repr + ")";
 }
 
-std::shared_ptr<parsers::DomainParser> create_domain_parser(std::string path) { return std::make_shared<parsers::DomainParser>(path); }
+std::shared_ptr<parsers::DomainParser> create_domain_parser(const std::string& path) { return std::make_shared<parsers::DomainParser>(path); }
 
-std::shared_ptr<parsers::ProblemParser> create_problem_parser(std::string path) { return std::make_shared<parsers::ProblemParser>(path); }
+std::shared_ptr<parsers::ProblemParser> create_problem_parser(const std::string& path) { return std::make_shared<parsers::ProblemParser>(path); }
+
+std::shared_ptr<planners::LiftedSuccessorGenerator> create_lifted_successor_generator(const formalism::ProblemDescription& problem)
+{
+    return std::make_shared<planners::LiftedSuccessorGenerator>(problem->domain, problem);
+}
+
+std::shared_ptr<planners::GroundedSuccessorGenerator> create_grounded_successor_generator(const formalism::ProblemDescription& problem)
+{
+    const auto successor_generator = planners::LiftedSuccessorGenerator(problem->domain, problem);
+    return std::make_shared<planners::GroundedSuccessorGenerator>(problem, successor_generator.get_actions());
+}
 
 PYBIND11_MODULE(mimir, m)
 {
@@ -144,4 +160,49 @@ PYBIND11_MODULE(mimir, m)
     py::class_<parsers::ProblemParser, std::shared_ptr<parsers::ProblemParser>>(m, "ProblemParser")
         .def(py::init(&create_problem_parser))
         .def("parse", &parsers::ProblemParser::parse);
+
+    py::class_<planners::SuccessorGeneratorBase, planners::SuccessorGenerator> successor_generator_base(m, "SuccessorGenerator");
+    successor_generator_base.def("get_applicable_actions", &planners::SuccessorGeneratorBase::get_applicable_actions);
+    successor_generator_base.def("__repr__",
+                                 [](const planners::SuccessorGeneratorBase& generator)
+                                 { return "<SuccessorGenerator '" + generator.get_problem()->name + "'>"; });
+
+    py::class_<planners::LiftedSuccessorGenerator, std::shared_ptr<planners::LiftedSuccessorGenerator>>(m, "LiftedSuccessorGenerator", successor_generator_base)
+        .def(py::init(&create_lifted_successor_generator));
+
+    py::class_<planners::GroundedSuccessorGenerator, std::shared_ptr<planners::GroundedSuccessorGenerator>>(m,
+                                                                                                            "GroundedSuccessorGenerator",
+                                                                                                            successor_generator_base)
+        .def(py::init(&create_grounded_successor_generator));
+
+    py::class_<formalism::TransitionImpl, formalism::Transition>(m, "Transition")
+        .def_readonly("source", &formalism::TransitionImpl::source_state)
+        .def_readonly("target", &formalism::TransitionImpl::target_state)
+        .def_readonly("action", &formalism::TransitionImpl::action)
+        .def("__repr__", [](const formalism::TransitionImpl& transition) { return "<Transition '" + to_string(*transition.action) + "'>"; });
+
+    py::class_<planners::StateSpaceImpl, planners::StateSpace>(m, "StateSpace")
+        .def(py::init(&planners::create_state_space), "problem"_a, "successor_generator"_a, "max_expanded"_a = 10'000'000)
+        .def_readonly("domain", &planners::StateSpaceImpl::domain)
+        .def_readonly("problem", &planners::StateSpaceImpl::problem)
+        .def("get_states", &planners::StateSpaceImpl::get_states)
+        .def("get_initial_state", &planners::StateSpaceImpl::get_initial_state)
+        .def("get_goal_states", &planners::StateSpaceImpl::get_goal_states)
+        .def("get_distance_from_initial_state", &planners::StateSpaceImpl::get_distance_from_initial_state, "state"_a)
+        .def("get_distance_to_goal_state", &planners::StateSpaceImpl::get_distance_to_goal_state, "state"_a)
+        .def("get_longest_distance_to_goal_state", &planners::StateSpaceImpl::get_longest_distance_to_goal_state)
+        .def("get_forward_transitions", &planners::StateSpaceImpl::get_forward_transitions, "state"_a)
+        .def("get_backward_transitions", &planners::StateSpaceImpl::get_backward_transitions, "state"_a)
+        .def("get_unique_id", &planners::StateSpaceImpl::get_unique_index_of_state, "state"_a)
+        .def("is_dead_end_state", &planners::StateSpaceImpl::is_dead_end_state, "state"_a)
+        .def("is_goal_state", &planners::StateSpaceImpl::is_goal_state, "state"_a)
+        .def("sample_state", &planners::StateSpaceImpl::sample_state)
+        .def("sample_state_with_distance_to_goal", &planners::StateSpaceImpl::sample_state_with_distance_to_goal, "distance"_a)
+        .def("num_states", &planners::StateSpaceImpl::num_states)
+        .def("num_dead_end_states", &planners::StateSpaceImpl::num_dead_end_states)
+        .def("num_goal_states", &planners::StateSpaceImpl::num_goal_states)
+        .def("num_transitions", &planners::StateSpaceImpl::num_transitions)
+        .def("__repr__",
+             [](const planners::StateSpaceImpl& state_space)
+             { return "<StateSpace '" + state_space.problem->name + ": " + std::to_string(state_space.num_states()) + " states'>"; });
 }

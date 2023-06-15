@@ -47,6 +47,8 @@ namespace planners
       public:
         GroundedSuccessorGenerator(const formalism::ProblemDescription& problem, const formalism::ActionList& ground_actions);
 
+        formalism::ProblemDescription get_problem() const override;
+
         formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
 
       private:

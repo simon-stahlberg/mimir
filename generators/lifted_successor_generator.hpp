@@ -23,6 +23,8 @@ namespace planners
       public:
         LiftedSuccessorGenerator(const formalism::DomainDescription& domain, const formalism::ProblemDescription& problem);
 
+        formalism::ProblemDescription get_problem() const override;
+
         formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
 
         bool get_actions(int32_t timeout_s, formalism::ActionList& out_actions) const;
