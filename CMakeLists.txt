@@ -16,10 +16,17 @@ find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
 
+# Set the output directory of the stub files.
+set(STUBS_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}")
+
+if(CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+    set(STUBS_OUTPUT "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+endif()
+
 # pip install pybind11-stubgen
 add_custom_target(generate_pyi_files ALL
-    COMMENT "Generating .pyi files"
-    COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --output-dir ${CMAKE_CURRENT_BINARY_DIR} mimir
+    COMMENT "Generating .pyi files to ${STUBS_OUTPUT}"
+    COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --output-dir ${STUBS_OUTPUT} mimir
 )
 
 # Make generate_pyi_files target dependent on mimir target
@@ -28,9 +35,9 @@ add_dependencies(generate_pyi_files mimir)
 add_subdirectory(mimir)
 add_library(mimir MODULE mimir/mimir.cpp)
 
-install(TARGETS mimir LIBRARY DESTINATION mimir)
-install(FILES ${CMAKE_BINARY_DIR}/mimir-stubs/__init__.pyi DESTINATION mimir)
-install(FILES ${CMAKE_BINARY_DIR}/mimir-stubs/setup.py DESTINATION mimir)
+# install(TARGETS mimir LIBRARY DESTINATION mimir)
+# install(FILES ${CMAKE_BINARY_DIR}/mimir-stubs/__init__.pyi DESTINATION mimir)
+# install(FILES ${CMAKE_BINARY_DIR}/mimir-stubs/setup.py DESTINATION mimir)
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 target_link_libraries(mimir -static-libstdc++ -lstdc++fs -static-libgcc)
 target_link_libraries(mimir formalism)
