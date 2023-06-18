@@ -32,7 +32,9 @@ namespace formalism
 
         std::map<std::string, formalism::Type> get_type_map() const;
 
-        std::map<std::string, formalism::Predicate> get_predicate_map() const;
+        std::map<std::string, formalism::Predicate> get_predicate_name_map() const;
+
+        std::map<uint32_t, formalism::Predicate> get_predicate_id_map() const;
 
         std::map<std::string, formalism::Object> get_constant_map() const;
     };

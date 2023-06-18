@@ -56,13 +56,25 @@ namespace formalism
         return map;
     }
 
-    std::map<std::string, formalism::Predicate> DomainImpl::get_predicate_map() const
+    std::map<std::string, formalism::Predicate> DomainImpl::get_predicate_name_map() const
     {
         std::map<std::string, formalism::Predicate> map;
 
         for (const auto& predicate : predicates)
         {
             map.insert(std::make_pair(predicate->name, predicate));
+        }
+
+        return map;
+    }
+
+    std::map<uint32_t, formalism::Predicate> DomainImpl::get_predicate_id_map() const
+    {
+        std::map<uint32_t, formalism::Predicate> map;
+
+        for (const auto& predicate : predicates)
+        {
+            map.insert(std::make_pair(predicate->id, predicate));
         }
 
         return map;

@@ -1095,7 +1095,7 @@ namespace parsers
         }
 
         const auto type_map = domain->get_type_map();
-        const auto predicate_map = domain->get_predicate_map();
+        const auto predicate_map = domain->get_predicate_name_map();
         const auto constant_map = domain->get_constant_map();
 
         const auto problem_name = problem_domain_name->get_problem_name();

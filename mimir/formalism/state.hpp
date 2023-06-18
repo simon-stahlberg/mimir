@@ -52,6 +52,8 @@ namespace formalism
 
         std::map<formalism::Predicate, formalism::AtomList> get_atoms_grouped_by_predicate() const;
 
+        std::map<uint32_t, std::vector<uint32_t>> get_atom_argument_ids_grouped_by_predicate_ids() const;
+
         std::size_t hash() const;
 
         friend bool is_applicable(const formalism::Action& action, const formalism::State& state);

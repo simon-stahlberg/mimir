@@ -183,6 +183,30 @@ namespace formalism
         return grouped_atoms;
     }
 
+    std::map<uint32_t, std::vector<uint32_t>> StateImpl::get_atom_argument_ids_grouped_by_predicate_ids() const
+    {
+        std::map<uint32_t, std::vector<uint32_t>> grouped_atoms;
+
+        for (const auto& atom : get_atoms())
+        {
+            const auto& predicate = atom->predicate;
+
+            if (grouped_atoms.find(predicate->id) == grouped_atoms.end())
+            {
+                grouped_atoms.insert(std::make_pair(predicate->id, std::vector<uint32_t>()));
+            }
+
+            auto& atom_list = grouped_atoms.at(predicate->id);
+
+            for (const auto& object : atom->arguments)
+            {
+                atom_list.push_back(object->id);
+            }
+        }
+
+        return grouped_atoms;
+    }
+
     bool is_in_state(uint32_t rank, const formalism::State& state) { return std::binary_search(state->ranks_.begin(), state->ranks_.end(), rank); }
 
     bool is_in_state(const formalism::Atom& atom, const formalism::State& state) { return is_in_state(state->get_problem()->get_rank(atom), state); }

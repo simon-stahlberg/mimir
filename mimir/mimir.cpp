@@ -124,7 +124,8 @@ PYBIND11_MODULE(mimir, m)
         .def_readonly("static_predicates", &formalism::DomainImpl::static_predicates)
         .def_readonly("action_schemas", &formalism::DomainImpl::action_schemas)
         .def("get_type_map", &formalism::DomainImpl::get_type_map)
-        .def("get_predicate_map", &formalism::DomainImpl::get_predicate_map)
+        .def("get_predicate_name_map", &formalism::DomainImpl::get_predicate_name_map)
+        .def("get_predicate_id_map", &formalism::DomainImpl::get_predicate_id_map)
         .def("get_constant_map", &formalism::DomainImpl::get_constant_map)
         .def("__repr__", [](const formalism::DomainImpl& domain) { return "<Domain '" + domain.name + "'>"; });
 
@@ -134,6 +135,7 @@ PYBIND11_MODULE(mimir, m)
         .def("get_dynamic_atoms", &formalism::StateImpl::get_dynamic_atoms)
         // .def("get_problem", &formalism::StateImpl::get_problem)  // Forward declare Problem.
         .def("get_atoms_by_predicate", &formalism::StateImpl::get_atoms_grouped_by_predicate)
+        .def("get_atom_argument_ids_grouped_by_predicate_ids", &formalism::StateImpl::get_atom_argument_ids_grouped_by_predicate_ids)
         .def("__repr__", [](const formalism::StateImpl& state) { return "<State '" + std::to_string(state.hash()) + "'>"; });
 
     py::class_<formalism::ActionImpl, formalism::Action>(m, "Action")
