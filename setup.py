@@ -59,7 +59,7 @@ setup(
     version="0.1.0",
     author="Simon Stahlberg",
     author_email="simon.stahlberg@gmail.com",
-    description="Mimir: Lifted PDDL parsing and expansion library",
+    description="Mimir: PDDL Parser and Planner Toolkit",
     long_description="",
     ext_modules=[CMakeExtension("mimir")],
     cmdclass={"build_ext": MyCMakeBuild},
