@@ -145,6 +145,8 @@ PYBIND11_MODULE(mimir, m)
         .def_readonly("cost", &formalism::ActionImpl::cost)
         .def("get_precondition", &formalism::ActionImpl::get_precondition)
         .def("get_effect", &formalism::ActionImpl::get_effect)
+        .def("is_applicable", &formalism::is_applicable)
+        .def("apply", &formalism::apply)
         .def("__repr__", [](const formalism::ActionImpl& action) { return "<Action '" + to_string(action) + "'>"; });
 
     py::class_<formalism::ProblemImpl, formalism::ProblemDescription>(m, "Problem")
