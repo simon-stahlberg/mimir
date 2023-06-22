@@ -52,7 +52,8 @@ namespace formalism
 
         std::map<formalism::Predicate, formalism::AtomList> get_atoms_grouped_by_predicate() const;
 
-        std::map<uint32_t, std::vector<uint32_t>> get_atom_argument_ids_grouped_by_predicate_ids() const;
+        std::pair<std::map<uint32_t, std::vector<uint32_t>>, std::map<uint32_t, std::pair<std::string, uint32_t>>>
+        pack_object_ids_by_predicate_id(bool include_types, bool include_goal) const;
 
         std::size_t hash() const;
 

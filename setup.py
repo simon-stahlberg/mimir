@@ -16,7 +16,7 @@ class CMakeExtension(Extension):
         self.sourcedir = os.fspath(Path(sourcedir).resolve())
 
 
-class MyCMakeBuild(build_ext):
+class CMakeBuild(build_ext):
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
         ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
@@ -52,8 +52,6 @@ class MyCMakeBuild(build_ext):
                         output_directory / "mimir-stubs")
 
 
-# The information here can also be placed in setup.cfg - better separation of
-# logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="mimir",
     version="0.1.0",
@@ -62,7 +60,7 @@ setup(
     description="Mimir: PDDL Parser and Planner Toolkit",
     long_description="",
     ext_modules=[CMakeExtension("mimir")],
-    cmdclass={"build_ext": MyCMakeBuild},
+    cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     python_requires=">=3.7",
 )

@@ -183,20 +183,23 @@ namespace formalism
         return grouped_atoms;
     }
 
-    std::map<uint32_t, std::vector<uint32_t>> StateImpl::get_atom_argument_ids_grouped_by_predicate_ids() const
+    std::pair<std::map<uint32_t, std::vector<uint32_t>>, std::map<uint32_t, std::pair<std::string, uint32_t>>>
+    StateImpl::pack_object_ids_by_predicate_id(bool include_types, bool include_goal) const
     {
-        std::map<uint32_t, std::vector<uint32_t>> grouped_atoms;
+        std::map<uint32_t, std::vector<uint32_t>> packed_ids;
+        std::map<uint32_t, std::pair<std::string, uint32_t>> id_to_name_arity;
 
         for (const auto& atom : get_atoms())
         {
             const auto& predicate = atom->predicate;
 
-            if (grouped_atoms.find(predicate->id) == grouped_atoms.end())
+            if (packed_ids.find(predicate->id) == packed_ids.end())
             {
-                grouped_atoms.insert(std::make_pair(predicate->id, std::vector<uint32_t>()));
+                packed_ids.insert(std::make_pair(predicate->id, std::vector<uint32_t>()));
+                id_to_name_arity.insert(std::make_pair(predicate->id, std::make_pair(predicate->name, predicate->arity)));
             }
 
-            auto& atom_list = grouped_atoms.at(predicate->id);
+            auto& atom_list = packed_ids.at(predicate->id);
 
             for (const auto& object : atom->arguments)
             {
@@ -204,7 +207,70 @@ namespace formalism
             }
         }
 
-        return grouped_atoms;
+        auto num_predicates = problem_->domain->predicates.size();
+
+        if (include_types)
+        {
+            std::map<formalism::Type, uint32_t> type_ids;
+            const auto& types = problem_->domain->types;
+
+            for (const auto& type : types)
+            {
+                type_ids.insert(std::make_pair(type, num_predicates + type_ids.size()));
+            }
+
+            for (const auto& object : problem_->objects)
+            {
+                const auto object_id = object->id;
+                auto type = object->type;
+
+                while (type != nullptr)
+                {
+                    const auto predicate_id = type_ids[type];
+
+                    if (packed_ids.find(predicate_id) == packed_ids.end())
+                    {
+                        packed_ids.insert(std::make_pair(predicate_id, std::vector<uint32_t>()));
+                        id_to_name_arity.insert(std::make_pair(predicate_id, std::make_pair(type->name + "_type", 1)));
+                    }
+
+                    auto& atom_list = packed_ids.at(predicate_id);
+                    atom_list.push_back(object_id);
+                    type = type->base;
+                }
+            }
+
+            num_predicates += types.size();
+        }
+
+        if (include_goal)
+        {
+            for (const auto& literal : problem_->goal)
+            {
+                if (literal->negated)
+                {
+                    throw std::invalid_argument("negated literal in the goal");
+                }
+
+                const auto atom = literal->atom;
+                const auto predicate_id = num_predicates + atom->predicate->id;
+
+                if (packed_ids.find(predicate_id) == packed_ids.end())
+                {
+                    packed_ids.insert(std::make_pair(predicate_id, std::vector<uint32_t>()));
+                    id_to_name_arity.insert(std::make_pair(predicate_id, std::make_pair(atom->predicate->name + "_goal", atom->predicate->arity)));
+                }
+
+                auto& atom_list = packed_ids.at(predicate_id);
+
+                for (const auto& object : atom->arguments)
+                {
+                    atom_list.push_back(object->id);
+                }
+            }
+        }
+
+        return std::make_pair(packed_ids, id_to_name_arity);
     }
 
     bool is_in_state(uint32_t rank, const formalism::State& state) { return std::binary_search(state->ranks_.begin(), state->ranks_.end(), rank); }
