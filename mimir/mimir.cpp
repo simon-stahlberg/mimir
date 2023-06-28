@@ -62,6 +62,8 @@ std::shared_ptr<planners::GroundedSuccessorGenerator> create_grounded_successor_
     return std::make_shared<planners::GroundedSuccessorGenerator>(problem, successor_generator.get_actions());
 }
 
+bool state_matches_literals(const formalism::State& state, const formalism::LiteralList& literals) { return formalism::literals_hold(literals, state); }
+
 PYBIND11_MODULE(mimir, m)
 {
     m.doc() = "Mimir: Lifted PDDL parsing and expansion library.";
@@ -136,6 +138,7 @@ PYBIND11_MODULE(mimir, m)
         // .def("get_problem", &formalism::StateImpl::get_problem)  // Forward declare Problem.
         .def("get_atoms_by_predicate", &formalism::StateImpl::get_atoms_grouped_by_predicate)
         .def("pack_object_ids_by_predicate_id", &formalism::StateImpl::pack_object_ids_by_predicate_id, "include_types"_a, "include_goal"_a)
+        .def("matches", &state_matches_literals, "literals"_a)
         .def("__repr__", [](const formalism::StateImpl& state) { return "<State '" + std::to_string(state.hash()) + "'>"; });
 
     py::class_<formalism::ActionImpl, formalism::Action>(m, "Action")
