@@ -19,11 +19,13 @@ namespace formalism
         std::vector<uint32_t> negative_precondition_ranks_;
         std::vector<uint32_t> positive_effect_ranks_;
         std::vector<uint32_t> negative_effect_ranks_;
+        formalism::ObjectList arguments_;
+        mutable formalism::LiteralList precondition_;
+        mutable formalism::LiteralList effect_;
 
       public:
         formalism::ProblemDescription problem;
         formalism::ActionSchema schema;
-        formalism::ObjectList arguments;
         int32_t cost;
 
         ActionImpl(const formalism::ProblemDescription& problem,
@@ -37,9 +39,11 @@ namespace formalism
 
         friend formalism::State apply(const formalism::Action& action, const formalism::State& state);
 
-        formalism::LiteralList get_precondition() const;
+        const formalism::ObjectList& get_arguments() const;
 
-        formalism::LiteralList get_effect() const;
+        const formalism::LiteralList& get_precondition() const;
+
+        const formalism::LiteralList& get_effect() const;
     };
 
     Action create_action(const formalism::ProblemDescription& problem,

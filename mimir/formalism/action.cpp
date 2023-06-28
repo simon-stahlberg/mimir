@@ -19,6 +19,7 @@
 #include "action.hpp"
 #include "help_functions.hpp"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -32,9 +33,11 @@ namespace formalism
         negative_precondition_ranks_(),
         positive_effect_ranks_(),
         negative_effect_ranks_(),
+        arguments_(arguments),
+        precondition_(),
+        effect_(),
         problem(problem),
         schema(schema),
-        arguments(arguments),
         cost(cost)
     {
         for (const auto& literal : get_precondition())
@@ -80,14 +83,16 @@ namespace formalism
         negative_precondition_ranks_(),
         positive_effect_ranks_(),
         negative_effect_ranks_(),
+        arguments_(),
+        precondition_(),
+        effect_(),
         problem(problem),
         schema(schema),
-        arguments(),
         cost(1)
     {
         for (const auto& parameter : schema->parameters)
         {
-            arguments.push_back(assignment.at(parameter));
+            arguments_.push_back(assignment.at(parameter));
         }
 
         for (const auto& literal : get_precondition())
@@ -126,32 +131,46 @@ namespace formalism
         std::sort(negative_effect_ranks_.begin(), negative_effect_ranks_.end());
     }
 
-    formalism::LiteralList ActionImpl::get_precondition() const
+    const formalism::ObjectList& ActionImpl::get_arguments() const { return arguments_; }
+
+    const formalism::LiteralList& ActionImpl::get_precondition() const
     {
+        if (precondition_.size() > 0)
+        {
+            return precondition_;
+        }
+
         formalism::ParameterAssignment assignment;
 
-        for (uint32_t index = 0; index < arguments.size(); ++index)
+        for (uint32_t index = 0; index < arguments_.size(); ++index)
         {
             const auto& parameter = schema->parameters.at(index);
-            const auto& argument = arguments.at(index);
+            const auto& argument = arguments_.at(index);
             assignment.insert(std::make_pair(parameter, argument));
         }
 
-        return formalism::ground_literal_list(schema->precondition, assignment);
+        precondition_ = formalism::ground_literal_list(schema->precondition, assignment);
+        return precondition_;
     }
 
-    formalism::LiteralList ActionImpl::get_effect() const
+    const formalism::LiteralList& ActionImpl::get_effect() const
     {
+        if (effect_.size() > 0)
+        {
+            return effect_;
+        }
+
         formalism::ParameterAssignment assignment;
 
-        for (uint32_t index = 0; index < arguments.size(); ++index)
+        for (uint32_t index = 0; index < arguments_.size(); ++index)
         {
             const auto& parameter = schema->parameters.at(index);
-            const auto& argument = arguments.at(index);
+            const auto& argument = arguments_.at(index);
             assignment.insert(std::make_pair(parameter, argument));
         }
 
-        return formalism::ground_literal_list(schema->effect, assignment);
+        effect_ = formalism::ground_literal_list(schema->effect, assignment);
+        return effect_;
     }
 
     Action create_action(const formalism::ProblemDescription& problem,
@@ -170,7 +189,7 @@ namespace formalism
     std::ostream& operator<<(std::ostream& os, const formalism::ActionImpl& action)
     {
         os << action.schema->name;
-        print_vector(os, action.arguments, "(", ")", ", ");
+        print_vector(os, action.get_arguments(), "(", ")", ", ");
         return os;
     }
 
@@ -183,18 +202,18 @@ namespace std
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     std::size_t hash<formalism::Action>::operator()(const formalism::Action& action) const
     {
-        return hash_combine(action->schema, action->arguments, action->cost);
+        return hash_combine(action->schema, action->get_arguments(), action->cost);
     }
 
     bool less<formalism::Action>::operator()(const formalism::Action& left_action, const formalism::Action& right_action) const
     {
-        return less_combine(std::make_tuple(left_action->schema, left_action->arguments, left_action->cost),
-                            std::make_tuple(right_action->schema, right_action->arguments, right_action->cost));
+        return less_combine(std::make_tuple(left_action->schema, left_action->get_arguments(), left_action->cost),
+                            std::make_tuple(right_action->schema, right_action->get_arguments(), right_action->cost));
     }
 
     bool equal_to<formalism::Action>::operator()(const formalism::Action& left_action, const formalism::Action& right_action) const
     {
-        return equal_to_combine(std::make_tuple(left_action->schema, left_action->arguments, left_action->cost),
-                                std::make_tuple(right_action->schema, right_action->arguments, right_action->cost));
+        return equal_to_combine(std::make_tuple(left_action->schema, left_action->get_arguments(), left_action->cost),
+                                std::make_tuple(right_action->schema, right_action->get_arguments(), right_action->cost));
     }
 }  // namespace std

@@ -16,12 +16,13 @@ using namespace py::literals;
 std::string to_string(const formalism::ActionImpl& action)
 {
     std::string repr = action.schema->name + "(";
+    const auto& action_arguments = action.get_arguments();
 
-    for (std::size_t index = 0; index < action.arguments.size(); ++index)
+    for (std::size_t index = 0; index < action_arguments.size(); ++index)
     {
-        repr += action.arguments[index]->name;
+        repr += action_arguments[index]->name;
 
-        if ((index + 1) < action.arguments.size())
+        if ((index + 1) < action_arguments.size())
         {
             repr += ", ";
         }
@@ -144,8 +145,8 @@ PYBIND11_MODULE(mimir, m)
     py::class_<formalism::ActionImpl, formalism::Action>(m, "Action")
         // .def_readonly("problem", &formalism::ActionImpl::problem)  // Forward declare Problem.
         .def_readonly("schema", &formalism::ActionImpl::schema)
-        .def_readonly("arguments", &formalism::ActionImpl::arguments)
         .def_readonly("cost", &formalism::ActionImpl::cost)
+        .def("get_arguments", &formalism::ActionImpl::get_arguments)
         .def("get_precondition", &formalism::ActionImpl::get_precondition)
         .def("get_effect", &formalism::ActionImpl::get_effect)
         .def("is_applicable", &formalism::is_applicable)

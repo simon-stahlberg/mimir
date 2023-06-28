@@ -279,7 +279,7 @@ namespace formalism
 
     bool is_applicable(const formalism::Action& action, const formalism::State& state)
     {
-        if (static_cast<int32_t>(action->arguments.size()) != action->schema->arity)
+        if (static_cast<int32_t>(action->get_arguments().size()) != action->schema->arity)
         {
             throw std::runtime_error("is_applicable: action is not ground");
         }
