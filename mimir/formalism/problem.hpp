@@ -26,19 +26,19 @@ namespace formalism
         std::vector<uint32_t> rank_to_arity_;
         std::vector<uint32_t> rank_to_predicate_id_;
 
-      public:
-        std::string name;
-        formalism::DomainDescription domain;
-        formalism::ObjectList objects;
-        formalism::State initial;
-        formalism::LiteralList goal;
-
         ProblemImpl(const std::string& name,
                     const formalism::DomainDescription& domain,
                     const formalism::ObjectList& objects,
                     const formalism::AtomSet& static_atoms,
                     const formalism::State& initial,
                     const formalism::LiteralList& goal);
+
+      public:
+        std::string name;
+        formalism::DomainDescription domain;
+        formalism::ObjectList objects;
+        formalism::State initial;
+        formalism::LiteralList goal;
 
         const formalism::AtomSet& get_static_atoms() const;
 

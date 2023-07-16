@@ -19,6 +19,8 @@
 #include "action_schema.hpp"
 #include "help_functions.hpp"
 
+#include <algorithm>
+
 namespace formalism
 {
     ActionSchemaImpl::ActionSchemaImpl(const std::string& name,
@@ -40,6 +42,35 @@ namespace formalism
                                       const formalism::LiteralList& effect)
     {
         return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, effect);
+    }
+
+    ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list)
+    {
+        std::vector<formalism::Literal> relaxed_precondition;
+
+        const auto positive_literal = [](const formalism::Literal& literal) { return !literal->negated; };
+
+        if (remove_negative_preconditions)
+        {
+            std::copy_if(action_schema->precondition.cbegin(), action_schema->precondition.cend(), std::back_inserter(relaxed_precondition), positive_literal);
+        }
+        else
+        {
+            relaxed_precondition.insert(relaxed_precondition.end(), action_schema->precondition.cbegin(), action_schema->precondition.cend());
+        }
+
+        std::vector<formalism::Literal> relaxed_effect;
+
+        if (remove_delete_list)
+        {
+            std::copy_if(action_schema->effect.cbegin(), action_schema->effect.cend(), std::back_inserter(relaxed_effect), positive_literal);
+        }
+        else
+        {
+            relaxed_effect.insert(relaxed_effect.end(), action_schema->effect.cbegin(), action_schema->effect.cend());
+        }
+
+        return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect);
     }
 
     bool affects_predicate(const formalism::ActionSchema& action_schema, const formalism::Predicate& predicate)

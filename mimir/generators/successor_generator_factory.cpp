@@ -35,7 +35,7 @@ namespace planners
                 {
                     // The GroundedSuccessorGenerator does not play well with an extreme number of actions.
 
-                    if (actions.size() < 10'000)
+                    if (actions.size() < 100'000)
                     {
                         return std::make_shared<GroundedSuccessorGenerator>(problem, actions);
                     }

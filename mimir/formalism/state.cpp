@@ -74,7 +74,7 @@ namespace formalism
         return std::make_shared<formalism::StateImpl>(atoms, problem);
     }
 
-    bool StateImpl::operator<(const StateImpl& other) const
+    inline bool StateImpl::operator<(const StateImpl& other) const
     {
         if (problem_ != other.problem_)
         {
@@ -84,14 +84,14 @@ namespace formalism
         return ranks_ < other.ranks_;
     }
 
-    bool StateImpl::operator==(const StateImpl& other) const
+    inline bool StateImpl::operator==(const StateImpl& other) const
     {
         if (hash_ != other.hash_)
         {
             return false;
         }
 
-        if (problem_ != other.problem_)
+        if (problem_.get() != other.problem_.get())
         {
             return false;
         }
@@ -99,9 +99,7 @@ namespace formalism
         return ranks_ == other.ranks_;
     }
 
-    bool StateImpl::operator!=(const StateImpl& other) const { return !(this->operator==(other)); }
-
-    std::size_t StateImpl::hash() const { return hash_; }
+    inline bool StateImpl::operator!=(const StateImpl& other) const { return !(this->operator==(other)); }
 
     formalism::AtomList StateImpl::get_atoms() const
     {
@@ -273,7 +271,11 @@ namespace formalism
         return std::make_pair(packed_ids, id_to_name_arity);
     }
 
-    bool is_in_state(uint32_t rank, const formalism::State& state) { return std::binary_search(state->ranks_.begin(), state->ranks_.end(), rank); }
+    bool is_in_state(uint32_t rank, const formalism::State& state)
+    {
+        const auto it = std::lower_bound(state->ranks_.cbegin(), state->ranks_.cend(), rank);
+        return (it != state->ranks_.cend() && *it == rank);
+    }
 
     bool is_in_state(const formalism::Atom& atom, const formalism::State& state) { return is_in_state(state->get_problem()->get_rank(atom), state); }
 
@@ -303,9 +305,12 @@ namespace formalism
 
     formalism::State apply(const formalism::Action& action, const formalism::State& state)
     {
-        auto ranks = state->ranks_;
+        const auto& ranks = state->ranks_;
+        const auto reserve_size = ranks.size() + action->positive_effect_ranks_.size();
 
         std::vector<uint32_t> ranks_delete;
+        ranks_delete.reserve(reserve_size);
+
         std::set_difference(ranks.begin(),
                             ranks.end(),
                             action->negative_effect_ranks_.begin(),
@@ -313,6 +318,8 @@ namespace formalism
                             std::back_inserter(ranks_delete));
 
         std::vector<uint32_t> ranks_add;
+        ranks_add.reserve(reserve_size);
+
         std::set_union(ranks_delete.begin(),
                        ranks_delete.end(),
                        action->positive_effect_ranks_.begin(),
@@ -380,19 +387,12 @@ namespace std
 
     bool equal_to<formalism::State>::operator()(const formalism::State& left_state, const formalism::State& right_state) const
     {
-        if (left_state == right_state)
+        if (left_state.get() == right_state.get())
         {
             return true;
         }
 
         if (!left_state || !right_state)
-        {
-            return false;
-        }
-
-        const std::hash<formalism::State> hash;
-
-        if (hash(left_state) != hash(right_state))
         {
             return false;
         }

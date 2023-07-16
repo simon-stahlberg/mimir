@@ -27,13 +27,19 @@ print_vector(std::ostream& os, const std::vector<T>& vector, const std::string& 
 // --------------
 
 template<typename T>
-void hash_combine(size_t& seed, const T& val)
+inline void hash_combine(size_t& seed, const T& val)
 {
     seed ^= std::hash<T>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+template<>
+inline void hash_combine(size_t& seed, const std::size_t& val)
+{
+    seed ^= val + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 template<typename... Types>
-size_t hash_combine(const Types&... args)
+inline size_t hash_combine(const Types&... args)
 {
     size_t seed = 0;
     (hash_combine(seed, args), ...);
@@ -41,13 +47,14 @@ size_t hash_combine(const Types&... args)
 }
 
 template<class T>
-inline std::size_t hash_vector(std::vector<T> vector)
+inline std::size_t hash_vector(const std::vector<T>& vector)
 {
     const auto hash_function = std::hash<T>();
     std::size_t aggregated_hash = 0;
     for (const auto& item : vector)
     {
-        hash_combine(aggregated_hash, hash_function(item));
+        const auto item_hash = hash_function(item);
+        hash_combine(aggregated_hash, item_hash);
     }
     return aggregated_hash;
 }

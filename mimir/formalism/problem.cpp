@@ -15,10 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+#include "../generators/lifted_successor_generator.hpp"
 #include "help_functions.hpp"
 #include "problem.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 
@@ -192,7 +193,7 @@ namespace formalism
             }
         }
 
-        auto problem = std::make_shared<formalism::ProblemImpl>(name, domain, objects, static_atoms, nullptr, goal);
+        auto problem = std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, static_atoms, nullptr, goal));
         problem->initial = create_state(initial, problem);
         return problem;
     }
@@ -231,6 +232,11 @@ namespace std
     bool equal_to<formalism::ProblemDescription>::operator()(const formalism::ProblemDescription& left_problem,
                                                              const formalism::ProblemDescription& right_problem) const
     {
+        if (left_problem.get() == right_problem.get())
+        {
+            return true;
+        }
+
         return equal_to_combine(
             std::make_tuple(left_problem->name, left_problem->domain, left_problem->objects, left_problem->initial, left_problem->goal),
             std::make_tuple(right_problem->name, right_problem->domain, right_problem->objects, right_problem->initial, right_problem->goal));

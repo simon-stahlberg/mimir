@@ -17,6 +17,8 @@ namespace planners
     {
       public:
         virtual ~DecisionNode();
+
+        virtual void get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const = 0;
     };
 
     class BranchNode : public DecisionNode
@@ -28,6 +30,8 @@ namespace planners
         std::unique_ptr<DecisionNode> dont_care_;
 
         BranchNode(uint32_t rank);
+
+        void get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const override;
     };
 
     class LeafNode : public DecisionNode
@@ -36,6 +40,8 @@ namespace planners
         formalism::ActionList actions_;
 
         LeafNode(const formalism::ActionList& actions);
+
+        void get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const override;
     };
 
     class GroundedSuccessorGenerator : public SuccessorGeneratorBase
@@ -52,18 +58,15 @@ namespace planners
         formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
 
       private:
-        formalism::AtomSet::const_iterator select_branching_atom(const formalism::ActionList& ground_actions,
-                                                                 const formalism::AtomSet& unique_atoms,
-                                                                 formalism::AtomSet::const_iterator next_atom);
+        formalism::AtomList::const_iterator
+        select_branching_atom(const formalism::ActionList& ground_actions, const formalism::AtomList& atoms, formalism::AtomList::const_iterator next_atom);
 
         std::unique_ptr<DecisionNode> build_decision_tree(const formalism::ProblemDescription& problem, const formalism::ActionList& ground_actions);
 
         std::unique_ptr<DecisionNode> build_decision_tree_recursive(const formalism::ProblemDescription& problem,
                                                                     const formalism::ActionList& ground_actions,
-                                                                    const formalism::AtomSet& unique_atoms,
-                                                                    formalism::AtomSet::const_iterator next_atom);
-
-        void get_applicable_actions_recursive(const DecisionNode* node, const formalism::State& state, formalism::ActionList& applicable_actions) const;
+                                                                    const formalism::AtomList& atoms,
+                                                                    formalism::AtomList::const_iterator next_atom);
     };
 }  // namespace planners
 

@@ -18,6 +18,8 @@
 
 #include "grounded_successor_generator.hpp"
 
+#include <algorithm>
+
 namespace planners
 {
     DecisionNode::~DecisionNode() = default;
@@ -43,17 +45,22 @@ namespace planners
         }
 
         formalism::ActionList applicable_actions;
-        get_applicable_actions_recursive(root_.get(), state, applicable_actions);
+
+        if (root_)
+        {
+            root_->get_applicable_actions(state, applicable_actions);
+        }
+
         return applicable_actions;
     }
 
-    formalism::AtomSet::const_iterator GroundedSuccessorGenerator::select_branching_atom(const formalism::ActionList& ground_actions,
-                                                                                         const formalism::AtomSet& unique_atoms,
-                                                                                         formalism::AtomSet::const_iterator next_atom)
+    formalism::AtomList::const_iterator GroundedSuccessorGenerator::select_branching_atom(const formalism::ActionList& ground_actions,
+                                                                                          const formalism::AtomList& atoms,
+                                                                                          formalism::AtomList::const_iterator next_atom)
     {
         std::equal_to<formalism::Atom> equal_to;
 
-        while (next_atom != unique_atoms.end())
+        while (next_atom != atoms.end())
         {
             const auto atom = *next_atom;
 
@@ -77,28 +84,41 @@ namespace planners
     std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const formalism::ProblemDescription& problem,
                                                                                   const formalism::ActionList& ground_actions)
     {
-        std::unordered_set<formalism::Atom> unique_atoms;
+        std::unordered_map<formalism::Atom, uint32_t> atom_occurrances;
 
         // Find unique atoms from ground action preconditions
         for (const auto& action : ground_actions)
         {
             for (const auto& literal : action->get_precondition())
             {
-                unique_atoms.insert(literal->atom);
+                ++atom_occurrances[literal->atom];
             }
         }
 
-        return build_decision_tree_recursive(problem, ground_actions, unique_atoms, unique_atoms.begin());
+        formalism::AtomList atoms;
+        atoms.reserve(atom_occurrances.size());
+
+        for (const auto& [key, value] : atom_occurrances)
+        {
+            atoms.emplace_back(key);
+        }
+
+        const auto occurance_descending = [&atom_occurrances](const formalism::Atom& lhs, const formalism::Atom& rhs)
+        { return atom_occurrances[lhs] > atom_occurrances[rhs]; };
+
+        std::sort(atoms.begin(), atoms.end(), occurance_descending);
+
+        return build_decision_tree_recursive(problem, ground_actions, atoms, atoms.begin());
     }
 
     std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree_recursive(const formalism::ProblemDescription& problem,
                                                                                             const formalism::ActionList& ground_actions,
-                                                                                            const formalism::AtomSet& unique_atoms,
-                                                                                            formalism::AtomSet::const_iterator next_atom)
+                                                                                            const formalism::AtomList& atoms,
+                                                                                            formalism::AtomList::const_iterator next_atom)
     {
-        next_atom = select_branching_atom(ground_actions, unique_atoms, next_atom);
+        next_atom = select_branching_atom(ground_actions, atoms, next_atom);
 
-        if ((next_atom == unique_atoms.end()) || ground_actions.empty())
+        if ((next_atom == atoms.end()) || ground_actions.empty())
         {
             return std::make_unique<LeafNode>(ground_actions);
         }
@@ -148,40 +168,39 @@ namespace planners
         }
 
         ++next_atom;
-        auto branch_node = std::make_unique<BranchNode>(problem->get_rank(branching_atom));
-        branch_node->present_ = build_decision_tree_recursive(problem, present_actions, unique_atoms, next_atom);
-        branch_node->not_present_ = build_decision_tree_recursive(problem, not_present_actions, unique_atoms, next_atom);
-        branch_node->dont_care_ = build_decision_tree_recursive(problem, dont_care_actions, unique_atoms, next_atom);
-        return branch_node;
+
+        if ((present_actions.size() == 0) && (not_present_actions.size() == 0) && (dont_care_actions.size() > 0))
+        {
+            return build_decision_tree_recursive(problem, dont_care_actions, atoms, next_atom);
+        }
+        else
+        {
+            auto branch_node = std::make_unique<BranchNode>(problem->get_rank(branching_atom));
+            branch_node->present_ = build_decision_tree_recursive(problem, present_actions, atoms, next_atom);
+            branch_node->not_present_ = build_decision_tree_recursive(problem, not_present_actions, atoms, next_atom);
+            branch_node->dont_care_ = build_decision_tree_recursive(problem, dont_care_actions, atoms, next_atom);
+            return branch_node;
+        }
     }
 
-    void GroundedSuccessorGenerator::get_applicable_actions_recursive(const DecisionNode* node,
-                                                                      const formalism::State& state,
-                                                                      formalism::ActionList& applicable_actions) const
+    void BranchNode::get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const
     {
-        if (!node)
+        const bool atom_present = formalism::is_in_state(rank_, state);
+
+        if (atom_present)
         {
-            return;
+            present_->get_applicable_actions(state, applicable_actions);
+        }
+        else
+        {
+            not_present_->get_applicable_actions(state, applicable_actions);
         }
 
-        if (const auto leaf = dynamic_cast<const LeafNode*>(node))
-        {
-            applicable_actions.insert(applicable_actions.end(), leaf->actions_.begin(), leaf->actions_.end());
-        }
-        else if (const auto branch = dynamic_cast<const BranchNode*>(node))
-        {
-            bool atom_present = formalism::is_in_state(branch->rank_, state);
+        dont_care_->get_applicable_actions(state, applicable_actions);
+    }
 
-            if (atom_present)
-            {
-                get_applicable_actions_recursive(branch->present_.get(), state, applicable_actions);
-            }
-            else
-            {
-                get_applicable_actions_recursive(branch->not_present_.get(), state, applicable_actions);
-            }
-
-            get_applicable_actions_recursive(branch->dont_care_.get(), state, applicable_actions);
-        }
+    void LeafNode::get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const
+    {
+        applicable_actions.insert(applicable_actions.end(), actions_.cbegin(), actions_.cend());
     }
 }  // namespace planners
