@@ -1,5 +1,5 @@
-#if !defined(PARSERS_PARSER_DOMAIN_HPP_)
-#define PARSERS_PARSER_DOMAIN_HPP_
+#if !defined(PDDL_PARSER_DOMAIN_HPP_)
+#define PDDL_PARSER_DOMAIN_HPP_
 
 #include "../formalism/domain.hpp"
 
@@ -26,6 +26,17 @@ namespace parsers
 
         formalism::DomainDescription parse();
     };
+
+    class ProblemParser
+    {
+      private:
+        const fs::path problem_path;
+
+      public:
+        ProblemParser(const fs::path& problem_path);
+
+        formalism::ProblemDescription parse(const formalism::DomainDescription& domain);
+    };
 }  // namespace parsers
 
-#endif  // PARSERS_PARSER_DOMAIN_HPP_
+#endif  // PDDL_PARSER_DOMAIN_HPP_

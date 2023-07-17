@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../formalism/help_functions.hpp"
 #include "state_space.hpp"
+
+#include "../formalism/help_functions.hpp"
 #include "successor_generator_factory.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <deque>
 

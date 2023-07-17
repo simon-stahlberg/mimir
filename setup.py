@@ -41,15 +41,17 @@ class CMakeBuild(build_ext):
         )
 
         subprocess.run(
-            ["cmake", "--build", "."], cwd=temp_directory, check=True
+            ["cmake", "--build", ".", "--config", "Release"], cwd=temp_directory, check=True  # Is used with MSVC
         )
 
         # Copy relevant files to output directory
-        shutil.copy(temp_directory / "mimir.so",
-                    output_directory / "mimir.so")
-
-        shutil.copytree(temp_directory / "mimir-stubs",
-                        output_directory / "mimir-stubs")
+        shutil.copytree(temp_directory / "mimir-stubs", output_directory / "mimir-stubs")
+        if Path.exists(temp_directory / "mimir.so"):
+            shutil.copy(temp_directory / "mimir.so", output_directory / "mimir.so")
+        elif Path.exists(temp_directory / "Release" / "mimir.dll"):
+            shutil.copy(temp_directory / "Release" / "mimir.dll", output_directory / "mimir.pyd")
+        else:
+            raise FileNotFoundError(f"could not find 'mimir.so' or 'mimir.dll' ({temp_directory})")
 
 
 setup(

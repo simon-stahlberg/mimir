@@ -8,23 +8,37 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 find_package(Boost REQUIRED)
 find_package(Python REQUIRED)
 find_package(PythonLibs REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
+
+message(STATUS "CMAKE_BUILD_TYPE is \"${CMAKE_BUILD_TYPE}\"")
+message(STATUS "Python_EXECUTABLE is \"${Python_EXECUTABLE}\"")
 
 add_subdirectory(mimir)
 add_library(mimir MODULE mimir/mimir.cpp)
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 set_target_properties(mimir PROPERTIES PREFIX "")
-target_link_libraries(mimir -static-libstdc++ -lstdc++fs -static-libgcc)
 target_link_libraries(mimir formalism)
 target_link_libraries(mimir generators)
 target_link_libraries(mimir pddl)
 target_link_libraries(mimir ${PYTHON_LIBRARIES})
+
+if (MSVC)
+    # Add MSVC specific library linking here
+else()
+    target_link_libraries(mimir -static-libstdc++ -lstdc++fs -static-libgcc)
+endif()
 
 # Add pybind11 include directory
 set(PYBIND11_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/extern/pybind11/include)
