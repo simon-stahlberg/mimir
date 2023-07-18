@@ -16,6 +16,10 @@
 
 namespace planners
 {
+    // TODO: Optimize this by translating all action schemas into more efficient representations.
+    // Instead of using an Object-Oriented representation, make it flatter and refer to parameters by their position rather than the object.
+    // Additionally, flatten literals to eliminate the need to follow pointers.
+
     struct Assignment
     {
         formalism::Parameter parameter;
