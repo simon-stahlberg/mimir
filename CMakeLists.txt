@@ -21,11 +21,15 @@ find_package(PythonLibs REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
+add_subdirectory(mimir)
 
 message(STATUS "CMAKE_BUILD_TYPE is \"${CMAKE_BUILD_TYPE}\"")
 message(STATUS "Python_EXECUTABLE is \"${Python_EXECUTABLE}\"")
 
-add_subdirectory(mimir)
+# ------------
+# Target Mimir
+# ------------
+
 add_library(mimir MODULE mimir/mimir.cpp)
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 set_target_properties(mimir PROPERTIES PREFIX "")
@@ -51,3 +55,13 @@ add_custom_target(generate_pyi_files ALL
 )
 
 add_dependencies(generate_pyi_files mimir)
+
+# ----------------
+# Target Profiling
+# ----------------
+
+add_executable(profiling mimir/profiling.cpp)
+set_property(TARGET profiling PROPERTY CXX_STANDARD 17)
+target_link_libraries(profiling formalism)
+target_link_libraries(profiling generators)
+target_link_libraries(profiling pddl)
