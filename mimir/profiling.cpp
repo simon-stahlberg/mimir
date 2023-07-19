@@ -18,6 +18,7 @@
 #include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <deque>
 
