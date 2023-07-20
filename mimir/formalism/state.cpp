@@ -15,25 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-#include "state.hpp"
-
+#include "../algorithms/murmurhash3.hpp"
 #include "help_functions.hpp"
 #include "problem.hpp"
+#include "state.hpp"
 
 #include <algorithm>
-#include <boost/functional/hash.hpp>
 #include <cassert>
 
 namespace formalism
 {
-    StateImpl::StateImpl(const std::vector<uint32_t>& dynamic_bitset, const formalism::ProblemDescription& problem) :
-        ranks_(dynamic_bitset),
-        problem_(problem),
-        hash_(0)
+    inline std::size_t compute_state_hash(const std::vector<uint32_t>& ranks, const formalism::ProblemDescription& problem)
     {
-        boost::hash_combine(hash_, (std::size_t) problem_.get());
-        boost::hash_combine(hash_, hash_vector(ranks_));
+        uint64_t hash[2];
+        uint32_t seed = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(problem.get()));
+        MurmurHash3_x64_128(&ranks[0], sizeof(uint32_t) * ranks.size(), seed, hash);
+        return hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2);
+    }
+
+    /// @brief Create a state given a sorted vector of ranks and a problem description
+    /// @param dynamic_ranks A sorted vector of ranks
+    /// @param problem A problem description object
+    StateImpl::StateImpl(const std::vector<uint32_t>& dynamic_ranks, const formalism::ProblemDescription& problem) :
+        ranks_(dynamic_ranks),
+        problem_(problem),
+        hash_(compute_state_hash(dynamic_ranks, problem))
+    {
     }
 
     StateImpl::StateImpl() : ranks_(), problem_(nullptr), hash_(0) {}
@@ -47,8 +54,7 @@ namespace formalism
 
         std::sort(ranks_.begin(), ranks_.end());
 
-        boost::hash_combine(hash_, (std::size_t) problem_.get());
-        boost::hash_combine(hash_, hash_vector(ranks_));
+        hash_ = compute_state_hash(ranks_, problem_);
     }
 
     StateImpl::StateImpl(const formalism::AtomSet& atoms, const formalism::ProblemDescription& problem) : ranks_(), problem_(problem), hash_(0)
@@ -58,8 +64,9 @@ namespace formalism
             ranks_.emplace_back(problem->get_rank(atom));
         }
 
-        boost::hash_combine(hash_, (std::size_t) problem_.get());
-        boost::hash_combine(hash_, hash_vector(ranks_));
+        std::sort(ranks_.begin(), ranks_.end());
+
+        hash_ = compute_state_hash(ranks_, problem_);
     }
 
     State create_state() { return std::make_shared<formalism::StateImpl>(); }

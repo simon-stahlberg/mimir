@@ -105,7 +105,10 @@ int main(int argc, char* argv[])
         uint32_t depth;
     };
 
+    std::cout << "Creating successor generator... ";
     const auto successor_generator = planners::create_sucessor_generator(problem, generator);
+    std::cout << "Done" << std::endl;
+
     std::unordered_map<formalism::State, uint32_t> state_indices;
     std::deque<Frame> frame_list;
     std::deque<uint32_t> open_list;
