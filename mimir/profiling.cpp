@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
     while (open_list.size() > 0)
     {
         const auto index = open_list.front();
-        const auto frame = frame_list[index];
+        const auto& frame = frame_list[index];
         open_list.pop_front();
 
         if (last_depth < frame.depth)

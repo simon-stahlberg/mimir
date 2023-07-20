@@ -385,7 +385,7 @@ namespace formalism
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::State>::operator()(const formalism::State& state) const { return !state ? 0 : state->hash(); }
+    std::size_t hash<formalism::State>::operator()(const formalism::State& state) const { return !state ? 0 : state->hash_; }
 
     bool less<formalism::State>::operator()(const formalism::State& left_state, const formalism::State& right_state) const
     {
@@ -394,16 +394,6 @@ namespace std
 
     bool equal_to<formalism::State>::operator()(const formalism::State& left_state, const formalism::State& right_state) const
     {
-        if (left_state.get() == right_state.get())
-        {
-            return true;
-        }
-
-        if (!left_state || !right_state)
-        {
-            return false;
-        }
-
         return *left_state == *right_state;
     }
 }  // namespace std
