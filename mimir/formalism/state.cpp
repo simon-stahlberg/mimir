@@ -313,27 +313,68 @@ namespace formalism
     formalism::State apply(const formalism::Action& action, const formalism::State& state)
     {
         const auto& ranks = state->ranks_;
-        const auto reserve_size = ranks.size() + action->positive_effect_ranks_.size();
+        const auto num_ranks = ranks.size();
 
-        std::vector<uint32_t> ranks_delete;
-        ranks_delete.reserve(reserve_size);
+        const auto& delete_ranks = action->negative_effect_ranks_;
+        const auto num_delete_ranks = delete_ranks.size();
 
-        std::set_difference(ranks.begin(),
-                            ranks.end(),
-                            action->negative_effect_ranks_.begin(),
-                            action->negative_effect_ranks_.end(),
-                            std::back_inserter(ranks_delete));
+        const auto& add_ranks = action->positive_effect_ranks_;
+        const auto num_add_ranks = add_ranks.size();
 
-        std::vector<uint32_t> ranks_add;
-        ranks_add.reserve(reserve_size);
+        std::vector<uint32_t> successor_ranks;
+        successor_ranks.reserve(num_ranks + num_add_ranks);
 
-        std::set_union(ranks_delete.begin(),
-                       ranks_delete.end(),
-                       action->positive_effect_ranks_.begin(),
-                       action->positive_effect_ranks_.end(),
-                       std::back_inserter(ranks_add));
+        std::size_t ranks_index = 0;
+        std::size_t delete_index = 0;
+        std::size_t add_index = 0;
 
-        return std::make_shared<formalism::StateImpl>(std::move(ranks_add), state->problem_);
+        while (ranks_index < num_ranks)
+        {
+            const auto rank = ranks[ranks_index];
+
+            // Advance 'delete_index' forward until it points to a rank that is the same as 'rank' or greater than it.
+
+            while ((delete_index < num_delete_ranks) && (delete_ranks[delete_index] < rank))
+            {
+                ++delete_index;
+            }
+
+            // Advance 'add_index' until it points to a rank that is the same as or larger than 'rank'. While moving 'add_index' forward, add all ranks in
+            // 'successor_ranks' as long as they do not introduce duplicates.
+
+            while ((add_index < num_add_ranks) && (add_ranks[add_index] < rank))
+            {
+                if (add_ranks[add_index] != successor_ranks.back())
+                {
+                    successor_ranks.emplace_back(add_ranks[add_index]);
+                }
+
+                ++add_index;
+            }
+
+            // If the rank at 'delete_ranks[delete_index]' is not the same as 'rank', then we can safely add it to 'successor_ranks'.
+
+            if ((delete_index >= num_delete_ranks) || (rank != delete_ranks[delete_index]))
+            {
+                successor_ranks.emplace_back(rank);
+            }
+
+            ++ranks_index;
+        }
+
+        // Add all trailing ranks in the list.
+
+        while (add_index < num_add_ranks)
+        {
+            if (add_ranks[add_index] != successor_ranks.back())
+            {
+                successor_ranks.emplace_back(add_ranks[add_index]);
+            }
+
+            ++add_index;
+        }
+
+        return std::make_shared<formalism::StateImpl>(std::move(successor_ranks), state->problem_);
     }
 
     bool atoms_hold(const AtomList& atoms, const formalism::State& state)
