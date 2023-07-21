@@ -155,6 +155,7 @@ namespace formalism
     std::vector<uint32_t> StateImpl::get_static_ranks() const
     {
         std::vector<uint32_t> static_atoms;
+        static_atoms.reserve(ranks_.size());
         std::copy_if(ranks_.begin(), ranks_.end(), std::back_insert_iterator(static_atoms), [this](uint32_t rank) { return problem_->is_static(rank); });
         return static_atoms;
     }
@@ -162,6 +163,7 @@ namespace formalism
     std::vector<uint32_t> StateImpl::get_dynamic_ranks() const
     {
         std::vector<uint32_t> dynamic_atoms;
+        dynamic_atoms.reserve(ranks_.size());
         std::copy_if(ranks_.begin(), ranks_.end(), std::back_insert_iterator(dynamic_atoms), [this](uint32_t rank) { return problem_->is_dynamic(rank); });
         return dynamic_atoms;
     }
