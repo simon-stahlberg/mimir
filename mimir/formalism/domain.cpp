@@ -102,6 +102,18 @@ namespace formalism
         return std::make_shared<DomainImpl>(name, requirements, types, constants, predicates, action_schemas);
     }
 
+    DomainDescription relax(const formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list)
+    {
+        formalism::ActionSchemaList relaxed_action_schemas;
+        relaxed_action_schemas.reserve(domain->action_schemas.size());
+        std::transform(domain->action_schemas.cbegin(),
+                       domain->action_schemas.cend(),
+                       std::back_insert_iterator(relaxed_action_schemas),
+                       [](const formalism::ActionSchema& action_schema) { return formalism::relax(action_schema, true, true); });
+
+        return create_domain(domain->name, domain->requirements, domain->types, domain->constants, domain->predicates, relaxed_action_schemas);
+    }
+
     std::ostream& operator<<(std::ostream& os, const formalism::DomainDescription& domain)
     {
         os << "Domain: " << domain->name << std::endl;

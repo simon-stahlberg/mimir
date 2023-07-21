@@ -119,8 +119,9 @@ int main(int argc, char* argv[])
 
         // Add the initial state to the data-structures
         const uint32_t initial_index = static_cast<uint32_t>(frame_list.size());
-        state_indices[problem->initial] = initial_index;
-        frame_list.emplace_back(Frame { problem->initial, 0 });
+        const auto initial_state = formalism::create_state(problem->initial, problem);
+        state_indices[initial_state] = initial_index;
+        frame_list.emplace_back(Frame { initial_state, 0 });
         open_list.emplace_back(initial_index);
     }
 

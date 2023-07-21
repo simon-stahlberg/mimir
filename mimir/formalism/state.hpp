@@ -7,6 +7,7 @@
 #include "literal.hpp"
 #include "transition.hpp"
 
+#include <boost/dynamic_bitset.hpp>
 #include <map>
 #include <memory>
 #include <unordered_set>
@@ -17,12 +18,14 @@ namespace formalism
     class StateImpl
     {
       private:
-        std::vector<uint32_t> ranks_;
+        mutable boost::dynamic_bitset<> bitset_;
         formalism::ProblemDescription problem_;
         std::size_t hash_;
 
       public:
         StateImpl();
+
+        StateImpl(const boost::dynamic_bitset<>& bitset, const formalism::ProblemDescription& problem);
 
         StateImpl(const std::vector<uint32_t>& atoms, const formalism::ProblemDescription& problem);
 
@@ -56,6 +59,8 @@ namespace formalism
         pack_object_ids_by_predicate_id(bool include_types, bool include_goal) const;
 
         inline std::size_t hash() const { return hash_; }
+
+        friend void resize_to_same_length(const StateImpl& lhs, const StateImpl& rhs);
 
         friend bool is_applicable(const formalism::Action& action, const formalism::State& state);
 

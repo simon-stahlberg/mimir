@@ -49,6 +49,7 @@ namespace planners
       private:
         using ParameterAssignmentsMap = std::unordered_map<formalism::Parameter, std::unordered_set<formalism::Object>>;
 
+        formalism::DomainDescription domain_;
         formalism::ProblemDescription problem_;
         formalism::ActionSchema action_schema;
         ParameterAssignmentsMap objects_by_parameter_type;
@@ -59,7 +60,8 @@ namespace planners
         std::vector<formalism::Literal> dynamic_precondition;
         std::vector<std::vector<std::size_t>> partitions_;
 
-        static std::vector<std::vector<bool>> build_assignment_sets(const formalism::ProblemDescription& problem, const std::vector<uint32_t>& ranks);
+        static std::vector<std::vector<bool>>
+        build_assignment_sets(const formalism::DomainDescription& domain, const formalism::ProblemDescription& problem, const std::vector<uint32_t>& ranks);
 
         bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
                                     const formalism::LiteralList& literals,
@@ -92,6 +94,10 @@ namespace planners
 
       public:
         LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem);
+
+        LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema,
+                                       const formalism::DomainDescription& domain,
+                                       const formalism::ProblemDescription& problem);
 
         formalism::ActionList get_applicable_actions(const formalism::State& state) const;
 

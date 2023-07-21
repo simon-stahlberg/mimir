@@ -55,11 +55,12 @@ namespace planners
      *
      * @return A set for each predicate that contains possible compatible assignments.
      */
-    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const formalism::ProblemDescription& problem,
+    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const formalism::DomainDescription& domain,
+                                                                                         const formalism::ProblemDescription& problem,
                                                                                          const std::vector<uint32_t>& ranks)
     {
         const auto num_objects = problem->objects.size();
-        const auto& predicates = problem->domain->predicates;
+        const auto& predicates = domain->predicates;
         std::vector<std::vector<bool>> assignment_sets;
         assignment_sets.resize(predicates.size());
 
@@ -200,6 +201,14 @@ namespace planners
     }
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :
+        LiftedSchemaSuccessorGenerator(action_schema, problem->domain, problem)
+    {
+    }
+
+    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema,
+                                                                   const formalism::DomainDescription& domain,
+                                                                   const formalism::ProblemDescription& problem) :
+        domain_(domain),
         problem_(problem),
         action_schema(action_schema),
         objects_by_parameter_type(),
@@ -252,7 +261,7 @@ namespace planners
             }
 
             // Separate precondition based on static and dynamic literals
-            const formalism::PredicateSet static_predicates(problem->domain->static_predicates.begin(), problem->domain->static_predicates.end());
+            const formalism::PredicateSet static_predicates(domain->static_predicates.begin(), domain->static_predicates.end());
 
             for (const auto& literal : action_schema->precondition)
             {
@@ -267,7 +276,8 @@ namespace planners
             }
 
             // Filter assignment based on static atoms
-            const auto assignment_sets = build_assignment_sets(problem_, problem->initial->get_static_ranks());
+            const auto initial_state = formalism::create_state(problem->initial, problem);
+            const auto assignment_sets = build_assignment_sets(domain_, problem_, initial_state->get_static_ranks());
 
             for (size_t first_id = 0; first_id < to_vertex_assignment.size(); ++first_id)
             {
@@ -483,7 +493,7 @@ namespace planners
 
     formalism::ActionList LiftedSchemaSuccessorGenerator::get_applicable_actions(const formalism::State& state) const
     {
-        const auto assignment_sets = build_assignment_sets(problem_, state->get_dynamic_ranks());
+        const auto assignment_sets = build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
         return get_applicable_actions(state, assignment_sets);
     }
 

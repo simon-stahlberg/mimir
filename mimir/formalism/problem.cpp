@@ -28,153 +28,134 @@ namespace formalism
     ProblemImpl::ProblemImpl(const std::string& name,
                              const formalism::DomainDescription& domain,
                              const formalism::ObjectList& objects,
-                             const formalism::AtomSet& static_atoms,
-                             const formalism::State& initial,
+                             const formalism::AtomList& initial,
                              const formalism::LiteralList& goal) :
-        static_atoms_(static_atoms),
-        predicate_id_to_offset_(),
-        predicate_id_to_predicate_(),
+        static_atoms_(),
         predicate_id_to_static_(),
-        object_id_to_object_(),
-        rank_to_arity_(),
+        atom_ranks_(),
+        rank_to_atom_(),
         rank_to_predicate_id_(),
+        rank_to_arity_(),
+        rank_to_argument_ids_(),
         name(name),
         domain(domain),
         objects(objects),
         initial(initial),
         goal(goal)
     {
-        // The predicates must be sorted by their id for offsets and indices to match.
-        auto predicates = domain->predicates;
-        std::sort(predicates.begin(), predicates.end(), [](const formalism::Predicate& lhs, const formalism::Predicate& rhs) { return lhs->id < rhs->id; });
+        const auto& static_predicates = domain->static_predicates;
+        formalism::PredicateSet static_predicate_set(static_predicates.begin(), static_predicates.end());
 
-        const auto num_objects = static_cast<uint32_t>(objects.size());
-        predicate_id_to_offset_.push_back(0);
-        uint32_t predicate_offset = 0;
-
-        for (const auto& predicate : predicates)
+        for (const auto& atom : initial)
         {
-            assert(predicate->id == (predicate_id_to_offset_.size() - 1));
-            predicate_offset += static_cast<uint32_t>(std::pow(num_objects, predicate->arity));
-            predicate_id_to_offset_.push_back(predicate_offset);
+            if (static_predicate_set.find(atom->predicate) != static_predicate_set.end())
+            {
+                static_atoms_.insert(atom);
+            }
         }
 
-        predicate_id_to_predicate_.resize(predicates.size());
-        for (const auto& predicate : predicates)
+        predicate_id_to_static_.resize(domain->predicates.size(), false);
+
+        for (const auto& static_predicate : static_predicates)
         {
-            predicate_id_to_predicate_[predicate->id] = predicate;
-        }
-
-        object_id_to_object_.resize(objects.size());
-        for (const auto& object : objects)
-        {
-            object_id_to_object_[object->id] = object;
-        }
-
-        predicate_id_to_static_.resize(predicates.size(), false);
-        for (const auto& predicate : domain->static_predicates)
-        {
-            predicate_id_to_static_[predicate->id] = true;
-        }
-
-        const auto num_ranks = predicate_id_to_offset_[predicate_id_to_offset_.size() - 1];
-        rank_to_arity_.resize(num_ranks);
-        rank_to_predicate_id_.resize(num_ranks);
-
-        for (std::size_t index = 0; index < predicates.size(); ++index)
-        {
-            const auto start_offset = predicate_id_to_offset_[index];
-            const auto end_offset = predicate_id_to_offset_[index + 1];
-            const auto arity = predicate_id_to_predicate_[index]->arity;
-            const auto id = predicate_id_to_predicate_[index]->id;
-
-            assert(id == static_cast<uint32_t>(index));
-
-            std::fill(rank_to_arity_.begin() + start_offset, rank_to_arity_.begin() + end_offset, arity);
-            std::fill(rank_to_predicate_id_.begin() + start_offset, rank_to_predicate_id_.begin() + end_offset, id);
+            predicate_id_to_static_[static_predicate->id] = true;
         }
     }
 
     const formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
 
-    uint32_t ProblemImpl::num_ranks() const { return predicate_id_to_offset_[predicate_id_to_offset_.size() - 1]; }
-
     uint32_t ProblemImpl::get_rank(const formalism::Atom& atom) const
     {
-        uint32_t rank = predicate_id_to_offset_[atom->predicate->id];
+        auto& rank_with_offset = atom_ranks_[atom];
 
-        for (std::size_t argument_index = 0; argument_index < atom->arguments.size(); ++argument_index)
+        if (rank_with_offset == 0)
         {
-            const auto argument_offset = static_cast<uint32_t>(std::pow(objects.size(), argument_index));
-            rank += argument_offset * atom->arguments[argument_index]->id;
+            rank_with_offset = static_cast<uint32_t>(atom_ranks_.size());
+            const auto rank = rank_with_offset - 1;
+
+            assert(rank_to_atom_.size() == rank);
+            assert(rank_to_predicate_id_.size() == rank);
+            assert(rank_to_arity_.size() == rank);
+            assert(rank_to_argument_ids_.size() == rank);
+
+            rank_to_atom_.emplace_back(atom);
+            rank_to_predicate_id_.emplace_back(atom->predicate->id);
+            rank_to_arity_.emplace_back(atom->predicate->arity);
+
+            std::vector<uint32_t> predicate_ids;
+            predicate_ids.reserve(atom->arguments.size());
+            std::transform(atom->arguments.cbegin(),
+                           atom->arguments.cend(),
+                           std::back_insert_iterator(predicate_ids),
+                           [](const formalism::Object& object) { return object->id; });
+            rank_to_argument_ids_.emplace_back(std::move(predicate_ids));
         }
 
-        return rank;
+        return rank_with_offset - 1;
     }
 
-    bool ProblemImpl::is_static(uint32_t rank) const
-    {
-        assert(rank < num_ranks());
-        const std::size_t predicate_index = get_predicate_id(rank);
-        return predicate_id_to_static_[predicate_index];
-    }
+    uint32_t ProblemImpl::num_ranks() const { return static_cast<uint32_t>(atom_ranks_.size()); }
+
+    bool ProblemImpl::is_static(uint32_t rank) const { return predicate_id_to_static_.at(get_predicate_id(rank)); }
 
     bool ProblemImpl::is_dynamic(uint32_t rank) const { return !is_static(rank); }
 
     uint32_t ProblemImpl::get_arity(uint32_t rank) const
     {
-        assert(rank < num_ranks());
-        return rank_to_arity_[rank];
+        assert(rank < rank_to_arity_.size());
+        return rank_to_arity_.at(rank);
     }
 
     uint32_t ProblemImpl::get_predicate_id(uint32_t rank) const
     {
-        assert(rank < num_ranks());
-        return rank_to_predicate_id_[rank];
+        assert(rank < rank_to_predicate_id_.size());
+        return rank_to_predicate_id_.at(rank);
     }
 
-    std::vector<uint32_t> ProblemImpl::get_argument_ids(uint32_t rank) const
+    const std::vector<uint32_t>& ProblemImpl::get_argument_ids(uint32_t rank) const
     {
-        assert(rank < num_ranks());
-        const auto predicate_index = rank_to_predicate_id_[rank];
-        const auto arity = rank_to_arity_[rank];
-        const auto num_objects = objects.size();
-        rank -= predicate_id_to_offset_[predicate_index];
-
-        std::vector<uint32_t> object_ids;
-
-        for (std::size_t argument_index = 0; argument_index < arity; ++argument_index)
-        {
-            const auto object_id = rank % num_objects;
-            rank /= num_objects;
-            object_ids.push_back(object_id);
-        }
-
-        return object_ids;
+        assert(rank < rank_to_argument_ids_.size());
+        return rank_to_argument_ids_.at(rank);
     }
+
+    const std::vector<formalism::Atom>& ProblemImpl::get_reachable_atoms() const { return rank_to_atom_; }
 
     formalism::Atom ProblemImpl::get_atom(uint32_t rank) const
     {
-        assert(rank < num_ranks());
-        const auto predicate_index = get_predicate_id(rank);
-        const auto predicate = predicate_id_to_predicate_[predicate_index];
-        const auto arity = predicate->arity;
-        const auto num_objects = objects.size();
-        rank -= predicate_id_to_offset_[predicate_index];
-
-        formalism::ObjectList arguments;
-
-        for (std::size_t argument_index = 0; argument_index < arity; ++argument_index)
-        {
-            const auto object_id = rank % num_objects;
-            rank /= num_objects;
-            arguments.push_back(object_id_to_object_[object_id]);
-        }
-
-        return formalism::create_atom(predicate, std::move(arguments));
+        assert(rank < rank_to_atom_.size());
+        return rank_to_atom_.at(rank);
     }
 
     uint32_t ProblemImpl::num_objects() const { return static_cast<uint32_t>(objects.size()); }
+
+    void compute_reachable_atoms(const formalism::ProblemDescription& problem)
+    {
+        const auto relaxed_domain = relax(problem->domain, true, true);
+        const planners::LiftedSuccessorGenerator successor_generator(relaxed_domain, problem);
+
+        std::equal_to<formalism::State> equals;
+        auto current_state = formalism::create_state(problem->initial, problem);
+
+        while (true)
+        {
+            auto next_state = current_state;
+
+            const auto actions = successor_generator.get_applicable_actions(next_state);
+
+            for (const auto& action : actions)
+            {
+                // Since there are no negative preconditions and negative effects, all actions are still applicable in the resulting state.
+                next_state = formalism::apply(action, next_state);
+            }
+
+            if (equals(current_state, next_state))
+            {
+                break;
+            }
+
+            current_state = next_state;
+        }
+    }
 
     ProblemDescription create_problem(const std::string& name,
                                       const formalism::DomainDescription& domain,
@@ -182,19 +163,8 @@ namespace formalism
                                       const formalism::AtomList& initial,
                                       const formalism::LiteralList& goal)
     {
-        formalism::PredicateSet static_predicate_set(domain->static_predicates.begin(), domain->static_predicates.end());
-        formalism::AtomSet static_atoms;
-
-        for (const auto& atom : initial)
-        {
-            if (static_predicate_set.find(atom->predicate) != static_predicate_set.end())
-            {
-                static_atoms.insert(atom);
-            }
-        }
-
-        auto problem = std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, static_atoms, nullptr, goal));
-        problem->initial = create_state(initial, problem);
+        const auto problem = std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal));
+        compute_reachable_atoms(problem);
         return problem;
     }
 

@@ -29,10 +29,10 @@ namespace formalism
                            const formalism::ActionSchema& schema,
                            const formalism::ObjectList& arguments,
                            const int32_t cost) :
-        positive_precondition_ranks_(),
-        negative_precondition_ranks_(),
-        positive_effect_ranks_(),
-        negative_effect_ranks_(),
+        positive_precondition_bitset_(),
+        negative_precondition_bitset_(),
+        positive_effect_bitset_(),
+        negative_effect_bitset_(),
         arguments_(arguments),
         precondition_(),
         effect_(),
@@ -45,13 +45,19 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
+            if (rank >= negative_precondition_bitset_.size())
+            {
+                negative_precondition_bitset_.resize(rank + 1);
+                positive_precondition_bitset_.resize(rank + 1);
+            }
+
             if (literal->negated)
             {
-                negative_precondition_ranks_.emplace_back(rank);
+                negative_precondition_bitset_.set(rank, true);
             }
             else
             {
-                positive_precondition_ranks_.emplace_back(rank);
+                positive_precondition_bitset_.set(rank, true);
             }
         }
 
@@ -60,29 +66,30 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
+            if (rank >= negative_effect_bitset_.size())
+            {
+                negative_effect_bitset_.resize(rank + 1);
+                positive_effect_bitset_.resize(rank + 1);
+            }
+
             if (literal->negated)
             {
-                negative_effect_ranks_.emplace_back(rank);
+                negative_effect_bitset_.set(rank, true);
             }
             else
             {
-                positive_effect_ranks_.emplace_back(rank);
+                positive_effect_bitset_.set(rank, true);
             }
         }
-
-        std::sort(positive_precondition_ranks_.begin(), positive_precondition_ranks_.end());
-        std::sort(negative_precondition_ranks_.begin(), negative_precondition_ranks_.end());
-        std::sort(positive_effect_ranks_.begin(), positive_effect_ranks_.end());
-        std::sort(negative_effect_ranks_.begin(), negative_effect_ranks_.end());
     }
 
     ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
                            const formalism::ActionSchema& schema,
                            const formalism::ParameterAssignment& assignment) :
-        positive_precondition_ranks_(),
-        negative_precondition_ranks_(),
-        positive_effect_ranks_(),
-        negative_effect_ranks_(),
+        positive_precondition_bitset_(),
+        negative_precondition_bitset_(),
+        positive_effect_bitset_(),
+        negative_effect_bitset_(),
         arguments_(),
         precondition_(),
         effect_(),
@@ -100,13 +107,19 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
+            if (rank >= negative_precondition_bitset_.size())
+            {
+                negative_precondition_bitset_.resize(rank + 1);
+                positive_precondition_bitset_.resize(rank + 1);
+            }
+
             if (literal->negated)
             {
-                negative_precondition_ranks_.emplace_back(rank);
+                negative_precondition_bitset_.set(rank, true);
             }
             else
             {
-                positive_precondition_ranks_.emplace_back(rank);
+                positive_precondition_bitset_.set(rank, true);
             }
         }
 
@@ -115,20 +128,21 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
+            if (rank >= negative_effect_bitset_.size())
+            {
+                negative_effect_bitset_.resize(rank + 1);
+                positive_effect_bitset_.resize(rank + 1);
+            }
+
             if (literal->negated)
             {
-                negative_effect_ranks_.emplace_back(rank);
+                negative_effect_bitset_.set(rank, true);
             }
             else
             {
-                positive_effect_ranks_.emplace_back(rank);
+                positive_effect_bitset_.set(rank, true);
             }
         }
-
-        std::sort(positive_precondition_ranks_.begin(), positive_precondition_ranks_.end());
-        std::sort(negative_precondition_ranks_.begin(), negative_precondition_ranks_.end());
-        std::sort(positive_effect_ranks_.begin(), positive_effect_ranks_.end());
-        std::sort(negative_effect_ranks_.begin(), negative_effect_ranks_.end());
     }
 
     const formalism::ObjectList& ActionImpl::get_arguments() const { return arguments_; }

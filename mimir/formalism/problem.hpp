@@ -19,32 +19,31 @@ namespace formalism
     {
       private:
         formalism::AtomSet static_atoms_;
-        std::vector<uint32_t> predicate_id_to_offset_;
-        std::vector<formalism::Predicate> predicate_id_to_predicate_;
         std::vector<bool> predicate_id_to_static_;
-        std::vector<formalism::Object> object_id_to_object_;
-        std::vector<uint32_t> rank_to_arity_;
-        std::vector<uint32_t> rank_to_predicate_id_;
+        mutable std::unordered_map<formalism::Atom, uint32_t> atom_ranks_;
+        mutable formalism::AtomList rank_to_atom_;
+        mutable std::vector<uint32_t> rank_to_predicate_id_;
+        mutable std::vector<uint32_t> rank_to_arity_;
+        mutable std::vector<std::vector<uint32_t>> rank_to_argument_ids_;
 
         ProblemImpl(const std::string& name,
                     const formalism::DomainDescription& domain,
                     const formalism::ObjectList& objects,
-                    const formalism::AtomSet& static_atoms,
-                    const formalism::State& initial,
+                    const formalism::AtomList& initial,
                     const formalism::LiteralList& goal);
 
       public:
         std::string name;
         formalism::DomainDescription domain;
         formalism::ObjectList objects;
-        formalism::State initial;
+        formalism::AtomList initial;
         formalism::LiteralList goal;
 
         const formalism::AtomSet& get_static_atoms() const;
 
-        uint32_t num_ranks() const;
-
         uint32_t get_rank(const formalism::Atom& atom) const;
+
+        uint32_t num_ranks() const;
 
         bool is_static(uint32_t rank) const;
 
@@ -56,7 +55,9 @@ namespace formalism
 
         formalism::Predicate get_predicate(uint32_t rank) const;
 
-        std::vector<uint32_t> get_argument_ids(uint32_t rank) const;
+        const std::vector<uint32_t>& get_argument_ids(uint32_t rank) const;
+
+        const formalism::AtomList& get_reachable_atoms() const;
 
         formalism::Atom get_atom(uint32_t rank) const;
 

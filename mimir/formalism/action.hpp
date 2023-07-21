@@ -8,6 +8,7 @@
 #include "problem.hpp"
 #include "state.hpp"
 
+#include <boost/dynamic_bitset.hpp>
 #include <iostream>
 
 namespace formalism
@@ -15,10 +16,10 @@ namespace formalism
     class ActionImpl
     {
       private:
-        std::vector<uint32_t> positive_precondition_ranks_;
-        std::vector<uint32_t> negative_precondition_ranks_;
-        std::vector<uint32_t> positive_effect_ranks_;
-        std::vector<uint32_t> negative_effect_ranks_;
+        boost::dynamic_bitset<> positive_precondition_bitset_;
+        boost::dynamic_bitset<> negative_precondition_bitset_;
+        boost::dynamic_bitset<> positive_effect_bitset_;
+        boost::dynamic_bitset<> negative_effect_bitset_;
         formalism::ObjectList arguments_;
         mutable formalism::LiteralList precondition_;
         mutable formalism::LiteralList effect_;

@@ -17,6 +17,7 @@ namespace planners
     class LiftedSuccessorGenerator : public SuccessorGeneratorBase
     {
       private:
+        formalism::DomainDescription domain_;
         formalism::ProblemDescription problem_;
         std::map<formalism::ActionSchema, LiftedSchemaSuccessorGenerator> generators_;
 

@@ -38,6 +38,8 @@ namespace formalism
                                       const formalism::LiteralList& precondition,
                                       const formalism::LiteralList& effect);
 
+    ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list);
+
     bool affects_predicate(const formalism::ActionSchema& action_schema, const formalism::Predicate& predicate);
 
     bool affect_predicate(const formalism::ActionSchemaList& action_schemas, const formalism::Predicate& predicate);

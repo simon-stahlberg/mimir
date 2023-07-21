@@ -202,7 +202,7 @@ namespace planners
 
     const std::vector<formalism::State>& StateSpaceImpl::get_states() const { return states_; }
 
-    formalism::State StateSpaceImpl::get_initial_state() const { return problem->initial; }
+    formalism::State StateSpaceImpl::get_initial_state() const { return formalism::create_state(problem->initial, problem); }
 
     uint64_t StateSpaceImpl::get_unique_index_of_state(const formalism::State& state) const { return get_state_index(state); }
 
@@ -318,7 +318,7 @@ namespace planners
         {
             uint64_t initial_index;
 
-            if (state_space->add_or_get_state(problem->initial, initial_index))
+            if (state_space->add_or_get_state(formalism::create_state(problem->initial, problem), initial_index))
             {
                 state_space->set_distance_from_initial_state(initial_index, 0);
                 is_expanded.push_back(false);

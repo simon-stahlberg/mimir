@@ -46,6 +46,8 @@ namespace formalism
                                     const formalism::PredicateList& predicates,
                                     const formalism::ActionSchemaList& action_schemas);
 
+    DomainDescription relax(const formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list);
+
     std::ostream& operator<<(std::ostream& os, const formalism::DomainDescription& domain);
 
 }  // namespace formalism

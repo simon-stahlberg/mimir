@@ -23,12 +23,13 @@
 namespace planners
 {
     LiftedSuccessorGenerator::LiftedSuccessorGenerator(const formalism::DomainDescription& domain, const formalism::ProblemDescription& problem) :
+        domain_(domain),
         problem_(problem),
         generators_()
     {
         for (const auto& action_schema : domain->action_schemas)
         {
-            generators_.insert(std::make_pair(action_schema, LiftedSchemaSuccessorGenerator(action_schema, problem)));
+            generators_.insert(std::make_pair(action_schema, LiftedSchemaSuccessorGenerator(action_schema, domain, problem)));
         }
     }
 
@@ -36,7 +37,7 @@ namespace planners
     {
         formalism::ActionList applicable_actions;
 
-        const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(problem_, state->get_dynamic_ranks());
+        const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
 
         for (const auto& [_, generator] : generators_)
         {
