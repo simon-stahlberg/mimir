@@ -28,9 +28,9 @@ namespace planners
 
         formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
 
-        bool get_actions(int32_t timeout_s, formalism::ActionList& out_actions) const;
-
-        formalism::ActionList get_actions() const;
+        bool get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
+                                    const formalism::State& state,
+                                    formalism::ActionList& out_actions) const;
     };
 }  // namespace planners
 

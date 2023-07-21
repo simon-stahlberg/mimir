@@ -57,8 +57,6 @@ namespace formalism
 
         const std::vector<uint32_t>& get_argument_ids(uint32_t rank) const;
 
-        const formalism::AtomList& get_reachable_atoms() const;
-
         formalism::Atom get_atom(uint32_t rank) const;
 
         uint32_t num_objects() const;

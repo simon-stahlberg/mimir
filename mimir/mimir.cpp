@@ -3,6 +3,7 @@
 #include "generators/lifted_successor_generator.hpp"
 #include "generators/state_space.hpp"
 #include "generators/successor_generator.hpp"
+#include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
 
 #include <Python.h>
@@ -54,13 +55,14 @@ std::shared_ptr<parsers::ProblemParser> create_problem_parser(const std::string&
 
 std::shared_ptr<planners::LiftedSuccessorGenerator> create_lifted_successor_generator(const formalism::ProblemDescription& problem)
 {
-    return std::make_shared<planners::LiftedSuccessorGenerator>(problem->domain, problem);
+    auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::LIFTED);
+    return std::dynamic_pointer_cast<planners::LiftedSuccessorGenerator>(successor_generator);
 }
 
 std::shared_ptr<planners::GroundedSuccessorGenerator> create_grounded_successor_generator(const formalism::ProblemDescription& problem)
 {
-    const auto successor_generator = planners::LiftedSuccessorGenerator(problem->domain, problem);
-    return std::make_shared<planners::GroundedSuccessorGenerator>(problem, successor_generator.get_actions());
+    auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::GROUNDED);
+    return std::dynamic_pointer_cast<planners::GroundedSuccessorGenerator>(successor_generator);
 }
 
 bool state_matches_literals(const formalism::State& state, const formalism::LiteralList& literals) { return formalism::literals_hold(literals, state); }

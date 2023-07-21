@@ -497,45 +497,36 @@ namespace planners
         return get_applicable_actions(state, assignment_sets);
     }
 
-    formalism::ActionList LiftedSchemaSuccessorGenerator::get_actions() const
+    bool LiftedSchemaSuccessorGenerator::get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
+                                                                const formalism::State& state,
+                                                                formalism::ActionList& out_actions) const
     {
         const auto num_parameters = action_schema->parameters.size();
 
         if (num_parameters == 0)
         {
-            return nullary_case(nullptr);
-        }
-        else if (num_parameters == 1)
-        {
-            return unary_case(nullptr);
-        }
-        else
-        {
-            return general_case(nullptr, {});
-        }
-    }
-
-    bool LiftedSchemaSuccessorGenerator::get_actions(const std::chrono::high_resolution_clock::time_point end_time, formalism::ActionList& out_actions) const
-    {
-        const auto num_parameters = action_schema->parameters.size();
-
-        if (num_parameters == 0)
-        {
-            if (!nullary_case(end_time, nullptr, out_actions))
+            if (!nullary_case(end_time, state, out_actions))
             {
                 return false;
             }
         }
-        else if (num_parameters == 1)
+
+        if (num_parameters == 1)
         {
-            if (!unary_case(end_time, nullptr, out_actions))
+            if (!unary_case(end_time, state, out_actions))
             {
                 return false;
             }
         }
-        else if (!general_case(end_time, nullptr, {}, out_actions))
+
+        if (num_parameters > 1)
         {
-            return false;
+            const auto assignment_sets = build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
+
+            if (!general_case(end_time, state, assignment_sets, out_actions))
+            {
+                return false;
+            }
         }
 
         return true;

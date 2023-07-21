@@ -50,12 +50,10 @@ namespace planners
 
     formalism::ProblemDescription LiftedSuccessorGenerator::get_problem() const { return problem_; }
 
-    bool LiftedSuccessorGenerator::get_actions(int32_t timeout_s, formalism::ActionList& out_actions) const
+    bool LiftedSuccessorGenerator::get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
+                                                          const formalism::State& state,
+                                                          formalism::ActionList& out_actions) const
     {
-        formalism::ActionList actions;
-        auto start_time = std::chrono::high_resolution_clock::now();
-        auto end_time = start_time + std::chrono::seconds(timeout_s);
-
         for (const auto& [_, generator] : generators_)
         {
             if (std::chrono::high_resolution_clock::now() >= end_time)
@@ -63,25 +61,12 @@ namespace planners
                 return false;
             }
 
-            if (!generator.get_actions(end_time, out_actions))
+            if (!generator.get_applicable_actions(end_time, state, out_actions))
             {
                 return false;
             }
         }
 
         return true;
-    }
-
-    formalism::ActionList LiftedSuccessorGenerator::get_actions() const
-    {
-        formalism::ActionList actions;
-
-        for (const auto& [_, generator] : generators_)
-        {
-            const auto schema_actions = generator.get_actions();
-            actions.insert(actions.end(), schema_actions.begin(), schema_actions.end());
-        }
-
-        return actions;
     }
 }  // namespace planners

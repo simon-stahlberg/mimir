@@ -22,26 +22,75 @@
 
 namespace planners
 {
+    bool compute_relaxed_reachable_actions(const std::chrono::high_resolution_clock::time_point end_time,
+                                           const formalism::ProblemDescription& problem,
+                                           formalism::ActionList& out_actions)
+    {
+        const auto relaxed_domain = relax(problem->domain, true, true);
+        const planners::LiftedSuccessorGenerator successor_generator(relaxed_domain, problem);
+
+        std::equal_to<formalism::State> equals;
+        formalism::ActionList relaxed_actions;
+        formalism::State state = formalism::create_state(problem->initial, problem);
+
+        while (true)
+        {
+            relaxed_actions.clear();
+            auto next_state = state;
+
+            if (!successor_generator.get_applicable_actions(end_time, next_state, relaxed_actions))
+            {
+                return false;
+            }
+
+            for (const auto& action : relaxed_actions)
+            {
+                // Since there are no negative preconditions and negative effects, all actions are still applicable in the resulting state.
+                next_state = formalism::apply(action, next_state);
+            }
+
+            if (equals(state, next_state))
+            {
+                break;
+            }
+
+            state = next_state;
+        }
+
+        // TODO: We can likely optimize the mapping between the relaxed action schemas and the original action schemas.
+
+        std::map<std::string, formalism::ActionSchema> action_schemas;
+
+        for (const auto& action_schema : problem->domain->action_schemas)
+        {
+            action_schemas.emplace(action_schema->name, action_schema);
+        }
+
+        for (const auto& relaxed_action : relaxed_actions)
+        {
+            out_actions.emplace_back(
+                formalism::create_action(problem, action_schemas.at(relaxed_action->schema->name), relaxed_action->get_arguments(), relaxed_action->cost));
+        }
+
+        return true;
+    }
+
     SuccessorGenerator create_sucessor_generator(const formalism::ProblemDescription& problem, SuccessorGeneratorType type)
     {
         switch (type)
         {
             case SuccessorGeneratorType::AUTOMATIC:
             {
-                const auto lifted_successor_generator = std::make_shared<LiftedSuccessorGenerator>(problem->domain, problem);
-
+                auto time_start = std::chrono::high_resolution_clock::now();
+                auto time_end = time_start + std::chrono::seconds(60);
                 formalism::ActionList actions;
-                if (lifted_successor_generator->get_actions(60, actions))
-                {
-                    // The GroundedSuccessorGenerator does not play well with an extreme number of actions.
 
-                    if (actions.size() < 100'000)
-                    {
-                        return std::make_shared<GroundedSuccessorGenerator>(problem, actions);
-                    }
+                if (compute_relaxed_reachable_actions(time_end, problem, actions))
+                {
+                    return std::make_shared<GroundedSuccessorGenerator>(problem, actions);
                 }
 
-                return lifted_successor_generator;
+                return std::make_shared<LiftedSuccessorGenerator>(problem->domain, problem);
             }
 
             case SuccessorGeneratorType::LIFTED:
@@ -53,9 +102,10 @@ namespace planners
             {
                 // The lifted successor generator can overapproximate all actions applicable in reachable states by only taking static atoms into
                 // considerations. The grounded successor generator is a decision tree structure over these actions.
-
-                LiftedSuccessorGenerator lifted_successor_generator(problem->domain, problem);
-                return std::make_shared<GroundedSuccessorGenerator>(problem, lifted_successor_generator.get_actions());
+                const auto time_max = std::chrono::high_resolution_clock::time_point::max();
+                formalism::ActionList actions;
+                compute_relaxed_reachable_actions(time_max, problem, actions);
+                return std::make_shared<GroundedSuccessorGenerator>(problem, actions);
             }
 
             default:

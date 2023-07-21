@@ -118,8 +118,6 @@ namespace formalism
         return rank_to_argument_ids_.at(rank);
     }
 
-    const std::vector<formalism::Atom>& ProblemImpl::get_reachable_atoms() const { return rank_to_atom_; }
-
     formalism::Atom ProblemImpl::get_atom(uint32_t rank) const
     {
         assert(rank < rank_to_atom_.size());
@@ -128,44 +126,13 @@ namespace formalism
 
     uint32_t ProblemImpl::num_objects() const { return static_cast<uint32_t>(objects.size()); }
 
-    void compute_reachable_atoms(const formalism::ProblemDescription& problem)
-    {
-        const auto relaxed_domain = relax(problem->domain, true, true);
-        const planners::LiftedSuccessorGenerator successor_generator(relaxed_domain, problem);
-
-        std::equal_to<formalism::State> equals;
-        auto current_state = formalism::create_state(problem->initial, problem);
-
-        while (true)
-        {
-            auto next_state = current_state;
-
-            const auto actions = successor_generator.get_applicable_actions(next_state);
-
-            for (const auto& action : actions)
-            {
-                // Since there are no negative preconditions and negative effects, all actions are still applicable in the resulting state.
-                next_state = formalism::apply(action, next_state);
-            }
-
-            if (equals(current_state, next_state))
-            {
-                break;
-            }
-
-            current_state = next_state;
-        }
-    }
-
     ProblemDescription create_problem(const std::string& name,
                                       const formalism::DomainDescription& domain,
                                       const formalism::ObjectList& objects,
                                       const formalism::AtomList& initial,
                                       const formalism::LiteralList& goal)
     {
-        const auto problem = std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal));
-        compute_reachable_atoms(problem);
-        return problem;
+        return std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal));
     }
 
     std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescription& problem)
