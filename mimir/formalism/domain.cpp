@@ -19,6 +19,8 @@
 #include "domain.hpp"
 #include "help_functions.hpp"
 
+#include <algorithm>
+
 namespace formalism
 {
     DomainImpl::DomainImpl(const std::string& name,
