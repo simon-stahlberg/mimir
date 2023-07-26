@@ -27,9 +27,26 @@ namespace formalism
 {
     inline std::size_t compute_state_hash(const boost::dynamic_bitset<>& bitset, const formalism::ProblemDescription& problem)
     {
-        // TODO: Use MurmurHash3 instead. Somehow.
-        std::hash<boost::dynamic_bitset<>> hash;
-        return hash(bitset);
+        // TODO: Preferably, we want to use MurmurHash3 directly on the underlying data of the bitset, but only up until the last set bit. However,
+        // boost::dynamic_bitset does not provide an efficient way of achieving this. For now, we create an array on the stack and fill it with the set
+        // positions.
+
+        const auto num_atoms = bitset.count();
+
+        std::size_t index = 0;
+        std::size_t indices[num_atoms];
+
+        auto position = bitset.find_first();
+        while (position < bitset.npos)
+        {
+            indices[index] = position;
+            position = bitset.find_next(position);
+            ++index;
+        }
+
+        int64_t hash[2];
+        MurmurHash3_x64_128(indices, num_atoms * sizeof(std::size_t), 0, hash);
+        return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
     }
 
     StateImpl::StateImpl(const boost::dynamic_bitset<>& bitset, const formalism::ProblemDescription& problem) :
@@ -40,7 +57,7 @@ namespace formalism
     }
 
     StateImpl::StateImpl(const std::vector<uint32_t>& ranks, const formalism::ProblemDescription& problem) :
-        bitset_(problem->num_ranks()),
+        bitset_(*std::max_element(ranks.cbegin(), ranks.cend()) + 1),
         problem_(problem),
         hash_(0)
     {

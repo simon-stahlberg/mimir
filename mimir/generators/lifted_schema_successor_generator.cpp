@@ -378,7 +378,6 @@ namespace planners
         const auto num_parameters = action_schema->parameters.size();
         const auto num_vertices = to_vertex_assignment.size();
 
-        // Allocate memory that for both the outer array and the inner arrays.
         std::vector<boost::dynamic_bitset<>> adjacency_matrix(num_vertices, boost::dynamic_bitset<>(num_vertices));
 
         if (state)
