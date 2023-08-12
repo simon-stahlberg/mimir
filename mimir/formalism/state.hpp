@@ -4,10 +4,10 @@
 #include "action.hpp"
 #include "action_schema.hpp"
 #include "atom.hpp"
+#include "bitset.hpp"
 #include "literal.hpp"
 #include "transition.hpp"
 
-#include <boost/dynamic_bitset.hpp>
 #include <map>
 #include <memory>
 #include <unordered_set>
@@ -18,14 +18,14 @@ namespace formalism
     class StateImpl
     {
       private:
-        mutable boost::dynamic_bitset<> bitset_;
+        mutable formalism::Bitset bitset_;
         formalism::ProblemDescription problem_;
         std::size_t hash_;
 
       public:
         StateImpl();
 
-        StateImpl(const boost::dynamic_bitset<>& bitset, const formalism::ProblemDescription& problem);
+        StateImpl(const formalism::Bitset& bitset, const formalism::ProblemDescription& problem);
 
         StateImpl(const std::vector<uint32_t>& atoms, const formalism::ProblemDescription& problem);
 

@@ -29,10 +29,10 @@ namespace formalism
                            const formalism::ActionSchema& schema,
                            const formalism::ObjectList& arguments,
                            const int32_t cost) :
-        positive_precondition_bitset_(),
-        negative_precondition_bitset_(),
-        positive_effect_bitset_(),
-        negative_effect_bitset_(),
+        positive_precondition_bitset_(0),
+        negative_precondition_bitset_(0),
+        positive_effect_bitset_(0),
+        negative_effect_bitset_(0),
         arguments_(arguments),
         precondition_(),
         effect_(),
@@ -45,19 +45,13 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
-            if (rank >= negative_precondition_bitset_.size())
-            {
-                negative_precondition_bitset_.resize(rank + 1);
-                positive_precondition_bitset_.resize(rank + 1);
-            }
-
             if (literal->negated)
             {
-                negative_precondition_bitset_.set(rank, true);
+                negative_precondition_bitset_.set(rank);
             }
             else
             {
-                positive_precondition_bitset_.set(rank, true);
+                positive_precondition_bitset_.set(rank);
             }
         }
 
@@ -66,19 +60,13 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
-            if (rank >= negative_effect_bitset_.size())
-            {
-                negative_effect_bitset_.resize(rank + 1);
-                positive_effect_bitset_.resize(rank + 1);
-            }
-
             if (literal->negated)
             {
-                negative_effect_bitset_.set(rank, true);
+                negative_effect_bitset_.set(rank);
             }
             else
             {
-                positive_effect_bitset_.set(rank, true);
+                positive_effect_bitset_.set(rank);
             }
         }
     }
@@ -86,10 +74,10 @@ namespace formalism
     ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
                            const formalism::ActionSchema& schema,
                            const formalism::ParameterAssignment& assignment) :
-        positive_precondition_bitset_(),
-        negative_precondition_bitset_(),
-        positive_effect_bitset_(),
-        negative_effect_bitset_(),
+        positive_precondition_bitset_(0),
+        negative_precondition_bitset_(0),
+        positive_effect_bitset_(0),
+        negative_effect_bitset_(0),
         arguments_(),
         precondition_(),
         effect_(),
@@ -107,19 +95,13 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
-            if (rank >= negative_precondition_bitset_.size())
-            {
-                negative_precondition_bitset_.resize(rank + 1);
-                positive_precondition_bitset_.resize(rank + 1);
-            }
-
             if (literal->negated)
             {
-                negative_precondition_bitset_.set(rank, true);
+                negative_precondition_bitset_.set(rank);
             }
             else
             {
-                positive_precondition_bitset_.set(rank, true);
+                positive_precondition_bitset_.set(rank);
             }
         }
 
@@ -128,19 +110,13 @@ namespace formalism
             const auto& atom = literal->atom;
             const auto rank = problem->get_rank(atom);
 
-            if (rank >= negative_effect_bitset_.size())
-            {
-                negative_effect_bitset_.resize(rank + 1);
-                positive_effect_bitset_.resize(rank + 1);
-            }
-
             if (literal->negated)
             {
-                negative_effect_bitset_.set(rank, true);
+                negative_effect_bitset_.set(rank);
             }
             else
             {
-                positive_effect_bitset_.set(rank, true);
+                positive_effect_bitset_.set(rank);
             }
         }
     }

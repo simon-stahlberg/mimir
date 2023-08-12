@@ -2,13 +2,13 @@
 #define FORMALISM_ACTION_HPP_
 
 #include "action_schema.hpp"
+#include "bitset.hpp"
 #include "declarations.hpp"
 #include "literal.hpp"
 #include "object.hpp"
 #include "problem.hpp"
 #include "state.hpp"
 
-#include <boost/dynamic_bitset.hpp>
 #include <iostream>
 
 namespace formalism
@@ -16,10 +16,10 @@ namespace formalism
     class ActionImpl
     {
       private:
-        boost::dynamic_bitset<> positive_precondition_bitset_;
-        boost::dynamic_bitset<> negative_precondition_bitset_;
-        boost::dynamic_bitset<> positive_effect_bitset_;
-        boost::dynamic_bitset<> negative_effect_bitset_;
+        formalism::Bitset positive_precondition_bitset_;
+        formalism::Bitset negative_precondition_bitset_;
+        formalism::Bitset positive_effect_bitset_;
+        formalism::Bitset negative_effect_bitset_;
         formalism::ObjectList arguments_;
         mutable formalism::LiteralList precondition_;
         mutable formalism::LiteralList effect_;

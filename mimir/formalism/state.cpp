@@ -25,31 +25,13 @@
 
 namespace formalism
 {
-    inline std::size_t compute_state_hash(const boost::dynamic_bitset<>& bitset, const formalism::ProblemDescription& problem)
+    inline std::size_t compute_state_hash(const formalism::Bitset& bitset, const formalism::ProblemDescription& problem)
     {
-        // TODO: Preferably, we want to use MurmurHash3 directly on the underlying data of the bitset, but only up until the last set bit. However,
-        // boost::dynamic_bitset does not provide an efficient way of achieving this. For now, we create an array on the stack and fill it with the set
-        // positions.
-
-        const auto num_atoms = bitset.count();
-
-        std::size_t index = 0;
-        std::size_t indices[num_atoms];
-
-        auto position = bitset.find_first();
-        while (position < bitset.npos)
-        {
-            indices[index] = position;
-            position = bitset.find_next(position);
-            ++index;
-        }
-
-        int64_t hash[2];
-        MurmurHash3_x64_128(indices, num_atoms * sizeof(std::size_t), 0, hash);
-        return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
+        // TODO: Add problem to hash
+        return std::hash<formalism::Bitset>()(bitset);
     }
 
-    StateImpl::StateImpl(const boost::dynamic_bitset<>& bitset, const formalism::ProblemDescription& problem) :
+    StateImpl::StateImpl(const formalism::Bitset& bitset, const formalism::ProblemDescription& problem) :
         bitset_(bitset),
         problem_(problem),
         hash_(compute_state_hash(bitset, problem))
@@ -63,13 +45,13 @@ namespace formalism
     {
         for (auto rank : ranks)
         {
-            bitset_.set(rank, true);
+            bitset_.set(rank);
         }
 
         hash_ = compute_state_hash(bitset_, problem);
     }
 
-    StateImpl::StateImpl() : bitset_(), problem_(nullptr), hash_(0) {}
+    StateImpl::StateImpl() : bitset_(0), problem_(nullptr), hash_(0) {}
 
     StateImpl::StateImpl(const formalism::AtomList& atoms, const formalism::ProblemDescription& problem) :
         bitset_(problem->num_ranks()),
@@ -79,30 +61,18 @@ namespace formalism
         for (const auto& atom : atoms)
         {
             const auto rank = problem->get_rank(atom);
-
-            if (rank >= bitset_.size())
-            {
-                bitset_.resize(rank + 1);
-            }
-
-            bitset_.set(rank, true);
+            bitset_.set(rank);
         }
 
         hash_ = compute_state_hash(bitset_, problem_);
     }
 
-    StateImpl::StateImpl(const formalism::AtomSet& atoms, const formalism::ProblemDescription& problem) : bitset_(), problem_(problem), hash_(0)
+    StateImpl::StateImpl(const formalism::AtomSet& atoms, const formalism::ProblemDescription& problem) : bitset_(0), problem_(problem), hash_(0)
     {
         for (const auto& atom : atoms)
         {
             const auto rank = problem->get_rank(atom);
-
-            if (rank >= bitset_.size())
-            {
-                bitset_.resize(rank + 1);
-            }
-
-            bitset_.set(rank, true);
+            bitset_.set(rank);
         }
 
         hash_ = compute_state_hash(bitset_, problem_);
@@ -120,21 +90,6 @@ namespace formalism
         return std::make_shared<formalism::StateImpl>(atoms, problem);
     }
 
-    void resize_to_same_length(boost::dynamic_bitset<>& lhs, boost::dynamic_bitset<>& rhs)
-    {
-        const auto lhs_length = lhs.size();
-        const auto rhs_length = rhs.size();
-
-        if (lhs_length < rhs_length)
-        {
-            lhs.resize(rhs_length);
-        }
-        else if (lhs_length > rhs_length)
-        {
-            rhs.resize(lhs_length);
-        }
-    }
-
     inline bool StateImpl::operator<(const StateImpl& other) const
     {
         if (problem_ != other.problem_)
@@ -142,7 +97,6 @@ namespace formalism
             return problem_ < other.problem_;
         }
 
-        resize_to_same_length(this->bitset_, other.bitset_);
         return bitset_ < other.bitset_;
     }
 
@@ -158,7 +112,6 @@ namespace formalism
             return false;
         }
 
-        resize_to_same_length(this->bitset_, other.bitset_);
         return bitset_ == other.bitset_;
     }
 
@@ -167,14 +120,20 @@ namespace formalism
     formalism::AtomList StateImpl::get_atoms() const
     {
         formalism::AtomList atoms;
+        std::size_t position = 0;
 
-        auto position = bitset_.find_first();
-
-        while (position < bitset_.npos)
+        while (true)
         {
+            position = bitset_.next_set_bit(position);
+
+            if (position == bitset_.no_position)
+            {
+                break;
+            }
+
             const auto rank = static_cast<uint32_t>(position);
             atoms.emplace_back(problem_->get_atom(rank));
-            position = bitset_.find_next(position);
+            ++position;
         }
 
         return atoms;
@@ -183,11 +142,17 @@ namespace formalism
     formalism::AtomList StateImpl::get_static_atoms() const
     {
         formalism::AtomList atoms;
+        std::size_t position = 0;
 
-        auto position = bitset_.find_first();
-
-        while (position < bitset_.npos)
+        while (true)
         {
+            position = bitset_.next_set_bit(position);
+
+            if (position == bitset_.no_position)
+            {
+                break;
+            }
+
             const auto rank = static_cast<uint32_t>(position);
 
             if (problem_->is_static(rank))
@@ -195,7 +160,7 @@ namespace formalism
                 atoms.emplace_back(problem_->get_atom(rank));
             }
 
-            position = bitset_.find_next(position);
+            ++position;
         }
 
         return atoms;
@@ -204,11 +169,17 @@ namespace formalism
     formalism::AtomList StateImpl::get_dynamic_atoms() const
     {
         formalism::AtomList atoms;
+        std::size_t position = 0;
 
-        auto position = bitset_.find_first();
-
-        while (position < bitset_.npos)
+        while (true)
         {
+            position = bitset_.next_set_bit(position);
+
+            if (position == bitset_.no_position)
+            {
+                break;
+            }
+
             const auto rank = static_cast<uint32_t>(position);
 
             if (problem_->is_dynamic(rank))
@@ -216,7 +187,7 @@ namespace formalism
                 atoms.emplace_back(problem_->get_atom(rank));
             }
 
-            position = bitset_.find_next(position);
+            ++position;
         }
 
         return atoms;
@@ -225,14 +196,20 @@ namespace formalism
     std::vector<uint32_t> StateImpl::get_ranks() const
     {
         std::vector<uint32_t> ranks;
+        std::size_t position = 0;
 
-        auto position = bitset_.find_first();
-
-        while (position < bitset_.npos)
+        while (true)
         {
+            position = bitset_.next_set_bit(position);
+
+            if (position == bitset_.no_position)
+            {
+                break;
+            }
+
             const auto rank = static_cast<uint32_t>(position);
             ranks.emplace_back(rank);
-            position = bitset_.find_next(position);
+            ++position;
         }
 
         return ranks;
@@ -241,11 +218,17 @@ namespace formalism
     std::vector<uint32_t> StateImpl::get_static_ranks() const
     {
         std::vector<uint32_t> static_ranks;
+        std::size_t position = 0;
 
-        auto position = bitset_.find_first();
-
-        while (position < bitset_.npos)
+        while (true)
         {
+            position = bitset_.next_set_bit(position);
+
+            if (position == bitset_.no_position)
+            {
+                break;
+            }
+
             const auto rank = static_cast<uint32_t>(position);
 
             if (problem_->is_static(rank))
@@ -253,7 +236,7 @@ namespace formalism
                 static_ranks.emplace_back(rank);
             }
 
-            position = bitset_.find_next(position);
+            ++position;
         }
 
         return static_ranks;
@@ -262,11 +245,17 @@ namespace formalism
     std::vector<uint32_t> StateImpl::get_dynamic_ranks() const
     {
         std::vector<uint32_t> static_ranks;
+        std::size_t position = 0;
 
-        auto position = bitset_.find_first();
-
-        while (position < bitset_.npos)
+        while (true)
         {
+            position = bitset_.next_set_bit(position);
+
+            if (position == bitset_.no_position)
+            {
+                break;
+            }
+
             const auto rank = static_cast<uint32_t>(position);
 
             if (problem_->is_dynamic(rank))
@@ -274,7 +263,7 @@ namespace formalism
                 static_ranks.emplace_back(rank);
             }
 
-            position = bitset_.find_next(position);
+            ++position;
         }
 
         return static_ranks;
@@ -392,7 +381,7 @@ namespace formalism
         return std::make_pair(packed_ids, id_to_name_arity);
     }
 
-    bool is_in_state(uint32_t rank, const formalism::State& state) { return (rank < state->bitset_.size()) && (state->bitset_.test(rank)); }
+    bool is_in_state(uint32_t rank, const formalism::State& state) { return state->bitset_.get(rank); }
 
     bool is_in_state(const formalism::Atom& atom, const formalism::State& state) { return is_in_state(state->get_problem()->get_rank(atom), state); }
 
@@ -404,9 +393,6 @@ namespace formalism
         }
 
         auto bitset = state->bitset_;
-        resize_to_same_length(bitset, action->positive_precondition_bitset_);
-        resize_to_same_length(bitset, action->negative_precondition_bitset_);
-        resize_to_same_length(bitset, state->bitset_);
         bitset |= action->positive_precondition_bitset_;
         bitset &= ~action->negative_precondition_bitset_;
         return state->bitset_ == bitset;
@@ -415,8 +401,6 @@ namespace formalism
     formalism::State apply(const formalism::Action& action, const formalism::State& state)
     {
         auto bitset = state->bitset_;
-        resize_to_same_length(bitset, action->positive_effect_bitset_);
-        resize_to_same_length(bitset, action->negative_effect_bitset_);
         bitset &= ~action->negative_effect_bitset_;
         bitset |= action->positive_effect_bitset_;
         return std::make_shared<formalism::StateImpl>(std::move(bitset), state->problem_);
