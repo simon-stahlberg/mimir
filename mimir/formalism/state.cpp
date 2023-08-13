@@ -454,7 +454,7 @@ namespace formalism
 
 namespace std
 {
-    // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
+    // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructu1
     std::size_t hash<formalism::State>::operator()(const formalism::State& state) const { return !state ? 0 : state->hash_; }
 
     bool less<formalism::State>::operator()(const formalism::State& left_state, const formalism::State& right_state) const

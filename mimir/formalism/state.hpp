@@ -18,7 +18,7 @@ namespace formalism
     class StateImpl
     {
       private:
-        mutable formalism::Bitset bitset_;
+        formalism::Bitset bitset_;
         formalism::ProblemDescription problem_;
         std::size_t hash_;
 
@@ -59,8 +59,6 @@ namespace formalism
         pack_object_ids_by_predicate_id(bool include_types, bool include_goal) const;
 
         inline std::size_t hash() const { return hash_; }
-
-        friend void resize_to_same_length(const StateImpl& lhs, const StateImpl& rhs);
 
         friend bool is_applicable(const formalism::Action& action, const formalism::State& state);
 
