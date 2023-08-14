@@ -1,3 +1,8 @@
+# VSCode
+.vscode
+.vscode/settings.json
+.vscode/tasks.json
+
 # Python build artefacts
 __pycache__
 MANIFEST.in
