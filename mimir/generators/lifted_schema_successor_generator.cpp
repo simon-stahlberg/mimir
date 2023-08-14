@@ -27,29 +27,29 @@
 #include <set>
 #include <unordered_map>
 
-std::size_t
-get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto third = second * (arity + 1);
-    const auto fourth = third * (num_objects + 1);
-    const auto rank = (first * (first_position + 1)) + (second * (second_position + 1)) + (third * (first_object + 1)) + (fourth * (second_object + 1));
-    return (std::size_t) rank;
-}
-
-std::size_t num_assignments(int32_t arity, int32_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto third = second * (arity + 1);
-    const auto fourth = third * (num_objects + 1);
-    const auto max = (first * arity) + (second * arity) + (third * num_objects) + (fourth * num_objects);
-    return (std::size_t)(max + 1);
-}
-
 namespace planners
 {
+    std::size_t
+    get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects)
+    {
+        const auto first = 1;
+        const auto second = first * (arity + 1);
+        const auto third = second * (arity + 1);
+        const auto fourth = third * (num_objects + 1);
+        const auto rank = (first * (first_position + 1)) + (second * (second_position + 1)) + (third * (first_object + 1)) + (fourth * (second_object + 1));
+        return (std::size_t) rank;
+    }
+
+    std::size_t num_assignments(int32_t arity, int32_t num_objects)
+    {
+        const auto first = 1;
+        const auto second = first * (arity + 1);
+        const auto third = second * (arity + 1);
+        const auto fourth = third * (num_objects + 1);
+        const auto max = (first * arity) + (second * arity) + (third * num_objects) + (fourth * num_objects);
+        return (std::size_t)(max + 1);
+    }
+
     /**
      * @brief Builds a datastructure to efficiently test if an assignment is compatible with an atom in the given set.
      *
@@ -96,41 +96,37 @@ namespace planners
     }
 
     bool LiftedSchemaSuccessorGenerator::literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
-                                                                const formalism::LiteralList& literals,
+                                                                const std::vector<planners::FlatLiteral>& literals,
                                                                 const Assignment& first_assignment,
                                                                 const Assignment& second_assignment) const
     {
-        // TODO: Profiling 18 %
-        std::equal_to<formalism::Parameter> equals;
-
         for (const auto& literal : literals)
         {
             int32_t first_position = -1;
             int32_t second_position = -1;
-            formalism::Object first_object = nullptr;
-            formalism::Object second_object = nullptr;
+            int32_t first_object_id = -1;
+            int32_t second_object_id = -1;
             bool empty_assignment = true;
-            const auto& arguments = literal->atom->arguments;
-            const auto predicate_arity = literal->atom->predicate->arity;
 
-            for (std::size_t index = 0; index < predicate_arity; ++index)
+            for (std::size_t index = 0; index < literal.arity; ++index)
             {
-                const auto& parameter = arguments[index];
-                const auto is_constant = !parameter->is_free_variable();
+                const auto& term = literal.arguments[index];
 
-                if (is_constant)
+                if (term.is_constant())
                 {
-                    if (predicate_arity <= 2)
+                    if (literal.arity <= 2)
                     {
+                        const auto term_id = term.get_value();
+
                         if (first_position < 0)
                         {
                             first_position = index;
-                            first_object = parameter;
+                            first_object_id = static_cast<int32_t>(term_id);
                         }
                         else
                         {
                             second_position = index;
-                            second_object = parameter;
+                            second_object_id = static_cast<int32_t>(term_id);
                         }
 
                         empty_assignment = false;
@@ -138,33 +134,35 @@ namespace planners
                 }
                 else
                 {
-                    if (equals(first_assignment.parameter, parameter))
+                    const auto term_index = term.get_value();
+
+                    if (first_assignment.parameter_index == term_index)
                     {
                         if (first_position < 0)
                         {
                             first_position = index;
-                            first_object = first_assignment.object;
+                            first_object_id = static_cast<int32_t>(first_assignment.object_id);
                         }
                         else
                         {
                             second_position = index;
-                            second_object = first_assignment.object;
+                            second_object_id = static_cast<int32_t>(first_assignment.object_id);
                             break;
                         }
 
                         empty_assignment = false;
                     }
-                    else if (equals(second_assignment.parameter, parameter))
+                    else if (second_assignment.parameter_index == term_index)
                     {
                         if (first_position < 0)
                         {
                             first_position = index;
-                            first_object = second_assignment.object;
+                            first_object_id = static_cast<int32_t>(second_assignment.object_id);
                         }
                         else
                         {
                             second_position = index;
-                            second_object = second_assignment.object;
+                            second_object_id = static_cast<int32_t>(second_assignment.object_id);
                             break;
                         }
 
@@ -175,22 +173,21 @@ namespace planners
 
             if (!empty_assignment)
             {
-                const auto& predicate = literal->atom->predicate;
-                const auto& assignment_set = assignment_sets[predicate->id];
+                const auto& assignment_set = assignment_sets[literal.predicate_id];
                 const auto assignment_rank = get_assignment_position(first_position,
-                                                                     first_object ? first_object->id : -1,
+                                                                     first_object_id,
                                                                      second_position,
-                                                                     second_object ? second_object->id : -1,
-                                                                     predicate->arity,
-                                                                     problem_->objects.size());
+                                                                     second_object_id,
+                                                                     static_cast<int32_t>(literal.arity),
+                                                                     static_cast<int32_t>(problem_->objects.size()));
 
                 const auto consistent_with_state = assignment_set[assignment_rank];
 
-                if (!literal->negated && !consistent_with_state)
+                if (!literal.negated && !consistent_with_state)
                 {
                     return false;
                 }
-                else if (literal->negated && consistent_with_state && ((predicate_arity == 1) || ((predicate_arity == 2) && (second_position >= 0))))
+                else if (literal.negated && consistent_with_state && ((literal.arity == 1) || ((literal.arity == 2) && (second_position >= 0))))
                 {
                     return false;
                 }
@@ -205,74 +202,57 @@ namespace planners
     {
     }
 
-    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema,
+    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema_temp,
                                                                    const formalism::DomainDescription& domain,
                                                                    const formalism::ProblemDescription& problem) :
         domain_(domain),
         problem_(problem),
-        action_schema(action_schema),
+        flat_action_schema_(FlatActionSchema(domain, action_schema_temp)),
         objects_by_parameter_type(),
         to_vertex_assignment(),
         statically_consistent_assignments(),
-        static_precondition(),
-        dynamic_precondition(),
         partitions_()
     {
         // Type information is used by the unary and general case
 
-        if (action_schema->parameters.size() >= 1)
+        if (flat_action_schema_.arity >= 1)
         {
             // Compatible objects by type
 
-            for (const auto& parameter : action_schema->parameters)
+            for (const auto& parameter : flat_action_schema_.get_parameters())
             {
-                std::unordered_set<formalism::Object> compatible_objects;
+                std::vector<uint32_t> compatible_objects;
 
                 for (const auto& object : problem->objects)
                 {
                     if (formalism::is_subtype_of(object->type, parameter->type))
                     {
-                        compatible_objects.insert(object);
+                        compatible_objects.emplace_back(object->id);
                     }
                 }
 
-                objects_by_parameter_type.insert(std::make_pair(parameter, compatible_objects));
+                objects_by_parameter_type.emplace(flat_action_schema_.get_parameter_index(parameter), std::move(compatible_objects));
             }
         }
 
         // The following is only used by the general case
 
-        if (action_schema->parameters.size() >= 2)
+        if (flat_action_schema_.arity >= 2)
         {
             // Create a mapping between indices and parameter-object assignments
 
-            for (const auto& parameter : action_schema->parameters)
+            for (uint32_t parameter_index = 0; parameter_index < flat_action_schema_.arity; ++parameter_index)
             {
-                const auto compatible_objects = objects_by_parameter_type.at(parameter);
+                const auto& compatible_objects = objects_by_parameter_type.at(parameter_index);
                 std::vector<std::size_t> partition;
 
-                for (const auto& object : compatible_objects)
+                for (const auto& object_id : compatible_objects)
                 {
                     partition.push_back(to_vertex_assignment.size());
-                    to_vertex_assignment.push_back(Assignment(parameter, object));
+                    to_vertex_assignment.push_back(Assignment(parameter_index, object_id));
                 }
 
                 partitions_.push_back(std::move(partition));
-            }
-
-            // Separate precondition based on static and dynamic literals
-            const formalism::PredicateSet static_predicates(domain->static_predicates.begin(), domain->static_predicates.end());
-
-            for (const auto& literal : action_schema->precondition)
-            {
-                if (static_predicates.find(literal->atom->predicate) != static_predicates.end())
-                {
-                    static_precondition.push_back(literal);
-                }
-                else
-                {
-                    dynamic_precondition.push_back(literal);
-                }
             }
 
             // Filter assignment based on static atoms
@@ -286,12 +266,30 @@ namespace planners
                     const auto& first_assignment = to_vertex_assignment.at(first_id);
                     const auto& second_assignment = to_vertex_assignment.at(second_id);
 
-                    if (first_assignment.parameter != second_assignment.parameter)
+                    if (first_assignment.parameter_index != second_assignment.parameter_index)
                     {
-                        if (literal_all_consistent(assignment_sets, static_precondition, first_assignment, second_assignment))
+                        if (literal_all_consistent(assignment_sets, flat_action_schema_.static_precondition, first_assignment, second_assignment))
                         {
                             statically_consistent_assignments.push_back(AssignmentPair(first_id, first_assignment, second_id, second_assignment));
                         }
+                    }
+                }
+            }
+
+            // The previous code does not handle static nullary atoms correctly
+
+            for (const auto& literal : flat_action_schema_.static_precondition)
+            {
+                if (literal.arity == 0)
+                {
+                    const auto negated = literal.source->negated;
+                    const auto& atom = literal.source->atom;
+                    const auto contains = static_cast<bool>(std::count(problem_->initial.cbegin(), problem_->initial.cend(), atom));
+
+                    if (contains == negated)
+                    {
+                        statically_consistent_assignments.clear();
+                        break;
                     }
                 }
             }
@@ -300,11 +298,9 @@ namespace planners
 
     bool LiftedSchemaSuccessorGenerator::nullary_preconditions_hold(const formalism::State& state) const
     {
-        for (const auto& literal : action_schema->precondition)
+        for (const auto& literal : flat_action_schema_.fluent_precondition)
         {
-            const auto predicate_arity = literal->atom->predicate->arity;
-
-            if ((predicate_arity == 0) && !formalism::literal_holds(literal, state))
+            if ((literal.arity == 0) && !formalism::literal_holds(literal.source, state))
             {
                 return false;
             }
@@ -322,7 +318,7 @@ namespace planners
             return false;
         }
 
-        const auto action = formalism::create_action(problem_, action_schema, formalism::ObjectList());
+        const auto action = formalism::create_action(problem_, flat_action_schema_.source, formalism::ObjectList());
 
         if ((state == nullptr) || formalism::literals_hold(action->get_precondition(), state))
         {
@@ -343,16 +339,14 @@ namespace planners
                                                     const formalism::State& state,
                                                     formalism::ActionList& out_actions) const
     {
-        const auto& parameter = action_schema->parameters.at(0);
-
-        for (const auto& object : objects_by_parameter_type.at(parameter))
+        for (const auto& object : objects_by_parameter_type.at(0))
         {
             if (std::chrono::high_resolution_clock::now() >= end_time)
             {
                 return false;
             }
 
-            const auto action = formalism::create_action(problem_, action_schema, { std::make_pair(parameter, object) });
+            const auto action = formalism::create_action(problem_, flat_action_schema_.source, std::vector<formalism::Object> { object });
 
             if ((state == nullptr) || formalism::literals_hold(action->get_precondition(), state))
             {
@@ -375,43 +369,24 @@ namespace planners
                                                       const std::vector<std::vector<bool>>& assignment_sets,
                                                       formalism::ActionList& out_actions) const
     {
-        const auto num_parameters = action_schema->parameters.size();
+        assert(state);
+
         const auto num_vertices = to_vertex_assignment.size();
 
         std::vector<boost::dynamic_bitset<>> adjacency_matrix(num_vertices, boost::dynamic_bitset<>(num_vertices));
 
-        if (state)
+        for (const auto& assignment : statically_consistent_assignments)
         {
-            for (const auto& assignment : statically_consistent_assignments)
+            if (std::chrono::high_resolution_clock::now() >= end_time)
             {
-                if (std::chrono::high_resolution_clock::now() >= end_time)
-                {
-                    return false;
-                }
-
-                const auto& first_assignment = assignment.first_assignment;
-                const auto& second_assignment = assignment.second_assignment;
-
-                if (literal_all_consistent(assignment_sets, dynamic_precondition, first_assignment, second_assignment))
-                {
-                    const auto first_id = assignment.first_position;
-                    const auto second_id = assignment.second_position;
-                    auto& first_row = adjacency_matrix[first_id];
-                    auto& second_row = adjacency_matrix[second_id];
-                    first_row[second_id] = 1;
-                    second_row[first_id] = 1;
-                }
+                return false;
             }
-        }
-        else
-        {
-            for (const auto& assignment : statically_consistent_assignments)
-            {
-                if (std::chrono::high_resolution_clock::now() >= end_time)
-                {
-                    return false;
-                }
 
+            const auto& first_assignment = assignment.first_assignment;
+            const auto& second_assignment = assignment.second_assignment;
+
+            if (literal_all_consistent(assignment_sets, flat_action_schema_.fluent_precondition, first_assignment, second_assignment))
+            {
                 const auto first_id = assignment.first_position;
                 const auto second_id = assignment.second_position;
                 auto& first_row = adjacency_matrix[first_id];
@@ -438,16 +413,18 @@ namespace planners
                 return false;
             }
 
-            formalism::ParameterAssignment assignment(num_parameters);
+            formalism::ParameterAssignment assignment(flat_action_schema_.arity);
 
-            for (std::size_t vertex_index = 0; vertex_index < num_parameters; ++vertex_index)
+            for (std::size_t vertex_index = 0; vertex_index < flat_action_schema_.arity; ++vertex_index)
             {
                 const auto vertex_id = clique[vertex_index];
                 const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
-                assignment.insert(std::make_pair(vertex_assignment.parameter, vertex_assignment.object));
+                const auto& parameter = flat_action_schema_.get_parameters()[vertex_assignment.parameter_index];
+                const auto& object = problem_->get_object(vertex_assignment.object_id);
+                assignment.emplace(parameter, object);
             }
 
-            const auto action = formalism::create_action(problem_, action_schema, std::move(assignment));
+            const auto action = formalism::create_action(problem_, flat_action_schema_.source, std::move(assignment));
 
             if ((state == nullptr) || formalism::literals_hold(action->get_precondition(), state, 3))
             {
@@ -474,13 +451,11 @@ namespace planners
             return formalism::ActionList();
         }
 
-        const auto num_parameters = action_schema->parameters.size();
-
-        if (num_parameters == 0)
+        if (flat_action_schema_.arity == 0)
         {
             return nullary_case(state);
         }
-        else if (num_parameters == 1)
+        else if (flat_action_schema_.arity == 1)
         {
             return unary_case(state);
         }
@@ -500,9 +475,7 @@ namespace planners
                                                                 const formalism::State& state,
                                                                 formalism::ActionList& out_actions) const
     {
-        const auto num_parameters = action_schema->parameters.size();
-
-        if (num_parameters == 0)
+        if (flat_action_schema_.arity == 0)
         {
             if (!nullary_case(end_time, state, out_actions))
             {
@@ -510,7 +483,7 @@ namespace planners
             }
         }
 
-        if (num_parameters == 1)
+        if (flat_action_schema_.arity == 1)
         {
             if (!unary_case(end_time, state, out_actions))
             {
@@ -518,7 +491,7 @@ namespace planners
             }
         }
 
-        if (num_parameters > 1)
+        if (flat_action_schema_.arity > 1)
         {
             const auto assignment_sets = build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
 

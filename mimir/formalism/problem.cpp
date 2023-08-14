@@ -60,6 +60,8 @@ namespace formalism
         {
             predicate_id_to_static_[static_predicate->id] = true;
         }
+
+        std::sort(this->objects.begin(), this->objects.end(), [](const formalism::Object& lhs, const formalism::Object& rhs) { return lhs->id < rhs->id; });
     }
 
     const formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
@@ -122,6 +124,12 @@ namespace formalism
     {
         assert(rank < rank_to_atom_.size());
         return rank_to_atom_.at(rank);
+    }
+
+    formalism::Object ProblemImpl::get_object(uint32_t object_id) const
+    {
+        assert(object_id < objects.size());
+        return objects.at(object_id);
     }
 
     uint32_t ProblemImpl::num_objects() const { return static_cast<uint32_t>(objects.size()); }

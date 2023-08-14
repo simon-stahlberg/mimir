@@ -5,6 +5,7 @@
 #include "../formalism/action_schema.hpp"
 #include "../formalism/problem.hpp"
 #include "../formalism/state.hpp"
+#include "flat_action_schema.hpp"
 #include "successor_generator.hpp"
 
 #include <algorithm>
@@ -16,16 +17,12 @@
 
 namespace planners
 {
-    // TODO: Optimize this by translating all action schemas into more efficient representations.
-    // Instead of using an Object-Oriented representation, make it flatter and refer to parameters by their position rather than the object.
-    // Additionally, flatten literals to eliminate the need to follow pointers.
-
     struct Assignment
     {
-        formalism::Parameter parameter;
-        formalism::Object object;
+        uint32_t parameter_index;
+        uint32_t object_id;
 
-        Assignment(formalism::Parameter parameter, formalism::Object object) : parameter(parameter), object(object) {}
+        Assignment(uint32_t parameter_index, uint32_t object_id) : parameter_index(parameter_index), object_id(object_id) {}
     };
 
     struct AssignmentPair
@@ -47,24 +44,20 @@ namespace planners
     class LiftedSchemaSuccessorGenerator
     {
       private:
-        using ParameterAssignmentsMap = std::unordered_map<formalism::Parameter, std::unordered_set<formalism::Object>>;
-
         formalism::DomainDescription domain_;
         formalism::ProblemDescription problem_;
-        formalism::ActionSchema action_schema;
-        ParameterAssignmentsMap objects_by_parameter_type;
+        planners::FlatActionSchema flat_action_schema_;
+        std::unordered_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
 
         std::vector<Assignment> to_vertex_assignment;
         std::vector<AssignmentPair> statically_consistent_assignments;
-        std::vector<formalism::Literal> static_precondition;
-        std::vector<formalism::Literal> dynamic_precondition;
         std::vector<std::vector<std::size_t>> partitions_;
 
         static std::vector<std::vector<bool>>
         build_assignment_sets(const formalism::DomainDescription& domain, const formalism::ProblemDescription& problem, const std::vector<uint32_t>& ranks);
 
         bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
-                                    const formalism::LiteralList& literals,
+                                    const std::vector<planners::FlatLiteral>& literals,
                                     const Assignment& first_assignment,
                                     const Assignment& second_assignment) const;
 
