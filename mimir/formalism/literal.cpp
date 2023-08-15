@@ -168,6 +168,11 @@ namespace std
             return false;
         }
 
-        return equal_to_combine(std::make_tuple(left_literal->atom, left_literal->negated), std::make_tuple(right_literal->atom, right_literal->negated));
+        if (left_literal->negated != right_literal->negated)
+        {
+            return false;
+        }
+
+        return std::equal_to<formalism::Atom>()(left_literal->atom, right_literal->atom);
     }
 }  // namespace std

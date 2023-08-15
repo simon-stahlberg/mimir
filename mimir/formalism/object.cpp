@@ -118,14 +118,6 @@ namespace std
             return false;
         }
 
-        const std::hash<formalism::Object> hash;
-
-        if (hash(left_object) != hash(right_object))
-        {
-            return false;
-        }
-
-        return equal_to_combine(std::make_tuple(left_object->id, left_object->name, left_object->type),
-                                std::make_tuple(right_object->id, right_object->name, right_object->type));
+        return left_object->id == right_object->id;
     }
 }  // namespace std

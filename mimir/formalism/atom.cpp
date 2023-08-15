@@ -270,6 +270,11 @@ namespace std
             return false;
         }
 
-        return equal_to_combine(std::make_tuple(left_atom->predicate, left_atom->arguments), std::make_tuple(right_atom->predicate, right_atom->arguments));
+        if (left_atom->predicate != right_atom->predicate)
+        {
+            return false;
+        }
+
+        return left_atom->arguments == right_atom->arguments;
     }
 }  // namespace std
