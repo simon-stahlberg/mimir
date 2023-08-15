@@ -88,10 +88,6 @@ namespace planners
       public:
         LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem);
 
-        LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema,
-                                       const formalism::DomainDescription& domain,
-                                       const formalism::ProblemDescription& problem);
-
         formalism::ActionList get_applicable_actions(const formalism::State& state) const;
 
         bool get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,

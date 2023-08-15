@@ -111,7 +111,8 @@ namespace formalism
         std::transform(domain->action_schemas.cbegin(),
                        domain->action_schemas.cend(),
                        std::back_insert_iterator(relaxed_action_schemas),
-                       [](const formalism::ActionSchema& action_schema) { return formalism::relax(action_schema, true, true); });
+                       [&](const formalism::ActionSchema& action_schema)
+                       { return formalism::relax(action_schema, remove_negative_preconditions, remove_delete_list); });
 
         return create_domain(domain->name, domain->requirements, domain->types, domain->constants, domain->predicates, relaxed_action_schemas);
     }

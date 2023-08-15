@@ -27,11 +27,12 @@ namespace planners
                                            formalism::ActionList& out_actions)
     {
         const auto relaxed_domain = relax(problem->domain, true, true);
-        const planners::LiftedSuccessorGenerator successor_generator(relaxed_domain, problem);
+        const auto relaxed_problem = formalism::create_problem(problem->name, relaxed_domain, problem->objects, problem->initial, problem->goal);
+        const planners::LiftedSuccessorGenerator successor_generator(relaxed_problem);
 
         std::equal_to<formalism::State> equals;
         formalism::ActionList relaxed_actions;
-        formalism::State state = formalism::create_state(problem->initial, problem);
+        formalism::State state = formalism::create_state(relaxed_problem->initial, relaxed_problem);
 
         while (true)
         {
@@ -90,12 +91,12 @@ namespace planners
                     return std::make_shared<GroundedSuccessorGenerator>(problem, actions);
                 }
 
-                return std::make_shared<LiftedSuccessorGenerator>(problem->domain, problem);
+                return std::make_shared<LiftedSuccessorGenerator>(problem);
             }
 
             case SuccessorGeneratorType::LIFTED:
             {
-                return std::make_shared<LiftedSuccessorGenerator>(problem->domain, problem);
+                return std::make_shared<LiftedSuccessorGenerator>(problem);
             }
 
             case SuccessorGeneratorType::GROUNDED:

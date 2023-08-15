@@ -17,12 +17,11 @@ namespace planners
     class LiftedSuccessorGenerator : public SuccessorGeneratorBase
     {
       private:
-        formalism::DomainDescription domain_;
         formalism::ProblemDescription problem_;
         std::map<formalism::ActionSchema, LiftedSchemaSuccessorGenerator> generators_;
 
       public:
-        LiftedSuccessorGenerator(const formalism::DomainDescription& domain, const formalism::ProblemDescription& problem);
+        LiftedSuccessorGenerator(const formalism::ProblemDescription& problem);
 
         formalism::ProblemDescription get_problem() const override;
 

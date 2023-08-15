@@ -198,16 +198,9 @@ namespace planners
     }
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :
-        LiftedSchemaSuccessorGenerator(action_schema, problem->domain, problem)
-    {
-    }
-
-    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema_temp,
-                                                                   const formalism::DomainDescription& domain,
-                                                                   const formalism::ProblemDescription& problem) :
-        domain_(domain),
+        domain_(problem->domain),
         problem_(problem),
-        flat_action_schema_(FlatActionSchema(domain, action_schema_temp)),
+        flat_action_schema_(FlatActionSchema(problem->domain, action_schema)),
         objects_by_parameter_type(),
         to_vertex_assignment(),
         statically_consistent_assignments(),
@@ -426,7 +419,7 @@ namespace planners
 
             const auto action = formalism::create_action(problem_, flat_action_schema_.source, std::move(assignment));
 
-            if ((state == nullptr) || formalism::literals_hold(action->get_precondition(), state, 3))
+            if (formalism::literals_hold(action->get_precondition(), state, 3))
             {
                 out_actions.push_back(action);
             }
