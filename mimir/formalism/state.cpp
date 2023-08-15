@@ -324,7 +324,7 @@ namespace formalism
 
             for (const auto& type : types)
             {
-                type_ids.insert(std::make_pair(type, num_predicates + type_ids.size()));
+                type_ids.emplace(type, static_cast<uint32_t>(num_predicates + type_ids.size()));
             }
 
             for (const auto& object : problem_->objects)
@@ -361,11 +361,11 @@ namespace formalism
                 }
 
                 const auto atom = literal->atom;
-                const auto predicate_id = num_predicates + atom->predicate->id;
+                const auto predicate_id = static_cast<uint32_t>(num_predicates) + atom->predicate->id;
 
                 if (packed_ids.find(predicate_id) == packed_ids.end())
                 {
-                    packed_ids.insert(std::make_pair(predicate_id, std::vector<uint32_t>()));
+                    packed_ids.emplace(predicate_id, std::vector<uint32_t>());
                     id_to_name_arity.insert(std::make_pair(predicate_id, std::make_pair(atom->predicate->name + "_goal", atom->predicate->arity)));
                 }
 
