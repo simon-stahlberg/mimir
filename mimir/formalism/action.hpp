@@ -21,13 +21,24 @@ namespace formalism
         formalism::Bitset positive_effect_bitset_;
         formalism::Bitset negative_effect_bitset_;
         formalism::ObjectList arguments_;
-        mutable formalism::LiteralList precondition_;
-        mutable formalism::LiteralList effect_;
+        formalism::LiteralList precondition_;
+        formalism::LiteralList effect_;
+
+        void initialize_precondition();
+
+        void initialize_effect();
 
       public:
         formalism::ProblemDescription problem;
         formalism::ActionSchema schema;
         int32_t cost;
+
+        ActionImpl(const formalism::ProblemDescription& problem,
+                   const formalism::ActionSchema& schema,
+                   const formalism::ObjectList& arguments,
+                   const formalism::LiteralList& precondition,
+                   const formalism::LiteralList& effect,
+                   const int32_t cost = 1);
 
         ActionImpl(const formalism::ProblemDescription& problem,
                    const formalism::ActionSchema& schema,
@@ -46,6 +57,13 @@ namespace formalism
 
         const formalism::LiteralList& get_effect() const;
     };
+
+    Action create_action(const formalism::ProblemDescription& problem,
+                         const formalism::ActionSchema& schema,
+                         const formalism::ObjectList& arguments,
+                         const formalism::LiteralList& precondition,
+                         const formalism::LiteralList& effect,
+                         const int32_t cost = 1);
 
     Action create_action(const formalism::ProblemDescription& problem,
                          const formalism::ActionSchema& schema,

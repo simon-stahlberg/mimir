@@ -29,7 +29,6 @@ message(STATUS "Python_EXECUTABLE is \"${Python_EXECUTABLE}\"")
 # ------------
 # Target Mimir
 # ------------
-
 add_library(mimir MODULE mimir/mimir.cpp)
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 set_target_properties(mimir PROPERTIES PREFIX "")
@@ -38,8 +37,12 @@ target_link_libraries(mimir generators)
 target_link_libraries(mimir pddl)
 target_link_libraries(mimir ${PYTHON_LIBRARIES})
 
-if (MSVC)
-    # Add MSVC specific library linking here
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(mimir PRIVATE NDEBUG)
+endif()
+
+if(MSVC)
+# Add MSVC specific library linking here
 else()
     target_link_libraries(mimir -static-libstdc++ -lstdc++fs -static-libgcc)
 endif()
@@ -59,7 +62,6 @@ add_dependencies(generate_pyi_files mimir)
 # ----------------
 # Target Profiling
 # ----------------
-
 add_executable(profiling mimir/profiling.cpp)
 set_property(TARGET profiling PROPERTY CXX_STANDARD 17)
 target_link_libraries(profiling formalism)

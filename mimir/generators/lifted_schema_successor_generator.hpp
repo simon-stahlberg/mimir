@@ -61,6 +61,10 @@ namespace planners
                                     const Assignment& first_assignment,
                                     const Assignment& second_assignment) const;
 
+        formalism::Literal ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const;
+
+        formalism::Action create_action(const formalism::ObjectList& terms) const;
+
         bool nullary_preconditions_hold(const formalism::State& state) const;
 
         bool has_consistent_effect(const formalism::Action& action) const;

@@ -25,17 +25,59 @@
 
 namespace formalism
 {
+    formalism::ObjectList create_arguments(const formalism::ActionSchema& action_schema, const formalism::ParameterAssignment& assignment)
+    {
+        formalism::ObjectList arguments;
+
+        for (const auto& parameter : action_schema->parameters)
+        {
+            arguments.emplace_back(assignment.at(parameter));
+        }
+
+        return arguments;
+    }
+
+    formalism::LiteralList create_precondition(const formalism::ActionSchema& action_schema, const formalism::ObjectList& arguments)
+    {
+        formalism::ParameterAssignment assignment;
+
+        for (uint32_t index = 0; index < arguments.size(); ++index)
+        {
+            const auto& parameter = action_schema->parameters.at(index);
+            const auto& argument = arguments.at(index);
+            assignment.insert(std::make_pair(parameter, argument));
+        }
+
+        return formalism::ground_literal_list(action_schema->precondition, assignment);
+    }
+
+    formalism::LiteralList create_effect(const formalism::ActionSchema& action_schema, const formalism::ObjectList& arguments)
+    {
+        formalism::ParameterAssignment assignment;
+
+        for (uint32_t index = 0; index < arguments.size(); ++index)
+        {
+            const auto& parameter = action_schema->parameters.at(index);
+            const auto& argument = arguments.at(index);
+            assignment.insert(std::make_pair(parameter, argument));
+        }
+
+        return formalism::ground_literal_list(action_schema->effect, assignment);
+    }
+
     ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
                            const formalism::ActionSchema& schema,
                            const formalism::ObjectList& arguments,
+                           const formalism::LiteralList& precondition,
+                           const formalism::LiteralList& effect,
                            const int32_t cost) :
         positive_precondition_bitset_(0),
         negative_precondition_bitset_(0),
         positive_effect_bitset_(0),
         negative_effect_bitset_(0),
         arguments_(arguments),
-        precondition_(),
-        effect_(),
+        precondition_(precondition),
+        effect_(effect),
         problem(problem),
         schema(schema),
         cost(cost)
@@ -73,94 +115,33 @@ namespace formalism
 
     ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
                            const formalism::ActionSchema& schema,
-                           const formalism::ParameterAssignment& assignment) :
-        positive_precondition_bitset_(0),
-        negative_precondition_bitset_(0),
-        positive_effect_bitset_(0),
-        negative_effect_bitset_(0),
-        arguments_(),
-        precondition_(),
-        effect_(),
-        problem(problem),
-        schema(schema),
-        cost(1)
+                           const formalism::ObjectList& arguments,
+                           const int32_t cost) :
+        ActionImpl(problem, schema, arguments, create_precondition(schema, arguments), create_effect(schema, arguments), cost)
     {
-        for (const auto& parameter : schema->parameters)
-        {
-            arguments_.push_back(assignment.at(parameter));
-        }
+    }
 
-        for (const auto& literal : get_precondition())
-        {
-            const auto& atom = literal->atom;
-            const auto rank = problem->get_rank(atom);
-
-            if (literal->negated)
-            {
-                negative_precondition_bitset_.set(rank);
-            }
-            else
-            {
-                positive_precondition_bitset_.set(rank);
-            }
-        }
-
-        for (const auto& literal : get_effect())
-        {
-            const auto& atom = literal->atom;
-            const auto rank = problem->get_rank(atom);
-
-            if (literal->negated)
-            {
-                negative_effect_bitset_.set(rank);
-            }
-            else
-            {
-                positive_effect_bitset_.set(rank);
-            }
-        }
+    ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
+                           const formalism::ActionSchema& schema,
+                           const formalism::ParameterAssignment& assignment) :
+        ActionImpl(problem, schema, create_arguments(schema, assignment), 1)
+    {
     }
 
     const formalism::ObjectList& ActionImpl::get_arguments() const { return arguments_; }
 
-    const formalism::LiteralList& ActionImpl::get_precondition() const
+    const formalism::LiteralList& ActionImpl::get_precondition() const { return precondition_; }
+
+    const formalism::LiteralList& ActionImpl::get_effect() const { return effect_; }
+
+    Action create_action(const formalism::ProblemDescription& problem,
+                         const formalism::ActionSchema& schema,
+                         const formalism::ObjectList& arguments,
+                         const formalism::LiteralList& precondition,
+                         const formalism::LiteralList& effect,
+                         const int32_t cost)
     {
-        if (precondition_.size() > 0)
-        {
-            return precondition_;
-        }
-
-        formalism::ParameterAssignment assignment;
-
-        for (uint32_t index = 0; index < arguments_.size(); ++index)
-        {
-            const auto& parameter = schema->parameters.at(index);
-            const auto& argument = arguments_.at(index);
-            assignment.insert(std::make_pair(parameter, argument));
-        }
-
-        precondition_ = formalism::ground_literal_list(schema->precondition, assignment);
-        return precondition_;
-    }
-
-    const formalism::LiteralList& ActionImpl::get_effect() const
-    {
-        if (effect_.size() > 0)
-        {
-            return effect_;
-        }
-
-        formalism::ParameterAssignment assignment;
-
-        for (uint32_t index = 0; index < arguments_.size(); ++index)
-        {
-            const auto& parameter = schema->parameters.at(index);
-            const auto& argument = arguments_.at(index);
-            assignment.insert(std::make_pair(parameter, argument));
-        }
-
-        effect_ = formalism::ground_literal_list(schema->effect, assignment);
-        return effect_;
+        return std::make_shared<formalism::ActionImpl>(problem, schema, arguments, precondition, effect, cost);
     }
 
     Action create_action(const formalism::ProblemDescription& problem,

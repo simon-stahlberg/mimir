@@ -197,6 +197,51 @@ namespace planners
         return true;
     }
 
+    formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const
+    {
+        formalism::ObjectList atom_terms;
+
+        for (const auto& term : literal.arguments)
+        {
+            if (term.is_constant())
+            {
+                atom_terms.emplace_back(problem_->get_object(term.get_value()));
+            }
+            else
+            {
+                atom_terms.emplace_back(terms[term.get_value()]);
+            }
+        }
+
+        const auto& atom_predicate = literal.source->atom->predicate;
+        const auto ground_atom = formalism::create_atom(atom_predicate, atom_terms);
+        return formalism::create_literal(ground_atom, literal.negated);
+    }
+
+    formalism::Action LiftedSchemaSuccessorGenerator::create_action(const formalism::ObjectList& terms) const
+    {
+        formalism::LiteralList precondition;
+
+        for (const auto& literal : flat_action_schema_.static_precondition)
+        {
+            precondition.emplace_back(ground_literal(literal, terms));
+        }
+
+        for (const auto& literal : flat_action_schema_.fluent_precondition)
+        {
+            precondition.emplace_back(ground_literal(literal, terms));
+        }
+
+        formalism::LiteralList effect;
+
+        for (const auto& literal : flat_action_schema_.effect)
+        {
+            effect.emplace_back(ground_literal(literal, terms));
+        }
+
+        return formalism::create_action(problem_, flat_action_schema_.source, terms, precondition, effect);
+    }
+
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :
         domain_(problem->domain),
         problem_(problem),
@@ -311,9 +356,9 @@ namespace planners
             return false;
         }
 
-        const auto action = formalism::create_action(problem_, flat_action_schema_.source, formalism::ObjectList());
+        const auto action = create_action(formalism::ObjectList {});
 
-        if ((state == nullptr) || formalism::literals_hold(action->get_precondition(), state))
+        if (formalism::literals_hold(action->get_precondition(), state))
         {
             out_actions.push_back(action);
         }
@@ -332,16 +377,16 @@ namespace planners
                                                     const formalism::State& state,
                                                     formalism::ActionList& out_actions) const
     {
-        for (const auto& object : objects_by_parameter_type.at(0))
+        for (const auto& object_id : objects_by_parameter_type.at(0))
         {
             if (std::chrono::high_resolution_clock::now() >= end_time)
             {
                 return false;
             }
 
-            const auto action = formalism::create_action(problem_, flat_action_schema_.source, std::vector<formalism::Object> { object });
+            const auto action = create_action({ problem_->get_object(object_id) });
 
-            if ((state == nullptr) || formalism::literals_hold(action->get_precondition(), state))
+            if (formalism::literals_hold(action->get_precondition(), state))
             {
                 out_actions.push_back(action);
             }
@@ -406,18 +451,19 @@ namespace planners
                 return false;
             }
 
-            formalism::ParameterAssignment assignment(flat_action_schema_.arity);
+            formalism::ObjectList terms(flat_action_schema_.arity);
 
             for (std::size_t vertex_index = 0; vertex_index < flat_action_schema_.arity; ++vertex_index)
             {
                 const auto vertex_id = clique[vertex_index];
-                const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
-                const auto& parameter = flat_action_schema_.get_parameters()[vertex_assignment.parameter_index];
-                const auto& object = problem_->get_object(vertex_assignment.object_id);
-                assignment.emplace(parameter, object);
+                const auto vertex_assignment = to_vertex_assignment.at(vertex_id);
+                const auto parameter_index = vertex_assignment.parameter_index;
+                const auto object_id = vertex_assignment.object_id;
+                const auto parameter = flat_action_schema_.get_parameters()[parameter_index];
+                terms[parameter_index] = problem_->get_object(object_id);
             }
 
-            const auto action = formalism::create_action(problem_, flat_action_schema_.source, std::move(assignment));
+            const auto action = create_action(std::move(terms));
 
             if (formalism::literals_hold(action->get_precondition(), state, 3))
             {

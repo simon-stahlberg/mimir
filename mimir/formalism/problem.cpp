@@ -72,6 +72,7 @@ namespace formalism
 
         if (rank_with_offset == 0)
         {
+            // Indexing creates a new item if none exists, thus the size is at least 1.
             rank_with_offset = static_cast<uint32_t>(atom_ranks_.size());
             const auto rank = rank_with_offset - 1;
 
@@ -129,6 +130,7 @@ namespace formalism
     formalism::Object ProblemImpl::get_object(uint32_t object_id) const
     {
         assert(object_id < objects.size());
+        assert(objects.at(object_id)->id == object_id);
         return objects.at(object_id);
     }
 
