@@ -214,11 +214,11 @@ namespace planners
         }
 
         const auto& atom_predicate = literal.source->atom->predicate;
-        const auto ground_atom = formalism::create_atom(atom_predicate, atom_terms);
+        const auto ground_atom = formalism::create_atom(atom_predicate, std::move(atom_terms));
         return formalism::create_literal(ground_atom, literal.negated);
     }
 
-    formalism::Action LiftedSchemaSuccessorGenerator::create_action(const formalism::ObjectList& terms) const
+    formalism::Action LiftedSchemaSuccessorGenerator::create_action(formalism::ObjectList&& terms) const
     {
         formalism::LiteralList precondition;
 
@@ -239,7 +239,7 @@ namespace planners
             effect.emplace_back(ground_literal(literal, terms));
         }
 
-        return formalism::create_action(problem_, flat_action_schema_.source, terms, precondition, effect);
+        return formalism::create_action(problem_, flat_action_schema_.source, std::move(terms), std::move(precondition), std::move(effect));
     }
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :

@@ -16,6 +16,8 @@ namespace formalism
         const formalism::Predicate predicate;
         const formalism::ObjectList arguments;
 
+        AtomImpl(const formalism::Predicate& predicate, formalism::ObjectList&& arguments);
+
         AtomImpl(const formalism::Predicate& predicate, const formalism::ObjectList& arguments);
 
         bool operator==(const AtomImpl& other) const;
@@ -29,6 +31,8 @@ namespace formalism
     formalism::Atom ground_predicate(const formalism::Predicate& predicate, const formalism::ParameterAssignment& assignment);
 
     bool matches(const Atom& first_atom, const Atom& second_atom);
+
+    Atom create_atom(const formalism::Predicate& predicate, formalism::ObjectList&& arguments);
 
     Atom create_atom(const formalism::Predicate& predicate, const formalism::ObjectList& arguments);
 

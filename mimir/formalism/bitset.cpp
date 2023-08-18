@@ -42,6 +42,33 @@ namespace formalism
 
     Bitset::Bitset(std::size_t size) : data(size / (sizeof(std::size_t) * 8) + 1, 0) {}
 
+    Bitset::Bitset(const Bitset& other) : data(other.data), default_bit_value(other.default_bit_value) {}
+
+    Bitset::Bitset(Bitset&& other) noexcept : data(std::move(other.data)), default_bit_value(other.default_bit_value) {}
+
+    Bitset& Bitset::operator=(const Bitset& other)
+    {
+        if (this != &other)
+        {
+            data = other.data;
+            default_bit_value = other.default_bit_value;
+        }
+
+        return *this;
+    }
+
+    // Move assignment operator
+    Bitset& Bitset::operator=(Bitset&& other) noexcept
+    {
+        if (this != &other)
+        {
+            data = std::move(other.data);
+            default_bit_value = other.default_bit_value;
+        }
+
+        return *this;
+    }
+
     void Bitset::set(std::size_t position)
     {
         const std::size_t index = position / block_size;   // Find the index in the vector

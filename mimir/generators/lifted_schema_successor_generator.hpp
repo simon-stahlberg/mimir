@@ -63,7 +63,7 @@ namespace planners
 
         formalism::Literal ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const;
 
-        formalism::Action create_action(const formalism::ObjectList& terms) const;
+        formalism::Action create_action(formalism::ObjectList&& terms) const;
 
         bool nullary_preconditions_hold(const formalism::State& state) const;
 

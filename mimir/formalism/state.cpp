@@ -31,10 +31,10 @@ namespace formalism
         return std::hash<formalism::Bitset>()(bitset);
     }
 
-    StateImpl::StateImpl(const formalism::Bitset& bitset, const formalism::ProblemDescription& problem) :
-        bitset_(bitset),
+    StateImpl::StateImpl(formalism::Bitset&& bitset, const formalism::ProblemDescription& problem) :
+        bitset_(std::move(bitset)),
         problem_(problem),
-        hash_(compute_state_hash(bitset, problem))
+        hash_(compute_state_hash(bitset_, problem))
     {
     }
 

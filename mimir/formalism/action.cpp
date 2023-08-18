@@ -67,17 +67,17 @@ namespace formalism
 
     ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
                            const formalism::ActionSchema& schema,
-                           const formalism::ObjectList& arguments,
-                           const formalism::LiteralList& precondition,
-                           const formalism::LiteralList& effect,
-                           const int32_t cost) :
+                           formalism::ObjectList&& arguments,
+                           formalism::LiteralList&& precondition,
+                           formalism::LiteralList&& effect,
+                           int32_t cost) :
         positive_precondition_bitset_(0),
         negative_precondition_bitset_(0),
         positive_effect_bitset_(0),
         negative_effect_bitset_(0),
-        arguments_(arguments),
-        precondition_(precondition),
-        effect_(effect),
+        arguments_(std::move(arguments)),
+        precondition_(std::move(precondition)),
+        effect_(std::move(effect)),
         problem(problem),
         schema(schema),
         cost(cost)
@@ -115,9 +115,9 @@ namespace formalism
 
     ActionImpl::ActionImpl(const formalism::ProblemDescription& problem,
                            const formalism::ActionSchema& schema,
-                           const formalism::ObjectList& arguments,
-                           const int32_t cost) :
-        ActionImpl(problem, schema, arguments, create_precondition(schema, arguments), create_effect(schema, arguments), cost)
+                           formalism::ObjectList&& arguments,
+                           int32_t cost) :
+        ActionImpl(problem, schema, std::move(arguments), create_precondition(schema, arguments), create_effect(schema, arguments), cost)
     {
     }
 
@@ -136,20 +136,17 @@ namespace formalism
 
     Action create_action(const formalism::ProblemDescription& problem,
                          const formalism::ActionSchema& schema,
-                         const formalism::ObjectList& arguments,
-                         const formalism::LiteralList& precondition,
-                         const formalism::LiteralList& effect,
-                         const int32_t cost)
+                         formalism::ObjectList&& arguments,
+                         formalism::LiteralList&& precondition,
+                         formalism::LiteralList&& effect,
+                         int32_t cost)
     {
-        return std::make_shared<formalism::ActionImpl>(problem, schema, arguments, precondition, effect, cost);
+        return std::make_shared<formalism::ActionImpl>(problem, schema, std::move(arguments), std::move(precondition), std::move(effect), cost);
     }
 
-    Action create_action(const formalism::ProblemDescription& problem,
-                         const formalism::ActionSchema& schema,
-                         const formalism::ObjectList& arguments,
-                         const int32_t cost)
+    Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost)
     {
-        return std::make_shared<formalism::ActionImpl>(problem, schema, arguments, cost);
+        return std::make_shared<formalism::ActionImpl>(problem, schema, std::move(arguments), cost);
     }
 
     Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, const formalism::ParameterAssignment& assignment)

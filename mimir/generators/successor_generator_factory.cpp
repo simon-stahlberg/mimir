@@ -69,8 +69,10 @@ namespace planners
 
         for (const auto& relaxed_action : relaxed_actions)
         {
-            out_actions.emplace_back(
-                formalism::create_action(problem, action_schemas.at(relaxed_action->schema->name), relaxed_action->get_arguments(), relaxed_action->cost));
+            auto action_schema = action_schemas.at(relaxed_action->schema->name);
+            auto arguments = relaxed_action->get_arguments();
+            auto cost = relaxed_action->cost;
+            out_actions.emplace_back(formalism::create_action(problem, action_schema, std::move(arguments), cost));
         }
 
         return true;

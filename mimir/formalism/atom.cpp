@@ -23,6 +23,13 @@
 
 namespace formalism
 {
+    AtomImpl::AtomImpl(const formalism::Predicate& predicate, formalism::ObjectList&& arguments) :
+        hash_(0),
+        predicate(predicate),
+        arguments(std::move(arguments))
+    {
+    }
+
     AtomImpl::AtomImpl(const formalism::Predicate& predicate, const formalism::ObjectList& arguments) : hash_(0), predicate(predicate), arguments(arguments) {}
 
     bool AtomImpl::operator==(const AtomImpl& other) const
@@ -86,6 +93,11 @@ namespace formalism
         }
 
         return true;
+    }
+
+    Atom create_atom(const formalism::Predicate& predicate, formalism::ObjectList&& arguments)
+    {
+        return std::make_shared<formalism::AtomImpl>(predicate, std::move(arguments));
     }
 
     Atom create_atom(const formalism::Predicate& predicate, const formalism::ObjectList& arguments)

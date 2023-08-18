@@ -25,7 +25,7 @@ namespace formalism
       public:
         StateImpl();
 
-        StateImpl(const formalism::Bitset& bitset, const formalism::ProblemDescription& problem);
+        StateImpl(formalism::Bitset&& bitset, const formalism::ProblemDescription& problem);
 
         StateImpl(const std::vector<uint32_t>& atoms, const formalism::ProblemDescription& problem);
 

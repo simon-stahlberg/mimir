@@ -22,6 +22,14 @@ namespace formalism
         // Initialize the bitset with a certain size
         Bitset(std::size_t size);
 
+        Bitset(const Bitset& other);
+
+        Bitset(Bitset&& other) noexcept;
+
+        Bitset& operator=(const Bitset& other);
+
+        Bitset& operator=(Bitset&& other) noexcept;
+
         // Set a bit at a specific position
         void set(std::size_t position);
 

@@ -35,15 +35,12 @@ namespace formalism
 
         ActionImpl(const formalism::ProblemDescription& problem,
                    const formalism::ActionSchema& schema,
-                   const formalism::ObjectList& arguments,
-                   const formalism::LiteralList& precondition,
-                   const formalism::LiteralList& effect,
-                   const int32_t cost = 1);
+                   formalism::ObjectList&& arguments,
+                   formalism::LiteralList&& precondition,
+                   formalism::LiteralList&& effect,
+                   int32_t cost = 1);
 
-        ActionImpl(const formalism::ProblemDescription& problem,
-                   const formalism::ActionSchema& schema,
-                   const formalism::ObjectList& arguments,
-                   const int32_t cost = 1);
+        ActionImpl(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost = 1);
 
         ActionImpl(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, const formalism::ParameterAssignment& assignment);
 
@@ -60,15 +57,13 @@ namespace formalism
 
     Action create_action(const formalism::ProblemDescription& problem,
                          const formalism::ActionSchema& schema,
-                         const formalism::ObjectList& arguments,
-                         const formalism::LiteralList& precondition,
-                         const formalism::LiteralList& effect,
-                         const int32_t cost = 1);
+                         formalism::ObjectList&& arguments,
+                         formalism::LiteralList&& precondition,
+                         formalism::LiteralList&& effect,
+                         int32_t cost = 1);
 
-    Action create_action(const formalism::ProblemDescription& problem,
-                         const formalism::ActionSchema& schema,
-                         const formalism::ObjectList& arguments,
-                         const int32_t cost = 1);
+    Action
+    create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost = 1);
 
     Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, const formalism::ParameterAssignment& assignment);
 
