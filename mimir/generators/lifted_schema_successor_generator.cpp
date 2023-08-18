@@ -409,17 +409,17 @@ namespace planners
     {
         assert(state);
 
+        if (std::chrono::high_resolution_clock::now() >= end_time)
+        {
+            return false;
+        }
+
         const auto num_vertices = to_vertex_assignment.size();
 
         std::vector<boost::dynamic_bitset<>> adjacency_matrix(num_vertices, boost::dynamic_bitset<>(num_vertices));
 
         for (const auto& assignment : statically_consistent_assignments)
         {
-            if (std::chrono::high_resolution_clock::now() >= end_time)
-            {
-                return false;
-            }
-
             const auto& first_assignment = assignment.first_assignment;
             const auto& second_assignment = assignment.second_assignment;
 
@@ -452,14 +452,15 @@ namespace planners
             }
 
             formalism::ObjectList terms(flat_action_schema_.arity);
+            const auto& parameters = flat_action_schema_.get_parameters();
 
             for (std::size_t vertex_index = 0; vertex_index < flat_action_schema_.arity; ++vertex_index)
             {
                 const auto vertex_id = clique[vertex_index];
-                const auto vertex_assignment = to_vertex_assignment.at(vertex_id);
+                const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
                 const auto parameter_index = vertex_assignment.parameter_index;
                 const auto object_id = vertex_assignment.object_id;
-                const auto parameter = flat_action_schema_.get_parameters()[parameter_index];
+                const auto& parameter = parameters[parameter_index];
                 terms[parameter_index] = problem_->get_object(object_id);
             }
 
