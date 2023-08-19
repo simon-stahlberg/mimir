@@ -32,6 +32,8 @@ namespace formalism
 
     bool matches(const Atom& first_atom, const Atom& second_atom);
 
+    Atom replace_term(const Atom& atom, uint32_t index, const formalism::Object& object);
+
     Atom create_atom(const formalism::Predicate& predicate, formalism::ObjectList&& arguments);
 
     Atom create_atom(const formalism::Predicate& predicate, const formalism::ObjectList& arguments);

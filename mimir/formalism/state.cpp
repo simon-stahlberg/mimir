@@ -439,6 +439,19 @@ namespace formalism
         return true;
     }
 
+    bool matches_any_in_state(const formalism::Atom& atom, const formalism::State& state)
+    {
+        for (const auto& state_atom : state->get_atoms())
+        {
+            if (formalism::matches(atom, state_atom))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     std::ostream& operator<<(std::ostream& os, const formalism::State& state)
     {
         os << state->get_atoms();

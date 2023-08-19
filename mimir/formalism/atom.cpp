@@ -95,6 +95,20 @@ namespace formalism
         return true;
     }
 
+    Atom replace_term(const Atom& atom, uint32_t index, const formalism::Object& object)
+    {
+        auto terms = atom->arguments;
+
+        if (index >= terms.size())
+        {
+            throw std::invalid_argument("index is out of range");
+        }
+
+        terms[index] = object;
+
+        return create_atom(atom->predicate, terms);
+    }
+
     Atom create_atom(const formalism::Predicate& predicate, formalism::ObjectList&& arguments)
     {
         return std::make_shared<formalism::AtomImpl>(predicate, std::move(arguments));

@@ -69,150 +69,221 @@ bool state_matches_literals(const formalism::State& state, const formalism::Lite
 
 PYBIND11_MODULE(mimir, m)
 {
+    // clang-format off
+
     m.doc() = "Mimir: Lifted PDDL parsing and expansion library.";
 
-    py::class_<formalism::TypeImpl, formalism::Type>(m, "Type")
-        .def_readonly("name", &formalism::TypeImpl::name)
-        .def_readonly("base", &formalism::TypeImpl::base)
-        .def("__repr__",
-             [](const formalism::TypeImpl& type)
-             { return type.base ? ("<Type '" + type.name + " : " + type.base->name + "'>") : ("<Type '" + type.name + "'>"); });
+    // Forward declarations
 
-    py::class_<formalism::ObjectImpl, formalism::Object>(m, "Object")
-        .def_readonly("id", &formalism::ObjectImpl::id)
-        .def_readonly("name", &formalism::ObjectImpl::name)
-        .def_readonly("type", &formalism::ObjectImpl::type)
-        .def("is_free", &formalism::ObjectImpl::is_free_variable)
-        .def("is_constant", &formalism::ObjectImpl::is_constant)
-        .def("__repr__", [](const formalism::ObjectImpl& object) { return "<Object '" + object.name + "'>"; });
-
-    py::class_<formalism::PredicateImpl, formalism::Predicate>(m, "Predicate")
-        .def_readonly("id", &formalism::PredicateImpl::id)
-        .def_readonly("name", &formalism::PredicateImpl::name)
-        .def_readonly("arity", &formalism::PredicateImpl::arity)
-        .def_readonly("parameters", &formalism::PredicateImpl::parameters)
-        .def("__repr__",
-             [](const formalism::PredicateImpl& predicate) { return "<Predicate '" + predicate.name + "/" + std::to_string(predicate.arity) + "'>"; });
-
-    py::class_<formalism::AtomImpl, formalism::Atom>(m, "Atom")
-        .def_readonly("predicate", &formalism::AtomImpl::predicate)
-        .def_readonly("arguments", &formalism::AtomImpl::arguments)
-        .def("__repr__", [](const formalism::AtomImpl& atom) { return "<Atom '" + to_string(atom) + "'>"; });
-
-    py::class_<formalism::LiteralImpl, formalism::Literal>(m, "Literal")
-        .def_readonly("atom", &formalism::LiteralImpl::atom)
-        .def_readonly("negated", &formalism::LiteralImpl::negated)
-        .def("__repr__",
-             [](const formalism::LiteralImpl& literal)
-             {
-                 const auto prefix = (literal.negated ? std::string("not ") : std::string(""));
-                 const auto name = to_string(*literal.atom);
-                 return "<Literal '" + prefix + name + "'>";
-             });
-
-    py::class_<formalism::ActionSchemaImpl, formalism::ActionSchema>(m, "ActionSchema")
-        .def_readonly("name", &formalism::ActionSchemaImpl::name)
-        .def_readonly("arity", &formalism::ActionSchemaImpl::arity)
-        .def_readonly("parameters", &formalism::ActionSchemaImpl::parameters)
-        .def_readonly("precondition", &formalism::ActionSchemaImpl::precondition)
-        .def_readonly("effect", &formalism::ActionSchemaImpl::effect)
-        .def("__repr__",
-             [](const formalism::ActionSchemaImpl& action_schema)
-             { return "<ActionSchema '" + action_schema.name + "/" + std::to_string(action_schema.arity) + "'>"; });
-
-    py::class_<formalism::DomainImpl, formalism::DomainDescription>(m, "Domain")
-        .def_readonly("name", &formalism::DomainImpl::name)
-        .def_readonly("requirements", &formalism::DomainImpl::requirements)
-        .def_readonly("types", &formalism::DomainImpl::types)
-        .def_readonly("constants", &formalism::DomainImpl::constants)
-        .def_readonly("predicates", &formalism::DomainImpl::predicates)
-        .def_readonly("static_predicates", &formalism::DomainImpl::static_predicates)
-        .def_readonly("action_schemas", &formalism::DomainImpl::action_schemas)
-        .def("get_type_map", &formalism::DomainImpl::get_type_map)
-        .def("get_predicate_name_map", &formalism::DomainImpl::get_predicate_name_map)
-        .def("get_predicate_id_map", &formalism::DomainImpl::get_predicate_id_map)
-        .def("get_constant_map", &formalism::DomainImpl::get_constant_map)
-        .def("__repr__", [](const formalism::DomainImpl& domain) { return "<Domain '" + domain.name + "'>"; });
-
-    py::class_<formalism::StateImpl, formalism::State>(m, "State")
-        .def("get_atoms", &formalism::StateImpl::get_atoms)
-        .def("get_static_atoms", &formalism::StateImpl::get_static_atoms)
-        .def("get_dynamic_atoms", &formalism::StateImpl::get_dynamic_atoms)
-        // .def("get_problem", &formalism::StateImpl::get_problem)  // Forward declare Problem.
-        .def("get_atoms_by_predicate", &formalism::StateImpl::get_atoms_grouped_by_predicate)
-        .def("pack_object_ids_by_predicate_id", &formalism::StateImpl::pack_object_ids_by_predicate_id, "include_types"_a, "include_goal"_a)
-        .def("matches", &state_matches_literals, "literals"_a)
-        .def("__repr__", [](const formalism::StateImpl& state) { return "<State '" + std::to_string(state.hash()) + "'>"; });
-
-    py::class_<formalism::ActionImpl, formalism::Action>(m, "Action")
-        // .def_readonly("problem", &formalism::ActionImpl::problem)  // Forward declare Problem.
-        .def_readonly("schema", &formalism::ActionImpl::schema)
-        .def_readonly("cost", &formalism::ActionImpl::cost)
-        .def("get_arguments", &formalism::ActionImpl::get_arguments)
-        .def("get_precondition", &formalism::ActionImpl::get_precondition)
-        .def("get_effect", &formalism::ActionImpl::get_effect)
-        .def("is_applicable", &formalism::is_applicable)
-        .def("apply", &formalism::apply)
-        .def("__repr__", [](const formalism::ActionImpl& action) { return "<Action '" + to_string(action) + "'>"; });
-
-    py::class_<formalism::ProblemImpl, formalism::ProblemDescription>(m, "Problem")
-        .def_readonly("name", &formalism::ProblemImpl::name)
-        .def_readonly("domain", &formalism::ProblemImpl::domain)
-        .def_readonly("objects", &formalism::ProblemImpl::objects)
-        .def_readonly("initial", &formalism::ProblemImpl::initial)
-        .def_readonly("goal", &formalism::ProblemImpl::goal)
-        .def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
-
-    py::class_<parsers::DomainParser, std::shared_ptr<parsers::DomainParser>>(m, "DomainParser")
-        .def(py::init(&create_domain_parser))
-        .def("parse", &parsers::DomainParser::parse);
-
-    py::class_<parsers::ProblemParser, std::shared_ptr<parsers::ProblemParser>>(m, "ProblemParser")
-        .def(py::init(&create_problem_parser))
-        .def("parse", &parsers::ProblemParser::parse);
-
+    py::class_<formalism::TypeImpl, formalism::Type> type(m, "Type");
+    py::class_<formalism::ObjectImpl, formalism::Object> object(m, "Object");
+    py::class_<formalism::PredicateImpl, formalism::Predicate> predicate(m, "Predicate");
+    py::class_<formalism::AtomImpl, formalism::Atom> atom(m, "Atom");
+    py::class_<formalism::LiteralImpl, formalism::Literal> literal(m, "Literal");
+    py::class_<formalism::ActionSchemaImpl, formalism::ActionSchema> action_schema(m, "ActionSchema");
+    py::class_<formalism::DomainImpl, formalism::DomainDescription> domain(m, "Domain");
+    py::class_<formalism::StateImpl, formalism::State> state(m, "State");
+    py::class_<formalism::ActionImpl, formalism::Action> action(m, "Action");
+    py::class_<formalism::ProblemImpl, formalism::ProblemDescription> problem(m, "Problem");
+    py::class_<parsers::DomainParser, std::shared_ptr<parsers::DomainParser>> domain_parser(m, "DomainParser");
+    py::class_<parsers::ProblemParser, std::shared_ptr<parsers::ProblemParser>> problem_parser(m, "ProblemParser");
     py::class_<planners::SuccessorGeneratorBase, planners::SuccessorGenerator> successor_generator_base(m, "SuccessorGenerator");
-    successor_generator_base.def("get_applicable_actions", &planners::SuccessorGeneratorBase::get_applicable_actions);
-    successor_generator_base.def("__repr__",
-                                 [](const planners::SuccessorGeneratorBase& generator)
-                                 { return "<SuccessorGenerator '" + generator.get_problem()->name + "'>"; });
+    py::class_<planners::LiftedSuccessorGenerator, std::shared_ptr<planners::LiftedSuccessorGenerator>> lifted_successor_generator(m, "LiftedSuccessorGenerator", successor_generator_base);
+    py::class_<planners::GroundedSuccessorGenerator, std::shared_ptr<planners::GroundedSuccessorGenerator>> grounded_successor_generator(m, "GroundedSuccessorGenerator", successor_generator_base);
+    py::class_<formalism::TransitionImpl, formalism::Transition> transition(m, "Transition");
+    py::class_<planners::StateSpaceImpl, planners::StateSpace> state_space(m, "StateSpace");
 
-    py::class_<planners::LiftedSuccessorGenerator, std::shared_ptr<planners::LiftedSuccessorGenerator>>(m, "LiftedSuccessorGenerator", successor_generator_base)
-        .def(py::init(&create_lifted_successor_generator));
+    // Definitions
 
-    py::class_<planners::GroundedSuccessorGenerator, std::shared_ptr<planners::GroundedSuccessorGenerator>>(m,
-                                                                                                            "GroundedSuccessorGenerator",
-                                                                                                            successor_generator_base)
-        .def(py::init(&create_grounded_successor_generator));
+    type.def_readonly("name", &formalism::TypeImpl::name, "Gets the name of the type.");
+    type.def_readonly("base", &formalism::TypeImpl::base, "Gets the base type of the type.");
+    type.def("__repr__", [](const formalism::TypeImpl& type) { return type.base ? ("<Type '" + type.name + " : " + type.base->name + "'>") : ("<Type '" + type.name + "'>"); });
 
-    py::class_<formalism::TransitionImpl, formalism::Transition>(m, "Transition")
-        .def_readonly("source", &formalism::TransitionImpl::source_state)
-        .def_readonly("target", &formalism::TransitionImpl::target_state)
-        .def_readonly("action", &formalism::TransitionImpl::action)
-        .def("__repr__", [](const formalism::TransitionImpl& transition) { return "<Transition '" + to_string(*transition.action) + "'>"; });
+    object.def_readonly("id", &formalism::ObjectImpl::id, "Gets the identifier of the object.");
+    object.def_readonly("name", &formalism::ObjectImpl::name, "Gets the name of the object.");
+    object.def_readonly("type", &formalism::ObjectImpl::type, "Gets the type of the object.");
+    object.def("is_variable", &formalism::ObjectImpl::is_free_variable, "Returns whether the term is a variable.");
+    object.def("is_constant", &formalism::ObjectImpl::is_constant, "Returns whether the term is a constant.");
+    object.def("__repr__", [](const formalism::ObjectImpl& object) { return "<Object '" + object.name + "'>"; });
 
-    py::class_<planners::StateSpaceImpl, planners::StateSpace>(m, "StateSpace")
-        .def(py::init(&planners::create_state_space), "problem"_a, "successor_generator"_a, "max_expanded"_a = 10'000'000)
-        .def_readonly("domain", &planners::StateSpaceImpl::domain)
-        .def_readonly("problem", &planners::StateSpaceImpl::problem)
-        .def("get_states", &planners::StateSpaceImpl::get_states)
-        .def("get_initial_state", &planners::StateSpaceImpl::get_initial_state)
-        .def("get_goal_states", &planners::StateSpaceImpl::get_goal_states)
-        .def("get_distance_from_initial_state", &planners::StateSpaceImpl::get_distance_from_initial_state, "state"_a)
-        .def("get_distance_to_goal_state", &planners::StateSpaceImpl::get_distance_to_goal_state, "state"_a)
-        .def("get_longest_distance_to_goal_state", &planners::StateSpaceImpl::get_longest_distance_to_goal_state)
-        .def("get_forward_transitions", &planners::StateSpaceImpl::get_forward_transitions, "state"_a)
-        .def("get_backward_transitions", &planners::StateSpaceImpl::get_backward_transitions, "state"_a)
-        .def("get_unique_id", &planners::StateSpaceImpl::get_unique_index_of_state, "state"_a)
-        .def("is_dead_end_state", &planners::StateSpaceImpl::is_dead_end_state, "state"_a)
-        .def("is_goal_state", &planners::StateSpaceImpl::is_goal_state, "state"_a)
-        .def("sample_state", &planners::StateSpaceImpl::sample_state)
-        .def("sample_state_with_distance_to_goal", &planners::StateSpaceImpl::sample_state_with_distance_to_goal, "distance"_a)
-        .def("num_states", &planners::StateSpaceImpl::num_states)
-        .def("num_dead_end_states", &planners::StateSpaceImpl::num_dead_end_states)
-        .def("num_goal_states", &planners::StateSpaceImpl::num_goal_states)
-        .def("num_transitions", &planners::StateSpaceImpl::num_transitions)
-        .def("__repr__",
-             [](const planners::StateSpaceImpl& state_space)
-             { return "<StateSpace '" + state_space.problem->name + ": " + std::to_string(state_space.num_states()) + " states'>"; });
+    predicate.def_readonly("id", &formalism::PredicateImpl::id, "Gets the identifier of the predicate.");
+    predicate.def_readonly("name", &formalism::PredicateImpl::name, "Gets the name of the predicate.");
+    predicate.def_readonly("arity", &formalism::PredicateImpl::arity, "Gets the arity of the predicate.");
+    predicate.def_readonly("parameters", &formalism::PredicateImpl::parameters, "Gets the parameters of the predicate.");
+    predicate.def("as_atom", [](const formalism::Predicate& predicate) { return formalism::create_atom(predicate, predicate->parameters); }, "Creates a new atom where all terms are variables.");
+    predicate.def("__repr__", [](const formalism::PredicateImpl& predicate) { return "<Predicate '" + predicate.name + "/" + std::to_string(predicate.arity) + "'>"; });
+
+    atom.def_readonly("predicate", &formalism::AtomImpl::predicate, "Gets the predicate of the atom");
+    atom.def_readonly("terms", &formalism::AtomImpl::arguments, "Gets the terms of the atom");
+    atom.def("replace_term", &formalism::replace_term, "index"_a, "object"_a, "Replaces a term in the atom");
+    atom.def("matches_state", &formalism::matches_any_in_state, "state"_a, "Tests if any atom matches an atom in the state");
+    atom.def("__repr__", [](const formalism::AtomImpl& atom) { return "<Atom '" + to_string(atom) + "'>"; });
+
+    literal.def_readonly("atom", &formalism::LiteralImpl::atom, "Gets the atom of the literal.");
+    literal.def_readonly("negated", &formalism::LiteralImpl::negated, "Returns whether the literal is negated.");
+    literal.def("__repr__",
+                [](const formalism::LiteralImpl& literal)
+                {
+                    const auto prefix = (literal.negated ? std::string("not ") : std::string(""));
+                    const auto name = to_string(*literal.atom);
+                    return "<Literal '" + prefix + name + "'>";
+                });
+
+    action_schema.def_readonly("name", &formalism::ActionSchemaImpl::name, "Gets the name of the action schema.");
+    action_schema.def_readonly("arity", &formalism::ActionSchemaImpl::arity, "Gets the arity of the action schema.");
+    action_schema.def_readonly("parameters", &formalism::ActionSchemaImpl::parameters, "Gets the parameters of the action schema.");
+    action_schema.def_readonly("precondition", &formalism::ActionSchemaImpl::precondition, "Gets the precondition of the action schema.");
+    action_schema.def_readonly("effect", &formalism::ActionSchemaImpl::effect, "Gets the effect of the action schema.");
+    action_schema.def("__repr__", [](const formalism::ActionSchemaImpl& action_schema) { return "<ActionSchema '" + action_schema.name + "/" + std::to_string(action_schema.arity) + "'>"; });
+
+    domain.def_readonly("name", &formalism::DomainImpl::name, "Gets the name of the domain.");
+    domain.def_readonly("requirements", &formalism::DomainImpl::requirements, "Gets the requirements of the domain.");
+    domain.def_readonly("types", &formalism::DomainImpl::types, "Gets the types of the domain.");
+    domain.def_readonly("constants", &formalism::DomainImpl::constants, "Gets the constants of the domain.");
+    domain.def_readonly("predicates", &formalism::DomainImpl::predicates, "Gets the predicates of the domain.");
+    domain.def_readonly("static_predicates", &formalism::DomainImpl::static_predicates, "Gets the static predicates of the domain.");
+    domain.def_readonly("action_schemas", &formalism::DomainImpl::action_schemas, "Gets the action schemas of the domain.");
+    domain.def("get_type_map", &formalism::DomainImpl::get_type_map, "Gets a dictionary mapping type name to type object.");
+    domain.def("get_predicate_name_map", &formalism::DomainImpl::get_predicate_name_map, "Gets a dictionary mapping predicate name to predicate object.");
+    domain.def("get_predicate_id_map", &formalism::DomainImpl::get_predicate_id_map, "Gets a dictionary mapping predicate identifier to predicate object.");
+    domain.def("get_constant_map", &formalism::DomainImpl::get_constant_map, "Gets a dictionary mapping constant name to constant object.");
+    domain.def("__repr__", [](const formalism::DomainImpl& domain) { return "<Domain '" + domain.name + "'>"; });
+
+    state.def("get_atoms", &formalism::StateImpl::get_atoms, "Gets the atoms of the state.");
+    state.def("get_static_atoms", &formalism::StateImpl::get_static_atoms, "Gets the static atoms of the state.");
+    state.def("get_fluent_atoms", &formalism::StateImpl::get_dynamic_atoms, "Gets the fluent atoms of the state.");
+    state.def("get_problem", &formalism::StateImpl::get_problem, "Gets the problem associated with the state.");
+    state.def("get_atoms_by_predicate", &formalism::StateImpl::get_atoms_grouped_by_predicate, "Gets a dictionary mapping predicates to ground atoms of the given predicate that are true in the state.");
+    state.def("pack_object_ids_by_predicate_id", &formalism::StateImpl::pack_object_ids_by_predicate_id, "include_types"_a, "include_goal"_a, "Gets a dictionary mapping predicate identifiers to a flattened list of object ids, implicitly denoting the atoms true in the state, and a dictionary mapping identifiers to names.");
+    state.def("literals_hold", &state_matches_literals, "literals"_a, "Tests whether all ground literals hold with respect to their polarity in the state.");
+    state.def("__repr__", [](const formalism::StateImpl& state) { return "<State '" + std::to_string(state.hash()) + "'>"; });
+
+    state.def("matches_all",
+        [](const formalism::State& state, const formalism::AtomList& atom_list)
+        {
+            for (const auto& atom : atom_list)
+            {
+                if (!formalism::matches_any_in_state(atom, state))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        },
+        "atom_list"_a, "Tests whether all atoms matches an atom in the state.");
+
+    state.def("matching_bindings",
+        [](const formalism::State& state, const formalism::AtomList& atom_list)
+        {
+            formalism::ParameterList parameters;
+            formalism::LiteralList precondition;
+            formalism::LiteralList effect;
+
+            for (const auto& atom : atom_list)
+            {
+                for (const auto& term : atom->arguments)
+                {
+                    if (term->is_free_variable())
+                    {
+                        if (!std::count(parameters.cbegin(), parameters.cend(), term))
+                        {
+                            parameters.emplace_back(term);
+                        }
+                    }
+                }
+
+                precondition.emplace_back(formalism::create_literal(atom, false));
+            }
+
+            const auto action_schema = formalism::create_action_schema("dummy", parameters, precondition, effect);
+            const planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state->get_problem());
+            const auto matches = successor_generator.get_applicable_actions(state);
+
+            std::vector<std::pair<formalism::AtomList, std::vector<std::pair<formalism::Parameter, formalism::Object>>>> instantiations_and_bindings;
+
+            for (const auto& match : matches)
+            {
+                const auto& arguments = match->get_arguments();
+
+                formalism::AtomList instantiation;
+                std::vector<std::pair<formalism::Parameter, formalism::Object>> binding;
+
+                for (const auto& literal : match->get_precondition())
+                {
+                    instantiation.emplace_back(literal->atom);
+                }
+
+                for (std::size_t index = 0; index < parameters.size(); ++index)
+                {
+                    const auto& parameter = parameters.at(index);
+                    const auto& object = arguments.at(index);
+                    binding.emplace_back(parameter, object);
+                }
+
+                instantiations_and_bindings.emplace_back(std::make_pair(std::move(instantiation), std::move(binding)));
+            }
+
+            return instantiations_and_bindings;
+        },
+        "atom_list"_a, "Gets all instantiations (and bindings) of the atom list that matches the state.");
+
+    action.def_readonly("problem", &formalism::ActionImpl::problem, "Gets the problem associated with the action.");
+    action.def_readonly("schema", &formalism::ActionImpl::schema, "Gets the action schema associated with the action.");
+    action.def_readonly("cost", &formalism::ActionImpl::cost, "Gets the cost of the action.");
+    action.def("get_arguments", &formalism::ActionImpl::get_arguments, "Gets the arguments of the action.");
+    action.def("get_precondition", &formalism::ActionImpl::get_precondition, "Gets the precondition of the action.");
+    action.def("get_effect", &formalism::ActionImpl::get_effect, "Gets the effect of the action.");
+    action.def("is_applicable", &formalism::is_applicable, "state"_a, "Tests whether the action is applicable in the state.");
+    action.def("apply", &formalism::apply, "state"_a, "Creates a new state state based on the given state and the effect of the action.");
+    action.def("__repr__", [](const formalism::ActionImpl& action) { return "<Action '" + to_string(action) + "'>"; });
+
+    problem.def_readonly("name", &formalism::ProblemImpl::name, "Gets the name of the problem.");
+    problem.def_readonly("domain", &formalism::ProblemImpl::domain, "Gets the domain associated with the problem.");
+    problem.def_readonly("objects", &formalism::ProblemImpl::objects, "Gets the objects of the problem.");
+    problem.def_readonly("initial", &formalism::ProblemImpl::initial, "Gets the initial atoms of the problem.");
+    problem.def_readonly("goal", &formalism::ProblemImpl::goal, "Gets the goal of the problem.");
+    problem.def("create_state", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return formalism::create_state(atom_list, problem); }, "Creates a new state given a list of atoms.");
+    problem.def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
+
+    domain_parser.def(py::init(&create_domain_parser));
+    domain_parser.def("parse", &parsers::DomainParser::parse, "Parses the associated file and creates a new domain.");
+
+    problem_parser.def(py::init(&create_problem_parser));
+    problem_parser.def("parse", &parsers::ProblemParser::parse, "Parses the associated file and creates a new problem.");
+
+    successor_generator_base.def("get_applicable_actions", &planners::SuccessorGeneratorBase::get_applicable_actions, "state"_a, "Gets all ground actions applicable in the given state.");
+    successor_generator_base.def("__repr__", [](const planners::SuccessorGeneratorBase& generator) { return "<SuccessorGenerator '" + generator.get_problem()->name + "'>"; });
+
+    lifted_successor_generator.def(py::init(&create_lifted_successor_generator));
+    grounded_successor_generator.def(py::init(&create_grounded_successor_generator));
+
+    transition.def_readonly("source", &formalism::TransitionImpl::source_state, "Gets the source of the transition.");
+    transition.def_readonly("target", &formalism::TransitionImpl::target_state, "Gets the target of the transition.");
+    transition.def_readonly("action", &formalism::TransitionImpl::action, "Gets the action associated with the transition.");
+    transition.def("__repr__", [](const formalism::TransitionImpl& transition) { return "<Transition '" + to_string(*transition.action) + "'>"; });
+
+    state_space.def(py::init(&planners::create_state_space), "problem"_a, "successor_generator"_a, "max_expanded"_a = 10'000'000);
+    state_space.def_readonly("domain", &planners::StateSpaceImpl::domain, "Gets the domain associated with the state space.");
+    state_space.def_readonly("problem", &planners::StateSpaceImpl::problem, "Gets the problem associated with the state space.");
+    state_space.def("get_states", &planners::StateSpaceImpl::get_states, "Gets all states in the state space.");
+    state_space.def("get_initial_state", &planners::StateSpaceImpl::get_initial_state, "Gets the initial state of the state space.");
+    state_space.def("get_goal_states", &planners::StateSpaceImpl::get_goal_states, "Gets all goal states of the state space.");
+    state_space.def("get_distance_from_initial_state", &planners::StateSpaceImpl::get_distance_from_initial_state, "state"_a, "Gets the distance from the initial state to the given state.");
+    state_space.def("get_distance_to_goal_state", &planners::StateSpaceImpl::get_distance_to_goal_state, "state"_a, "Gets the distance from the given state to the closest goal state.");
+    state_space.def("get_longest_distance_to_goal_state", &planners::StateSpaceImpl::get_longest_distance_to_goal_state, "Gets the longest distance from a state to its closest goal state.");
+    state_space.def("get_forward_transitions", &planners::StateSpaceImpl::get_forward_transitions, "state"_a, "Gets the possible forward transitions of the given state.");
+    state_space.def("get_backward_transitions", &planners::StateSpaceImpl::get_backward_transitions, "state"_a, "Gets the possible backward transitions of the given state.");
+    state_space.def("get_unique_id", &planners::StateSpaceImpl::get_unique_index_of_state, "state"_a, "Gets an unique identifier of the given from 0 to N - 1, where N is the number of states in the state space.");
+    state_space.def("is_dead_end_state", &planners::StateSpaceImpl::is_dead_end_state, "state"_a, "Tests whether the given state is a dead end state.");
+    state_space.def("is_goal_state", &planners::StateSpaceImpl::is_goal_state, "state"_a, "Tests whether the given state is a goal state.");
+    state_space.def("sample_state", &planners::StateSpaceImpl::sample_state, "Gets a uniformly random state from the state space.");
+    state_space.def("sample_state_with_distance_to_goal", &planners::StateSpaceImpl::sample_state_with_distance_to_goal, "distance"_a, "Gets a uniformly random state from the state space with the given distance to its closest goal state.");
+    state_space.def("num_states", &planners::StateSpaceImpl::num_states, "Gets the number of states in the state space.");
+    state_space.def("num_dead_end_states", &planners::StateSpaceImpl::num_dead_end_states, "Gets the number of dead end states in the state space.");
+    state_space.def("num_goal_states", &planners::StateSpaceImpl::num_goal_states, "Gets the number of goal states in the state space.");
+    state_space.def("num_transitions", &planners::StateSpaceImpl::num_transitions, "Gets the number of transitions in the state space.");
+    state_space.def("__repr__", [](const planners::StateSpaceImpl& state_space) { return "<StateSpace '" + state_space.problem->name + ": " + std::to_string(state_space.num_states()) + " states'>"; });
+
+    // clang-format on
 }
