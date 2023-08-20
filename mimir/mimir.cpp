@@ -234,9 +234,9 @@ PYBIND11_MODULE(mimir, m)
     action.def("get_arguments", &formalism::ActionImpl::get_arguments, "Gets the arguments of the action.");
     action.def("get_precondition", &formalism::ActionImpl::get_precondition, "Gets the precondition of the action.");
     action.def("get_effect", &formalism::ActionImpl::get_effect, "Gets the effect of the action.");
+    action.def("get_name", [](const formalism::ActionImpl& action) { return to_string(action); }, "Gets the name of the action.");
     action.def("is_applicable", &formalism::is_applicable, "state"_a, "Tests whether the action is applicable in the state.");
     action.def("apply", &formalism::apply, "state"_a, "Creates a new state state based on the given state and the effect of the action.");
-    action.def("name", [](const formalism::ActionImpl& action) { return to_string(action); }, "Gets the name of the action.");
     action.def("__repr__", [](const formalism::ActionImpl& action) { return "<Action '" + to_string(action) + "'>"; });
 
     problem.def_readonly("name", &formalism::ProblemImpl::name, "Gets the name of the problem.");
