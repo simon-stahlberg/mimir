@@ -117,6 +117,7 @@ PYBIND11_MODULE(mimir, m)
     atom.def_readonly("terms", &formalism::AtomImpl::arguments, "Gets the terms of the atom");
     atom.def("replace_term", &formalism::replace_term, "index"_a, "object"_a, "Replaces a term in the atom");
     atom.def("matches_state", &formalism::matches_any_in_state, "state"_a, "Tests if any atom matches an atom in the state");
+    atom.def("get_name", [](const formalism::AtomImpl& atom) { return to_string(atom); }, "Gets the name of the atom.");
     atom.def("__repr__", [](const formalism::AtomImpl& atom) { return "<Atom '" + to_string(atom) + "'>"; });
 
     literal.def_readonly("atom", &formalism::LiteralImpl::atom, "Gets the atom of the literal.");
