@@ -245,6 +245,7 @@ PYBIND11_MODULE(mimir, m)
     problem.def_readonly("initial", &formalism::ProblemImpl::initial, "Gets the initial atoms of the problem.");
     problem.def_readonly("goal", &formalism::ProblemImpl::goal, "Gets the goal of the problem.");
     problem.def("create_state", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return formalism::create_state(atom_list, problem); }, "Creates a new state given a list of atoms.");
+    problem.def("get_encountered_atoms", &formalism::ProblemImpl::get_encountered_atoms, "Gets all atoms seen so far.");
     problem.def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
 
     domain_parser.def(py::init(&create_domain_parser));

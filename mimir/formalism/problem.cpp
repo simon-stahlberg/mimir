@@ -127,6 +127,18 @@ namespace formalism
         return rank_to_atom_.at(rank);
     }
 
+    formalism::AtomList ProblemImpl::get_encountered_atoms() const
+    {
+        formalism::AtomList atoms;
+
+        for (const auto& [key, value] : atom_ranks_)
+        {
+            atoms.emplace_back(key);
+        }
+
+        return atoms;
+    }
+
     formalism::Object ProblemImpl::get_object(uint32_t object_id) const
     {
         assert(object_id < objects.size());
