@@ -12,6 +12,14 @@ Mimir can handle STRIPS planning problems with negative preconditions and typing
     - `git submodule init`
     - `git submodule update --recursive`
 
+### Conan
+
+To simply compile Mimir, you can use Conan to take care of the dependencies automatically:
+
+1. `pip install conan pybind11_stubgen`
+2. `conan install . --output-folder=build --build=missing`
+3. `cd build && cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release && cmake --build .`
+
 ### Debian
 
 To begin using Mimir, follow the instructions below (Debian):
