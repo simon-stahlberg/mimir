@@ -14,6 +14,72 @@
 namespace py = pybind11;
 using namespace py::literals;
 
+/// @brief A class that enables enumerating all ground atoms (and bindings) of a conjunction of literals that are true in the given state.
+class LiteralGrounder
+{
+  private:
+    formalism::ActionSchema action_schema_;
+    std::unique_ptr<planners::LiftedSchemaSuccessorGenerator> generator_;
+
+  public:
+    LiteralGrounder(const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) : action_schema_(nullptr), generator_(nullptr)
+    {
+        formalism::ParameterList parameters;
+        formalism::LiteralList precondition;
+        formalism::LiteralList effect;
+
+        for (const auto& atom : atom_list)
+        {
+            for (const auto& term : atom->arguments)
+            {
+                if (term->is_free_variable())
+                {
+                    if (!std::count(parameters.cbegin(), parameters.cend(), term))
+                    {
+                        parameters.emplace_back(term);
+                    }
+                }
+            }
+
+            precondition.emplace_back(formalism::create_literal(atom, false));
+        }
+
+        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect);
+        generator_ = std::make_unique<planners::LiftedSchemaSuccessorGenerator>(action_schema_, problem);
+    }
+
+    std::vector<std::pair<formalism::AtomList, std::vector<std::pair<formalism::Parameter, formalism::Object>>>> ground(const formalism::State& state)
+    {
+        const auto matches = generator_->get_applicable_actions(state);
+
+        std::vector<std::pair<formalism::AtomList, std::vector<std::pair<formalism::Parameter, formalism::Object>>>> instantiations_and_bindings;
+
+        for (const auto& match : matches)
+        {
+            const auto& arguments = match->get_arguments();
+
+            formalism::AtomList instantiation;
+            std::vector<std::pair<formalism::Parameter, formalism::Object>> binding;
+
+            for (const auto& literal : match->get_precondition())
+            {
+                instantiation.emplace_back(literal->atom);
+            }
+
+            for (std::size_t index = 0; index < action_schema_->parameters.size(); ++index)
+            {
+                const auto& parameter = action_schema_->parameters.at(index);
+                const auto& object = arguments.at(index);
+                binding.emplace_back(parameter, object);
+            }
+
+            instantiations_and_bindings.emplace_back(std::make_pair(std::move(instantiation), std::move(binding)));
+        }
+
+        return instantiations_and_bindings;
+    }
+};
+
 std::string to_string(const formalism::ActionImpl& action)
 {
     std::string repr = action.schema->name + "(";
@@ -92,6 +158,7 @@ PYBIND11_MODULE(mimir, m)
     py::class_<planners::GroundedSuccessorGenerator, std::shared_ptr<planners::GroundedSuccessorGenerator>> grounded_successor_generator(m, "GroundedSuccessorGenerator", successor_generator_base);
     py::class_<formalism::TransitionImpl, formalism::Transition> transition(m, "Transition");
     py::class_<planners::StateSpaceImpl, planners::StateSpace> state_space(m, "StateSpace");
+    py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>> literal_grounder(m, "LiteralGrounder");
 
     // Definitions
 
@@ -177,55 +244,8 @@ PYBIND11_MODULE(mimir, m)
     state.def("matching_bindings",
         [](const formalism::State& state, const formalism::AtomList& atom_list)
         {
-            formalism::ParameterList parameters;
-            formalism::LiteralList precondition;
-            formalism::LiteralList effect;
-
-            for (const auto& atom : atom_list)
-            {
-                for (const auto& term : atom->arguments)
-                {
-                    if (term->is_free_variable())
-                    {
-                        if (!std::count(parameters.cbegin(), parameters.cend(), term))
-                        {
-                            parameters.emplace_back(term);
-                        }
-                    }
-                }
-
-                precondition.emplace_back(formalism::create_literal(atom, false));
-            }
-
-            const auto action_schema = formalism::create_action_schema("dummy", parameters, precondition, effect);
-            const planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state->get_problem());
-            const auto matches = successor_generator.get_applicable_actions(state);
-
-            std::vector<std::pair<formalism::AtomList, std::vector<std::pair<formalism::Parameter, formalism::Object>>>> instantiations_and_bindings;
-
-            for (const auto& match : matches)
-            {
-                const auto& arguments = match->get_arguments();
-
-                formalism::AtomList instantiation;
-                std::vector<std::pair<formalism::Parameter, formalism::Object>> binding;
-
-                for (const auto& literal : match->get_precondition())
-                {
-                    instantiation.emplace_back(literal->atom);
-                }
-
-                for (std::size_t index = 0; index < parameters.size(); ++index)
-                {
-                    const auto& parameter = parameters.at(index);
-                    const auto& object = arguments.at(index);
-                    binding.emplace_back(parameter, object);
-                }
-
-                instantiations_and_bindings.emplace_back(std::make_pair(std::move(instantiation), std::move(binding)));
-            }
-
-            return instantiations_and_bindings;
+            LiteralGrounder grounder(state->get_problem(), atom_list);
+            return grounder.ground(state);
         },
         "atom_list"_a, "Gets all instantiations (and bindings) of the atom list that matches the state.");
 
@@ -246,6 +266,7 @@ PYBIND11_MODULE(mimir, m)
     problem.def_readonly("initial", &formalism::ProblemImpl::initial, "Gets the initial atoms of the problem.");
     problem.def_readonly("goal", &formalism::ProblemImpl::goal, "Gets the goal of the problem.");
     problem.def("create_state", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return formalism::create_state(atom_list, problem); }, "Creates a new state given a list of atoms.");
+    problem.def("create_grounder", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return std::make_shared<LiteralGrounder>(problem, atom_list); });
     problem.def("get_encountered_atoms", &formalism::ProblemImpl::get_encountered_atoms, "Gets all atoms seen so far.");
     problem.def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
 
@@ -287,6 +308,9 @@ PYBIND11_MODULE(mimir, m)
     state_space.def("num_goal_states", &planners::StateSpaceImpl::num_goal_states, "Gets the number of goal states in the state space.");
     state_space.def("num_transitions", &planners::StateSpaceImpl::num_transitions, "Gets the number of transitions in the state space.");
     state_space.def("__repr__", [](const planners::StateSpaceImpl& state_space) { return "<StateSpace '" + state_space.problem->name + ": " + std::to_string(state_space.num_states()) + " states'>"; });
+
+    literal_grounder.def("ground", &LiteralGrounder::ground, "state"_a, "Gets a list of instantiations of the associated atom list that are true in the given state.");
+    literal_grounder.def("__repr__", [](const LiteralGrounder& grounder){ return "<LiteralGrounder>"; });
 
     // clang-format on
 }
