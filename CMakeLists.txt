@@ -54,7 +54,7 @@ target_include_directories(mimir PRIVATE ${PYBIND11_INCLUDE_DIR})
 # Generate pyi files, add generate_pyi_files dependent on mimir
 add_custom_target(generate_pyi_files ALL
     COMMENT "Generating .pyi files"
-    COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --no-setup-py --output-dir ${CMAKE_CURRENT_BINARY_DIR} mimir
+    COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --output-dir ${CMAKE_CURRENT_BINARY_DIR} mimir
 )
 
 add_dependencies(generate_pyi_files mimir)

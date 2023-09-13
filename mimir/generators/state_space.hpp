@@ -32,6 +32,7 @@ namespace planners
         std::vector<std::vector<formalism::Transition>> forward_transitions_;
         std::vector<std::vector<formalism::Transition>> backward_transitions_;
         std::unordered_map<formalism::State, uint64_t> state_indices_;
+        mutable std::vector<std::vector<int32_t>> state_distances_;
 
         // Since we return references of internal vectors, ensure that only create_statespaces can create this object.
         StateSpaceImpl(const formalism::ProblemDescription& problem);
@@ -87,6 +88,8 @@ namespace planners
         bool is_goal_state(const formalism::State& state) const;
 
         int32_t get_distance_to_goal_state(const formalism::State& state) const;
+
+        int32_t get_distance_between_states(const formalism::State& from_state, const formalism::State& to_state) const;
 
         int32_t get_longest_distance_to_goal_state() const;
 

@@ -295,6 +295,7 @@ PYBIND11_MODULE(mimir, m)
     state_space.def("get_goal_states", &planners::StateSpaceImpl::get_goal_states, "Gets all goal states of the state space.");
     state_space.def("get_distance_from_initial_state", &planners::StateSpaceImpl::get_distance_from_initial_state, "state"_a, "Gets the distance from the initial state to the given state.");
     state_space.def("get_distance_to_goal_state", &planners::StateSpaceImpl::get_distance_to_goal_state, "state"_a, "Gets the distance from the given state to the closest goal state.");
+    state_space.def("get_distance_between_states", &planners::StateSpaceImpl::get_distance_between_states, "from_state"_a, "to_state"_a, "Gets the distance between the \"from state\" to the \"to state\".");
     state_space.def("get_longest_distance_to_goal_state", &planners::StateSpaceImpl::get_longest_distance_to_goal_state, "Gets the longest distance from a state to its closest goal state.");
     state_space.def("get_forward_transitions", &planners::StateSpaceImpl::get_forward_transitions, "state"_a, "Gets the possible forward transitions of the given state.");
     state_space.def("get_backward_transitions", &planners::StateSpaceImpl::get_backward_transitions, "state"_a, "Gets the possible backward transitions of the given state.");

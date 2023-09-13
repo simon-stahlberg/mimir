@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "state_space.hpp"
-
 #include "../formalism/help_functions.hpp"
+#include "state_space.hpp"
 #include "successor_generator_factory.hpp"
 
 #include <algorithm>
 #include <chrono>
 #include <deque>
+#include <limits>
 
 namespace std
 {
@@ -55,6 +55,7 @@ namespace planners
         forward_transitions_(),
         backward_transitions_(),
         state_indices_(),
+        state_distances_(),
         domain(problem->domain),
         problem(problem)
     {
@@ -68,6 +69,7 @@ namespace planners
         forward_transitions_.clear();
         backward_transitions_.clear();
         state_indices_.clear();
+        state_distances_.clear();
     }
 
     bool StateSpaceImpl::add_or_get_state(const formalism::State& state, uint64_t& out_index)
@@ -238,6 +240,64 @@ namespace planners
     {
         const auto index = get_state_index(state);
         return get_distance_to_goal(index);
+    }
+
+    int32_t StateSpaceImpl::get_distance_between_states(const formalism::State& from_state, const formalism::State& to_state) const
+    {
+        // Check if the Floyd-Warshall distance matrix has been cached, if not, compute it.
+
+        if (state_distances_.size() == 0)
+        {
+            const auto size = num_states();
+            const auto inf = std::numeric_limits<int32_t>::max();
+
+            state_distances_ = std::vector(size, std::vector<int32_t>(size, inf));
+
+            for (const auto& transitions : forward_transitions_)
+            {
+                for (const auto& transition : transitions)
+                {
+                    const auto source_index = get_state_index(transition->source_state);
+                    const auto target_index = get_state_index(transition->target_state);
+                    state_distances_[source_index][target_index] = 1;
+                }
+            }
+
+            for (const auto& state : states_)
+            {
+                const auto state_index = get_state_index(state);
+                state_distances_[state_index][state_index] = 0;
+            }
+
+            for (uint64_t k = 0; k < size; ++k)
+            {
+                for (uint64_t i = 0; i < size; ++i)
+                {
+                    for (uint64_t j = 0; j < size; ++j)
+                    {
+                        const auto ik = state_distances_[i][k];
+                        const auto kj = state_distances_[k][j];
+
+                        if ((ik < inf) && (kj < inf))
+                        {
+                            auto& ij = state_distances_[i][j];
+                            auto ikj = ik + kj;
+
+                            if (ikj < ij)
+                            {
+                                ij = ikj;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return the distance between the given states.
+
+        const auto from_index = get_state_index(from_state);
+        const auto to_index = get_state_index(to_state);
+        return state_distances_[from_index][to_index];
     }
 
     int32_t StateSpaceImpl::get_distance_from_initial_state(const formalism::State& state) const
