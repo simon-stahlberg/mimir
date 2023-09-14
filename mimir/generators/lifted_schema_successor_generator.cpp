@@ -197,11 +197,12 @@ namespace planners
         return true;
     }
 
-    formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const
+    formalism::ObjectList LiftedSchemaSuccessorGenerator::ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
+                                                                            const formalism::ObjectList& terms) const
     {
         formalism::ObjectList atom_terms;
 
-        for (const auto& term : literal.arguments)
+        for (const auto& term : parameters)
         {
             if (term.is_constant())
             {
@@ -213,13 +214,20 @@ namespace planners
             }
         }
 
+        return atom_terms;
+    }
+
+    formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const
+    {
         const auto& atom_predicate = literal.source->atom->predicate;
-        const auto ground_atom = formalism::create_atom(atom_predicate, std::move(atom_terms));
+        const auto ground_atom = formalism::create_atom(atom_predicate, ground_parameters(literal.arguments, terms));
         return formalism::create_literal(ground_atom, literal.negated);
     }
 
     formalism::Action LiftedSchemaSuccessorGenerator::create_action(formalism::ObjectList&& terms) const
     {
+        // Get the precondition of the ground action
+
         formalism::LiteralList precondition;
 
         for (const auto& literal : flat_action_schema_.static_precondition)
@@ -232,6 +240,8 @@ namespace planners
             precondition.emplace_back(ground_literal(literal, terms));
         }
 
+        // Get the effect of the ground action
+
         formalism::LiteralList effect;
 
         for (const auto& literal : flat_action_schema_.effect)
@@ -239,7 +249,30 @@ namespace planners
             effect.emplace_back(ground_literal(literal, terms));
         }
 
-        return formalism::create_action(problem_, flat_action_schema_.source, std::move(terms), std::move(precondition), std::move(effect));
+        // Get the cost of the ground action
+
+        double cost;
+        const auto cost_function = flat_action_schema_.source->cost;
+
+        if (cost_function->is_constant())
+        {
+            cost = cost_function->get_constant();
+        }
+        else
+        {
+            const auto cost_atom_schema = flat_action_schema_.source->cost->get_atom();
+            const auto cost_atom = formalism::create_atom(cost_atom_schema->predicate, ground_parameters(flat_action_schema_.cost_arguments, terms));
+            cost = problem_->atom_costs.at(cost_atom);
+        }
+
+        if (cost_function->get_operation() == formalism::FunctionOperation::DECREASE)
+        {
+            cost = -cost;
+        }
+
+        // Finally, create the ground action
+
+        return formalism::create_action(problem_, flat_action_schema_.source, std::move(terms), std::move(precondition), std::move(effect), cost);
     }
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :

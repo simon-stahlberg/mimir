@@ -46,6 +46,7 @@ namespace planners
         std::vector<FlatLiteral> static_precondition;
         std::vector<FlatLiteral> fluent_precondition;
         std::vector<FlatLiteral> effect;
+        std::vector<ParameterIndexOrConstantId> cost_arguments;
         uint32_t arity;
 
         FlatActionSchema(const formalism::DomainDescription& domain, const formalism::ActionSchema& action_schema);

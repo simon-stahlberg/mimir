@@ -31,14 +31,14 @@ namespace formalism
       public:
         formalism::ProblemDescription problem;
         formalism::ActionSchema schema;
-        int32_t cost;
+        double cost;
 
         ActionImpl(const formalism::ProblemDescription& problem,
                    const formalism::ActionSchema& schema,
                    formalism::ObjectList&& arguments,
                    formalism::LiteralList&& precondition,
                    formalism::LiteralList&& effect,
-                   int32_t cost = 1);
+                   double cost = 1);
 
         ActionImpl(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost = 1);
 
@@ -60,12 +60,14 @@ namespace formalism
                          formalism::ObjectList&& arguments,
                          formalism::LiteralList&& precondition,
                          formalism::LiteralList&& effect,
-                         int32_t cost = 1);
+                         double cost);
 
-    Action
-    create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost = 1);
+    Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, double cost);
 
-    Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, const formalism::ParameterAssignment& assignment);
+    Action create_action(const formalism::ProblemDescription& problem,
+                         const formalism::ActionSchema& schema,
+                         const formalism::ParameterAssignment& assignment,
+                         double cost);
 
     std::ostream& operator<<(std::ostream& os, const formalism::ActionImpl& action);
 

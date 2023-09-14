@@ -29,7 +29,8 @@ namespace formalism
                              const formalism::DomainDescription& domain,
                              const formalism::ObjectList& objects,
                              const formalism::AtomList& initial,
-                             const formalism::LiteralList& goal) :
+                             const formalism::LiteralList& goal,
+                             const std::unordered_map<formalism::Atom, double>& atom_costs) :
         static_atoms_(),
         predicate_id_to_static_(),
         atom_ranks_(),
@@ -41,7 +42,8 @@ namespace formalism
         domain(domain),
         objects(objects),
         initial(initial),
-        goal(goal)
+        goal(goal),
+        atom_costs(atom_costs)
     {
         const auto& static_predicates = domain->static_predicates;
         formalism::PredicateSet static_predicate_set(static_predicates.begin(), static_predicates.end());
@@ -152,9 +154,10 @@ namespace formalism
                                       const formalism::DomainDescription& domain,
                                       const formalism::ObjectList& objects,
                                       const formalism::AtomList& initial,
-                                      const formalism::LiteralList& goal)
+                                      const formalism::LiteralList& goal,
+                                      const std::unordered_map<formalism::Atom, double>& atom_costs)
     {
-        return std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal));
+        return std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal, atom_costs));
     }
 
     std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescription& problem)

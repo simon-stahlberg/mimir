@@ -30,7 +30,8 @@ namespace formalism
                     const formalism::DomainDescription& domain,
                     const formalism::ObjectList& objects,
                     const formalism::AtomList& initial,
-                    const formalism::LiteralList& goal);
+                    const formalism::LiteralList& goal,
+                    const std::unordered_map<formalism::Atom, double>& atom_costs);
 
       public:
         std::string name;
@@ -38,6 +39,7 @@ namespace formalism
         formalism::ObjectList objects;
         formalism::AtomList initial;
         formalism::LiteralList goal;
+        std::unordered_map<formalism::Atom, double> atom_costs;
 
         const formalism::AtomSet& get_static_atoms() const;
 
@@ -69,14 +71,16 @@ namespace formalism
                                                  const formalism::DomainDescription& domain,
                                                  const formalism::ObjectList& objects,
                                                  const formalism::AtomList& initial,
-                                                 const formalism::LiteralList& goal);
+                                                 const formalism::LiteralList& goal,
+                                                 const std::unordered_map<formalism::Atom, double>& atom_costs);
     };
 
     ProblemDescription create_problem(const std::string& name,
                                       const formalism::DomainDescription& domain,
                                       const formalism::ObjectList& objects,
                                       const formalism::AtomList& initial,
-                                      const formalism::LiteralList& goal);
+                                      const formalism::LiteralList& goal,
+                                      const std::unordered_map<formalism::Atom, double>& atom_costs);
 
     std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescription& problem);
 

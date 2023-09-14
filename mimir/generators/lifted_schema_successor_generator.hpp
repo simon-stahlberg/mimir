@@ -61,6 +61,8 @@ namespace planners
                                     const Assignment& first_assignment,
                                     const Assignment& second_assignment) const;
 
+        formalism::ObjectList ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters, const formalism::ObjectList& terms) const;
+
         formalism::Literal ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const;
 
         formalism::Action create_action(formalism::ObjectList&& terms) const;

@@ -36,6 +36,7 @@ namespace planners
         static_precondition(),
         fluent_precondition(),
         effect(),
+        cost_arguments(),
         arity(static_cast<uint32_t>(action_schema->arity))
     {
         for (const auto& parameter : action_schema->parameters)
@@ -61,6 +62,19 @@ namespace planners
         for (const auto& literal : action_schema->effect)
         {
             effect.emplace_back(literal, parameter_indices_);
+        }
+
+        if (action_schema->cost->has_atom())
+        {
+            const auto cost_atom = action_schema->cost->get_atom();
+            cost_arguments.reserve(cost_atom->arguments.size());
+
+            for (const auto& parameter : cost_atom->arguments)
+            {
+                const auto is_constant = parameter->is_constant();
+                const auto value = is_constant ? parameter->id : parameter_indices_.at(parameter);
+                cost_arguments.emplace_back(ParameterIndexOrConstantId(value, is_constant));
+            }
         }
     }
 

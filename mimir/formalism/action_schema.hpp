@@ -2,6 +2,7 @@
 #define FORMALISM_ACTION_SCHEMA_HPP_
 
 #include "declarations.hpp"
+#include "function.hpp"
 #include "literal.hpp"
 #include "object.hpp"
 
@@ -18,6 +19,7 @@ namespace formalism
         formalism::ParameterList parameters;
         formalism::LiteralList precondition;
         formalism::LiteralList effect;
+        formalism::Function cost;
 
         /**
          * @brief Construct a new action achema object.
@@ -30,13 +32,15 @@ namespace formalism
         ActionSchemaImpl(const std::string& name,
                          const formalism::ParameterList& parameters,
                          const formalism::LiteralList& precondition,
-                         const formalism::LiteralList& effect);
+                         const formalism::LiteralList& effect,
+                         const formalism::Function& cost);
     };
 
     ActionSchema create_action_schema(const std::string& name,
                                       const formalism::ParameterList& parameters,
                                       const formalism::LiteralList& precondition,
-                                      const formalism::LiteralList& effect);
+                                      const formalism::LiteralList& effect,
+                                      const formalism::Function& cost);
 
     ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list);
 

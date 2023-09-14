@@ -27,7 +27,8 @@ namespace planners
                                            formalism::ActionList& out_actions)
     {
         const auto relaxed_domain = relax(problem->domain, true, true);
-        const auto relaxed_problem = formalism::create_problem(problem->name, relaxed_domain, problem->objects, problem->initial, problem->goal);
+        const auto relaxed_problem =
+            formalism::create_problem(problem->name, relaxed_domain, problem->objects, problem->initial, problem->goal, problem->atom_costs);
         const planners::LiftedSuccessorGenerator successor_generator(relaxed_problem);
 
         std::equal_to<formalism::State> equals;

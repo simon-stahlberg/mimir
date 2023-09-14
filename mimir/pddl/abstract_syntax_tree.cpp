@@ -22,6 +22,15 @@
 
 namespace parsers
 {
+    /* Help functions */
+
+    std::string to_lowercase(const std::string& str)
+    {
+        std::string result = str;
+        std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c) { return std::tolower(c); });
+        return result;
+    }
+
     /* ASTNode */
 
     ASTNode::~ASTNode() {};
@@ -476,6 +485,16 @@ namespace parsers
         }
     }
 
+    formalism::Predicate FunctionDeclarationNode::get_function(const uint32_t id, const std::map<std::string, formalism::Type>& types) const
+    {
+        if (to_lowercase(type->get_name()) != "number")
+        {
+            throw std::invalid_argument("unsupported function output type");
+        }
+
+        return predicate->get_predicate(id, types);
+    }
+
     /* FunctionDeclarationListNode */
 
     FunctionDeclarationListNode::FunctionDeclarationListNode(std::vector<FunctionDeclarationNode*>& functions) : functions(functions) {}
@@ -487,6 +506,19 @@ namespace parsers
             delete node;
         }
         functions.clear();
+    }
+
+    formalism::PredicateList FunctionDeclarationListNode::get_functions(const std::map<std::string, formalism::Type>& types) const
+    {
+        formalism::PredicateList result;
+        uint32_t func_id = 0;
+
+        for (const auto predicate_node : functions)
+        {
+            result.push_back(predicate_node->get_function(func_id++, types));
+        }
+
+        return result;
     }
 
     /* FunctionNode */
@@ -577,9 +609,9 @@ namespace parsers
 
     /* LiteralOrFunctionNode */
 
-    LiteralOrFunctionNode::LiteralOrFunctionNode(LiteralNode* literal_node) : literal_node(literal_node), function_effect_node(nullptr) {}
+    LiteralOrFunctionNode::LiteralOrFunctionNode(LiteralNode* literal_node) : literal_node(literal_node), function_node(nullptr) {}
 
-    LiteralOrFunctionNode::LiteralOrFunctionNode(FunctionNode* function_effect_node) : literal_node(nullptr), function_effect_node(function_effect_node) {}
+    LiteralOrFunctionNode::LiteralOrFunctionNode(FunctionNode* function_node) : literal_node(nullptr), function_node(function_node) {}
 
     LiteralOrFunctionNode::~LiteralOrFunctionNode()
     {
@@ -589,10 +621,10 @@ namespace parsers
             literal_node = nullptr;
         }
 
-        if (function_effect_node)
+        if (function_node)
         {
-            delete function_effect_node;
-            function_effect_node = nullptr;
+            delete function_node;
+            function_node = nullptr;
         }
     }
 
@@ -627,6 +659,57 @@ namespace parsers
             if (node->literal_node)
             {
                 result.push_back(node->literal_node->get_literal(parameters, constants, predicates));
+            }
+        }
+
+        return result;
+    }
+
+    formalism::FunctionList LiteralOrFunctionListNode::get_functions(const std::map<std::string, formalism::Parameter>& parameters,
+                                                                     const std::map<std::string, formalism::Object>& constants,
+                                                                     const std::map<std::string, formalism::Predicate>& functions) const
+    {
+        formalism::FunctionList result;
+
+        for (const auto node : literal_or_functions)
+        {
+            const auto& function = node->function_node;
+
+            if (function)
+            {
+                const auto operation_name = to_lowercase(function->op->get_name());
+                formalism::FunctionOperation operation;
+
+                if (operation_name == "increase")
+                {
+                    operation = formalism::FunctionOperation::INCREASE;
+                }
+                else if (operation_name == "decrease")
+                {
+                    operation = formalism::FunctionOperation::DECREASE;
+                }
+                else
+                {
+                    throw std::invalid_argument("unsupported function operation type");
+                }
+
+                const auto variable = function->first_operand_atom->get_atom(parameters, constants, functions)->predicate;
+
+                if (variable->arity != 0)
+                {
+                    throw std::invalid_argument("variable is not nullary");
+                }
+
+                if (function->second_operand_atom)
+                {
+                    const auto atom = function->second_operand_atom->get_atom(parameters, constants, functions);
+                    result.emplace_back(formalism::create_function(operation, variable, atom));
+                }
+                else
+                {
+                    const auto constant = function->second_operand_value;
+                    result.emplace_back(formalism::create_function(operation, variable, constant));
+                }
             }
         }
 
@@ -668,14 +751,36 @@ namespace parsers
         }
     }
 
-    std::pair<formalism::LiteralList, formalism::LiteralList>
-    ActionBodyNode::get_precondition_effect(const std::map<std::string, formalism::Parameter>& parameters,
-                                            const std::map<std::string, formalism::Object>& constants,
-                                            const std::map<std::string, formalism::Predicate>& predicates) const
+    std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::Function>
+    ActionBodyNode::get_precondition_effect_cost(const std::map<std::string, formalism::Parameter>& parameters,
+                                                 const std::map<std::string, formalism::Object>& constants,
+                                                 const std::map<std::string, formalism::Predicate>& predicates,
+                                                 const std::map<std::string, formalism::Predicate>& functions) const
     {
         const auto precondition_literals = precondition->get_literals(parameters, constants, predicates);
         const auto effect_literals = effect->get_literals(parameters, constants, predicates);
-        return std::make_pair(precondition_literals, effect_literals);
+        const auto effect_functions = effect->get_functions(parameters, constants, functions);
+        formalism::Function cost_function = nullptr;
+
+        if (effect_functions.size() > 1)
+        {
+            throw std::invalid_argument("only one cost function is supported");
+        }
+        else if (effect_functions.size() == 1)
+        {
+            cost_function = effect_functions.at(0);
+        }
+        else if (functions.count("total-cost"))
+        {
+            cost_function = create_function(formalism::FunctionOperation::INCREASE, functions.at("total-cost"), 1.0);
+        }
+
+        if (!cost_function)
+        {
+            throw std::invalid_argument("missing cost function; can't implicitily define unit cost without \"total-cost\" function");
+        }
+
+        return std::make_tuple(precondition_literals, effect_literals, cost_function);
     }
 
     /* ActionNode */
@@ -705,7 +810,8 @@ namespace parsers
 
     formalism::ActionSchema ActionNode::get_action(const std::map<std::string, formalism::Type>& types,
                                                    const std::map<std::string, formalism::Object>& constants,
-                                                   const std::map<std::string, formalism::Predicate>& predicates) const
+                                                   const std::map<std::string, formalism::Predicate>& predicates,
+                                                   const std::map<std::string, formalism::Predicate>& functions) const
     {
         const auto action_name = name->get_name();
 
@@ -733,9 +839,8 @@ namespace parsers
             }
         }
 
-        const auto action_precondition_effect = body->get_precondition_effect(action_parameter_map, constants, predicates);
-
-        return formalism::create_action_schema(action_name, action_parameter_list, action_precondition_effect.first, action_precondition_effect.second);
+        const auto& [precondition, effect, cost] = body->get_precondition_effect_cost(action_parameter_map, constants, predicates, functions);
+        return formalism::create_action_schema(action_name, action_parameter_list, precondition, effect, cost);
     }
 
     /* DomainNode */
@@ -921,32 +1026,41 @@ namespace parsers
         return result;
     }
 
+    std::map<std::string, formalism::Predicate> DomainNode::get_functions(const std::map<std::string, formalism::Type>& types) const
+    {
+        std::map<std::string, formalism::Predicate> result;
+
+        if (functions)
+        {
+            const auto predicate_list = functions->get_functions(types);
+
+            for (const auto& predicate : predicate_list)
+            {
+                result.emplace(predicate->name, predicate);
+            }
+        }
+        else
+        {
+            result.emplace("total-cost", formalism::create_predicate(0, "total-cost", {}));
+        }
+
+        return result;
+    }
+
     std::vector<formalism::ActionSchema> DomainNode::get_action_schemas(const std::map<std::string, formalism::Type>& types,
                                                                         const std::map<std::string, formalism::Object>& constants,
-                                                                        const std::map<std::string, formalism::Predicate>& predicates) const
+                                                                        const std::map<std::string, formalism::Predicate>& predicates,
+                                                                        const std::map<std::string, formalism::Predicate>& functions) const
     {
         std::vector<formalism::ActionSchema> action_schemas;
 
         for (const auto node : this->actions)
         {
-            action_schemas.push_back(node->get_action(types, constants, predicates));
+            action_schemas.push_back(node->get_action(types, constants, predicates, functions));
         }
 
         return action_schemas;
     }
-
-    // template<typename K, typename V>
-    // std::vector<V> get_values(std::map<K, V> map) const
-    // {
-    //     std::vector<V> values;
-
-    //     for (auto it = map.begin(); it != map.end(); ++it)
-    //     {
-    //         values.push_back(it->second);
-    //     }
-
-    //     return values;
-    // }
 
     formalism::DomainDescription DomainNode::get_domain() const
     {
@@ -955,13 +1069,15 @@ namespace parsers
         const auto domain_types = this->get_types();
         const auto domain_constants = this->get_constants(domain_types);
         const auto domain_predicates = this->get_predicates(domain_types);
-        const auto domain_actions = this->get_action_schemas(domain_types, domain_constants, domain_predicates);
+        const auto domain_functions = this->get_functions(domain_types);
+        const auto domain_actions = this->get_action_schemas(domain_types, domain_constants, domain_predicates, domain_functions);
 
         return formalism::create_domain(domain_name,
                                         domain_requirements,
                                         get_values(domain_types),
                                         get_values(domain_constants),
                                         get_values(domain_predicates),
+                                        get_values(domain_functions),
                                         domain_actions);
     }
 
@@ -1094,19 +1210,64 @@ namespace parsers
             throw std::invalid_argument("domain names do not match: \"" + domain_name + "\" and \"" + domain->name + "\"");
         }
 
+        if (metric && (metric->name->get_name() != "total-cost"))
+        {
+            throw std::invalid_argument("expected metric to minimize: \"total-cost\"");
+        }
+
         const auto type_map = domain->get_type_map();
         const auto predicate_map = domain->get_predicate_name_map();
+        const auto function_map = domain->get_function_name_map();
         const auto constant_map = domain->get_constant_map();
 
         const auto problem_name = problem_domain_name->get_problem_name();
         const auto object_map = get_objects(constant_map.size(), type_map);
 
+        // Merge constants and objects into a single map
+
+        std::map<std::string, formalism::Parameter> constants_and_objects_map;
+
+        for (const auto& [name, parameter] : constant_map)
+        {
+            constants_and_objects_map[name] = parameter;
+        }
+
+        for (const auto& [name, parameter] : object_map)
+        {
+            constants_and_objects_map[name] = parameter;
+        }
+
         std::vector<formalism::Literal> initial_list;
+        std::unordered_map<formalism::Atom, double> atom_costs;
+
         for (const auto& node : initial->literal_or_functions)
         {
             if (node->literal_node)
             {
                 initial_list.push_back(node->literal_node->get_literal(object_map, constant_map, predicate_map));
+            }
+            else
+            {
+                const auto operation = node->function_node->op->get_name();
+
+                if (operation == "=")
+                {
+                    const auto atom = node->function_node->first_operand_atom->get_atom({}, constants_and_objects_map, function_map);
+
+                    if (node->function_node->second_operand_atom)
+                    {
+                        throw std::invalid_argument("expected a constant");
+                    }
+                    else
+                    {
+                        const auto constant = node->function_node->second_operand_value;
+                        atom_costs.emplace(atom, constant);
+                    }
+                }
+                else
+                {
+                    throw std::invalid_argument("expected operation to be \"=\"");
+                }
             }
         }
 
@@ -1115,6 +1276,6 @@ namespace parsers
         auto objects = get_values(object_map);
         objects.insert(objects.end(), domain->constants.begin(), domain->constants.end());
 
-        return formalism::create_problem(problem_name + " (" + filename + ")", domain, objects, atoms_of(initial_list), goal_list);
+        return formalism::create_problem(problem_name + " (" + filename + ")", domain, objects, atoms_of(initial_list), goal_list, atom_costs);
     }
 }  // namespace parsers

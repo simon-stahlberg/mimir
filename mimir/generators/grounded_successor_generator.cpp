@@ -30,12 +30,15 @@ namespace planners
 
     GroundedSuccessorGenerator::GroundedSuccessorGenerator(const formalism::ProblemDescription& problem, const formalism::ActionList& ground_actions) :
         problem_(problem),
+        actions_(ground_actions),
         root_(nullptr)
     {
         root_ = build_decision_tree(problem, ground_actions);
     }
 
     formalism::ProblemDescription GroundedSuccessorGenerator::get_problem() const { return problem_; }
+
+    const formalism::ActionList& GroundedSuccessorGenerator::get_actions() const { return actions_; }
 
     formalism::ActionList GroundedSuccessorGenerator::get_applicable_actions(const formalism::State& state) const
     {

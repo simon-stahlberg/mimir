@@ -44,7 +44,7 @@ class LiteralGrounder
             precondition.emplace_back(formalism::create_literal(atom, false));
         }
 
-        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect);
+        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect, formalism::create_unit_cost_function(problem->domain));
         generator_ = std::make_unique<planners::LiftedSchemaSuccessorGenerator>(action_schema_, problem);
     }
 

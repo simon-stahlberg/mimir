@@ -31,6 +31,10 @@ namespace formalism
     using Literal = std::shared_ptr<LiteralImpl>;
     using LiteralList = std::vector<Literal>;
 
+    class FunctionImpl;
+    using Function = std::shared_ptr<FunctionImpl>;
+    using FunctionList = std::vector<Function>;
+
     class ObjectImpl;
     using Object = std::shared_ptr<ObjectImpl>;
     using ObjectList = std::vector<Object>;

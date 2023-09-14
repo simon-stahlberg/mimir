@@ -70,7 +70,7 @@ namespace formalism
                            formalism::ObjectList&& arguments,
                            formalism::LiteralList&& precondition,
                            formalism::LiteralList&& effect,
-                           int32_t cost) :
+                           double cost) :
         positive_precondition_bitset_(0),
         negative_precondition_bitset_(0),
         positive_effect_bitset_(0),
@@ -139,17 +139,20 @@ namespace formalism
                          formalism::ObjectList&& arguments,
                          formalism::LiteralList&& precondition,
                          formalism::LiteralList&& effect,
-                         int32_t cost)
+                         double cost)
     {
         return std::make_shared<formalism::ActionImpl>(problem, schema, std::move(arguments), std::move(precondition), std::move(effect), cost);
     }
 
-    Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost)
+    Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, double cost)
     {
         return std::make_shared<formalism::ActionImpl>(problem, schema, std::move(arguments), cost);
     }
 
-    Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, const formalism::ParameterAssignment& assignment)
+    Action create_action(const formalism::ProblemDescription& problem,
+                         const formalism::ActionSchema& schema,
+                         const formalism::ParameterAssignment& assignment,
+                         double cost)
     {
         return std::make_shared<formalism::ActionImpl>(problem, schema, assignment);
     }

@@ -28,6 +28,7 @@ namespace formalism
                            const formalism::TypeList& types,
                            const formalism::ObjectList& constants,
                            const formalism::PredicateList& predicates,
+                           const formalism::PredicateList& functions,
                            const formalism::ActionSchemaList& action_schemas) :
         name(name),
         requirements(requirements),
@@ -35,6 +36,7 @@ namespace formalism
         constants(constants),
         predicates(predicates),
         static_predicates(),
+        functions(functions),
         action_schemas(action_schemas)
     {
         for (const auto& predicate : predicates)
@@ -63,6 +65,18 @@ namespace formalism
         std::map<std::string, formalism::Predicate> map;
 
         for (const auto& predicate : predicates)
+        {
+            map.insert(std::make_pair(predicate->name, predicate));
+        }
+
+        return map;
+    }
+
+    std::map<std::string, formalism::Predicate> DomainImpl::get_function_name_map() const
+    {
+        std::map<std::string, formalism::Predicate> map;
+
+        for (const auto& predicate : functions)
         {
             map.insert(std::make_pair(predicate->name, predicate));
         }
@@ -99,9 +113,10 @@ namespace formalism
                                     const formalism::TypeList& types,
                                     const formalism::ObjectList& constants,
                                     const formalism::PredicateList& predicates,
+                                    const formalism::PredicateList& functions,
                                     const formalism::ActionSchemaList& action_schemas)
     {
-        return std::make_shared<DomainImpl>(name, requirements, types, constants, predicates, action_schemas);
+        return std::make_shared<DomainImpl>(name, requirements, types, constants, predicates, functions, action_schemas);
     }
 
     DomainDescription relax(const formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list)
@@ -114,7 +129,13 @@ namespace formalism
                        [&](const formalism::ActionSchema& action_schema)
                        { return formalism::relax(action_schema, remove_negative_preconditions, remove_delete_list); });
 
-        return create_domain(domain->name, domain->requirements, domain->types, domain->constants, domain->predicates, relaxed_action_schemas);
+        return create_domain(domain->name,
+                             domain->requirements,
+                             domain->types,
+                             domain->constants,
+                             domain->predicates,
+                             domain->functions,
+                             relaxed_action_schemas);
     }
 
     std::ostream& operator<<(std::ostream& os, const formalism::DomainDescription& domain)

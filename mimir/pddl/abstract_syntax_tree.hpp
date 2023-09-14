@@ -3,6 +3,7 @@
 
 #include "../formalism/action_schema.hpp"
 #include "../formalism/domain.hpp"
+#include "../formalism/function.hpp"
 #include "../formalism/literal.hpp"
 #include "../formalism/object.hpp"
 #include "../formalism/predicate.hpp"
@@ -166,6 +167,7 @@ namespace parsers
 
         FunctionDeclarationNode(PredicateNode* predicate, NameNode* type);
         ~FunctionDeclarationNode() override;
+        formalism::Predicate get_function(const uint32_t id, const std::map<std::string, formalism::Type>& types) const;
     };
 
     class FunctionDeclarationListNode : public ASTNode
@@ -175,6 +177,7 @@ namespace parsers
 
         FunctionDeclarationListNode(std::vector<FunctionDeclarationNode*>& functions);
         ~FunctionDeclarationListNode() override;
+        formalism::PredicateList get_functions(const std::map<std::string, formalism::Type>& types) const;
     };
 
     class FunctionNode : public ASTNode
@@ -220,10 +223,10 @@ namespace parsers
     {
       public:
         LiteralNode* literal_node;
-        FunctionNode* function_effect_node;
+        FunctionNode* function_node;
 
         LiteralOrFunctionNode(LiteralNode* literal_node);
-        LiteralOrFunctionNode(FunctionNode* function_effect_node);
+        LiteralOrFunctionNode(FunctionNode* function_node);
         ~LiteralOrFunctionNode() override;
     };
 
@@ -238,6 +241,9 @@ namespace parsers
         formalism::LiteralList get_literals(const std::map<std::string, formalism::Parameter>& parameters,
                                             const std::map<std::string, formalism::Object>& constants,
                                             const std::map<std::string, formalism::Predicate>& predicates) const;
+        formalism::FunctionList get_functions(const std::map<std::string, formalism::Parameter>& parameters,
+                                              const std::map<std::string, formalism::Object>& constants,
+                                              const std::map<std::string, formalism::Predicate>& predicates) const;
     };
 
     class ActionBodyNode : public ASTNode
@@ -250,9 +256,11 @@ namespace parsers
                        boost::optional<boost::fusion::vector<std::string, LiteralOrFunctionListNode*>>& effect);
         ActionBodyNode(LiteralListNode* precondition, LiteralOrFunctionListNode* effect);
         ~ActionBodyNode() override;
-        std::pair<formalism::LiteralList, formalism::LiteralList> get_precondition_effect(const std::map<std::string, formalism::Parameter>& parameters,
-                                                                                          const std::map<std::string, formalism::Object>& constants,
-                                                                                          const std::map<std::string, formalism::Predicate>& predicates) const;
+        std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::Function>
+        get_precondition_effect_cost(const std::map<std::string, formalism::Parameter>& parameters,
+                                     const std::map<std::string, formalism::Object>& constants,
+                                     const std::map<std::string, formalism::Predicate>& predicates,
+                                     const std::map<std::string, formalism::Predicate>& functions) const;
     };
 
     class ActionNode : public ASTNode
@@ -266,7 +274,8 @@ namespace parsers
         ~ActionNode() override;
         formalism::ActionSchema get_action(const std::map<std::string, formalism::Type>& types,
                                            const std::map<std::string, formalism::Object>& constants,
-                                           const std::map<std::string, formalism::Predicate>& predicates) const;
+                                           const std::map<std::string, formalism::Predicate>& predicates,
+                                           const std::map<std::string, formalism::Predicate>& functions) const;
     };
 
     class DomainNode : public ASTNode
@@ -294,9 +303,11 @@ namespace parsers
         std::map<std::string, formalism::Type> get_types() const;
         std::map<std::string, formalism::Object> get_constants(const std::map<std::string, formalism::Type>& types) const;
         std::map<std::string, formalism::Predicate> get_predicates(const std::map<std::string, formalism::Type>& types) const;
+        std::map<std::string, formalism::Predicate> get_functions(const std::map<std::string, formalism::Type>& types) const;
         std::vector<formalism::ActionSchema> get_action_schemas(const std::map<std::string, formalism::Type>& types,
                                                                 const std::map<std::string, formalism::Object>& constants,
-                                                                const std::map<std::string, formalism::Predicate>& predicates) const;
+                                                                const std::map<std::string, formalism::Predicate>& predicates,
+                                                                const std::map<std::string, formalism::Predicate>& functions) const;
         template<typename K, typename V>
         inline std::vector<V> get_values(std::map<K, V> map) const
         {

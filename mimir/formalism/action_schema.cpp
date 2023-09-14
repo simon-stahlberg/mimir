@@ -26,22 +26,25 @@ namespace formalism
     ActionSchemaImpl::ActionSchemaImpl(const std::string& name,
                                        const formalism::ParameterList& parameters,
                                        const formalism::LiteralList& precondition,
-                                       const formalism::LiteralList& effect) :
+                                       const formalism::LiteralList& effect,
+                                       const formalism::Function& cost) :
         name(name),
         arity(parameters.size()),
         complete(true),
         parameters(parameters),
         precondition(precondition),
-        effect(effect)
+        effect(effect),
+        cost(cost)
     {
     }
 
     ActionSchema create_action_schema(const std::string& name,
                                       const formalism::ParameterList& parameters,
                                       const formalism::LiteralList& precondition,
-                                      const formalism::LiteralList& effect)
+                                      const formalism::LiteralList& effect,
+                                      const formalism::Function& cost)
     {
-        return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, effect);
+        return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, effect, cost);
     }
 
     ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list)
@@ -70,7 +73,7 @@ namespace formalism
             relaxed_effect.insert(relaxed_effect.end(), action_schema->effect.cbegin(), action_schema->effect.cend());
         }
 
-        return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect);
+        return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect, action_schema->cost);
     }
 
     bool affects_predicate(const formalism::ActionSchema& action_schema, const formalism::Predicate& predicate)

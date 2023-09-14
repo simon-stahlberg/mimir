@@ -21,6 +21,7 @@ namespace formalism
         formalism::ObjectList constants;
         formalism::PredicateList predicates;
         formalism::PredicateList static_predicates;
+        formalism::PredicateList functions;
         formalism::ActionSchemaList action_schemas;
 
         DomainImpl(const std::string& name,
@@ -28,11 +29,14 @@ namespace formalism
                    const formalism::TypeList& types,
                    const formalism::ObjectList& constants,
                    const formalism::PredicateList& predicates,
+                   const formalism::PredicateList& functions,
                    const formalism::ActionSchemaList& action_schemas);
 
         std::map<std::string, formalism::Type> get_type_map() const;
 
         std::map<std::string, formalism::Predicate> get_predicate_name_map() const;
+
+        std::map<std::string, formalism::Predicate> get_function_name_map() const;
 
         std::map<uint32_t, formalism::Predicate> get_predicate_id_map() const;
 
@@ -44,6 +48,7 @@ namespace formalism
                                     const formalism::TypeList& types,
                                     const formalism::ObjectList& constants,
                                     const formalism::PredicateList& predicates,
+                                    const formalism::PredicateList& functions,
                                     const formalism::ActionSchemaList& action_schemas);
 
     DomainDescription relax(const formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list);

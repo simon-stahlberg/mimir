@@ -48,12 +48,15 @@ namespace planners
     {
       private:
         formalism::ProblemDescription problem_;
+        formalism::ActionList actions_;
         std::unique_ptr<DecisionNode> root_;
 
       public:
         GroundedSuccessorGenerator(const formalism::ProblemDescription& problem, const formalism::ActionList& ground_actions);
 
         formalism::ProblemDescription get_problem() const override;
+
+        const formalism::ActionList& get_actions() const;
 
         formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
 
