@@ -44,7 +44,7 @@ class LiteralGrounder
             precondition.emplace_back(formalism::create_literal(atom, false));
         }
 
-        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect, formalism::create_unit_cost_function(problem->domain));
+        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect, {}, formalism::create_unit_cost_function(problem->domain));
         generator_ = std::make_unique<planners::LiftedSchemaSuccessorGenerator>(action_schema_, problem);
     }
 
@@ -159,6 +159,7 @@ PYBIND11_MODULE(mimir, m)
     py::class_<formalism::TransitionImpl, formalism::Transition> transition(m, "Transition");
     py::class_<planners::StateSpaceImpl, planners::StateSpace> state_space(m, "StateSpace");
     py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>> literal_grounder(m, "LiteralGrounder");
+    py::class_<formalism::Implication, std::shared_ptr<formalism::Implication>> implication(m, "Implication");
 
     // Definitions
 
@@ -201,7 +202,8 @@ PYBIND11_MODULE(mimir, m)
     action_schema.def_readonly("arity", &formalism::ActionSchemaImpl::arity, "Gets the arity of the action schema.");
     action_schema.def_readonly("parameters", &formalism::ActionSchemaImpl::parameters, "Gets the parameters of the action schema.");
     action_schema.def_readonly("precondition", &formalism::ActionSchemaImpl::precondition, "Gets the precondition of the action schema.");
-    action_schema.def_readonly("effect", &formalism::ActionSchemaImpl::effect, "Gets the effect of the action schema.");
+    action_schema.def_readonly("effect", &formalism::ActionSchemaImpl::unconditional_effect, "Gets the unconditional effect of the action schema.");
+    action_schema.def_readonly("conditional_effect", &formalism::ActionSchemaImpl::conditional_effect, "Gets the conditional effect of the action schema.");
     action_schema.def("__repr__", [](const formalism::ActionSchemaImpl& action_schema) { return "<ActionSchema '" + action_schema.name + "/" + std::to_string(action_schema.arity) + "'>"; });
 
     domain.def_readonly("name", &formalism::DomainImpl::name, "Gets the name of the domain.");
@@ -254,7 +256,8 @@ PYBIND11_MODULE(mimir, m)
     action.def_readonly("cost", &formalism::ActionImpl::cost, "Gets the cost of the action.");
     action.def("get_arguments", &formalism::ActionImpl::get_arguments, "Gets the arguments of the action.");
     action.def("get_precondition", &formalism::ActionImpl::get_precondition, "Gets the precondition of the action.");
-    action.def("get_effect", &formalism::ActionImpl::get_effect, "Gets the effect of the action.");
+    action.def("get_effect", &formalism::ActionImpl::get_unconditional_effect, "Gets the unconditional effect of the action.");
+    action.def("get_conditional_effect", &formalism::ActionImpl::get_conditional_effect, "Gets the conditional effect of the action.");
     action.def("get_name", [](const formalism::ActionImpl& action) { return to_string(action); }, "Gets the name of the action.");
     action.def("is_applicable", &formalism::is_applicable, "state"_a, "Tests whether the action is applicable in the state.");
     action.def("apply", &formalism::apply, "state"_a, "Creates a new state state based on the given state and the effect of the action.");
@@ -312,6 +315,10 @@ PYBIND11_MODULE(mimir, m)
 
     literal_grounder.def("ground", &LiteralGrounder::ground, "state"_a, "Gets a list of instantiations of the associated atom list that are true in the given state.");
     literal_grounder.def("__repr__", [](const LiteralGrounder& grounder){ return "<LiteralGrounder>"; });
+
+    implication.def_readonly("antecedent", &formalism::Implication::antecedent, "Gets the antecedent of the implication.");
+    implication.def_readonly("consequence", &formalism::Implication::consequence, "Gets the consequence of the implication.");
+    implication.def("__repr__", [](const formalism::Implication& implication) { return "<Implication>"; });
 
     // clang-format on
 }

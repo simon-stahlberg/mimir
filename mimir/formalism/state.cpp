@@ -393,16 +393,57 @@ namespace formalism
         }
 
         auto bitset = state->bitset_;
-        bitset |= action->positive_precondition_bitset_;
-        bitset &= ~action->negative_precondition_bitset_;
+        bitset |= action->applicability_positive_precondition_bitset_;
+        bitset &= ~action->applicability_negative_precondition_bitset_;
         return state->bitset_ == bitset;
     }
 
     formalism::State apply(const formalism::Action& action, const formalism::State& state)
     {
+        // We first apply the delete lists, followed by the add lists to prevent actions from simultaneously negating and establishing the same condition.
+
         auto bitset = state->bitset_;
-        bitset &= ~action->negative_effect_bitset_;
-        bitset |= action->positive_effect_bitset_;
+        const auto num_conditional_effects = action->conditional_positive_precondition_bitsets_.size();
+
+        if (num_conditional_effects > 0)
+        {
+            std::vector<std::size_t> applicable_conditional_effects;
+
+            for (std::size_t index = 0; index < num_conditional_effects; ++index)
+            {
+                if ((bitset == (bitset | action->conditional_positive_precondition_bitsets_[index])) &&  // positive preconditions
+                    (bitset == (bitset & ~action->conditional_negative_precondition_bitsets_[index])))   // negative preconditions
+                {
+                    applicable_conditional_effects.emplace_back(index);
+                }
+            }
+
+            // Apply the delete lists
+
+            bitset &= ~action->unconditional_negative_effect_bitset_;
+
+            for (const auto& index : applicable_conditional_effects)
+            {
+                bitset &= ~action->conditional_negative_effect_bitsets_[index];
+            }
+
+            // Apply the add lists
+
+            bitset |= action->unconditional_positive_effect_bitset_;
+
+            for (const auto& index : applicable_conditional_effects)
+            {
+                bitset |= action->conditional_positive_effect_bitsets_[index];
+            }
+        }
+        else
+        {
+            // Apply the delete list, then the add list
+
+            bitset &= ~action->unconditional_negative_effect_bitset_;
+            bitset |= action->unconditional_positive_effect_bitset_;
+        }
+
         return std::make_shared<formalism::StateImpl>(std::move(bitset), state->problem_);
     }
 

@@ -16,13 +16,18 @@ namespace formalism
     class ActionImpl
     {
       private:
-        formalism::Bitset positive_precondition_bitset_;
-        formalism::Bitset negative_precondition_bitset_;
-        formalism::Bitset positive_effect_bitset_;
-        formalism::Bitset negative_effect_bitset_;
+        formalism::Bitset applicability_positive_precondition_bitset_;
+        formalism::Bitset applicability_negative_precondition_bitset_;
+        formalism::Bitset unconditional_positive_effect_bitset_;
+        formalism::Bitset unconditional_negative_effect_bitset_;
+        std::vector<formalism::Bitset> conditional_positive_precondition_bitsets_;
+        std::vector<formalism::Bitset> conditional_negative_precondition_bitsets_;
+        std::vector<formalism::Bitset> conditional_positive_effect_bitsets_;
+        std::vector<formalism::Bitset> conditional_negative_effect_bitsets_;
         formalism::ObjectList arguments_;
-        formalism::LiteralList precondition_;
-        formalism::LiteralList effect_;
+        formalism::LiteralList applicability_precondition_;
+        formalism::LiteralList unconditional_effect_;
+        formalism::ImplicationList conditional_effect_;
 
         void initialize_precondition();
 
@@ -37,8 +42,9 @@ namespace formalism
                    const formalism::ActionSchema& schema,
                    formalism::ObjectList&& arguments,
                    formalism::LiteralList&& precondition,
-                   formalism::LiteralList&& effect,
-                   double cost = 1);
+                   formalism::LiteralList&& unconditional_effect,
+                   formalism::ImplicationList&& conditional_effect,
+                   double cost);
 
         ActionImpl(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, int32_t cost = 1);
 
@@ -52,14 +58,17 @@ namespace formalism
 
         const formalism::LiteralList& get_precondition() const;
 
-        const formalism::LiteralList& get_effect() const;
+        const formalism::LiteralList& get_unconditional_effect() const;
+
+        const formalism::ImplicationList& get_conditional_effect() const;
     };
 
     Action create_action(const formalism::ProblemDescription& problem,
                          const formalism::ActionSchema& schema,
                          formalism::ObjectList&& arguments,
                          formalism::LiteralList&& precondition,
-                         formalism::LiteralList&& effect,
+                         formalism::LiteralList&& unconditional_effect,
+                         formalism::ImplicationList&& conditional_effect,
                          double cost);
 
     Action create_action(const formalism::ProblemDescription& problem, const formalism::ActionSchema& schema, formalism::ObjectList&& arguments, double cost);

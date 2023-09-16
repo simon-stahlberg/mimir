@@ -26,14 +26,16 @@ namespace formalism
     ActionSchemaImpl::ActionSchemaImpl(const std::string& name,
                                        const formalism::ParameterList& parameters,
                                        const formalism::LiteralList& precondition,
-                                       const formalism::LiteralList& effect,
+                                       const formalism::LiteralList& unconditional_effect,
+                                       const formalism::ImplicationList& conditional_effect,
                                        const formalism::Function& cost) :
         name(name),
         arity(parameters.size()),
         complete(true),
         parameters(parameters),
         precondition(precondition),
-        effect(effect),
+        unconditional_effect(unconditional_effect),
+        conditional_effect(conditional_effect),
         cost(cost)
     {
     }
@@ -41,10 +43,11 @@ namespace formalism
     ActionSchema create_action_schema(const std::string& name,
                                       const formalism::ParameterList& parameters,
                                       const formalism::LiteralList& precondition,
-                                      const formalism::LiteralList& effect,
+                                      const formalism::LiteralList& unconditional_effect,
+                                      const formalism::ImplicationList& conditional_effect,
                                       const formalism::Function& cost)
     {
-        return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, effect, cost);
+        return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, unconditional_effect, conditional_effect, cost);
     }
 
     ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list)
@@ -66,19 +69,40 @@ namespace formalism
 
         if (remove_delete_list)
         {
-            std::copy_if(action_schema->effect.cbegin(), action_schema->effect.cend(), std::back_inserter(relaxed_effect), positive_literal);
+            std::copy_if(action_schema->unconditional_effect.cbegin(),
+                         action_schema->unconditional_effect.cend(),
+                         std::back_inserter(relaxed_effect),
+                         positive_literal);
+
+            for (const auto& [_, consequence] : action_schema->conditional_effect)
+            {
+                std::copy_if(consequence.cbegin(), consequence.cend(), std::back_inserter(relaxed_effect), positive_literal);
+            }
         }
         else
         {
-            relaxed_effect.insert(relaxed_effect.end(), action_schema->effect.cbegin(), action_schema->effect.cend());
+            relaxed_effect.insert(relaxed_effect.end(), action_schema->unconditional_effect.cbegin(), action_schema->unconditional_effect.cend());
         }
 
-        return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect, action_schema->cost);
+        return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect, {}, action_schema->cost);
     }
 
     bool affects_predicate(const formalism::ActionSchema& action_schema, const formalism::Predicate& predicate)
     {
-        return contains_predicate(action_schema->effect, predicate);
+        if (contains_predicate(action_schema->unconditional_effect, predicate))
+        {
+            return true;
+        }
+
+        for (const auto& [_, consequence] : action_schema->conditional_effect)
+        {
+            if (contains_predicate(consequence, predicate))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool affect_predicate(const formalism::ActionSchemaList& action_schemas, const formalism::Predicate& predicate)
@@ -111,23 +135,47 @@ namespace std
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     std::size_t hash<formalism::ActionSchema>::operator()(const formalism::ActionSchema& action_schema) const
     {
-        return hash_combine(action_schema->name, action_schema->arity, action_schema->parameters, action_schema->precondition, action_schema->effect);
+        return hash_combine(action_schema->name,
+                            action_schema->arity,
+                            action_schema->parameters,
+                            action_schema->precondition,
+                            action_schema->unconditional_effect,
+                            action_schema->conditional_effect,
+                            action_schema->cost);
     }
 
     std::size_t hash<formalism::ActionSchemaList>::operator()(const formalism::ActionSchemaList& action_schemas) const { return hash_vector(action_schemas); }
 
     bool less<formalism::ActionSchema>::operator()(const formalism::ActionSchema& left_action_schema, const formalism::ActionSchema& right_action_schema) const
     {
-        return less_combine(
-            std::make_tuple(left_action_schema->name, left_action_schema->parameters, left_action_schema->precondition, left_action_schema->effect),
-            std::make_tuple(right_action_schema->name, right_action_schema->parameters, right_action_schema->precondition, right_action_schema->effect));
+        return less_combine(std::make_tuple(left_action_schema->name,
+                                            left_action_schema->parameters,
+                                            left_action_schema->precondition,
+                                            left_action_schema->unconditional_effect,
+                                            left_action_schema->conditional_effect,
+                                            left_action_schema->cost),
+                            std::make_tuple(right_action_schema->name,
+                                            right_action_schema->parameters,
+                                            right_action_schema->precondition,
+                                            right_action_schema->unconditional_effect,
+                                            right_action_schema->conditional_effect,
+                                            right_action_schema->cost));
     }
 
     bool equal_to<formalism::ActionSchema>::operator()(const formalism::ActionSchema& left_action_schema,
                                                        const formalism::ActionSchema& right_action_schema) const
     {
-        return equal_to_combine(
-            std::make_tuple(left_action_schema->name, left_action_schema->parameters, left_action_schema->precondition, left_action_schema->effect),
-            std::make_tuple(right_action_schema->name, right_action_schema->parameters, right_action_schema->precondition, right_action_schema->effect));
+        return equal_to_combine(std::make_tuple(left_action_schema->name,
+                                                left_action_schema->parameters,
+                                                left_action_schema->precondition,
+                                                left_action_schema->unconditional_effect,
+                                                left_action_schema->conditional_effect,
+                                                left_action_schema->cost),
+                                std::make_tuple(right_action_schema->name,
+                                                right_action_schema->parameters,
+                                                right_action_schema->precondition,
+                                                right_action_schema->unconditional_effect,
+                                                right_action_schema->conditional_effect,
+                                                right_action_schema->cost));
     }
 }  // namespace std

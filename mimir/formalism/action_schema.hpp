@@ -3,6 +3,7 @@
 
 #include "declarations.hpp"
 #include "function.hpp"
+#include "implication.hpp"
 #include "literal.hpp"
 #include "object.hpp"
 
@@ -18,7 +19,8 @@ namespace formalism
         bool complete;
         formalism::ParameterList parameters;
         formalism::LiteralList precondition;
-        formalism::LiteralList effect;
+        formalism::LiteralList unconditional_effect;
+        formalism::ImplicationList conditional_effect;
         formalism::Function cost;
 
         /**
@@ -33,6 +35,7 @@ namespace formalism
                          const formalism::ParameterList& parameters,
                          const formalism::LiteralList& precondition,
                          const formalism::LiteralList& effect,
+                         const formalism::ImplicationList& conditional_effect,
                          const formalism::Function& cost);
     };
 
@@ -40,6 +43,7 @@ namespace formalism
                                       const formalism::ParameterList& parameters,
                                       const formalism::LiteralList& precondition,
                                       const formalism::LiteralList& effect,
+                                      const formalism::ImplicationList& conditional_effect,
                                       const formalism::Function& cost);
 
     ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list);

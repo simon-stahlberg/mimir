@@ -219,28 +219,43 @@ namespace parsers
                                             const std::map<std::string, formalism::Predicate>& predicates) const;
     };
 
-    class LiteralOrFunctionNode : public ASTNode
+    class ConditionalNode : public ASTNode
+    {
+      public:
+        LiteralListNode* antecedent;
+        LiteralListNode* consequence;
+
+        ConditionalNode(LiteralListNode* antecedent, LiteralListNode* consequence);
+        ~ConditionalNode() override;
+    };
+
+    class LiteralOrConditionalOrFunctionNode : public ASTNode
     {
       public:
         LiteralNode* literal_node;
         FunctionNode* function_node;
+        ConditionalNode* conditional_node;
 
-        LiteralOrFunctionNode(LiteralNode* literal_node);
-        LiteralOrFunctionNode(FunctionNode* function_node);
-        ~LiteralOrFunctionNode() override;
+        LiteralOrConditionalOrFunctionNode(LiteralNode* literal_node);
+        LiteralOrConditionalOrFunctionNode(FunctionNode* function_node);
+        LiteralOrConditionalOrFunctionNode(ConditionalNode* conditional_node);
+        ~LiteralOrConditionalOrFunctionNode() override;
     };
 
-    class LiteralOrFunctionListNode : public ASTNode
+    class LiteralOrConditionalOrFunctionListNode : public ASTNode
     {
       public:
-        std::vector<LiteralOrFunctionNode*> literal_or_functions;
+        std::vector<LiteralOrConditionalOrFunctionNode*> literal_or_functions;
 
-        LiteralOrFunctionListNode(LiteralOrFunctionNode* literal_or_function);
-        LiteralOrFunctionListNode(std::vector<LiteralOrFunctionNode*>& literal_or_functions);
-        ~LiteralOrFunctionListNode() override;
+        LiteralOrConditionalOrFunctionListNode(LiteralOrConditionalOrFunctionNode* literal_or_function);
+        LiteralOrConditionalOrFunctionListNode(std::vector<LiteralOrConditionalOrFunctionNode*>& literal_or_functions);
+        ~LiteralOrConditionalOrFunctionListNode() override;
         formalism::LiteralList get_literals(const std::map<std::string, formalism::Parameter>& parameters,
                                             const std::map<std::string, formalism::Object>& constants,
                                             const std::map<std::string, formalism::Predicate>& predicates) const;
+        formalism::ImplicationList get_conditionals(const std::map<std::string, formalism::Parameter>& parameters,
+                                                    const std::map<std::string, formalism::Object>& constants,
+                                                    const std::map<std::string, formalism::Predicate>& predicates) const;
         formalism::FunctionList get_functions(const std::map<std::string, formalism::Parameter>& parameters,
                                               const std::map<std::string, formalism::Object>& constants,
                                               const std::map<std::string, formalism::Predicate>& predicates) const;
@@ -250,13 +265,13 @@ namespace parsers
     {
       public:
         LiteralListNode* precondition;
-        LiteralOrFunctionListNode* effect;
+        LiteralOrConditionalOrFunctionListNode* effect;
 
         ActionBodyNode(boost::optional<boost::fusion::vector<std::string, LiteralListNode*>>& precondition,
-                       boost::optional<boost::fusion::vector<std::string, LiteralOrFunctionListNode*>>& effect);
-        ActionBodyNode(LiteralListNode* precondition, LiteralOrFunctionListNode* effect);
+                       boost::optional<boost::fusion::vector<std::string, LiteralOrConditionalOrFunctionListNode*>>& effect);
+        ActionBodyNode(LiteralListNode* precondition, LiteralOrConditionalOrFunctionListNode* effect);
         ~ActionBodyNode() override;
-        std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::Function>
+        std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::ImplicationList, formalism::Function>
         get_precondition_effect_cost(const std::map<std::string, formalism::Parameter>& parameters,
                                      const std::map<std::string, formalism::Object>& constants,
                                      const std::map<std::string, formalism::Predicate>& predicates,
@@ -341,7 +356,7 @@ namespace parsers
     {
         ProblemHeaderNode* problem_domain_name;
         TypedNameListNode* objects;
-        LiteralOrFunctionListNode* initial;
+        LiteralOrConditionalOrFunctionListNode* initial;
         LiteralListNode* goal;
         AtomNode* metric;
 
@@ -353,7 +368,7 @@ namespace parsers
       public:
         ProblemNode(ProblemHeaderNode* problem_domain_name,
                     boost::optional<TypedNameListNode*> objects,
-                    LiteralOrFunctionListNode* initial,
+                    LiteralOrConditionalOrFunctionListNode* initial,
                     LiteralListNode* goal,
                     boost::optional<AtomNode*> metric);
 

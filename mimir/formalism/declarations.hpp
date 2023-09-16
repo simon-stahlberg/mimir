@@ -64,7 +64,6 @@ namespace formalism
     class TransitionImpl;
     using Transition = std::shared_ptr<TransitionImpl>;
     using TransitionList = std::vector<Transition>;
-
 }  // namespace formalism
 
 #endif  // FORMALISM_DECLARATIONS_HPP_

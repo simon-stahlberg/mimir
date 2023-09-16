@@ -150,7 +150,8 @@ namespace parsers
             throw std::runtime_error("internal error: both name_node and variable_node are null");
         }
 
-        // TODO: Check parameters and thne constants
+        // TODO: Check parameters and then constants
+
         const auto parameters_handler = parameters.find(name);
         if (parameters_handler != parameters.end())
         {
@@ -560,6 +561,25 @@ namespace parsers
         }
     }
 
+    /* ConditionalNode */
+
+    ConditionalNode::ConditionalNode(LiteralListNode* antecedent, LiteralListNode* consequence) : antecedent(antecedent), consequence(consequence) {}
+
+    ConditionalNode::~ConditionalNode()
+    {
+        if (antecedent)
+        {
+            delete antecedent;
+            antecedent = nullptr;
+        }
+
+        if (consequence)
+        {
+            delete consequence;
+            consequence = nullptr;
+        }
+    }
+
     /* LiteralNode */
 
     LiteralNode::LiteralNode(bool negated, AtomNode* atom) : negated(negated), atom(atom) {}
@@ -607,13 +627,30 @@ namespace parsers
         return result;
     }
 
-    /* LiteralOrFunctionNode */
+    /* LiteralOrConditionalOrFunctionNode */
 
-    LiteralOrFunctionNode::LiteralOrFunctionNode(LiteralNode* literal_node) : literal_node(literal_node), function_node(nullptr) {}
+    LiteralOrConditionalOrFunctionNode::LiteralOrConditionalOrFunctionNode(LiteralNode* literal_node) :
+        literal_node(literal_node),
+        function_node(nullptr),
+        conditional_node(nullptr)
+    {
+    }
 
-    LiteralOrFunctionNode::LiteralOrFunctionNode(FunctionNode* function_node) : literal_node(nullptr), function_node(function_node) {}
+    LiteralOrConditionalOrFunctionNode::LiteralOrConditionalOrFunctionNode(FunctionNode* function_node) :
+        literal_node(nullptr),
+        function_node(function_node),
+        conditional_node(nullptr)
+    {
+    }
 
-    LiteralOrFunctionNode::~LiteralOrFunctionNode()
+    LiteralOrConditionalOrFunctionNode::LiteralOrConditionalOrFunctionNode(ConditionalNode* conditional_node) :
+        literal_node(nullptr),
+        function_node(nullptr),
+        conditional_node(conditional_node)
+    {
+    }
+
+    LiteralOrConditionalOrFunctionNode::~LiteralOrConditionalOrFunctionNode()
     {
         if (literal_node)
         {
@@ -628,18 +665,20 @@ namespace parsers
         }
     }
 
-    /* LiteralOrFunctionListNode */
+    /* LiteralOrConditionalOrFunctionListNode */
 
-    LiteralOrFunctionListNode::LiteralOrFunctionListNode(LiteralOrFunctionNode* literal_or_function) : literal_or_functions()
+    LiteralOrConditionalOrFunctionListNode::LiteralOrConditionalOrFunctionListNode(LiteralOrConditionalOrFunctionNode* literal_or_function) :
+        literal_or_functions()
     {
         literal_or_functions.push_back(literal_or_function);
     }
 
-    LiteralOrFunctionListNode::LiteralOrFunctionListNode(std::vector<LiteralOrFunctionNode*>& literal_or_functions) : literal_or_functions(literal_or_functions)
+    LiteralOrConditionalOrFunctionListNode::LiteralOrConditionalOrFunctionListNode(std::vector<LiteralOrConditionalOrFunctionNode*>& literal_or_functions) :
+        literal_or_functions(literal_or_functions)
     {
     }
 
-    LiteralOrFunctionListNode::~LiteralOrFunctionListNode()
+    LiteralOrConditionalOrFunctionListNode::~LiteralOrConditionalOrFunctionListNode()
     {
         for (auto literal_or_function : literal_or_functions)
         {
@@ -648,9 +687,9 @@ namespace parsers
         literal_or_functions.clear();
     }
 
-    formalism::LiteralList LiteralOrFunctionListNode::get_literals(const std::map<std::string, formalism::Parameter>& parameters,
-                                                                   const std::map<std::string, formalism::Object>& constants,
-                                                                   const std::map<std::string, formalism::Predicate>& predicates) const
+    formalism::LiteralList LiteralOrConditionalOrFunctionListNode::get_literals(const std::map<std::string, formalism::Parameter>& parameters,
+                                                                                const std::map<std::string, formalism::Object>& constants,
+                                                                                const std::map<std::string, formalism::Predicate>& predicates) const
     {
         formalism::LiteralList result;
 
@@ -665,9 +704,28 @@ namespace parsers
         return result;
     }
 
-    formalism::FunctionList LiteralOrFunctionListNode::get_functions(const std::map<std::string, formalism::Parameter>& parameters,
-                                                                     const std::map<std::string, formalism::Object>& constants,
-                                                                     const std::map<std::string, formalism::Predicate>& functions) const
+    formalism::ImplicationList LiteralOrConditionalOrFunctionListNode::get_conditionals(const std::map<std::string, formalism::Parameter>& parameters,
+                                                                                        const std::map<std::string, formalism::Object>& constants,
+                                                                                        const std::map<std::string, formalism::Predicate>& predicates) const
+    {
+        formalism::ImplicationList result;
+
+        for (const auto node : this->literal_or_functions)
+        {
+            if (node->conditional_node)
+            {
+                const auto antecedent = node->conditional_node->antecedent->get_literals(parameters, constants, predicates);
+                const auto consequence = node->conditional_node->consequence->get_literals(parameters, constants, predicates);
+                result.push_back(formalism::Implication(std::move(antecedent), std::move(consequence)));
+            }
+        }
+
+        return result;
+    }
+
+    formalism::FunctionList LiteralOrConditionalOrFunctionListNode::get_functions(const std::map<std::string, formalism::Parameter>& parameters,
+                                                                                  const std::map<std::string, formalism::Object>& constants,
+                                                                                  const std::map<std::string, formalism::Predicate>& functions) const
     {
         formalism::FunctionList result;
 
@@ -719,7 +777,7 @@ namespace parsers
     /* ActionBodyNode */
 
     ActionBodyNode::ActionBodyNode(boost::optional<boost::fusion::vector<std::string, LiteralListNode*>>& precondition,
-                                   boost::optional<boost::fusion::vector<std::string, LiteralOrFunctionListNode*>>& effect) :
+                                   boost::optional<boost::fusion::vector<std::string, LiteralOrConditionalOrFunctionListNode*>>& effect) :
         precondition(nullptr),
         effect(nullptr)
     {
@@ -734,7 +792,9 @@ namespace parsers
         }
     }
 
-    ActionBodyNode::ActionBodyNode(LiteralListNode* precondition, LiteralOrFunctionListNode* effect) : precondition(precondition), effect(effect) {}
+    ActionBodyNode::ActionBodyNode(LiteralListNode* precondition, LiteralOrConditionalOrFunctionListNode* effect) : precondition(precondition), effect(effect)
+    {
+    }
 
     ActionBodyNode::~ActionBodyNode()
     {
@@ -751,7 +811,7 @@ namespace parsers
         }
     }
 
-    std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::Function>
+    std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::ImplicationList, formalism::Function>
     ActionBodyNode::get_precondition_effect_cost(const std::map<std::string, formalism::Parameter>& parameters,
                                                  const std::map<std::string, formalism::Object>& constants,
                                                  const std::map<std::string, formalism::Predicate>& predicates,
@@ -760,6 +820,7 @@ namespace parsers
         const auto precondition_literals = precondition->get_literals(parameters, constants, predicates);
         const auto effect_literals = effect->get_literals(parameters, constants, predicates);
         const auto effect_functions = effect->get_functions(parameters, constants, functions);
+        const auto effect_conditional = effect->get_conditionals(parameters, constants, predicates);
         formalism::Function cost_function = nullptr;
 
         if (effect_functions.size() > 1)
@@ -780,7 +841,7 @@ namespace parsers
             throw std::invalid_argument("missing cost function; can't implicitily define unit cost without \"total-cost\" function");
         }
 
-        return std::make_tuple(precondition_literals, effect_literals, cost_function);
+        return std::make_tuple(precondition_literals, effect_literals, effect_conditional, cost_function);
     }
 
     /* ActionNode */
@@ -839,8 +900,8 @@ namespace parsers
             }
         }
 
-        const auto& [precondition, effect, cost] = body->get_precondition_effect_cost(action_parameter_map, constants, predicates, functions);
-        return formalism::create_action_schema(action_name, action_parameter_list, precondition, effect, cost);
+        const auto& [precondition, effect, cond_effect, cost] = body->get_precondition_effect_cost(action_parameter_map, constants, predicates, functions);
+        return formalism::create_action_schema(action_name, action_parameter_list, precondition, effect, cond_effect, cost);
     }
 
     /* DomainNode */
@@ -1163,7 +1224,7 @@ namespace parsers
 
     ProblemNode::ProblemNode(ProblemHeaderNode* problem_domain_name,
                              boost::optional<TypedNameListNode*> objects,
-                             LiteralOrFunctionListNode* initial,
+                             LiteralOrConditionalOrFunctionListNode* initial,
                              LiteralListNode* goal,
                              boost::optional<AtomNode*> metric) :
         problem_domain_name(problem_domain_name),

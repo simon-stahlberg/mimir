@@ -29,13 +29,20 @@ namespace planners
         }
     }
 
+    FlatImplication::FlatImplication(std::vector<FlatLiteral>&& antecedent, std::vector<FlatLiteral>&& consequence) :
+        antecedent(std::move(antecedent)),
+        consequence(std::move(consequence))
+    {
+    }
+
     FlatActionSchema::FlatActionSchema(const formalism::DomainDescription& domain, const formalism::ActionSchema& action_schema) :
         parameter_indices_(),
         index_parameters_(),
         source(action_schema),
         static_precondition(),
         fluent_precondition(),
-        effect(),
+        unconditional_effect(),
+        conditional_effect(),
         cost_arguments(),
         arity(static_cast<uint32_t>(action_schema->arity))
     {
@@ -59,9 +66,27 @@ namespace planners
             }
         }
 
-        for (const auto& literal : action_schema->effect)
+        for (const auto& literal : action_schema->unconditional_effect)
         {
-            effect.emplace_back(literal, parameter_indices_);
+            unconditional_effect.emplace_back(literal, parameter_indices_);
+        }
+
+        for (const auto& [antecedent, consequence] : action_schema->conditional_effect)
+        {
+            std::vector<FlatLiteral> flat_antecedent;
+            std::vector<FlatLiteral> flat_consequence;
+
+            for (const auto& literal : antecedent)
+            {
+                flat_antecedent.emplace_back(literal, parameter_indices_);
+            }
+
+            for (const auto& literal : consequence)
+            {
+                flat_consequence.emplace_back(literal, parameter_indices_);
+            }
+
+            conditional_effect.emplace_back(std::move(flat_antecedent), std::move(flat_consequence));
         }
 
         if (action_schema->cost->has_atom())

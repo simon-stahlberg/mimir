@@ -242,11 +242,31 @@ namespace planners
 
         // Get the effect of the ground action
 
-        formalism::LiteralList effect;
+        formalism::LiteralList unconditional_effect;
 
-        for (const auto& literal : flat_action_schema_.effect)
+        for (const auto& literal : flat_action_schema_.unconditional_effect)
         {
-            effect.emplace_back(ground_literal(literal, terms));
+            unconditional_effect.emplace_back(ground_literal(literal, terms));
+        }
+
+        formalism::ImplicationList conditional_effect;
+
+        for (const auto& flat_implication : flat_action_schema_.conditional_effect)
+        {
+            formalism::LiteralList antecedent;
+            formalism::LiteralList consequence;
+
+            for (const auto& literal : flat_implication.antecedent)
+            {
+                antecedent.emplace_back(ground_literal(literal, terms));
+            }
+
+            for (const auto& literal : flat_implication.consequence)
+            {
+                consequence.emplace_back(ground_literal(literal, terms));
+            }
+
+            conditional_effect.emplace_back(std::move(antecedent), std::move(consequence));
         }
 
         // Get the cost of the ground action
@@ -272,7 +292,13 @@ namespace planners
 
         // Finally, create the ground action
 
-        return formalism::create_action(problem_, flat_action_schema_.source, std::move(terms), std::move(precondition), std::move(effect), cost);
+        return formalism::create_action(problem_,
+                                        flat_action_schema_.source,
+                                        std::move(terms),
+                                        std::move(precondition),
+                                        std::move(unconditional_effect),
+                                        std::move(conditional_effect),
+                                        cost);
     }
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :

@@ -57,13 +57,14 @@ namespace parsers
         qi::rule<std::string::iterator, FunctionDeclarationNode*(), ascii::space_type> FUNCTION_DECLARATION;
         qi::rule<std::string::iterator, FunctionDeclarationListNode*(), ascii::space_type> FUNCTION_DECLARATION_LIST;
         qi::rule<std::string::iterator, FunctionNode*(), ascii::space_type> FUNCTION;
+        qi::rule<std::string::iterator, ConditionalNode*(), ascii::space_type> CONDITIONAL;
         qi::rule<std::string::iterator, AtomNode*(), ascii::space_type> ATOM;
         qi::rule<std::string::iterator, LiteralNode*(), ascii::space_type> LITERAL;
         qi::rule<std::string::iterator, LiteralListNode*(), ascii::space_type> CONJUNCTIVE_LITERALS;
-        qi::rule<std::string::iterator, LiteralListNode*(), ascii::space_type> PRECONDITION;
-        qi::rule<std::string::iterator, LiteralOrFunctionNode*(), ascii::space_type> LITERAL_OR_FUNCTION;
-        qi::rule<std::string::iterator, LiteralOrFunctionListNode*(), ascii::space_type> CONJUNCTIVE_LITERAL_OR_FUNCTIONS;
-        qi::rule<std::string::iterator, LiteralOrFunctionListNode*(), ascii::space_type> EFFECT;
+        qi::rule<std::string::iterator, LiteralListNode*(), ascii::space_type> ONE_OR_MORE_LITERALS;
+        qi::rule<std::string::iterator, LiteralOrConditionalOrFunctionNode*(), ascii::space_type> LITERAL_OR_CONDITIONAL_OR_FUNCTION;
+        qi::rule<std::string::iterator, LiteralOrConditionalOrFunctionListNode*(), ascii::space_type> CONJUNCTIVE_LITERAL_OR_CONDITIONAL_OR_FUNCTIONS;
+        qi::rule<std::string::iterator, LiteralOrConditionalOrFunctionListNode*(), ascii::space_type> ONE_OR_MORE_LITERALS_CONDITIONALS_FUNCTIONS;
         qi::rule<std::string::iterator, ActionBodyNode*(), ascii::space_type> ACTION_BODY;
         qi::rule<std::string::iterator, ActionNode*(), ascii::space_type> ACTION;
         qi::rule<std::string::iterator, NameNode*(), ascii::space_type> DOMAIN_HEADER;
@@ -119,10 +120,11 @@ namespace parsers
                                   | (*VARIABLE)[_val = new_<TypedVariableListNode>(_1)];  // untyped variables, and typed variables with recursion below
 
             // Requirements
-            REQUIREMENT = string(":strips")[_val = new_<RequirementNode>(_1)]                     // strips requirement
-                          | string(":typing")[_val = new_<RequirementNode>(_1)]                   // typing requirement
-                          | string(":action-costs")[_val = new_<RequirementNode>(_1)]             // action-costs requirement
-                          | string(":negative-preconditions")[_val = new_<RequirementNode>(_1)];  // negative precondition requirement
+            REQUIREMENT = string(":strips")[_val = new_<RequirementNode>(_1)]                    // strips requirement
+                          | string(":typing")[_val = new_<RequirementNode>(_1)]                  // typing requirement
+                          | string(":action-costs")[_val = new_<RequirementNode>(_1)]            // action-costs requirement
+                          | string(":negative-preconditions")[_val = new_<RequirementNode>(_1)]  // negative precondition requirement
+                          | string(":conditional-effects")[_val = new_<RequirementNode>(_1)];    // conditional effects requirement
 
             REQUIREMENT_LIST = ((string("(") >> string(":requirements")) > *REQUIREMENT > string(")"))[_val = new_<RequirementListNode>(_2)];
 
@@ -147,29 +149,33 @@ namespace parsers
             ATOM = ((string("(") >> NAME) > *TERM >> string(")"))[_val = new_<AtomNode>(at_c<1>(_1), at_c<0>(_2))];
 
             LITERAL = ((string("(") >> string("not")) >> ATOM >> string(")"))[_val = new_<LiteralNode>(true, _3)]  // negated
-                      | FUNCTION                                                                                   // action-costs
                       | ATOM[_val = new_<LiteralNode>(false, _1)];                                                 // not negated
 
             CONJUNCTIVE_LITERALS = (((string("(") >> string("and")) > *LITERAL) >> string(")"))[_val = new_<LiteralListNode>(at_c<1>(_1))];
 
-            PRECONDITION = CONJUNCTIVE_LITERALS[_val = _1]                                                             // forward the conjunctive literals node
-                           | LITERAL[_val = new_<LiteralListNode>(_1)];                                                // create a new list of size 1
+            ONE_OR_MORE_LITERALS = CONJUNCTIVE_LITERALS[_val = _1]               // forward the conjunctive literals node
+                                   | LITERAL[_val = new_<LiteralListNode>(_1)];  // create a new list of size 1
 
             FUNCTION = (string("(") >> NAME >> ATOM >> double_ >> string(")"))[_val = new_<FunctionNode>(_2, _3, _4)]  // constant value
                        | (string("(") >> NAME >> ATOM >> ATOM >> string(")"))[_val = new_<FunctionNode>(_2, _3, _4)];  // variable value
 
-            LITERAL_OR_FUNCTION =
-                ((string("(") >> string("not")) >> ATOM >> string(")"))[_val = new_<LiteralOrFunctionNode>(new_<LiteralNode>(true, _3))]  // negated
-                | FUNCTION[_val = new_<LiteralOrFunctionNode>(_1)]                                                                        // action-costs
-                | ATOM[_val = new_<LiteralOrFunctionNode>(new_<LiteralNode>(false, _1))];                                                 // not negated
+            CONDITIONAL = (string("(") >> string("when") >> ONE_OR_MORE_LITERALS >> ONE_OR_MORE_LITERALS >> string(")"))[_val = new_<ConditionalNode>(_3, _4)];
 
-            CONJUNCTIVE_LITERAL_OR_FUNCTIONS =
-                (((string("(") >> string("and")) > *LITERAL_OR_FUNCTION) >> string(")"))[_val = new_<LiteralOrFunctionListNode>(at_c<1>(_1))];
+            LITERAL_OR_CONDITIONAL_OR_FUNCTION = ((string("(") >> string("not")) >> ATOM
+                                                  >> string(")"))[_val = new_<LiteralOrConditionalOrFunctionNode>(new_<LiteralNode>(true, _3))]  // negated
+                                                 | CONDITIONAL[_val = new_<LiteralOrConditionalOrFunctionNode>(_1)]                              // conditional
+                                                 | FUNCTION[_val = new_<LiteralOrConditionalOrFunctionNode>(_1)]                                 // action-costs
+                                                 | ATOM[_val = new_<LiteralOrConditionalOrFunctionNode>(new_<LiteralNode>(false, _1))];          // not negated
 
-            EFFECT = CONJUNCTIVE_LITERAL_OR_FUNCTIONS[_val = _1]                         // forward the conjunctive literal or functions
-                     | LITERAL_OR_FUNCTION[_val = new_<LiteralOrFunctionListNode>(_1)];  // create a new list of size 1
+            CONJUNCTIVE_LITERAL_OR_CONDITIONAL_OR_FUNCTIONS = (((string("(") >> string("and")) > *LITERAL_OR_CONDITIONAL_OR_FUNCTION)
+                                                               >> string(")"))[_val = new_<LiteralOrConditionalOrFunctionListNode>(at_c<1>(_1))];
 
-            ACTION_BODY = (-(string(":precondition") > PRECONDITION) > -(string(":effect") > EFFECT))[_val = new_<ActionBodyNode>(_1, _2)];
+            ONE_OR_MORE_LITERALS_CONDITIONALS_FUNCTIONS =
+                CONJUNCTIVE_LITERAL_OR_CONDITIONAL_OR_FUNCTIONS[_val = _1]                                      // forward the conjunctive literal or functions
+                | LITERAL_OR_CONDITIONAL_OR_FUNCTION[_val = new_<LiteralOrConditionalOrFunctionListNode>(_1)];  // create a new list of size 1
+
+            ACTION_BODY = (-(string(":precondition") > ONE_OR_MORE_LITERALS)
+                           > -(string(":effect") > ONE_OR_MORE_LITERALS_CONDITIONALS_FUNCTIONS))[_val = new_<ActionBodyNode>(_1, _2)];
 
             ACTION = ((string("(") >> string(":action")) > NAME > string(":parameters") > string("(") > TYPED_VARIABLE_LIST > string(")") > ACTION_BODY
                       > string(")"))[_val = new_<ActionNode>(_2, _5, _7)];
@@ -255,12 +261,12 @@ namespace parsers
         qi::rule<std::string::iterator, TermNode*(), ascii::space_type> TERM;
         qi::rule<std::string::iterator, TypedNameListNode*(), ascii::space_type> TYPED_NAME_LIST;
         qi::rule<std::string::iterator, TypedNameListNode*(), ascii::space_type> OBJECT_LIST;
-        qi::rule<std::string::iterator, LiteralOrFunctionListNode*(), ascii::space_type> INITIAL_LIST;
+        qi::rule<std::string::iterator, LiteralOrConditionalOrFunctionListNode*(), ascii::space_type> INITIAL_LIST;
         qi::rule<std::string::iterator, LiteralListNode*(), ascii::space_type> GOAL_LIST;
         qi::rule<std::string::iterator, AtomNode*(), ascii::space_type> ATOM;
         qi::rule<std::string::iterator, LiteralNode*(), ascii::space_type> LITERAL;
         qi::rule<std::string::iterator, FunctionNode*(), ascii::space_type> FUNCTION;
-        qi::rule<std::string::iterator, LiteralOrFunctionNode*(), ascii::space_type> LITERAL_OR_FUNCTION;
+        qi::rule<std::string::iterator, LiteralOrConditionalOrFunctionNode*(), ascii::space_type> LITERAL_OR_FUNCTION;
         qi::rule<std::string::iterator, LiteralListNode*(), ascii::space_type> CONJUNCTIVE_LITERALS;
         qi::rule<std::string::iterator, LiteralListNode*(), ascii::space_type> CONDITION;
         qi::rule<std::string::iterator, AtomNode*(), ascii::space_type> METRIC;
@@ -322,7 +328,7 @@ namespace parsers
             FUNCTION = (string("(") >> string("=") >> ATOM >> double_
                         >> string(")"))[_val = new_<FunctionNode>(new_<NameNode>('=', std::vector<CharacterNode*>()), _3, _4)];
 
-            LITERAL_OR_FUNCTION = LITERAL[_val = new_<LiteralOrFunctionNode>(_1)] | FUNCTION[_val = new_<LiteralOrFunctionNode>(_1)];
+            LITERAL_OR_FUNCTION = LITERAL[_val = new_<LiteralOrConditionalOrFunctionNode>(_1)] | FUNCTION[_val = new_<LiteralOrConditionalOrFunctionNode>(_1)];
 
             CONJUNCTIVE_LITERALS = (((string("(") >> string("and")) > *LITERAL) >> string(")"))[_val = new_<LiteralListNode>(at_c<1>(_1))];
 
@@ -332,7 +338,7 @@ namespace parsers
             // Objects
             OBJECT_LIST = ((string("(") >> string(":objects")) > TYPED_NAME_LIST >> string(")"))[_val = at_c<0>(_2)];
 
-            INITIAL_LIST = ((string("(") >> string(":init")) > *LITERAL_OR_FUNCTION > string(")"))[_val = new_<LiteralOrFunctionListNode>(_2)];
+            INITIAL_LIST = ((string("(") >> string(":init")) > *LITERAL_OR_FUNCTION > string(")"))[_val = new_<LiteralOrConditionalOrFunctionListNode>(_2)];
 
             GOAL_LIST = (string("(") > string(":goal") > CONDITION > string(")"))[_val = _3];
 

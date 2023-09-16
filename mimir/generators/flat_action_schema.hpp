@@ -35,6 +35,15 @@ namespace planners
         FlatLiteral(const formalism::Literal& literal, const std::map<formalism::Object, uint32_t> parameter_indices);
     };
 
+    class FlatImplication
+    {
+      public:
+        std::vector<FlatLiteral> antecedent;
+        std::vector<FlatLiteral> consequence;
+
+        FlatImplication(std::vector<FlatLiteral>&& antecedent, std::vector<FlatLiteral>&& consequence);
+    };
+
     class FlatActionSchema
     {
       private:
@@ -45,7 +54,8 @@ namespace planners
         formalism::ActionSchema source;
         std::vector<FlatLiteral> static_precondition;
         std::vector<FlatLiteral> fluent_precondition;
-        std::vector<FlatLiteral> effect;
+        std::vector<FlatLiteral> unconditional_effect;
+        std::vector<FlatImplication> conditional_effect;
         std::vector<ParameterIndexOrConstantId> cost_arguments;
         uint32_t arity;
 
