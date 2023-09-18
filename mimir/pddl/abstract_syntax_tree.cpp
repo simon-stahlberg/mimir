@@ -454,7 +454,8 @@ namespace parsers
         predicates.clear();
     }
 
-    formalism::PredicateList PredicateListNode::get_predicates(const std::map<std::string, formalism::Type>& types) const
+    formalism::PredicateList PredicateListNode::get_predicates(const formalism::RequirementList& requirements,
+                                                               const std::map<std::string, formalism::Type>& types) const
     {
         formalism::PredicateList result;
         uint32_t pred_id = 0;
@@ -462,6 +463,13 @@ namespace parsers
         for (const auto predicate_node : predicates)
         {
             result.push_back(predicate_node->get_predicate(pred_id++, types));
+        }
+
+        if (std::count(requirements.cbegin(), requirements.cend(), ":equality"))
+        {
+            const auto lhs = formalism::create_object(0, "?lhs", types.at("object"));
+            const auto rhs = formalism::create_object(1, "?rhs", types.at("object"));
+            result.push_back(formalism::create_predicate(pred_id, "=", { lhs, rhs }));
         }
 
         return result;
@@ -488,7 +496,7 @@ namespace parsers
 
     formalism::Predicate FunctionDeclarationNode::get_function(const uint32_t id, const std::map<std::string, formalism::Type>& types) const
     {
-        if (to_lowercase(type->get_name()) != "number")
+        if (type && to_lowercase(type->get_name()) != "number")
         {
             throw std::invalid_argument("unsupported function output type");
         }
@@ -1070,13 +1078,14 @@ namespace parsers
         return result;
     }
 
-    std::map<std::string, formalism::Predicate> DomainNode::get_predicates(const std::map<std::string, formalism::Type>& types) const
+    std::map<std::string, formalism::Predicate> DomainNode::get_predicates(const formalism::RequirementList& requirements,
+                                                                           const std::map<std::string, formalism::Type>& types) const
     {
         std::map<std::string, formalism::Predicate> result;
 
         if (predicates)
         {
-            const auto predicate_list = predicates->get_predicates(types);
+            const auto predicate_list = predicates->get_predicates(requirements, types);
 
             for (const auto& predicate : predicate_list)
             {
@@ -1129,7 +1138,7 @@ namespace parsers
         const auto domain_requirements = (requirements != nullptr) ? (requirements->get_requirements()) : formalism::RequirementList();
         const auto domain_types = this->get_types();
         const auto domain_constants = this->get_constants(domain_types);
-        const auto domain_predicates = this->get_predicates(domain_types);
+        const auto domain_predicates = this->get_predicates(domain_requirements, domain_types);
         const auto domain_functions = this->get_functions(domain_types);
         const auto domain_actions = this->get_action_schemas(domain_types, domain_constants, domain_predicates, domain_functions);
 
@@ -1329,6 +1338,17 @@ namespace parsers
                 {
                     throw std::invalid_argument("expected operation to be \"=\"");
                 }
+            }
+        }
+
+        if (std::count(domain->requirements.cbegin(), domain->requirements.cend(), ":equality"))
+        {
+            for (const auto& [_, obj] : object_map)
+            {
+                const auto equality_predicate = predicate_map.at("=");
+                const auto equality_atom = formalism::create_atom(equality_predicate, { obj, obj });
+                const auto equality_literal = formalism::create_literal(equality_atom, false);
+                initial_list.push_back(equality_literal);
             }
         }
 

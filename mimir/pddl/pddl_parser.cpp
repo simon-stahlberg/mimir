@@ -43,6 +43,7 @@ namespace parsers
         // list of rules, the middle argument to the template is the return value of the grammar
         qi::rule<std::string::iterator, CharacterNode*()> ANY_CHAR;
         qi::rule<std::string::iterator, NameNode*()> NAME;
+        qi::rule<std::string::iterator, NameNode*()> NAME_OR_EQUALITY;
         qi::rule<std::string::iterator, VariableNode*(), ascii::space_type> VARIABLE;
         qi::rule<std::string::iterator, TypeNode*(), ascii::space_type> TYPE;
         qi::rule<std::string::iterator, TermNode*(), ascii::space_type> TERM;
@@ -97,20 +98,23 @@ namespace parsers
             // The following grammar implement PDDL with STRIPS, typing and negative preconditions.
 
             // Names
-            ANY_CHAR = alpha[_val = new_<CharacterNode>(_1)]                 // alphabetical character
-                       | alnum[_val = new_<CharacterNode>(_1)]               // alphanumerical character
-                       | char_('-')[_val = new_<CharacterNode>(_1)]          // dash character
-                       | char_('_')[_val = new_<CharacterNode>(_1)];         // underscore character
+            ANY_CHAR = alpha[_val = new_<CharacterNode>(_1)]          // alphabetical character
+                       | alnum[_val = new_<CharacterNode>(_1)]        // alphanumerical character
+                       | char_('-')[_val = new_<CharacterNode>(_1)]   // dash character
+                       | char_('_')[_val = new_<CharacterNode>(_1)];  // underscore character
 
-            NAME = (alpha >> *ANY_CHAR)[_val = new_<NameNode>(_1, _2)];      // a name must start with an alphabetical character
+            NAME = (alpha >> *ANY_CHAR)[_val = new_<NameNode>(_1, _2)];  // a name must start with an alphabetical character
+
+            NAME_OR_EQUALITY = NAME[_val = _1]                                                             // normal name
+                               | string("=")[_val = new_<NameNode>('=', std::vector<CharacterNode*> {})];  // equality '='
 
             VARIABLE = (char_('?') >> NAME)[_val = new_<VariableNode>(_2)];  // the symbol '?' indicates a variable, and is implicit
 
-            TYPE = NAME[_val = new_<TypeNode>(_1)]                           // user specified type
-                   | string("object")[_val = new_<TypeNode>(_1)];            // default type
+            TYPE = NAME[_val = new_<TypeNode>(_1)]                 // user specified type
+                   | string("object")[_val = new_<TypeNode>(_1)];  // default type
 
-            TERM = NAME[_val = new_<TermNode>(_1)]                           // term is a constant
-                   | VARIABLE[_val = new_<TermNode>(_1)];                    // term is a variable
+            TERM = NAME[_val = new_<TermNode>(_1)]         // term is a constant
+                   | VARIABLE[_val = new_<TermNode>(_1)];  // term is a variable
 
             // Lists
             TYPED_NAME_LIST = ((+NAME >> string("-") >> TYPE) > TYPED_NAME_LIST)[_val = new_<TypedNameListNode>(at_c<0>(_1), at_c<2>(_1), _2)]
@@ -124,7 +128,8 @@ namespace parsers
                           | string(":typing")[_val = new_<RequirementNode>(_1)]                  // typing requirement
                           | string(":action-costs")[_val = new_<RequirementNode>(_1)]            // action-costs requirement
                           | string(":negative-preconditions")[_val = new_<RequirementNode>(_1)]  // negative precondition requirement
-                          | string(":conditional-effects")[_val = new_<RequirementNode>(_1)];    // conditional effects requirement
+                          | string(":conditional-effects")[_val = new_<RequirementNode>(_1)]     // conditional effects requirement
+                          | string(":equality")[_val = new_<RequirementNode>(_1)];               // equality requirement
 
             REQUIREMENT_LIST = ((string("(") >> string(":requirements")) > *REQUIREMENT > string(")"))[_val = new_<RequirementListNode>(_2)];
 
@@ -146,7 +151,7 @@ namespace parsers
                 ((string("(") >> string(":functions")) > *FUNCTION_DECLARATION > string(")"))[_val = new_<FunctionDeclarationListNode>(_2)];
 
             // Actions
-            ATOM = ((string("(") >> NAME) > *TERM >> string(")"))[_val = new_<AtomNode>(at_c<1>(_1), at_c<0>(_2))];
+            ATOM = ((string("(") >> NAME_OR_EQUALITY) > *TERM >> string(")"))[_val = new_<AtomNode>(at_c<1>(_1), at_c<0>(_2))];
 
             LITERAL = ((string("(") >> string("not")) >> ATOM >> string(")"))[_val = new_<LiteralNode>(true, _3)]  // negated
                       | ATOM[_val = new_<LiteralNode>(false, _1)];                                                 // not negated

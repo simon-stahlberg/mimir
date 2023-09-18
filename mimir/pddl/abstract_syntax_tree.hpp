@@ -156,7 +156,7 @@ namespace parsers
 
         PredicateListNode(std::vector<PredicateNode*>& predicates);
         ~PredicateListNode() override;
-        formalism::PredicateList get_predicates(const std::map<std::string, formalism::Type>& types) const;
+        formalism::PredicateList get_predicates(const formalism::RequirementList& requirements, const std::map<std::string, formalism::Type>& types) const;
     };
 
     class FunctionDeclarationNode : public ASTNode
@@ -317,7 +317,8 @@ namespace parsers
       private:
         std::map<std::string, formalism::Type> get_types() const;
         std::map<std::string, formalism::Object> get_constants(const std::map<std::string, formalism::Type>& types) const;
-        std::map<std::string, formalism::Predicate> get_predicates(const std::map<std::string, formalism::Type>& types) const;
+        std::map<std::string, formalism::Predicate> get_predicates(const formalism::RequirementList& requirements,
+                                                                   const std::map<std::string, formalism::Type>& types) const;
         std::map<std::string, formalism::Predicate> get_functions(const std::map<std::string, formalism::Type>& types) const;
         std::vector<formalism::ActionSchema> get_action_schemas(const std::map<std::string, formalism::Type>& types,
                                                                 const std::map<std::string, formalism::Object>& constants,
