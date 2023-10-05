@@ -40,7 +40,13 @@ namespace formalism
         }
     }
 
-    Bitset::Bitset(std::size_t size) : data(size / (sizeof(std::size_t) * 8) + 1, 0) {}
+    Bitset::Bitset(std::size_t size) : data(size / (sizeof(std::size_t) * 8) + 1, block_zeroes) {}
+
+    Bitset::Bitset(std::size_t size, bool default_bit_value) :
+        data(size / (sizeof(std::size_t) * 8) + 1, default_bit_value ? block_ones : block_zeroes),
+        default_bit_value(default_bit_value)
+    {
+    }
 
     Bitset::Bitset(const Bitset& other) : data(other.data), default_bit_value(other.default_bit_value) {}
 
@@ -80,6 +86,19 @@ namespace formalism
         }
 
         data[index] |= (static_cast<std::size_t>(1) << offset);  // Set the bit at the offset
+    }
+
+    void Bitset::unset(std::size_t position)
+    {
+        const std::size_t index = position / block_size;   // Find the index in the vector
+        const std::size_t offset = position % block_size;  // Find the offset within the std::size_t
+
+        if (index >= data.size())
+        {
+            data.resize(index + 1, default_bit_value ? block_ones : block_zeroes);
+        }
+
+        data[index] &= ~(static_cast<std::size_t>(1) << offset);  // Set the bit at the offset
     }
 
     bool Bitset::get(std::size_t position) const

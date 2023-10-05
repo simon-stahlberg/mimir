@@ -394,7 +394,7 @@ namespace formalism
 
         auto bitset = state->bitset_;
         bitset |= action->applicability_positive_precondition_bitset_;
-        bitset &= ~action->applicability_negative_precondition_bitset_;
+        bitset &= action->applicability_negative_precondition_bitset_;
         return state->bitset_ == bitset;
     }
 
@@ -412,7 +412,7 @@ namespace formalism
             for (std::size_t index = 0; index < num_conditional_effects; ++index)
             {
                 if ((bitset == (bitset | action->conditional_positive_precondition_bitsets_[index])) &&  // positive preconditions
-                    (bitset == (bitset & ~action->conditional_negative_precondition_bitsets_[index])))   // negative preconditions
+                    (bitset == (bitset & action->conditional_negative_precondition_bitsets_[index])))    // negative preconditions
                 {
                     applicable_conditional_effects.emplace_back(index);
                 }
@@ -420,11 +420,11 @@ namespace formalism
 
             // Apply the delete lists
 
-            bitset &= ~action->unconditional_negative_effect_bitset_;
+            bitset &= action->unconditional_negative_effect_bitset_;
 
             for (const auto& index : applicable_conditional_effects)
             {
-                bitset &= ~action->conditional_negative_effect_bitsets_[index];
+                bitset &= action->conditional_negative_effect_bitsets_[index];
             }
 
             // Apply the add lists
@@ -440,7 +440,7 @@ namespace formalism
         {
             // Apply the delete list, then the add list
 
-            bitset &= ~action->unconditional_negative_effect_bitset_;
+            bitset &= action->unconditional_negative_effect_bitset_;
             bitset |= action->unconditional_positive_effect_bitset_;
         }
 

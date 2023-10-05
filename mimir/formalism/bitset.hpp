@@ -22,6 +22,8 @@ namespace formalism
         // Initialize the bitset with a certain size
         Bitset(std::size_t size);
 
+        Bitset(std::size_t size, bool default_bit_value);
+
         Bitset(const Bitset& other);
 
         Bitset(Bitset&& other) noexcept;
@@ -32,6 +34,9 @@ namespace formalism
 
         // Set a bit at a specific position
         void set(std::size_t position);
+
+        // Unset a bit at a specific position
+        void unset(std::size_t position);
 
         // Get the value of a bit at a specific position
         bool get(std::size_t position) const;

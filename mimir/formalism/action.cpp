@@ -15,7 +15,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #include "action.hpp"
 #include "help_functions.hpp"
 
@@ -99,7 +98,7 @@ namespace formalism
 
             if (literal->negated)
             {
-                negative.set(rank);
+                negative.unset(rank);
             }
             else
             {
@@ -115,10 +114,10 @@ namespace formalism
                            formalism::LiteralList&& unconditional_effect,
                            formalism::ImplicationList&& conditional_effect,
                            double cost) :
-        applicability_positive_precondition_bitset_(0),
-        applicability_negative_precondition_bitset_(0),
-        unconditional_positive_effect_bitset_(0),
-        unconditional_negative_effect_bitset_(0),
+        applicability_positive_precondition_bitset_(0, false),
+        applicability_negative_precondition_bitset_(0, true),
+        unconditional_positive_effect_bitset_(0, false),
+        unconditional_negative_effect_bitset_(0, true),
         conditional_positive_precondition_bitsets_(),
         conditional_negative_precondition_bitsets_(),
         conditional_positive_effect_bitsets_(),
@@ -136,10 +135,10 @@ namespace formalism
 
         for (const auto& [antecedent, consequence] : conditional_effect_)
         {
-            formalism::Bitset positive_precondition(0);
-            formalism::Bitset negative_precondition(0);
-            formalism::Bitset positive_effect(0);
-            formalism::Bitset negative_effect(0);
+            formalism::Bitset positive_precondition(0, false);
+            formalism::Bitset negative_precondition(0, true);
+            formalism::Bitset positive_effect(0, false);
+            formalism::Bitset negative_effect(0, true);
 
             convert_to_bitsets(problem, antecedent, positive_precondition, negative_precondition);
             convert_to_bitsets(problem, consequence, positive_effect, negative_effect);

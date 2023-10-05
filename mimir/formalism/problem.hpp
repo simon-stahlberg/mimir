@@ -64,6 +64,8 @@ namespace formalism
 
         formalism::AtomList get_encountered_atoms() const;
 
+        uint32_t num_encountered_atoms() const;
+
         formalism::Object get_object(uint32_t object_id) const;
 
         uint32_t num_objects() const;

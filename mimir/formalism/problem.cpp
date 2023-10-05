@@ -141,6 +141,8 @@ namespace formalism
         return atoms;
     }
 
+    uint32_t ProblemImpl::num_encountered_atoms() const { return static_cast<uint32_t>(atom_ranks_.size()); }
+
     formalism::Object ProblemImpl::get_object(uint32_t object_id) const
     {
         assert(object_id < objects.size());
