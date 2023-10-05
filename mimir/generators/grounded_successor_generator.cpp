@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+#include "../algorithms/robin_map.hpp"
 #include "grounded_successor_generator.hpp"
 
 #include <algorithm>
@@ -87,7 +87,7 @@ namespace planners
     std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const formalism::ProblemDescription& problem,
                                                                                   const formalism::ActionList& ground_actions)
     {
-        std::unordered_map<formalism::Atom, uint32_t> atom_occurrances;
+        tsl::robin_map<formalism::Atom, uint32_t> atom_occurrances;
 
         // Find unique atoms from ground action preconditions
         for (const auto& action : ground_actions)

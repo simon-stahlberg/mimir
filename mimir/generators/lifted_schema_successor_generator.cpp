@@ -25,7 +25,6 @@
 #include <boost/dynamic_bitset.hpp>
 #include <limits>
 #include <set>
-#include <unordered_map>
 
 namespace planners
 {

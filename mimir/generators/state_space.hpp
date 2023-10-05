@@ -9,7 +9,6 @@
 #include "successor_generator.hpp"
 
 #include <limits>
-#include <unordered_map>
 #include <vector>
 
 namespace planners
@@ -31,7 +30,7 @@ namespace planners
         std::vector<std::vector<formalism::State>> states_by_distance_;
         std::vector<std::vector<formalism::Transition>> forward_transitions_;
         std::vector<std::vector<formalism::Transition>> backward_transitions_;
-        std::unordered_map<formalism::State, uint64_t> state_indices_;
+        tsl::robin_map<formalism::State, uint64_t> state_indices_;
         mutable std::vector<std::vector<int32_t>> state_distances_;
 
         // Since we return references of internal vectors, ensure that only create_statespaces can create this object.

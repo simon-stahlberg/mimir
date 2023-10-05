@@ -15,7 +15,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #include "atom.hpp"
 #include "help_functions.hpp"
 
@@ -191,7 +190,7 @@ namespace formalism
 
     formalism::ObjectList get_unique_objects(const formalism::AtomList& atom_list, int32_t argument_index)
     {
-        std::unordered_set<formalism::Object> object_set;
+        tsl::robin_set<formalism::Object> object_set;
 
         for (const auto& atom : atom_list)
         {

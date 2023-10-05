@@ -1,6 +1,7 @@
 #if !defined(PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_)
 #define PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_
 
+#include "../algorithms/robin_map.hpp"
 #include "../formalism/action.hpp"
 #include "../formalism/action_schema.hpp"
 #include "../formalism/problem.hpp"
@@ -11,8 +12,6 @@
 #include <algorithm>
 #include <chrono>
 #include <memory>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 namespace planners
@@ -47,7 +46,7 @@ namespace planners
         formalism::DomainDescription domain_;
         formalism::ProblemDescription problem_;
         planners::FlatActionSchema flat_action_schema_;
-        std::unordered_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
+        tsl::robin_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
 
         std::vector<Assignment> to_vertex_assignment;
         std::vector<AssignmentPair> statically_consistent_assignments;

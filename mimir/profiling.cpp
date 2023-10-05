@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "algorithms/robin_map.hpp"
 #include "generators/grounded_successor_generator.hpp"
 #include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
@@ -47,7 +48,7 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
         uint32_t depth;
     };
 
-    std::unordered_map<formalism::State, uint32_t> state_indices;
+    tsl::robin_map<formalism::State, uint32_t> state_indices;
     std::deque<Frame> frame_list;
     std::deque<uint32_t> open_list;
 
@@ -121,7 +122,7 @@ void dijkstra(const formalism::ProblemDescription& problem, const planners::Succ
         double f;
     };
 
-    std::unordered_map<formalism::State, uint32_t> state_indices;
+    tsl::robin_map<formalism::State, uint32_t> state_indices;
     std::deque<Frame> frame_list;
     const auto comparator = [](const std::pair<double, int>& lhs, const std::pair<double, int>& rhs) { return lhs.first > rhs.first; };
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, decltype(comparator)> priority_queue(comparator);

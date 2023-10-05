@@ -8,7 +8,6 @@
 #include "successor_generator.hpp"
 
 #include <memory>
-#include <unordered_set>
 #include <vector>
 
 namespace planners

@@ -1,10 +1,11 @@
 #if !defined(FORMALISM_DECLARATIONS_HPP_)
 #define FORMALISM_DECLARATIONS_HPP_
 
+#include "../algorithms/robin_map.hpp"
+#include "../algorithms/robin_set.hpp"
+
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 namespace formalism
@@ -20,7 +21,7 @@ namespace formalism
     class AtomImpl;
     using Atom = std::shared_ptr<AtomImpl>;
     using AtomList = std::vector<Atom>;
-    using AtomSet = std::unordered_set<formalism::Atom>;
+    using AtomSet = tsl::robin_set<formalism::Atom>;
 
     class DomainImpl;
     using DomainDescription = std::shared_ptr<DomainImpl>;
@@ -40,12 +41,12 @@ namespace formalism
     using ObjectList = std::vector<Object>;
     using Parameter = Object;
     using ParameterList = ObjectList;
-    using ParameterAssignment = std::unordered_map<Parameter, Object>;
+    using ParameterAssignment = tsl::robin_map<Parameter, Object>;
 
     class PredicateImpl;
     using Predicate = std::shared_ptr<PredicateImpl>;
     using PredicateList = std::vector<Predicate>;
-    using PredicateSet = std::unordered_set<formalism::Predicate>;
+    using PredicateSet = tsl::robin_set<formalism::Predicate>;
 
     class ProblemImpl;
     using ProblemDescription = std::shared_ptr<ProblemImpl>;

@@ -1,6 +1,7 @@
 #if !defined(FORMALISM_PROBLEM_HPP_)
 #define FORMALISM_PROBLEM_HPP_
 
+#include "../algorithms/robin_map.hpp"
 #include "action_schema.hpp"
 #include "atom.hpp"
 #include "domain.hpp"
@@ -20,7 +21,7 @@ namespace formalism
       private:
         formalism::AtomSet static_atoms_;
         std::vector<bool> predicate_id_to_static_;
-        mutable std::unordered_map<formalism::Atom, uint32_t> atom_ranks_;
+        mutable tsl::robin_map<formalism::Atom, uint32_t> atom_ranks_;
         mutable formalism::AtomList rank_to_atom_;
         mutable std::vector<uint32_t> rank_to_predicate_id_;
         mutable std::vector<uint32_t> rank_to_arity_;
