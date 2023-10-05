@@ -22,7 +22,10 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstddef>
+#include <cstdlib>
 #include <deque>
+#include <iostream>
 #include <numeric>
 #include <queue>
 #include <vector>
@@ -35,6 +38,45 @@ namespace fs = std::filesystem;
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #endif
+
+// Global variables to keep track of memory allocation and deallocation
+std::size_t totalMemoryAllocated = 0;
+std::size_t totalMemoryDeallocated = 0;
+
+// Override the new operator
+void* operator new(std::size_t size)
+{
+    auto pointer = static_cast<std::size_t*>(std::malloc(size + sizeof(std::size_t)));
+
+    if (pointer)
+    {
+        pointer[0] = size;
+        totalMemoryAllocated += size;
+        return pointer + 1;
+    }
+    else
+    {
+        throw std::bad_alloc();
+    }
+}
+
+// Override the delete operator
+void operator delete(void* ptr) noexcept
+{
+    if (ptr)
+    {
+        const auto original_pointer = static_cast<std::size_t*>(ptr) - 1;
+        const auto size = *original_pointer;
+        totalMemoryDeallocated += size;
+        std::free(original_pointer);
+    }
+}
+
+// Override the new[] operator
+void* operator new[](std::size_t size) { return operator new(size); }
+
+// Override the delete[] operator
+void operator delete[](void* ptr) noexcept { operator delete(ptr); }
 
 std::vector<std::string> successor_generator_types() { return std::vector<std::string>({ "automatic", "lifted", "grounded" }); }
 
@@ -80,7 +122,8 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
         {
             const auto time_depth = std::chrono::high_resolution_clock::now();
             const auto time_depth_ms = std::chrono::duration_cast<std::chrono::milliseconds>(time_depth - time_start).count();
-            std::cout << "[g = " << last_depth << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_depth_ms << " ms]" << std::endl;
+            std::cout << "[g = " << last_depth << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_depth_ms << " ms; ";
+            std::cout << ((totalMemoryAllocated - totalMemoryDeallocated) / 1024) << " KiB]" << std::endl;
             last_depth = frame.depth;
         }
 
@@ -261,12 +304,9 @@ int main(int argc, char* argv[])
     if (generator == planners::SuccessorGeneratorType::GROUNDED)
     {
         const auto grounded_successor_generator = std::static_pointer_cast<planners::GroundedSuccessorGenerator>(successor_generator);
-        std::cout << "Number of grounded actions: " << grounded_successor_generator->get_actions().size() << std::endl;
-
-        // for (const auto& action : grounded_successor_generator->get_actions())
-        // {
-        //     std::cout << action << ": " << action->cost << std::endl;
-        // }
+        std::cout << "Number of ground actions: " << grounded_successor_generator->get_actions().size() << std::endl;
+        std::cout << "Number of atoms: " << problem->get_encountered_atoms().size() << std::endl;
+        std::cout << "Number of static atoms: " << problem->get_static_atoms().size() << std::endl;
     }
 
     if (search_name == "bfs")
