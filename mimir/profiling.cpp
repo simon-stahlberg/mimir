@@ -40,18 +40,20 @@ namespace fs = std::experimental::filesystem;
 #endif
 
 // Global variables to keep track of memory allocation and deallocation
-std::size_t totalMemoryAllocated = 0;
-std::size_t totalMemoryDeallocated = 0;
+std::size_t total_memory_allocated = 0;
+std::size_t total_memory_deallocated = 0;
+std::size_t peak_memory_usage = 0;
 
 // Override the new operator
 void* operator new(std::size_t size)
 {
-    auto pointer = static_cast<std::size_t*>(std::malloc(size + sizeof(std::size_t)));
+    const auto pointer = static_cast<int32_t*>(std::malloc(size + sizeof(int32_t)));
 
     if (pointer)
     {
         pointer[0] = size;
-        totalMemoryAllocated += size;
+        total_memory_allocated += size;
+        peak_memory_usage = std::max(peak_memory_usage, total_memory_allocated - total_memory_deallocated);
         return pointer + 1;
     }
     else
@@ -65,9 +67,9 @@ void operator delete(void* ptr) noexcept
 {
     if (ptr)
     {
-        const auto original_pointer = static_cast<std::size_t*>(ptr) - 1;
+        const auto original_pointer = static_cast<int32_t*>(ptr) - 1;
         const auto size = *original_pointer;
-        totalMemoryDeallocated += size;
+        total_memory_deallocated += static_cast<std::size_t>(size);
         std::free(original_pointer);
     }
 }
@@ -90,8 +92,8 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
         uint32_t depth;
     };
 
-    tsl::robin_map<formalism::State, uint32_t> state_indices;
-    std::deque<Frame> frame_list;
+    tsl::robin_map<formalism::State, uint32_t> state_indices;  // 39 % memory. All the states require 31 % memory, the internal bitsets require 7 % memory.
+    std::deque<Frame> frame_list;                              // 10.5 % memory
     std::deque<uint32_t> open_list;
 
     {  // Initialize data-structures
@@ -123,7 +125,8 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
             const auto time_depth = std::chrono::high_resolution_clock::now();
             const auto time_depth_ms = std::chrono::duration_cast<std::chrono::milliseconds>(time_depth - time_start).count();
             std::cout << "[g = " << last_depth << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_depth_ms << " ms; ";
-            std::cout << ((totalMemoryAllocated - totalMemoryDeallocated) / 1024) << " KiB]" << std::endl;
+            std::cout << ((total_memory_allocated - total_memory_deallocated) / 1024) << " KiB current; " << (peak_memory_usage / 1024) << " KiB peak]"
+                      << std::endl;
             last_depth = frame.depth;
         }
 
