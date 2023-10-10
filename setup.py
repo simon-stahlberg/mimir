@@ -45,7 +45,14 @@ class CMakeBuild(build_ext):
         )
 
         # Copy relevant files to output directory
-        shutil.copytree(temp_directory / "mimir-stubs", output_directory / "mimir-stubs")
+
+        # Copy stub files
+        if Path.exists(temp_directory / "mimir-stubs"):
+            shutil.copytree(temp_directory / "mimir-stubs", output_directory / "mimir-stubs")
+        elif Path.exists(temp_directory / "mimir.pyi"):
+            shutil.copy(temp_directory / "mimir.pyi", output_directory / "mimir.pyi")
+
+        # Copy the shared object file
         if Path.exists(temp_directory / "mimir.so"):
             shutil.copy(temp_directory / "mimir.so", output_directory / "mimir.so")
         elif Path.exists(temp_directory / "Release" / "mimir.dll"):
