@@ -24,7 +24,7 @@ To simply compile Mimir, you can use Conan to take care of the dependencies auto
 
 To begin using Mimir, follow the instructions below (Debian):
 
-1. Install all dependencies: `apt-get update && apt-get install python3 python3-dev python3-pip g++ libboost-dev cmake make`
+1. Install all dependencies: `apt-get update && apt-get install python3 python3-dev python3-pip g++ libboost-dev libgtest-dev cmake make`
 
 2. Afterwards, you can install the package by: `pip install .`
 
