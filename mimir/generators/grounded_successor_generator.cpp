@@ -87,6 +87,9 @@ namespace planners
     std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const formalism::ProblemDescription& problem,
                                                                                   const formalism::ActionList& ground_actions)
     {
+        const auto& static_predicates = problem->domain->static_predicates;
+        const auto& static_atoms = problem->get_static_atoms();
+
         tsl::robin_map<formalism::Atom, uint32_t> atom_occurrances;
 
         // Find unique atoms from ground action preconditions
@@ -94,7 +97,21 @@ namespace planners
         {
             for (const auto& literal : action->get_precondition())
             {
-                ++atom_occurrances[literal->atom];
+                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal->atom->predicate);
+
+                if (is_static_predicate)
+                {
+                    // We can disregard static atoms, provided that all actions in "ground_actions" meet the precondition for doing so
+
+                    if (static_atoms.contains(literal->atom) == literal->negated)
+                    {
+                        throw std::runtime_error("ground_actions contains an always inapplicable action");
+                    }
+                }
+                else
+                {
+                    ++atom_occurrances[literal->atom];
+                }
             }
         }
 
