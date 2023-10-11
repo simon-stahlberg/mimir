@@ -926,6 +926,7 @@ namespace parsers
         types(nullptr),
         constants(nullptr),
         predicates(nullptr),
+        functions(nullptr),
         actions(actions)
     {
         if (requirements)
