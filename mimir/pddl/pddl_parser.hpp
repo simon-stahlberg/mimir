@@ -3,6 +3,7 @@
 
 #include "../formalism/domain.hpp"
 
+#include <fstream>
 #include <memory>
 
 // Older versions of LibC++ does not have filesystem (e.g., ubuntu 18.04), use the experimental version
@@ -25,6 +26,8 @@ namespace parsers
         DomainParser(const fs::path& domain_path);
 
         formalism::DomainDescription parse();
+
+        static formalism::DomainDescription parse(std::istream& stream);
     };
 
     class ProblemParser
@@ -36,6 +39,8 @@ namespace parsers
         ProblemParser(const fs::path& problem_path);
 
         formalism::ProblemDescription parse(const formalism::DomainDescription& domain);
+
+        static formalism::ProblemDescription parse(const formalism::DomainDescription& domain, const std::string& name, std::istream& stream);
     };
 }  // namespace parsers
 

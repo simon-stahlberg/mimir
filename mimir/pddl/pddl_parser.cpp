@@ -214,47 +214,49 @@ namespace parsers
 
     formalism::DomainDescription DomainParser::parse()
     {
-        if (fs::exists(this->domain_path))
+        if (!fs::exists(this->domain_path))
         {
-            std::ifstream domain_stream(this->domain_path.c_str());
-
-            if (domain_stream.is_open())
-            {
-                std::stringstream buffer;
-                buffer << domain_stream.rdbuf();
-                domain_stream.close();
-                std::string domain_content = buffer.str();
-                const auto comments_regex = std::regex(";[^\n]*\n");
-                domain_content = std::regex_replace(domain_content, comments_regex, "\n");
-                boost::algorithm::to_lower(domain_content);
-                PDDLDomainGrammar domain_grammar;
-                auto iterator_begin = domain_content.begin();
-                auto iterator_end = domain_content.end();
-                DomainNode* domain_node = nullptr;
-
-                if (qi::phrase_parse(iterator_begin, iterator_end, domain_grammar, ascii::space, domain_node))
-                {
-                    const auto domain = domain_node->get_domain();
-                    delete domain_node;
-                    return domain;
-                }
-                else
-                {
-                    if (domain_node)
-                    {
-                        delete domain_node;
-                    }
-
-                    throw std::runtime_error("domain could not be parsed");
-                }
-            }
-            else
-            {
-                throw std::invalid_argument("could not open domain file");
-            }
+            throw std::invalid_argument("domain file does not exist (" + domain_path.string() + ")");
         }
 
-        throw std::invalid_argument("domain file does not exist");
+        std::ifstream stream(this->domain_path.c_str());
+
+        if (!stream.is_open())
+        {
+            throw std::invalid_argument("could not open domain file");
+        }
+
+        return parse(stream);
+    }
+
+    formalism::DomainDescription DomainParser::parse(std::istream& stream)
+    {
+        std::stringstream buffer;
+        buffer << stream.rdbuf();
+        std::string domain_content = buffer.str();
+        const auto comments_regex = std::regex(";[^\n]*\n");
+        domain_content = std::regex_replace(domain_content, comments_regex, "\n");
+        boost::algorithm::to_lower(domain_content);
+        PDDLDomainGrammar domain_grammar;
+        auto iterator_begin = domain_content.begin();
+        auto iterator_end = domain_content.end();
+        DomainNode* domain_node = nullptr;
+
+        if (qi::phrase_parse(iterator_begin, iterator_end, domain_grammar, ascii::space, domain_node))
+        {
+            const auto domain = domain_node->get_domain();
+            delete domain_node;
+            return domain;
+        }
+        else
+        {
+            if (domain_node)
+            {
+                delete domain_node;
+            }
+
+            throw std::runtime_error("domain could not be parsed");
+        }
     }
 
     struct PDDLProblemGrammar : public qi::grammar<std::string::iterator, ProblemNode*(), ascii::space_type>
@@ -377,46 +379,48 @@ namespace parsers
 
     formalism::ProblemDescription ProblemParser::parse(const formalism::DomainDescription& domain)
     {
-        if (fs::exists(this->problem_path))
+        if (!fs::exists(this->problem_path))
         {
-            std::ifstream problem_stream(this->problem_path.c_str());
-
-            if (problem_stream.is_open())
-            {
-                std::stringstream buffer;
-                buffer << problem_stream.rdbuf();
-                problem_stream.close();
-                std::string problem_content = buffer.str();
-                const auto comments_regex = std::regex(";[^\n]*\n");
-                problem_content = std::regex_replace(problem_content, comments_regex, "\n");
-                boost::algorithm::to_lower(problem_content);
-                PDDLProblemGrammar problem_grammar;
-                auto iterator_begin = problem_content.begin();
-                auto iterator_end = problem_content.end();
-                ProblemNode* problem_node = nullptr;
-
-                if (qi::phrase_parse(iterator_begin, iterator_end, problem_grammar, ascii::space, problem_node))
-                {
-                    const auto problem = problem_node->get_problem(problem_path.filename().string(), domain);
-                    delete problem_node;
-                    return problem;
-                }
-                else
-                {
-                    if (problem_node)
-                    {
-                        delete problem_node;
-                    }
-
-                    throw std::runtime_error("problem could not be parsed");
-                }
-            }
-            else
-            {
-                throw std::invalid_argument("could not open problem file");
-            }
+            throw std::invalid_argument("problem file does not exist (" + problem_path.string() + ")");
         }
 
-        throw std::invalid_argument("problem file does not exist");
+        std::ifstream stream(this->problem_path.c_str());
+
+        if (!stream.is_open())
+        {
+            throw std::invalid_argument("could not open problem file");
+        }
+
+        return parse(domain, problem_path.filename().string(), stream);
+    }
+
+    formalism::ProblemDescription ProblemParser::parse(const formalism::DomainDescription& domain, const std::string& name, std::istream& stream)
+    {
+        std::stringstream buffer;
+        buffer << stream.rdbuf();
+        std::string problem_content = buffer.str();
+        const auto comments_regex = std::regex(";[^\n]*\n");
+        problem_content = std::regex_replace(problem_content, comments_regex, "\n");
+        boost::algorithm::to_lower(problem_content);
+        PDDLProblemGrammar problem_grammar;
+        auto iterator_begin = problem_content.begin();
+        auto iterator_end = problem_content.end();
+        ProblemNode* problem_node = nullptr;
+
+        if (qi::phrase_parse(iterator_begin, iterator_end, problem_grammar, ascii::space, problem_node))
+        {
+            const auto problem = problem_node->get_problem(name, domain);
+            delete problem_node;
+            return problem;
+        }
+        else
+        {
+            if (problem_node)
+            {
+                delete problem_node;
+            }
+
+            throw std::runtime_error("problem could not be parsed");
+        }
     }
 }  // namespace parsers

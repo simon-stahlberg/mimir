@@ -274,10 +274,10 @@ PYBIND11_MODULE(mimir, m)
     problem.def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
 
     domain_parser.def(py::init(&create_domain_parser));
-    domain_parser.def("parse", &parsers::DomainParser::parse, "Parses the associated file and creates a new domain.");
+    domain_parser.def("parse", (formalism::DomainDescription (parsers::DomainParser::*)()) &parsers::DomainParser::parse, "Parses the associated file and creates a new domain.");
 
     problem_parser.def(py::init(&create_problem_parser));
-    problem_parser.def("parse", &parsers::ProblemParser::parse, "Parses the associated file and creates a new problem.");
+    problem_parser.def("parse", (formalism::ProblemDescription (parsers::ProblemParser::*)(const formalism::DomainDescription&)) &parsers::ProblemParser::parse, "Parses the associated file and creates a new problem.");
 
     successor_generator_base.def("get_applicable_actions", &planners::SuccessorGeneratorBase::get_applicable_actions, "state"_a, "Gets all ground actions applicable in the given state.");
     successor_generator_base.def("__repr__", [](const planners::SuccessorGeneratorBase& generator) { return "<SuccessorGenerator '" + generator.get_problem()->name + "'>"; });
