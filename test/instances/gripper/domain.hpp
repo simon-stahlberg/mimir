@@ -7,7 +7,7 @@
 
 namespace test
 {
-    static DomainParseResult domain_gripper_result = { num_action_schemas : 3, num_predicates : 7, num_constants : 0, num_types : 1 };
+    static DomainParseResult domain_gripper_parse_result = { num_action_schemas : 3, num_predicates : 7, num_constants : 0, num_types : 1 };
 
     static std::string domain_gripper = R"(
 (define (domain gripper-strips)
@@ -51,4 +51,5 @@ namespace test
 		            (not (carry ?obj ?gripper)))))
 )";
 }  // namespace test
+
 #endif  // TEST_INSTANCES_GRIPPER_DOMAIN_HPP_

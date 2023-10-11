@@ -7,7 +7,7 @@
 
 namespace test
 {
-    static DomainParseResult domain_blocks_result = { num_action_schemas : 4, num_predicates : 5, num_constants : 0, num_types : 1 };
+    static DomainParseResult domain_blocks_parse_result = { num_action_schemas : 4, num_predicates : 5, num_constants : 0, num_types : 1 };
 
     static std::string domain_blocks = R"(
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -61,4 +61,5 @@ namespace test
 
 )";
 }  // namespace test
+
 #endif  // TEST_INSTANCES_BLOCKS_DOMAIN_HPP_
