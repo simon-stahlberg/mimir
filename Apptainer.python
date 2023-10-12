@@ -1,10 +1,11 @@
 Bootstrap: docker
-From: ubuntu:latest
+From: pytorch/pytorch:latest
 Stage: build
 
 %files
     extern /mimir/extern
     mimir /mimir/mimir
+    test /mimir/test
     CMakeLists.txt /mimir/CMakeLists.txt
     pyproject.toml /mimir/pyproject.toml
     setup.py /mimir/setup.py
@@ -12,6 +13,10 @@ Stage: build
 %post
     apt-get update
     apt-get -y install --no-install-recommends python3 python3-dev python3-pip g++ libboost-dev libgtest-dev cmake make
+    apt-get clean
     rm -rf /var/lib/apt/lists/*
     cd /mimir
     pip3 install . -v
+
+%runscript
+    python3 "$@"
