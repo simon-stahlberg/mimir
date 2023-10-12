@@ -27,6 +27,7 @@ namespace planners
         std::vector<formalism::State> states_;
         std::vector<formalism::State> goal_states_;
         std::vector<StateInfo> state_infos_;
+        std::vector<formalism::State> dead_end_states_;
         std::vector<std::vector<formalism::State>> states_by_distance_;
         std::vector<std::vector<formalism::Transition>> forward_transitions_;
         std::vector<std::vector<formalism::Transition>> backward_transitions_;
@@ -101,6 +102,8 @@ namespace planners
         formalism::State sample_state() const;
 
         formalism::State sample_state_with_distance_to_goal(int32_t distance) const;
+
+        formalism::State sample_dead_end_state() const;
 
         std::vector<formalism::State> get_goal_states() const;
 

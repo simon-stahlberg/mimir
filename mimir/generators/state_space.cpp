@@ -51,6 +51,7 @@ namespace planners
         states_(),
         goal_states_(),
         state_infos_(),
+        dead_end_states_(),
         states_by_distance_(),
         forward_transitions_(),
         backward_transitions_(),
@@ -325,6 +326,17 @@ namespace planners
         }
     }
 
+    formalism::State StateSpaceImpl::sample_dead_end_state() const
+    {
+        if (dead_end_states_.size() == 0)
+        {
+            throw std::invalid_argument("no dead end states to sample");
+        }
+
+        const auto index = std::rand() % static_cast<int>(dead_end_states_.size());
+        return dead_end_states_[index];
+    }
+
     void StateSpaceImpl::set_distance_from_initial_state(uint64_t state_index, int32_t value) { state_infos_[state_index].distance_from_initial_state = value; }
 
     void StateSpaceImpl::set_distance_to_goal_state(uint64_t state_index, int32_t value) { state_infos_[state_index].distance_to_goal_state = value; }
@@ -484,7 +496,15 @@ namespace planners
         for (const auto& state : state_space->get_states())
         {
             const auto distance = state_space->get_distance_to_goal_state(state);
-            state_space->states_by_distance_[distance].push_back(state);
+
+            if (distance >= 0)
+            {
+                state_space->states_by_distance_[distance].push_back(state);
+            }
+            else
+            {
+                state_space->dead_end_states_.push_back(state);
+            }
         }
 
         return StateSpace(state_space);

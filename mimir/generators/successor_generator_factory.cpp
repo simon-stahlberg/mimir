@@ -68,12 +68,36 @@ namespace planners
             action_schemas.emplace(action_schema->name, action_schema);
         }
 
+        const auto& static_predicates = problem->domain->static_predicates;
+        const auto& static_atoms = problem->get_static_atoms();
+
+        const auto is_statically_inapplicable = [&static_predicates, &static_atoms](const formalism::Action& ground_action)
+        {
+            for (const auto& literal : ground_action->get_precondition())
+            {
+                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal->atom->predicate);
+
+                if (is_static_predicate && (static_atoms.contains(literal->atom) == literal->negated))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
         for (const auto& relaxed_action : relaxed_actions)
         {
             auto action_schema = action_schemas.at(relaxed_action->schema->name);
             auto arguments = relaxed_action->get_arguments();
             auto cost = relaxed_action->cost;
-            out_actions.emplace_back(formalism::create_action(problem, action_schema, std::move(arguments), cost));
+
+            const auto ground_action = formalism::create_action(problem, action_schema, std::move(arguments), cost);
+
+            if (!is_statically_inapplicable(ground_action))
+            {
+                out_actions.emplace_back(ground_action);
+            }
         }
 
         return true;

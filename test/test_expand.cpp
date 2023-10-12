@@ -1,5 +1,8 @@
 #include "../mimir/formalism/domain.hpp"
 #include "../mimir/formalism/problem.hpp"
+#include "../mimir/generators/state_space.hpp"
+#include "../mimir/generators/successor_generator.hpp"
+#include "../mimir/generators/successor_generator_factory.hpp"
 #include "../mimir/pddl/parsers.hpp"
 
 // PDDL files encoded as static strings named "domain_<DOMAIN>" or "problem_<DOMAIN>"
@@ -21,41 +24,11 @@
 
 namespace test
 {
-    void assert_domain_parse(const formalism::DomainDescription& domain, const test::DomainParseResult& expect)
-    {
-        ASSERT_EQ(domain->action_schemas.size(), expect.num_action_schemas);
-        ASSERT_EQ(domain->predicates.size(), expect.num_predicates);
-        ASSERT_EQ(domain->constants.size(), expect.num_constants);
-        ASSERT_EQ(domain->types.size(), expect.num_types);
-    }
-
-    void assert_problem_parse(const formalism::ProblemDescription& problem, const test::ProblemParseResult& expect)
-    {
-        ASSERT_EQ(problem->objects.size(), expect.num_objects);
-        ASSERT_EQ(problem->initial.size(), expect.num_initial);
-        ASSERT_EQ(problem->goal.size(), expect.num_goal);
-    }
-
-    class ParseTest : public testing::TestWithParam<std::tuple<std::string, DomainParseResult, std::string, ProblemParseResult>>
+    class ExpandTest : public testing::TestWithParam<std::tuple<std::string, DomainParseResult, std::string, ProblemParseResult>>
     {
     };
 
-    TEST(Parse, MultipleTimes)
-    {
-        for (std::size_t i = 0; i < 5; ++i)
-        {
-            std::istringstream domain_stream(domain_blocks);
-            std::istringstream problem_stream(problem_blocks);
-
-            const auto domain = parsers::DomainParser::parse(domain_stream);
-            const auto problem = parsers::ProblemParser::parse(domain, "", problem_stream);
-
-            assert_domain_parse(domain, domain_blocks_parse_result);
-            assert_problem_parse(problem, problem_blocks_parse_result);
-        }
-    }
-
-    TEST_P(ParseTest, Parameterized)
+    TEST_P(ExpandTest, Parameterized)
     {
         const auto domain_text = std::get<0>(GetParam());
         const auto domain_result = std::get<1>(GetParam());
@@ -68,12 +41,14 @@ namespace test
         const auto domain = parsers::DomainParser::parse(domain_stream);
         const auto problem = parsers::ProblemParser::parse(domain, "", problem_stream);
 
-        assert_domain_parse(domain, domain_result);
-        assert_problem_parse(problem, problem_result);
+        const auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::GROUNDED);
+        const auto state_space = planners::create_state_space(problem, successor_generator);
+
+        ASSERT_GT(state_space->num_states(), 0);
     }
 
     INSTANTIATE_TEST_SUITE_P(ParamTest,
-                             ParseTest,
+                             ExpandTest,
                              testing::Values(std::make_tuple(domain_blocks, domain_blocks_parse_result, problem_blocks, problem_blocks_parse_result),
                                              std::make_tuple(domain_gripper, domain_gripper_parse_result, problem_gripper, problem_gripper_parse_result),
                                              std::make_tuple(domain_spanner, domain_spanner_parse_result, problem_spanner, problem_spanner_parse_result),

@@ -307,6 +307,7 @@ PYBIND11_MODULE(mimir, m)
     state_space.def("is_goal_state", &planners::StateSpaceImpl::is_goal_state, "state"_a, "Tests whether the given state is a goal state.");
     state_space.def("sample_state", &planners::StateSpaceImpl::sample_state, "Gets a uniformly random state from the state space.");
     state_space.def("sample_state_with_distance_to_goal", &planners::StateSpaceImpl::sample_state_with_distance_to_goal, "distance"_a, "Gets a uniformly random state from the state space with the given distance to its closest goal state.");
+    state_space.def("sample_dead_end_state", &planners::StateSpaceImpl::sample_dead_end_state, "Gets a uniformly random dead end state from the state space.");
     state_space.def("num_states", &planners::StateSpaceImpl::num_states, "Gets the number of states in the state space.");
     state_space.def("num_dead_end_states", &planners::StateSpaceImpl::num_dead_end_states, "Gets the number of dead end states in the state space.");
     state_space.def("num_goal_states", &planners::StateSpaceImpl::num_goal_states, "Gets the number of goal states in the state space.");
