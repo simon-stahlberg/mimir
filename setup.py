@@ -31,6 +31,7 @@ class CMakeBuild(build_ext):
         os.makedirs(temp_directory, exist_ok=True)
 
         cmake_args = [
+            f"-DBUILD_TESTS=OFF",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE=Release",  # Is not used with MSVC, but causes no harm
         ]
