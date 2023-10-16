@@ -2,9 +2,7 @@
 #include "../mimir/formalism/problem.hpp"
 #include "../mimir/pddl/parsers.hpp"
 
-// PDDL files encoded as static strings named "domain_<DOMAIN>" or "problem_<DOMAIN>"
-// The expected results are stored as structs named "domain_<DOMAIN>_<TYPE>_result" and "problem_<DOMAIN>_<TYPE>_result"
-// Where <TYPE> is a type of result, e.g., parsing or expanding.
+// Test instances
 
 #include "instances/blocks/domain.hpp"
 #include "instances/blocks/problem.hpp"
@@ -44,14 +42,14 @@ namespace test
     {
         for (std::size_t i = 0; i < 5; ++i)
         {
-            std::istringstream domain_stream(domain_blocks);
-            std::istringstream problem_stream(problem_blocks);
+            std::istringstream domain_stream(blocks::domain);
+            std::istringstream problem_stream(blocks::problem);
 
             const auto domain = parsers::DomainParser::parse(domain_stream);
             const auto problem = parsers::ProblemParser::parse(domain, "", problem_stream);
 
-            assert_domain_parse(domain, domain_blocks_parse_result);
-            assert_problem_parse(problem, problem_blocks_parse_result);
+            assert_domain_parse(domain, blocks::domain_parse_result);
+            assert_problem_parse(problem, blocks::problem_parse_result);
         }
     }
 
@@ -74,8 +72,8 @@ namespace test
 
     INSTANTIATE_TEST_SUITE_P(ParamTest,
                              ParseTest,
-                             testing::Values(std::make_tuple(domain_blocks, domain_blocks_parse_result, problem_blocks, problem_blocks_parse_result),
-                                             std::make_tuple(domain_gripper, domain_gripper_parse_result, problem_gripper, problem_gripper_parse_result),
-                                             std::make_tuple(domain_spanner, domain_spanner_parse_result, problem_spanner, problem_spanner_parse_result),
-                                             std::make_tuple(domain_spider, domain_spider_parse_result, problem_spider, problem_spider_parse_result)));
+                             testing::Values(std::make_tuple(blocks::domain, blocks::domain_parse_result, blocks::problem, blocks::problem_parse_result),
+                                             std::make_tuple(gripper::domain, gripper::domain_parse_result, gripper::problem, gripper::problem_parse_result),
+                                             std::make_tuple(spanner::domain, spanner::domain_parse_result, spanner::problem, spanner::problem_parse_result),
+                                             std::make_tuple(spider::domain, spider::domain_parse_result, spider::problem, spider::problem_parse_result)));
 }  // namespace test

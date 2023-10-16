@@ -5,11 +5,11 @@
 
 #include <string>
 
-namespace test
+namespace test::spider
 {
-    static DomainParseResult domain_spider_parse_result = { num_action_schemas : 16, num_predicates : 21, num_constants : 1, num_types : 6 };
+    static DomainParseResult domain_parse_result = { num_action_schemas : 16, num_predicates : 21, num_constants : 1, num_types : 6 };
 
-    static std::string domain_spider = R"(
+    static std::string domain = R"(
 (define (domain spider)
     (:requirements :typing :conditional-effects :action-costs :negative-preconditions)
 

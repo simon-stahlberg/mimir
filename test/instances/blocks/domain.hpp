@@ -5,11 +5,11 @@
 
 #include <string>
 
-namespace test
+namespace test::blocks
 {
-    static DomainParseResult domain_blocks_parse_result = { num_action_schemas : 4, num_predicates : 5, num_constants : 0, num_types : 1 };
+    static DomainParseResult domain_parse_result = { num_action_schemas : 4, num_predicates : 5, num_constants : 0, num_types : 1 };
 
-    static std::string domain_blocks = R"(
+    static std::string domain = R"(
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; 4 Op-blocks world
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

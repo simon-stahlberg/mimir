@@ -1,0 +1,5 @@
+file(GLOB SRC_FILES "*.cpp")
+add_library(search STATIC ${SRC_FILES})
+target_link_libraries(search algorithms)
+target_link_libraries(search formalism)
+target_link_libraries(search generators)

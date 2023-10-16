@@ -5,11 +5,11 @@
 
 #include <string>
 
-namespace test
+namespace test::spanner
 {
-    static DomainParseResult domain_spanner_parse_result = { num_action_schemas : 3, num_predicates : 6, num_constants : 0, num_types : 6 };
+    static DomainParseResult domain_parse_result = { num_action_schemas : 3, num_predicates : 6, num_constants : 0, num_types : 6 };
 
-    static std::string domain_spanner = R"(
+    static std::string domain = R"(
 (define (domain spanner)
     (:requirements :typing :strips)
 

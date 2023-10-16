@@ -5,11 +5,17 @@
 
 #include <string>
 
-namespace test
+namespace test::spanner
 {
-    static ProblemParseResult problem_spanner_parse_result = { num_objects : 8, num_initial : 9, num_goal : 1 };
+    static ProblemParseResult problem_parse_result = { num_objects : 8, num_initial : 9, num_goal : 1 };
 
-    static std::string problem_spanner = R"(
+    static int32_t bfs_result[] = { 0, 1, 2, 3, 4, 6, 7 };
+
+    static constexpr int32_t bfs_length = std::extent<decltype(bfs_result)>::value;
+
+    static int32_t bfs_plan_length = 6;
+
+    static std::string problem = R"(
 (define (problem prob)
     (:domain spanner)
 

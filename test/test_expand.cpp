@@ -5,9 +5,7 @@
 #include "../mimir/generators/successor_generator_factory.hpp"
 #include "../mimir/pddl/parsers.hpp"
 
-// PDDL files encoded as static strings named "domain_<DOMAIN>" or "problem_<DOMAIN>"
-// The expected results are stored as structs named "domain_<DOMAIN>_<TYPE>_result" and "problem_<DOMAIN>_<TYPE>_result"
-// Where <TYPE> is a type of result, e.g., parsing or expanding.
+// Test instances
 
 #include "instances/blocks/domain.hpp"
 #include "instances/blocks/problem.hpp"
@@ -49,8 +47,8 @@ namespace test
 
     INSTANTIATE_TEST_SUITE_P(ParamTest,
                              ExpandTest,
-                             testing::Values(std::make_tuple(domain_blocks, domain_blocks_parse_result, problem_blocks, problem_blocks_parse_result),
-                                             std::make_tuple(domain_gripper, domain_gripper_parse_result, problem_gripper, problem_gripper_parse_result),
-                                             std::make_tuple(domain_spanner, domain_spanner_parse_result, problem_spanner, problem_spanner_parse_result),
-                                             std::make_tuple(domain_spider, domain_spider_parse_result, problem_spider, problem_spider_parse_result)));
+                             testing::Values(std::make_tuple(blocks::domain, blocks::domain_parse_result, blocks::problem, blocks::problem_parse_result),
+                                             std::make_tuple(gripper::domain, gripper::domain_parse_result, gripper::problem, gripper::problem_parse_result),
+                                             std::make_tuple(spanner::domain, spanner::domain_parse_result, spanner::problem, spanner::problem_parse_result),
+                                             std::make_tuple(spider::domain, spider::domain_parse_result, spider::problem, spider::problem_parse_result)));
 }  // namespace test

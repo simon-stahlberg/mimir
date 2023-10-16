@@ -19,6 +19,7 @@
 #include "generators/grounded_successor_generator.hpp"
 #include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
+#include "search/breadth_first_search.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -84,77 +85,47 @@ std::vector<std::string> successor_generator_types() { return std::vector<std::s
 
 void bfs(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
 {
-    // breadth-first search until a goal state is found
-
-    struct Frame
-    {
-        formalism::State state;
-        uint32_t depth;
-    };
-
-    tsl::robin_map<formalism::State, uint32_t> state_indices;  // 39 % memory. All the states require 31 % memory, the internal bitsets require 7 % memory.
-    std::deque<Frame> frame_list;                              // 10.5 % memory
-    std::deque<uint32_t> open_list;
-
-    {  // Initialize data-structures
-        // We want the index of the initial state to be 1 for convenience.
-        frame_list.emplace_back(Frame { nullptr, 0 });
-
-        // Add the initial state to the data-structures
-        const uint32_t initial_index = static_cast<uint32_t>(frame_list.size());
-        const auto initial_state = formalism::create_state(problem->initial, problem);
-        state_indices[initial_state] = initial_index;
-        frame_list.emplace_back(Frame { initial_state, 0 });
-        open_list.emplace_back(initial_index);
-    }
-
-    uint32_t expanded = 0;
-    uint32_t generated = 0;
-    uint32_t last_depth = 0;
-
+    planners::BreadthFirstSearch search(problem, successor_generator);
     const auto time_start = std::chrono::high_resolution_clock::now();
 
-    while (open_list.size() > 0)
+    search.register_handler(
+        [&time_start, &search]()
+        {
+            const auto time_now = std::chrono::high_resolution_clock::now();
+            const auto time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - time_start).count();
+            const auto statistics = search.get_statistics();
+            const auto expanded = std::get<int32_t>(statistics.at("expanded"));
+            const auto generated = std::get<int32_t>(statistics.at("generated"));
+            const auto depth = std::get<int32_t>(statistics.at("max_depth"));
+            std::cout << "[depth = " << depth << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_delta << " ms; ";
+            std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
+        });
+
+    formalism::ActionList plan;
+    const auto result = search.plan(plan);
+
+    std::cout << std::endl;
+
+    switch (result)
     {
-        const auto index = open_list.front();
-        const auto& frame = frame_list[index];
-        open_list.pop_front();
-
-        if (last_depth < frame.depth)
-        {
-            const auto time_depth = std::chrono::high_resolution_clock::now();
-            const auto time_depth_ms = std::chrono::duration_cast<std::chrono::milliseconds>(time_depth - time_start).count();
-            std::cout << "[g = " << last_depth << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_depth_ms << " ms; ";
-            std::cout << ((total_memory_allocated - total_memory_deallocated) / 1024) << " KiB current; " << (peak_memory_usage / 1024) << " KiB peak]"
-                      << std::endl;
-            last_depth = frame.depth;
-        }
-
-        if (formalism::literals_hold(problem->goal, frame.state))
-        {
-            std::cout << "Found goal state at depth " << frame.depth << std::endl;
-            break;
-        }
-
-        ++expanded;
-
-        const auto applicable_actions = successor_generator->get_applicable_actions(frame.state);
-
-        for (const auto& action : applicable_actions)
-        {
-            const auto successor_state = formalism::apply(action, frame.state);
-            auto& successor_index = state_indices[successor_state];
-
-            // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
-
-            if (successor_index == 0)
+        case planners::SearchResult::SOLVED:
+            std::cout << "Found a plan of length " << plan.size() << ":" << std::endl;
+            for (const auto& action : plan)
             {
-                ++generated;
-                successor_index = static_cast<uint32_t>(frame_list.size());
-                frame_list.emplace_back(Frame { successor_state, frame.depth + 1 });
-                open_list.emplace_back(successor_index);
+                std::cout << action << std::endl;
             }
-        }
+            break;
+
+        case planners::SearchResult::UNSOLVABLE:
+            std::cout << "Problem is provably unsolvable" << std::endl;
+            break;
+
+        case planners::SearchResult::ABORTED:
+            std::cout << "Search was aborted" << std::endl;
+            break;
+
+        default:
+            throw std::runtime_error("not implemented");
     }
 }
 
@@ -311,6 +282,8 @@ int main(int argc, char* argv[])
         std::cout << "Number of atoms: " << problem->get_encountered_atoms().size() << std::endl;
         std::cout << "Number of static atoms: " << problem->get_static_atoms().size() << std::endl;
     }
+
+    std::cout << std::endl;
 
     if (search_name == "bfs")
     {

@@ -5,11 +5,11 @@
 
 #include <string>
 
-namespace test
+namespace test::gripper
 {
-    static DomainParseResult domain_gripper_parse_result = { num_action_schemas : 3, num_predicates : 7, num_constants : 0, num_types : 1 };
+    static DomainParseResult domain_parse_result = { num_action_schemas : 3, num_predicates : 7, num_constants : 0, num_types : 1 };
 
-    static std::string domain_gripper = R"(
+    static std::string domain = R"(
 (define (domain gripper-strips)
    (:predicates (room ?r)
 		        (ball ?b)

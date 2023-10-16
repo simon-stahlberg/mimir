@@ -39,6 +39,7 @@ set_target_properties(mimir PROPERTIES PREFIX "")
 target_link_libraries(mimir formalism)
 target_link_libraries(mimir generators)
 target_link_libraries(mimir pddl)
+target_link_libraries(mimir search)
 target_link_libraries(mimir ${PYTHON_LIBRARIES})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -71,6 +72,7 @@ set_property(TARGET profiling PROPERTY CXX_STANDARD 17)
 target_link_libraries(profiling formalism)
 target_link_libraries(profiling generators)
 target_link_libraries(profiling pddl)
+target_link_libraries(profiling search)
 
 # -----------
 # Target Test
@@ -84,6 +86,7 @@ if(BUILD_TESTS)
     target_link_libraries(mimir-test formalism)
     target_link_libraries(mimir-test algorithms)
     target_link_libraries(mimir-test generators)
+    target_link_libraries(mimir-test search)
     target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} pthread)
     gtest_discover_tests(mimir-test)
 endif()
