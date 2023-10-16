@@ -1,6 +1,7 @@
 #if !defined(FORMALISM_HELP_FUNCTIONS_HPP_)
 #define FORMALISM_HELP_FUNCTIONS_HPP_
 
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <vector>
