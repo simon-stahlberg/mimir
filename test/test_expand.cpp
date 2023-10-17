@@ -22,6 +22,18 @@
 
 namespace test
 {
+    formalism::AtomSet to_set(const formalism::AtomList& list)
+    {
+        formalism::AtomSet set;
+
+        for (const auto& item : list)
+        {
+            set.emplace(item);
+        }
+
+        return set;
+    }
+
     class ExpandTest : public testing::TestWithParam<std::tuple<std::string, DomainParseResult, std::string, ProblemParseResult>>
     {
     };
@@ -42,7 +54,40 @@ namespace test
         const auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::GROUNDED);
         const auto state_space = planners::create_state_space(problem, successor_generator);
 
-        ASSERT_GT(state_space->num_states(), 0);
+        const auto& states = state_space->get_states();
+        ASSERT_GT(states.size(), 0);
+        ASSERT_EQ(states.size(), state_space->num_states());
+        std::equal_to<formalism::State> state_equals;
+
+        for (const auto& state : states)
+        {
+            const auto dynamic_atom_list = state->get_dynamic_atoms();
+            const auto static_atom_list = state->get_static_atoms();
+            const auto all_atom_list = state->get_atoms();
+
+            ASSERT_EQ(dynamic_atom_list.size() + static_atom_list.size(), all_atom_list.size());
+
+            const auto dynamic_atom_set = to_set(dynamic_atom_list);
+            const auto static_atom_set = to_set(static_atom_list);
+            const auto all_atom_set = to_set(all_atom_list);
+
+            ASSERT_EQ(static_atom_set, problem->get_static_atoms());
+            ASSERT_EQ(dynamic_atom_list.size(), dynamic_atom_set.size());
+            ASSERT_EQ(static_atom_list.size(), static_atom_set.size());
+            ASSERT_EQ(all_atom_list.size(), all_atom_set.size());
+
+            formalism::AtomSet new_all_atom_set;
+            std::set_union(dynamic_atom_set.begin(),
+                           dynamic_atom_set.end(),
+                           static_atom_set.begin(),
+                           static_atom_set.end(),
+                           std::inserter(new_all_atom_set, new_all_atom_set.begin()));
+
+            ASSERT_EQ(new_all_atom_set.size(), all_atom_set.size());
+
+            const auto new_state = formalism::create_state(new_all_atom_set, problem);
+            ASSERT_TRUE(state_equals(new_state, state));
+        }
     }
 
     INSTANTIATE_TEST_SUITE_P(ParamTest,
