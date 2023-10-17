@@ -142,9 +142,10 @@ namespace formalism
     formalism::AtomList StateImpl::get_static_atoms() const
     {
         formalism::AtomList atoms;
+        const auto& static_atoms = problem_->get_static_atoms();
         std::size_t position = 0;
 
-        while (true)
+        while (position < static_atoms.size())
         {
             position = bitset_.next_set_bit(position);
 
@@ -154,12 +155,8 @@ namespace formalism
             }
 
             const auto rank = static_cast<uint32_t>(position);
-
-            if (problem_->is_static(rank))
-            {
-                atoms.emplace_back(problem_->get_atom(rank));
-            }
-
+            assert(problem_->is_static(rank));
+            atoms.emplace_back(problem_->get_atom(rank));
             ++position;
         }
 
@@ -169,7 +166,8 @@ namespace formalism
     formalism::AtomList StateImpl::get_dynamic_atoms() const
     {
         formalism::AtomList atoms;
-        std::size_t position = 0;
+        const auto& static_atoms = problem_->get_static_atoms();
+        std::size_t position = static_atoms.size();
 
         while (true)
         {
@@ -181,12 +179,8 @@ namespace formalism
             }
 
             const auto rank = static_cast<uint32_t>(position);
-
-            if (problem_->is_dynamic(rank))
-            {
-                atoms.emplace_back(problem_->get_atom(rank));
-            }
-
+            assert(problem_->is_dynamic(rank));
+            atoms.emplace_back(problem_->get_atom(rank));
             ++position;
         }
 

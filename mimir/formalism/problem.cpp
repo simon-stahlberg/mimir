@@ -53,6 +53,7 @@ namespace formalism
             if (static_predicate_set.find(atom->predicate) != static_predicate_set.end())
             {
                 static_atoms_.insert(atom);
+                get_rank(atom);  // Assign the N first ranks to static atoms
             }
         }
 
@@ -101,7 +102,7 @@ namespace formalism
 
     uint32_t ProblemImpl::num_ranks() const { return static_cast<uint32_t>(atom_ranks_.size()); }
 
-    bool ProblemImpl::is_static(uint32_t rank) const { return predicate_id_to_static_.at(get_predicate_id(rank)); }
+    bool ProblemImpl::is_static(uint32_t rank) const { return rank < static_atoms_.size(); }
 
     bool ProblemImpl::is_dynamic(uint32_t rank) const { return !is_static(rank); }
 
