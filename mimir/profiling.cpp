@@ -21,6 +21,7 @@
 #include "pddl/parsers.hpp"
 #include "search/breadth_first_search.hpp"
 #include "search/eager_astar_search.hpp"
+#include "search/heuristics/h1_heuristic.hpp"
 #include "search/heuristics/h2_heuristic.hpp"
 #include "search/openlists/priority_queue_open_list.hpp"
 
@@ -134,7 +135,7 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
 
 void astar(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
 {
-    const auto heuristic = planners::create_h2_heuristic(problem, successor_generator);
+    const auto heuristic = planners::create_h1_heuristic(problem, successor_generator);
     const auto open_list = planners::create_priority_queue_open_list();
     planners::EagerAStarSearch search(problem, successor_generator, heuristic, open_list);
     const auto time_start = std::chrono::high_resolution_clock::now();
