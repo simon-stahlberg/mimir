@@ -86,11 +86,16 @@ namespace planners
             return false;
         };
 
-        // Make sure that each atom in the initial state has a rank, they don't necessarily have to be mentioned in a ground action
+        // Make sure that each atom in the initial state and goal has a rank, they don't necessarily have to be mentioned in a ground action
 
         for (const auto& atom : problem->initial)
         {
             problem->get_rank(atom);
+        }
+
+        for (const auto& literal : problem->goal)
+        {
+            problem->get_rank(literal->atom);
         }
 
         // Create all ground actions for the original problem
