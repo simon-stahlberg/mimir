@@ -20,6 +20,9 @@
 #include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
 #include "search/breadth_first_search.hpp"
+#include "search/eager_astar_search.hpp"
+#include "search/heuristics/h2_heuristic.hpp"
+#include "search/openlists/priority_queue_open_list.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -98,6 +101,58 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
             const auto generated = std::get<int32_t>(statistics.at("generated"));
             const auto depth = std::get<int32_t>(statistics.at("max_depth"));
             std::cout << "[depth = " << depth << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_delta << " ms; ";
+            std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
+        });
+
+    formalism::ActionList plan;
+    const auto result = search.plan(plan);
+
+    std::cout << std::endl;
+
+    switch (result)
+    {
+        case planners::SearchResult::SOLVED:
+            std::cout << "Found a plan of length " << plan.size() << ":" << std::endl;
+            for (const auto& action : plan)
+            {
+                std::cout << action << std::endl;
+            }
+            break;
+
+        case planners::SearchResult::UNSOLVABLE:
+            std::cout << "Problem is provably unsolvable" << std::endl;
+            break;
+
+        case planners::SearchResult::ABORTED:
+            std::cout << "Search was aborted" << std::endl;
+            break;
+
+        default:
+            throw std::runtime_error("not implemented");
+    }
+}
+
+void astar(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+{
+    const auto heuristic = planners::create_h2_heuristic(problem, successor_generator);
+    const auto open_list = planners::create_priority_queue_open_list();
+    planners::EagerAStarSearch search(problem, successor_generator, heuristic, open_list);
+    const auto time_start = std::chrono::high_resolution_clock::now();
+
+    search.register_handler(
+        [&time_start, &search]()
+        {
+            const auto time_now = std::chrono::high_resolution_clock::now();
+            const auto time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - time_start).count();
+            const auto statistics = search.get_statistics();
+            const auto expanded = std::get<int32_t>(statistics.at("expanded"));
+            const auto generated = std::get<int32_t>(statistics.at("generated"));
+            const auto evaluated = std::get<int32_t>(statistics.at("evaluated"));
+            // const auto depth = std::get<int32_t>(statistics.at("max_depth"));
+            // const auto g_value = std::get<int32_t>(statistics.at("max_g_value"));
+            const auto f_value = std::get<double>(statistics.at("max_f_value"));
+            std::cout << "[f = " << f_value << "] Expanded: " << expanded << "; Generated: " << generated << "; Evaluated: " << evaluated << " [" << time_delta
+                      << " ms; ";
             std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
         });
 
@@ -292,6 +347,10 @@ int main(int argc, char* argv[])
     else if (search_name == "dijkstras")
     {
         dijkstra(problem, successor_generator);
+    }
+    else if (search_name == "astar")
+    {
+        astar(problem, successor_generator);
     }
     else
     {

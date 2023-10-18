@@ -29,7 +29,7 @@ namespace planners
             formalism::Action predecessor_action;
             int32_t predecessor_index;
             int32_t depth;
-            double h_value;
+            double g_value;
         };
 
         tsl::robin_map<formalism::State, int32_t> state_indices;
@@ -60,7 +60,7 @@ namespace planners
                 statistics_["expanded"] = expanded;
                 statistics_["generated"] = generated;
                 statistics_["max_depth"] = frame.depth;
-                statistics_["max_h_value"] = frame.h_value;
+                statistics_["max_g_value"] = frame.g_value;
                 notify_handlers();
             }
 
@@ -94,12 +94,13 @@ namespace planners
                 const auto successor_state = formalism::apply(action, frame.state);
                 auto& successor_index = state_indices[successor_state];  // Reference is used to update state_indices
 
-                // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
                 if (successor_index == 0)
                 {
+                    // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
+
                     ++generated;
                     successor_index = static_cast<int32_t>(frame_list.size());
-                    frame_list.emplace_back(Frame { successor_state, action, index, frame.depth + 1, frame.h_value + action->cost });
+                    frame_list.emplace_back(Frame { successor_state, action, index, frame.depth + 1, frame.g_value + action->cost });
                     open_list.emplace_back(successor_index);
                 }
             }

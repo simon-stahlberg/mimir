@@ -59,7 +59,7 @@ namespace planners
             state = next_state;
         }
 
-        // TODO: We can likely optimize the mapping between the relaxed action schemas and the original action schemas.
+        // TODO: We can likely optimize the mapping between the relaxed action schemas and the original action schemas
 
         std::map<std::string, formalism::ActionSchema> action_schemas;
 
@@ -85,6 +85,15 @@ namespace planners
 
             return false;
         };
+
+        // Make sure that each atom in the initial state has a rank, they don't necessarily have to be mentioned in a ground action
+
+        for (const auto& atom : problem->initial)
+        {
+            problem->get_rank(atom);
+        }
+
+        // Create all ground actions for the original problem
 
         for (const auto& relaxed_action : relaxed_actions)
         {
