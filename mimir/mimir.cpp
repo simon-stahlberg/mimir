@@ -243,6 +243,8 @@ PYBIND11_MODULE(mimir, m)
     state.def("get_atoms_by_predicate", &formalism::StateImpl::get_atoms_grouped_by_predicate, "Gets a dictionary mapping predicates to ground atoms of the given predicate that are true in the state.");
     state.def("pack_object_ids_by_predicate_id", &formalism::StateImpl::pack_object_ids_by_predicate_id, "include_types"_a, "include_goal"_a, "Gets a dictionary mapping predicate identifiers to a flattened list of object ids, implicitly denoting the atoms true in the state, and a dictionary mapping identifiers to names.");
     state.def("literals_hold", &state_matches_literals, "literals"_a, "Tests whether all ground literals hold with respect to their polarity in the state.");
+    state.def("__eq__", &formalism::StateImpl::operator==);
+    state.def("__hash__", &formalism::StateImpl::hash);
     state.def("__repr__", [](const formalism::StateImpl& state) { return "<State '" + std::to_string(state.hash()) + "'>"; });
 
     state.def("matches_all",

@@ -90,7 +90,7 @@ namespace formalism
         return std::make_shared<formalism::StateImpl>(atoms, problem);
     }
 
-    inline bool StateImpl::operator<(const StateImpl& other) const
+    bool StateImpl::operator<(const StateImpl& other) const
     {
         if (problem_ != other.problem_)
         {
@@ -100,7 +100,7 @@ namespace formalism
         return bitset_ < other.bitset_;
     }
 
-    inline bool StateImpl::operator==(const StateImpl& other) const
+    bool StateImpl::operator==(const StateImpl& other) const
     {
         if (hash_ != other.hash_)
         {
@@ -115,7 +115,7 @@ namespace formalism
         return bitset_ == other.bitset_;
     }
 
-    inline bool StateImpl::operator!=(const StateImpl& other) const { return !(this->operator==(other)); }
+    bool StateImpl::operator!=(const StateImpl& other) const { return !(this->operator==(other)); }
 
     formalism::AtomList StateImpl::get_atoms() const
     {
@@ -374,6 +374,8 @@ namespace formalism
 
         return std::make_pair(packed_ids, id_to_name_arity);
     }
+
+    std::size_t StateImpl::hash() const { return hash_; }
 
     bool is_in_state(uint32_t rank, const formalism::State& state) { return state->bitset_.get(rank); }
 

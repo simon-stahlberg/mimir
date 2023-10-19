@@ -32,11 +32,11 @@ namespace formalism
 
         StateImpl(const formalism::AtomSet& atoms, const formalism::ProblemDescription& problem);
 
-        inline bool operator<(const StateImpl& other) const;
+        bool operator<(const StateImpl& other) const;
 
-        inline bool operator==(const StateImpl& other) const;
+        bool operator==(const StateImpl& other) const;
 
-        inline bool operator!=(const StateImpl& other) const;
+        bool operator!=(const StateImpl& other) const;
 
         formalism::AtomList get_atoms() const;
 
@@ -57,7 +57,7 @@ namespace formalism
         std::pair<std::map<uint32_t, std::vector<uint32_t>>, std::map<uint32_t, std::pair<std::string, uint32_t>>>
         pack_object_ids_by_predicate_id(bool include_types, bool include_goal) const;
 
-        inline std::size_t hash() const { return hash_; }
+        std::size_t hash() const;
 
         friend bool is_applicable(const formalism::Action& action, const formalism::State& state);
 
