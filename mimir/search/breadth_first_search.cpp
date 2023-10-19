@@ -21,7 +21,9 @@ namespace planners
         statistics_.clear();
         int32_t expanded = 0;
         int32_t generated = 0;
-        int32_t last_depth = -1;
+        int32_t max_depth = -1;
+        double max_g_value = -1;
+        int32_t last_depth = -1;  // Used to notify handlers
 
         struct Frame
         {
@@ -54,13 +56,16 @@ namespace planners
             const auto& frame = frame_list[index];
             open_list.pop_front();
 
+            max_depth = std::max(max_depth, frame.depth);
+            max_g_value = std::max(max_g_value, frame.g_value);
+
             if (last_depth < frame.depth)
             {
                 last_depth = frame.depth;
                 statistics_["expanded"] = expanded;
                 statistics_["generated"] = generated;
-                statistics_["max_depth"] = frame.depth;
-                statistics_["max_g_value"] = frame.g_value;
+                statistics_["max_depth"] = max_depth;
+                statistics_["max_g_value"] = max_g_value;
                 notify_handlers();
             }
 
@@ -71,6 +76,13 @@ namespace planners
 
             if (formalism::literals_hold(problem_->goal, frame.state))
             {
+                // Update the statistics to the final values
+
+                statistics_["expanded"] = expanded;
+                statistics_["generated"] = generated;
+                statistics_["max_depth"] = max_depth;
+                statistics_["max_g_value"] = max_g_value;
+
                 // Reconstruct the path to the goal state
                 out_plan.clear();
                 auto current_frame = frame;
@@ -105,6 +117,13 @@ namespace planners
                 }
             }
         }
+
+        // Update the statistics to the final values
+
+        statistics_["expanded"] = expanded;
+        statistics_["generated"] = generated;
+        statistics_["max_depth"] = max_depth;
+        statistics_["max_g_value"] = max_g_value;
 
         return SearchResult::UNSOLVABLE;
     }

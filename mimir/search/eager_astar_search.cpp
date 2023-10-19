@@ -32,7 +32,10 @@ namespace planners
         int32_t expanded = 0;
         int32_t generated = 0;
         int32_t evaluated = 0;
-        int32_t last_f_value = -1;
+        int32_t max_depth = -1;
+        double max_g_value = -1;
+        double max_f_value = -1;
+        int32_t last_f_value = -1;  // Used to notify handlers
 
         struct Frame
         {
@@ -74,6 +77,9 @@ namespace planners
 
             frame.closed = true;
             const auto f_value = frame.g_value + frame.h_value;
+            max_depth = std::max(max_depth, frame.depth);
+            max_g_value = std::max(max_g_value, frame.g_value);
+            max_f_value = std::max(max_f_value, f_value);
 
             if (last_f_value < f_value)
             {
@@ -81,9 +87,9 @@ namespace planners
                 statistics_["expanded"] = expanded;
                 statistics_["generated"] = generated;
                 statistics_["evaluated"] = evaluated;
-                statistics_["max_depth"] = frame.depth;
-                statistics_["max_g_value"] = frame.g_value;
-                statistics_["max_f_value"] = f_value;
+                statistics_["max_depth"] = max_depth;
+                statistics_["max_g_value"] = max_g_value;
+                statistics_["max_f_value"] = max_f_value;
                 notify_handlers();
             }
 
@@ -94,7 +100,17 @@ namespace planners
 
             if (formalism::literals_hold(problem_->goal, frame.state))
             {
+                // Update the statistics to the final values
+
+                statistics_["expanded"] = expanded;
+                statistics_["generated"] = generated;
+                statistics_["evaluated"] = evaluated;
+                statistics_["max_depth"] = max_depth;
+                statistics_["max_g_value"] = max_g_value;
+                statistics_["max_f_value"] = max_f_value;
+
                 // Reconstruct the path to the goal state
+
                 out_plan.clear();
                 auto current_frame = frame;
 
@@ -162,6 +178,15 @@ namespace planners
                 }
             }
         }
+
+        // Update the statistics to the final values
+
+        statistics_["expanded"] = expanded;
+        statistics_["generated"] = generated;
+        statistics_["evaluated"] = evaluated;
+        statistics_["max_depth"] = max_depth;
+        statistics_["max_g_value"] = max_g_value;
+        statistics_["max_f_value"] = max_f_value;
 
         return SearchResult::UNSOLVABLE;
     }
