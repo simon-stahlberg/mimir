@@ -6,7 +6,7 @@
 
 namespace planners
 {
-    BreadthFirstSearch::BreadthFirstSearch(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator) :
+    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator) :
         SearchBase(),
         statistics_(),
         problem_(problem),
@@ -14,9 +14,9 @@ namespace planners
     {
     }
 
-    std::map<std::string, std::variant<int32_t, double>> BreadthFirstSearch::get_statistics() const { return statistics_; }
+    std::map<std::string, std::variant<int32_t, double>> BreadthFirstSearchImpl::get_statistics() const { return statistics_; }
 
-    SearchResult BreadthFirstSearch::plan(formalism::ActionList& out_plan)
+    SearchResult BreadthFirstSearchImpl::plan(formalism::ActionList& out_plan)
     {
         statistics_.clear();
         int32_t expanded = 0;
@@ -107,5 +107,10 @@ namespace planners
         }
 
         return SearchResult::UNSOLVABLE;
+    }
+
+    BreadthFirstSearch create_breadth_first_search(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+    {
+        return std::make_shared<BreadthFirstSearchImpl>(problem, successor_generator);
     }
 }  // namespace planners

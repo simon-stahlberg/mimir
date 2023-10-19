@@ -5,9 +5,18 @@
 #include "generators/successor_generator.hpp"
 #include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
+#include "search/breadth_first_search.hpp"
+#include "search/eager_astar_search.hpp"
+#include "search/heuristics/h1_heuristic.hpp"
+#include "search/heuristics/h2_heuristic.hpp"
+#include "search/heuristics/heuristic_base.hpp"
+#include "search/openlists/open_list_base.hpp"
+#include "search/openlists/priority_queue_open_list.hpp"
+#include "search/search_base.hpp"
 
 #include <Python.h>
 #include <memory>
+#include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -156,8 +165,16 @@ PYBIND11_MODULE(mimir, m)
     py::class_<planners::SuccessorGeneratorBase, planners::SuccessorGenerator> successor_generator_base(m, "SuccessorGenerator");
     py::class_<planners::LiftedSuccessorGenerator, std::shared_ptr<planners::LiftedSuccessorGenerator>> lifted_successor_generator(m, "LiftedSuccessorGenerator", successor_generator_base);
     py::class_<planners::GroundedSuccessorGenerator, std::shared_ptr<planners::GroundedSuccessorGenerator>> grounded_successor_generator(m, "GroundedSuccessorGenerator", successor_generator_base);
-    py::class_<formalism::TransitionImpl, formalism::Transition> transition(m, "Transition");
     py::class_<planners::StateSpaceImpl, planners::StateSpace> state_space(m, "StateSpace");
+    py::class_<planners::SearchBase, planners::Search> search(m, "Search");
+    py::class_<planners::BreadthFirstSearchImpl, planners::BreadthFirstSearch> breadth_first_search(m, "BreadthFirstSearch", search);
+    py::class_<planners::EagerAStarSearchImpl, planners::EagerAStarSearch> eager_astar_search(m, "AStarSearch", search);
+    py::class_<planners::OpenListBase<int32_t>, planners::OpenList> open_list(m, "OpenList");
+    py::class_<planners::PriorityQueueOpenList<int32_t>, std::shared_ptr<planners::PriorityQueueOpenList<int32_t>>> priority_queue_open_list(m, "PriorityQueueOpenList", open_list);
+    py::class_<planners::HeuristicBase, planners::Heuristic> heuristic(m, "Heuristic");
+    py::class_<planners::H1Heuristic, std::shared_ptr<planners::H1Heuristic>> h1_heuristic(m, "H1Heuristic", heuristic);
+    py::class_<planners::H2Heuristic, std::shared_ptr<planners::H2Heuristic>> h2_heuristic(m, "H2Heuristic", heuristic);
+    py::class_<formalism::TransitionImpl, formalism::Transition> transition(m, "Transition");
     py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>> literal_grounder(m, "LiteralGrounder");
     py::class_<formalism::Implication, std::shared_ptr<formalism::Implication>> implication(m, "Implication");
 
@@ -273,24 +290,36 @@ PYBIND11_MODULE(mimir, m)
     problem.def("get_encountered_atoms", &formalism::ProblemImpl::get_encountered_atoms, "Gets all atoms seen so far.");
     problem.def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
 
-    domain_parser.def(py::init(&create_domain_parser));
+    domain_parser.def(py::init(&create_domain_parser), "path"_a);
     domain_parser.def("parse", (formalism::DomainDescription (parsers::DomainParser::*)()) &parsers::DomainParser::parse, "Parses the associated file and creates a new domain.");
 
-    problem_parser.def(py::init(&create_problem_parser));
+    problem_parser.def(py::init(&create_problem_parser), "path"_a);
     problem_parser.def("parse", (formalism::ProblemDescription (parsers::ProblemParser::*)(const formalism::DomainDescription&)) &parsers::ProblemParser::parse, "Parses the associated file and creates a new problem.");
 
     successor_generator_base.def("get_applicable_actions", &planners::SuccessorGeneratorBase::get_applicable_actions, "state"_a, "Gets all ground actions applicable in the given state.");
     successor_generator_base.def("__repr__", [](const planners::SuccessorGeneratorBase& generator) { return "<SuccessorGenerator '" + generator.get_problem()->name + "'>"; });
 
-    lifted_successor_generator.def(py::init(&create_lifted_successor_generator));
-    grounded_successor_generator.def(py::init(&create_grounded_successor_generator));
+    lifted_successor_generator.def(py::init(&create_lifted_successor_generator), "problem"_a);
+    grounded_successor_generator.def(py::init(&create_grounded_successor_generator), "problem"_a);
+
+    search.def("plan", [](const planners::Search& search) { formalism::ActionList plan; const auto result = search->plan(plan); return std::make_pair(result == planners::SearchResult::SOLVED, plan); });
+    search.def("abort", &planners::SearchBase::abort);
+    search.def("register_callback", &planners::SearchBase::register_handler, "callback_function"_a, "The callback function will be invoked as the search algorithm progresses.");
+    search.def("get_statistics", &planners::SearchBase::get_statistics, "Get statistics of the search so far.");
+
+    breadth_first_search.def(py::init(&planners::create_breadth_first_search), "problem"_a, "successor_generator"_a, "Creates a breadth-first search object.");
+    eager_astar_search.def(py::init(&planners::create_eager_astar), "problem"_a, "successor_generator"_a, "heuristic"_a, "open_list"_a, "Creates an A* search object.");
+
+    priority_queue_open_list.def(py::init(&planners::create_priority_queue_open_list), "Creates a priority queue open list object.");
+
+    h1_heuristic.def(py::init(&planners::create_h1_heuristic), "problem"_a, "successor_generator"_a, "Creates a h1 heuristic function object.");
+    h2_heuristic.def(py::init(&planners::create_h2_heuristic), "problem"_a, "successor_generator"_a, "Creates a h2 heuristic function object.");
 
     transition.def_readonly("source", &formalism::TransitionImpl::source_state, "Gets the source of the transition.");
     transition.def_readonly("target", &formalism::TransitionImpl::target_state, "Gets the target of the transition.");
     transition.def_readonly("action", &formalism::TransitionImpl::action, "Gets the action associated with the transition.");
     transition.def("__repr__", [](const formalism::TransitionImpl& transition) { return "<Transition '" + to_string(*transition.action) + "'>"; });
 
-    // state_space.def(py::init(&planners::create_state_space), "problem"_a, "successor_generator"_a);
     state_space.def_static("new", &planners::create_state_space, "problem"_a, "successor_generator"_a, "max_expanded"_a = 1'000'000);
     state_space.def_readonly("domain", &planners::StateSpaceImpl::domain, "Gets the domain associated with the state space.");
     state_space.def_readonly("problem", &planners::StateSpaceImpl::problem, "Gets the problem associated with the state space.");

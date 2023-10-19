@@ -1,5 +1,5 @@
-#if !defined(PLANNERS_HEURISTIC_H2_HPP_)
-#define PLANNERS_HEURISTIC_H2_HPP_
+#if !defined(PLANNERS_HEURISTIC_H1_HPP_)
+#define PLANNERS_HEURISTIC_H1_HPP_
 
 #include "../../formalism/atom.hpp"
 #include "../../formalism/problem.hpp"
@@ -36,4 +36,4 @@ namespace planners
     std::shared_ptr<H1Heuristic> create_h1_heuristic(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator);
 }  // namespace planners
 
-#endif  // PLANNERS_HEURISTIC_H2_HPP_
+#endif  // PLANNERS_HEURISTIC_H1_HPP_

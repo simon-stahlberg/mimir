@@ -5,6 +5,7 @@
 #include "search_result.hpp"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
@@ -43,6 +44,7 @@ namespace planners
         virtual SearchResult plan(formalism::ActionList& out_plan) = 0;
     };
 
+    using Search = std::shared_ptr<SearchBase>;
 }  // namespace planners
 
 #endif  // PLANNERS_SEARCH_BASE_HPP_

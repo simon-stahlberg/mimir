@@ -6,10 +6,10 @@
 
 namespace planners
 {
-    EagerAStarSearch::EagerAStarSearch(const formalism::ProblemDescription& problem,
-                                       const planners::SuccessorGenerator& successor_generator,
-                                       const planners::Heuristic& heuristic,
-                                       const planners::OpenList& open_list) :
+    EagerAStarSearchImpl::EagerAStarSearchImpl(const formalism::ProblemDescription& problem,
+                                               const planners::SuccessorGenerator& successor_generator,
+                                               const planners::Heuristic& heuristic,
+                                               const planners::OpenList& open_list) :
         SearchBase(),
         statistics_(),
         problem_(problem),
@@ -19,9 +19,9 @@ namespace planners
     {
     }
 
-    std::map<std::string, std::variant<int32_t, double>> EagerAStarSearch::get_statistics() const { return statistics_; }
+    std::map<std::string, std::variant<int32_t, double>> EagerAStarSearchImpl::get_statistics() const { return statistics_; }
 
-    SearchResult EagerAStarSearch::plan(formalism::ActionList& out_plan)
+    SearchResult EagerAStarSearchImpl::plan(formalism::ActionList& out_plan)
     {
         if (open_list_->size() > 0)
         {
@@ -141,7 +141,7 @@ namespace planners
                     auto& succ_frame = frame_list[succ_index];
                     const auto succ_g_value = frame.g_value + action->cost;
 
-                    if (succ_g_value < succ_frame.g_value)
+                    if (!succ_frame.closed && (succ_g_value < succ_frame.g_value))
                     {
                         // We have found a better way to the next state; update the frame
 
@@ -164,5 +164,13 @@ namespace planners
         }
 
         return SearchResult::UNSOLVABLE;
+    }
+
+    EagerAStarSearch create_eager_astar(const formalism::ProblemDescription& problem,
+                                        const planners::SuccessorGenerator& successor_generator,
+                                        const planners::Heuristic& heuristic,
+                                        const planners::OpenList& open_list)
+    {
+        return std::make_shared<EagerAStarSearchImpl>(problem, successor_generator, heuristic, open_list);
     }
 }  // namespace planners

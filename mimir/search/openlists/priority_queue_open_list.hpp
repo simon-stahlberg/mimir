@@ -24,7 +24,7 @@ namespace planners
         std::size_t size() override;
     };
 
-    planners::OpenList create_priority_queue_open_list();
+    std::shared_ptr<PriorityQueueOpenList<int32_t>> create_priority_queue_open_list();
 }  // namespace planners
 
 #endif  // PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_

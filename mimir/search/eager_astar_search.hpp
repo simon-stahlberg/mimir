@@ -7,9 +7,11 @@
 #include "openlists/open_list_base.hpp"
 #include "search_base.hpp"
 
+#include <memory>
+
 namespace planners
 {
-    class EagerAStarSearch : public SearchBase
+    class EagerAStarSearchImpl : public SearchBase
     {
       private:
         std::map<std::string, std::variant<int32_t, double>> statistics_;
@@ -19,15 +21,22 @@ namespace planners
         planners::OpenList open_list_;
 
       public:
-        EagerAStarSearch(const formalism::ProblemDescription& problem,
-                         const planners::SuccessorGenerator& successor_generator,
-                         const planners::Heuristic& heuristic,
-                         const planners::OpenList& open_list);
+        EagerAStarSearchImpl(const formalism::ProblemDescription& problem,
+                             const planners::SuccessorGenerator& successor_generator,
+                             const planners::Heuristic& heuristic,
+                             const planners::OpenList& open_list);
 
         std::map<std::string, std::variant<int32_t, double>> get_statistics() const override;
 
         SearchResult plan(formalism::ActionList& out_plan) override;
     };
+
+    using EagerAStarSearch = std::shared_ptr<EagerAStarSearchImpl>;
+
+    EagerAStarSearch create_eager_astar(const formalism::ProblemDescription& problem,
+                                        const planners::SuccessorGenerator& successor_generator,
+                                        const planners::Heuristic& heuristic,
+                                        const planners::OpenList& open_list);
 }  // namespace planners
 
 #endif  // PLANNERS_EAGER_ASTAR_SEARCH_HPP_

@@ -27,5 +27,5 @@ namespace planners
         return priority_queue_.size();
     }
 
-    planners::OpenList create_priority_queue_open_list() { return std::make_shared<PriorityQueueOpenList<int32_t>>(); }
+    std::shared_ptr<PriorityQueueOpenList<int32_t>> create_priority_queue_open_list() { return std::make_shared<PriorityQueueOpenList<int32_t>>(); }
 }  // namespace planners

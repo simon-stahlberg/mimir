@@ -89,15 +89,15 @@ std::vector<std::string> successor_generator_types() { return std::vector<std::s
 
 void bfs(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
 {
-    planners::BreadthFirstSearch search(problem, successor_generator);
+    planners::Search search = planners::create_breadth_first_search(problem, successor_generator);
     const auto time_start = std::chrono::high_resolution_clock::now();
 
-    search.register_handler(
+    search->register_handler(
         [&time_start, &search]()
         {
             const auto time_now = std::chrono::high_resolution_clock::now();
             const auto time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - time_start).count();
-            const auto statistics = search.get_statistics();
+            const auto statistics = search->get_statistics();
             const auto expanded = std::get<int32_t>(statistics.at("expanded"));
             const auto generated = std::get<int32_t>(statistics.at("generated"));
             const auto depth = std::get<int32_t>(statistics.at("max_depth"));
@@ -106,7 +106,7 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
         });
 
     formalism::ActionList plan;
-    const auto result = search.plan(plan);
+    const auto result = search->plan(plan);
 
     std::cout << std::endl;
 
@@ -135,22 +135,22 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
 
 void astar(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
 {
+    const auto time_start = std::chrono::high_resolution_clock::now();
     const auto heuristic = planners::create_h1_heuristic(problem, successor_generator);
     const auto open_list = planners::create_priority_queue_open_list();
-    planners::EagerAStarSearch search(problem, successor_generator, heuristic, open_list);
-    const auto time_start = std::chrono::high_resolution_clock::now();
+    auto search = planners::create_eager_astar(problem, successor_generator, heuristic, open_list);
 
-    search.register_handler(
+    search->register_handler(
         [&time_start, &search]()
         {
             const auto time_now = std::chrono::high_resolution_clock::now();
             const auto time_delta = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - time_start).count();
-            const auto statistics = search.get_statistics();
+            const auto statistics = search->get_statistics();
             const auto expanded = std::get<int32_t>(statistics.at("expanded"));
             const auto generated = std::get<int32_t>(statistics.at("generated"));
             const auto evaluated = std::get<int32_t>(statistics.at("evaluated"));
             // const auto depth = std::get<int32_t>(statistics.at("max_depth"));
-            // const auto g_value = std::get<int32_t>(statistics.at("max_g_value"));
+            const auto g_value = std::get<double>(statistics.at("max_g_value"));
             const auto f_value = std::get<double>(statistics.at("max_f_value"));
             std::cout << "[f = " << f_value << "] Expanded: " << expanded << "; Generated: " << generated << "; Evaluated: " << evaluated << " [" << time_delta
                       << " ms; ";
@@ -158,7 +158,7 @@ void astar(const formalism::ProblemDescription& problem, const planners::Success
         });
 
     formalism::ActionList plan;
-    const auto result = search.plan(plan);
+    const auto result = search->plan(plan);
 
     std::cout << std::endl;
 

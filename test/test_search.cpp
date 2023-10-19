@@ -44,12 +44,12 @@ namespace test
         const auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::GROUNDED);
 
         const auto state_space = planners::create_state_space(problem, successor_generator);
-        planners::BreadthFirstSearch search(problem, successor_generator);
+        auto search = planners::create_breadth_first_search(problem, successor_generator);
 
-        search.register_handler(
+        search->register_handler(
             [&search, &expanded_array, &expanded_length]()
             {
-                const auto statistics = search.get_statistics();
+                const auto statistics = search->get_statistics();
                 ASSERT_TRUE(statistics.count("expanded"));
                 ASSERT_TRUE(statistics.count("max_depth"));
                 const auto expanded = std::get<int32_t>(statistics.at("expanded"));
@@ -61,12 +61,12 @@ namespace test
                 }
                 else
                 {
-                    search.abort();
+                    search->abort();
                 }
             });
 
         formalism::ActionList plan;
-        const auto result = search.plan(plan);
+        const auto result = search->plan(plan);
         ASSERT_EQ(result, planners::SearchResult::SOLVED);
         ASSERT_EQ(plan.size(), plan_length);
     }
