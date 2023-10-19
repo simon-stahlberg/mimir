@@ -12,9 +12,14 @@ namespace planners
     class BreadthFirstSearchImpl : public SearchBase
     {
       private:
-        std::map<std::string, std::variant<int32_t, double>> statistics_;
         formalism::ProblemDescription problem_;
         planners::SuccessorGenerator successor_generator_;
+        double max_g_value_;
+        int32_t max_depth_;
+        int32_t expanded_;
+        int32_t generated_;
+
+        void reset_statistics();
 
       public:
         BreadthFirstSearchImpl(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator);

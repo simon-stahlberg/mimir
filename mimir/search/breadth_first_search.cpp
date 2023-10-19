@@ -8,21 +8,36 @@ namespace planners
 {
     BreadthFirstSearchImpl::BreadthFirstSearchImpl(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator) :
         SearchBase(),
-        statistics_(),
         problem_(problem),
-        successor_generator_(successor_generator)
+        successor_generator_(successor_generator),
+        max_g_value_(-1),
+        max_depth_(-1),
+        expanded_(0),
+        generated_(0)
     {
     }
 
-    std::map<std::string, std::variant<int32_t, double>> BreadthFirstSearchImpl::get_statistics() const { return statistics_; }
+    void BreadthFirstSearchImpl::reset_statistics()
+    {
+        max_g_value_ = -1;
+        max_depth_ = -1;
+        expanded_ = 0;
+        generated_ = 0;
+    }
+
+    std::map<std::string, std::variant<int32_t, double>> BreadthFirstSearchImpl::get_statistics() const
+    {
+        std::map<std::string, std::variant<int32_t, double>> statistics;
+        statistics["expanded"] = expanded_;
+        statistics["generated"] = generated_;
+        statistics["max_depth"] = max_depth_;
+        statistics["max_g_value"] = max_g_value_;
+        return statistics;
+    }
 
     SearchResult BreadthFirstSearchImpl::plan(formalism::ActionList& out_plan)
     {
-        statistics_.clear();
-        int32_t expanded = 0;
-        int32_t generated = 0;
-        int32_t max_depth = -1;
-        double max_g_value = -1;
+        reset_statistics();
         int32_t last_depth = -1;  // Used to notify handlers
 
         struct Frame
@@ -56,16 +71,12 @@ namespace planners
             const auto& frame = frame_list[index];
             open_list.pop_front();
 
-            max_depth = std::max(max_depth, frame.depth);
-            max_g_value = std::max(max_g_value, frame.g_value);
+            max_depth_ = std::max(max_depth_, frame.depth);
+            max_g_value_ = std::max(max_g_value_, frame.g_value);
 
             if (last_depth < frame.depth)
             {
                 last_depth = frame.depth;
-                statistics_["expanded"] = expanded;
-                statistics_["generated"] = generated;
-                statistics_["max_depth"] = max_depth;
-                statistics_["max_g_value"] = max_g_value;
                 notify_handlers();
             }
 
@@ -76,13 +87,6 @@ namespace planners
 
             if (formalism::literals_hold(problem_->goal, frame.state))
             {
-                // Update the statistics to the final values
-
-                statistics_["expanded"] = expanded;
-                statistics_["generated"] = generated;
-                statistics_["max_depth"] = max_depth;
-                statistics_["max_g_value"] = max_g_value;
-
                 // Reconstruct the path to the goal state
                 out_plan.clear();
                 auto current_frame = frame;
@@ -97,7 +101,7 @@ namespace planners
                 return SearchResult::SOLVED;
             }
 
-            ++expanded;
+            ++expanded_;
 
             const auto applicable_actions = successor_generator_->get_applicable_actions(frame.state);
 
@@ -110,20 +114,13 @@ namespace planners
                 {
                     // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
 
-                    ++generated;
+                    ++generated_;
                     successor_index = static_cast<int32_t>(frame_list.size());
                     frame_list.emplace_back(Frame { successor_state, action, index, frame.depth + 1, frame.g_value + action->cost });
                     open_list.emplace_back(successor_index);
                 }
             }
         }
-
-        // Update the statistics to the final values
-
-        statistics_["expanded"] = expanded;
-        statistics_["generated"] = generated;
-        statistics_["max_depth"] = max_depth;
-        statistics_["max_g_value"] = max_g_value;
 
         return SearchResult::UNSOLVABLE;
     }

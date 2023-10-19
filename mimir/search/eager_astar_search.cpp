@@ -11,15 +11,40 @@ namespace planners
                                                const planners::Heuristic& heuristic,
                                                const planners::OpenList& open_list) :
         SearchBase(),
-        statistics_(),
         problem_(problem),
         successor_generator_(successor_generator),
         heuristic_(heuristic),
-        open_list_(open_list)
+        open_list_(open_list),
+        max_g_value_(-1),
+        max_f_value_(-1),
+        max_depth_(-1),
+        expanded_(0),
+        generated_(0),
+        evaluated_(0)
     {
     }
 
-    std::map<std::string, std::variant<int32_t, double>> EagerAStarSearchImpl::get_statistics() const { return statistics_; }
+    void EagerAStarSearchImpl::reset_statistics()
+    {
+        max_g_value_ = -1;
+        max_f_value_ = -1;
+        max_depth_ = -1;
+        expanded_ = 0;
+        generated_ = 0;
+        evaluated_ = 0;
+    }
+
+    std::map<std::string, std::variant<int32_t, double>> EagerAStarSearchImpl::get_statistics() const
+    {
+        std::map<std::string, std::variant<int32_t, double>> statistics;
+        statistics["expanded"] = expanded_;
+        statistics["generated"] = generated_;
+        statistics["evaluated"] = evaluated_;
+        statistics["max_depth"] = max_depth_;
+        statistics["max_g_value"] = max_g_value_;
+        statistics["max_f_value"] = max_f_value_;
+        return statistics;
+    }
 
     SearchResult EagerAStarSearchImpl::plan(formalism::ActionList& out_plan)
     {
@@ -28,13 +53,7 @@ namespace planners
             throw std::runtime_error("open list is not initially empty");
         }
 
-        statistics_.clear();
-        int32_t expanded = 0;
-        int32_t generated = 0;
-        int32_t evaluated = 0;
-        int32_t max_depth = -1;
-        double max_g_value = -1;
-        double max_f_value = -1;
+        reset_statistics();
         int32_t last_f_value = -1;  // Used to notify handlers
 
         struct Frame
@@ -62,7 +81,7 @@ namespace planners
             state_indices[initial_state] = initial_index;
             frame_list.emplace_back(Frame { initial_state, nullptr, -1, 0, 0.0, initial_h_value, false });
             open_list_->insert(initial_index, 0.0);
-            ++evaluated;
+            ++evaluated_;
         }
 
         while (open_list_->size() > 0)
@@ -77,19 +96,13 @@ namespace planners
 
             frame.closed = true;
             const auto f_value = frame.g_value + frame.h_value;
-            max_depth = std::max(max_depth, frame.depth);
-            max_g_value = std::max(max_g_value, frame.g_value);
-            max_f_value = std::max(max_f_value, f_value);
+            max_depth_ = std::max(max_depth_, frame.depth);
+            max_g_value_ = std::max(max_g_value_, frame.g_value);
+            max_f_value_ = std::max(max_f_value_, f_value);
 
             if (last_f_value < f_value)
             {
                 last_f_value = f_value;
-                statistics_["expanded"] = expanded;
-                statistics_["generated"] = generated;
-                statistics_["evaluated"] = evaluated;
-                statistics_["max_depth"] = max_depth;
-                statistics_["max_g_value"] = max_g_value;
-                statistics_["max_f_value"] = max_f_value;
                 notify_handlers();
             }
 
@@ -100,15 +113,6 @@ namespace planners
 
             if (formalism::literals_hold(problem_->goal, frame.state))
             {
-                // Update the statistics to the final values
-
-                statistics_["expanded"] = expanded;
-                statistics_["generated"] = generated;
-                statistics_["evaluated"] = evaluated;
-                statistics_["max_depth"] = max_depth;
-                statistics_["max_g_value"] = max_g_value;
-                statistics_["max_f_value"] = max_f_value;
-
                 // Reconstruct the path to the goal state
 
                 out_plan.clear();
@@ -124,7 +128,7 @@ namespace planners
                 return SearchResult::SOLVED;
             }
 
-            ++expanded;
+            ++expanded_;
 
             const auto applicable_actions = successor_generator_->get_applicable_actions(frame.state);
 
@@ -142,14 +146,14 @@ namespace planners
                     const auto succ_h_value = heuristic_->evaluate(succ_state);
                     const auto succ_f_value = succ_g_value + succ_h_value;
                     const auto succ_dead_end = HeuristicBase::is_dead_end(succ_h_value);
-                    ++evaluated;
+                    ++evaluated_;
 
                     frame_list.emplace_back(Frame { succ_state, action, index, frame.depth + 1, succ_g_value, succ_h_value, succ_dead_end });
 
                     if (!succ_dead_end)
                     {
                         open_list_->insert(succ_index, succ_f_value);
-                        ++generated;
+                        ++generated_;
                     }
                 }
                 else
@@ -172,21 +176,12 @@ namespace planners
 
                             const auto succ_f_value = succ_g_value + succ_frame.h_value;
                             open_list_->insert(succ_index, succ_f_value);
-                            ++generated;
+                            ++generated_;
                         }
                     }
                 }
             }
         }
-
-        // Update the statistics to the final values
-
-        statistics_["expanded"] = expanded;
-        statistics_["generated"] = generated;
-        statistics_["evaluated"] = evaluated;
-        statistics_["max_depth"] = max_depth;
-        statistics_["max_g_value"] = max_g_value;
-        statistics_["max_f_value"] = max_f_value;
 
         return SearchResult::UNSOLVABLE;
     }
