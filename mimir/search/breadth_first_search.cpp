@@ -7,7 +7,7 @@
 namespace planners
 {
     BreadthFirstSearchImpl::BreadthFirstSearchImpl(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator) :
-        SearchBase(),
+        SearchBase(problem),
         problem_(problem),
         successor_generator_(successor_generator),
         max_g_value_(-1),
@@ -59,7 +59,7 @@ namespace planners
 
             // Add the initial state to the data-structures
             const int32_t initial_index = static_cast<int32_t>(frame_list.size());
-            const auto initial_state = formalism::create_state(problem_->initial, problem_);
+            const auto initial_state = this->initial_state;
             state_indices[initial_state] = initial_index;
             frame_list.emplace_back(Frame { initial_state, nullptr, -1, 0, 0.0 });
             open_list.emplace_back(initial_index);

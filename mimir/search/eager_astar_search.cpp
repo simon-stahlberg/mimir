@@ -10,7 +10,7 @@ namespace planners
                                                const planners::SuccessorGenerator& successor_generator,
                                                const planners::Heuristic& heuristic,
                                                const planners::OpenList& open_list) :
-        SearchBase(),
+        SearchBase(problem),
         problem_(problem),
         successor_generator_(successor_generator),
         heuristic_(heuristic),
@@ -76,7 +76,7 @@ namespace planners
 
             // Add the initial state to the data-structures
             const int32_t initial_index = static_cast<int32_t>(frame_list.size());
-            const auto initial_state = formalism::create_state(problem_->initial, problem_);
+            const auto initial_state = this->initial_state;
             const auto initial_h_value = heuristic_->evaluate(initial_state);
             state_indices[initial_state] = initial_index;
             frame_list.emplace_back(Frame { initial_state, nullptr, -1, 0, 0.0, initial_h_value, false });

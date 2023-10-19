@@ -2,9 +2,16 @@
 
 namespace planners
 {
-    SearchBase::SearchBase() : event_handlers_(), should_abort(false) {}
+    SearchBase::SearchBase(const formalism::ProblemDescription& problem) :
+        event_handlers_(),
+        should_abort(false),
+        initial_state(formalism::create_state(problem->initial, problem))
+    {
+    }
 
     void SearchBase::abort() { should_abort = true; }
+
+    void SearchBase::set_initial_state(const formalism::State& state) { initial_state = state; }
 
     void SearchBase::notify_handlers() const
     {

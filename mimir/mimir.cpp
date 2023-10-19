@@ -304,6 +304,7 @@ PYBIND11_MODULE(mimir, m)
 
     search.def("plan", [](const planners::Search& search) { formalism::ActionList plan; const auto result = search->plan(plan); return std::make_pair(result == planners::SearchResult::SOLVED, plan); });
     search.def("abort", &planners::SearchBase::abort);
+    search.def("set_initial_state", &planners::SearchBase::set_initial_state, "state"_a, "Sets the initial state of the search.");
     search.def("register_callback", &planners::SearchBase::register_handler, "callback_function"_a, "The callback function will be invoked as the search algorithm progresses.");
     search.def("get_statistics", &planners::SearchBase::get_statistics, "Get statistics of the search so far.");
 

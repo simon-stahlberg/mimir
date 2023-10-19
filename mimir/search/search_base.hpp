@@ -18,9 +18,10 @@ namespace planners
         std::vector<std::function<void()>> event_handlers_;
 
       protected:
+        formalism::State initial_state;
         volatile bool should_abort;
 
-        SearchBase();
+        SearchBase(const formalism::ProblemDescription& problem);
 
         /// @brief Notify all registered handlers
         void notify_handlers() const;
@@ -33,6 +34,8 @@ namespace planners
         void register_handler(const std::function<void()>& handler);
 
         void abort();
+
+        void set_initial_state(const formalism::State& state);
 
         /// @brief Get statistics from the last planning step
         /// @return A dictionary with statistics
