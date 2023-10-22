@@ -23,8 +23,8 @@ namespace planners
         std::vector<int32_t> goal_;
         mutable std::vector<double> table_;
 
-        double evaluate(const std::vector<int32_t>& s) const;
-        void update(const std::size_t val, const int32_t h, bool& changed) const;
+        double evaluate(const std::vector<int32_t>& ranks) const;
+        void update(int32_t rank, double value, bool& changed) const;
         void fill_tables(const formalism::State& state) const;
 
       public:

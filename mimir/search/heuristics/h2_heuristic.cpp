@@ -30,8 +30,8 @@ namespace planners
         problem_(problem),
         actions_(),
         goal_(),
-        ht1_(),
-        ht2_()
+        h1_table_(),
+        h2_table_()
     {
         const auto grounded_successor_generator = std::dynamic_pointer_cast<planners::GroundedSuccessorGenerator>(successor_generator);
 
@@ -44,12 +44,12 @@ namespace planners
 
         // Pre-allocate memory for ht1 and ht2
 
-        ht1_.resize(num_ranks);
-        ht2_.resize(num_ranks);
+        h1_table_.resize(num_ranks);
+        h2_table_.resize(num_ranks);
 
         for (std::size_t i = 0; i < num_ranks; ++i)
         {
-            ht2_[i].resize(num_ranks);
+            h2_table_[i].resize(num_ranks);
         }
 
         // Convert the goal to the internal format
@@ -122,22 +122,22 @@ namespace planners
         }
     }
 
-    double H2Heuristic::evaluate(const std::vector<int32_t>& s) const
+    double H2Heuristic::evaluate(const std::vector<int32_t>& ranks) const
     {
         double v = 0;
 
-        for (std::size_t i = 0; i < s.size(); i++)
+        for (std::size_t i = 0; i < ranks.size(); i++)
         {
-            v = std::max(v, ht1_[s[i]]);
+            v = std::max(v, h1_table_[ranks[i]]);
 
             if (is_dead_end(v))
             {
                 return DEAD_END;
             }
 
-            for (std::size_t j = i + 1; j < s.size(); j++)
+            for (std::size_t j = i + 1; j < ranks.size(); j++)
             {
-                v = std::max(v, ht2_[s[i]][s[j]]);
+                v = std::max(v, h2_table_[ranks[i]][ranks[j]]);
 
                 if (is_dead_end(v))
                 {
@@ -149,25 +149,25 @@ namespace planners
         return v;
     }
 
-    double H2Heuristic::evaluate(const std::vector<int32_t>& s, int32_t x) const
+    double H2Heuristic::evaluate(const std::vector<int32_t>& ranks, int32_t rank) const
     {
         double v = 0;
 
-        v = std::max(v, ht1_[x]);
+        v = std::max(v, h1_table_[rank]);
 
         if (is_dead_end(v))
         {
             return DEAD_END;
         }
 
-        for (std::size_t i = 0; i < s.size(); i++)
+        for (std::size_t i = 0; i < ranks.size(); i++)
         {
-            if (x == s[i])
+            if (rank == ranks[i])
             {
                 continue;
             }
 
-            v = std::max(v, ht2_[x][s[i]]);
+            v = std::max(v, h2_table_[rank][ranks[i]]);
 
             if (is_dead_end(v))
             {
@@ -178,36 +178,36 @@ namespace planners
         return v;
     }
 
-    void H2Heuristic::update(const std::size_t val, const int32_t h, bool& changed) const
+    void H2Heuristic::update(int32_t rank, double value, bool& changed) const
     {
-        if (ht1_[val] > h)
+        if (h1_table_[rank] > value)
         {
-            ht1_[val] = h;
+            h1_table_[rank] = value;
             changed = true;
         }
     }
 
-    void H2Heuristic::update(const std::size_t val1, const std::size_t val2, const int32_t h, bool& changed) const
+    void H2Heuristic::update(int32_t rank1, int32_t rank2, double value, bool& changed) const
     {
-        if (ht2_[val1][val2] > h)
+        if (h2_table_[rank1][rank2] > value)
         {
-            ht2_[val1][val2] = h;
-            ht2_[val2][val1] = h;
+            h2_table_[rank1][rank2] = value;
+            h2_table_[rank2][rank1] = value;
             changed = true;
         }
     }
 
     void H2Heuristic::fill_tables(const formalism::State& state) const
     {
-        const auto num_atoms = ht1_.size();
+        const auto num_atoms = h1_table_.size();
 
         for (std::size_t i = 0; i < num_atoms; ++i)
         {
-            ht1_[i] = DEAD_END;
+            h1_table_[i] = DEAD_END;
 
             for (std::size_t j = 0; j < num_atoms; ++j)
             {
-                ht2_[i][j] = DEAD_END;
+                h2_table_[i][j] = DEAD_END;
             }
         }
 
@@ -221,11 +221,11 @@ namespace planners
 
         for (std::size_t i = 0; i < state_ids.size(); ++i)
         {
-            ht1_[state_ids[i]] = 0;
+            h1_table_[state_ids[i]] = 0;
 
             for (std::size_t j = 0; j < state_ids.size(); ++j)
             {
-                ht2_[state_ids[i]][state_ids[j]] = 0;
+                h2_table_[state_ids[i]][state_ids[j]] = 0;
             }
         }
 
@@ -238,35 +238,35 @@ namespace planners
             for (std::size_t action_index = 0; action_index < actions_.size(); ++action_index)
             {
                 const auto& [precondition, add_effect, delete_effect_complement, cost] = actions_[action_index];
-                const auto c1 = evaluate(precondition);
+                const auto cost1 = evaluate(precondition);
 
-                if (is_dead_end(c1))
+                if (is_dead_end(cost1))
                 {
                     continue;
                 }
 
                 for (std::size_t i = 0; i < add_effect.size(); i++)
                 {
-                    const auto p = add_effect[i];
-                    update(p, c1 + cost, changed);
+                    const auto rank1 = add_effect[i];
+                    update(rank1, cost1 + cost, changed);
 
                     for (std::size_t j = i + 1; j < add_effect.size(); j++)
                     {
-                        const auto q = add_effect[j];
+                        const auto rank2 = add_effect[j];
 
-                        if (p != q)
+                        if (rank1 != rank2)
                         {
-                            update(p, q, c1 + cost, changed);
+                            update(rank1, rank2, cost1 + cost, changed);
                         }
                     }
 
-                    for (const auto r : delete_effect_complement)
+                    for (const auto rank2 : delete_effect_complement)
                     {
-                        const auto c2 = std::max(c1, evaluate(precondition, r));
+                        const auto cost2 = std::max(cost1, evaluate(precondition, rank2));
 
-                        if (!is_dead_end(c2))
+                        if (!is_dead_end(cost2))
                         {
-                            update(p, r, c2 + cost, changed);
+                            update(rank1, rank2, cost2 + cost, changed);
                         }
                     }
                 }

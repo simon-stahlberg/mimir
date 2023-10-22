@@ -21,13 +21,13 @@ namespace planners
         formalism::ProblemDescription problem_;
         std::vector<InternalAction> actions_;
         std::vector<int32_t> goal_;
-        mutable std::vector<double> ht1_;
-        mutable std::vector<std::vector<double>> ht2_;
+        mutable std::vector<double> h1_table_;
+        mutable std::vector<std::vector<double>> h2_table_;
 
-        double evaluate(const std::vector<int32_t>& s) const;
-        double evaluate(const std::vector<int32_t>& s, int32_t x) const;
-        void update(const std::size_t val, const int32_t h, bool& changed) const;
-        void update(const std::size_t val1, const std::size_t val2, const int32_t h, bool& changed) const;
+        double evaluate(const std::vector<int32_t>& ranks) const;
+        double evaluate(const std::vector<int32_t>& ranks, int32_t rank) const;
+        void update(int32_t rank, double value, bool& changed) const;
+        void update(int32_t rank1, int32_t rank2, double value, bool& changed) const;
         void fill_tables(const formalism::State& state) const;
 
       public:

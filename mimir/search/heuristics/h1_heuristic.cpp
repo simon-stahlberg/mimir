@@ -132,7 +132,7 @@ namespace planners
         return value;
     }
 
-    void H1Heuristic::update(const std::size_t rank, const int32_t value, bool& changed) const
+    void H1Heuristic::update(int32_t rank, double value, bool& changed) const
     {
         if (table_[rank] > value)
         {
