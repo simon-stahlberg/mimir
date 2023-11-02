@@ -17,6 +17,7 @@
 
 #include "algorithms/robin_map.hpp"
 #include "generators/grounded_successor_generator.hpp"
+#include "generators/state_space.hpp"
 #include "generators/successor_generator_factory.hpp"
 #include "pddl/parsers.hpp"
 #include "search/breadth_first_search.hpp"
@@ -130,6 +131,26 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
 
         default:
             throw std::runtime_error("not implemented");
+    }
+}
+
+void state_space(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+{
+    const auto state_space = planners::create_state_space(problem, successor_generator, nullptr, 100'000);
+
+    if (state_space)
+    {
+        const auto num_states = state_space->num_states();
+        const auto num_dead_end_states = state_space->num_dead_end_states();
+        const auto num_goal_states = state_space->num_goal_states();
+
+        std::cout << "# States: " << num_states << std::endl;
+        std::cout << "# Dead End States: " << num_dead_end_states << std::endl;
+        std::cout << "# Goal States: " << num_goal_states << std::endl;
+    }
+    else
+    {
+        std::cout << "Problem too large to expand" << std::endl;
     }
 }
 
@@ -273,7 +294,7 @@ int main(int argc, char* argv[])
     if (argc != 5)
     {
         std::cout << "Invalid number of arguments" << std::endl;
-        std::cout << "Profling <Domain> <Problem> <Successor Generator> <dijkstras|bfs>" << std::endl;
+        std::cout << "Profling <Domain> <Problem> <Successor Generator> <dijkstras|bfs|astar|statespace>" << std::endl;
         exit(1);
     }
     else
@@ -352,6 +373,10 @@ int main(int argc, char* argv[])
     else if (search_name == "astar")
     {
         astar(problem, successor_generator);
+    }
+    else if (search_name == "statespace")
+    {
+        state_space(problem, successor_generator);
     }
     else
     {

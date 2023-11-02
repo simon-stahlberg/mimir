@@ -374,7 +374,10 @@ namespace planners
         return num_dead_ends;
     }
 
-    StateSpace create_state_space(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator, uint32_t max_states)
+    StateSpace create_state_space(const formalism::ProblemDescription& problem,
+                                  const planners::SuccessorGenerator& successor_generator,
+                                  const formalism::State& initial_state,
+                                  uint32_t max_states)
     {
         if (problem != successor_generator->get_problem())
         {
@@ -390,7 +393,7 @@ namespace planners
         {
             uint64_t initial_index;
 
-            if (state_space->add_or_get_state(formalism::create_state(problem->initial, problem), initial_index))
+            if (state_space->add_or_get_state(initial_state ? initial_state : formalism::create_state(problem->initial, problem), initial_index))
             {
                 state_space->set_distance_from_initial_state(initial_index, 0);
                 is_expanded.push_back(false);

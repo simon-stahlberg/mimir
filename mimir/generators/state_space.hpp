@@ -115,11 +115,12 @@ namespace planners
 
         uint64_t num_dead_end_states() const;
 
-        friend StateSpace create_state_space(const formalism::ProblemDescription&, const planners::SuccessorGenerator&, uint32_t);
+        friend StateSpace create_state_space(const formalism::ProblemDescription&, const planners::SuccessorGenerator&, const formalism::State&, uint32_t);
     };
 
     StateSpace create_state_space(const formalism::ProblemDescription& problem,
                                   const planners::SuccessorGenerator& successor_generator,
+                                  const formalism::State& initial_state = nullptr,
                                   uint32_t max_states = std::numeric_limits<uint32_t>::max());
 
     std::ostream& operator<<(std::ostream& os, const planners::StateSpace& state_space);
