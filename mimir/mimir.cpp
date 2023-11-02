@@ -323,7 +323,7 @@ PYBIND11_MODULE(mimir, m)
     transition.def_readonly("action", &formalism::TransitionImpl::action, "Gets the action associated with the transition.");
     transition.def("__repr__", [](const formalism::TransitionImpl& transition) { return "<Transition '" + to_string(*transition.action) + "'>"; });
 
-    state_space.def_static("new", &planners::create_state_space, "problem"_a, "successor_generator"_a, "initial_state"_a = nullptr, "max_expanded"_a = 1'000'000);
+    state_space.def_static("new", &planners::create_state_space, "problem"_a, "successor_generator"_a, "max_expanded"_a = 1'000'000);
     state_space.def_readonly("domain", &planners::StateSpaceImpl::domain, "Gets the domain associated with the state space.");
     state_space.def_readonly("problem", &planners::StateSpaceImpl::problem, "Gets the problem associated with the state space.");
     state_space.def("get_states", &planners::StateSpaceImpl::get_states, "Gets all states in the state space.");

@@ -67,6 +67,11 @@ namespace formalism
         std::sort(this->objects.begin(), this->objects.end(), [](const formalism::Object& lhs, const formalism::Object& rhs) { return lhs->id < rhs->id; });
     }
 
+    formalism::ProblemDescription ProblemImpl::replace_initial(const formalism::AtomList& initial) const
+    {
+        return create_problem(this->name, this->domain, this->objects, initial, this->goal, this->atom_costs);
+    }
+
     const formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
 
     uint32_t ProblemImpl::get_rank(const formalism::Atom& atom) const

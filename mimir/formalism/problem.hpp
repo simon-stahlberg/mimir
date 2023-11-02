@@ -42,6 +42,8 @@ namespace formalism
         formalism::LiteralList goal;
         std::unordered_map<formalism::Atom, double> atom_costs;
 
+        formalism::ProblemDescription replace_initial(const formalism::AtomList& initial) const;
+
         const formalism::AtomSet& get_static_atoms() const;
 
         uint32_t get_rank(const formalism::Atom& atom) const;

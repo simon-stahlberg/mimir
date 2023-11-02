@@ -136,7 +136,7 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
 
 void state_space(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
 {
-    const auto state_space = planners::create_state_space(problem, successor_generator, nullptr, 100'000);
+    const auto state_space = planners::create_state_space(problem, successor_generator, 100'000);
 
     if (state_space)
     {
