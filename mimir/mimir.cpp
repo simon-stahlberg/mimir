@@ -287,6 +287,7 @@ PYBIND11_MODULE(mimir, m)
     problem.def_readonly("objects", &formalism::ProblemImpl::objects, "Gets the objects of the problem.");
     problem.def_readonly("initial", &formalism::ProblemImpl::initial, "Gets the initial atoms of the problem.");
     problem.def_readonly("goal", &formalism::ProblemImpl::goal, "Gets the goal of the problem.");
+    problem.def("replace_initial", &formalism::ProblemImpl::replace_initial, "initial"_a, "Gets a new object with the given initial atoms.");
     problem.def("create_state", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return formalism::create_state(atom_list, problem); }, "Creates a new state given a list of atoms.");
     problem.def("create_grounder", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return std::make_shared<LiteralGrounder>(problem, atom_list); });
     problem.def("get_encountered_atoms", &formalism::ProblemImpl::get_encountered_atoms, "Gets all atoms seen so far.");
