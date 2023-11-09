@@ -266,23 +266,15 @@ namespace std
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     std::size_t hash<formalism::Bitset>::operator()(const formalism::Bitset& bitset) const
     {
-        const std::size_t default_block = bitset.default_bit_value ? bitset.block_ones : bitset.block_zeroes;
-        std::size_t last_relevant_index = bitset.data.size();
-
-        // Find the last block that differs from the default block
-        for (std::size_t index = bitset.data.size() - 1; index >= 0; --index)
-        {
-            if (bitset.data[index] != default_block)
-            {
-                last_relevant_index = index;
-                break;
-            }
-        }
-
-        // Compute a hash value up to and including this block
-        const auto length = (last_relevant_index == bitset.data.size()) ? 0 : ((last_relevant_index + 1) * sizeof(std::size_t));
+        const auto default_block = bitset.default_bit_value ? bitset.block_ones : bitset.block_zeroes;
         const auto seed = static_cast<uint32_t>(default_block);
 
+        // Find the last block that differs from the default block
+        auto last_relevant_index = static_cast<int64_t>(bitset.data.size()) - 1;
+        for (; (last_relevant_index >= 0) && (bitset.data[last_relevant_index] == default_block); --last_relevant_index) {}
+        const auto length = static_cast<std::size_t>(last_relevant_index + 1) * sizeof(std::size_t);
+
+        // Compute a hash value up to and including this block
         int64_t hash[2];
         MurmurHash3_x64_128(&bitset.data[0], length, seed, hash);
         return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));

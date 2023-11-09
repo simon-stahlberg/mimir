@@ -140,10 +140,12 @@ void state_space(const formalism::ProblemDescription& problem, const planners::S
 
     if (state_space)
     {
+        const auto num_objects = problem->num_objects();
         const auto num_states = state_space->num_states();
         const auto num_dead_end_states = state_space->num_dead_end_states();
         const auto num_goal_states = state_space->num_goal_states();
 
+        std::cout << "# Objects: " << num_objects << std::endl;
         std::cout << "# States: " << num_states << std::endl;
         std::cout << "# Dead End States: " << num_dead_end_states << std::endl;
         std::cout << "# Goal States: " << num_goal_states << std::endl;
