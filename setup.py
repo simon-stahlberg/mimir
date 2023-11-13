@@ -64,7 +64,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name="mimir",
-    version="0.1.0",
+    version="0.1.1",
     author="Simon Stahlberg",
     author_email="simon.stahlberg@gmail.com",
     description="Mimir: PDDL Parser and Planner Toolkit",
