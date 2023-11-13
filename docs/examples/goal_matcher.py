@@ -1,7 +1,7 @@
-import time
-import random
-import mimir
 import argparse
+import mimir
+import random
+import time
 
 from pathlib import Path
 
@@ -23,6 +23,7 @@ def main():
     if state_space is None:
         print('Too many states. Aborting.')
         exit(1)
+    # If you have a many different quantified goals over a specific state space, then the GoalMatcher is suitable for the task.
     goal_matcher = mimir.GoalMatcher(state_space)
     ground_atoms = problem.get_encountered_atoms()
     def get_random_atom():

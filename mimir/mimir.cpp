@@ -34,6 +34,7 @@ class LiteralGrounder
   public:
     LiteralGrounder(const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) : action_schema_(nullptr), generator_(nullptr)
     {
+        std::equal_to<formalism::Object> equal_to;
         formalism::ParameterList parameters;
         formalism::LiteralList precondition;
         formalism::LiteralList effect;
@@ -44,7 +45,18 @@ class LiteralGrounder
             {
                 if (term->is_free_variable())
                 {
-                    if (!std::count(parameters.cbegin(), parameters.cend(), term))
+                    bool new_term = true;
+
+                    for (const auto& parameter : parameters)
+                    {
+                        if (equal_to(parameter, term))
+                        {
+                            new_term = false;
+                            break;
+                        }
+                    }
+
+                    if (new_term)
                     {
                         parameters.emplace_back(term);
                     }
@@ -54,7 +66,8 @@ class LiteralGrounder
             precondition.emplace_back(formalism::create_literal(atom, false));
         }
 
-        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect, {}, formalism::create_unit_cost_function(problem->domain));
+        const auto unit_cost = formalism::create_unit_cost_function(problem->domain);
+        action_schema_ = formalism::create_action_schema("dummy", parameters, precondition, effect, {}, unit_cost);
         generator_ = std::make_unique<planners::LiftedSchemaSuccessorGenerator>(action_schema_, problem);
     }
 
@@ -291,7 +304,6 @@ PYBIND11_MODULE(mimir, m)
     problem.def_readonly("goal", &formalism::ProblemImpl::goal, "Gets the goal of the problem.");
     problem.def("replace_initial", &formalism::ProblemImpl::replace_initial, "initial"_a, "Gets a new object with the given initial atoms.");
     problem.def("create_state", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return formalism::create_state(atom_list, problem); }, "Creates a new state given a list of atoms.");
-    problem.def("create_grounder", [](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return std::make_shared<LiteralGrounder>(problem, atom_list); });
     problem.def("get_encountered_atoms", &formalism::ProblemImpl::get_encountered_atoms, "Gets all atoms seen so far.");
     problem.def("__repr__", [](const formalism::ProblemImpl& problem) { return "<Problem '" + problem.name + "'>"; });
 
@@ -350,6 +362,7 @@ PYBIND11_MODULE(mimir, m)
     state_space.def("num_transitions", &planners::StateSpaceImpl::num_transitions, "Gets the number of transitions in the state space.");
     state_space.def("__repr__", [](const planners::StateSpaceImpl& state_space) { return "<StateSpace '" + state_space.problem->name + ": " + std::to_string(state_space.num_states()) + " states'>"; });
 
+    literal_grounder.def(py::init([](const formalism::ProblemDescription& problem, const formalism::AtomList& atom_list) { return std::make_shared<LiteralGrounder>(problem, atom_list); }), "problem"_a, "atom_list"_a);
     literal_grounder.def("ground", &LiteralGrounder::ground, "state"_a, "Gets a list of instantiations of the associated atom list that are true in the given state.");
     literal_grounder.def("__repr__", [](const LiteralGrounder& grounder){ return "<LiteralGrounder>"; });
 
