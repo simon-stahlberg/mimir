@@ -12,6 +12,8 @@ namespace formalism
       private:
         std::size_t hash_;
 
+        void validate() const;
+
       public:
         const formalism::Predicate predicate;
         const formalism::ObjectList arguments;

@@ -80,9 +80,13 @@ namespace formalism
 
     formalism::State apply(const formalism::Action& action, const formalism::State& state);
 
-    bool is_in_state(uint32_t atom, const formalism::State& state);
+    bool is_in_state(uint32_t rank, const formalism::State& state);
 
     bool is_in_state(const formalism::Atom& atom, const formalism::State& state);
+
+    bool subset_of_state(const std::vector<uint32_t>& ranks, const formalism::State& state);
+
+    bool subset_of_state(const formalism::AtomList& atoms, const formalism::State& state);
 
     // non-friend functions
 

@@ -381,6 +381,32 @@ namespace formalism
 
     bool is_in_state(const formalism::Atom& atom, const formalism::State& state) { return is_in_state(state->get_problem()->get_rank(atom), state); }
 
+    bool subset_of_state(const std::vector<uint32_t>& ranks, const formalism::State& state)
+    {
+        for (auto rank : ranks)
+        {
+            if (!is_in_state(rank, state))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool subset_of_state(const formalism::AtomList& atoms, const formalism::State& state)
+    {
+        for (const auto& atom : atoms)
+        {
+            if (!is_in_state(atom, state))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     bool is_applicable(const formalism::Action& action, const formalism::State& state)
     {
         if (static_cast<int32_t>(action->get_arguments().size()) != action->schema->arity)

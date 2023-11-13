@@ -48,6 +48,8 @@ namespace formalism
 
         uint32_t get_rank(const formalism::Atom& atom) const;
 
+        std::vector<uint32_t> to_ranks(const formalism::AtomList& atoms) const;
+
         uint32_t num_ranks() const;
 
         bool is_static(uint32_t rank) const;

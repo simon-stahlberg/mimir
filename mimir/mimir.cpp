@@ -1,4 +1,5 @@
 #include "formalism/declarations.hpp"
+#include "generators/goal_matcher.hpp"
 #include "generators/grounded_successor_generator.hpp"
 #include "generators/lifted_successor_generator.hpp"
 #include "generators/state_space.hpp"
@@ -176,6 +177,7 @@ PYBIND11_MODULE(mimir, m)
     py::class_<planners::H2Heuristic, std::shared_ptr<planners::H2Heuristic>> h2_heuristic(m, "H2Heuristic", heuristic);
     py::class_<formalism::TransitionImpl, formalism::Transition> transition(m, "Transition");
     py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>> literal_grounder(m, "LiteralGrounder");
+    py::class_<planners::GoalMatcher, std::shared_ptr<planners::GoalMatcher>> goal_matcher(m, "GoalMatcher");
     py::class_<formalism::Implication, std::shared_ptr<formalism::Implication>> implication(m, "Implication");
 
     // Definitions
@@ -350,6 +352,10 @@ PYBIND11_MODULE(mimir, m)
 
     literal_grounder.def("ground", &LiteralGrounder::ground, "state"_a, "Gets a list of instantiations of the associated atom list that are true in the given state.");
     literal_grounder.def("__repr__", [](const LiteralGrounder& grounder){ return "<LiteralGrounder>"; });
+
+    goal_matcher.def(py::init([](const planners::StateSpace& state_space) { return std::make_shared<planners::GoalMatcher>(state_space); }), "state_space"_a);
+    goal_matcher.def("best_match", &planners::GoalMatcher::best_match, "goal"_a);
+    goal_matcher.def("__repr__", [](const planners::GoalMatcher& goal_matcher) { return "<GoalMatcher>"; });
 
     implication.def_readonly("antecedent", &formalism::Implication::antecedent, "Gets the antecedent of the implication.");
     implication.def_readonly("consequence", &formalism::Implication::consequence, "Gets the consequence of the implication.");

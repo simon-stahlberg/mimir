@@ -105,6 +105,18 @@ namespace formalism
         return rank_with_offset - 1;
     }
 
+    std::vector<uint32_t> ProblemImpl::to_ranks(const formalism::AtomList& atoms) const
+    {
+        std::vector<uint32_t> ranks;
+
+        for (const auto& atom : atoms)
+        {
+            ranks.emplace_back(get_rank(atom));
+        }
+
+        return ranks;
+    }
+
     uint32_t ProblemImpl::num_ranks() const { return static_cast<uint32_t>(atom_ranks_.size()); }
 
     bool ProblemImpl::is_static(uint32_t rank) const { return rank < static_atoms_.size(); }

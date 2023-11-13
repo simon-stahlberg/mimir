@@ -22,14 +22,37 @@
 
 namespace formalism
 {
+    void AtomImpl::validate() const
+    {
+        if (predicate->arity != static_cast<uint32_t>(arguments.size()))
+        {
+            throw std::invalid_argument("size of arguments does not match predicate");
+        }
+
+        for (uint32_t index = 0; index < predicate->arity; ++index)
+        {
+            const auto& argument_type = arguments[index]->type;
+            const auto& parameter_type = predicate->parameters[index]->type;
+
+            if (!formalism::is_subtype_of(argument_type, parameter_type))
+            {
+                throw std::invalid_argument("type mismatch at index " + std::to_string(index));
+            }
+        }
+    }
+
     AtomImpl::AtomImpl(const formalism::Predicate& predicate, formalism::ObjectList&& arguments) :
         hash_(0),
         predicate(predicate),
         arguments(std::move(arguments))
     {
+        // validate();  // For performance reasons, skip validation for this constructor.
     }
 
-    AtomImpl::AtomImpl(const formalism::Predicate& predicate, const formalism::ObjectList& arguments) : hash_(0), predicate(predicate), arguments(arguments) {}
+    AtomImpl::AtomImpl(const formalism::Predicate& predicate, const formalism::ObjectList& arguments) : hash_(0), predicate(predicate), arguments(arguments)
+    {
+        validate();
+    }
 
     bool AtomImpl::operator==(const AtomImpl& other) const
     {
