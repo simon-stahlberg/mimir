@@ -17,6 +17,11 @@ namespace formalism
     class StateImpl
     {
       private:
+        //  TODO: In the future, structure the state into two parts: a 'grounded' section and a 'lifted' section. The grounded segment should use an FDR
+        //  representation instead of a bitset. Even in a lifted configuration, identifying certain FDR variables, such as the location of a truck, should be
+        //  straightforward through the analysis of action schemas and the initial state. In a grounded configuration, a more in-depth mutex analysis can be
+        //  performed to construct FDR variables (leaving the lifted part empty). This should improve performance significantly in some domains.
+
         formalism::Bitset bitset_;
         formalism::ProblemDescription problem_;
         std::size_t hash_;
