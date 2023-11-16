@@ -367,7 +367,8 @@ PYBIND11_MODULE(mimir, m)
     literal_grounder.def("__repr__", [](const LiteralGrounder& grounder){ return "<LiteralGrounder>"; });
 
     goal_matcher.def(py::init([](const planners::StateSpace& state_space) { return std::make_shared<planners::GoalMatcher>(state_space); }), "state_space"_a);
-    goal_matcher.def("best_match", &planners::GoalMatcher::best_match, "goal"_a);
+    goal_matcher.def("best_match", py::overload_cast<const formalism::AtomList&>(&planners::GoalMatcher::best_match), "goal"_a);
+    goal_matcher.def("best_match", py::overload_cast<const formalism::State&, const formalism::AtomList&>(&planners::GoalMatcher::best_match), "state"_a, "goal"_a);
     goal_matcher.def("__repr__", [](const planners::GoalMatcher& goal_matcher) { return "<GoalMatcher>"; });
 
     implication.def_readonly("antecedent", &formalism::Implication::antecedent, "Gets the antecedent of the implication.");

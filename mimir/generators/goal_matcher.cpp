@@ -22,30 +22,69 @@ namespace planners
         return true;
     }
 
-    GoalMatcher::GoalMatcher(const planners::StateSpace& state_space) : state_space_(state_space), state_distances_()
+    GoalMatcher::GoalMatcher(const planners::StateSpace& state_space) :
+        state_space_(state_space),
+        state_distances_initial_(),
+        state_distances_general_(),
+        state_distance_mutex_()
     {
-        for (const auto& state : state_space_->get_states())
-        {
-            state_distances_.emplace_back(state, state_space_->get_distance_to_goal_state(state));
-        }
+    }
+
+    const std::vector<std::pair<formalism::State, int32_t>>& GoalMatcher::get_state_distances(const formalism::State& from_state)
+    {
+        std::lock_guard<std::mutex> lock(state_distance_mutex_);  // Lock is released automatically when it goes out of scope.
+        std::equal_to<formalism::State> equal_to;
 
         const auto distance_ascending = [](const std::pair<formalism::State, int32_t>& lhs, const std::pair<formalism::State, int32_t>& rhs)
         { return lhs.second < rhs.second; };
 
-        std::sort(state_distances_.begin(), state_distances_.end(), distance_ascending);
+        if (equal_to(from_state, state_space_->get_initial_state()))
+        {
+            if (state_distances_initial_.size() > 0)
+            {
+                return state_distances_initial_;
+            }
+
+            for (const auto& state : state_space_->get_states())
+            {
+                state_distances_initial_.emplace_back(state, state_space_->get_distance_to_goal_state(state));
+            }
+
+            std::sort(state_distances_initial_.begin(), state_distances_initial_.end(), distance_ascending);
+
+            return state_distances_initial_;
+        }
+        else
+        {
+            state_distances_general_.clear();
+
+            for (const auto& to_state : state_space_->get_states())
+            {
+                state_distances_general_.emplace_back(to_state, state_space_->get_distance_between_states(from_state, to_state));
+            }
+
+            std::sort(state_distances_general_.begin(), state_distances_general_.end(), distance_ascending);
+
+            return state_distances_general_;
+        }
     }
 
     std::pair<formalism::State, int32_t> GoalMatcher::best_match(const formalism::AtomList& goal)
+    {
+        return best_match(state_space_->get_initial_state(), goal);
+    }
+
+    std::pair<formalism::State, int32_t> GoalMatcher::best_match(const formalism::State& from_state, const formalism::AtomList& goal)
     {
         if (is_ground(goal))
         {
             const auto goal_ranks = state_space_->problem->to_ranks(goal);
 
-            for (const auto& [state, distance] : state_distances_)
+            for (const auto& [to_state, distance] : get_state_distances(from_state))
             {
-                if (formalism::subset_of_state(goal_ranks, state))
+                if (formalism::subset_of_state(goal_ranks, to_state))
                 {
-                    return std::make_pair(state, distance);
+                    return std::make_pair(to_state, distance);
                 }
             }
 
@@ -89,13 +128,13 @@ namespace planners
             const auto action_schema = formalism::create_action_schema("dummy", parameters, precondition, effect, {}, unit_cost);
             planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state_space_->problem);
 
-            for (const auto& [state, distance] : state_distances_)
+            for (const auto& [to_state, distance] : get_state_distances(from_state))
             {
-                const auto matches = successor_generator.get_applicable_actions(state);
+                const auto matches = successor_generator.get_applicable_actions(to_state);
 
                 if (matches.size() > 0)
                 {
-                    return std::make_pair(state, distance);
+                    return std::make_pair(to_state, distance);
                 }
             }
 

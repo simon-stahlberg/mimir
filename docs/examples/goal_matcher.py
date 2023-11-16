@@ -29,14 +29,22 @@ def main():
     def get_random_atom():
         if random.randint(0, 1) > 0: return ground_atoms[random.randint(0, len(ground_atoms) - 1)]
         else: return domain.predicates[random.randint(0, len(domain.predicates) - 1)].as_atom()
-    goal = [get_random_atom(), get_random_atom()]  # Construct your quantified goal here
-    print(f'Quantified goal: {goal}')
-    time_start = time.time()
-    state, distance = goal_matcher.best_match(goal)
-    time_end = time.time()
-    print(f'Distance to closest state matching the goal: {distance}')
-    print(f'State: {"-" if state is None else state.get_atoms()}')
-    print(f'Time: {time_end - time_start:.5f} seconds')
+    for i in range(1, 10):
+        # We want to determine the distance to the closest state from the initial state.
+        # It is possible to use "state_space.sample_state()," and Floyd-Warshall will be computed and cached for the state_space.
+        # However, note that Floyd-Warshall is an O(n^3) algorithm and will likely take too much time and memory to be practical.
+        # In this case, we suggest using "problem.replace_initial(...)" and computing a new state_space from the new initial state.
+        from_state = state_space.get_initial_state()
+        goal = [get_random_atom(), get_random_atom()]  # Construct your quantified goal here
+        # Use "atom.replace_term(...)" to construct new atoms, e.g. partially quantified atoms.
+        print(f'[{i}] -----')
+        print(f'[{i}] Quantified goal: {goal}')
+        time_start = time.time()
+        to_state, distance = goal_matcher.best_match(from_state, goal)
+        time_end = time.time()
+        print(f'[{i}] Distance to closest state matching the goal: {distance}')
+        print(f'[{i}] State: {"-" if to_state is None else to_state.get_atoms()}')
+        print(f'[{i}] Time: {time_end - time_start:.5f} seconds')
 
 if __name__ == '__main__':
     main()
