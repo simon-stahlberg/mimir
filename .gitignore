@@ -26,6 +26,7 @@ libtorch*
 # Build artefacts
 build
 out
+*.sif
 
 #CMake
 CMakeLists.txt.user
