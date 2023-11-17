@@ -37,7 +37,7 @@ add_subdirectory(test)
 if(BUILD_LIBMIMIR)
     add_library(mimir STATIC "lib/mimir.cpp")
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
-    target_link_libraries(mimir algorithms formalism generators pddl search)
+    target_link_libraries(mimir PRIVATE algorithms formalism generators pddl search)
 
     target_include_directories(mimir PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -45,7 +45,7 @@ if(BUILD_LIBMIMIR)
     )
 
     install(TARGETS mimir algorithms formalism generators pddl search
-        EXPORT mimirTargets
+        EXPORT MimirTargets
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin
@@ -53,34 +53,34 @@ if(BUILD_LIBMIMIR)
     )
 
     install(DIRECTORY include/ DESTINATION include)
-    export(TARGETS mimir algorithms formalism generators pddl search NAMESPACE mimir:: FILE mimirConfig.cmake)
+    export(TARGETS mimir algorithms formalism generators pddl search NAMESPACE mimir:: FILE MimirConfig.cmake)
     include(CMakePackageConfigHelpers)
 
     write_basic_package_version_file(
-        "mimirConfigVersion.cmake"
+        "MimirConfigVersion.cmake"
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion
     )
 
     install(
-        EXPORT mimirTargets
-        FILE mimirTargets.cmake
+        EXPORT MimirTargets
+        FILE MimirTargets.cmake
         NAMESPACE mimir::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mimir
+        DESTINATION lib/cmake/mimir
     )
 
     install(
-        EXPORT mimirTargets
-        FILE mimirConfig.cmake
+        EXPORT MimirTargets
+        FILE MimirConfig.cmake
         NAMESPACE mimir::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mimir
+        DESTINATION lib/cmake/mimir
     )
 
     install(
-        EXPORT mimirTargets
-        FILE mimirConfigVersion.cmake
+        EXPORT MimirTargets
+        FILE MimirConfigVersion.cmake
         NAMESPACE mimir::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mimir
+        DESTINATION lib/cmake/mimir
     )
 endif()
 
