@@ -1,6 +1,6 @@
-#include "../mimir/formalism/domain.hpp"
-#include "../mimir/formalism/problem.hpp"
-#include "../mimir/pddl/parsers.hpp"
+#include "../include/mimir/formalism/domain.hpp"
+#include "../include/mimir/formalism/problem.hpp"
+#include "../include/mimir/pddl/parsers.hpp"
 
 // Test instances
 

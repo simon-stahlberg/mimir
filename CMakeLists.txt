@@ -24,7 +24,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${PYTHON_INCLUDE_DIRS})
 set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
-add_subdirectory(mimir)
+add_subdirectory(src)
 add_subdirectory(test)
 
 message(STATUS "CMAKE_BUILD_TYPE is \"${CMAKE_BUILD_TYPE}\"")
@@ -33,9 +33,10 @@ message(STATUS "Python_EXECUTABLE is \"${Python_EXECUTABLE}\"")
 # ------------
 # Target Mimir
 # ------------
-add_library(mimir MODULE mimir/mimir.cpp)
+add_library(mimir MODULE bin/mimir.cpp)
 set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 set_target_properties(mimir PROPERTIES PREFIX "")
+target_link_libraries(mimir algorithms)
 target_link_libraries(mimir formalism)
 target_link_libraries(mimir generators)
 target_link_libraries(mimir pddl)
@@ -67,7 +68,7 @@ add_dependencies(generate_pyi_files mimir)
 # ----------------
 # Target Profiling
 # ----------------
-add_executable(profiling mimir/profiling.cpp)
+add_executable(profiling bin/profiling.cpp)
 set_property(TARGET profiling PROPERTY CXX_STANDARD 17)
 target_link_libraries(profiling formalism)
 target_link_libraries(profiling generators)
