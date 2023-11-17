@@ -163,7 +163,7 @@ bool state_matches_literals(const mimir::formalism::State& state, const mimir::f
     return mimir::formalism::literals_hold(literals, state);
 }
 
-PYBIND11_MODULE(mimir, m)
+PYBIND11_MODULE(pymimir, m)
 {
     // clang-format off
 

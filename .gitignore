@@ -9,6 +9,7 @@ MANIFEST.in
 _skbuild
 dist
 mimir.egg-info
+pymimir.egg-info
 
 # Profiling
 perf*

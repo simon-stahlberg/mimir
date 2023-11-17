@@ -31,7 +31,10 @@ class CMakeBuild(build_ext):
         os.makedirs(temp_directory, exist_ok=True)
 
         cmake_args = [
+            f"-DBUILD_LIBMIMIR=OFF",
             f"-DBUILD_TESTS=OFF",
+            f"-DBUILD_PYMIMIR=ON",
+            f"-DBUILD_PROFILING=OFF",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE=Release",  # Is not used with MSVC, but causes no harm
         ]
@@ -48,22 +51,22 @@ class CMakeBuild(build_ext):
         # Copy relevant files to output directory
 
         # Copy stub files
-        if Path.exists(temp_directory / "mimir-stubs"):
-            shutil.copytree(temp_directory / "mimir-stubs", output_directory / "mimir-stubs")
-        elif Path.exists(temp_directory / "mimir.pyi"):
-            shutil.copy(temp_directory / "mimir.pyi", output_directory / "mimir.pyi")
+        if Path.exists(temp_directory / "pymimir-stubs"):
+            shutil.copytree(temp_directory / "pymimir-stubs", output_directory / "pymimir-stubs")
+        elif Path.exists(temp_directory / "pymimir.pyi"):
+            shutil.copy(temp_directory / "pymimir.pyi", output_directory / "pymimir.pyi")
 
         # Copy the shared object file
-        if Path.exists(temp_directory / "mimir.so"):
-            shutil.copy(temp_directory / "mimir.so", output_directory / "mimir.so")
-        elif Path.exists(temp_directory / "Release" / "mimir.dll"):
-            shutil.copy(temp_directory / "Release" / "mimir.dll", output_directory / "mimir.pyd")
+        if Path.exists(temp_directory / "pymimir.so"):
+            shutil.copy(temp_directory / "pymimir.so", output_directory / "pymimir.so")
+        elif Path.exists(temp_directory / "Release" / "pymimir.dll"):
+            shutil.copy(temp_directory / "Release" / "pymimir.dll", output_directory / "pymimir.pyd")
         else:
-            raise FileNotFoundError(f"could not find 'mimir.so' or 'mimir.dll' ({temp_directory})")
+            raise FileNotFoundError(f"could not find 'pymimir.so' or 'pymimir.dll' ({temp_directory})")
 
 
 setup(
-    name="mimir",
+    name="pymimir",
     version="0.1.1",
     author="Simon Stahlberg",
     author_email="simon.stahlberg@gmail.com",
