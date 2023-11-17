@@ -33,7 +33,7 @@ namespace std
     };
 }  // namespace std
 
-namespace planners
+namespace mimir::planners
 {
     struct StateInfo
     {
@@ -47,7 +47,7 @@ namespace planners
         }
     };
 
-    StateSpaceImpl::StateSpaceImpl(const formalism::ProblemDescription& problem) :
+    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::ProblemDescription& problem) :
         states_(),
         goal_states_(),
         state_infos_(),
@@ -73,7 +73,7 @@ namespace planners
         state_distances_.clear();
     }
 
-    bool StateSpaceImpl::add_or_get_state(const formalism::State& state, uint64_t& out_index)
+    bool StateSpaceImpl::add_or_get_state(const mimir::formalism::State& state, uint64_t& out_index)
     {
         const auto index_handler = state_indices_.find(state);
 
@@ -87,8 +87,8 @@ namespace planners
             out_index = states_.size();
             states_.push_back(state);
             state_infos_.push_back(StateInfo(-1, -1));
-            forward_transitions_.push_back(std::vector<formalism::Transition>());
-            backward_transitions_.push_back(std::vector<formalism::Transition>());
+            forward_transitions_.push_back(std::vector<mimir::formalism::Transition>());
+            backward_transitions_.push_back(std::vector<mimir::formalism::Transition>());
             state_indices_.insert(std::make_pair(state, out_index));
 
             if (literals_hold(problem->goal, state))
@@ -100,7 +100,7 @@ namespace planners
         }
     }
 
-    void StateSpaceImpl::add_goal_state(const formalism::State& state)
+    void StateSpaceImpl::add_goal_state(const mimir::formalism::State& state)
     {
         if (std::find(goal_states_.begin(), goal_states_.end(), state) == goal_states_.end())
         {
@@ -110,7 +110,7 @@ namespace planners
 
     void StateSpaceImpl::add_transition(uint64_t from_state_index,
                                         uint64_t to_state_index,
-                                        const formalism::Action& action,
+                                        const mimir::formalism::Action& action,
                                         uint64_t& out_from_forward_index,
                                         uint64_t& out_to_backward_index)
     {
@@ -122,21 +122,21 @@ namespace planners
         backward_transitions_[to_state_index].push_back(transition);
     }
 
-    const formalism::Transition& StateSpaceImpl::get_forward_transition(uint64_t state_index, uint64_t transition_index) const
+    const mimir::formalism::Transition& StateSpaceImpl::get_forward_transition(uint64_t state_index, uint64_t transition_index) const
     {
         return forward_transitions_[state_index][transition_index];
     }
 
-    const formalism::Transition& StateSpaceImpl::get_backward_transition(uint64_t state_index, uint64_t transition_index) const
+    const mimir::formalism::Transition& StateSpaceImpl::get_backward_transition(uint64_t state_index, uint64_t transition_index) const
     {
         return backward_transitions_[state_index][transition_index];
     }
 
-    const formalism::TransitionList& StateSpaceImpl::get_forward(uint64_t state_index) const { return forward_transitions_[state_index]; }
+    const mimir::formalism::TransitionList& StateSpaceImpl::get_forward(uint64_t state_index) const { return forward_transitions_[state_index]; }
 
-    const formalism::TransitionList& StateSpaceImpl::get_backward(uint64_t state_index) const { return backward_transitions_[state_index]; }
+    const mimir::formalism::TransitionList& StateSpaceImpl::get_backward(uint64_t state_index) const { return backward_transitions_[state_index]; }
 
-    formalism::State StateSpaceImpl::get_state(uint64_t state_index) const { return states_[state_index]; }
+    mimir::formalism::State StateSpaceImpl::get_state(uint64_t state_index) const { return states_[state_index]; }
 
     int32_t StateSpaceImpl::get_distance_to_goal(uint64_t state_index) const { return state_infos_[state_index].distance_to_goal_state; }
 
@@ -191,25 +191,25 @@ namespace planners
 
     int32_t StateSpaceImpl::get_distance_from_initial(uint64_t state_index) const { return state_infos_[state_index].distance_from_initial_state; }
 
-    const std::vector<formalism::Transition>& StateSpaceImpl::get_forward_transitions(const formalism::State& state) const
+    const std::vector<mimir::formalism::Transition>& StateSpaceImpl::get_forward_transitions(const mimir::formalism::State& state) const
     {
         const auto index = get_state_index(state);
         return forward_transitions_[index];
     }
 
-    const std::vector<formalism::Transition>& StateSpaceImpl::get_backward_transitions(const formalism::State& state) const
+    const std::vector<mimir::formalism::Transition>& StateSpaceImpl::get_backward_transitions(const mimir::formalism::State& state) const
     {
         const auto index = get_state_index(state);
         return backward_transitions_[index];
     }
 
-    const std::vector<formalism::State>& StateSpaceImpl::get_states() const { return states_; }
+    const std::vector<mimir::formalism::State>& StateSpaceImpl::get_states() const { return states_; }
 
-    formalism::State StateSpaceImpl::get_initial_state() const { return formalism::create_state(problem->initial, problem); }
+    mimir::formalism::State StateSpaceImpl::get_initial_state() const { return mimir::formalism::create_state(problem->initial, problem); }
 
-    uint64_t StateSpaceImpl::get_unique_index_of_state(const formalism::State& state) const { return get_state_index(state); }
+    uint64_t StateSpaceImpl::get_unique_index_of_state(const mimir::formalism::State& state) const { return get_state_index(state); }
 
-    uint64_t StateSpaceImpl::get_state_index(const formalism::State& state) const
+    uint64_t StateSpaceImpl::get_state_index(const mimir::formalism::State& state) const
     {
         const auto index_handler = state_indices_.find(state);
 
@@ -223,27 +223,27 @@ namespace planners
         }
     }
 
-    bool StateSpaceImpl::is_dead_end_state(const formalism::State& state) const
+    bool StateSpaceImpl::is_dead_end_state(const mimir::formalism::State& state) const
     {
         const auto index = get_state_index(state);
         const auto& info = state_infos_[index];
         return info.distance_to_goal_state < 0;
     }
 
-    bool StateSpaceImpl::is_goal_state(const formalism::State& state) const
+    bool StateSpaceImpl::is_goal_state(const mimir::formalism::State& state) const
     {
         const auto index = get_state_index(state);
         const auto& info = state_infos_[index];
         return info.distance_to_goal_state == 0;
     }
 
-    int32_t StateSpaceImpl::get_distance_to_goal_state(const formalism::State& state) const
+    int32_t StateSpaceImpl::get_distance_to_goal_state(const mimir::formalism::State& state) const
     {
         const auto index = get_state_index(state);
         return get_distance_to_goal(index);
     }
 
-    int32_t StateSpaceImpl::get_distance_between_states(const formalism::State& from_state, const formalism::State& to_state) const
+    int32_t StateSpaceImpl::get_distance_between_states(const mimir::formalism::State& from_state, const mimir::formalism::State& to_state) const
     {
         // Check if the Floyd-Warshall distance matrix has been cached, if not, compute it.
 
@@ -301,19 +301,19 @@ namespace planners
         return state_distances_[from_index][to_index];
     }
 
-    int32_t StateSpaceImpl::get_distance_from_initial_state(const formalism::State& state) const
+    int32_t StateSpaceImpl::get_distance_from_initial_state(const mimir::formalism::State& state) const
     {
         const auto index = get_state_index(state);
         return get_distance_from_initial(index);
     }
 
-    formalism::State StateSpaceImpl::sample_state() const
+    mimir::formalism::State StateSpaceImpl::sample_state() const
     {
         const auto index = std::rand() % static_cast<int>(states_.size());
         return states_[index];
     }
 
-    formalism::State StateSpaceImpl::sample_state_with_distance_to_goal(int32_t distance) const
+    mimir::formalism::State StateSpaceImpl::sample_state_with_distance_to_goal(int32_t distance) const
     {
         if (static_cast<std::size_t>(distance) < states_by_distance_.size())
         {
@@ -326,7 +326,7 @@ namespace planners
         }
     }
 
-    formalism::State StateSpaceImpl::sample_dead_end_state() const
+    mimir::formalism::State StateSpaceImpl::sample_dead_end_state() const
     {
         if (dead_end_states_.size() == 0)
         {
@@ -341,7 +341,7 @@ namespace planners
 
     void StateSpaceImpl::set_distance_to_goal_state(uint64_t state_index, int32_t value) { state_infos_[state_index].distance_to_goal_state = value; }
 
-    std::vector<formalism::State> StateSpaceImpl::get_goal_states() const { return goal_states_; }
+    std::vector<mimir::formalism::State> StateSpaceImpl::get_goal_states() const { return goal_states_; }
 
     uint64_t StateSpaceImpl::num_states() const { return (uint64_t) states_.size(); }
 
@@ -374,7 +374,8 @@ namespace planners
         return num_dead_ends;
     }
 
-    StateSpace create_state_space(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator, uint32_t max_states)
+    StateSpace
+    create_state_space(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator, uint32_t max_states)
     {
         if (problem != successor_generator->get_problem())
         {
@@ -390,7 +391,7 @@ namespace planners
         {
             uint64_t initial_index;
 
-            if (state_space->add_or_get_state(formalism::create_state(problem->initial, problem), initial_index))
+            if (state_space->add_or_get_state(mimir::formalism::create_state(problem->initial, problem), initial_index))
             {
                 state_space->set_distance_from_initial_state(initial_index, 0);
                 is_expanded.push_back(false);
@@ -413,7 +414,7 @@ namespace planners
 
             const auto state = state_space->get_state(state_index);
             const auto distance_from_initial_state = state_space->get_distance_from_initial(state_index);
-            const auto is_goal_state = formalism::literals_hold(goal, state);
+            const auto is_goal_state = mimir::formalism::literals_hold(goal, state);
 
             if (is_goal_state)
             {
@@ -427,7 +428,7 @@ namespace planners
 
             for (const auto& ground_action : ground_actions)
             {
-                const auto successor_state = formalism::apply(ground_action, state);
+                const auto successor_state = mimir::formalism::apply(ground_action, state);
                 uint64_t successor_state_index;
                 bool successor_is_new_state;
 
@@ -510,13 +511,13 @@ namespace planners
         return StateSpace(state_space);
     }
 
-    std::ostream& operator<<(std::ostream& os, const planners::StateSpace& state_space)
+    std::ostream& operator<<(std::ostream& os, const mimir::planners::StateSpace& state_space)
     {
         os << "# States: " << state_space->num_states() << "; # Transitions: " << state_space->num_transitions();
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const planners::StateSpaceList& state_spaces)
+    std::ostream& operator<<(std::ostream& os, const mimir::planners::StateSpaceList& state_spaces)
     {
         print_vector(os, state_spaces);
         return os;

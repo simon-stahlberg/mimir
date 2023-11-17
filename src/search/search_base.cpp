@@ -1,17 +1,17 @@
 #include "../../include/mimir/search/search_base.hpp"
 
-namespace planners
+namespace mimir::planners
 {
-    SearchBase::SearchBase(const formalism::ProblemDescription& problem) :
+    SearchBase::SearchBase(const mimir::formalism::ProblemDescription& problem) :
         event_handlers_(),
         should_abort(false),
-        initial_state(formalism::create_state(problem->initial, problem))
+        initial_state(mimir::formalism::create_state(problem->initial, problem))
     {
     }
 
     void SearchBase::abort() { should_abort = true; }
 
-    void SearchBase::set_initial_state(const formalism::State& state) { initial_state = state; }
+    void SearchBase::set_initial_state(const mimir::formalism::State& state) { initial_state = state; }
 
     void SearchBase::notify_handlers() const
     {

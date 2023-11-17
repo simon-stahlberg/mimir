@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
     class ParameterIndexOrConstantId
     {
@@ -26,13 +26,13 @@ namespace planners
     class FlatLiteral
     {
       public:
-        formalism::Literal source;
+        mimir::formalism::Literal source;
         std::vector<ParameterIndexOrConstantId> arguments;
         uint32_t predicate_id;
         uint32_t arity;
         bool negated;
 
-        FlatLiteral(const formalism::Literal& literal, const std::map<formalism::Object, uint32_t> parameter_indices);
+        FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Object, uint32_t> parameter_indices);
     };
 
     class FlatImplication
@@ -47,11 +47,11 @@ namespace planners
     class FlatActionSchema
     {
       private:
-        std::map<formalism::Object, uint32_t> parameter_indices_;
-        std::vector<formalism::Object> index_parameters_;
+        std::map<mimir::formalism::Object, uint32_t> parameter_indices_;
+        std::vector<mimir::formalism::Object> index_parameters_;
 
       public:
-        formalism::ActionSchema source;
+        mimir::formalism::ActionSchema source;
         std::vector<FlatLiteral> static_precondition;
         std::vector<FlatLiteral> fluent_precondition;
         std::vector<FlatLiteral> unconditional_effect;
@@ -59,11 +59,11 @@ namespace planners
         std::vector<ParameterIndexOrConstantId> cost_arguments;
         uint32_t arity;
 
-        FlatActionSchema(const formalism::DomainDescription& domain, const formalism::ActionSchema& action_schema);
+        FlatActionSchema(const mimir::formalism::DomainDescription& domain, const mimir::formalism::ActionSchema& action_schema);
 
-        const std::vector<formalism::Object>& get_parameters() const;
+        const std::vector<mimir::formalism::Object>& get_parameters() const;
 
-        uint32_t get_parameter_index(const formalism::Object& parameter) const;
+        uint32_t get_parameter_index(const mimir::formalism::Object& parameter) const;
     };
 }  // namespace planners
 

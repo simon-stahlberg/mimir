@@ -10,14 +10,14 @@
 #include <memory>
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
     class DecisionNode
     {
       public:
         virtual ~DecisionNode();
 
-        virtual void get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const = 0;
+        virtual void get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const = 0;
     };
 
     class BranchNode : public DecisionNode
@@ -30,45 +30,47 @@ namespace planners
 
         BranchNode(uint32_t rank);
 
-        void get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const override;
+        void get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const override;
     };
 
     class LeafNode : public DecisionNode
     {
       public:
-        formalism::ActionList actions_;
+        mimir::formalism::ActionList actions_;
 
-        LeafNode(const formalism::ActionList& actions);
+        LeafNode(const mimir::formalism::ActionList& actions);
 
-        void get_applicable_actions(const formalism::State& state, formalism::ActionList& applicable_actions) const override;
+        void get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const override;
     };
 
     class GroundedSuccessorGenerator : public SuccessorGeneratorBase
     {
       private:
-        formalism::ProblemDescription problem_;
-        formalism::ActionList actions_;
+        mimir::formalism::ProblemDescription problem_;
+        mimir::formalism::ActionList actions_;
         std::unique_ptr<DecisionNode> root_;
 
       public:
-        GroundedSuccessorGenerator(const formalism::ProblemDescription& problem, const formalism::ActionList& ground_actions);
+        GroundedSuccessorGenerator(const mimir::formalism::ProblemDescription& problem, const mimir::formalism::ActionList& ground_actions);
 
-        formalism::ProblemDescription get_problem() const override;
+        mimir::formalism::ProblemDescription get_problem() const override;
 
-        const formalism::ActionList& get_actions() const;
+        const mimir::formalism::ActionList& get_actions() const;
 
-        formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
+        mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const override;
 
       private:
-        formalism::AtomList::const_iterator
-        select_branching_atom(const formalism::ActionList& ground_actions, const formalism::AtomList& atoms, formalism::AtomList::const_iterator next_atom);
+        mimir::formalism::AtomList::const_iterator select_branching_atom(const mimir::formalism::ActionList& ground_actions,
+                                                                         const mimir::formalism::AtomList& atoms,
+                                                                         mimir::formalism::AtomList::const_iterator next_atom);
 
-        std::unique_ptr<DecisionNode> build_decision_tree(const formalism::ProblemDescription& problem, const formalism::ActionList& ground_actions);
+        std::unique_ptr<DecisionNode> build_decision_tree(const mimir::formalism::ProblemDescription& problem,
+                                                          const mimir::formalism::ActionList& ground_actions);
 
-        std::unique_ptr<DecisionNode> build_decision_tree_recursive(const formalism::ProblemDescription& problem,
-                                                                    const formalism::ActionList& ground_actions,
-                                                                    const formalism::AtomList& atoms,
-                                                                    formalism::AtomList::const_iterator next_atom);
+        std::unique_ptr<DecisionNode> build_decision_tree_recursive(const mimir::formalism::ProblemDescription& problem,
+                                                                    const mimir::formalism::ActionList& ground_actions,
+                                                                    const mimir::formalism::AtomList& atoms,
+                                                                    mimir::formalism::AtomList::const_iterator next_atom);
     };
 }  // namespace planners
 

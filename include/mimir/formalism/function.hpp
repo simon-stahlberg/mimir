@@ -3,7 +3,7 @@
 
 #include "declarations.hpp"
 
-namespace formalism
+namespace mimir::formalism
 {
     enum FunctionOperation
     {
@@ -15,19 +15,19 @@ namespace formalism
     {
       private:
         FunctionOperation operation_;
-        formalism::Predicate variable_;
-        formalism::Atom atom_;
+        mimir::formalism::Predicate variable_;
+        mimir::formalism::Atom atom_;
         double constant_;
         bool is_constant_;
 
       public:
-        FunctionImpl(FunctionOperation operation, const formalism::Predicate& variable, const formalism::Atom& atom);
+        FunctionImpl(FunctionOperation operation, const mimir::formalism::Predicate& variable, const mimir::formalism::Atom& atom);
 
-        FunctionImpl(FunctionOperation operation, const formalism::Predicate& variable, double constant);
+        FunctionImpl(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant);
 
         FunctionOperation get_operation();
 
-        formalism::Predicate get_variable();
+        mimir::formalism::Predicate get_variable();
 
         bool is_constant();
 
@@ -35,14 +35,14 @@ namespace formalism
 
         bool has_atom();
 
-        formalism::Atom get_atom();
+        mimir::formalism::Atom get_atom();
     };
 
-    Function create_function(FunctionOperation operation, const formalism::Predicate& variable, const formalism::Atom& atom);
+    Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, const mimir::formalism::Atom& atom);
 
-    Function create_function(FunctionOperation operation, const formalism::Predicate& variable, double constant);
+    Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant);
 
-    Function create_unit_cost_function(const formalism::DomainDescription& domain);
+    Function create_unit_cost_function(const mimir::formalism::DomainDescription& domain);
 }  // namespace formalism
 
 #endif  // FORMALISM_FUNCTION_HPP_

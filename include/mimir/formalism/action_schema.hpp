@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace formalism
+namespace mimir::formalism
 {
     class ActionSchemaImpl
     {
@@ -17,11 +17,11 @@ namespace formalism
         std::string name;
         int32_t arity;
         bool complete;
-        formalism::ParameterList parameters;
-        formalism::LiteralList precondition;
-        formalism::LiteralList unconditional_effect;
-        formalism::ImplicationList conditional_effect;
-        formalism::Function cost;
+        mimir::formalism::ParameterList parameters;
+        mimir::formalism::LiteralList precondition;
+        mimir::formalism::LiteralList unconditional_effect;
+        mimir::formalism::ImplicationList conditional_effect;
+        mimir::formalism::Function cost;
 
         /**
          * @brief Construct a new action achema object.
@@ -32,56 +32,56 @@ namespace formalism
          * @param effect The effect of the action schema (interpreted as conjunction of literals).
          */
         ActionSchemaImpl(const std::string& name,
-                         const formalism::ParameterList& parameters,
-                         const formalism::LiteralList& precondition,
-                         const formalism::LiteralList& effect,
-                         const formalism::ImplicationList& conditional_effect,
-                         const formalism::Function& cost);
+                         const mimir::formalism::ParameterList& parameters,
+                         const mimir::formalism::LiteralList& precondition,
+                         const mimir::formalism::LiteralList& effect,
+                         const mimir::formalism::ImplicationList& conditional_effect,
+                         const mimir::formalism::Function& cost);
     };
 
     ActionSchema create_action_schema(const std::string& name,
-                                      const formalism::ParameterList& parameters,
-                                      const formalism::LiteralList& precondition,
-                                      const formalism::LiteralList& effect,
-                                      const formalism::ImplicationList& conditional_effect,
-                                      const formalism::Function& cost);
+                                      const mimir::formalism::ParameterList& parameters,
+                                      const mimir::formalism::LiteralList& precondition,
+                                      const mimir::formalism::LiteralList& effect,
+                                      const mimir::formalism::ImplicationList& conditional_effect,
+                                      const mimir::formalism::Function& cost);
 
-    ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list);
+    ActionSchema relax(const mimir::formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list);
 
-    bool affects_predicate(const formalism::ActionSchema& action_schema, const formalism::Predicate& predicate);
+    bool affects_predicate(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::Predicate& predicate);
 
-    bool affect_predicate(const formalism::ActionSchemaList& action_schemas, const formalism::Predicate& predicate);
+    bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ActionSchema& action_schema);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchema& action_schema);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ActionSchemaList& action_schemas);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas);
 }  // namespace formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<formalism::ActionSchema>
+    struct hash<mimir::formalism::ActionSchema>
     {
-        std::size_t operator()(const formalism::ActionSchema& action_schema) const;
+        std::size_t operator()(const mimir::formalism::ActionSchema& action_schema) const;
     };
 
     template<>
-    struct hash<formalism::ActionSchemaList>
+    struct hash<mimir::formalism::ActionSchemaList>
     {
-        std::size_t operator()(const formalism::ActionSchemaList& action_schemas) const;
+        std::size_t operator()(const mimir::formalism::ActionSchemaList& action_schemas) const;
     };
 
     template<>
-    struct less<formalism::ActionSchema>
+    struct less<mimir::formalism::ActionSchema>
     {
-        bool operator()(const formalism::ActionSchema& left_action_schema, const formalism::ActionSchema& right_action_schema) const;
+        bool operator()(const mimir::formalism::ActionSchema& left_action_schema, const mimir::formalism::ActionSchema& right_action_schema) const;
     };
 
     template<>
-    struct equal_to<formalism::ActionSchema>
+    struct equal_to<mimir::formalism::ActionSchema>
     {
-        bool operator()(const formalism::ActionSchema& left_action_schema, const formalism::ActionSchema& right_action_schema) const;
+        bool operator()(const mimir::formalism::ActionSchema& left_action_schema, const mimir::formalism::ActionSchema& right_action_schema) const;
     };
 
 }  // namespace std

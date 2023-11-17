@@ -3,7 +3,7 @@
 
 #include <memory>
 
-namespace planners
+namespace mimir::planners
 {
     template<typename T>
     class OpenListBase

@@ -33,7 +33,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace tsl
+namespace mimir::tsl
 {
 
     /**
@@ -90,12 +90,12 @@ namespace tsl
              class KeyEqual = std::equal_to<Key>,
              class Allocator = std::allocator<std::pair<Key, T>>,
              bool StoreHash = false,
-             class GrowthPolicy = tsl::rh::power_of_two_growth_policy<2>>
+             class GrowthPolicy = mimir::tsl::rh::power_of_two_growth_policy<2>>
     class robin_map
     {
       private:
         template<typename U>
-        using has_is_transparent = tsl::detail_robin_hash::has_is_transparent<U>;
+        using has_is_transparent = mimir::tsl::detail_robin_hash::has_is_transparent<U>;
 
         class KeySelect
         {
@@ -749,7 +749,7 @@ namespace tsl
 
     /**
      * Same as `tsl::robin_map<Key, T, Hash, KeyEqual, Allocator, StoreHash,
-     * tsl::rh::prime_growth_policy>`.
+     * mimir::tsl::rh::prime_growth_policy>`.
      */
     template<class Key,
              class T,
@@ -757,7 +757,7 @@ namespace tsl
              class KeyEqual = std::equal_to<Key>,
              class Allocator = std::allocator<std::pair<Key, T>>,
              bool StoreHash = false>
-    using robin_pg_map = robin_map<Key, T, Hash, KeyEqual, Allocator, StoreHash, tsl::rh::prime_growth_policy>;
+    using robin_pg_map = robin_map<Key, T, Hash, KeyEqual, Allocator, StoreHash, mimir::tsl::rh::prime_growth_policy>;
 
 }  // end namespace tsl
 

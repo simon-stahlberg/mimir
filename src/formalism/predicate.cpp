@@ -21,9 +21,9 @@
 
 #include <string>
 
-namespace formalism
+namespace mimir::formalism
 {
-    PredicateImpl::PredicateImpl(const uint32_t id, const std::string& name, const formalism::ObjectList& parameters) :
+    PredicateImpl::PredicateImpl(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters) :
         hash_(0),
         id(id),
         name(name),
@@ -32,12 +32,12 @@ namespace formalism
     {
     }
 
-    Predicate create_predicate(const uint32_t id, const std::string& name, const formalism::ObjectList& parameters)
+    Predicate create_predicate(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters)
     {
-        return std::make_shared<formalism::PredicateImpl>(id, name, parameters);
+        return std::make_shared<mimir::formalism::PredicateImpl>(id, name, parameters);
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::Predicate& predicate)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Predicate& predicate)
     {
         os << predicate->name << "(";
 
@@ -56,17 +56,17 @@ namespace formalism
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::PredicateList& predicates)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::PredicateList& predicates)
     {
-        print_vector<formalism::Predicate>(os, predicates);
+        print_vector<mimir::formalism::Predicate>(os, predicates);
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::Predicate>::operator()(const formalism::Predicate& predicate) const
+    std::size_t hash<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& predicate) const
     {
         if (!predicate)
         {
@@ -81,15 +81,17 @@ namespace std
         return predicate->hash_;
     }
 
-    std::size_t hash<formalism::PredicateList>::operator()(const formalism::PredicateList& predicates) const { return hash_vector(predicates); }
+    std::size_t hash<mimir::formalism::PredicateList>::operator()(const mimir::formalism::PredicateList& predicates) const { return hash_vector(predicates); }
 
-    bool less<formalism::Predicate>::operator()(const formalism::Predicate& left_predicate, const formalism::Predicate& right_predicate) const
+    bool less<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& left_predicate,
+                                                       const mimir::formalism::Predicate& right_predicate) const
     {
         return less_combine(std::make_tuple(left_predicate->id, left_predicate->name, left_predicate->parameters),
                             std::make_tuple(right_predicate->id, right_predicate->name, right_predicate->parameters));
     }
 
-    bool equal_to<formalism::Predicate>::operator()(const formalism::Predicate& left_predicate, const formalism::Predicate& right_predicate) const
+    bool equal_to<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& left_predicate,
+                                                           const mimir::formalism::Predicate& right_predicate) const
     {
         if (left_predicate == right_predicate)
         {
@@ -101,7 +103,7 @@ namespace std
             return false;
         }
 
-        const std::hash<formalism::Predicate> hash;
+        const std::hash<mimir::formalism::Predicate> hash;
 
         if (hash(left_predicate) != hash(right_predicate))
         {

@@ -9,15 +9,15 @@
 
 #include <memory>
 
-namespace planners
+namespace mimir::planners
 {
     class EagerAStarSearchImpl : public SearchBase
     {
       private:
-        formalism::ProblemDescription problem_;
-        planners::SuccessorGenerator successor_generator_;
-        planners::Heuristic heuristic_;
-        planners::OpenList open_list_;
+        mimir::formalism::ProblemDescription problem_;
+        mimir::planners::SuccessorGenerator successor_generator_;
+        mimir::planners::Heuristic heuristic_;
+        mimir::planners::OpenList open_list_;
         double max_g_value_;
         double max_f_value_;
         int32_t max_depth_;
@@ -28,22 +28,22 @@ namespace planners
         void reset_statistics();
 
       public:
-        EagerAStarSearchImpl(const formalism::ProblemDescription& problem,
-                             const planners::SuccessorGenerator& successor_generator,
-                             const planners::Heuristic& heuristic,
-                             const planners::OpenList& open_list);
+        EagerAStarSearchImpl(const mimir::formalism::ProblemDescription& problem,
+                             const mimir::planners::SuccessorGenerator& successor_generator,
+                             const mimir::planners::Heuristic& heuristic,
+                             const mimir::planners::OpenList& open_list);
 
         std::map<std::string, std::variant<int32_t, double>> get_statistics() const override;
 
-        SearchResult plan(formalism::ActionList& out_plan) override;
+        SearchResult plan(mimir::formalism::ActionList& out_plan) override;
     };
 
     using EagerAStarSearch = std::shared_ptr<EagerAStarSearchImpl>;
 
-    EagerAStarSearch create_eager_astar(const formalism::ProblemDescription& problem,
-                                        const planners::SuccessorGenerator& successor_generator,
-                                        const planners::Heuristic& heuristic,
-                                        const planners::OpenList& open_list);
+    EagerAStarSearch create_eager_astar(const mimir::formalism::ProblemDescription& problem,
+                                        const mimir::planners::SuccessorGenerator& successor_generator,
+                                        const mimir::planners::Heuristic& heuristic,
+                                        const mimir::planners::OpenList& open_list);
 }  // namespace planners
 
 #endif  // PLANNERS_EAGER_ASTAR_SEARCH_HPP_

@@ -19,9 +19,9 @@
 
 #include <chrono>
 
-namespace planners
+namespace mimir::planners
 {
-    LiftedSuccessorGenerator::LiftedSuccessorGenerator(const formalism::ProblemDescription& problem) : problem_(problem), generators_()
+    LiftedSuccessorGenerator::LiftedSuccessorGenerator(const mimir::formalism::ProblemDescription& problem) : problem_(problem), generators_()
     {
         for (const auto& action_schema : problem->domain->action_schemas)
         {
@@ -29,9 +29,9 @@ namespace planners
         }
     }
 
-    formalism::ActionList LiftedSuccessorGenerator::get_applicable_actions(const formalism::State& state) const
+    mimir::formalism::ActionList LiftedSuccessorGenerator::get_applicable_actions(const mimir::formalism::State& state) const
     {
-        formalism::ActionList applicable_actions;
+        mimir::formalism::ActionList applicable_actions;
 
         const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(problem_->domain, problem_, state->get_dynamic_ranks());
 
@@ -44,11 +44,11 @@ namespace planners
         return applicable_actions;
     }
 
-    formalism::ProblemDescription LiftedSuccessorGenerator::get_problem() const { return problem_; }
+    mimir::formalism::ProblemDescription LiftedSuccessorGenerator::get_problem() const { return problem_; }
 
     bool LiftedSuccessorGenerator::get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
-                                                          const formalism::State& state,
-                                                          formalism::ActionList& out_actions) const
+                                                          const mimir::formalism::State& state,
+                                                          mimir::formalism::ActionList& out_actions) const
     {
         for (const auto& [_, generator] : generators_)
         {

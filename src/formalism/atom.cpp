@@ -20,7 +20,7 @@
 
 #include <algorithm>
 
-namespace formalism
+namespace mimir::formalism
 {
     void AtomImpl::validate() const
     {
@@ -34,14 +34,14 @@ namespace formalism
             const auto& argument_type = arguments[index]->type;
             const auto& parameter_type = predicate->parameters[index]->type;
 
-            if (!formalism::is_subtype_of(argument_type, parameter_type))
+            if (!mimir::formalism::is_subtype_of(argument_type, parameter_type))
             {
                 throw std::invalid_argument("type mismatch at index " + std::to_string(index));
             }
         }
     }
 
-    AtomImpl::AtomImpl(const formalism::Predicate& predicate, formalism::ObjectList&& arguments) :
+    AtomImpl::AtomImpl(const mimir::formalism::Predicate& predicate, mimir::formalism::ObjectList&& arguments) :
         hash_(0),
         predicate(predicate),
         arguments(std::move(arguments))
@@ -49,7 +49,10 @@ namespace formalism
         // validate();  // For performance reasons, skip validation for this constructor.
     }
 
-    AtomImpl::AtomImpl(const formalism::Predicate& predicate, const formalism::ObjectList& arguments) : hash_(0), predicate(predicate), arguments(arguments)
+    AtomImpl::AtomImpl(const mimir::formalism::Predicate& predicate, const mimir::formalism::ObjectList& arguments) :
+        hash_(0),
+        predicate(predicate),
+        arguments(arguments)
     {
         validate();
     }
@@ -84,9 +87,9 @@ namespace formalism
 
     bool AtomImpl::operator!=(const AtomImpl& other) const { return !(this->operator==(other)); }
 
-    formalism::Atom ground_predicate(const formalism::Predicate& predicate, const formalism::ParameterAssignment& assignment)
+    mimir::formalism::Atom ground_predicate(const mimir::formalism::Predicate& predicate, const mimir::formalism::ParameterAssignment& assignment)
     {
-        formalism::ObjectList arguments;
+        mimir::formalism::ObjectList arguments;
 
         for (const auto& parameter : predicate->parameters)
         {
@@ -117,7 +120,7 @@ namespace formalism
         return true;
     }
 
-    Atom replace_term(const Atom& atom, uint32_t index, const formalism::Object& object)
+    Atom replace_term(const Atom& atom, uint32_t index, const mimir::formalism::Object& object)
     {
         auto terms = atom->arguments;
 
@@ -131,19 +134,19 @@ namespace formalism
         return create_atom(atom->predicate, terms);
     }
 
-    Atom create_atom(const formalism::Predicate& predicate, formalism::ObjectList&& arguments)
+    Atom create_atom(const mimir::formalism::Predicate& predicate, mimir::formalism::ObjectList&& arguments)
     {
-        return std::make_shared<formalism::AtomImpl>(predicate, std::move(arguments));
+        return std::make_shared<mimir::formalism::AtomImpl>(predicate, std::move(arguments));
     }
 
-    Atom create_atom(const formalism::Predicate& predicate, const formalism::ObjectList& arguments)
+    Atom create_atom(const mimir::formalism::Predicate& predicate, const mimir::formalism::ObjectList& arguments)
     {
-        return std::make_shared<formalism::AtomImpl>(predicate, arguments);
+        return std::make_shared<mimir::formalism::AtomImpl>(predicate, arguments);
     }
 
-    formalism::AtomList filter(const formalism::AtomList& atom_list, const formalism::Object& obj, int32_t argument_index)
+    mimir::formalism::AtomList filter(const mimir::formalism::AtomList& atom_list, const mimir::formalism::Object& obj, int32_t argument_index)
     {
-        formalism::AtomList filtered_atom_list;
+        mimir::formalism::AtomList filtered_atom_list;
 
         for (const auto& atom : atom_list)
         {
@@ -156,9 +159,9 @@ namespace formalism
         return filtered_atom_list;
     }
 
-    formalism::AtomList filter(const formalism::AtomList& atom_list, const formalism::ObjectList& object_list, int32_t argument_index)
+    mimir::formalism::AtomList filter(const mimir::formalism::AtomList& atom_list, const mimir::formalism::ObjectList& object_list, int32_t argument_index)
     {
-        formalism::AtomSet filtered_atom_set;
+        mimir::formalism::AtomSet filtered_atom_set;
 
         for (const auto& atom : atom_list)
         {
@@ -168,10 +171,10 @@ namespace formalism
             }
         }
 
-        return formalism::AtomList(filtered_atom_set.begin(), filtered_atom_set.end());
+        return mimir::formalism::AtomList(filtered_atom_set.begin(), filtered_atom_set.end());
     }
 
-    formalism::AtomList exclude(const formalism::AtomList& atom_list, const formalism::AtomList& other_list)
+    mimir::formalism::AtomList exclude(const mimir::formalism::AtomList& atom_list, const mimir::formalism::AtomList& other_list)
     {
         AtomList excluded_atom_list;
 
@@ -199,9 +202,9 @@ namespace formalism
         return excluded_atom_list;
     }
 
-    formalism::ObjectList get_objects(const formalism::AtomList& atom_list, int32_t argument_index)
+    mimir::formalism::ObjectList get_objects(const mimir::formalism::AtomList& atom_list, int32_t argument_index)
     {
-        formalism::ObjectList object_list;
+        mimir::formalism::ObjectList object_list;
 
         for (const auto& atom : atom_list)
         {
@@ -211,31 +214,31 @@ namespace formalism
         return object_list;
     }
 
-    formalism::ObjectList get_unique_objects(const formalism::AtomList& atom_list, int32_t argument_index)
+    mimir::formalism::ObjectList get_unique_objects(const mimir::formalism::AtomList& atom_list, int32_t argument_index)
     {
-        tsl::robin_set<formalism::Object> object_set;
+        mimir::tsl::robin_set<mimir::formalism::Object> object_set;
 
         for (const auto& atom : atom_list)
         {
             object_set.insert(atom->arguments.at(argument_index));
         }
 
-        return formalism::ObjectList(object_set.begin(), object_set.end());
+        return mimir::formalism::ObjectList(object_set.begin(), object_set.end());
     }
 
-    formalism::ObjectList concatenate(const formalism::ObjectList& left_list, const formalism::ObjectList& right_list)
+    mimir::formalism::ObjectList concatenate(const mimir::formalism::ObjectList& left_list, const mimir::formalism::ObjectList& right_list)
     {
         auto concatenated = left_list;
         concatenated.insert(concatenated.end(), right_list.begin(), left_list.end());
         return concatenated;
     }
 
-    formalism::ObjectList difference(const formalism::ObjectList& left_list, const formalism::ObjectList& right_list)
+    mimir::formalism::ObjectList difference(const mimir::formalism::ObjectList& left_list, const mimir::formalism::ObjectList& right_list)
     {
-        formalism::ObjectList sorted_right_list = right_list;
+        mimir::formalism::ObjectList sorted_right_list = right_list;
         std::sort(sorted_right_list.begin(), sorted_right_list.end());
 
-        formalism::ObjectList difference;
+        mimir::formalism::ObjectList difference;
 
         for (const auto& obj : left_list)
         {
@@ -248,7 +251,7 @@ namespace formalism
         return difference;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::Atom& atom)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Atom& atom)
     {
         os << atom->predicate->name << "(";
 
@@ -267,17 +270,17 @@ namespace formalism
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::AtomList& atoms)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::AtomList& atoms)
     {
-        print_vector<formalism::Atom>(os, atoms);
+        print_vector<mimir::formalism::Atom>(os, atoms);
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::Atom>::operator()(const formalism::Atom& atom) const
+    std::size_t hash<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& atom) const
     {
         if (!atom)
         {
@@ -292,14 +295,14 @@ namespace std
         return atom->hash_;
     }
 
-    std::size_t hash<formalism::AtomList>::operator()(const formalism::AtomList& atoms) const { return hash_vector(atoms); }
+    std::size_t hash<mimir::formalism::AtomList>::operator()(const mimir::formalism::AtomList& atoms) const { return hash_vector(atoms); }
 
-    bool less<formalism::Atom>::operator()(const formalism::Atom& left_atom, const formalism::Atom& right_atom) const
+    bool less<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const
     {
         return less_combine(std::make_tuple(left_atom->predicate, left_atom->arguments), std::make_tuple(right_atom->predicate, right_atom->arguments));
     }
 
-    bool equal_to<formalism::Atom>::operator()(const formalism::Atom& left_atom, const formalism::Atom& right_atom) const
+    bool equal_to<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const
     {
         if (left_atom == right_atom)
         {
@@ -311,7 +314,7 @@ namespace std
             return false;
         }
 
-        const std::hash<formalism::Atom> hash;
+        const std::hash<mimir::formalism::Atom> hash;
 
         if (hash(left_atom) != hash(right_atom))
         {

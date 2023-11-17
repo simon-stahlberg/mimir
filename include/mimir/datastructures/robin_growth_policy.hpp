@@ -70,7 +70,7 @@
 
 #define TSL_RH_UNUSED(x) static_cast<void>(x)
 
-namespace tsl
+namespace mimir::tsl
 {
     namespace rh
     {
@@ -335,7 +335,7 @@ namespace tsl
 
         /**
          * Grow the hash table by using prime numbers as bucket count. Slower than
-         * tsl::rh::power_of_two_growth_policy in general but will probably distribute
+         * mimir::tsl::rh::power_of_two_growth_policy in general but will probably distribute
          * the values around better in the buckets with a poor hash function.
          *
          * To allow the compiler to optimize the modulo operation, a lookup table is

@@ -19,7 +19,7 @@
 
 #include <boost/fusion/include/at_c.hpp>
 
-namespace parsers
+namespace mimir::parsers
 {
     /* Help functions */
 
@@ -131,8 +131,8 @@ namespace parsers
         }
     }
 
-    formalism::Object TermNode::get_term(const std::map<std::string, formalism::Parameter>& parameters,
-                                         const std::map<std::string, formalism::Object>& constants) const
+    mimir::formalism::Object TermNode::get_term(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                const std::map<std::string, mimir::formalism::Object>& constants) const
     {
         std::string name;
 
@@ -185,9 +185,9 @@ namespace parsers
         arguments.clear();
     }
 
-    formalism::Atom AtomNode::get_atom(const std::map<std::string, formalism::Parameter>& parameters,
-                                       const std::map<std::string, formalism::Object>& constants,
-                                       const std::map<std::string, formalism::Predicate>& predicates) const
+    mimir::formalism::Atom AtomNode::get_atom(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                              const std::map<std::string, mimir::formalism::Object>& constants,
+                                              const std::map<std::string, mimir::formalism::Predicate>& predicates) const
     {
         const auto atom_name = name->get_name();
         const auto predicate_handler = predicates.find(atom_name);
@@ -195,14 +195,14 @@ namespace parsers
         if (predicate_handler != predicates.end())
         {
             const auto predicate = predicate_handler->second;
-            formalism::ObjectList atom_arguments;
+            mimir::formalism::ObjectList atom_arguments;
 
             for (const auto node : arguments)
             {
                 atom_arguments.push_back(node->get_term(parameters, constants));
             }
 
-            return formalism::create_atom(predicate, atom_arguments);
+            return mimir::formalism::create_atom(predicate, atom_arguments);
         }
         else
         {
@@ -364,9 +364,9 @@ namespace parsers
 
     /* RequirementNode */
 
-    RequirementNode::RequirementNode(formalism::Requirement requirement) : requirement(requirement) {}
+    RequirementNode::RequirementNode(mimir::formalism::Requirement requirement) : requirement(requirement) {}
 
-    formalism::Requirement RequirementNode::get_requirement() const { return requirement; }
+    mimir::formalism::Requirement RequirementNode::get_requirement() const { return requirement; }
 
     /* RequirementListNode */
 
@@ -382,9 +382,9 @@ namespace parsers
         requirements.clear();
     }
 
-    formalism::RequirementList RequirementListNode::get_requirements() const
+    mimir::formalism::RequirementList RequirementListNode::get_requirements() const
     {
-        formalism::RequirementList result;
+        mimir::formalism::RequirementList result;
 
         for (auto node : requirements)
         {
@@ -413,11 +413,11 @@ namespace parsers
         }
     }
 
-    formalism::Predicate PredicateNode::get_predicate(const uint32_t id, const std::map<std::string, formalism::Type>& types) const
+    mimir::formalism::Predicate PredicateNode::get_predicate(const uint32_t id, const std::map<std::string, mimir::formalism::Type>& types) const
     {
         const auto predicate_name = name->get_name();
         const auto typed_variables = parameters->get_typed_variables();
-        formalism::ObjectList predicate_parameters;
+        mimir::formalism::ObjectList predicate_parameters;
 
         uint32_t obj_id = 0;
 
@@ -429,7 +429,7 @@ namespace parsers
             if (parameter_type_handler != types.end())
             {
                 const auto parameter_type = parameter_type_handler->second;
-                predicate_parameters.push_back(formalism::create_object(obj_id++, parameter_name, parameter_type));
+                predicate_parameters.push_back(mimir::formalism::create_object(obj_id++, parameter_name, parameter_type));
             }
             else
             {
@@ -437,7 +437,7 @@ namespace parsers
             }
         }
 
-        return formalism::create_predicate(id, name->get_name(), predicate_parameters);
+        return mimir::formalism::create_predicate(id, name->get_name(), predicate_parameters);
     }
 
     /* PredicateListNode */
@@ -453,10 +453,10 @@ namespace parsers
         predicates.clear();
     }
 
-    formalism::PredicateList PredicateListNode::get_predicates(const formalism::RequirementList& requirements,
-                                                               const std::map<std::string, formalism::Type>& types) const
+    mimir::formalism::PredicateList PredicateListNode::get_predicates(const mimir::formalism::RequirementList& requirements,
+                                                                      const std::map<std::string, mimir::formalism::Type>& types) const
     {
-        formalism::PredicateList result;
+        mimir::formalism::PredicateList result;
         uint32_t pred_id = 0;
 
         for (const auto predicate_node : predicates)
@@ -466,9 +466,9 @@ namespace parsers
 
         if (std::count(requirements.cbegin(), requirements.cend(), ":equality"))
         {
-            const auto lhs = formalism::create_object(0, "?lhs", types.at("object"));
-            const auto rhs = formalism::create_object(1, "?rhs", types.at("object"));
-            result.push_back(formalism::create_predicate(pred_id, "=", { lhs, rhs }));
+            const auto lhs = mimir::formalism::create_object(0, "?lhs", types.at("object"));
+            const auto rhs = mimir::formalism::create_object(1, "?rhs", types.at("object"));
+            result.push_back(mimir::formalism::create_predicate(pred_id, "=", { lhs, rhs }));
         }
 
         return result;
@@ -493,7 +493,7 @@ namespace parsers
         }
     }
 
-    formalism::Predicate FunctionDeclarationNode::get_function(const uint32_t id, const std::map<std::string, formalism::Type>& types) const
+    mimir::formalism::Predicate FunctionDeclarationNode::get_function(const uint32_t id, const std::map<std::string, mimir::formalism::Type>& types) const
     {
         if (type && to_lowercase(type->get_name()) != "number")
         {
@@ -516,9 +516,9 @@ namespace parsers
         functions.clear();
     }
 
-    formalism::PredicateList FunctionDeclarationListNode::get_functions(const std::map<std::string, formalism::Type>& types) const
+    mimir::formalism::PredicateList FunctionDeclarationListNode::get_functions(const std::map<std::string, mimir::formalism::Type>& types) const
     {
-        formalism::PredicateList result;
+        mimir::formalism::PredicateList result;
         uint32_t func_id = 0;
 
         for (const auto predicate_node : functions)
@@ -597,12 +597,12 @@ namespace parsers
         atom = nullptr;
     }
 
-    formalism::Literal LiteralNode::get_literal(const std::map<std::string, formalism::Parameter>& parameters,
-                                                const std::map<std::string, formalism::Object>& constants,
-                                                const std::map<std::string, formalism::Predicate>& predicates) const
+    mimir::formalism::Literal LiteralNode::get_literal(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                       const std::map<std::string, mimir::formalism::Object>& constants,
+                                                       const std::map<std::string, mimir::formalism::Predicate>& predicates) const
     {
         const auto literal_atom = atom->get_atom(parameters, constants, predicates);
-        return formalism::create_literal(literal_atom, negated);
+        return mimir::formalism::create_literal(literal_atom, negated);
     }
 
     /* LiteralListNode */
@@ -620,11 +620,11 @@ namespace parsers
         literals.clear();
     }
 
-    formalism::LiteralList LiteralListNode::get_literals(const std::map<std::string, formalism::Parameter>& parameters,
-                                                         const std::map<std::string, formalism::Object>& constants,
-                                                         const std::map<std::string, formalism::Predicate>& predicates) const
+    mimir::formalism::LiteralList LiteralListNode::get_literals(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                                const std::map<std::string, mimir::formalism::Object>& constants,
+                                                                const std::map<std::string, mimir::formalism::Predicate>& predicates) const
     {
-        formalism::LiteralList result;
+        mimir::formalism::LiteralList result;
 
         for (const auto node : literals)
         {
@@ -694,11 +694,12 @@ namespace parsers
         literal_or_functions.clear();
     }
 
-    formalism::LiteralList LiteralOrConditionalOrFunctionListNode::get_literals(const std::map<std::string, formalism::Parameter>& parameters,
-                                                                                const std::map<std::string, formalism::Object>& constants,
-                                                                                const std::map<std::string, formalism::Predicate>& predicates) const
+    mimir::formalism::LiteralList
+    LiteralOrConditionalOrFunctionListNode::get_literals(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                         const std::map<std::string, mimir::formalism::Object>& constants,
+                                                         const std::map<std::string, mimir::formalism::Predicate>& predicates) const
     {
-        formalism::LiteralList result;
+        mimir::formalism::LiteralList result;
 
         for (const auto node : literal_or_functions)
         {
@@ -711,11 +712,12 @@ namespace parsers
         return result;
     }
 
-    formalism::ImplicationList LiteralOrConditionalOrFunctionListNode::get_conditionals(const std::map<std::string, formalism::Parameter>& parameters,
-                                                                                        const std::map<std::string, formalism::Object>& constants,
-                                                                                        const std::map<std::string, formalism::Predicate>& predicates) const
+    mimir::formalism::ImplicationList
+    LiteralOrConditionalOrFunctionListNode::get_conditionals(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                             const std::map<std::string, mimir::formalism::Object>& constants,
+                                                             const std::map<std::string, mimir::formalism::Predicate>& predicates) const
     {
-        formalism::ImplicationList result;
+        mimir::formalism::ImplicationList result;
 
         for (const auto node : this->literal_or_functions)
         {
@@ -723,18 +725,19 @@ namespace parsers
             {
                 const auto antecedent = node->conditional_node->antecedent->get_literals(parameters, constants, predicates);
                 const auto consequence = node->conditional_node->consequence->get_literals(parameters, constants, predicates);
-                result.push_back(formalism::Implication(std::move(antecedent), std::move(consequence)));
+                result.push_back(mimir::formalism::Implication(std::move(antecedent), std::move(consequence)));
             }
         }
 
         return result;
     }
 
-    formalism::FunctionList LiteralOrConditionalOrFunctionListNode::get_functions(const std::map<std::string, formalism::Parameter>& parameters,
-                                                                                  const std::map<std::string, formalism::Object>& constants,
-                                                                                  const std::map<std::string, formalism::Predicate>& functions) const
+    mimir::formalism::FunctionList
+    LiteralOrConditionalOrFunctionListNode::get_functions(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                          const std::map<std::string, mimir::formalism::Object>& constants,
+                                                          const std::map<std::string, mimir::formalism::Predicate>& functions) const
     {
-        formalism::FunctionList result;
+        mimir::formalism::FunctionList result;
 
         for (const auto node : literal_or_functions)
         {
@@ -743,15 +746,15 @@ namespace parsers
             if (function)
             {
                 const auto operation_name = to_lowercase(function->op->get_name());
-                formalism::FunctionOperation operation;
+                mimir::formalism::FunctionOperation operation;
 
                 if (operation_name == "increase")
                 {
-                    operation = formalism::FunctionOperation::INCREASE;
+                    operation = mimir::formalism::FunctionOperation::INCREASE;
                 }
                 else if (operation_name == "decrease")
                 {
-                    operation = formalism::FunctionOperation::DECREASE;
+                    operation = mimir::formalism::FunctionOperation::DECREASE;
                 }
                 else
                 {
@@ -768,12 +771,12 @@ namespace parsers
                 if (function->second_operand_atom)
                 {
                     const auto atom = function->second_operand_atom->get_atom(parameters, constants, functions);
-                    result.emplace_back(formalism::create_function(operation, variable, atom));
+                    result.emplace_back(mimir::formalism::create_function(operation, variable, atom));
                 }
                 else
                 {
                     const auto constant = function->second_operand_value;
-                    result.emplace_back(formalism::create_function(operation, variable, constant));
+                    result.emplace_back(mimir::formalism::create_function(operation, variable, constant));
                 }
             }
         }
@@ -818,17 +821,17 @@ namespace parsers
         }
     }
 
-    std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::ImplicationList, formalism::Function>
-    ActionBodyNode::get_precondition_effect_cost(const std::map<std::string, formalism::Parameter>& parameters,
-                                                 const std::map<std::string, formalism::Object>& constants,
-                                                 const std::map<std::string, formalism::Predicate>& predicates,
-                                                 const std::map<std::string, formalism::Predicate>& functions) const
+    std::tuple<mimir::formalism::LiteralList, mimir::formalism::LiteralList, mimir::formalism::ImplicationList, mimir::formalism::Function>
+    ActionBodyNode::get_precondition_effect_cost(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                 const std::map<std::string, mimir::formalism::Object>& constants,
+                                                 const std::map<std::string, mimir::formalism::Predicate>& predicates,
+                                                 const std::map<std::string, mimir::formalism::Predicate>& functions) const
     {
         const auto precondition_literals = precondition->get_literals(parameters, constants, predicates);
         const auto effect_literals = effect->get_literals(parameters, constants, predicates);
         const auto effect_functions = effect->get_functions(parameters, constants, functions);
         const auto effect_conditional = effect->get_conditionals(parameters, constants, predicates);
-        formalism::Function cost_function = nullptr;
+        mimir::formalism::Function cost_function = nullptr;
 
         if (effect_functions.size() > 1)
         {
@@ -840,7 +843,7 @@ namespace parsers
         }
         else if (functions.count("total-cost"))
         {
-            cost_function = create_function(formalism::FunctionOperation::INCREASE, functions.at("total-cost"), 1.0);
+            cost_function = create_function(mimir::formalism::FunctionOperation::INCREASE, functions.at("total-cost"), 1.0);
         }
 
         if (!cost_function)
@@ -876,15 +879,15 @@ namespace parsers
         }
     }
 
-    formalism::ActionSchema ActionNode::get_action(const std::map<std::string, formalism::Type>& types,
-                                                   const std::map<std::string, formalism::Object>& constants,
-                                                   const std::map<std::string, formalism::Predicate>& predicates,
-                                                   const std::map<std::string, formalism::Predicate>& functions) const
+    mimir::formalism::ActionSchema ActionNode::get_action(const std::map<std::string, mimir::formalism::Type>& types,
+                                                          const std::map<std::string, mimir::formalism::Object>& constants,
+                                                          const std::map<std::string, mimir::formalism::Predicate>& predicates,
+                                                          const std::map<std::string, mimir::formalism::Predicate>& functions) const
     {
         const auto action_name = name->get_name();
 
-        formalism::ParameterList action_parameter_list;
-        std::map<std::string, formalism::Parameter> action_parameter_map;
+        mimir::formalism::ParameterList action_parameter_list;
+        std::map<std::string, mimir::formalism::Parameter> action_parameter_map;
         const auto typed_parameters = parameters->get_typed_variables();
         uint32_t obj_id = 0;
 
@@ -897,7 +900,7 @@ namespace parsers
             if (type_handler != types.end())
             {
                 const auto parameter_type = type_handler->second;
-                const auto parameter = formalism::create_object(obj_id++, parameter_name, parameter_type);
+                const auto parameter = mimir::formalism::create_object(obj_id++, parameter_name, parameter_type);
                 action_parameter_list.push_back(parameter);
                 action_parameter_map.insert(std::make_pair(parameter_name, parameter));
             }
@@ -908,7 +911,7 @@ namespace parsers
         }
 
         const auto& [precondition, effect, cond_effect, cost] = body->get_precondition_effect_cost(action_parameter_map, constants, predicates, functions);
-        return formalism::create_action_schema(action_name, action_parameter_list, precondition, effect, cond_effect, cost);
+        return mimir::formalism::create_action_schema(action_name, action_parameter_list, precondition, effect, cond_effect, cost);
     }
 
     /* DomainNode */
@@ -993,11 +996,11 @@ namespace parsers
         actions.clear();
     }
 
-    std::map<std::string, formalism::Type> DomainNode::get_types() const
+    std::map<std::string, mimir::formalism::Type> DomainNode::get_types() const
     {
-        std::map<std::string, formalism::Type> result;
+        std::map<std::string, mimir::formalism::Type> result;
 
-        result.insert(std::make_pair("object", formalism::create_type("object")));
+        result.insert(std::make_pair("object", mimir::formalism::create_type("object")));
 
         if (types)
         {
@@ -1014,7 +1017,7 @@ namespace parsers
                 // get pointer to base type, or create one if it does not exist
 
                 const auto base_type_handler = result.find(base_name);
-                formalism::Type base_type;
+                mimir::formalism::Type base_type;
 
                 if (base_type_handler != result.end())
                 {
@@ -1022,7 +1025,7 @@ namespace parsers
                 }
                 else
                 {
-                    base_type = formalism::create_type(base_name);
+                    base_type = mimir::formalism::create_type(base_name);
                     result.insert(std::make_pair(base_name, base_type));
                 }
 
@@ -1039,7 +1042,7 @@ namespace parsers
                 else
                 {
                     // create new type
-                    auto type = formalism::create_type(type_name, base_type);
+                    auto type = mimir::formalism::create_type(type_name, base_type);
                     result.insert(std::make_pair(type_name, type));
                 }
             }
@@ -1048,9 +1051,9 @@ namespace parsers
         return result;
     }
 
-    std::map<std::string, formalism::Object> DomainNode::get_constants(const std::map<std::string, formalism::Type>& types) const
+    std::map<std::string, mimir::formalism::Object> DomainNode::get_constants(const std::map<std::string, mimir::formalism::Type>& types) const
     {
-        std::map<std::string, formalism::Object> result;
+        std::map<std::string, mimir::formalism::Object> result;
 
         if (constants)
         {
@@ -1065,7 +1068,7 @@ namespace parsers
                 if (type_handler != types.end())
                 {
                     const auto type = type_handler->second;
-                    const auto object = formalism::create_object(obj_id++, object_name, type);
+                    const auto object = mimir::formalism::create_object(obj_id++, object_name, type);
                     result.insert(std::make_pair(object_name, object));
                 }
                 else
@@ -1078,10 +1081,10 @@ namespace parsers
         return result;
     }
 
-    std::map<std::string, formalism::Predicate> DomainNode::get_predicates(const formalism::RequirementList& requirements,
-                                                                           const std::map<std::string, formalism::Type>& types) const
+    std::map<std::string, mimir::formalism::Predicate> DomainNode::get_predicates(const mimir::formalism::RequirementList& requirements,
+                                                                                  const std::map<std::string, mimir::formalism::Type>& types) const
     {
-        std::map<std::string, formalism::Predicate> result;
+        std::map<std::string, mimir::formalism::Predicate> result;
 
         if (predicates)
         {
@@ -1096,9 +1099,9 @@ namespace parsers
         return result;
     }
 
-    std::map<std::string, formalism::Predicate> DomainNode::get_functions(const std::map<std::string, formalism::Type>& types) const
+    std::map<std::string, mimir::formalism::Predicate> DomainNode::get_functions(const std::map<std::string, mimir::formalism::Type>& types) const
     {
-        std::map<std::string, formalism::Predicate> result;
+        std::map<std::string, mimir::formalism::Predicate> result;
 
         if (functions)
         {
@@ -1111,18 +1114,18 @@ namespace parsers
         }
         else
         {
-            result.emplace("total-cost", formalism::create_predicate(0, "total-cost", {}));
+            result.emplace("total-cost", mimir::formalism::create_predicate(0, "total-cost", {}));
         }
 
         return result;
     }
 
-    std::vector<formalism::ActionSchema> DomainNode::get_action_schemas(const std::map<std::string, formalism::Type>& types,
-                                                                        const std::map<std::string, formalism::Object>& constants,
-                                                                        const std::map<std::string, formalism::Predicate>& predicates,
-                                                                        const std::map<std::string, formalism::Predicate>& functions) const
+    std::vector<mimir::formalism::ActionSchema> DomainNode::get_action_schemas(const std::map<std::string, mimir::formalism::Type>& types,
+                                                                               const std::map<std::string, mimir::formalism::Object>& constants,
+                                                                               const std::map<std::string, mimir::formalism::Predicate>& predicates,
+                                                                               const std::map<std::string, mimir::formalism::Predicate>& functions) const
     {
-        std::vector<formalism::ActionSchema> action_schemas;
+        std::vector<mimir::formalism::ActionSchema> action_schemas;
 
         for (const auto node : this->actions)
         {
@@ -1132,23 +1135,23 @@ namespace parsers
         return action_schemas;
     }
 
-    formalism::DomainDescription DomainNode::get_domain() const
+    mimir::formalism::DomainDescription DomainNode::get_domain() const
     {
         const auto domain_name = name->get_name();
-        const auto domain_requirements = (requirements != nullptr) ? (requirements->get_requirements()) : formalism::RequirementList();
+        const auto domain_requirements = (requirements != nullptr) ? (requirements->get_requirements()) : mimir::formalism::RequirementList();
         const auto domain_types = this->get_types();
         const auto domain_constants = this->get_constants(domain_types);
         const auto domain_predicates = this->get_predicates(domain_requirements, domain_types);
         const auto domain_functions = this->get_functions(domain_types);
         const auto domain_actions = this->get_action_schemas(domain_types, domain_constants, domain_predicates, domain_functions);
 
-        return formalism::create_domain(domain_name,
-                                        domain_requirements,
-                                        get_values(domain_types),
-                                        get_values(domain_constants),
-                                        get_values(domain_predicates),
-                                        get_values(domain_functions),
-                                        domain_actions);
+        return mimir::formalism::create_domain(domain_name,
+                                               domain_requirements,
+                                               get_values(domain_types),
+                                               get_values(domain_constants),
+                                               get_values(domain_predicates),
+                                               get_values(domain_functions),
+                                               domain_actions);
     }
 
     /* ProblemHeaderNode */
@@ -1176,9 +1179,10 @@ namespace parsers
 
     /* ProblemNode */
 
-    std::map<std::string, formalism::Object> ProblemNode::get_objects(uint32_t num_constants, const std::map<std::string, formalism::Type>& types) const
+    std::map<std::string, mimir::formalism::Object> ProblemNode::get_objects(uint32_t num_constants,
+                                                                             const std::map<std::string, mimir::formalism::Type>& types) const
     {
-        std::map<std::string, formalism::Object> result;
+        std::map<std::string, mimir::formalism::Object> result;
 
         if (objects)
         {
@@ -1193,7 +1197,7 @@ namespace parsers
                 if (type_handler != types.end())
                 {
                     const auto type = type_handler->second;
-                    const auto object = formalism::create_object(obj_id++, object_name, type);
+                    const auto object = mimir::formalism::create_object(obj_id++, object_name, type);
                     result.insert(std::make_pair(object_name, object));
                 }
                 else
@@ -1219,9 +1223,9 @@ namespace parsers
         return values;
     }
 
-    formalism::AtomList ProblemNode::atoms_of(const formalism::LiteralList& literals) const
+    mimir::formalism::AtomList ProblemNode::atoms_of(const mimir::formalism::LiteralList& literals) const
     {
-        formalism::AtomList atoms;
+        mimir::formalism::AtomList atoms;
 
         for (const auto& literal : literals)
         {
@@ -1271,7 +1275,7 @@ namespace parsers
         }
     }
 
-    formalism::ProblemDescription ProblemNode::get_problem(const std::string& filename, const formalism::DomainDescription& domain) const
+    mimir::formalism::ProblemDescription ProblemNode::get_problem(const std::string& filename, const mimir::formalism::DomainDescription& domain) const
     {
         const auto domain_name = problem_domain_name->get_domain_name();
 
@@ -1295,7 +1299,7 @@ namespace parsers
 
         // Merge constants and objects into a single map
 
-        std::map<std::string, formalism::Parameter> constants_and_objects_map;
+        std::map<std::string, mimir::formalism::Parameter> constants_and_objects_map;
 
         for (const auto& [name, parameter] : constant_map)
         {
@@ -1307,8 +1311,8 @@ namespace parsers
             constants_and_objects_map[name] = parameter;
         }
 
-        std::vector<formalism::Literal> initial_list;
-        std::unordered_map<formalism::Atom, double> atom_costs;
+        std::vector<mimir::formalism::Literal> initial_list;
+        std::unordered_map<mimir::formalism::Atom, double> atom_costs;
 
         for (const auto& node : initial->literal_or_functions)
         {
@@ -1346,8 +1350,8 @@ namespace parsers
             for (const auto& [_, obj] : object_map)
             {
                 const auto equality_predicate = predicate_map.at("=");
-                const auto equality_atom = formalism::create_atom(equality_predicate, { obj, obj });
-                const auto equality_literal = formalism::create_literal(equality_atom, false);
+                const auto equality_atom = mimir::formalism::create_atom(equality_predicate, { obj, obj });
+                const auto equality_literal = mimir::formalism::create_literal(equality_atom, false);
                 initial_list.push_back(equality_literal);
             }
         }
@@ -1357,6 +1361,6 @@ namespace parsers
         auto objects = get_values(object_map);
         objects.insert(objects.end(), domain->constants.begin(), domain->constants.end());
 
-        return formalism::create_problem(problem_name + " (" + filename + ")", domain, objects, atoms_of(initial_list), goal_list, atom_costs);
+        return mimir::formalism::create_problem(problem_name + " (" + filename + ")", domain, objects, atoms_of(initial_list), goal_list, atom_costs);
     }
 }  // namespace parsers

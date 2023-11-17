@@ -14,41 +14,41 @@
 #include <string>
 #include <vector>
 
-namespace formalism
+namespace mimir::formalism
 {
     class ProblemImpl
     {
       private:
-        formalism::AtomSet static_atoms_;
+        mimir::formalism::AtomSet static_atoms_;
         std::vector<bool> predicate_id_to_static_;
-        mutable tsl::robin_map<formalism::Atom, uint32_t> atom_ranks_;
-        mutable formalism::AtomList rank_to_atom_;
+        mutable mimir::tsl::robin_map<mimir::formalism::Atom, uint32_t> atom_ranks_;
+        mutable mimir::formalism::AtomList rank_to_atom_;
         mutable std::vector<uint32_t> rank_to_predicate_id_;
         mutable std::vector<uint32_t> rank_to_arity_;
         mutable std::vector<std::vector<uint32_t>> rank_to_argument_ids_;
 
         ProblemImpl(const std::string& name,
-                    const formalism::DomainDescription& domain,
-                    const formalism::ObjectList& objects,
-                    const formalism::AtomList& initial,
-                    const formalism::LiteralList& goal,
-                    const std::unordered_map<formalism::Atom, double>& atom_costs);
+                    const mimir::formalism::DomainDescription& domain,
+                    const mimir::formalism::ObjectList& objects,
+                    const mimir::formalism::AtomList& initial,
+                    const mimir::formalism::LiteralList& goal,
+                    const std::unordered_map<mimir::formalism::Atom, double>& atom_costs);
 
       public:
         std::string name;
-        formalism::DomainDescription domain;
-        formalism::ObjectList objects;
-        formalism::AtomList initial;
-        formalism::LiteralList goal;
-        std::unordered_map<formalism::Atom, double> atom_costs;
+        mimir::formalism::DomainDescription domain;
+        mimir::formalism::ObjectList objects;
+        mimir::formalism::AtomList initial;
+        mimir::formalism::LiteralList goal;
+        std::unordered_map<mimir::formalism::Atom, double> atom_costs;
 
-        formalism::ProblemDescription replace_initial(const formalism::AtomList& initial) const;
+        mimir::formalism::ProblemDescription replace_initial(const mimir::formalism::AtomList& initial) const;
 
-        const formalism::AtomSet& get_static_atoms() const;
+        const mimir::formalism::AtomSet& get_static_atoms() const;
 
-        uint32_t get_rank(const formalism::Atom& atom) const;
+        uint32_t get_rank(const mimir::formalism::Atom& atom) const;
 
-        std::vector<uint32_t> to_ranks(const formalism::AtomList& atoms) const;
+        std::vector<uint32_t> to_ranks(const mimir::formalism::AtomList& atoms) const;
 
         uint32_t num_ranks() const;
 
@@ -60,38 +60,38 @@ namespace formalism
 
         uint32_t get_predicate_id(uint32_t rank) const;
 
-        formalism::Predicate get_predicate(uint32_t rank) const;
+        mimir::formalism::Predicate get_predicate(uint32_t rank) const;
 
         const std::vector<uint32_t>& get_argument_ids(uint32_t rank) const;
 
-        formalism::Atom get_atom(uint32_t rank) const;
+        mimir::formalism::Atom get_atom(uint32_t rank) const;
 
-        formalism::AtomList get_encountered_atoms() const;
+        mimir::formalism::AtomList get_encountered_atoms() const;
 
         uint32_t num_encountered_atoms() const;
 
-        formalism::Object get_object(uint32_t object_id) const;
+        mimir::formalism::Object get_object(uint32_t object_id) const;
 
         uint32_t num_objects() const;
 
         friend ProblemDescription create_problem(const std::string& name,
-                                                 const formalism::DomainDescription& domain,
-                                                 const formalism::ObjectList& objects,
-                                                 const formalism::AtomList& initial,
-                                                 const formalism::LiteralList& goal,
-                                                 const std::unordered_map<formalism::Atom, double>& atom_costs);
+                                                 const mimir::formalism::DomainDescription& domain,
+                                                 const mimir::formalism::ObjectList& objects,
+                                                 const mimir::formalism::AtomList& initial,
+                                                 const mimir::formalism::LiteralList& goal,
+                                                 const std::unordered_map<mimir::formalism::Atom, double>& atom_costs);
     };
 
     ProblemDescription create_problem(const std::string& name,
-                                      const formalism::DomainDescription& domain,
-                                      const formalism::ObjectList& objects,
-                                      const formalism::AtomList& initial,
-                                      const formalism::LiteralList& goal,
-                                      const std::unordered_map<formalism::Atom, double>& atom_costs);
+                                      const mimir::formalism::DomainDescription& domain,
+                                      const mimir::formalism::ObjectList& objects,
+                                      const mimir::formalism::AtomList& initial,
+                                      const mimir::formalism::LiteralList& goal,
+                                      const std::unordered_map<mimir::formalism::Atom, double>& atom_costs);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescription& problem);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemDescription& problem);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescriptionList& problems);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemDescriptionList& problems);
 
 }  // namespace formalism
 
@@ -99,21 +99,21 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<formalism::ProblemDescription>
+    struct hash<mimir::formalism::ProblemDescription>
     {
-        std::size_t operator()(const formalism::ProblemDescription& problem) const;
+        std::size_t operator()(const mimir::formalism::ProblemDescription& problem) const;
     };
 
     template<>
-    struct less<formalism::ProblemDescription>
+    struct less<mimir::formalism::ProblemDescription>
     {
-        bool operator()(const formalism::ProblemDescription& left_problem, const formalism::ProblemDescription& right_problem) const;
+        bool operator()(const mimir::formalism::ProblemDescription& left_problem, const mimir::formalism::ProblemDescription& right_problem) const;
     };
 
     template<>
-    struct equal_to<formalism::ProblemDescription>
+    struct equal_to<mimir::formalism::ProblemDescription>
     {
-        bool operator()(const formalism::ProblemDescription& left_problem, const formalism::ProblemDescription& right_problem) const;
+        bool operator()(const mimir::formalism::ProblemDescription& left_problem, const mimir::formalism::ProblemDescription& right_problem) const;
     };
 
 }  // namespace std

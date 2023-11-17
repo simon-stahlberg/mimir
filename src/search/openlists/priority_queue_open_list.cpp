@@ -1,6 +1,6 @@
 #include "../../../include/mimir/search/openlists/priority_queue_open_list.hpp"
 
-namespace planners
+namespace mimir::planners
 {
     template<typename T>
     PriorityQueueOpenList<T>::PriorityQueueOpenList() : priority_queue_()

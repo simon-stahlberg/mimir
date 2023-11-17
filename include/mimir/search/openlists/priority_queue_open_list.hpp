@@ -6,7 +6,7 @@
 #include <functional>
 #include <queue>
 
-namespace planners
+namespace mimir::planners
 {
     template<typename T>
     class PriorityQueueOpenList : public OpenListBase<T>

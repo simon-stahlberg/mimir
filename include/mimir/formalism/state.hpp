@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-namespace formalism
+namespace mimir::formalism
 {
     class StateImpl
     {
@@ -22,20 +22,20 @@ namespace formalism
         //  straightforward through the analysis of action schemas and the initial state. In a grounded configuration, a more in-depth mutex analysis can be
         //  performed to construct FDR variables (leaving the lifted part empty). This should improve performance significantly in some domains.
 
-        formalism::Bitset bitset_;
-        formalism::ProblemDescription problem_;
+        mimir::formalism::Bitset bitset_;
+        mimir::formalism::ProblemDescription problem_;
         std::size_t hash_;
 
       public:
         StateImpl();
 
-        StateImpl(formalism::Bitset&& bitset, const formalism::ProblemDescription& problem);
+        StateImpl(mimir::formalism::Bitset&& bitset, const mimir::formalism::ProblemDescription& problem);
 
-        StateImpl(const std::vector<uint32_t>& atoms, const formalism::ProblemDescription& problem);
+        StateImpl(const std::vector<uint32_t>& atoms, const mimir::formalism::ProblemDescription& problem);
 
-        StateImpl(const formalism::AtomList& atoms, const formalism::ProblemDescription& problem);
+        StateImpl(const mimir::formalism::AtomList& atoms, const mimir::formalism::ProblemDescription& problem);
 
-        StateImpl(const formalism::AtomSet& atoms, const formalism::ProblemDescription& problem);
+        StateImpl(const mimir::formalism::AtomSet& atoms, const mimir::formalism::ProblemDescription& problem);
 
         bool operator<(const StateImpl& other) const;
 
@@ -43,11 +43,11 @@ namespace formalism
 
         bool operator!=(const StateImpl& other) const;
 
-        formalism::AtomList get_atoms() const;
+        mimir::formalism::AtomList get_atoms() const;
 
-        formalism::AtomList get_static_atoms() const;
+        mimir::formalism::AtomList get_static_atoms() const;
 
-        formalism::AtomList get_dynamic_atoms() const;
+        mimir::formalism::AtomList get_dynamic_atoms() const;
 
         std::vector<uint32_t> get_ranks() const;
 
@@ -55,24 +55,24 @@ namespace formalism
 
         std::vector<uint32_t> get_dynamic_ranks() const;
 
-        formalism::ProblemDescription get_problem() const;
+        mimir::formalism::ProblemDescription get_problem() const;
 
-        std::map<formalism::Predicate, formalism::AtomList> get_atoms_grouped_by_predicate() const;
+        std::map<mimir::formalism::Predicate, mimir::formalism::AtomList> get_atoms_grouped_by_predicate() const;
 
         std::pair<std::map<uint32_t, std::vector<uint32_t>>, std::map<uint32_t, std::pair<std::string, uint32_t>>>
         pack_object_ids_by_predicate_id(bool include_types, bool include_goal) const;
 
         std::size_t hash() const;
 
-        friend bool is_applicable(const formalism::Action& action, const formalism::State& state);
+        friend bool is_applicable(const mimir::formalism::Action& action, const mimir::formalism::State& state);
 
-        friend formalism::State apply(const formalism::Action& action, const formalism::State& state);
+        friend mimir::formalism::State apply(const mimir::formalism::Action& action, const mimir::formalism::State& state);
 
-        friend bool is_in_state(uint32_t rank, const formalism::State& state);
+        friend bool is_in_state(uint32_t rank, const mimir::formalism::State& state);
 
-        friend bool is_in_state(const formalism::Atom& atom, const formalism::State& state);
+        friend bool is_in_state(const mimir::formalism::Atom& atom, const mimir::formalism::State& state);
 
-        friend std::ostream& operator<<(std::ostream& os, const formalism::State& state);
+        friend std::ostream& operator<<(std::ostream& os, const mimir::formalism::State& state);
 
         template<typename T>
         friend class std::hash;
@@ -83,37 +83,37 @@ namespace formalism
 
     // friend functions
 
-    formalism::State apply(const formalism::Action& action, const formalism::State& state);
+    mimir::formalism::State apply(const mimir::formalism::Action& action, const mimir::formalism::State& state);
 
-    bool is_in_state(uint32_t rank, const formalism::State& state);
+    bool is_in_state(uint32_t rank, const mimir::formalism::State& state);
 
-    bool is_in_state(const formalism::Atom& atom, const formalism::State& state);
+    bool is_in_state(const mimir::formalism::Atom& atom, const mimir::formalism::State& state);
 
-    bool subset_of_state(const std::vector<uint32_t>& ranks, const formalism::State& state);
+    bool subset_of_state(const std::vector<uint32_t>& ranks, const mimir::formalism::State& state);
 
-    bool subset_of_state(const formalism::AtomList& atoms, const formalism::State& state);
+    bool subset_of_state(const mimir::formalism::AtomList& atoms, const mimir::formalism::State& state);
 
     // non-friend functions
 
     State create_state();
 
-    State create_state(const formalism::AtomList& atoms, formalism::ProblemDescription problem);
+    State create_state(const mimir::formalism::AtomList& atoms, mimir::formalism::ProblemDescription problem);
 
-    State create_state(const formalism::AtomSet& atoms, formalism::ProblemDescription problem);
+    State create_state(const mimir::formalism::AtomSet& atoms, mimir::formalism::ProblemDescription problem);
 
-    bool is_applicable(const formalism::Action& action, const formalism::State& state);
+    bool is_applicable(const mimir::formalism::Action& action, const mimir::formalism::State& state);
 
-    bool atoms_hold(const AtomList& atoms, const formalism::State& state);
+    bool atoms_hold(const AtomList& atoms, const mimir::formalism::State& state);
 
-    bool literal_holds(const formalism::Literal& literal, const formalism::State& state);
+    bool literal_holds(const mimir::formalism::Literal& literal, const mimir::formalism::State& state);
 
-    bool literals_hold(const LiteralList& literal_list, const formalism::State& state, std::size_t min_arity = 0);
+    bool literals_hold(const LiteralList& literal_list, const mimir::formalism::State& state, std::size_t min_arity = 0);
 
-    bool matches_any_in_state(const formalism::Atom& atom, const formalism::State& state);
+    bool matches_any_in_state(const mimir::formalism::Atom& atom, const mimir::formalism::State& state);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::State& state);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::State& state);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::StateList& states);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::StateList& states);
 
 }  // namespace formalism
 
@@ -121,21 +121,21 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<formalism::State>
+    struct hash<mimir::formalism::State>
     {
-        std::size_t operator()(const formalism::State& state) const;
+        std::size_t operator()(const mimir::formalism::State& state) const;
     };
 
     template<>
-    struct less<formalism::State>
+    struct less<mimir::formalism::State>
     {
-        bool operator()(const formalism::State& left_state, const formalism::State& right_state) const;
+        bool operator()(const mimir::formalism::State& left_state, const mimir::formalism::State& right_state) const;
     };
 
     template<>
-    struct equal_to<formalism::State>
+    struct equal_to<mimir::formalism::State>
     {
-        bool operator()(const formalism::State& left_state, const formalism::State& right_state) const;
+        bool operator()(const mimir::formalism::State& left_state, const mimir::formalism::State& right_state) const;
     };
 
 }  // namespace std

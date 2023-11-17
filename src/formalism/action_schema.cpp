@@ -20,14 +20,14 @@
 
 #include <algorithm>
 
-namespace formalism
+namespace mimir::formalism
 {
     ActionSchemaImpl::ActionSchemaImpl(const std::string& name,
-                                       const formalism::ParameterList& parameters,
-                                       const formalism::LiteralList& precondition,
-                                       const formalism::LiteralList& unconditional_effect,
-                                       const formalism::ImplicationList& conditional_effect,
-                                       const formalism::Function& cost) :
+                                       const mimir::formalism::ParameterList& parameters,
+                                       const mimir::formalism::LiteralList& precondition,
+                                       const mimir::formalism::LiteralList& unconditional_effect,
+                                       const mimir::formalism::ImplicationList& conditional_effect,
+                                       const mimir::formalism::Function& cost) :
         name(name),
         arity(parameters.size()),
         complete(true),
@@ -40,20 +40,20 @@ namespace formalism
     }
 
     ActionSchema create_action_schema(const std::string& name,
-                                      const formalism::ParameterList& parameters,
-                                      const formalism::LiteralList& precondition,
-                                      const formalism::LiteralList& unconditional_effect,
-                                      const formalism::ImplicationList& conditional_effect,
-                                      const formalism::Function& cost)
+                                      const mimir::formalism::ParameterList& parameters,
+                                      const mimir::formalism::LiteralList& precondition,
+                                      const mimir::formalism::LiteralList& unconditional_effect,
+                                      const mimir::formalism::ImplicationList& conditional_effect,
+                                      const mimir::formalism::Function& cost)
     {
         return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, unconditional_effect, conditional_effect, cost);
     }
 
-    ActionSchema relax(const formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list)
+    ActionSchema relax(const mimir::formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list)
     {
-        std::vector<formalism::Literal> relaxed_precondition;
+        std::vector<mimir::formalism::Literal> relaxed_precondition;
 
-        const auto positive_literal = [](const formalism::Literal& literal) { return !literal->negated; };
+        const auto positive_literal = [](const mimir::formalism::Literal& literal) { return !literal->negated; };
 
         if (remove_negative_preconditions)
         {
@@ -64,7 +64,7 @@ namespace formalism
             relaxed_precondition.insert(relaxed_precondition.end(), action_schema->precondition.cbegin(), action_schema->precondition.cend());
         }
 
-        std::vector<formalism::Literal> relaxed_effect;
+        std::vector<mimir::formalism::Literal> relaxed_effect;
 
         if (remove_delete_list)
         {
@@ -86,7 +86,7 @@ namespace formalism
         return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect, {}, action_schema->cost);
     }
 
-    bool affects_predicate(const formalism::ActionSchema& action_schema, const formalism::Predicate& predicate)
+    bool affects_predicate(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::Predicate& predicate)
     {
         if (contains_predicate(action_schema->unconditional_effect, predicate))
         {
@@ -104,7 +104,7 @@ namespace formalism
         return false;
     }
 
-    bool affect_predicate(const formalism::ActionSchemaList& action_schemas, const formalism::Predicate& predicate)
+    bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate)
     {
         for (const auto& action_schema : action_schemas)
         {
@@ -117,22 +117,22 @@ namespace formalism
         return false;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ActionSchema& action_schema)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchema& action_schema)
     {
         return os << action_schema->name << "/" << action_schema->arity;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ActionSchemaList& action_schemas)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas)
     {
         print_vector(os, action_schemas);
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::ActionSchema>::operator()(const formalism::ActionSchema& action_schema) const
+    std::size_t hash<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& action_schema) const
     {
         return hash_combine(action_schema->name,
                             action_schema->arity,
@@ -143,9 +143,13 @@ namespace std
                             action_schema->cost);
     }
 
-    std::size_t hash<formalism::ActionSchemaList>::operator()(const formalism::ActionSchemaList& action_schemas) const { return hash_vector(action_schemas); }
+    std::size_t hash<mimir::formalism::ActionSchemaList>::operator()(const mimir::formalism::ActionSchemaList& action_schemas) const
+    {
+        return hash_vector(action_schemas);
+    }
 
-    bool less<formalism::ActionSchema>::operator()(const formalism::ActionSchema& left_action_schema, const formalism::ActionSchema& right_action_schema) const
+    bool less<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& left_action_schema,
+                                                          const mimir::formalism::ActionSchema& right_action_schema) const
     {
         return less_combine(std::make_tuple(left_action_schema->name,
                                             left_action_schema->parameters,
@@ -161,8 +165,8 @@ namespace std
                                             right_action_schema->cost));
     }
 
-    bool equal_to<formalism::ActionSchema>::operator()(const formalism::ActionSchema& left_action_schema,
-                                                       const formalism::ActionSchema& right_action_schema) const
+    bool equal_to<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& left_action_schema,
+                                                              const mimir::formalism::ActionSchema& right_action_schema) const
     {
         return equal_to_combine(std::make_tuple(left_action_schema->name,
                                                 left_action_schema->parameters,

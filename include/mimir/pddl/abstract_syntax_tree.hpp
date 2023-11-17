@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace parsers
+namespace mimir::parsers
 {
     class ASTNode
     {
@@ -74,8 +74,8 @@ namespace parsers
         TermNode(NameNode* node);
         TermNode(VariableNode* node);
         ~TermNode() override;
-        formalism::Object get_term(const std::map<std::string, formalism::Parameter>& parameters,
-                                   const std::map<std::string, formalism::Object>& constants) const;
+        mimir::formalism::Object get_term(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                          const std::map<std::string, mimir::formalism::Object>& constants) const;
     };
 
     class AtomNode : public ASTNode
@@ -86,9 +86,9 @@ namespace parsers
 
         AtomNode(NameNode* name, std::vector<TermNode*>& arguments);
         ~AtomNode() override;
-        formalism::Atom get_atom(const std::map<std::string, formalism::Parameter>& parameters,
-                                 const std::map<std::string, formalism::Object>& constants,
-                                 const std::map<std::string, formalism::Predicate>& predicates) const;
+        mimir::formalism::Atom get_atom(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                        const std::map<std::string, mimir::formalism::Object>& constants,
+                                        const std::map<std::string, mimir::formalism::Predicate>& predicates) const;
     };
 
     class TypedNameListNode : public ASTNode
@@ -122,10 +122,10 @@ namespace parsers
     class RequirementNode : public ASTNode
     {
       public:
-        formalism::Requirement requirement;
+        mimir::formalism::Requirement requirement;
 
-        RequirementNode(formalism::Requirement requirement);
-        formalism::Requirement get_requirement() const;
+        RequirementNode(mimir::formalism::Requirement requirement);
+        mimir::formalism::Requirement get_requirement() const;
     };
 
     class RequirementListNode : public ASTNode
@@ -135,7 +135,7 @@ namespace parsers
 
         RequirementListNode(std::vector<RequirementNode*>& requirements);
         ~RequirementListNode() override;
-        formalism::RequirementList get_requirements() const;
+        mimir::formalism::RequirementList get_requirements() const;
     };
 
     class PredicateNode : public ASTNode
@@ -146,7 +146,7 @@ namespace parsers
 
         PredicateNode(NameNode* name, TypedVariableListNode* parameters);
         ~PredicateNode() override;
-        formalism::Predicate get_predicate(const uint32_t id, const std::map<std::string, formalism::Type>& types) const;
+        mimir::formalism::Predicate get_predicate(const uint32_t id, const std::map<std::string, mimir::formalism::Type>& types) const;
     };
 
     class PredicateListNode : public ASTNode
@@ -156,7 +156,8 @@ namespace parsers
 
         PredicateListNode(std::vector<PredicateNode*>& predicates);
         ~PredicateListNode() override;
-        formalism::PredicateList get_predicates(const formalism::RequirementList& requirements, const std::map<std::string, formalism::Type>& types) const;
+        mimir::formalism::PredicateList get_predicates(const mimir::formalism::RequirementList& requirements,
+                                                       const std::map<std::string, mimir::formalism::Type>& types) const;
     };
 
     class FunctionDeclarationNode : public ASTNode
@@ -167,7 +168,7 @@ namespace parsers
 
         FunctionDeclarationNode(PredicateNode* predicate, NameNode* type);
         ~FunctionDeclarationNode() override;
-        formalism::Predicate get_function(const uint32_t id, const std::map<std::string, formalism::Type>& types) const;
+        mimir::formalism::Predicate get_function(const uint32_t id, const std::map<std::string, mimir::formalism::Type>& types) const;
     };
 
     class FunctionDeclarationListNode : public ASTNode
@@ -177,7 +178,7 @@ namespace parsers
 
         FunctionDeclarationListNode(std::vector<FunctionDeclarationNode*>& functions);
         ~FunctionDeclarationListNode() override;
-        formalism::PredicateList get_functions(const std::map<std::string, formalism::Type>& types) const;
+        mimir::formalism::PredicateList get_functions(const std::map<std::string, mimir::formalism::Type>& types) const;
     };
 
     class FunctionNode : public ASTNode
@@ -201,9 +202,9 @@ namespace parsers
 
         LiteralNode(bool negated, AtomNode* atom);
         ~LiteralNode() override;
-        formalism::Literal get_literal(const std::map<std::string, formalism::Parameter>& parameters,
-                                       const std::map<std::string, formalism::Object>& constants,
-                                       const std::map<std::string, formalism::Predicate>& predicates) const;
+        mimir::formalism::Literal get_literal(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                              const std::map<std::string, mimir::formalism::Object>& constants,
+                                              const std::map<std::string, mimir::formalism::Predicate>& predicates) const;
     };
 
     class LiteralListNode : public ASTNode
@@ -214,9 +215,9 @@ namespace parsers
         LiteralListNode(LiteralNode* literal);
         LiteralListNode(std::vector<LiteralNode*>& literals);
         ~LiteralListNode() override;
-        formalism::LiteralList get_literals(const std::map<std::string, formalism::Parameter>& parameters,
-                                            const std::map<std::string, formalism::Object>& constants,
-                                            const std::map<std::string, formalism::Predicate>& predicates) const;
+        mimir::formalism::LiteralList get_literals(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                   const std::map<std::string, mimir::formalism::Object>& constants,
+                                                   const std::map<std::string, mimir::formalism::Predicate>& predicates) const;
     };
 
     class ConditionalNode : public ASTNode
@@ -250,15 +251,15 @@ namespace parsers
         LiteralOrConditionalOrFunctionListNode(LiteralOrConditionalOrFunctionNode* literal_or_function);
         LiteralOrConditionalOrFunctionListNode(std::vector<LiteralOrConditionalOrFunctionNode*>& literal_or_functions);
         ~LiteralOrConditionalOrFunctionListNode() override;
-        formalism::LiteralList get_literals(const std::map<std::string, formalism::Parameter>& parameters,
-                                            const std::map<std::string, formalism::Object>& constants,
-                                            const std::map<std::string, formalism::Predicate>& predicates) const;
-        formalism::ImplicationList get_conditionals(const std::map<std::string, formalism::Parameter>& parameters,
-                                                    const std::map<std::string, formalism::Object>& constants,
-                                                    const std::map<std::string, formalism::Predicate>& predicates) const;
-        formalism::FunctionList get_functions(const std::map<std::string, formalism::Parameter>& parameters,
-                                              const std::map<std::string, formalism::Object>& constants,
-                                              const std::map<std::string, formalism::Predicate>& predicates) const;
+        mimir::formalism::LiteralList get_literals(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                   const std::map<std::string, mimir::formalism::Object>& constants,
+                                                   const std::map<std::string, mimir::formalism::Predicate>& predicates) const;
+        mimir::formalism::ImplicationList get_conditionals(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                           const std::map<std::string, mimir::formalism::Object>& constants,
+                                                           const std::map<std::string, mimir::formalism::Predicate>& predicates) const;
+        mimir::formalism::FunctionList get_functions(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                                     const std::map<std::string, mimir::formalism::Object>& constants,
+                                                     const std::map<std::string, mimir::formalism::Predicate>& predicates) const;
     };
 
     class ActionBodyNode : public ASTNode
@@ -271,11 +272,11 @@ namespace parsers
                        boost::optional<boost::fusion::vector<std::string, LiteralOrConditionalOrFunctionListNode*>>& effect);
         ActionBodyNode(LiteralListNode* precondition, LiteralOrConditionalOrFunctionListNode* effect);
         ~ActionBodyNode() override;
-        std::tuple<formalism::LiteralList, formalism::LiteralList, formalism::ImplicationList, formalism::Function>
-        get_precondition_effect_cost(const std::map<std::string, formalism::Parameter>& parameters,
-                                     const std::map<std::string, formalism::Object>& constants,
-                                     const std::map<std::string, formalism::Predicate>& predicates,
-                                     const std::map<std::string, formalism::Predicate>& functions) const;
+        std::tuple<mimir::formalism::LiteralList, mimir::formalism::LiteralList, mimir::formalism::ImplicationList, mimir::formalism::Function>
+        get_precondition_effect_cost(const std::map<std::string, mimir::formalism::Parameter>& parameters,
+                                     const std::map<std::string, mimir::formalism::Object>& constants,
+                                     const std::map<std::string, mimir::formalism::Predicate>& predicates,
+                                     const std::map<std::string, mimir::formalism::Predicate>& functions) const;
     };
 
     class ActionNode : public ASTNode
@@ -287,10 +288,10 @@ namespace parsers
 
         ActionNode(NameNode* name, TypedVariableListNode* parameters, ActionBodyNode* body);
         ~ActionNode() override;
-        formalism::ActionSchema get_action(const std::map<std::string, formalism::Type>& types,
-                                           const std::map<std::string, formalism::Object>& constants,
-                                           const std::map<std::string, formalism::Predicate>& predicates,
-                                           const std::map<std::string, formalism::Predicate>& functions) const;
+        mimir::formalism::ActionSchema get_action(const std::map<std::string, mimir::formalism::Type>& types,
+                                                  const std::map<std::string, mimir::formalism::Object>& constants,
+                                                  const std::map<std::string, mimir::formalism::Predicate>& predicates,
+                                                  const std::map<std::string, mimir::formalism::Predicate>& functions) const;
     };
 
     class DomainNode : public ASTNode
@@ -315,15 +316,15 @@ namespace parsers
         ~DomainNode() override;
 
       private:
-        std::map<std::string, formalism::Type> get_types() const;
-        std::map<std::string, formalism::Object> get_constants(const std::map<std::string, formalism::Type>& types) const;
-        std::map<std::string, formalism::Predicate> get_predicates(const formalism::RequirementList& requirements,
-                                                                   const std::map<std::string, formalism::Type>& types) const;
-        std::map<std::string, formalism::Predicate> get_functions(const std::map<std::string, formalism::Type>& types) const;
-        std::vector<formalism::ActionSchema> get_action_schemas(const std::map<std::string, formalism::Type>& types,
-                                                                const std::map<std::string, formalism::Object>& constants,
-                                                                const std::map<std::string, formalism::Predicate>& predicates,
-                                                                const std::map<std::string, formalism::Predicate>& functions) const;
+        std::map<std::string, mimir::formalism::Type> get_types() const;
+        std::map<std::string, mimir::formalism::Object> get_constants(const std::map<std::string, mimir::formalism::Type>& types) const;
+        std::map<std::string, mimir::formalism::Predicate> get_predicates(const mimir::formalism::RequirementList& requirements,
+                                                                          const std::map<std::string, mimir::formalism::Type>& types) const;
+        std::map<std::string, mimir::formalism::Predicate> get_functions(const std::map<std::string, mimir::formalism::Type>& types) const;
+        std::vector<mimir::formalism::ActionSchema> get_action_schemas(const std::map<std::string, mimir::formalism::Type>& types,
+                                                                       const std::map<std::string, mimir::formalism::Object>& constants,
+                                                                       const std::map<std::string, mimir::formalism::Predicate>& predicates,
+                                                                       const std::map<std::string, mimir::formalism::Predicate>& functions) const;
         template<typename K, typename V>
         inline std::vector<V> get_values(std::map<K, V> map) const
         {
@@ -338,7 +339,7 @@ namespace parsers
         }
 
       public:
-        formalism::DomainDescription get_domain() const;
+        mimir::formalism::DomainDescription get_domain() const;
     };
 
     class ProblemHeaderNode : public ASTNode
@@ -361,10 +362,10 @@ namespace parsers
         LiteralListNode* goal;
         AtomNode* metric;
 
-        std::map<std::string, formalism::Object> get_objects(uint32_t num_constants, const std::map<std::string, formalism::Type>& types) const;
+        std::map<std::string, mimir::formalism::Object> get_objects(uint32_t num_constants, const std::map<std::string, mimir::formalism::Type>& types) const;
         template<typename K, typename V>
         std::vector<V> get_values(std::map<K, V> map) const;
-        formalism::AtomList atoms_of(const formalism::LiteralList& literals) const;
+        mimir::formalism::AtomList atoms_of(const mimir::formalism::LiteralList& literals) const;
 
       public:
         ProblemNode(ProblemHeaderNode* problem_domain_name,
@@ -374,7 +375,7 @@ namespace parsers
                     boost::optional<AtomNode*> metric);
 
         ~ProblemNode() override;
-        formalism::ProblemDescription get_problem(const std::string& filename, const formalism::DomainDescription& domain) const;
+        mimir::formalism::ProblemDescription get_problem(const std::string& filename, const mimir::formalism::DomainDescription& domain) const;
     };
 }  // namespace parsers
 

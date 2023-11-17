@@ -22,9 +22,9 @@
 
 namespace test
 {
-    formalism::AtomSet to_set(const formalism::AtomList& list)
+    mimir::formalism::AtomSet to_set(const mimir::formalism::AtomList& list)
     {
-        formalism::AtomSet set;
+        mimir::formalism::AtomSet set;
 
         for (const auto& item : list)
         {
@@ -48,16 +48,16 @@ namespace test
         std::istringstream domain_stream(domain_text);
         std::istringstream problem_stream(problem_text);
 
-        const auto domain = parsers::DomainParser::parse(domain_stream);
-        const auto problem = parsers::ProblemParser::parse(domain, "", problem_stream);
+        const auto domain = mimir::parsers::DomainParser::parse(domain_stream);
+        const auto problem = mimir::parsers::ProblemParser::parse(domain, "", problem_stream);
 
-        const auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::GROUNDED);
-        const auto state_space = planners::create_state_space(problem, successor_generator);
+        const auto successor_generator = mimir::planners::create_sucessor_generator(problem, mimir::planners::SuccessorGeneratorType::GROUNDED);
+        const auto state_space = mimir::planners::create_state_space(problem, successor_generator);
 
         const auto& states = state_space->get_states();
         ASSERT_GT(states.size(), 0);
         ASSERT_EQ(states.size(), state_space->num_states());
-        std::equal_to<formalism::State> state_equals;
+        std::equal_to<mimir::formalism::State> state_equals;
 
         for (const auto& state : states)
         {
@@ -76,7 +76,7 @@ namespace test
             ASSERT_EQ(static_atom_list.size(), static_atom_set.size());
             ASSERT_EQ(all_atom_list.size(), all_atom_set.size());
 
-            formalism::AtomSet new_all_atom_set;
+            mimir::formalism::AtomSet new_all_atom_set;
             std::set_union(dynamic_atom_set.begin(),
                            dynamic_atom_set.end(),
                            static_atom_set.begin(),
@@ -85,7 +85,7 @@ namespace test
 
             ASSERT_EQ(new_all_atom_set.size(), all_atom_set.size());
 
-            const auto new_state = formalism::create_state(new_all_atom_set, problem);
+            const auto new_state = mimir::formalism::create_state(new_all_atom_set, problem);
             ASSERT_TRUE(state_equals(new_state, state));
         }
     }

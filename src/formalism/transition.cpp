@@ -18,21 +18,24 @@
 #include "../../include/mimir/formalism/transition.hpp"
 #include "help_functions.hpp"
 
-namespace formalism
+namespace mimir::formalism
 {
-    TransitionImpl::TransitionImpl(const formalism::State& source_state, const formalism::Action& action, const formalism::State& target_state) :
+    TransitionImpl::TransitionImpl(const mimir::formalism::State& source_state,
+                                   const mimir::formalism::Action& action,
+                                   const mimir::formalism::State& target_state) :
         source_state(source_state),
         target_state(target_state),
         action(action)
     {
     }
 
-    Transition create_transition(const formalism::State& source_state, const formalism::Action& action, const formalism::State& target_state)
+    Transition
+    create_transition(const mimir::formalism::State& source_state, const mimir::formalism::Action& action, const mimir::formalism::State& target_state)
     {
         return std::make_shared<TransitionImpl>(source_state, action, target_state);
     }
 
-    StateTransitions to_state_transitions(const formalism::ProblemDescription& problem, const formalism::TransitionList& transitions)
+    StateTransitions to_state_transitions(const mimir::formalism::ProblemDescription& problem, const mimir::formalism::TransitionList& transitions)
     {
         if (transitions.size() == 0)
         {
@@ -55,34 +58,36 @@ namespace formalism
         return std::make_tuple(state, std::move(successors), problem);
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::Transition& transition)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Transition& transition)
     {
         os << transition->action;
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::TransitionList& transitions)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::TransitionList& transitions)
     {
         print_vector(os, transitions);
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::Transition>::operator()(const formalism::Transition& transition) const
+    std::size_t hash<mimir::formalism::Transition>::operator()(const mimir::formalism::Transition& transition) const
     {
         return hash_combine(transition->action, transition->source_state, transition->target_state);
     }
 
-    bool less<formalism::Transition>::operator()(const formalism::Transition& left_transition, const formalism::Transition& right_transition) const
+    bool less<mimir::formalism::Transition>::operator()(const mimir::formalism::Transition& left_transition,
+                                                        const mimir::formalism::Transition& right_transition) const
     {
         return less_combine(std::make_tuple(left_transition->action, left_transition->source_state, left_transition->target_state),
                             std::make_tuple(right_transition->action, right_transition->source_state, right_transition->target_state));
     }
 
-    bool equal_to<formalism::Transition>::operator()(const formalism::Transition& left_transition, const formalism::Transition& right_transition) const
+    bool equal_to<mimir::formalism::Transition>::operator()(const mimir::formalism::Transition& left_transition,
+                                                            const mimir::formalism::Transition& right_transition) const
     {
         return equal_to_combine(std::make_tuple(left_transition->action, left_transition->source_state, left_transition->target_state),
                                 std::make_tuple(right_transition->action, right_transition->source_state, right_transition->target_state));

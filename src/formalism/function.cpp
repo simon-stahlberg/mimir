@@ -1,9 +1,9 @@
 #include "../../include/mimir/formalism/domain.hpp"
 #include "../../include/mimir/formalism/function.hpp"
 
-namespace formalism
+namespace mimir::formalism
 {
-    FunctionImpl::FunctionImpl(FunctionOperation operation, const formalism::Predicate& variable, const formalism::Atom& atom) :
+    FunctionImpl::FunctionImpl(FunctionOperation operation, const mimir::formalism::Predicate& variable, const mimir::formalism::Atom& atom) :
         operation_(operation),
         variable_(variable),
         atom_(atom),
@@ -12,7 +12,7 @@ namespace formalism
     {
     }
 
-    FunctionImpl::FunctionImpl(FunctionOperation operation, const formalism::Predicate& variable, double constant) :
+    FunctionImpl::FunctionImpl(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant) :
         operation_(operation),
         variable_(variable),
         atom_(),
@@ -23,7 +23,7 @@ namespace formalism
 
     FunctionOperation FunctionImpl::get_operation() { return operation_; }
 
-    formalism::Predicate FunctionImpl::get_variable() { return variable_; }
+    mimir::formalism::Predicate FunctionImpl::get_variable() { return variable_; }
 
     bool FunctionImpl::is_constant() { return is_constant_; }
 
@@ -31,19 +31,19 @@ namespace formalism
 
     bool FunctionImpl::has_atom() { return !is_constant_; }
 
-    formalism::Atom FunctionImpl::get_atom() { return atom_; }
+    mimir::formalism::Atom FunctionImpl::get_atom() { return atom_; }
 
-    Function create_function(FunctionOperation operation, const formalism::Predicate& variable, const formalism::Atom& atom)
+    Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, const mimir::formalism::Atom& atom)
     {
         return std::make_shared<FunctionImpl>(operation, variable, atom);
     }
 
-    Function create_function(FunctionOperation operation, const formalism::Predicate& variable, double constant)
+    Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant)
     {
         return std::make_shared<FunctionImpl>(operation, variable, constant);
     }
 
-    Function create_unit_cost_function(const formalism::DomainDescription& domain)
+    Function create_unit_cost_function(const mimir::formalism::DomainDescription& domain)
     {
         for (const auto& function : domain->functions)
         {

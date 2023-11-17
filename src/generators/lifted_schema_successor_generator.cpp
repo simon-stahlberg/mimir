@@ -26,7 +26,7 @@
 #include <limits>
 #include <set>
 
-namespace planners
+namespace mimir::planners
 {
     std::size_t
     get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects)
@@ -54,8 +54,8 @@ namespace planners
      *
      * @return A set for each predicate that contains possible compatible assignments.
      */
-    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const formalism::DomainDescription& domain,
-                                                                                         const formalism::ProblemDescription& problem,
+    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const mimir::formalism::DomainDescription& domain,
+                                                                                         const mimir::formalism::ProblemDescription& problem,
                                                                                          const std::vector<uint32_t>& ranks)
     {
         const auto num_objects = problem->objects.size();
@@ -95,7 +95,7 @@ namespace planners
     }
 
     bool LiftedSchemaSuccessorGenerator::literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
-                                                                const std::vector<planners::FlatLiteral>& literals,
+                                                                const std::vector<mimir::planners::FlatLiteral>& literals,
                                                                 const Assignment& first_assignment,
                                                                 const Assignment& second_assignment) const
     {
@@ -196,10 +196,10 @@ namespace planners
         return true;
     }
 
-    formalism::ObjectList LiftedSchemaSuccessorGenerator::ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
-                                                                            const formalism::ObjectList& terms) const
+    mimir::formalism::ObjectList LiftedSchemaSuccessorGenerator::ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
+                                                                                   const mimir::formalism::ObjectList& terms) const
     {
-        formalism::ObjectList atom_terms;
+        mimir::formalism::ObjectList atom_terms;
 
         for (const auto& term : parameters)
         {
@@ -216,18 +216,18 @@ namespace planners
         return atom_terms;
     }
 
-    formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const
+    mimir::formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const mimir::formalism::ObjectList& terms) const
     {
         const auto& atom_predicate = literal.source->atom->predicate;
-        const auto ground_atom = formalism::create_atom(atom_predicate, ground_parameters(literal.arguments, terms));
-        return formalism::create_literal(ground_atom, literal.negated);
+        const auto ground_atom = mimir::formalism::create_atom(atom_predicate, ground_parameters(literal.arguments, terms));
+        return mimir::formalism::create_literal(ground_atom, literal.negated);
     }
 
-    formalism::Action LiftedSchemaSuccessorGenerator::create_action(formalism::ObjectList&& terms) const
+    mimir::formalism::Action LiftedSchemaSuccessorGenerator::create_action(mimir::formalism::ObjectList&& terms) const
     {
         // Get the precondition of the ground action
 
-        formalism::LiteralList precondition;
+        mimir::formalism::LiteralList precondition;
 
         for (const auto& literal : flat_action_schema_.static_precondition)
         {
@@ -241,19 +241,19 @@ namespace planners
 
         // Get the effect of the ground action
 
-        formalism::LiteralList unconditional_effect;
+        mimir::formalism::LiteralList unconditional_effect;
 
         for (const auto& literal : flat_action_schema_.unconditional_effect)
         {
             unconditional_effect.emplace_back(ground_literal(literal, terms));
         }
 
-        formalism::ImplicationList conditional_effect;
+        mimir::formalism::ImplicationList conditional_effect;
 
         for (const auto& flat_implication : flat_action_schema_.conditional_effect)
         {
-            formalism::LiteralList antecedent;
-            formalism::LiteralList consequence;
+            mimir::formalism::LiteralList antecedent;
+            mimir::formalism::LiteralList consequence;
 
             for (const auto& literal : flat_implication.antecedent)
             {
@@ -280,27 +280,28 @@ namespace planners
         else
         {
             const auto cost_atom_schema = flat_action_schema_.source->cost->get_atom();
-            const auto cost_atom = formalism::create_atom(cost_atom_schema->predicate, ground_parameters(flat_action_schema_.cost_arguments, terms));
+            const auto cost_atom = mimir::formalism::create_atom(cost_atom_schema->predicate, ground_parameters(flat_action_schema_.cost_arguments, terms));
             cost = problem_->atom_costs.at(cost_atom);
         }
 
-        if (cost_function->get_operation() == formalism::FunctionOperation::DECREASE)
+        if (cost_function->get_operation() == mimir::formalism::FunctionOperation::DECREASE)
         {
             cost = -cost;
         }
 
         // Finally, create the ground action
 
-        return formalism::create_action(problem_,
-                                        flat_action_schema_.source,
-                                        std::move(terms),
-                                        std::move(precondition),
-                                        std::move(unconditional_effect),
-                                        std::move(conditional_effect),
-                                        cost);
+        return mimir::formalism::create_action(problem_,
+                                               flat_action_schema_.source,
+                                               std::move(terms),
+                                               std::move(precondition),
+                                               std::move(unconditional_effect),
+                                               std::move(conditional_effect),
+                                               cost);
     }
 
-    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem) :
+    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const mimir::formalism::ActionSchema& action_schema,
+                                                                   const mimir::formalism::ProblemDescription& problem) :
         domain_(problem->domain),
         problem_(problem),
         flat_action_schema_(FlatActionSchema(problem->domain, action_schema)),
@@ -321,7 +322,7 @@ namespace planners
 
                 for (const auto& object : problem->objects)
                 {
-                    if (formalism::is_subtype_of(object->type, parameter->type))
+                    if (mimir::formalism::is_subtype_of(object->type, parameter->type))
                     {
                         compatible_objects.emplace_back(object->id);
                     }
@@ -352,7 +353,7 @@ namespace planners
             }
 
             // Filter assignment based on static atoms
-            const auto initial_state = formalism::create_state(problem->initial, problem);
+            const auto initial_state = mimir::formalism::create_state(problem->initial, problem);
             const auto assignment_sets = build_assignment_sets(domain_, problem_, initial_state->get_static_ranks());
 
             for (size_t first_id = 0; first_id < to_vertex_assignment.size(); ++first_id)
@@ -392,11 +393,11 @@ namespace planners
         }
     }
 
-    bool LiftedSchemaSuccessorGenerator::nullary_preconditions_hold(const formalism::State& state) const
+    bool LiftedSchemaSuccessorGenerator::nullary_preconditions_hold(const mimir::formalism::State& state) const
     {
         for (const auto& literal : flat_action_schema_.fluent_precondition)
         {
-            if ((literal.arity == 0) && !formalism::literal_holds(literal.source, state))
+            if ((literal.arity == 0) && !mimir::formalism::literal_holds(literal.source, state))
             {
                 return false;
             }
@@ -406,17 +407,17 @@ namespace planners
     }
 
     bool LiftedSchemaSuccessorGenerator::nullary_case(const std::chrono::high_resolution_clock::time_point end_time,
-                                                      const formalism::State& state,
-                                                      formalism::ActionList& out_actions) const
+                                                      const mimir::formalism::State& state,
+                                                      mimir::formalism::ActionList& out_actions) const
     {
         if (std::chrono::high_resolution_clock::now() >= end_time)
         {
             return false;
         }
 
-        const auto action = create_action(formalism::ObjectList {});
+        const auto action = create_action(mimir::formalism::ObjectList {});
 
-        if (formalism::literals_hold(action->get_precondition(), state))
+        if (mimir::formalism::literals_hold(action->get_precondition(), state))
         {
             out_actions.push_back(action);
         }
@@ -424,16 +425,16 @@ namespace planners
         return true;
     }
 
-    formalism::ActionList LiftedSchemaSuccessorGenerator::nullary_case(const formalism::State& state) const
+    mimir::formalism::ActionList LiftedSchemaSuccessorGenerator::nullary_case(const mimir::formalism::State& state) const
     {
-        formalism::ActionList applicable_actions;
+        mimir::formalism::ActionList applicable_actions;
         nullary_case(std::chrono::high_resolution_clock::time_point::max(), state, applicable_actions);
         return applicable_actions;
     }
 
     bool LiftedSchemaSuccessorGenerator::unary_case(const std::chrono::high_resolution_clock::time_point end_time,
-                                                    const formalism::State& state,
-                                                    formalism::ActionList& out_actions) const
+                                                    const mimir::formalism::State& state,
+                                                    mimir::formalism::ActionList& out_actions) const
     {
         for (const auto& object_id : objects_by_parameter_type.at(0))
         {
@@ -444,7 +445,7 @@ namespace planners
 
             const auto action = create_action({ problem_->get_object(object_id) });
 
-            if (formalism::literals_hold(action->get_precondition(), state))
+            if (mimir::formalism::literals_hold(action->get_precondition(), state))
             {
                 out_actions.push_back(action);
             }
@@ -453,17 +454,17 @@ namespace planners
         return true;
     }
 
-    formalism::ActionList LiftedSchemaSuccessorGenerator::unary_case(const formalism::State& state) const
+    mimir::formalism::ActionList LiftedSchemaSuccessorGenerator::unary_case(const mimir::formalism::State& state) const
     {
-        formalism::ActionList applicable_actions;
+        mimir::formalism::ActionList applicable_actions;
         unary_case(std::chrono::high_resolution_clock::time_point::max(), state, applicable_actions);
         return applicable_actions;
     }
 
     bool LiftedSchemaSuccessorGenerator::general_case(const std::chrono::high_resolution_clock::time_point end_time,
-                                                      const formalism::State& state,
+                                                      const mimir::formalism::State& state,
                                                       const std::vector<std::vector<bool>>& assignment_sets,
-                                                      formalism::ActionList& out_actions) const
+                                                      mimir::formalism::ActionList& out_actions) const
     {
         assert(state);
 
@@ -509,7 +510,7 @@ namespace planners
                 return false;
             }
 
-            formalism::ObjectList terms(flat_action_schema_.arity);
+            mimir::formalism::ObjectList terms(flat_action_schema_.arity);
             const auto& parameters = flat_action_schema_.get_parameters();
 
             for (std::size_t vertex_index = 0; vertex_index < flat_action_schema_.arity; ++vertex_index)
@@ -524,7 +525,7 @@ namespace planners
 
             const auto action = create_action(std::move(terms));
 
-            if (formalism::literals_hold(action->get_precondition(), state, 3))
+            if (mimir::formalism::literals_hold(action->get_precondition(), state, 3))
             {
                 out_actions.push_back(action);
             }
@@ -533,20 +534,20 @@ namespace planners
         return true;
     }
 
-    formalism::ActionList LiftedSchemaSuccessorGenerator::general_case(const formalism::State& state,
-                                                                       const std::vector<std::vector<bool>>& assignment_sets) const
+    mimir::formalism::ActionList LiftedSchemaSuccessorGenerator::general_case(const mimir::formalism::State& state,
+                                                                              const std::vector<std::vector<bool>>& assignment_sets) const
     {
-        formalism::ActionList applicable_actions;
+        mimir::formalism::ActionList applicable_actions;
         general_case(std::chrono::high_resolution_clock::time_point::max(), state, assignment_sets, applicable_actions);
         return applicable_actions;
     }
 
-    formalism::ActionList LiftedSchemaSuccessorGenerator::get_applicable_actions(const formalism::State& state,
-                                                                                 const std::vector<std::vector<bool>>& assignment_sets) const
+    mimir::formalism::ActionList LiftedSchemaSuccessorGenerator::get_applicable_actions(const mimir::formalism::State& state,
+                                                                                        const std::vector<std::vector<bool>>& assignment_sets) const
     {
         if (!nullary_preconditions_hold(state))
         {
-            return formalism::ActionList();
+            return mimir::formalism::ActionList();
         }
 
         if (flat_action_schema_.arity == 0)
@@ -563,15 +564,15 @@ namespace planners
         }
     }
 
-    formalism::ActionList LiftedSchemaSuccessorGenerator::get_applicable_actions(const formalism::State& state) const
+    mimir::formalism::ActionList LiftedSchemaSuccessorGenerator::get_applicable_actions(const mimir::formalism::State& state) const
     {
         const auto assignment_sets = build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
         return get_applicable_actions(state, assignment_sets);
     }
 
     bool LiftedSchemaSuccessorGenerator::get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
-                                                                const formalism::State& state,
-                                                                formalism::ActionList& out_actions) const
+                                                                const mimir::formalism::State& state,
+                                                                mimir::formalism::ActionList& out_actions) const
     {
         if (flat_action_schema_.arity == 0)
         {

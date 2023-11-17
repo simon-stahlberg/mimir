@@ -7,7 +7,7 @@
 #include <limits>
 #include <vector>
 
-namespace algorithms
+namespace mimir::algorithms
 {
     // Find all cliques of size k in a k-partite graph
     bool find_all_k_cliques_in_k_partite_graph(const std::chrono::high_resolution_clock::time_point end_time,

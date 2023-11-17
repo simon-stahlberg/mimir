@@ -20,15 +20,15 @@
 
 #include <algorithm>
 
-namespace formalism
+namespace mimir::formalism
 {
     DomainImpl::DomainImpl(const std::string& name,
-                           const formalism::RequirementList& requirements,
-                           const formalism::TypeList& types,
-                           const formalism::ObjectList& constants,
-                           const formalism::PredicateList& predicates,
-                           const formalism::PredicateList& functions,
-                           const formalism::ActionSchemaList& action_schemas) :
+                           const mimir::formalism::RequirementList& requirements,
+                           const mimir::formalism::TypeList& types,
+                           const mimir::formalism::ObjectList& constants,
+                           const mimir::formalism::PredicateList& predicates,
+                           const mimir::formalism::PredicateList& functions,
+                           const mimir::formalism::ActionSchemaList& action_schemas) :
         name(name),
         requirements(requirements),
         types(types),
@@ -47,9 +47,9 @@ namespace formalism
         }
     }
 
-    std::map<std::string, formalism::Type> DomainImpl::get_type_map() const
+    std::map<std::string, mimir::formalism::Type> DomainImpl::get_type_map() const
     {
-        std::map<std::string, formalism::Type> map;
+        std::map<std::string, mimir::formalism::Type> map;
 
         for (const auto& type : types)
         {
@@ -59,9 +59,9 @@ namespace formalism
         return map;
     }
 
-    std::map<std::string, formalism::Predicate> DomainImpl::get_predicate_name_map() const
+    std::map<std::string, mimir::formalism::Predicate> DomainImpl::get_predicate_name_map() const
     {
-        std::map<std::string, formalism::Predicate> map;
+        std::map<std::string, mimir::formalism::Predicate> map;
 
         for (const auto& predicate : predicates)
         {
@@ -71,9 +71,9 @@ namespace formalism
         return map;
     }
 
-    std::map<std::string, formalism::Predicate> DomainImpl::get_function_name_map() const
+    std::map<std::string, mimir::formalism::Predicate> DomainImpl::get_function_name_map() const
     {
-        std::map<std::string, formalism::Predicate> map;
+        std::map<std::string, mimir::formalism::Predicate> map;
 
         for (const auto& predicate : functions)
         {
@@ -83,9 +83,9 @@ namespace formalism
         return map;
     }
 
-    std::map<uint32_t, formalism::Predicate> DomainImpl::get_predicate_id_map() const
+    std::map<uint32_t, mimir::formalism::Predicate> DomainImpl::get_predicate_id_map() const
     {
-        std::map<uint32_t, formalism::Predicate> map;
+        std::map<uint32_t, mimir::formalism::Predicate> map;
 
         for (const auto& predicate : predicates)
         {
@@ -95,9 +95,9 @@ namespace formalism
         return map;
     }
 
-    std::map<std::string, formalism::Object> DomainImpl::get_constant_map() const
+    std::map<std::string, mimir::formalism::Object> DomainImpl::get_constant_map() const
     {
-        std::map<std::string, formalism::Object> map;
+        std::map<std::string, mimir::formalism::Object> map;
 
         for (const auto& constant : constants)
         {
@@ -108,25 +108,25 @@ namespace formalism
     }
 
     DomainDescription create_domain(const std::string& name,
-                                    const formalism::RequirementList& requirements,
-                                    const formalism::TypeList& types,
-                                    const formalism::ObjectList& constants,
-                                    const formalism::PredicateList& predicates,
-                                    const formalism::PredicateList& functions,
-                                    const formalism::ActionSchemaList& action_schemas)
+                                    const mimir::formalism::RequirementList& requirements,
+                                    const mimir::formalism::TypeList& types,
+                                    const mimir::formalism::ObjectList& constants,
+                                    const mimir::formalism::PredicateList& predicates,
+                                    const mimir::formalism::PredicateList& functions,
+                                    const mimir::formalism::ActionSchemaList& action_schemas)
     {
         return std::make_shared<DomainImpl>(name, requirements, types, constants, predicates, functions, action_schemas);
     }
 
-    DomainDescription relax(const formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list)
+    DomainDescription relax(const mimir::formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list)
     {
-        formalism::ActionSchemaList relaxed_action_schemas;
+        mimir::formalism::ActionSchemaList relaxed_action_schemas;
         relaxed_action_schemas.reserve(domain->action_schemas.size());
         std::transform(domain->action_schemas.cbegin(),
                        domain->action_schemas.cend(),
                        std::back_insert_iterator(relaxed_action_schemas),
-                       [&](const formalism::ActionSchema& action_schema)
-                       { return formalism::relax(action_schema, remove_negative_preconditions, remove_delete_list); });
+                       [&](const mimir::formalism::ActionSchema& action_schema)
+                       { return mimir::formalism::relax(action_schema, remove_negative_preconditions, remove_delete_list); });
 
         return create_domain(domain->name,
                              domain->requirements,
@@ -137,7 +137,7 @@ namespace formalism
                              relaxed_action_schemas);
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::DomainDescription& domain)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::DomainDescription& domain)
     {
         os << "Domain: " << domain->name << std::endl;
         os << "Requirements: ";
@@ -157,24 +157,25 @@ namespace formalism
         os << std::endl;
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::DomainDescription>::operator()(const formalism::DomainDescription& domain) const
+    std::size_t hash<mimir::formalism::DomainDescription>::operator()(const mimir::formalism::DomainDescription& domain) const
     {
         return hash_combine(domain->name, domain->types, domain->constants, domain->predicates, domain->action_schemas);
     }
 
-    bool less<formalism::DomainDescription>::operator()(const formalism::DomainDescription& left_domain, const formalism::DomainDescription& right_domain) const
+    bool less<mimir::formalism::DomainDescription>::operator()(const mimir::formalism::DomainDescription& left_domain,
+                                                               const mimir::formalism::DomainDescription& right_domain) const
     {
         return less_combine(std::make_tuple(left_domain->name, left_domain->constants, left_domain->predicates, left_domain->action_schemas),
                             std::make_tuple(right_domain->name, right_domain->constants, right_domain->predicates, right_domain->action_schemas));
     }
 
-    bool equal_to<formalism::DomainDescription>::operator()(const formalism::DomainDescription& left_domain,
-                                                            const formalism::DomainDescription& right_domain) const
+    bool equal_to<mimir::formalism::DomainDescription>::operator()(const mimir::formalism::DomainDescription& left_domain,
+                                                                   const mimir::formalism::DomainDescription& right_domain) const
     {
         return equal_to_combine(std::make_tuple(left_domain->name, left_domain->constants, left_domain->predicates, left_domain->action_schemas),
                                 std::make_tuple(right_domain->name, right_domain->constants, right_domain->predicates, right_domain->action_schemas));

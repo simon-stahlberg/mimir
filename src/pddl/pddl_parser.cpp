@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-namespace parsers
+namespace mimir::parsers
 {
     namespace ascii = boost::spirit::ascii;
     namespace phoenix = boost::phoenix;
@@ -211,7 +211,7 @@ namespace parsers
 
     DomainParser::DomainParser(const fs::path& domain_path) : domain_path(domain_path) {}
 
-    formalism::DomainDescription DomainParser::parse()
+    mimir::formalism::DomainDescription DomainParser::parse()
     {
         if (!fs::exists(this->domain_path))
         {
@@ -228,7 +228,7 @@ namespace parsers
         return parse(stream);
     }
 
-    formalism::DomainDescription DomainParser::parse(std::istream& stream)
+    mimir::formalism::DomainDescription DomainParser::parse(std::istream& stream)
     {
         std::stringstream buffer;
         buffer << stream.rdbuf();
@@ -376,7 +376,7 @@ namespace parsers
 
     ProblemParser::ProblemParser(const fs::path& problem_path) : problem_path(problem_path) {}
 
-    formalism::ProblemDescription ProblemParser::parse(const formalism::DomainDescription& domain)
+    mimir::formalism::ProblemDescription ProblemParser::parse(const mimir::formalism::DomainDescription& domain)
     {
         if (!fs::exists(this->problem_path))
         {
@@ -393,7 +393,7 @@ namespace parsers
         return parse(domain, problem_path.filename().string(), stream);
     }
 
-    formalism::ProblemDescription ProblemParser::parse(const formalism::DomainDescription& domain, const std::string& name, std::istream& stream)
+    mimir::formalism::ProblemDescription ProblemParser::parse(const mimir::formalism::DomainDescription& domain, const std::string& name, std::istream& stream)
     {
         std::stringstream buffer;
         buffer << stream.rdbuf();

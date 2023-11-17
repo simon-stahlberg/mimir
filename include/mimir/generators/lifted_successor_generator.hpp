@@ -12,24 +12,24 @@
 #include <map>
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
     class LiftedSuccessorGenerator : public SuccessorGeneratorBase
     {
       private:
-        formalism::ProblemDescription problem_;
-        std::map<formalism::ActionSchema, LiftedSchemaSuccessorGenerator> generators_;
+        mimir::formalism::ProblemDescription problem_;
+        std::map<mimir::formalism::ActionSchema, LiftedSchemaSuccessorGenerator> generators_;
 
       public:
-        LiftedSuccessorGenerator(const formalism::ProblemDescription& problem);
+        LiftedSuccessorGenerator(const mimir::formalism::ProblemDescription& problem);
 
-        formalism::ProblemDescription get_problem() const override;
+        mimir::formalism::ProblemDescription get_problem() const override;
 
-        formalism::ActionList get_applicable_actions(const formalism::State& state) const override;
+        mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const override;
 
         bool get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
-                                    const formalism::State& state,
-                                    formalism::ActionList& out_actions) const;
+                                    const mimir::formalism::State& state,
+                                    mimir::formalism::ActionList& out_actions) const;
     };
 }  // namespace planners
 

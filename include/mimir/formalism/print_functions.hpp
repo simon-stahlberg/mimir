@@ -5,9 +5,9 @@
 
 #include <iostream>
 
-namespace formalism
+namespace mimir::formalism
 {
-    void print_atom(const formalism::Atom& atom)
+    void print_atom(const mimir::formalism::Atom& atom)
     {
         std::cout << atom->predicate->name << "(";
 
@@ -25,7 +25,7 @@ namespace formalism
         std::cout << ")" << std::endl;
     }
 
-    void print_atoms(const formalism::AtomList& atoms)
+    void print_atoms(const mimir::formalism::AtomList& atoms)
     {
         for (const auto& atom : atoms)
         {

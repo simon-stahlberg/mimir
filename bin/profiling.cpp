@@ -88,9 +88,9 @@ void operator delete[](void* ptr) noexcept { operator delete(ptr); }
 
 std::vector<std::string> successor_generator_types() { return std::vector<std::string>({ "automatic", "lifted", "grounded" }); }
 
-void bfs(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+void bfs(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
-    planners::Search search = planners::create_breadth_first_search(problem, successor_generator);
+    mimir::planners::Search search = mimir::planners::create_breadth_first_search(problem, successor_generator);
     const auto time_start = std::chrono::high_resolution_clock::now();
 
     search->register_handler(
@@ -106,14 +106,14 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
             std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
         });
 
-    formalism::ActionList plan;
+    mimir::formalism::ActionList plan;
     const auto result = search->plan(plan);
 
     std::cout << std::endl;
 
     switch (result)
     {
-        case planners::SearchResult::SOLVED:
+        case mimir::planners::SearchResult::SOLVED:
             std::cout << "Found a plan of length " << plan.size() << ":" << std::endl;
             for (const auto& action : plan)
             {
@@ -121,11 +121,11 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
             }
             break;
 
-        case planners::SearchResult::UNSOLVABLE:
+        case mimir::planners::SearchResult::UNSOLVABLE:
             std::cout << "Problem is provably unsolvable" << std::endl;
             break;
 
-        case planners::SearchResult::ABORTED:
+        case mimir::planners::SearchResult::ABORTED:
             std::cout << "Search was aborted" << std::endl;
             break;
 
@@ -134,9 +134,9 @@ void bfs(const formalism::ProblemDescription& problem, const planners::Successor
     }
 }
 
-void state_space(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+void state_space(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
-    const auto state_space = planners::create_state_space(problem, successor_generator, 100'000);
+    const auto state_space = mimir::planners::create_state_space(problem, successor_generator, 100'000);
 
     if (state_space)
     {
@@ -156,12 +156,12 @@ void state_space(const formalism::ProblemDescription& problem, const planners::S
     }
 }
 
-void astar(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+void astar(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     const auto time_start = std::chrono::high_resolution_clock::now();
-    const auto heuristic = planners::create_h1_heuristic(problem, successor_generator);
-    const auto open_list = planners::create_priority_queue_open_list();
-    auto search = planners::create_eager_astar(problem, successor_generator, heuristic, open_list);
+    const auto heuristic = mimir::planners::create_h1_heuristic(problem, successor_generator);
+    const auto open_list = mimir::planners::create_priority_queue_open_list();
+    auto search = mimir::planners::create_eager_astar(problem, successor_generator, heuristic, open_list);
 
     search->register_handler(
         [&time_start, &search]()
@@ -180,14 +180,14 @@ void astar(const formalism::ProblemDescription& problem, const planners::Success
             std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
         });
 
-    formalism::ActionList plan;
+    mimir::formalism::ActionList plan;
     const auto result = search->plan(plan);
 
     std::cout << std::endl;
 
     switch (result)
     {
-        case planners::SearchResult::SOLVED:
+        case mimir::planners::SearchResult::SOLVED:
             std::cout << "Found a plan of length " << plan.size() << ":" << std::endl;
             for (const auto& action : plan)
             {
@@ -195,11 +195,11 @@ void astar(const formalism::ProblemDescription& problem, const planners::Success
             }
             break;
 
-        case planners::SearchResult::UNSOLVABLE:
+        case mimir::planners::SearchResult::UNSOLVABLE:
             std::cout << "Problem is provably unsolvable" << std::endl;
             break;
 
-        case planners::SearchResult::ABORTED:
+        case mimir::planners::SearchResult::ABORTED:
             std::cout << "Search was aborted" << std::endl;
             break;
 
@@ -208,17 +208,17 @@ void astar(const formalism::ProblemDescription& problem, const planners::Success
     }
 }
 
-void dijkstra(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+void dijkstra(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     // dijkstra's until a goal state is found
 
     struct Frame
     {
-        formalism::State state;
+        mimir::formalism::State state;
         double f;
     };
 
-    tsl::robin_map<formalism::State, uint32_t> state_indices;
+    mimir::tsl::robin_map<mimir::formalism::State, uint32_t> state_indices;
     std::deque<Frame> frame_list;
     const auto comparator = [](const std::pair<double, int>& lhs, const std::pair<double, int>& rhs) { return lhs.first > rhs.first; };
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, decltype(comparator)> priority_queue(comparator);
@@ -229,7 +229,7 @@ void dijkstra(const formalism::ProblemDescription& problem, const planners::Succ
 
         // Add the initial state to the data-structures
         const uint32_t initial_index = static_cast<uint32_t>(frame_list.size());
-        const auto initial_state = formalism::create_state(problem->initial, problem);
+        const auto initial_state = mimir::formalism::create_state(problem->initial, problem);
         state_indices[initial_state] = initial_index;
         frame_list.emplace_back(Frame { initial_state, 0 });
         priority_queue.emplace(0.0, initial_index);
@@ -255,7 +255,7 @@ void dijkstra(const formalism::ProblemDescription& problem, const planners::Succ
             std::cout << "[f = " << last_f << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_f_ms << " ms]" << std::endl;
         }
 
-        if (formalism::literals_hold(problem->goal, frame.state))
+        if (mimir::formalism::literals_hold(problem->goal, frame.state))
         {
             std::cout << "Found goal state at f-value " << frame.f << std::endl;
             break;
@@ -267,7 +267,7 @@ void dijkstra(const formalism::ProblemDescription& problem, const planners::Succ
 
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = formalism::apply(action, frame.state);
+            const auto successor_state = mimir::formalism::apply(action, frame.state);
             auto& successor_index = state_indices[successor_state];
 
             // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
@@ -327,36 +327,36 @@ int main(int argc, char* argv[])
 
     // parse PDDL files
 
-    parsers::DomainParser domain_parser(domain_path);
+    mimir::parsers::DomainParser domain_parser(domain_path);
     const auto domain = domain_parser.parse();
     std::cout << domain << std::endl;
 
-    parsers::ProblemParser problem_parser(problem_path);
+    mimir::parsers::ProblemParser problem_parser(problem_path);
     const auto problem = problem_parser.parse(domain);
     std::cout << problem << std::endl;
 
     // find  plan
 
-    auto generator = planners::SuccessorGeneratorType::AUTOMATIC;
+    auto generator = mimir::planners::SuccessorGeneratorType::AUTOMATIC;
 
     if (generator_name == "lifted")
     {
-        generator = planners::SuccessorGeneratorType::LIFTED;
+        generator = mimir::planners::SuccessorGeneratorType::LIFTED;
     }
     else if (generator_name == "grounded")
     {
-        generator = planners::SuccessorGeneratorType::GROUNDED;
+        generator = mimir::planners::SuccessorGeneratorType::GROUNDED;
     }
 
     std::cout << "Using " << generator_name << " successor generator" << std::endl << std::endl;
 
     std::cout << "Creating successor generator... ";
-    const auto successor_generator = planners::create_sucessor_generator(problem, generator);
+    const auto successor_generator = mimir::planners::create_sucessor_generator(problem, generator);
     std::cout << "Done" << std::endl;
 
-    if (generator == planners::SuccessorGeneratorType::GROUNDED)
+    if (generator == mimir::planners::SuccessorGeneratorType::GROUNDED)
     {
-        const auto grounded_successor_generator = std::static_pointer_cast<planners::GroundedSuccessorGenerator>(successor_generator);
+        const auto grounded_successor_generator = std::static_pointer_cast<mimir::planners::GroundedSuccessorGenerator>(successor_generator);
         std::cout << "Number of ground actions: " << grounded_successor_generator->get_actions().size() << std::endl;
         std::cout << "Number of atoms: " << problem->get_encountered_atoms().size() << std::endl;
         std::cout << "Number of static atoms: " << problem->get_static_atoms().size() << std::endl;

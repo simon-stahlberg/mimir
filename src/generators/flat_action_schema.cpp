@@ -2,7 +2,7 @@
 
 #include <map>
 
-namespace planners
+namespace mimir::planners
 {
     ParameterIndexOrConstantId::ParameterIndexOrConstantId(uint32_t value, bool is_constant) : value(is_constant ? ~value : value) {}
 
@@ -12,7 +12,7 @@ namespace planners
 
     uint32_t ParameterIndexOrConstantId::get_value() const { return is_constant() ? ~value : value; }
 
-    FlatLiteral::FlatLiteral(const formalism::Literal& literal, const std::map<formalism::Object, uint32_t> parameter_indices) :
+    FlatLiteral::FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Object, uint32_t> parameter_indices) :
         source(literal),
         arguments(),
         predicate_id(literal->atom->predicate->id),
@@ -35,7 +35,7 @@ namespace planners
     {
     }
 
-    FlatActionSchema::FlatActionSchema(const formalism::DomainDescription& domain, const formalism::ActionSchema& action_schema) :
+    FlatActionSchema::FlatActionSchema(const mimir::formalism::DomainDescription& domain, const mimir::formalism::ActionSchema& action_schema) :
         parameter_indices_(),
         index_parameters_(),
         source(action_schema),
@@ -52,7 +52,7 @@ namespace planners
             index_parameters_.emplace_back(parameter);
         }
 
-        const formalism::PredicateSet static_predicates(domain->static_predicates.begin(), domain->static_predicates.end());
+        const mimir::formalism::PredicateSet static_predicates(domain->static_predicates.begin(), domain->static_predicates.end());
 
         for (const auto& literal : action_schema->precondition)
         {
@@ -103,7 +103,7 @@ namespace planners
         }
     }
 
-    const std::vector<formalism::Object>& FlatActionSchema::get_parameters() const { return index_parameters_; }
+    const std::vector<mimir::formalism::Object>& FlatActionSchema::get_parameters() const { return index_parameters_; }
 
-    uint32_t FlatActionSchema::get_parameter_index(const formalism::Object& parameter) const { return parameter_indices_.at(parameter); }
+    uint32_t FlatActionSchema::get_parameter_index(const mimir::formalism::Object& parameter) const { return parameter_indices_.at(parameter); }
 }  // namespace planners

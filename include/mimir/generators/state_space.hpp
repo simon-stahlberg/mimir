@@ -11,12 +11,12 @@
 #include <limits>
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
     class StateSpaceImpl;
     using StateSpace = std::shared_ptr<StateSpaceImpl>;
     using StateSpaceList = std::vector<StateSpace>;
-    using StateSpaceSample = std::pair<formalism::State, StateSpace>;
+    using StateSpaceSample = std::pair<mimir::formalism::State, StateSpace>;
     using StateSpaceSampleList = std::vector<StateSpaceSample>;
 
     struct StateInfo;
@@ -24,40 +24,40 @@ namespace planners
     class StateSpaceImpl
     {
       private:
-        std::vector<formalism::State> states_;
-        std::vector<formalism::State> goal_states_;
+        std::vector<mimir::formalism::State> states_;
+        std::vector<mimir::formalism::State> goal_states_;
         std::vector<StateInfo> state_infos_;
-        std::vector<formalism::State> dead_end_states_;
-        std::vector<std::vector<formalism::State>> states_by_distance_;
-        std::vector<std::vector<formalism::Transition>> forward_transitions_;
-        std::vector<std::vector<formalism::Transition>> backward_transitions_;
-        tsl::robin_map<formalism::State, uint64_t> state_indices_;
+        std::vector<mimir::formalism::State> dead_end_states_;
+        std::vector<std::vector<mimir::formalism::State>> states_by_distance_;
+        std::vector<std::vector<mimir::formalism::Transition>> forward_transitions_;
+        std::vector<std::vector<mimir::formalism::Transition>> backward_transitions_;
+        mimir::tsl::robin_map<mimir::formalism::State, uint64_t> state_indices_;
         mutable std::vector<std::vector<int32_t>> state_distances_;
 
         // Since we return references of internal vectors, ensure that only create_statespaces can create this object.
-        StateSpaceImpl(const formalism::ProblemDescription& problem);
+        StateSpaceImpl(const mimir::formalism::ProblemDescription& problem);
 
-        bool add_or_get_state(const formalism::State& state, uint64_t& out_index);
+        bool add_or_get_state(const mimir::formalism::State& state, uint64_t& out_index);
 
-        void add_goal_state(const formalism::State& state);
+        void add_goal_state(const mimir::formalism::State& state);
 
         void add_transition(uint64_t from_state_index,
                             uint64_t to_state_index,
-                            const formalism::Action& action,
+                            const mimir::formalism::Action& action,
                             uint64_t& out_from_forward_index,
                             uint64_t& out_to_backward_index);
 
-        const formalism::Transition& get_forward_transition(uint64_t state_index, uint64_t transition_index) const;
+        const mimir::formalism::Transition& get_forward_transition(uint64_t state_index, uint64_t transition_index) const;
 
-        const formalism::Transition& get_backward_transition(uint64_t state_index, uint64_t transition_index) const;
+        const mimir::formalism::Transition& get_backward_transition(uint64_t state_index, uint64_t transition_index) const;
 
-        const formalism::TransitionList& get_forward(uint64_t state_index) const;
+        const mimir::formalism::TransitionList& get_forward(uint64_t state_index) const;
 
-        const formalism::TransitionList& get_backward(uint64_t state_index) const;
+        const mimir::formalism::TransitionList& get_backward(uint64_t state_index) const;
 
-        formalism::State get_state(uint64_t state_index) const;
+        mimir::formalism::State get_state(uint64_t state_index) const;
 
-        uint64_t get_state_index(const formalism::State& state) const;
+        uint64_t get_state_index(const mimir::formalism::State& state) const;
 
         int32_t get_distance_to_goal(uint64_t state_index) const;
 
@@ -68,28 +68,28 @@ namespace planners
         void set_distance_to_goal_state(uint64_t state_index, int32_t value);
 
       public:
-        formalism::DomainDescription domain;
-        formalism::ProblemDescription problem;
+        mimir::formalism::DomainDescription domain;
+        mimir::formalism::ProblemDescription problem;
 
         virtual ~StateSpaceImpl();
 
-        const std::vector<formalism::Transition>& get_forward_transitions(const formalism::State& state) const;
+        const std::vector<mimir::formalism::Transition>& get_forward_transitions(const mimir::formalism::State& state) const;
 
-        const std::vector<formalism::Transition>& get_backward_transitions(const formalism::State& state) const;
+        const std::vector<mimir::formalism::Transition>& get_backward_transitions(const mimir::formalism::State& state) const;
 
-        const std::vector<formalism::State>& get_states() const;
+        const std::vector<mimir::formalism::State>& get_states() const;
 
-        formalism::State get_initial_state() const;
+        mimir::formalism::State get_initial_state() const;
 
-        uint64_t get_unique_index_of_state(const formalism::State& state) const;
+        uint64_t get_unique_index_of_state(const mimir::formalism::State& state) const;
 
-        bool is_dead_end_state(const formalism::State& state) const;
+        bool is_dead_end_state(const mimir::formalism::State& state) const;
 
-        bool is_goal_state(const formalism::State& state) const;
+        bool is_goal_state(const mimir::formalism::State& state) const;
 
-        int32_t get_distance_to_goal_state(const formalism::State& state) const;
+        int32_t get_distance_to_goal_state(const mimir::formalism::State& state) const;
 
-        int32_t get_distance_between_states(const formalism::State& from_state, const formalism::State& to_state) const;
+        int32_t get_distance_between_states(const mimir::formalism::State& from_state, const mimir::formalism::State& to_state) const;
 
         int32_t get_longest_distance_to_goal_state() const;
 
@@ -97,15 +97,15 @@ namespace planners
 
         std::vector<double> get_distance_to_goal_state_weights() const;
 
-        int32_t get_distance_from_initial_state(const formalism::State& state) const;
+        int32_t get_distance_from_initial_state(const mimir::formalism::State& state) const;
 
-        formalism::State sample_state() const;
+        mimir::formalism::State sample_state() const;
 
-        formalism::State sample_state_with_distance_to_goal(int32_t distance) const;
+        mimir::formalism::State sample_state_with_distance_to_goal(int32_t distance) const;
 
-        formalism::State sample_dead_end_state() const;
+        mimir::formalism::State sample_dead_end_state() const;
 
-        std::vector<formalism::State> get_goal_states() const;
+        std::vector<mimir::formalism::State> get_goal_states() const;
 
         uint64_t num_states() const;
 
@@ -115,16 +115,16 @@ namespace planners
 
         uint64_t num_dead_end_states() const;
 
-        friend StateSpace create_state_space(const formalism::ProblemDescription&, const planners::SuccessorGenerator&, uint32_t);
+        friend StateSpace create_state_space(const mimir::formalism::ProblemDescription&, const mimir::planners::SuccessorGenerator&, uint32_t);
     };
 
-    StateSpace create_state_space(const formalism::ProblemDescription& problem,
-                                  const planners::SuccessorGenerator& successor_generator,
+    StateSpace create_state_space(const mimir::formalism::ProblemDescription& problem,
+                                  const mimir::planners::SuccessorGenerator& successor_generator,
                                   uint32_t max_states = std::numeric_limits<uint32_t>::max());
 
-    std::ostream& operator<<(std::ostream& os, const planners::StateSpace& state_space);
+    std::ostream& operator<<(std::ostream& os, const mimir::planners::StateSpace& state_space);
 
-    std::ostream& operator<<(std::ostream& os, const planners::StateSpaceList& state_spaces);
+    std::ostream& operator<<(std::ostream& os, const mimir::planners::StateSpaceList& state_spaces);
 
 }  // namespace planners
 

@@ -24,16 +24,16 @@
 #include <iterator>
 #include <limits>
 
-namespace planners
+namespace mimir::planners
 {
-    H2Heuristic::H2Heuristic(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator) :
+    H2Heuristic::H2Heuristic(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator) :
         problem_(problem),
         actions_(),
         goal_(),
         h1_table_(),
         h2_table_()
     {
-        const auto grounded_successor_generator = std::dynamic_pointer_cast<planners::GroundedSuccessorGenerator>(successor_generator);
+        const auto grounded_successor_generator = std::dynamic_pointer_cast<mimir::planners::GroundedSuccessorGenerator>(successor_generator);
 
         if (!grounded_successor_generator)
         {
@@ -197,7 +197,7 @@ namespace planners
         }
     }
 
-    void H2Heuristic::fill_tables(const formalism::State& state) const
+    void H2Heuristic::fill_tables(const mimir::formalism::State& state) const
     {
         const auto num_atoms = h1_table_.size();
 
@@ -274,7 +274,7 @@ namespace planners
         } while (changed);
     }
 
-    double H2Heuristic::evaluate(const formalism::State& state) const
+    double H2Heuristic::evaluate(const mimir::formalism::State& state) const
     {
         if (state->get_problem() != problem_)
         {
@@ -285,7 +285,8 @@ namespace planners
         return evaluate(goal_);
     }
 
-    std::shared_ptr<H2Heuristic> create_h2_heuristic(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+    std::shared_ptr<H2Heuristic> create_h2_heuristic(const mimir::formalism::ProblemDescription& problem,
+                                                     const mimir::planners::SuccessorGenerator& successor_generator)
     {
         return std::make_shared<H2Heuristic>(problem, successor_generator);
     }

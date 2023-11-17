@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace formalism
+namespace mimir::formalism
 {
     class ActionImpl;
     using Action = std::shared_ptr<ActionImpl>;
@@ -21,7 +21,7 @@ namespace formalism
     class AtomImpl;
     using Atom = std::shared_ptr<AtomImpl>;
     using AtomList = std::vector<Atom>;
-    using AtomSet = tsl::robin_set<formalism::Atom>;
+    using AtomSet = mimir::tsl::robin_set<mimir::formalism::Atom>;
 
     class DomainImpl;
     using DomainDescription = std::shared_ptr<DomainImpl>;
@@ -41,12 +41,12 @@ namespace formalism
     using ObjectList = std::vector<Object>;
     using Parameter = Object;
     using ParameterList = ObjectList;
-    using ParameterAssignment = tsl::robin_map<Parameter, Object>;
+    using ParameterAssignment = mimir::tsl::robin_map<Parameter, Object>;
 
     class PredicateImpl;
     using Predicate = std::shared_ptr<PredicateImpl>;
     using PredicateList = std::vector<Predicate>;
-    using PredicateSet = tsl::robin_set<formalism::Predicate>;
+    using PredicateSet = mimir::tsl::robin_set<mimir::formalism::Predicate>;
 
     class ProblemImpl;
     using ProblemDescription = std::shared_ptr<ProblemImpl>;

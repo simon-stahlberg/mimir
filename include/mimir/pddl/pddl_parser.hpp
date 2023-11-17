@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 namespace fs = std::experimental::filesystem;
 #endif
 
-namespace parsers
+namespace mimir::parsers
 {
     class DomainParser
     {
@@ -25,9 +25,9 @@ namespace parsers
       public:
         DomainParser(const fs::path& domain_path);
 
-        formalism::DomainDescription parse();
+        mimir::formalism::DomainDescription parse();
 
-        static formalism::DomainDescription parse(std::istream& stream);
+        static mimir::formalism::DomainDescription parse(std::istream& stream);
     };
 
     class ProblemParser
@@ -38,9 +38,9 @@ namespace parsers
       public:
         ProblemParser(const fs::path& problem_path);
 
-        formalism::ProblemDescription parse(const formalism::DomainDescription& domain);
+        mimir::formalism::ProblemDescription parse(const mimir::formalism::DomainDescription& domain);
 
-        static formalism::ProblemDescription parse(const formalism::DomainDescription& domain, const std::string& name, std::istream& stream);
+        static mimir::formalism::ProblemDescription parse(const mimir::formalism::DomainDescription& domain, const std::string& name, std::istream& stream);
     };
 }  // namespace parsers
 

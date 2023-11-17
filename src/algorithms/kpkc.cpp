@@ -17,7 +17,7 @@
 
 #include "../../include/mimir/algorithms/kpkc.hpp"
 
-namespace algorithms
+namespace mimir::algorithms
 {
     bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolution_clock::time_point end_time,
                                                       const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,

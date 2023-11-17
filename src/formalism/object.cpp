@@ -18,19 +18,19 @@
 #include "../../include/mimir/formalism/object.hpp"
 #include "help_functions.hpp"
 
-namespace formalism
+namespace mimir::formalism
 {
-    ObjectImpl::ObjectImpl(const uint32_t id, const std::string& name, const formalism::Type type) : hash_(0), id(id), name(name), type(type) {}
+    ObjectImpl::ObjectImpl(const uint32_t id, const std::string& name, const mimir::formalism::Type type) : hash_(0), id(id), name(name), type(type) {}
 
     bool ObjectImpl::is_free_variable() const { return (name.size() > 0) && (name.at(0) == '?'); }
 
     bool ObjectImpl::is_constant() const { return !is_free_variable(); }
 
-    Object create_object(const uint32_t id, const std::string& name, const formalism::Type type) { return std::make_shared<ObjectImpl>(id, name, type); }
+    Object create_object(const uint32_t id, const std::string& name, const mimir::formalism::Type type) { return std::make_shared<ObjectImpl>(id, name, type); }
 
-    formalism::ObjectList filter(const formalism::ObjectList& object_list, const formalism::Type& type)
+    mimir::formalism::ObjectList filter(const mimir::formalism::ObjectList& object_list, const mimir::formalism::Type& type)
     {
-        formalism::ObjectList filtered_objects;
+        mimir::formalism::ObjectList filtered_objects;
 
         for (const auto& obj : object_list)
         {
@@ -43,9 +43,9 @@ namespace formalism
         return filtered_objects;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ObjectImpl& object) { return os << object.name; }
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ObjectImpl& object) { return os << object.name; }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::Object& object)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Object& object)
     {
         if (object)
         {
@@ -57,17 +57,17 @@ namespace formalism
         }
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ObjectList& objects)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ObjectList& objects)
     {
         print_vector(os, objects);
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::Object>::operator()(const formalism::Object& object) const
+    std::size_t hash<mimir::formalism::Object>::operator()(const mimir::formalism::Object& object) const
     {
         if (!object)
         {
@@ -82,9 +82,12 @@ namespace std
         return object->hash_;
     }
 
-    std::size_t hash<formalism::ObjectList>::operator()(const formalism::ObjectList& objects) const { return hash_vector<formalism::Object>(objects); }
+    std::size_t hash<mimir::formalism::ObjectList>::operator()(const mimir::formalism::ObjectList& objects) const
+    {
+        return hash_vector<mimir::formalism::Object>(objects);
+    }
 
-    bool less<formalism::Object>::operator()(const formalism::Object& left_object, const formalism::Object& right_object) const
+    bool less<mimir::formalism::Object>::operator()(const mimir::formalism::Object& left_object, const mimir::formalism::Object& right_object) const
     {
         if (left_object == right_object)
         {
@@ -105,7 +108,7 @@ namespace std
                             std::make_tuple(right_object->id, right_object->name, right_object->type));
     }
 
-    bool equal_to<formalism::Object>::operator()(const formalism::Object& left_object, const formalism::Object& right_object) const
+    bool equal_to<mimir::formalism::Object>::operator()(const mimir::formalism::Object& left_object, const mimir::formalism::Object& right_object) const
     {
         if (left_object == right_object)
         {

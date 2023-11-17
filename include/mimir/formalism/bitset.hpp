@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace formalism
+namespace mimir::formalism
 {
     class Bitset
     {
@@ -70,21 +70,21 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<formalism::Bitset>
+    struct hash<mimir::formalism::Bitset>
     {
-        std::size_t operator()(const formalism::Bitset& bitset) const;
+        std::size_t operator()(const mimir::formalism::Bitset& bitset) const;
     };
 
     template<>
-    struct less<formalism::Bitset>
+    struct less<mimir::formalism::Bitset>
     {
-        bool operator()(const formalism::Bitset& left_bitset, const formalism::Bitset& right_bitset) const;
+        bool operator()(const mimir::formalism::Bitset& left_bitset, const mimir::formalism::Bitset& right_bitset) const;
     };
 
     template<>
-    struct equal_to<formalism::Bitset>
+    struct equal_to<mimir::formalism::Bitset>
     {
-        bool operator()(const formalism::Bitset& left_bitset, const formalism::Bitset& right_bitset) const;
+        bool operator()(const mimir::formalism::Bitset& left_bitset, const mimir::formalism::Bitset& right_bitset) const;
     };
 }  // namespace std
 

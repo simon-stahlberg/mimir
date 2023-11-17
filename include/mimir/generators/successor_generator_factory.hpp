@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace planners
+namespace mimir::planners
 {
     enum SuccessorGeneratorType
     {
@@ -15,7 +15,7 @@ namespace planners
         GROUNDED
     };
 
-    SuccessorGenerator create_sucessor_generator(const formalism::ProblemDescription& problem, SuccessorGeneratorType type);
+    SuccessorGenerator create_sucessor_generator(const mimir::formalism::ProblemDescription& problem, SuccessorGeneratorType type);
 }  // namespace planners
 
 #endif  // PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_

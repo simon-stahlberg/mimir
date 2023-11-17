@@ -38,13 +38,13 @@ namespace test
         std::istringstream domain_stream(domain_text);
         std::istringstream problem_stream(problem_text);
 
-        const auto domain = parsers::DomainParser::parse(domain_stream);
-        const auto problem = parsers::ProblemParser::parse(domain, "", problem_stream);
+        const auto domain = mimir::parsers::DomainParser::parse(domain_stream);
+        const auto problem = mimir::parsers::ProblemParser::parse(domain, "", problem_stream);
 
-        const auto successor_generator = planners::create_sucessor_generator(problem, planners::SuccessorGeneratorType::GROUNDED);
+        const auto successor_generator = mimir::planners::create_sucessor_generator(problem, mimir::planners::SuccessorGeneratorType::GROUNDED);
 
-        const auto state_space = planners::create_state_space(problem, successor_generator);
-        auto search = planners::create_breadth_first_search(problem, successor_generator);
+        const auto state_space = mimir::planners::create_state_space(problem, successor_generator);
+        auto search = mimir::planners::create_breadth_first_search(problem, successor_generator);
 
         search->register_handler(
             [&search, &expanded_array, &expanded_length]()
@@ -65,9 +65,9 @@ namespace test
                 }
             });
 
-        formalism::ActionList plan;
+        mimir::formalism::ActionList plan;
         const auto result = search->plan(plan);
-        ASSERT_EQ(result, planners::SearchResult::SOLVED);
+        ASSERT_EQ(result, mimir::planners::SearchResult::SOLVED);
         ASSERT_EQ(plan.size(), plan_length);
     }
 

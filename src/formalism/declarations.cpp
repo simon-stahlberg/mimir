@@ -17,6 +17,6 @@
 
 #include "../../include/mimir/formalism/declarations.hpp"
 
-namespace formalism
+namespace mimir::formalism
 {
-}  // namespace formalism
+}  // namespace mimir::formalism

@@ -19,20 +19,20 @@
 #include "../../include/mimir/generators/lifted_successor_generator.hpp"
 #include "../../include/mimir/generators/successor_generator_factory.hpp"
 
-namespace planners
+namespace mimir::planners
 {
     bool compute_relaxed_reachable_actions(const std::chrono::high_resolution_clock::time_point end_time,
-                                           const formalism::ProblemDescription& problem,
-                                           formalism::ActionList& out_actions)
+                                           const mimir::formalism::ProblemDescription& problem,
+                                           mimir::formalism::ActionList& out_actions)
     {
         const auto relaxed_domain = relax(problem->domain, true, true);
         const auto relaxed_problem =
-            formalism::create_problem(problem->name, relaxed_domain, problem->objects, problem->initial, problem->goal, problem->atom_costs);
-        const planners::LiftedSuccessorGenerator successor_generator(relaxed_problem);
+            mimir::formalism::create_problem(problem->name, relaxed_domain, problem->objects, problem->initial, problem->goal, problem->atom_costs);
+        const mimir::planners::LiftedSuccessorGenerator successor_generator(relaxed_problem);
 
-        std::equal_to<formalism::State> equals;
-        formalism::ActionList relaxed_actions;
-        formalism::State state = formalism::create_state(relaxed_problem->initial, relaxed_problem);
+        std::equal_to<mimir::formalism::State> equals;
+        mimir::formalism::ActionList relaxed_actions;
+        mimir::formalism::State state = mimir::formalism::create_state(relaxed_problem->initial, relaxed_problem);
 
         while (true)
         {
@@ -47,7 +47,7 @@ namespace planners
             for (const auto& action : relaxed_actions)
             {
                 // Since there are no negative preconditions and negative effects, all actions are still applicable in the resulting state.
-                next_state = formalism::apply(action, next_state);
+                next_state = mimir::formalism::apply(action, next_state);
             }
 
             if (equals(state, next_state))
@@ -60,7 +60,7 @@ namespace planners
 
         // TODO: We can likely optimize the mapping between the relaxed action schemas and the original action schemas
 
-        std::map<std::string, formalism::ActionSchema> action_schemas;
+        std::map<std::string, mimir::formalism::ActionSchema> action_schemas;
 
         for (const auto& action_schema : problem->domain->action_schemas)
         {
@@ -70,7 +70,7 @@ namespace planners
         const auto& static_predicates = problem->domain->static_predicates;
         const auto& static_atoms = problem->get_static_atoms();
 
-        const auto is_statically_inapplicable = [&static_predicates, &static_atoms](const formalism::Action& ground_action)
+        const auto is_statically_inapplicable = [&static_predicates, &static_atoms](const mimir::formalism::Action& ground_action)
         {
             for (const auto& literal : ground_action->get_precondition())
             {
@@ -105,7 +105,7 @@ namespace planners
             auto arguments = relaxed_action->get_arguments();
             auto cost = relaxed_action->cost;
 
-            const auto ground_action = formalism::create_action(problem, action_schema, std::move(arguments), cost);
+            const auto ground_action = mimir::formalism::create_action(problem, action_schema, std::move(arguments), cost);
 
             if (!is_statically_inapplicable(ground_action))
             {
@@ -116,7 +116,7 @@ namespace planners
         return true;
     }
 
-    SuccessorGenerator create_sucessor_generator(const formalism::ProblemDescription& problem, SuccessorGeneratorType type)
+    SuccessorGenerator create_sucessor_generator(const mimir::formalism::ProblemDescription& problem, SuccessorGeneratorType type)
     {
         switch (type)
         {
@@ -124,7 +124,7 @@ namespace planners
             {
                 auto time_start = std::chrono::high_resolution_clock::now();
                 auto time_end = time_start + std::chrono::seconds(60);
-                formalism::ActionList actions;
+                mimir::formalism::ActionList actions;
 
                 if (compute_relaxed_reachable_actions(time_end, problem, actions))
                 {
@@ -144,7 +144,7 @@ namespace planners
                 // The lifted successor generator can overapproximate all actions applicable in reachable states by only taking static atoms into
                 // considerations. The grounded successor generator is a decision tree structure over these actions.
                 const auto time_max = std::chrono::high_resolution_clock::time_point::max();
-                formalism::ActionList actions;
+                mimir::formalism::ActionList actions;
                 compute_relaxed_reachable_actions(time_max, problem, actions);
                 return std::make_shared<GroundedSuccessorGenerator>(problem, actions);
             }

@@ -6,16 +6,16 @@
 
 #include <memory>
 
-namespace planners
+namespace mimir::planners
 {
     class SuccessorGeneratorBase
     {
       public:
         virtual ~SuccessorGeneratorBase() = default;
 
-        virtual formalism::ProblemDescription get_problem() const = 0;
+        virtual mimir::formalism::ProblemDescription get_problem() const = 0;
 
-        virtual formalism::ActionList get_applicable_actions(const formalism::State& state) const = 0;
+        virtual mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const = 0;
     };
 
     using SuccessorGenerator = std::shared_ptr<SuccessorGeneratorBase>;

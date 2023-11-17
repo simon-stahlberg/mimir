@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace formalism
+namespace mimir::formalism
 {
     struct Implication
     {
@@ -33,39 +33,39 @@ namespace formalism
 namespace std
 {
     template<>
-    struct hash<formalism::Implication>
+    struct hash<mimir::formalism::Implication>
     {
-        std::size_t operator()(const formalism::Implication& implication) const;
+        std::size_t operator()(const mimir::formalism::Implication& implication) const;
     };
 
     template<>
-    struct less<formalism::Implication>
+    struct less<mimir::formalism::Implication>
     {
-        bool operator()(const formalism::Implication& lhs, const formalism::Implication& rhs) const;
+        bool operator()(const mimir::formalism::Implication& lhs, const mimir::formalism::Implication& rhs) const;
     };
 
     template<>
-    struct equal_to<formalism::Implication>
+    struct equal_to<mimir::formalism::Implication>
     {
-        bool operator()(const formalism::Implication& lhs, const formalism::Implication& rhs) const;
+        bool operator()(const mimir::formalism::Implication& lhs, const mimir::formalism::Implication& rhs) const;
     };
 
     template<>
-    struct hash<formalism::ImplicationList>
+    struct hash<mimir::formalism::ImplicationList>
     {
-        std::size_t operator()(const formalism::ImplicationList& implication_list) const;
+        std::size_t operator()(const mimir::formalism::ImplicationList& implication_list) const;
     };
 
     template<>
-    struct less<formalism::ImplicationList>
+    struct less<mimir::formalism::ImplicationList>
     {
-        bool operator()(const formalism::ImplicationList& lhs, const formalism::ImplicationList& rhs) const;
+        bool operator()(const mimir::formalism::ImplicationList& lhs, const mimir::formalism::ImplicationList& rhs) const;
     };
 
     template<>
-    struct equal_to<formalism::ImplicationList>
+    struct equal_to<mimir::formalism::ImplicationList>
     {
-        bool operator()(const formalism::ImplicationList& lhs, const formalism::ImplicationList& rhs) const;
+        bool operator()(const mimir::formalism::ImplicationList& lhs, const mimir::formalism::ImplicationList& rhs) const;
     };
 }  // namespace std
 

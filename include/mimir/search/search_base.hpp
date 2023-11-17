@@ -10,7 +10,7 @@
 #include <variant>
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
     class SearchBase
     {
@@ -18,10 +18,10 @@ namespace planners
         std::vector<std::function<void()>> event_handlers_;
 
       protected:
-        formalism::State initial_state;
+        mimir::formalism::State initial_state;
         volatile bool should_abort;
 
-        SearchBase(const formalism::ProblemDescription& problem);
+        SearchBase(const mimir::formalism::ProblemDescription& problem);
 
         /// @brief Notify all registered handlers
         void notify_handlers() const;
@@ -35,7 +35,7 @@ namespace planners
 
         void abort();
 
-        void set_initial_state(const formalism::State& state);
+        void set_initial_state(const mimir::formalism::State& state);
 
         /// @brief Get statistics from the last planning step
         /// @return A dictionary with statistics
@@ -44,7 +44,7 @@ namespace planners
         /// @brief Find a plan for the associated problem
         /// @param out_plan The plan, if one was found
         /// @return The result of the planning step
-        virtual SearchResult plan(formalism::ActionList& out_plan) = 0;
+        virtual SearchResult plan(mimir::formalism::ActionList& out_plan) = 0;
     };
 
     using Search = std::shared_ptr<SearchBase>;

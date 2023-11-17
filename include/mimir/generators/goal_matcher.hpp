@@ -7,26 +7,26 @@
 
 #include <mutex>
 
-namespace planners
+namespace mimir::planners
 {
     class GoalMatcher
     {
       private:
-        planners::StateSpace state_space_;
-        std::vector<std::pair<formalism::State, int32_t>> state_distances_initial_;
-        std::vector<std::pair<formalism::State, int32_t>> state_distances_general_;
+        mimir::planners::StateSpace state_space_;
+        std::vector<std::pair<mimir::formalism::State, int32_t>> state_distances_initial_;
+        std::vector<std::pair<mimir::formalism::State, int32_t>> state_distances_general_;
         std::mutex state_distance_mutex_;
 
-        const std::vector<std::pair<formalism::State, int32_t>>& get_state_distances(const formalism::State& state);
+        const std::vector<std::pair<mimir::formalism::State, int32_t>>& get_state_distances(const mimir::formalism::State& state);
 
-        bool is_ground(const formalism::AtomList& goal);
+        bool is_ground(const mimir::formalism::AtomList& goal);
 
       public:
-        GoalMatcher(const planners::StateSpace& state_space);
+        GoalMatcher(const mimir::planners::StateSpace& state_space);
 
-        std::pair<formalism::State, int32_t> best_match(const formalism::AtomList& goal);
+        std::pair<mimir::formalism::State, int32_t> best_match(const mimir::formalism::AtomList& goal);
 
-        std::pair<formalism::State, int32_t> best_match(const formalism::State& from_state, const formalism::AtomList& goal);
+        std::pair<mimir::formalism::State, int32_t> best_match(const mimir::formalism::State& from_state, const mimir::formalism::AtomList& goal);
     };
 }  // namespace planners
 

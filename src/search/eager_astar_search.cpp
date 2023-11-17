@@ -4,12 +4,12 @@
 #include <algorithm>
 #include <deque>
 
-namespace planners
+namespace mimir::planners
 {
-    EagerAStarSearchImpl::EagerAStarSearchImpl(const formalism::ProblemDescription& problem,
-                                               const planners::SuccessorGenerator& successor_generator,
-                                               const planners::Heuristic& heuristic,
-                                               const planners::OpenList& open_list) :
+    EagerAStarSearchImpl::EagerAStarSearchImpl(const mimir::formalism::ProblemDescription& problem,
+                                               const mimir::planners::SuccessorGenerator& successor_generator,
+                                               const mimir::planners::Heuristic& heuristic,
+                                               const mimir::planners::OpenList& open_list) :
         SearchBase(problem),
         problem_(problem),
         successor_generator_(successor_generator),
@@ -46,7 +46,7 @@ namespace planners
         return statistics;
     }
 
-    SearchResult EagerAStarSearchImpl::plan(formalism::ActionList& out_plan)
+    SearchResult EagerAStarSearchImpl::plan(mimir::formalism::ActionList& out_plan)
     {
         if (open_list_->size() > 0)
         {
@@ -58,8 +58,8 @@ namespace planners
 
         struct Frame
         {
-            formalism::State state;
-            formalism::Action predecessor_action;
+            mimir::formalism::State state;
+            mimir::formalism::Action predecessor_action;
             int32_t predecessor_index;
             int32_t depth;
             double g_value;
@@ -67,7 +67,7 @@ namespace planners
             bool closed;
         };
 
-        tsl::robin_map<formalism::State, int32_t> state_indices;
+        mimir::tsl::robin_map<mimir::formalism::State, int32_t> state_indices;
         std::deque<Frame> frame_list;
 
         {  // Initialize data-structures
@@ -111,7 +111,7 @@ namespace planners
                 return SearchResult::ABORTED;
             }
 
-            if (formalism::literals_hold(problem_->goal, frame.state))
+            if (mimir::formalism::literals_hold(problem_->goal, frame.state))
             {
                 // Reconstruct the path to the goal state
 
@@ -134,7 +134,7 @@ namespace planners
 
             for (const auto& action : applicable_actions)
             {
-                const auto succ_state = formalism::apply(action, frame.state);
+                const auto succ_state = mimir::formalism::apply(action, frame.state);
                 auto& succ_index = state_indices[succ_state];  // Reference is used to update state_indices
 
                 if (succ_index == 0)
@@ -186,10 +186,10 @@ namespace planners
         return SearchResult::UNSOLVABLE;
     }
 
-    EagerAStarSearch create_eager_astar(const formalism::ProblemDescription& problem,
-                                        const planners::SuccessorGenerator& successor_generator,
-                                        const planners::Heuristic& heuristic,
-                                        const planners::OpenList& open_list)
+    EagerAStarSearch create_eager_astar(const mimir::formalism::ProblemDescription& problem,
+                                        const mimir::planners::SuccessorGenerator& successor_generator,
+                                        const mimir::planners::Heuristic& heuristic,
+                                        const mimir::planners::OpenList& open_list)
     {
         return std::make_shared<EagerAStarSearchImpl>(problem, successor_generator, heuristic, open_list);
     }

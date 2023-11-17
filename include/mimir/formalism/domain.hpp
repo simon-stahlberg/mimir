@@ -10,50 +10,50 @@
 #include <map>
 #include <string>
 
-namespace formalism
+namespace mimir::formalism
 {
     class DomainImpl
     {
       public:
         std::string name;
-        formalism::RequirementList requirements;
-        formalism::TypeList types;
-        formalism::ObjectList constants;
-        formalism::PredicateList predicates;
-        formalism::PredicateList static_predicates;
-        formalism::PredicateList functions;
-        formalism::ActionSchemaList action_schemas;
+        mimir::formalism::RequirementList requirements;
+        mimir::formalism::TypeList types;
+        mimir::formalism::ObjectList constants;
+        mimir::formalism::PredicateList predicates;
+        mimir::formalism::PredicateList static_predicates;
+        mimir::formalism::PredicateList functions;
+        mimir::formalism::ActionSchemaList action_schemas;
 
         DomainImpl(const std::string& name,
-                   const formalism::RequirementList& requirements,
-                   const formalism::TypeList& types,
-                   const formalism::ObjectList& constants,
-                   const formalism::PredicateList& predicates,
-                   const formalism::PredicateList& functions,
-                   const formalism::ActionSchemaList& action_schemas);
+                   const mimir::formalism::RequirementList& requirements,
+                   const mimir::formalism::TypeList& types,
+                   const mimir::formalism::ObjectList& constants,
+                   const mimir::formalism::PredicateList& predicates,
+                   const mimir::formalism::PredicateList& functions,
+                   const mimir::formalism::ActionSchemaList& action_schemas);
 
-        std::map<std::string, formalism::Type> get_type_map() const;
+        std::map<std::string, mimir::formalism::Type> get_type_map() const;
 
-        std::map<std::string, formalism::Predicate> get_predicate_name_map() const;
+        std::map<std::string, mimir::formalism::Predicate> get_predicate_name_map() const;
 
-        std::map<std::string, formalism::Predicate> get_function_name_map() const;
+        std::map<std::string, mimir::formalism::Predicate> get_function_name_map() const;
 
-        std::map<uint32_t, formalism::Predicate> get_predicate_id_map() const;
+        std::map<uint32_t, mimir::formalism::Predicate> get_predicate_id_map() const;
 
-        std::map<std::string, formalism::Object> get_constant_map() const;
+        std::map<std::string, mimir::formalism::Object> get_constant_map() const;
     };
 
     DomainDescription create_domain(const std::string& name,
-                                    const formalism::RequirementList& requirements,
-                                    const formalism::TypeList& types,
-                                    const formalism::ObjectList& constants,
-                                    const formalism::PredicateList& predicates,
-                                    const formalism::PredicateList& functions,
-                                    const formalism::ActionSchemaList& action_schemas);
+                                    const mimir::formalism::RequirementList& requirements,
+                                    const mimir::formalism::TypeList& types,
+                                    const mimir::formalism::ObjectList& constants,
+                                    const mimir::formalism::PredicateList& predicates,
+                                    const mimir::formalism::PredicateList& functions,
+                                    const mimir::formalism::ActionSchemaList& action_schemas);
 
-    DomainDescription relax(const formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list);
+    DomainDescription relax(const mimir::formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::DomainDescription& domain);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::DomainDescription& domain);
 
 }  // namespace formalism
 
@@ -61,21 +61,21 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<formalism::DomainDescription>
+    struct hash<mimir::formalism::DomainDescription>
     {
-        std::size_t operator()(const formalism::DomainDescription& domain) const;
+        std::size_t operator()(const mimir::formalism::DomainDescription& domain) const;
     };
 
     template<>
-    struct less<formalism::DomainDescription>
+    struct less<mimir::formalism::DomainDescription>
     {
-        bool operator()(const formalism::DomainDescription& left_domain, const formalism::DomainDescription& right_domain) const;
+        bool operator()(const mimir::formalism::DomainDescription& left_domain, const mimir::formalism::DomainDescription& right_domain) const;
     };
 
     template<>
-    struct equal_to<formalism::DomainDescription>
+    struct equal_to<mimir::formalism::DomainDescription>
     {
-        bool operator()(const formalism::DomainDescription& left_domain, const formalism::DomainDescription& right_domain) const;
+        bool operator()(const mimir::formalism::DomainDescription& left_domain, const mimir::formalism::DomainDescription& right_domain) const;
     };
 
 }  // namespace std

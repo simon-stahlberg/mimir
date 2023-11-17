@@ -23,14 +23,14 @@
 #include <cassert>
 #include <cmath>
 
-namespace formalism
+namespace mimir::formalism
 {
     ProblemImpl::ProblemImpl(const std::string& name,
-                             const formalism::DomainDescription& domain,
-                             const formalism::ObjectList& objects,
-                             const formalism::AtomList& initial,
-                             const formalism::LiteralList& goal,
-                             const std::unordered_map<formalism::Atom, double>& atom_costs) :
+                             const mimir::formalism::DomainDescription& domain,
+                             const mimir::formalism::ObjectList& objects,
+                             const mimir::formalism::AtomList& initial,
+                             const mimir::formalism::LiteralList& goal,
+                             const std::unordered_map<mimir::formalism::Atom, double>& atom_costs) :
         static_atoms_(),
         predicate_id_to_static_(),
         atom_ranks_(),
@@ -46,7 +46,7 @@ namespace formalism
         atom_costs(atom_costs)
     {
         const auto& static_predicates = domain->static_predicates;
-        formalism::PredicateSet static_predicate_set(static_predicates.begin(), static_predicates.end());
+        mimir::formalism::PredicateSet static_predicate_set(static_predicates.begin(), static_predicates.end());
 
         for (const auto& atom : initial)
         {
@@ -64,17 +64,19 @@ namespace formalism
             predicate_id_to_static_[static_predicate->id] = true;
         }
 
-        std::sort(this->objects.begin(), this->objects.end(), [](const formalism::Object& lhs, const formalism::Object& rhs) { return lhs->id < rhs->id; });
+        std::sort(this->objects.begin(),
+                  this->objects.end(),
+                  [](const mimir::formalism::Object& lhs, const mimir::formalism::Object& rhs) { return lhs->id < rhs->id; });
     }
 
-    formalism::ProblemDescription ProblemImpl::replace_initial(const formalism::AtomList& initial) const
+    mimir::formalism::ProblemDescription ProblemImpl::replace_initial(const mimir::formalism::AtomList& initial) const
     {
         return create_problem(this->name, this->domain, this->objects, initial, this->goal, this->atom_costs);
     }
 
-    const formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
+    const mimir::formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
 
-    uint32_t ProblemImpl::get_rank(const formalism::Atom& atom) const
+    uint32_t ProblemImpl::get_rank(const mimir::formalism::Atom& atom) const
     {
         auto& rank_with_offset = atom_ranks_[atom];
 
@@ -98,14 +100,14 @@ namespace formalism
             std::transform(atom->arguments.cbegin(),
                            atom->arguments.cend(),
                            std::back_insert_iterator(predicate_ids),
-                           [](const formalism::Object& object) { return object->id; });
+                           [](const mimir::formalism::Object& object) { return object->id; });
             rank_to_argument_ids_.emplace_back(std::move(predicate_ids));
         }
 
         return rank_with_offset - 1;
     }
 
-    std::vector<uint32_t> ProblemImpl::to_ranks(const formalism::AtomList& atoms) const
+    std::vector<uint32_t> ProblemImpl::to_ranks(const mimir::formalism::AtomList& atoms) const
     {
         std::vector<uint32_t> ranks;
 
@@ -141,15 +143,15 @@ namespace formalism
         return rank_to_argument_ids_.at(rank);
     }
 
-    formalism::Atom ProblemImpl::get_atom(uint32_t rank) const
+    mimir::formalism::Atom ProblemImpl::get_atom(uint32_t rank) const
     {
         assert(rank < rank_to_atom_.size());
         return rank_to_atom_.at(rank);
     }
 
-    formalism::AtomList ProblemImpl::get_encountered_atoms() const
+    mimir::formalism::AtomList ProblemImpl::get_encountered_atoms() const
     {
-        formalism::AtomList atoms;
+        mimir::formalism::AtomList atoms;
 
         for (const auto& [key, value] : atom_ranks_)
         {
@@ -161,7 +163,7 @@ namespace formalism
 
     uint32_t ProblemImpl::num_encountered_atoms() const { return static_cast<uint32_t>(atom_ranks_.size()); }
 
-    formalism::Object ProblemImpl::get_object(uint32_t object_id) const
+    mimir::formalism::Object ProblemImpl::get_object(uint32_t object_id) const
     {
         assert(object_id < objects.size());
         assert(objects.at(object_id)->id == object_id);
@@ -171,16 +173,16 @@ namespace formalism
     uint32_t ProblemImpl::num_objects() const { return static_cast<uint32_t>(objects.size()); }
 
     ProblemDescription create_problem(const std::string& name,
-                                      const formalism::DomainDescription& domain,
-                                      const formalism::ObjectList& objects,
-                                      const formalism::AtomList& initial,
-                                      const formalism::LiteralList& goal,
-                                      const std::unordered_map<formalism::Atom, double>& atom_costs)
+                                      const mimir::formalism::DomainDescription& domain,
+                                      const mimir::formalism::ObjectList& objects,
+                                      const mimir::formalism::AtomList& initial,
+                                      const mimir::formalism::LiteralList& goal,
+                                      const std::unordered_map<mimir::formalism::Atom, double>& atom_costs)
     {
-        return std::shared_ptr<formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal, atom_costs));
+        return std::shared_ptr<mimir::formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal, atom_costs));
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescription& problem)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemDescription& problem)
     {
         os << "Name: " << problem->name << std::endl;
         os << "Objects: " << problem->objects << std::endl;
@@ -189,30 +191,30 @@ namespace formalism
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const formalism::ProblemDescriptionList& problems)
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemDescriptionList& problems)
     {
         print_vector(os, problems);
         return os;
     }
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<formalism::ProblemDescription>::operator()(const formalism::ProblemDescription& problem) const
+    std::size_t hash<mimir::formalism::ProblemDescription>::operator()(const mimir::formalism::ProblemDescription& problem) const
     {
         return hash_combine(problem->name, problem->domain, problem->objects, problem->initial, problem->goal);
     }
 
-    bool less<formalism::ProblemDescription>::operator()(const formalism::ProblemDescription& left_problem,
-                                                         const formalism::ProblemDescription& right_problem) const
+    bool less<mimir::formalism::ProblemDescription>::operator()(const mimir::formalism::ProblemDescription& left_problem,
+                                                                const mimir::formalism::ProblemDescription& right_problem) const
     {
         return less_combine(std::make_tuple(left_problem->name, left_problem->domain, left_problem->objects, left_problem->initial, left_problem->goal),
                             std::make_tuple(right_problem->name, right_problem->domain, right_problem->objects, right_problem->initial, right_problem->goal));
     }
 
-    bool equal_to<formalism::ProblemDescription>::operator()(const formalism::ProblemDescription& left_problem,
-                                                             const formalism::ProblemDescription& right_problem) const
+    bool equal_to<mimir::formalism::ProblemDescription>::operator()(const mimir::formalism::ProblemDescription& left_problem,
+                                                                    const mimir::formalism::ProblemDescription& right_problem) const
     {
         if (left_problem.get() == right_problem.get())
         {

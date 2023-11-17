@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
-    bool GoalMatcher::is_ground(const formalism::AtomList& goal)
+    bool GoalMatcher::is_ground(const mimir::formalism::AtomList& goal)
     {
         for (const auto& atom : goal)
         {
@@ -22,7 +22,7 @@ namespace planners
         return true;
     }
 
-    GoalMatcher::GoalMatcher(const planners::StateSpace& state_space) :
+    GoalMatcher::GoalMatcher(const mimir::planners::StateSpace& state_space) :
         state_space_(state_space),
         state_distances_initial_(),
         state_distances_general_(),
@@ -30,12 +30,12 @@ namespace planners
     {
     }
 
-    const std::vector<std::pair<formalism::State, int32_t>>& GoalMatcher::get_state_distances(const formalism::State& from_state)
+    const std::vector<std::pair<mimir::formalism::State, int32_t>>& GoalMatcher::get_state_distances(const mimir::formalism::State& from_state)
     {
         std::lock_guard<std::mutex> lock(state_distance_mutex_);  // Lock is released automatically when it goes out of scope.
-        std::equal_to<formalism::State> equal_to;
+        std::equal_to<mimir::formalism::State> equal_to;
 
-        const auto distance_ascending = [](const std::pair<formalism::State, int32_t>& lhs, const std::pair<formalism::State, int32_t>& rhs)
+        const auto distance_ascending = [](const std::pair<mimir::formalism::State, int32_t>& lhs, const std::pair<mimir::formalism::State, int32_t>& rhs)
         { return lhs.second < rhs.second; };
 
         if (equal_to(from_state, state_space_->get_initial_state()))
@@ -69,12 +69,12 @@ namespace planners
         }
     }
 
-    std::pair<formalism::State, int32_t> GoalMatcher::best_match(const formalism::AtomList& goal)
+    std::pair<mimir::formalism::State, int32_t> GoalMatcher::best_match(const mimir::formalism::AtomList& goal)
     {
         return best_match(state_space_->get_initial_state(), goal);
     }
 
-    std::pair<formalism::State, int32_t> GoalMatcher::best_match(const formalism::State& from_state, const formalism::AtomList& goal)
+    std::pair<mimir::formalism::State, int32_t> GoalMatcher::best_match(const mimir::formalism::State& from_state, const mimir::formalism::AtomList& goal)
     {
         if (is_ground(goal))
         {
@@ -82,7 +82,7 @@ namespace planners
 
             for (const auto& [to_state, distance] : get_state_distances(from_state))
             {
-                if (formalism::subset_of_state(goal_ranks, to_state))
+                if (mimir::formalism::subset_of_state(goal_ranks, to_state))
                 {
                     return std::make_pair(to_state, distance);
                 }
@@ -92,10 +92,10 @@ namespace planners
         }
         else
         {
-            std::equal_to<formalism::Object> equal_to;
-            formalism::ParameterList parameters;
-            formalism::LiteralList precondition;
-            formalism::LiteralList effect;
+            std::equal_to<mimir::formalism::Object> equal_to;
+            mimir::formalism::ParameterList parameters;
+            mimir::formalism::LiteralList precondition;
+            mimir::formalism::LiteralList effect;
 
             for (const auto& atom : goal)
             {
@@ -121,12 +121,12 @@ namespace planners
                     }
                 }
 
-                precondition.emplace_back(formalism::create_literal(atom, false));
+                precondition.emplace_back(mimir::formalism::create_literal(atom, false));
             }
 
-            const auto unit_cost = formalism::create_unit_cost_function(state_space_->domain);
-            const auto action_schema = formalism::create_action_schema("dummy", parameters, precondition, effect, {}, unit_cost);
-            planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state_space_->problem);
+            const auto unit_cost = mimir::formalism::create_unit_cost_function(state_space_->domain);
+            const auto action_schema = mimir::formalism::create_action_schema("dummy", parameters, precondition, effect, {}, unit_cost);
+            mimir::planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state_space_->problem);
 
             for (const auto& [to_state, distance] : get_state_distances(from_state))
             {

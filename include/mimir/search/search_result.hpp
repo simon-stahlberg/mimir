@@ -1,7 +1,7 @@
 #if !defined(PLANNERS_SEARCH_RESULT_HPP_)
 #define PLANNERS_SEARCH_RESULT_HPP_
 
-namespace planners
+namespace mimir::planners
 {
     enum SearchResult
     {

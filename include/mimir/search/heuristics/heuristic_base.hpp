@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace planners
+namespace mimir::planners
 {
     class HeuristicBase
     {
@@ -19,7 +19,7 @@ namespace planners
         /// @brief Find a plan for the associated problem
         /// @param out_plan The plan, if one was found
         /// @return The result of the planning step
-        virtual double evaluate(const formalism::State& state) const = 0;
+        virtual double evaluate(const mimir::formalism::State& state) const = 0;
     };
 
     using Heuristic = std::shared_ptr<HeuristicBase>;

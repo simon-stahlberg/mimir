@@ -42,7 +42,7 @@
 #include <utility>
 #include <vector>
 
-namespace tsl
+namespace mimir::tsl
 {
 
     namespace detail_robin_hash
@@ -431,7 +431,7 @@ namespace tsl
                 }
             }
 
-            using bucket_entry = tsl::detail_robin_hash::bucket_entry<value_type, STORE_HASH>;
+            using bucket_entry = mimir::tsl::detail_robin_hash::bucket_entry<value_type, STORE_HASH>;
             using distance_type = typename bucket_entry::distance_type;
 
             using buckets_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<bucket_entry>;

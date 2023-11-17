@@ -14,7 +14,7 @@
 #include <memory>
 #include <vector>
 
-namespace planners
+namespace mimir::planners
 {
     struct Assignment
     {
@@ -43,61 +43,66 @@ namespace planners
     class LiftedSchemaSuccessorGenerator
     {
       private:
-        formalism::DomainDescription domain_;
-        formalism::ProblemDescription problem_;
-        planners::FlatActionSchema flat_action_schema_;
-        tsl::robin_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
+        mimir::formalism::DomainDescription domain_;
+        mimir::formalism::ProblemDescription problem_;
+        mimir::planners::FlatActionSchema flat_action_schema_;
+        mimir::tsl::robin_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
 
         std::vector<Assignment> to_vertex_assignment;
         std::vector<AssignmentPair> statically_consistent_assignments;
         std::vector<std::vector<std::size_t>> partitions_;
 
-        static std::vector<std::vector<bool>>
-        build_assignment_sets(const formalism::DomainDescription& domain, const formalism::ProblemDescription& problem, const std::vector<uint32_t>& ranks);
+        static std::vector<std::vector<bool>> build_assignment_sets(const mimir::formalism::DomainDescription& domain,
+                                                                    const mimir::formalism::ProblemDescription& problem,
+                                                                    const std::vector<uint32_t>& ranks);
 
         bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
-                                    const std::vector<planners::FlatLiteral>& literals,
+                                    const std::vector<mimir::planners::FlatLiteral>& literals,
                                     const Assignment& first_assignment,
                                     const Assignment& second_assignment) const;
 
-        formalism::ObjectList ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters, const formalism::ObjectList& terms) const;
+        mimir::formalism::ObjectList ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
+                                                       const mimir::formalism::ObjectList& terms) const;
 
-        formalism::Literal ground_literal(const FlatLiteral& literal, const formalism::ObjectList& terms) const;
+        mimir::formalism::Literal ground_literal(const FlatLiteral& literal, const mimir::formalism::ObjectList& terms) const;
 
-        formalism::Action create_action(formalism::ObjectList&& terms) const;
+        mimir::formalism::Action create_action(mimir::formalism::ObjectList&& terms) const;
 
-        bool nullary_preconditions_hold(const formalism::State& state) const;
+        bool nullary_preconditions_hold(const mimir::formalism::State& state) const;
 
-        bool has_consistent_effect(const formalism::Action& action) const;
+        bool has_consistent_effect(const mimir::formalism::Action& action) const;
 
-        bool
-        nullary_case(const std::chrono::high_resolution_clock::time_point end_time, const formalism::State& state, formalism::ActionList& out_actions) const;
+        bool nullary_case(const std::chrono::high_resolution_clock::time_point end_time,
+                          const mimir::formalism::State& state,
+                          mimir::formalism::ActionList& out_actions) const;
 
-        bool unary_case(const std::chrono::high_resolution_clock::time_point end_time, const formalism::State& state, formalism::ActionList& out_actions) const;
+        bool unary_case(const std::chrono::high_resolution_clock::time_point end_time,
+                        const mimir::formalism::State& state,
+                        mimir::formalism::ActionList& out_actions) const;
 
         bool general_case(const std::chrono::high_resolution_clock::time_point end_time,
-                          const formalism::State& state,
+                          const mimir::formalism::State& state,
                           const std::vector<std::vector<bool>>& assignment_sets,
-                          formalism::ActionList& out_actions) const;
+                          mimir::formalism::ActionList& out_actions) const;
 
-        formalism::ActionList nullary_case(const formalism::State& state) const;
+        mimir::formalism::ActionList nullary_case(const mimir::formalism::State& state) const;
 
-        formalism::ActionList unary_case(const formalism::State& state) const;
+        mimir::formalism::ActionList unary_case(const mimir::formalism::State& state) const;
 
-        formalism::ActionList general_case(const formalism::State& state, const std::vector<std::vector<bool>>& assignment_sets) const;
+        mimir::formalism::ActionList general_case(const mimir::formalism::State& state, const std::vector<std::vector<bool>>& assignment_sets) const;
 
-        formalism::ActionList get_applicable_actions(const formalism::State& state, const std::vector<std::vector<bool>>& assignment_sets) const;
+        mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state, const std::vector<std::vector<bool>>& assignment_sets) const;
 
         friend class LiftedSuccessorGenerator;
 
       public:
-        LiftedSchemaSuccessorGenerator(const formalism::ActionSchema& action_schema, const formalism::ProblemDescription& problem);
+        LiftedSchemaSuccessorGenerator(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::ProblemDescription& problem);
 
-        formalism::ActionList get_applicable_actions(const formalism::State& state) const;
+        mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const;
 
         bool get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
-                                    const formalism::State& state,
-                                    formalism::ActionList& out_actions) const;
+                                    const mimir::formalism::State& state,
+                                    mimir::formalism::ActionList& out_actions) const;
     };
 }  // namespace planners
 

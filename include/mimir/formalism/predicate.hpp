@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace formalism
+namespace mimir::formalism
 {
     class PredicateImpl
     {
@@ -15,20 +15,20 @@ namespace formalism
       public:
         const uint32_t id;
         const std::string name;
-        const formalism::ObjectList parameters;
+        const mimir::formalism::ObjectList parameters;
         const uint32_t arity;
 
-        PredicateImpl(const uint32_t id, const std::string& name, const formalism::ObjectList& parameters);
+        PredicateImpl(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters);
 
         template<typename T>
         friend class std::hash;
     };
 
-    Predicate create_predicate(const uint32_t id, const std::string& name, const formalism::ObjectList& parameters);
+    Predicate create_predicate(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::Predicate& predicate);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Predicate& predicate);
 
-    std::ostream& operator<<(std::ostream& os, const formalism::PredicateList& predicates);
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::PredicateList& predicates);
 
 }  // namespace formalism
 
@@ -36,27 +36,27 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<formalism::Predicate>
+    struct hash<mimir::formalism::Predicate>
     {
-        std::size_t operator()(const formalism::Predicate& predicate) const;
+        std::size_t operator()(const mimir::formalism::Predicate& predicate) const;
     };
 
     template<>
-    struct hash<formalism::PredicateList>
+    struct hash<mimir::formalism::PredicateList>
     {
-        std::size_t operator()(const formalism::PredicateList& predicates) const;
+        std::size_t operator()(const mimir::formalism::PredicateList& predicates) const;
     };
 
     template<>
-    struct less<formalism::Predicate>
+    struct less<mimir::formalism::Predicate>
     {
-        bool operator()(const formalism::Predicate& left_predicate, const formalism::Predicate& right_predicate) const;
+        bool operator()(const mimir::formalism::Predicate& left_predicate, const mimir::formalism::Predicate& right_predicate) const;
     };
 
     template<>
-    struct equal_to<formalism::Predicate>
+    struct equal_to<mimir::formalism::Predicate>
     {
-        bool operator()(const formalism::Predicate& left_predicate, const formalism::Predicate& right_predicate) const;
+        bool operator()(const mimir::formalism::Predicate& left_predicate, const mimir::formalism::Predicate& right_predicate) const;
     };
 
 }  // namespace std

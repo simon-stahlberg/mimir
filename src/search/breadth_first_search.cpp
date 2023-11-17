@@ -4,9 +4,10 @@
 #include <algorithm>
 #include <deque>
 
-namespace planners
+namespace mimir::planners
 {
-    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator) :
+    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const mimir::formalism::ProblemDescription& problem,
+                                                   const mimir::planners::SuccessorGenerator& successor_generator) :
         SearchBase(problem),
         problem_(problem),
         successor_generator_(successor_generator),
@@ -35,21 +36,21 @@ namespace planners
         return statistics;
     }
 
-    SearchResult BreadthFirstSearchImpl::plan(formalism::ActionList& out_plan)
+    SearchResult BreadthFirstSearchImpl::plan(mimir::formalism::ActionList& out_plan)
     {
         reset_statistics();
         int32_t last_depth = -1;  // Used to notify handlers
 
         struct Frame
         {
-            formalism::State state;
-            formalism::Action predecessor_action;
+            mimir::formalism::State state;
+            mimir::formalism::Action predecessor_action;
             int32_t predecessor_index;
             int32_t depth;
             double g_value;
         };
 
-        tsl::robin_map<formalism::State, int32_t> state_indices;
+        mimir::tsl::robin_map<mimir::formalism::State, int32_t> state_indices;
         std::deque<Frame> frame_list;
         std::deque<int32_t> open_list;
 
@@ -85,7 +86,7 @@ namespace planners
                 return SearchResult::ABORTED;
             }
 
-            if (formalism::literals_hold(problem_->goal, frame.state))
+            if (mimir::formalism::literals_hold(problem_->goal, frame.state))
             {
                 // Reconstruct the path to the goal state
                 out_plan.clear();
@@ -107,7 +108,7 @@ namespace planners
 
             for (const auto& action : applicable_actions)
             {
-                const auto successor_state = formalism::apply(action, frame.state);
+                const auto successor_state = mimir::formalism::apply(action, frame.state);
                 auto& successor_index = state_indices[successor_state];  // Reference is used to update state_indices
 
                 if (successor_index == 0)
@@ -125,7 +126,8 @@ namespace planners
         return SearchResult::UNSOLVABLE;
     }
 
-    BreadthFirstSearch create_breadth_first_search(const formalism::ProblemDescription& problem, const planners::SuccessorGenerator& successor_generator)
+    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::ProblemDescription& problem,
+                                                   const mimir::planners::SuccessorGenerator& successor_generator)
     {
         return std::make_shared<BreadthFirstSearchImpl>(problem, successor_generator);
     }
