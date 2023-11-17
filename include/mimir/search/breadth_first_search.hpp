@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_BREADTH_FIRST_SEARCH_HPP_)
+#ifndef PLANNERS_BREADTH_FIRST_SEARCH_HPP_
 #define PLANNERS_BREADTH_FIRST_SEARCH_HPP_
 
 #include "../formalism/problem.hpp"

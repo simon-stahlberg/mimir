@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_ATOM_HPP_)
+#ifndef FORMALISM_ATOM_HPP_
 #define FORMALISM_ATOM_HPP_
 
 #include "declarations.hpp"

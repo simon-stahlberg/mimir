@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_STATE_SPACE_HPP_)
+#ifndef PLANNERS_STATE_SPACE_HPP_
 #define PLANNERS_STATE_SPACE_HPP_
 
 #include "../formalism/declarations.hpp"

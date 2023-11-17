@@ -1,4 +1,4 @@
-#if !defined(TEST_EXPECT_STRUCTURES_HPP_)
+#ifndef TEST_EXPECT_STRUCTURES_HPP_
 #define TEST_EXPECT_STRUCTURES_HPP_
 
 #include <cstddef>

@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_SEARCH_BASE_HPP_)
+#ifndef PLANNERS_SEARCH_BASE_HPP_
 #define PLANNERS_SEARCH_BASE_HPP_
 
 #include "../formalism/action.hpp"

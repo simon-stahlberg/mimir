@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_OPEN_LIST_BASE_HPP_)
+#ifndef PLANNERS_OPEN_LIST_BASE_HPP_
 #define PLANNERS_OPEN_LIST_BASE_HPP_
 
 #include <memory>

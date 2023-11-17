@@ -1,4 +1,4 @@
-#if !defined(TEST_INSTANCES_SPANNER_DOMAIN_HPP_)
+#ifndef TEST_INSTANCES_SPANNER_DOMAIN_HPP_
 #define TEST_INSTANCES_SPANNER_DOMAIN_HPP_
 
 #include "../../expect_structures.hpp"

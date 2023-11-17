@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_DECLARATIONS_HPP_)
+#ifndef FORMALISM_DECLARATIONS_HPP_
 #define FORMALISM_DECLARATIONS_HPP_
 
 #include "../datastructures/robin_map.hpp"

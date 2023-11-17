@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_PDB_BASE_HPP_)
+#ifndef PLANNERS_PDB_BASE_HPP_
 #define PLANNERS_PDB_BASE_HPP_
 
 #include "../../formalism/problem.hpp"

@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_SUCCESSOR_GENERATOR_HPP_)
+#ifndef PLANNERS_SUCCESSOR_GENERATOR_HPP_
 #define PLANNERS_SUCCESSOR_GENERATOR_HPP_
 
 #include "../formalism/declarations.hpp"

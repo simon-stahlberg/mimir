@@ -1,4 +1,4 @@
-#if !defined(PDDL_PARSER_DOMAIN_HPP_)
+#ifndef PDDL_PARSER_DOMAIN_HPP_
 #define PDDL_PARSER_DOMAIN_HPP_
 
 #include "../formalism/domain.hpp"

@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_EAGER_ASTAR_SEARCH_HPP_)
+#ifndef PLANNERS_EAGER_ASTAR_SEARCH_HPP_
 #define PLANNERS_EAGER_ASTAR_SEARCH_HPP_
 
 #include "../formalism/problem.hpp"

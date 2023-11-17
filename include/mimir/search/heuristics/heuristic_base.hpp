@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_HEURISTIC_BASE_HPP_)
+#ifndef PLANNERS_HEURISTIC_BASE_HPP_
 #define PLANNERS_HEURISTIC_BASE_HPP_
 
 #include "../../formalism/state.hpp"

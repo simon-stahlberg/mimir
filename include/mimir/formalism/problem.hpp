@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_PROBLEM_HPP_)
+#ifndef FORMALISM_PROBLEM_HPP_
 #define FORMALISM_PROBLEM_HPP_
 
 #include "../datastructures/robin_map.hpp"

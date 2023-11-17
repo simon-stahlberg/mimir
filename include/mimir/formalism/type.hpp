@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_TYPE_HPP_)
+#ifndef FORMALISM_TYPE_HPP_
 #define FORMALISM_TYPE_HPP_
 
 #include <memory>

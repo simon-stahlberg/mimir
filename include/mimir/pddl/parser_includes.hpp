@@ -1,4 +1,4 @@
-#if !defined(PARSERS_PARSER_INCLUDES_HPP_)
+#ifndef PARSERS_PARSER_INCLUDES_HPP_
 #define PARSERS_PARSER_INCLUDES_HPP_
 
 // MSVC produces a linker error when they are included from both domain_parser.cpp and problem_parser.cpp. To resolve this, include this file in both instead.

@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_GOAL_GENERATOR_HPP_)
+#ifndef PLANNERS_GOAL_GENERATOR_HPP_
 #define PLANNERS_GOAL_GENERATOR_HPP_
 
 #include "../formalism/atom.hpp"

@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_PRINT_FUNCTIONS_HPP_)
+#ifndef FORMALISM_PRINT_FUNCTIONS_HPP_
 #define FORMALISM_PRINT_FUNCTIONS_HPP_
 
 #include "atom.hpp"

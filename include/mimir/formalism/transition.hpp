@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_TRANSITION_HPP_)
+#ifndef FORMALISM_TRANSITION_HPP_
 #define FORMALISM_TRANSITION_HPP_
 
 #include "action.hpp"

@@ -1,4 +1,4 @@
-#if !defined(TEST_INSTANCES_GRIPPER_PROBLEM_HPP_)
+#ifndef TEST_INSTANCES_GRIPPER_PROBLEM_HPP_
 #define TEST_INSTANCES_GRIPPER_PROBLEM_HPP_
 
 #include "../../expect_structures.hpp"

@@ -1,4 +1,4 @@
-#if !defined(PLANNERS_HEURISTIC_H1_HPP_)
+#ifndef PLANNERS_HEURISTIC_H1_HPP_
 #define PLANNERS_HEURISTIC_H1_HPP_
 
 #include "../../formalism/atom.hpp"

@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_STATE_HPP_)
+#ifndef FORMALISM_STATE_HPP_
 #define FORMALISM_STATE_HPP_
 
 #include "action.hpp"

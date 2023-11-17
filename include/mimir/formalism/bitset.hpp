@@ -1,4 +1,4 @@
-#if !defined(FORMALISM_BITSET_HPP_)
+#ifndef FORMALISM_BITSET_HPP_
 #define FORMALISM_BITSET_HPP_
 
 #include <algorithm>

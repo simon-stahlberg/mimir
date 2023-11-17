@@ -1,4 +1,4 @@
-#if !defined(PARSERS_ABSTRACT_SYNTAX_TREE_HPP_)
+#ifndef PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
 #define PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
 
 #include "../formalism/action_schema.hpp"

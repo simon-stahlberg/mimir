@@ -1,4 +1,4 @@
-#if !defined(ALGORITHMS_KPKC_HPP_)
+#ifndef ALGORITHMS_KPKC_HPP_
 #define ALGORITHMS_KPKC_HPP_
 
 #include <boost/dynamic_bitset.hpp>
