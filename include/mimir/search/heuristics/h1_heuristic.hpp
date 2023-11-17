@@ -1,5 +1,5 @@
-#ifndef PLANNERS_HEURISTIC_H1_HPP_
-#define PLANNERS_HEURISTIC_H1_HPP_
+#ifndef MIMIR_PLANNERS_HEURISTIC_H1_HPP_
+#define MIMIR_PLANNERS_HEURISTIC_H1_HPP_
 
 #include "../../formalism/atom.hpp"
 #include "../../formalism/problem.hpp"
@@ -37,4 +37,4 @@ namespace mimir::planners
                                                      const mimir::planners::SuccessorGenerator& successor_generator);
 }  // namespace planners
 
-#endif  // PLANNERS_HEURISTIC_H1_HPP_
+#endif  // MIMIR_PLANNERS_HEURISTIC_H1_HPP_

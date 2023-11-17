@@ -1,5 +1,5 @@
-#ifndef PLANNERS_OPEN_LIST_BASE_HPP_
-#define PLANNERS_OPEN_LIST_BASE_HPP_
+#ifndef MIMIR_PLANNERS_OPEN_LIST_BASE_HPP_
+#define MIMIR_PLANNERS_OPEN_LIST_BASE_HPP_
 
 #include <memory>
 
@@ -21,4 +21,4 @@ namespace mimir::planners
     using OpenList = std::shared_ptr<OpenListBase<int32_t>>;
 }  // namespace planners
 
-#endif  // PLANNERS_OPEN_LIST_BASE_HPP_
+#endif  // MIMIR_PLANNERS_OPEN_LIST_BASE_HPP_

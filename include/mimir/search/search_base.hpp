@@ -1,5 +1,5 @@
-#ifndef PLANNERS_SEARCH_BASE_HPP_
-#define PLANNERS_SEARCH_BASE_HPP_
+#ifndef MIMIR_PLANNERS_SEARCH_BASE_HPP_
+#define MIMIR_PLANNERS_SEARCH_BASE_HPP_
 
 #include "../formalism/action.hpp"
 #include "search_result.hpp"
@@ -50,4 +50,4 @@ namespace mimir::planners
     using Search = std::shared_ptr<SearchBase>;
 }  // namespace planners
 
-#endif  // PLANNERS_SEARCH_BASE_HPP_
+#endif  // MIMIR_PLANNERS_SEARCH_BASE_HPP_

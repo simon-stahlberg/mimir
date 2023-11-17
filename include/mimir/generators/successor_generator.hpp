@@ -1,5 +1,5 @@
-#ifndef PLANNERS_SUCCESSOR_GENERATOR_HPP_
-#define PLANNERS_SUCCESSOR_GENERATOR_HPP_
+#ifndef MIMIR_PLANNERS_SUCCESSOR_GENERATOR_HPP_
+#define MIMIR_PLANNERS_SUCCESSOR_GENERATOR_HPP_
 
 #include "../formalism/declarations.hpp"
 #include "../formalism/state.hpp"
@@ -21,4 +21,4 @@ namespace mimir::planners
     using SuccessorGenerator = std::shared_ptr<SuccessorGeneratorBase>;
 }  // namespace planners
 
-#endif  // PLANNERS_SUCCESSOR_GENERATOR_HPP_
+#endif  // MIMIR_PLANNERS_SUCCESSOR_GENERATOR_HPP_

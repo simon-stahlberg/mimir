@@ -1,5 +1,5 @@
-#ifndef PLANNERS_GOAL_GENERATOR_HPP_
-#define PLANNERS_GOAL_GENERATOR_HPP_
+#ifndef MIMIR_PLANNERS_GOAL_GENERATOR_HPP_
+#define MIMIR_PLANNERS_GOAL_GENERATOR_HPP_
 
 #include "../formalism/atom.hpp"
 #include "../formalism/state.hpp"
@@ -30,4 +30,4 @@ namespace mimir::planners
     };
 }  // namespace planners
 
-#endif  // PLANNERS_GOAL_GENERATOR_HPP_
+#endif  // MIMIR_PLANNERS_GOAL_GENERATOR_HPP_

@@ -1,5 +1,5 @@
-#ifndef ALGORITHMS_KPKC_HPP_
-#define ALGORITHMS_KPKC_HPP_
+#ifndef MIMIR_ALGORITHMS_KPKC_HPP_
+#define MIMIR_ALGORITHMS_KPKC_HPP_
 
 #include <boost/dynamic_bitset.hpp>
 #include <chrono>
@@ -16,4 +16,4 @@ namespace mimir::algorithms
                                                std::vector<std::vector<std::size_t>>& out_cliques);
 }  // namespace algorithms
 
-#endif  // ALGORITHMS_KPKC_HPP_
+#endif  // MIMIR_ALGORITHMS_KPKC_HPP_

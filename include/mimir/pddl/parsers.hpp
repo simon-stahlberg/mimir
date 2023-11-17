@@ -1,6 +1,6 @@
-#ifndef PARSERS_PARSERS_HPP_
-#define PARSERS_PARSERS_HPP_
+#ifndef MIMIR_PARSERS_PARSERS_HPP_
+#define MIMIR_PARSERS_PARSERS_HPP_
 
 #include "pddl_parser.hpp"
 
-#endif  // PARSERS_PARSERS_HPP_
+#endif  // MIMIR_PARSERS_PARSERS_HPP_

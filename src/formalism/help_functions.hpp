@@ -1,5 +1,5 @@
-#ifndef FORMALISM_HELP_FUNCTIONS_HPP_
-#define FORMALISM_HELP_FUNCTIONS_HPP_
+#ifndef MIMIR_FORMALISM_HELP_FUNCTIONS_HPP_
+#define MIMIR_FORMALISM_HELP_FUNCTIONS_HPP_
 
 #include <cstdint>
 #include <functional>
@@ -119,4 +119,4 @@ constexpr bool equal_to_combine(const std::tuple<Types...>& left, const std::tup
     return equal_to_for_each(left, right, std::index_sequence_for<Types...> {});
 }
 
-#endif  // FORMALISM_HELP_FUNCTIONS_HPP_
+#endif  // MIMIR_FORMALISM_HELP_FUNCTIONS_HPP_

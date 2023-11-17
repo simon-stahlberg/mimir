@@ -1,5 +1,5 @@
-#ifndef FORMALISM_STATE_HPP_
-#define FORMALISM_STATE_HPP_
+#ifndef MIMIR_FORMALISM_STATE_HPP_
+#define MIMIR_FORMALISM_STATE_HPP_
 
 #include "action.hpp"
 #include "action_schema.hpp"
@@ -140,4 +140,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_STATE_HPP_
+#endif  // MIMIR_FORMALISM_STATE_HPP_

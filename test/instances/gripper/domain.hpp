@@ -1,5 +1,5 @@
-#ifndef TEST_INSTANCES_GRIPPER_DOMAIN_HPP_
-#define TEST_INSTANCES_GRIPPER_DOMAIN_HPP_
+#ifndef MIMIR_TEST_INSTANCES_GRIPPER_DOMAIN_HPP_
+#define MIMIR_TEST_INSTANCES_GRIPPER_DOMAIN_HPP_
 
 #include "../../expect_structures.hpp"
 
@@ -52,4 +52,4 @@ namespace test::gripper
 )";
 }  // namespace test
 
-#endif  // TEST_INSTANCES_GRIPPER_DOMAIN_HPP_
+#endif  // MIMIR_TEST_INSTANCES_GRIPPER_DOMAIN_HPP_

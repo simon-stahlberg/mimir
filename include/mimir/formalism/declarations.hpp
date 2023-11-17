@@ -1,5 +1,5 @@
-#ifndef FORMALISM_DECLARATIONS_HPP_
-#define FORMALISM_DECLARATIONS_HPP_
+#ifndef MIMIR_FORMALISM_DECLARATIONS_HPP_
+#define MIMIR_FORMALISM_DECLARATIONS_HPP_
 
 #include "../datastructures/robin_map.hpp"
 #include "../datastructures/robin_set.hpp"
@@ -67,4 +67,4 @@ namespace mimir::formalism
     using TransitionList = std::vector<Transition>;
 }  // namespace formalism
 
-#endif  // FORMALISM_DECLARATIONS_HPP_
+#endif  // MIMIR_FORMALISM_DECLARATIONS_HPP_

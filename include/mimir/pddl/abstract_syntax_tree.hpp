@@ -1,5 +1,5 @@
-#ifndef PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
-#define PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
+#ifndef MIMIR_PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
+#define MIMIR_PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
 
 #include "../formalism/action_schema.hpp"
 #include "../formalism/domain.hpp"
@@ -379,4 +379,4 @@ namespace mimir::parsers
     };
 }  // namespace parsers
 
-#endif  // PARSERS_ABSTRACT_SYNTAX_TREE_HPP_
+#endif  // MIMIR_PARSERS_ABSTRACT_SYNTAX_TREE_HPP_

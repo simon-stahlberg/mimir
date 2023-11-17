@@ -2,8 +2,8 @@
 // MurmurHash3 was written by Austin Appleby, and is placed in the public
 // domain. The author hereby disclaims copyright to this source code.
 
-#ifndef _MURMURHASH3_H_
-#define _MURMURHASH3_H_
+#ifndef MIMIR__MURMURHASH3_H_
+#define MIMIR__MURMURHASH3_H_
 
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros
@@ -22,7 +22,7 @@ typedef unsigned __int64 uint64_t;
 
 #include <stdint.h>
 
-#endif  // !defined(_MSC_VER)
+#endif  // MIMIR_!defined(_MSC_VER)
 
 //-----------------------------------------------------------------------------
 
@@ -34,4 +34,4 @@ void MurmurHash3_x64_128(const void* key, int len, uint32_t seed, void* out);
 
 //-----------------------------------------------------------------------------
 
-#endif  // _MURMURHASH3_H_
+#endif  // MIMIR__MURMURHASH3_H_

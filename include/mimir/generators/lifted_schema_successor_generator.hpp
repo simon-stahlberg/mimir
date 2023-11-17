@@ -1,5 +1,5 @@
-#ifndef PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_
-#define PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_
+#ifndef MIMIR_PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_
+#define MIMIR_PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_
 
 #include "../datastructures/robin_map.hpp"
 #include "../formalism/action.hpp"
@@ -106,4 +106,4 @@ namespace mimir::planners
     };
 }  // namespace planners
 
-#endif  // PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_
+#endif  // MIMIR_PLANNERS_LIFTED_SCHEMA_SUCCESSOR_GENERATOR_HPP_

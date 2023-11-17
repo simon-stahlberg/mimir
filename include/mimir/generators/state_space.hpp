@@ -1,5 +1,5 @@
-#ifndef PLANNERS_STATE_SPACE_HPP_
-#define PLANNERS_STATE_SPACE_HPP_
+#ifndef MIMIR_PLANNERS_STATE_SPACE_HPP_
+#define MIMIR_PLANNERS_STATE_SPACE_HPP_
 
 #include "../formalism/declarations.hpp"
 #include "../formalism/domain.hpp"
@@ -128,4 +128,4 @@ namespace mimir::planners
 
 }  // namespace planners
 
-#endif  // PLANNERS_STATE_SPACE_HPP_
+#endif  // MIMIR_PLANNERS_STATE_SPACE_HPP_

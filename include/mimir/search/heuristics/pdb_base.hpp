@@ -1,5 +1,5 @@
-#ifndef PLANNERS_PDB_BASE_HPP_
-#define PLANNERS_PDB_BASE_HPP_
+#ifndef MIMIR_PLANNERS_PDB_BASE_HPP_
+#define MIMIR_PLANNERS_PDB_BASE_HPP_
 
 #include "../../formalism/problem.hpp"
 #include "../../formalism/state.hpp"
@@ -24,4 +24,4 @@ namespace mimir::planners
 
 }  // namespace planners
 
-#endif  // PLANNERS_PDB_BASE_HPP_
+#endif  // MIMIR_PLANNERS_PDB_BASE_HPP_

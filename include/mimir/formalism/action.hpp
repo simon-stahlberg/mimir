@@ -1,5 +1,5 @@
-#ifndef FORMALISM_ACTION_HPP_
-#define FORMALISM_ACTION_HPP_
+#ifndef MIMIR_FORMALISM_ACTION_HPP_
+#define MIMIR_FORMALISM_ACTION_HPP_
 
 #include "action_schema.hpp"
 #include "bitset.hpp"
@@ -115,4 +115,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_ACTION_HPP_
+#endif  // MIMIR_FORMALISM_ACTION_HPP_

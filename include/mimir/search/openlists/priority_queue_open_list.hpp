@@ -1,5 +1,5 @@
-#ifndef PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_
-#define PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_
+#ifndef MIMIR_PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_
+#define MIMIR_PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_
 
 #include "open_list_base.hpp"
 
@@ -27,4 +27,4 @@ namespace mimir::planners
     std::shared_ptr<PriorityQueueOpenList<int32_t>> create_priority_queue_open_list();
 }  // namespace planners
 
-#endif  // PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_
+#endif  // MIMIR_PLANNERS_PRIORITY_QUEUE_OPEN_LIST_HPP_

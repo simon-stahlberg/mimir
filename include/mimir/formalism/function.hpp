@@ -1,5 +1,5 @@
-#ifndef FORMALISM_FUNCTION_HPP_
-#define FORMALISM_FUNCTION_HPP_
+#ifndef MIMIR_FORMALISM_FUNCTION_HPP_
+#define MIMIR_FORMALISM_FUNCTION_HPP_
 
 #include "declarations.hpp"
 
@@ -45,4 +45,4 @@ namespace mimir::formalism
     Function create_unit_cost_function(const mimir::formalism::DomainDescription& domain);
 }  // namespace formalism
 
-#endif  // FORMALISM_FUNCTION_HPP_
+#endif  // MIMIR_FORMALISM_FUNCTION_HPP_

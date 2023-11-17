@@ -1,5 +1,5 @@
-#ifndef FORMALISM_ATOM_HPP_
-#define FORMALISM_ATOM_HPP_
+#ifndef MIMIR_FORMALISM_ATOM_HPP_
+#define MIMIR_FORMALISM_ATOM_HPP_
 
 #include "declarations.hpp"
 #include "object.hpp"
@@ -89,4 +89,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_ATOM_HPP_
+#endif  // MIMIR_FORMALISM_ATOM_HPP_

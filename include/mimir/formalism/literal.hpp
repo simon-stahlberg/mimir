@@ -1,5 +1,5 @@
-#ifndef FORMALISM_LITERAL_HPP_
-#define FORMALISM_LITERAL_HPP_
+#ifndef MIMIR_FORMALISM_LITERAL_HPP_
+#define MIMIR_FORMALISM_LITERAL_HPP_
 
 #include "atom.hpp"
 #include "declarations.hpp"
@@ -70,4 +70,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_LITERAL_HPP_
+#endif  // MIMIR_FORMALISM_LITERAL_HPP_

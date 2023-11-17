@@ -1,5 +1,5 @@
-#ifndef FORMALISM_TRANSITION_HPP_
-#define FORMALISM_TRANSITION_HPP_
+#ifndef MIMIR_FORMALISM_TRANSITION_HPP_
+#define MIMIR_FORMALISM_TRANSITION_HPP_
 
 #include "action.hpp"
 #include "declarations.hpp"
@@ -52,4 +52,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_TRANSITION_HPP_
+#endif  // MIMIR_FORMALISM_TRANSITION_HPP_

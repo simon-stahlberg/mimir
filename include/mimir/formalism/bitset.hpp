@@ -1,5 +1,5 @@
-#ifndef FORMALISM_BITSET_HPP_
-#define FORMALISM_BITSET_HPP_
+#ifndef MIMIR_FORMALISM_BITSET_HPP_
+#define MIMIR_FORMALISM_BITSET_HPP_
 
 #include <algorithm>
 #include <vector>

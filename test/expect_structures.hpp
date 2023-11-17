@@ -1,5 +1,5 @@
-#ifndef TEST_EXPECT_STRUCTURES_HPP_
-#define TEST_EXPECT_STRUCTURES_HPP_
+#ifndef MIMIR_TEST_EXPECT_STRUCTURES_HPP_
+#define MIMIR_TEST_EXPECT_STRUCTURES_HPP_
 
 #include <cstddef>
 namespace test
@@ -19,4 +19,4 @@ namespace test
         std::size_t num_goal;
     };
 }  // namespace test
-#endif  // TEST_EXPECT_STRUCTURES_HPP_
+#endif  // MIMIR_TEST_EXPECT_STRUCTURES_HPP_

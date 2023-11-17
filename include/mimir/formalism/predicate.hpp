@@ -1,5 +1,5 @@
-#ifndef FORMALISM_PREDICATE_HPP_
-#define FORMALISM_PREDICATE_HPP_
+#ifndef MIMIR_FORMALISM_PREDICATE_HPP_
+#define MIMIR_FORMALISM_PREDICATE_HPP_
 
 #include "declarations.hpp"
 
@@ -61,4 +61,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_PREDICATE_HPP_
+#endif  // MIMIR_FORMALISM_PREDICATE_HPP_

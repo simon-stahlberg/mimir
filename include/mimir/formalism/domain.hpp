@@ -1,5 +1,5 @@
-#ifndef FORMALISM_DOMAIN_HPP_
-#define FORMALISM_DOMAIN_HPP_
+#ifndef MIMIR_FORMALISM_DOMAIN_HPP_
+#define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "action_schema.hpp"
 #include "declarations.hpp"
@@ -80,4 +80,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_DOMAIN_HPP_
+#endif  // MIMIR_FORMALISM_DOMAIN_HPP_

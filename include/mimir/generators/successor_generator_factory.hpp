@@ -1,5 +1,5 @@
-#ifndef PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
-#define PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
+#ifndef MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
+#define MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
 
 #include "../formalism/problem.hpp"
 #include "successor_generator.hpp"
@@ -18,4 +18,4 @@ namespace mimir::planners
     SuccessorGenerator create_sucessor_generator(const mimir::formalism::ProblemDescription& problem, SuccessorGeneratorType type);
 }  // namespace planners
 
-#endif  // PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
+#endif  // MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_

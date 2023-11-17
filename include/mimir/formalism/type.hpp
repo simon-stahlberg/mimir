@@ -1,5 +1,5 @@
-#ifndef FORMALISM_TYPE_HPP_
-#define FORMALISM_TYPE_HPP_
+#ifndef MIMIR_FORMALISM_TYPE_HPP_
+#define MIMIR_FORMALISM_TYPE_HPP_
 
 #include <memory>
 #include <string>
@@ -59,4 +59,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_TYPE_HPP_
+#endif  // MIMIR_FORMALISM_TYPE_HPP_

@@ -1,5 +1,5 @@
-#ifndef TEST_INSTANCES_BLOCKS_PROBLEM_HPP_
-#define TEST_INSTANCES_BLOCKS_PROBLEM_HPP_
+#ifndef MIMIR_TEST_INSTANCES_BLOCKS_PROBLEM_HPP_
+#define MIMIR_TEST_INSTANCES_BLOCKS_PROBLEM_HPP_
 
 #include "../../expect_structures.hpp"
 
@@ -37,4 +37,4 @@ namespace test::blocks
     )
 )";
 }  // namespace test
-#endif  // TEST_INSTANCES_BLOCKS_PROBLEM_HPP_
+#endif  // MIMIR_TEST_INSTANCES_BLOCKS_PROBLEM_HPP_

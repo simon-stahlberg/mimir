@@ -1,5 +1,5 @@
-#ifndef FORMALISM_PRINT_FUNCTIONS_HPP_
-#define FORMALISM_PRINT_FUNCTIONS_HPP_
+#ifndef MIMIR_FORMALISM_PRINT_FUNCTIONS_HPP_
+#define MIMIR_FORMALISM_PRINT_FUNCTIONS_HPP_
 
 #include "atom.hpp"
 
@@ -34,4 +34,4 @@ namespace mimir::formalism
     }
 }  // namespace formalism
 
-#endif  // FORMALISM_PRINT_FUNCTIONS_HPP_
+#endif  // MIMIR_FORMALISM_PRINT_FUNCTIONS_HPP_

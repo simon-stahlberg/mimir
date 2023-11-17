@@ -1,5 +1,5 @@
-#ifndef PLANNERS_HEURISTIC_BASE_HPP_
-#define PLANNERS_HEURISTIC_BASE_HPP_
+#ifndef MIMIR_PLANNERS_HEURISTIC_BASE_HPP_
+#define MIMIR_PLANNERS_HEURISTIC_BASE_HPP_
 
 #include "../../formalism/state.hpp"
 
@@ -25,4 +25,4 @@ namespace mimir::planners
     using Heuristic = std::shared_ptr<HeuristicBase>;
 }  // namespace planners
 
-#endif  // PLANNERS_HEURISTIC_BASE_HPP_
+#endif  // MIMIR_PLANNERS_HEURISTIC_BASE_HPP_

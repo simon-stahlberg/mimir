@@ -1,5 +1,5 @@
-#ifndef PLANNERS_ACTION_SCHEMA_FLAT_REPRESENTATION_HPP_
-#define PLANNERS_ACTION_SCHEMA_FLAT_REPRESENTATION_HPP_
+#ifndef MIMIR_PLANNERS_ACTION_SCHEMA_FLAT_REPRESENTATION_HPP_
+#define MIMIR_PLANNERS_ACTION_SCHEMA_FLAT_REPRESENTATION_HPP_
 
 #include "../formalism/action.hpp"
 #include "../formalism/action_schema.hpp"
@@ -67,4 +67,4 @@ namespace mimir::planners
     };
 }  // namespace planners
 
-#endif  // PLANNERS_ACTION_SCHEMA_FLAT_REPRESENTATION_HPP_
+#endif  // MIMIR_PLANNERS_ACTION_SCHEMA_FLAT_REPRESENTATION_HPP_

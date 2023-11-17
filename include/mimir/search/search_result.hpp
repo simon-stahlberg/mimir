@@ -1,5 +1,5 @@
-#ifndef PLANNERS_SEARCH_RESULT_HPP_
-#define PLANNERS_SEARCH_RESULT_HPP_
+#ifndef MIMIR_PLANNERS_SEARCH_RESULT_HPP_
+#define MIMIR_PLANNERS_SEARCH_RESULT_HPP_
 
 namespace mimir::planners
 {
@@ -11,4 +11,4 @@ namespace mimir::planners
     };
 }  // namespace planners
 
-#endif  // PLANNERS_SEARCH_RESULT_HPP_
+#endif  // MIMIR_PLANNERS_SEARCH_RESULT_HPP_

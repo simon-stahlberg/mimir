@@ -1,5 +1,5 @@
-#ifndef PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_
-#define PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_
+#ifndef MIMIR_PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_
+#define MIMIR_PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_
 
 #include "../formalism/action.hpp"
 #include "../formalism/declarations.hpp"
@@ -74,4 +74,4 @@ namespace mimir::planners
     };
 }  // namespace planners
 
-#endif  // PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_
+#endif  // MIMIR_PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_

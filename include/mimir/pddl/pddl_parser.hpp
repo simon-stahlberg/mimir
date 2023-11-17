@@ -1,5 +1,5 @@
-#ifndef PDDL_PARSER_DOMAIN_HPP_
-#define PDDL_PARSER_DOMAIN_HPP_
+#ifndef MIMIR_PDDL_PARSER_DOMAIN_HPP_
+#define MIMIR_PDDL_PARSER_DOMAIN_HPP_
 
 #include "../formalism/domain.hpp"
 
@@ -44,4 +44,4 @@ namespace mimir::parsers
     };
 }  // namespace parsers
 
-#endif  // PDDL_PARSER_DOMAIN_HPP_
+#endif  // MIMIR_PDDL_PARSER_DOMAIN_HPP_

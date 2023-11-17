@@ -1,5 +1,5 @@
-#ifndef PLANNERS_BREADTH_FIRST_SEARCH_HPP_
-#define PLANNERS_BREADTH_FIRST_SEARCH_HPP_
+#ifndef MIMIR_PLANNERS_BREADTH_FIRST_SEARCH_HPP_
+#define MIMIR_PLANNERS_BREADTH_FIRST_SEARCH_HPP_
 
 #include "../formalism/problem.hpp"
 #include "../generators/successor_generator.hpp"
@@ -35,4 +35,4 @@ namespace mimir::planners
                                                    const mimir::planners::SuccessorGenerator& successor_generator);
 }  // namespace planners
 
-#endif  // PLANNERS_BREADTH_FIRST_SEARCH_HPP_
+#endif  // MIMIR_PLANNERS_BREADTH_FIRST_SEARCH_HPP_

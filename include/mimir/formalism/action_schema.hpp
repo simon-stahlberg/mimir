@@ -1,5 +1,5 @@
-#ifndef FORMALISM_ACTION_SCHEMA_HPP_
-#define FORMALISM_ACTION_SCHEMA_HPP_
+#ifndef MIMIR_FORMALISM_ACTION_SCHEMA_HPP_
+#define MIMIR_FORMALISM_ACTION_SCHEMA_HPP_
 
 #include "declarations.hpp"
 #include "function.hpp"
@@ -86,4 +86,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_ACTION_SCHEMA_HPP_
+#endif  // MIMIR_FORMALISM_ACTION_SCHEMA_HPP_

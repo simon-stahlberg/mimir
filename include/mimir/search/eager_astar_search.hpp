@@ -1,5 +1,5 @@
-#ifndef PLANNERS_EAGER_ASTAR_SEARCH_HPP_
-#define PLANNERS_EAGER_ASTAR_SEARCH_HPP_
+#ifndef MIMIR_PLANNERS_EAGER_ASTAR_SEARCH_HPP_
+#define MIMIR_PLANNERS_EAGER_ASTAR_SEARCH_HPP_
 
 #include "../formalism/problem.hpp"
 #include "../generators/successor_generator.hpp"
@@ -46,4 +46,4 @@ namespace mimir::planners
                                         const mimir::planners::OpenList& open_list);
 }  // namespace planners
 
-#endif  // PLANNERS_EAGER_ASTAR_SEARCH_HPP_
+#endif  // MIMIR_PLANNERS_EAGER_ASTAR_SEARCH_HPP_

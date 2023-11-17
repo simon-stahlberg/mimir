@@ -1,5 +1,5 @@
-#ifndef FORMALISM_CONDITIONAL_HPP_
-#define FORMALISM_CONDITIONAL_HPP_
+#ifndef MIMIR_FORMALISM_CONDITIONAL_HPP_
+#define MIMIR_FORMALISM_CONDITIONAL_HPP_
 
 #include "declarations.hpp"
 #include "literal.hpp"
@@ -69,4 +69,4 @@ namespace std
     };
 }  // namespace std
 
-#endif  // FORMALISM_CONDITIONAL_HPP_
+#endif  // MIMIR_FORMALISM_CONDITIONAL_HPP_

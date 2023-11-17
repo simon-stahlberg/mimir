@@ -1,5 +1,5 @@
-#ifndef FORMALISM_OBJECT_HPP_
-#define FORMALISM_OBJECT_HPP_
+#ifndef MIMIR_FORMALISM_OBJECT_HPP_
+#define MIMIR_FORMALISM_OBJECT_HPP_
 
 #include "declarations.hpp"
 #include "type.hpp"
@@ -70,4 +70,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_OBJECT_HPP_
+#endif  // MIMIR_FORMALISM_OBJECT_HPP_

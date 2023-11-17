@@ -1,5 +1,5 @@
-#ifndef FORMALISM_PROBLEM_HPP_
-#define FORMALISM_PROBLEM_HPP_
+#ifndef MIMIR_FORMALISM_PROBLEM_HPP_
+#define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "../datastructures/robin_map.hpp"
 #include "action_schema.hpp"
@@ -118,4 +118,4 @@ namespace std
 
 }  // namespace std
 
-#endif  // FORMALISM_PROBLEM_HPP_
+#endif  // MIMIR_FORMALISM_PROBLEM_HPP_
