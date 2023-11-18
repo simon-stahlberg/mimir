@@ -28,23 +28,23 @@ endif()
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(include)
-add_subdirectory(src)
-add_subdirectory(test)
+
+file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
+file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 
 # ------------
 # Target Mimir
 # ------------
 if(BUILD_LIBMIMIR)
-    add_library(mimir STATIC "lib/mimir.cpp")
+    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES})
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
-    target_link_libraries(mimir PRIVATE algorithms formalism generators pddl search)
 
     target_include_directories(mimir PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     )
 
-    install(TARGETS mimir algorithms formalism generators pddl search
+    install(TARGETS mimir
         EXPORT MimirTargets
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
@@ -53,7 +53,7 @@ if(BUILD_LIBMIMIR)
     )
 
     install(DIRECTORY include/ DESTINATION include)
-    export(TARGETS mimir algorithms formalism generators pddl search NAMESPACE mimir:: FILE MimirConfig.cmake)
+    export(TARGETS mimir NAMESPACE mimir:: FILE MimirConfig.cmake)
     include(CMakePackageConfigHelpers)
 
     write_basic_package_version_file(
@@ -92,10 +92,10 @@ if(BUILD_PYMIMIR)
     find_package(PythonLibs REQUIRED)
     set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
     include_directories(${PYTHON_INCLUDE_DIRS})
-    add_library(pymimir MODULE lib/pymimir.cpp)
+    add_library(pymimir MODULE lib/pymimir.cpp ${MIMIR_SRC_FILES})
     set_property(TARGET pymimir PROPERTY CXX_STANDARD 17)
     set_target_properties(pymimir PROPERTIES PREFIX "")
-    target_link_libraries(pymimir algorithms formalism generators pddl search ${PYTHON_LIBRARIES})
+    target_link_libraries(pymimir ${PYTHON_LIBRARIES})
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         target_compile_definitions(pymimir PRIVATE NDEBUG)
@@ -124,9 +124,8 @@ endif()
 # Target Profiling
 # ----------------
 if(BUILD_PROFILING)
-    add_executable(profiling bin/profiling.cpp)
-    set_property(TARGET profiling PROPERTY CXX_STANDARD 17)
-    target_link_libraries(profiling formalism generators pddl search)
+    add_executable(mimir-profile bin/profiling.cpp ${MIMIR_SRC_FILES})
+    set_property(TARGET mimir-profile PROPERTY CXX_STANDARD 17)
 endif()
 
 # -----------
@@ -136,8 +135,7 @@ if(BUILD_TESTS)
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
     include(GoogleTest)
-    file(GLOB TEST_SOURCES "test/*.cpp")
-    add_executable(mimir-test ${TEST_SOURCES})
-    target_link_libraries(mimir-test pddl formalism algorithms generators search ${GTEST_BOTH_LIBRARIES} pthread)
+    add_executable(mimir-test ${MIMIR_TEST_FILES} ${MIMIR_SRC_FILES})
+    target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} pthread)
     gtest_discover_tests(mimir-test)
 endif()

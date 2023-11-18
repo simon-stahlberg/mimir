@@ -1,7 +1,0 @@
-file(GLOB SEARCH_SRC_FILES "*.cpp")
-file(GLOB HEURISTICS_SRC_FILES "heuristics/*.cpp")
-file(GLOB OPEN_LISTS_SRC_FILES "openlists/*.cpp")
-add_library(search STATIC ${SEARCH_SRC_FILES} ${HEURISTICS_SRC_FILES} ${OPEN_LISTS_SRC_FILES})
-target_link_libraries(search algorithms)
-target_link_libraries(search formalism)
-target_link_libraries(search generators)
