@@ -47,7 +47,7 @@ namespace mimir::planners
         h1_table_.resize(num_ranks);
         h2_table_.resize(num_ranks);
 
-        for (std::size_t i = 0; i < num_ranks; ++i)
+        for (int32_t i = 0; i < num_ranks; ++i)
         {
             h2_table_[i].resize(num_ranks);
         }

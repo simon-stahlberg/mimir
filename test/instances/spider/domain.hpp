@@ -7,7 +7,7 @@
 
 namespace test::spider
 {
-    static DomainParseResult domain_parse_result = { num_action_schemas : 16, num_predicates : 21, num_constants : 1, num_types : 6 };
+    static DomainParseResult domain_parse_result __attribute__((unused)) = { num_action_schemas : 16, num_predicates : 21, num_constants : 1, num_types : 6 };
 
     static std::string domain = R"(
 (define (domain spider)

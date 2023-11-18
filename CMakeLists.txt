@@ -21,10 +21,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+    if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+    endif()
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W1 /EHsc /bigobj /MP")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " /IGNORE:4006,4044,4075")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG -flto -fwhole-program -funroll-loops -fomit-frame-pointer")
+    set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
 endif()
+
+message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(include)

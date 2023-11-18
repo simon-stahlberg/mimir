@@ -7,7 +7,7 @@
 
 namespace test::spanner
 {
-    static DomainParseResult domain_parse_result = { num_action_schemas : 3, num_predicates : 6, num_constants : 0, num_types : 6 };
+    static DomainParseResult domain_parse_result __attribute__((unused)) = { num_action_schemas : 3, num_predicates : 6, num_constants : 0, num_types : 6 };
 
     static std::string domain = R"(
 (define (domain spanner)

@@ -143,8 +143,6 @@ namespace mimir::planners
 
     void H1Heuristic::fill_tables(const mimir::formalism::State& state) const
     {
-        const auto num_atoms = table_.size();
-
         for (auto& value : table_)
         {
             value = DEAD_END;

@@ -7,7 +7,7 @@
 
 namespace test::spider
 {
-    static ProblemParseResult problem_parse_result = { num_objects : 19, num_initial : 92, num_goal : 17 };
+    static ProblemParseResult problem_parse_result __attribute__((unused)) = { num_objects : 19, num_initial : 92, num_goal : 17 };
 
     static int32_t bfs_result[] = { 0,    1,    4,    7,    10,   13,   22,   29,   36,   41,   56,    67,    76,    93,    115,   128,   154,
                                     183,  213,  243,  288,  340,  397,  453,  523,  615,  715,  798,   916,   1018,  1143,  1261,  1414,  1543,
@@ -16,7 +16,7 @@ namespace test::spider
 
     static constexpr int32_t bfs_length = std::extent<decltype(bfs_result)>::value;
 
-    static int32_t bfs_plan_length = 67;
+    static int32_t bfs_plan_length __attribute__((unused)) = 67;
 
     static std::string problem = R"(
 (define (problem spider-1-4-3-3-2-1400)

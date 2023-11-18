@@ -173,7 +173,7 @@ void astar(const mimir::formalism::ProblemDescription& problem, const mimir::pla
             const auto generated = std::get<int32_t>(statistics.at("generated"));
             const auto evaluated = std::get<int32_t>(statistics.at("evaluated"));
             // const auto depth = std::get<int32_t>(statistics.at("max_depth"));
-            const auto g_value = std::get<double>(statistics.at("max_g_value"));
+            // const auto g_value = std::get<double>(statistics.at("max_g_value"));
             const auto f_value = std::get<double>(statistics.at("max_f_value"));
             std::cout << "[f = " << f_value << "] Expanded: " << expanded << "; Generated: " << generated << "; Evaluated: " << evaluated << " [" << time_delta
                       << " ms; ";

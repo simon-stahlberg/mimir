@@ -7,13 +7,13 @@
 
 namespace test::blocks
 {
-    static ProblemParseResult problem_parse_result = { num_objects : 4, num_initial : 9, num_goal : 3 };
+    static ProblemParseResult problem_parse_result __attribute__((unused)) = { num_objects : 4, num_initial : 9, num_goal : 3 };
 
     static int32_t bfs_result[] = { 0, 1, 5, 17, 41, 77, 101 };
 
     static constexpr int32_t bfs_length = std::extent<decltype(bfs_result)>::value;
 
-    static int32_t bfs_plan_length = 6;
+    static int32_t bfs_plan_length __attribute__((unused)) = 6;
 
     static std::string problem = R"(
 (define (problem blocks-4-0)

@@ -41,9 +41,9 @@ namespace test
     TEST_P(ExpandTest, Parameterized)
     {
         const auto domain_text = std::get<0>(GetParam());
-        const auto domain_result = std::get<1>(GetParam());
+        // const auto domain_result = std::get<1>(GetParam());
         const auto problem_text = std::get<2>(GetParam());
-        const auto problem_result = std::get<3>(GetParam());
+        // const auto problem_result = std::get<3>(GetParam());
 
         std::istringstream domain_stream(domain_text);
         std::istringstream problem_stream(problem_text);

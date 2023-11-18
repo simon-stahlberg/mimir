@@ -511,7 +511,6 @@ namespace mimir::planners
             }
 
             mimir::formalism::ObjectList terms(flat_action_schema_.arity);
-            const auto& parameters = flat_action_schema_.get_parameters();
 
             for (std::size_t vertex_index = 0; vertex_index < flat_action_schema_.arity; ++vertex_index)
             {
@@ -519,7 +518,6 @@ namespace mimir::planners
                 const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
                 const auto parameter_index = vertex_assignment.parameter_index;
                 const auto object_id = vertex_assignment.object_id;
-                const auto& parameter = parameters[parameter_index];
                 terms[parameter_index] = problem_->get_object(object_id);
             }
 

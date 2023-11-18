@@ -7,13 +7,13 @@
 
 namespace test::gripper
 {
-    static ProblemParseResult problem_parse_result = { num_objects : 8, num_initial : 15, num_goal : 4 };
+    static ProblemParseResult problem_parse_result __attribute__((unused)) = { num_objects : 8, num_initial : 15, num_goal : 4 };
 
     static int32_t bfs_result[] = { 0, 1, 10, 30, 46, 74, 104, 134, 182, 218, 234, 246 };
 
     static constexpr int32_t bfs_length = std::extent<decltype(bfs_result)>::value;
 
-    static int32_t bfs_plan_length = 11;
+    static int32_t bfs_plan_length __attribute__((unused)) = 11;
 
     static std::string problem = R"(
 (define (problem strips-gripper-x-1)

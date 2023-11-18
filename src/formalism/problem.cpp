@@ -84,12 +84,11 @@ namespace mimir::formalism
         {
             // Indexing creates a new item if none exists, thus the size is at least 1.
             rank_with_offset = static_cast<uint32_t>(atom_ranks_.size());
-            const auto rank = rank_with_offset - 1;
 
-            assert(rank_to_atom_.size() == rank);
-            assert(rank_to_predicate_id_.size() == rank);
-            assert(rank_to_arity_.size() == rank);
-            assert(rank_to_argument_ids_.size() == rank);
+            assert(rank_to_atom_.size() == (rank_with_offset - 1));
+            assert(rank_to_predicate_id_.size() == (rank_with_offset - 1));
+            assert(rank_to_arity_.size() == (rank_with_offset - 1));
+            assert(rank_to_argument_ids_.size() == (rank_with_offset - 1));
 
             rank_to_atom_.emplace_back(atom);
             rank_to_predicate_id_.emplace_back(atom->predicate->id);
