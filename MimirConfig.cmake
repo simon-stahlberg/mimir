@@ -1,7 +1,0 @@
-include(CMakeFindDependencyMacro)
-set(Mimir_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
-add_library(Mimir INTERFACE)
-target_include_directories(Mimir INTERFACE $<BUILD_INTERFACE:${Mimir_INCLUDE_DIRS}> $<INSTALL_INTERFACE:include>)
-install(TARGETS Mimir EXPORT MimirTargets)
-install(DIRECTORY "${Mimir_INCLUDE_DIRS}/" DESTINATION "include")
-install(FILES MimirConfig.cmake DESTINATION lib/cmake/Mimir)
