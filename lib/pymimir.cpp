@@ -206,6 +206,7 @@ PYBIND11_MODULE(pymimir, m)
     type.def_readonly("base", &mimir::formalism::TypeImpl::base, "Gets the base type of the type.");
     type.def("__repr__", [](const mimir::formalism::TypeImpl& type) { return type.base ? ("<Type '" + type.name + " : " + type.base->name + "'>") : ("<Type '" + type.name + "'>"); });
 
+    object.def(py::init(&mimir::formalism::create_object), "id"_a, "name"_a, "type"_a, "Creates a new object with the given id, name and type.");
     object.def_readonly("id", &mimir::formalism::ObjectImpl::id, "Gets the identifier of the object.");
     object.def_readonly("name", &mimir::formalism::ObjectImpl::name, "Gets the name of the object.");
     object.def_readonly("type", &mimir::formalism::ObjectImpl::type, "Gets the type of the object.");
