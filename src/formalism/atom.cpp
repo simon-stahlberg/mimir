@@ -36,7 +36,9 @@ namespace mimir::formalism
 
             if (!mimir::formalism::is_subtype_of(argument_type, parameter_type))
             {
-                throw std::invalid_argument("type mismatch at index " + std::to_string(index));
+                const auto error_message = "type mismatch at index " + std::to_string(index) + ": expected \"" + parameter_type->name + "\" but got \""
+                                           + argument_type->name + "\" (" + arguments[index]->name + ")";
+                throw std::invalid_argument(error_message);
             }
         }
     }
