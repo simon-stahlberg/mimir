@@ -1,5 +1,5 @@
 import argparse
-import mimir
+import pymimir
 import random
 import time
 
@@ -13,18 +13,18 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    domain = mimir.DomainParser(str(args.domain_path)).parse()
-    problem = mimir.ProblemParser(str(args.problem_path)).parse(domain)
+    domain = pymimir.DomainParser(str(args.domain_path)).parse()
+    problem = pymimir.ProblemParser(str(args.problem_path)).parse(domain)
     time_start = time.time()
-    successor_generator = mimir.GroundedSuccessorGenerator(problem)
-    state_space = mimir.StateSpace.new(problem, successor_generator)
+    successor_generator = pymimir.GroundedSuccessorGenerator(problem)
+    state_space = pymimir.StateSpace.new(problem, successor_generator)
     time_end = time.time()
     print(f'StateSpace: {state_space.num_states()} [{time_end - time_start:.1f} seconds]')
     if state_space is None:
         print('Too many states. Aborting.')
         exit(1)
     # If you have a many different quantified goals over a specific state space, then the GoalMatcher is suitable for the task.
-    goal_matcher = mimir.GoalMatcher(state_space)
+    goal_matcher = pymimir.GoalMatcher(state_space)
     ground_atoms = problem.get_encountered_atoms()
     def get_random_atom():
         if random.randint(0, 1) > 0: return ground_atoms[random.randint(0, len(ground_atoms) - 1)]

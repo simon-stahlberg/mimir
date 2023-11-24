@@ -47,7 +47,7 @@ namespace mimir::planners
 
             for (const auto& state : state_space_->get_states())
             {
-                state_distances_initial_.emplace_back(state, state_space_->get_distance_to_goal_state(state));
+                state_distances_initial_.emplace_back(state, state_space_->get_distance_from_initial_state(state));
             }
 
             std::sort(state_distances_initial_.begin(), state_distances_initial_.end(), distance_ascending);
