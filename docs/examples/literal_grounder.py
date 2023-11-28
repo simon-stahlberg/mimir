@@ -24,9 +24,19 @@ def main():
     literal_grounder = pymimir.LiteralGrounder(problem, quantified_goal)
     bindings = literal_grounder.ground(problem.create_state(problem.initial))
     time_end = time.time()
-    print(f'# ground goals: {len(bindings)} [{time_end - time_start:.8f} seconds]')
+    print(f'# ground bindings: {len(bindings)} [{time_end - time_start:.8f} seconds]')
     for ground_goal, binding in bindings:
-        print(f'Ground goal: {ground_goal}, binding: {binding}')
+        print(f' - ground atoms: {ground_goal}, binding: {binding}')
+    # Enumerate all bindings for static atoms
+    time_start = time.time()
+    _ = pymimir.GroundedSuccessorGenerator(problem)  # Performs a reachability analysis, problem.get_encountered_atoms() is now populated properly.
+    static_literal_grounder = pymimir.LiteralGrounder(problem, quantified_goal)
+    static_bindings = static_literal_grounder.ground(problem.create_state(problem.get_encountered_atoms()))
+    time_end = time.time()
+    print(f'# static bindings: {len(static_bindings)} [{time_end - time_start:.8f} seconds]')
+    for ground_goal, binding in static_bindings:
+        print(f' - ground atoms: {ground_goal}, binding: {binding}')
+
 
 if __name__ == '__main__':
     main()
