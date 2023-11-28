@@ -92,40 +92,53 @@ namespace mimir::planners
         }
         else
         {
-            std::equal_to<mimir::formalism::Object> equal_to;
+            std::map<std::string, mimir::formalism::Parameter> parameter_map;
             mimir::formalism::ParameterList parameters;
             mimir::formalism::LiteralList precondition;
-            mimir::formalism::LiteralList effect;
+
+            // Create new parameters
 
             for (const auto& atom : goal)
             {
                 for (const auto& term : atom->arguments)
                 {
+                    if (term->is_free_variable() && !parameter_map.count(term->name))
+                    {
+                        const auto id = static_cast<uint32_t>(parameter_map.size());
+                        const auto new_parameter = mimir::formalism::create_object(id, term->name, term->type);
+                        parameter_map.emplace(term->name, new_parameter);
+                        parameters.emplace_back(new_parameter);
+                    }
+                }
+            }
+
+            // Create new atoms
+
+            for (const auto& atom : goal)
+            {
+                mimir::formalism::ParameterList new_terms;
+
+                for (const auto& term : atom->arguments)
+                {
                     if (term->is_free_variable())
                     {
-                        bool new_term = true;
-
-                        for (const auto& parameter : parameters)
-                        {
-                            if (equal_to(parameter, term))
-                            {
-                                new_term = false;
-                                break;
-                            }
-                        }
-
-                        if (new_term)
-                        {
-                            parameters.emplace_back(term);
-                        }
+                        new_terms.emplace_back(parameter_map.at(term->name));
+                    }
+                    else
+                    {
+                        new_terms.emplace_back(term);
                     }
                 }
 
-                precondition.emplace_back(mimir::formalism::create_literal(atom, false));
+                const auto new_atom = mimir::formalism::create_atom(atom->predicate, new_terms);
+                const auto new_literal = mimir::formalism::create_literal(new_atom, false);
+                precondition.emplace_back(new_literal);
             }
 
+            // Create action schema
+
             const auto unit_cost = mimir::formalism::create_unit_cost_function(state_space_->domain);
-            const auto action_schema = mimir::formalism::create_action_schema("dummy", parameters, precondition, effect, {}, unit_cost);
+            const auto action_schema = mimir::formalism::create_action_schema("dummy", parameters, precondition, {}, {}, unit_cost);
             mimir::planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state_space_->problem);
 
             for (const auto& [to_state, distance] : get_state_distances(from_state))

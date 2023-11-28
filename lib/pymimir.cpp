@@ -36,57 +36,69 @@ class LiteralGrounder
         action_schema_(nullptr),
         generator_(nullptr)
     {
-        std::equal_to<mimir::formalism::Object> equal_to;
+        std::map<std::string, mimir::formalism::Parameter> parameter_map;
         mimir::formalism::ParameterList parameters;
         mimir::formalism::LiteralList precondition;
-        mimir::formalism::LiteralList effect;
+
+        // Create new parameters
 
         for (const auto& atom : atom_list)
         {
             for (const auto& term : atom->arguments)
             {
+                if (term->is_free_variable() && !parameter_map.count(term->name))
+                {
+                    const auto id = static_cast<uint32_t>(parameter_map.size());
+                    const auto new_parameter = mimir::formalism::create_object(id, term->name, term->type);
+                    parameter_map.emplace(term->name, new_parameter);
+                    parameters.emplace_back(new_parameter);
+                }
+            }
+        }
+
+        // Create new atoms
+
+        for (const auto& atom : atom_list)
+        {
+            mimir::formalism::ParameterList new_terms;
+
+            for (const auto& term : atom->arguments)
+            {
                 if (term->is_free_variable())
                 {
-                    bool new_term = true;
-
-                    for (const auto& parameter : parameters)
-                    {
-                        if (equal_to(parameter, term))
-                        {
-                            new_term = false;
-                            break;
-                        }
-                    }
-
-                    if (new_term)
-                    {
-                        parameters.emplace_back(term);
-                    }
+                    new_terms.emplace_back(parameter_map.at(term->name));
+                }
+                else
+                {
+                    new_terms.emplace_back(term);
                 }
             }
 
-            precondition.emplace_back(mimir::formalism::create_literal(atom, false));
+            const auto new_atom = mimir::formalism::create_atom(atom->predicate, new_terms);
+            const auto new_literal = mimir::formalism::create_literal(new_atom, false);
+            precondition.emplace_back(new_literal);
         }
 
+        // Create action schema
+
         const auto unit_cost = mimir::formalism::create_unit_cost_function(problem->domain);
-        action_schema_ = mimir::formalism::create_action_schema("dummy", parameters, precondition, effect, {}, unit_cost);
+        action_schema_ = mimir::formalism::create_action_schema("dummy", parameters, precondition, {}, {}, unit_cost);
         generator_ = std::make_unique<mimir::planners::LiftedSchemaSuccessorGenerator>(action_schema_, problem);
     }
 
-    std::vector<std::pair<mimir::formalism::AtomList, std::vector<std::pair<mimir::formalism::Parameter, mimir::formalism::Object>>>>
+    std::vector<std::pair<mimir::formalism::AtomList, std::vector<std::pair<std::string, mimir::formalism::Object>>>>
     ground(const mimir::formalism::State& state)
     {
         const auto matches = generator_->get_applicable_actions(state);
 
-        std::vector<std::pair<mimir::formalism::AtomList, std::vector<std::pair<mimir::formalism::Parameter, mimir::formalism::Object>>>>
-            instantiations_and_bindings;
+        std::vector<std::pair<mimir::formalism::AtomList, std::vector<std::pair<std::string, mimir::formalism::Object>>>> instantiations_and_bindings;
 
         for (const auto& match : matches)
         {
             const auto& arguments = match->get_arguments();
 
             mimir::formalism::AtomList instantiation;
-            std::vector<std::pair<mimir::formalism::Parameter, mimir::formalism::Object>> binding;
+            std::vector<std::pair<std::string, mimir::formalism::Object>> binding;
 
             for (const auto& literal : match->get_precondition())
             {
@@ -97,7 +109,7 @@ class LiteralGrounder
             {
                 const auto& parameter = action_schema_->parameters.at(index);
                 const auto& object = arguments.at(index);
-                binding.emplace_back(parameter, object);
+                binding.emplace_back(parameter->name, object);
             }
 
             instantiations_and_bindings.emplace_back(std::make_pair(std::move(instantiation), std::move(binding)));
