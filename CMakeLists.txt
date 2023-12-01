@@ -113,10 +113,11 @@ if(BUILD_PYMIMIR)
     endif()
 
     if(MSVC)
-    # Add MSVC specific library linking here
+        # Add MSVC specific library linking here
     else()
+        target_link_libraries(pymimir -lstdc++fs)
         # These settings seem to cause issues with torch.
-        # target_link_libraries(pymimir -static-libstdc++ -lstdc++fs -static-libgcc)
+        # target_link_libraries(pymimir -static-libstdc++ -static-libgcc)
     endif()
 
     # Add pybind11 include directory
