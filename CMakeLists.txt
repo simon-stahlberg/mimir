@@ -28,6 +28,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W1 /EHsc /bigobj /MP")
     string(APPEND CMAKE_EXE_LINKER_FLAGS " /IGNORE:4006,4044,4075")
 else()
+    # TODO: Add -Wextra and fix all warnings
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
     set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
@@ -114,7 +115,8 @@ if(BUILD_PYMIMIR)
     if(MSVC)
     # Add MSVC specific library linking here
     else()
-        target_link_libraries(pymimir -static-libstdc++ -lstdc++fs -static-libgcc)
+        # These settings seem to cause issues with torch.
+        # target_link_libraries(pymimir -static-libstdc++ -lstdc++fs -static-libgcc)
     endif()
 
     # Add pybind11 include directory
