@@ -16,8 +16,8 @@
  */
 
 #include "../include/mimir/datastructures/robin_map.hpp"
+#include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/grounded_successor_generator.hpp"
-#include "../include/mimir/generators/state_space.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
 #include "../include/mimir/pddl/parsers.hpp"
 #include "../include/mimir/search/breadth_first_search.hpp"
@@ -136,7 +136,7 @@ void bfs(const mimir::formalism::ProblemDescription& problem, const mimir::plann
 
 void state_space(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
-    const auto state_space = mimir::planners::create_state_space(problem, successor_generator, 100'000);
+    const auto state_space = mimir::planners::create_complete_state_space(problem, successor_generator, 100'000);
 
     if (state_space)
     {

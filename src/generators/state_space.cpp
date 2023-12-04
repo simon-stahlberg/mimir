@@ -16,500 +16,64 @@
  */
 
 #include "../../include/mimir/generators/state_space.hpp"
-#include "../../include/mimir/generators/successor_generator_factory.hpp"
 #include "../formalism/help_functions.hpp"
-
-#include <algorithm>
-#include <chrono>
-#include <deque>
-#include <limits>
-
-namespace std
-{
-    template<>
-    struct hash<pair<uint64_t, uint64_t>>
-    {
-        size_t operator()(const pair<uint64_t, uint64_t>& x) const { return (size_t) x.first; }
-    };
-}  // namespace std
 
 namespace mimir::planners
 {
-    struct StateInfo
-    {
-        int32_t distance_from_initial_state;
-        int32_t distance_to_goal_state;
-
-        StateInfo(int32_t distance_from_initial_state, int32_t distance_to_goal_state) :
-            distance_from_initial_state(distance_from_initial_state),
-            distance_to_goal_state(distance_to_goal_state)
-        {
-        }
-    };
-
-    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::ProblemDescription& problem) :
-        states_(),
-        goal_states_(),
-        state_infos_(),
-        dead_end_states_(),
-        states_by_distance_(),
-        forward_transitions_(),
-        backward_transitions_(),
-        state_indices_(),
-        state_distances_(),
-        domain(problem->domain),
-        problem(problem)
-    {
-    }
+    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::ProblemDescription& problem) : domain(problem->domain), problem(problem) {}
 
     StateSpaceImpl::~StateSpaceImpl()
     {
-        states_.clear();
-        goal_states_.clear();
-        state_infos_.clear();
-        forward_transitions_.clear();
-        backward_transitions_.clear();
-        state_indices_.clear();
-        state_distances_.clear();
+        domain = nullptr;
+        problem = nullptr;
     }
-
-    bool StateSpaceImpl::add_or_get_state(const mimir::formalism::State& state, uint64_t& out_index)
-    {
-        const auto index_handler = state_indices_.find(state);
-
-        if (index_handler != state_indices_.end())
-        {
-            out_index = index_handler->second;
-            return false;
-        }
-        else
-        {
-            out_index = states_.size();
-            states_.push_back(state);
-            state_infos_.push_back(StateInfo(-1, -1));
-            forward_transitions_.push_back(std::vector<mimir::formalism::Transition>());
-            backward_transitions_.push_back(std::vector<mimir::formalism::Transition>());
-            state_indices_.insert(std::make_pair(state, out_index));
-
-            if (literals_hold(problem->goal, state))
-            {
-                goal_states_.push_back(state);
-            }
-
-            return true;
-        }
-    }
-
-    void StateSpaceImpl::add_goal_state(const mimir::formalism::State& state)
-    {
-        if (std::find(goal_states_.begin(), goal_states_.end(), state) == goal_states_.end())
-        {
-            goal_states_.push_back(state);
-        }
-    }
-
-    void StateSpaceImpl::add_transition(uint64_t from_state_index,
-                                        uint64_t to_state_index,
-                                        const mimir::formalism::Action& action,
-                                        uint64_t& out_from_forward_index,
-                                        uint64_t& out_to_backward_index)
-    {
-        out_from_forward_index = forward_transitions_[from_state_index].size();
-        out_to_backward_index = backward_transitions_[to_state_index].size();
-
-        const auto transition = create_transition(get_state(from_state_index), action, get_state(to_state_index));
-        forward_transitions_[from_state_index].push_back(transition);
-        backward_transitions_[to_state_index].push_back(transition);
-    }
-
-    const mimir::formalism::Transition& StateSpaceImpl::get_forward_transition(uint64_t state_index, uint64_t transition_index) const
-    {
-        return forward_transitions_[state_index][transition_index];
-    }
-
-    const mimir::formalism::Transition& StateSpaceImpl::get_backward_transition(uint64_t state_index, uint64_t transition_index) const
-    {
-        return backward_transitions_[state_index][transition_index];
-    }
-
-    const mimir::formalism::TransitionList& StateSpaceImpl::get_forward(uint64_t state_index) const { return forward_transitions_[state_index]; }
-
-    const mimir::formalism::TransitionList& StateSpaceImpl::get_backward(uint64_t state_index) const { return backward_transitions_[state_index]; }
-
-    mimir::formalism::State StateSpaceImpl::get_state(uint64_t state_index) const { return states_[state_index]; }
-
-    int32_t StateSpaceImpl::get_distance_to_goal(uint64_t state_index) const { return state_infos_[state_index].distance_to_goal_state; }
-
-    int32_t StateSpaceImpl::get_longest_distance_to_goal_state() const
-    {
-        int32_t longest_distance_to_goal_state = 0;
-
-        for (std::size_t index = 0; index < state_infos_.size(); ++index)
-        {
-            longest_distance_to_goal_state = std::max(longest_distance_to_goal_state, state_infos_[index].distance_to_goal_state);
-        }
-
-        return longest_distance_to_goal_state;
-    }
-
-    std::vector<uint32_t> StateSpaceImpl::get_distance_to_goal_state_histogram() const
-    {
-        std::vector<uint32_t> histogram;
-        histogram.resize(get_longest_distance_to_goal_state() + 1);
-
-        for (std::size_t index = 0; index < state_infos_.size(); ++index)
-        {
-            const auto distance = state_infos_[index].distance_to_goal_state;
-
-            if (distance >= 0)
-            {
-                ++histogram[distance];
-            }
-        }
-
-        return histogram;
-    }
-
-    std::vector<double> StateSpaceImpl::get_distance_to_goal_state_weights() const
-    {
-        const auto histogram = get_distance_to_goal_state_histogram();
-        const auto largest_class = (double) *std::max_element(histogram.begin(), histogram.end());
-
-        std::vector<double> weights;
-        weights.resize(histogram.size(), 1.0);
-
-        for (std::size_t index = 0; index < histogram.size(); ++index)
-        {
-            if (histogram[index] > 0)
-            {
-                weights[index] = largest_class / (double) histogram[index];
-            }
-        }
-
-        return weights;
-    }
-
-    int32_t StateSpaceImpl::get_distance_from_initial(uint64_t state_index) const { return state_infos_[state_index].distance_from_initial_state; }
 
     const std::vector<mimir::formalism::Transition>& StateSpaceImpl::get_forward_transitions(const mimir::formalism::State& state) const
     {
-        const auto index = get_state_index(state);
-        return forward_transitions_[index];
+        throw std::runtime_error("not implemented");
     }
 
     const std::vector<mimir::formalism::Transition>& StateSpaceImpl::get_backward_transitions(const mimir::formalism::State& state) const
     {
-        const auto index = get_state_index(state);
-        return backward_transitions_[index];
+        throw std::runtime_error("not implemented");
     }
 
-    const std::vector<mimir::formalism::State>& StateSpaceImpl::get_states() const { return states_; }
+    const std::vector<mimir::formalism::State>& StateSpaceImpl::get_states() const { throw std::runtime_error("not implemented"); }
 
-    mimir::formalism::State StateSpaceImpl::get_initial_state() const { return mimir::formalism::create_state(problem->initial, problem); }
+    mimir::formalism::State StateSpaceImpl::get_initial_state() const { throw std::runtime_error("not implemented"); }
 
-    uint64_t StateSpaceImpl::get_unique_index_of_state(const mimir::formalism::State& state) const { return get_state_index(state); }
+    uint64_t StateSpaceImpl::get_unique_index_of_state(const mimir::formalism::State& state) const { throw std::runtime_error("not implemented"); }
 
-    uint64_t StateSpaceImpl::get_state_index(const mimir::formalism::State& state) const
-    {
-        const auto index_handler = state_indices_.find(state);
+    bool StateSpaceImpl::is_dead_end_state(const mimir::formalism::State& state) const { throw std::runtime_error("not implemented"); }
 
-        if (index_handler == state_indices_.end())
-        {
-            throw std::invalid_argument("state");
-        }
-        else
-        {
-            return index_handler->second;
-        }
-    }
+    bool StateSpaceImpl::is_goal_state(const mimir::formalism::State& state) const { throw std::runtime_error("not implemented"); }
 
-    bool StateSpaceImpl::is_dead_end_state(const mimir::formalism::State& state) const
-    {
-        const auto index = get_state_index(state);
-        const auto& info = state_infos_[index];
-        return info.distance_to_goal_state < 0;
-    }
-
-    bool StateSpaceImpl::is_goal_state(const mimir::formalism::State& state) const
-    {
-        const auto index = get_state_index(state);
-        const auto& info = state_infos_[index];
-        return info.distance_to_goal_state == 0;
-    }
-
-    int32_t StateSpaceImpl::get_distance_to_goal_state(const mimir::formalism::State& state) const
-    {
-        const auto index = get_state_index(state);
-        return get_distance_to_goal(index);
-    }
+    int32_t StateSpaceImpl::get_distance_to_goal_state(const mimir::formalism::State& state) const { throw std::runtime_error("not implemented"); }
 
     int32_t StateSpaceImpl::get_distance_between_states(const mimir::formalism::State& from_state, const mimir::formalism::State& to_state) const
     {
-        // Check if the Floyd-Warshall distance matrix has been cached, if not, compute it.
-
-        if (state_distances_.size() == 0)
-        {
-            const auto size = num_states();
-            const auto inf = std::numeric_limits<int32_t>::max();
-
-            state_distances_ = std::vector(size, std::vector<int32_t>(size, inf));
-
-            for (const auto& transitions : forward_transitions_)
-            {
-                for (const auto& transition : transitions)
-                {
-                    const auto source_index = get_state_index(transition->source_state);
-                    const auto target_index = get_state_index(transition->target_state);
-                    state_distances_[source_index][target_index] = 1;
-                }
-            }
-
-            for (const auto& state : states_)
-            {
-                const auto state_index = get_state_index(state);
-                state_distances_[state_index][state_index] = 0;
-            }
-
-            for (uint64_t k = 0; k < size; ++k)
-            {
-                for (uint64_t i = 0; i < size; ++i)
-                {
-                    for (uint64_t j = 0; j < size; ++j)
-                    {
-                        const auto ik = state_distances_[i][k];
-                        const auto kj = state_distances_[k][j];
-
-                        if ((ik < inf) && (kj < inf))
-                        {
-                            auto& ij = state_distances_[i][j];
-                            auto ikj = ik + kj;
-
-                            if (ikj < ij)
-                            {
-                                ij = ikj;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Return the distance between the given states.
-
-        const auto from_index = get_state_index(from_state);
-        const auto to_index = get_state_index(to_state);
-        return state_distances_[from_index][to_index];
+        throw std::runtime_error("not implemented");
     }
 
-    int32_t StateSpaceImpl::get_distance_from_initial_state(const mimir::formalism::State& state) const
-    {
-        const auto index = get_state_index(state);
-        return get_distance_from_initial(index);
-    }
+    int32_t StateSpaceImpl::get_longest_distance_to_goal_state() const { throw std::runtime_error("not implemented"); }
 
-    mimir::formalism::State StateSpaceImpl::sample_state() const
-    {
-        const auto index = std::rand() % static_cast<int>(states_.size());
-        return states_[index];
-    }
+    int32_t StateSpaceImpl::get_distance_from_initial_state(const mimir::formalism::State& state) const { throw std::runtime_error("not implemented"); }
 
-    mimir::formalism::State StateSpaceImpl::sample_state_with_distance_to_goal(int32_t distance) const
-    {
-        if (static_cast<std::size_t>(distance) < states_by_distance_.size())
-        {
-            const auto index = std::rand() % static_cast<int>(states_by_distance_[distance].size());
-            return states_by_distance_[distance][index];
-        }
-        else
-        {
-            throw std::invalid_argument("distance is out of range");
-        }
-    }
+    mimir::formalism::State StateSpaceImpl::sample_state() const { throw std::runtime_error("not implemented"); }
 
-    mimir::formalism::State StateSpaceImpl::sample_dead_end_state() const
-    {
-        if (dead_end_states_.size() == 0)
-        {
-            throw std::invalid_argument("no dead end states to sample");
-        }
+    mimir::formalism::State StateSpaceImpl::sample_state_with_distance_to_goal(int32_t distance) const { throw std::runtime_error("not implemented"); }
 
-        const auto index = std::rand() % static_cast<int>(dead_end_states_.size());
-        return dead_end_states_[index];
-    }
+    mimir::formalism::State StateSpaceImpl::sample_dead_end_state() const { throw std::runtime_error("not implemented"); }
 
-    void StateSpaceImpl::set_distance_from_initial_state(uint64_t state_index, int32_t value) { state_infos_[state_index].distance_from_initial_state = value; }
+    std::vector<mimir::formalism::State> StateSpaceImpl::get_goal_states() const { throw std::runtime_error("not implemented"); }
 
-    void StateSpaceImpl::set_distance_to_goal_state(uint64_t state_index, int32_t value) { state_infos_[state_index].distance_to_goal_state = value; }
+    uint64_t StateSpaceImpl::num_states() const { throw std::runtime_error("not implemented"); }
 
-    std::vector<mimir::formalism::State> StateSpaceImpl::get_goal_states() const { return goal_states_; }
+    uint64_t StateSpaceImpl::num_transitions() const { throw std::runtime_error("not implemented"); }
 
-    uint64_t StateSpaceImpl::num_states() const { return (uint64_t) states_.size(); }
+    uint64_t StateSpaceImpl::num_goal_states() const { throw std::runtime_error("not implemented"); }
 
-    uint64_t StateSpaceImpl::num_transitions() const
-    {
-        uint64_t num_transitions = 0;
-
-        for (std::size_t i = 0; i < forward_transitions_.size(); ++i)
-        {
-            num_transitions += forward_transitions_[i].size();
-        }
-
-        return num_transitions;
-    }
-
-    uint64_t StateSpaceImpl::num_goal_states() const { return (uint64_t) goal_states_.size(); }
-
-    uint64_t StateSpaceImpl::num_dead_end_states() const
-    {
-        uint64_t num_dead_ends = 0;
-
-        for (const auto& info : state_infos_)
-        {
-            if (info.distance_to_goal_state < 0)
-            {
-                ++num_dead_ends;
-            }
-        }
-
-        return num_dead_ends;
-    }
-
-    StateSpace
-    create_state_space(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator, uint32_t max_states)
-    {
-        if (problem != successor_generator->get_problem())
-        {
-            throw std::invalid_argument("the successor generator is not for the given problem");
-        }
-
-        auto state_space = new StateSpaceImpl(problem);
-
-        std::vector<uint64_t> goal_indices;
-        std::vector<bool> is_expanded;
-        std::deque<uint64_t> queue;
-
-        {
-            uint64_t initial_index;
-
-            if (state_space->add_or_get_state(mimir::formalism::create_state(problem->initial, problem), initial_index))
-            {
-                state_space->set_distance_from_initial_state(initial_index, 0);
-                is_expanded.push_back(false);
-            }
-
-            queue.push_back(initial_index);
-        }
-
-        const auto goal = problem->goal;
-
-        while ((queue.size() > 0) && (state_space->num_states() < max_states))
-        {
-            const auto state_index = queue.front();
-            queue.pop_front();
-
-            if (is_expanded[state_index])
-            {
-                continue;
-            }
-
-            const auto state = state_space->get_state(state_index);
-            const auto distance_from_initial_state = state_space->get_distance_from_initial(state_index);
-            const auto is_goal_state = mimir::formalism::literals_hold(goal, state);
-
-            if (is_goal_state)
-            {
-                goal_indices.push_back(state_index);
-                state_space->add_goal_state(state);
-            }
-
-            is_expanded[state_index] = true;
-            const auto ground_actions = successor_generator->get_applicable_actions(state);
-            std::vector<uint64_t> successor_indices;
-
-            for (const auto& ground_action : ground_actions)
-            {
-                const auto successor_state = mimir::formalism::apply(ground_action, state);
-                uint64_t successor_state_index;
-                bool successor_is_new_state;
-
-                successor_is_new_state = state_space->add_or_get_state(successor_state, successor_state_index);
-
-                uint64_t from_transition_index, to_transition_index;
-                state_space->add_transition(state_index, successor_state_index, ground_action, from_transition_index, to_transition_index);
-
-                if (successor_is_new_state)
-                {
-                    state_space->set_distance_from_initial_state(successor_state_index, distance_from_initial_state + 1);
-                    is_expanded.push_back(false);
-                    queue.push_back(successor_state_index);
-                }
-            }
-        }
-
-        // Check if every state was expanded (i.e., if max_states stopped the search).
-
-        if (queue.size() > 0)
-        {
-            delete state_space;
-            return nullptr;
-        }
-
-        queue.insert(queue.end(), goal_indices.begin(), goal_indices.end());
-
-        for (const auto& goal_state_index : goal_indices)
-        {
-            state_space->set_distance_to_goal_state(goal_state_index, 0);
-        }
-
-        std::fill(is_expanded.begin(), is_expanded.end(), false);
-
-        while (queue.size() > 0)
-        {
-            const auto state_index = queue.front();
-            queue.pop_front();
-
-            if (is_expanded[state_index])
-            {
-                continue;
-            }
-
-            is_expanded[state_index] = true;
-
-            const auto distance_to_goal_state = state_space->get_distance_to_goal(state_index);
-            const auto& backward_transitions = state_space->get_backward(state_index);
-
-            for (const auto& backward_transition : backward_transitions)
-            {
-                const auto predecessor_state_index = state_space->get_state_index(backward_transition->source_state);
-                const auto predecessor_is_new_state = state_space->get_distance_to_goal(predecessor_state_index) < 0;
-
-                if (predecessor_is_new_state)
-                {
-                    state_space->set_distance_to_goal_state(predecessor_state_index, distance_to_goal_state + 1);
-                    queue.push_back(predecessor_state_index);
-                }
-            }
-        }
-
-        const auto max_distance = state_space->get_longest_distance_to_goal_state();
-        state_space->states_by_distance_.resize(max_distance + 1);
-
-        for (const auto& state : state_space->get_states())
-        {
-            const auto distance = state_space->get_distance_to_goal_state(state);
-
-            if (distance >= 0)
-            {
-                state_space->states_by_distance_[distance].push_back(state);
-            }
-            else
-            {
-                state_space->dead_end_states_.push_back(state);
-            }
-        }
-
-        return StateSpace(state_space);
-    }
+    uint64_t StateSpaceImpl::num_dead_end_states() const { throw std::runtime_error("not implemented"); }
 
     std::ostream& operator<<(std::ostream& os, const mimir::planners::StateSpace& state_space)
     {
@@ -522,4 +86,4 @@ namespace mimir::planners
         print_vector(os, state_spaces);
         return os;
     }
-}  // namespace planners
+}  // namespace mimir::planners

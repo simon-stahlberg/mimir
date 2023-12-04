@@ -1,6 +1,6 @@
 #include "../include/mimir/formalism/domain.hpp"
 #include "../include/mimir/formalism/problem.hpp"
-#include "../include/mimir/generators/state_space.hpp"
+#include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/successor_generator.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
 #include "../include/mimir/pddl/parsers.hpp"
@@ -52,7 +52,7 @@ namespace test
         const auto problem = mimir::parsers::ProblemParser::parse(domain, "", problem_stream);
 
         const auto successor_generator = mimir::planners::create_sucessor_generator(problem, mimir::planners::SuccessorGeneratorType::GROUNDED);
-        const auto state_space = mimir::planners::create_state_space(problem, successor_generator);
+        const auto state_space = mimir::planners::create_complete_state_space(problem, successor_generator);
 
         const auto& states = state_space->get_states();
         ASSERT_GT(states.size(), 0);

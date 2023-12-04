@@ -1,7 +1,7 @@
 #include "../include/mimir/formalism/domain.hpp"
 #include "../include/mimir/formalism/problem.hpp"
+#include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/goal_matcher.hpp"
-#include "../include/mimir/generators/state_space.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
 #include "../include/mimir/pddl/parsers.hpp"
 
@@ -32,7 +32,7 @@ namespace test
         const auto predicates_by_name = domain->get_predicate_name_map();
 
         const auto successor_generator = mimir::planners::create_sucessor_generator(problem, mimir::planners::GROUNDED);
-        const auto state_space = mimir::planners::create_state_space(problem, successor_generator);
+        const auto state_space = mimir::planners::create_complete_state_space(problem, successor_generator);
         mimir::planners::GoalMatcher goal_matcher(state_space);
 
         const auto on_predicate = predicates_by_name.at("on");
@@ -51,7 +51,7 @@ namespace test
         const auto predicates_by_name = domain->get_predicate_name_map();
 
         const auto successor_generator = mimir::planners::create_sucessor_generator(problem, mimir::planners::GROUNDED);
-        const auto state_space = mimir::planners::create_state_space(problem, successor_generator);
+        const auto state_space = mimir::planners::create_complete_state_space(problem, successor_generator);
         mimir::planners::GoalMatcher goal_matcher(state_space);
 
         const auto gripper_predicate = predicates_by_name.at("gripper");

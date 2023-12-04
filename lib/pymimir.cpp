@@ -1,8 +1,8 @@
 #include "../include/mimir/formalism/declarations.hpp"
+#include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/goal_matcher.hpp"
 #include "../include/mimir/generators/grounded_successor_generator.hpp"
 #include "../include/mimir/generators/lifted_successor_generator.hpp"
-#include "../include/mimir/generators/state_space.hpp"
 #include "../include/mimir/generators/successor_generator.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
 #include "../include/mimir/pddl/parsers.hpp"
@@ -358,7 +358,7 @@ PYBIND11_MODULE(pymimir, m)
     transition.def_readonly("action", &mimir::formalism::TransitionImpl::action, "Gets the action associated with the transition.");
     transition.def("__repr__", [](const mimir::formalism::TransitionImpl& transition) { return "<Transition '" + to_string(*transition.action) + "'>"; });
 
-    state_space.def_static("new", &mimir::planners::create_state_space, "problem"_a, "successor_generator"_a, "max_expanded"_a = 1'000'000);
+    state_space.def_static("new", &mimir::planners::create_complete_state_space, "problem"_a, "successor_generator"_a, "max_expanded"_a = 1'000'000);
     state_space.def_readonly("domain", &mimir::planners::StateSpaceImpl::domain, "Gets the domain associated with the state space.");
     state_space.def_readonly("problem", &mimir::planners::StateSpaceImpl::problem, "Gets the problem associated with the state space.");
     state_space.def("get_states", &mimir::planners::StateSpaceImpl::get_states, "Gets all states in the state space.");
