@@ -4,42 +4,38 @@
 #include "atom.hpp"
 #include "declarations.hpp"
 
+#include <loki/domain/pddl/literal.hpp>
 #include <memory>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class LiteralImpl
+    class Literal
     {
       private:
-        std::size_t hash_;
+        loki::pddl::Literal external_;
 
       public:
-        const Atom atom;
-        const bool negated;
+        explicit Literal(loki::pddl::Literal external_literal);
 
-        LiteralImpl(const Atom& atom, const bool negated);
+        explicit Literal(Atom atom, bool negated);
 
-        template<typename T>
-        friend class std::hash;
+        Literal ground_literal(const ParameterAssignment& assignment) const;
+
+        Atom as_atom() const;
+
+        bool contains_predicate(const Predicate& predicate);
+
+        std::size_t hash() const;
+
+        friend std::ostream& operator<<(std::ostream& os, const Literal& literal);
     };
 
-    mimir::formalism::Literal create_literal(const Atom& atom, const bool negated);
+    // bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate);
 
-    mimir::formalism::Literal ground_literal(const mimir::formalism::Literal& literal, const mimir::formalism::ParameterAssignment& assignment);
+    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::LiteralList& literals);
 
-    mimir::formalism::LiteralList ground_literal_list(const mimir::formalism::LiteralList& literal_list,
-                                                      const mimir::formalism::ParameterAssignment& assignment);
-
-    mimir::formalism::AtomList as_atoms(const mimir::formalism::LiteralList& literals);
-
-    bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Literal& literal);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::LiteralList& literals);
-
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {

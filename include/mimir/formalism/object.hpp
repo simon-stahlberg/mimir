@@ -39,7 +39,7 @@ namespace mimir::formalism
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ObjectList& objects);
 
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {

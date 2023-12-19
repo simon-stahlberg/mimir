@@ -1,3 +1,4 @@
+/*
 #ifndef MIMIR_FORMALISM_FUNCTION_HPP_
 #define MIMIR_FORMALISM_FUNCTION_HPP_
 
@@ -46,3 +47,4 @@ namespace mimir::formalism
 }  // namespace formalism
 
 #endif  // MIMIR_FORMALISM_FUNCTION_HPP_
+*/

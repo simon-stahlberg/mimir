@@ -7,75 +7,54 @@
 #include "predicate.hpp"
 #include "type.hpp"
 
+#include <loki/domain/pddl/domain.hpp>
 #include <map>
 #include <string>
 
 namespace mimir::formalism
 {
-    class DomainImpl
+    class Domain
     {
+      private:
+        loki::pddl::Domain external_;
+
       public:
-        std::string name;
-        mimir::formalism::RequirementList requirements;
-        mimir::formalism::TypeList types;
-        mimir::formalism::ObjectList constants;
-        mimir::formalism::PredicateList predicates;
-        mimir::formalism::PredicateList static_predicates;
-        mimir::formalism::PredicateList functions;
-        mimir::formalism::ActionSchemaList action_schemas;
+        explicit Domain(loki::pddl::Domain external_domain);
 
-        DomainImpl(const std::string& name,
-                   const mimir::formalism::RequirementList& requirements,
-                   const mimir::formalism::TypeList& types,
-                   const mimir::formalism::ObjectList& constants,
-                   const mimir::formalism::PredicateList& predicates,
-                   const mimir::formalism::PredicateList& functions,
-                   const mimir::formalism::ActionSchemaList& action_schemas);
+        std::map<std::string, Type> get_type_map() const;
 
-        std::map<std::string, mimir::formalism::Type> get_type_map() const;
+        std::map<std::string, Predicate> get_predicate_name_map() const;
 
-        std::map<std::string, mimir::formalism::Predicate> get_predicate_name_map() const;
+        std::map<std::string, Predicate> get_function_name_map() const;
 
-        std::map<std::string, mimir::formalism::Predicate> get_function_name_map() const;
+        std::map<uint32_t, Predicate> get_predicate_id_map() const;
 
-        std::map<uint32_t, mimir::formalism::Predicate> get_predicate_id_map() const;
+        std::map<std::string, Object> get_constant_map() const;
 
-        std::map<std::string, mimir::formalism::Object> get_constant_map() const;
+        friend std::ostream& operator<<(std::ostream& os, const Domain& domain);
     };
 
-    DomainDescription create_domain(const std::string& name,
-                                    const mimir::formalism::RequirementList& requirements,
-                                    const mimir::formalism::TypeList& types,
-                                    const mimir::formalism::ObjectList& constants,
-                                    const mimir::formalism::PredicateList& predicates,
-                                    const mimir::formalism::PredicateList& functions,
-                                    const mimir::formalism::ActionSchemaList& action_schemas);
-
-    DomainDescription relax(const mimir::formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::DomainDescription& domain);
-
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::DomainDescription>
+    struct hash<mimir::formalism::Domain>
     {
-        std::size_t operator()(const mimir::formalism::DomainDescription& domain) const;
+        std::size_t operator()(const mimir::formalism::Domain& domain) const;
     };
 
     template<>
-    struct less<mimir::formalism::DomainDescription>
+    struct less<mimir::formalism::Domain>
     {
-        bool operator()(const mimir::formalism::DomainDescription& left_domain, const mimir::formalism::DomainDescription& right_domain) const;
+        bool operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::DomainDescription>
+    struct equal_to<mimir::formalism::Domain>
     {
-        bool operator()(const mimir::formalism::DomainDescription& left_domain, const mimir::formalism::DomainDescription& right_domain) const;
+        bool operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const;
     };
 
 }  // namespace std

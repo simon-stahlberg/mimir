@@ -25,25 +25,7 @@
 
 namespace mimir::formalism
 {
-    ProblemImpl::ProblemImpl(const std::string& name,
-                             const mimir::formalism::DomainDescription& domain,
-                             const mimir::formalism::ObjectList& objects,
-                             const mimir::formalism::AtomList& initial,
-                             const mimir::formalism::LiteralList& goal,
-                             const std::unordered_map<mimir::formalism::Atom, double>& atom_costs) :
-        static_atoms_(),
-        predicate_id_to_static_(),
-        atom_ranks_(),
-        rank_to_atom_(),
-        rank_to_predicate_id_(),
-        rank_to_arity_(),
-        rank_to_argument_ids_(),
-        name(name),
-        domain(domain),
-        objects(objects),
-        initial(initial),
-        goal(goal),
-        atom_costs(atom_costs)
+    Problem::Problem(loki::pddl::Problem external_problem) : external_(std::move(external_problem))
     {
         const auto& static_predicates = domain->static_predicates;
         mimir::formalism::PredicateSet static_predicate_set(static_predicates.begin(), static_predicates.end());
@@ -69,14 +51,14 @@ namespace mimir::formalism
                   [](const mimir::formalism::Object& lhs, const mimir::formalism::Object& rhs) { return lhs->id < rhs->id; });
     }
 
-    mimir::formalism::ProblemDescription ProblemImpl::replace_initial(const mimir::formalism::AtomList& initial) const
+    mimir::formalism::ProblemDescription Problem::replace_initial(const mimir::formalism::AtomList& initial) const
     {
         return create_problem(this->name, this->domain, this->objects, initial, this->goal, this->atom_costs);
     }
 
-    const mimir::formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
+    const mimir::formalism::AtomSet& Problem::get_static_atoms() const { return static_atoms_; }
 
-    uint32_t ProblemImpl::get_rank(const mimir::formalism::Atom& atom) const
+    uint32_t Problem::get_rank(const mimir::formalism::Atom& atom) const
     {
         auto& rank_with_offset = atom_ranks_[atom];
 
@@ -106,7 +88,7 @@ namespace mimir::formalism
         return rank_with_offset - 1;
     }
 
-    std::vector<uint32_t> ProblemImpl::to_ranks(const mimir::formalism::AtomList& atoms) const
+    std::vector<uint32_t> Problem::to_ranks(const mimir::formalism::AtomList& atoms) const
     {
         std::vector<uint32_t> ranks;
 
@@ -118,37 +100,37 @@ namespace mimir::formalism
         return ranks;
     }
 
-    uint32_t ProblemImpl::num_ranks() const { return static_cast<uint32_t>(atom_ranks_.size()); }
+    uint32_t Problem::num_ranks() const { return static_cast<uint32_t>(atom_ranks_.size()); }
 
-    bool ProblemImpl::is_static(uint32_t rank) const { return rank < static_atoms_.size(); }
+    bool Problem::is_static(uint32_t rank) const { return rank < static_atoms_.size(); }
 
-    bool ProblemImpl::is_dynamic(uint32_t rank) const { return !is_static(rank); }
+    bool Problem::is_dynamic(uint32_t rank) const { return !is_static(rank); }
 
-    uint32_t ProblemImpl::get_arity(uint32_t rank) const
+    uint32_t Problem::get_arity(uint32_t rank) const
     {
         assert(rank < rank_to_arity_.size());
         return rank_to_arity_.at(rank);
     }
 
-    uint32_t ProblemImpl::get_predicate_id(uint32_t rank) const
+    uint32_t Problem::get_predicate_id(uint32_t rank) const
     {
         assert(rank < rank_to_predicate_id_.size());
         return rank_to_predicate_id_.at(rank);
     }
 
-    const std::vector<uint32_t>& ProblemImpl::get_argument_ids(uint32_t rank) const
+    const std::vector<uint32_t>& Problem::get_argument_ids(uint32_t rank) const
     {
         assert(rank < rank_to_argument_ids_.size());
         return rank_to_argument_ids_.at(rank);
     }
 
-    mimir::formalism::Atom ProblemImpl::get_atom(uint32_t rank) const
+    mimir::formalism::Atom Problem::get_atom(uint32_t rank) const
     {
         assert(rank < rank_to_atom_.size());
         return rank_to_atom_.at(rank);
     }
 
-    mimir::formalism::AtomList ProblemImpl::get_encountered_atoms() const
+    mimir::formalism::AtomList Problem::get_encountered_atoms() const
     {
         mimir::formalism::AtomList atoms;
 
@@ -160,16 +142,16 @@ namespace mimir::formalism
         return atoms;
     }
 
-    uint32_t ProblemImpl::num_encountered_atoms() const { return static_cast<uint32_t>(atom_ranks_.size()); }
+    uint32_t Problem::num_encountered_atoms() const { return static_cast<uint32_t>(atom_ranks_.size()); }
 
-    mimir::formalism::Object ProblemImpl::get_object(uint32_t object_id) const
+    mimir::formalism::Object Problem::get_object(uint32_t object_id) const
     {
         assert(object_id < objects.size());
         assert(objects.at(object_id)->id == object_id);
         return objects.at(object_id);
     }
 
-    uint32_t ProblemImpl::num_objects() const { return static_cast<uint32_t>(objects.size()); }
+    uint32_t Problem::num_objects() const { return static_cast<uint32_t>(objects.size()); }
 
     ProblemDescription create_problem(const std::string& name,
                                       const mimir::formalism::DomainDescription& domain,
@@ -178,7 +160,7 @@ namespace mimir::formalism
                                       const mimir::formalism::LiteralList& goal,
                                       const std::unordered_map<mimir::formalism::Atom, double>& atom_costs)
     {
-        return std::shared_ptr<mimir::formalism::ProblemImpl>(new ProblemImpl(name, domain, objects, initial, goal, atom_costs));
+        return std::shared_ptr<mimir::formalism::Problem>(new Problem(name, domain, objects, initial, goal, atom_costs));
     }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemDescription& problem)

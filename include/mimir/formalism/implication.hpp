@@ -1,3 +1,4 @@
+/*
 #ifndef MIMIR_FORMALISM_CONDITIONAL_HPP_
 #define MIMIR_FORMALISM_CONDITIONAL_HPP_
 
@@ -70,3 +71,4 @@ namespace std
 }  // namespace std
 
 #endif  // MIMIR_FORMALISM_CONDITIONAL_HPP_
+*/

@@ -10,39 +10,24 @@
 #include "state.hpp"
 #include "type.hpp"
 
+#include <loki/problem/pddl/problem.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class ProblemImpl
+    class Problem
     {
       private:
-        mimir::formalism::AtomSet static_atoms_;
-        std::vector<bool> predicate_id_to_static_;
-        mutable mimir::tsl::robin_map<mimir::formalism::Atom, uint32_t> atom_ranks_;
-        mutable mimir::formalism::AtomList rank_to_atom_;
-        mutable std::vector<uint32_t> rank_to_predicate_id_;
-        mutable std::vector<uint32_t> rank_to_arity_;
-        mutable std::vector<std::vector<uint32_t>> rank_to_argument_ids_;
+        loki::pddl::Problem external_;
+        // mimir::formalism::AtomSet static_atoms_;
+        // std::vector<bool> predicate_id_to_static_;
 
-        ProblemImpl(const std::string& name,
-                    const mimir::formalism::DomainDescription& domain,
-                    const mimir::formalism::ObjectList& objects,
-                    const mimir::formalism::AtomList& initial,
-                    const mimir::formalism::LiteralList& goal,
-                    const std::unordered_map<mimir::formalism::Atom, double>& atom_costs);
+        Problem(loki::pddl::Problem problem);
 
       public:
-        std::string name;
-        mimir::formalism::DomainDescription domain;
-        mimir::formalism::ObjectList objects;
-        mimir::formalism::AtomList initial;
-        mimir::formalism::LiteralList goal;
-        std::unordered_map<mimir::formalism::Atom, double> atom_costs;
-
-        mimir::formalism::ProblemDescription replace_initial(const mimir::formalism::AtomList& initial) const;
+        // mimir::formalism::ProblemDescription replace_initial(const mimir::formalism::AtomList& initial) const;
 
         const mimir::formalism::AtomSet& get_static_atoms() const;
 
@@ -93,7 +78,7 @@ namespace mimir::formalism
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemDescriptionList& problems);
 
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {

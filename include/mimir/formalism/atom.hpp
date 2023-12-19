@@ -7,58 +7,27 @@
 
 namespace mimir::formalism
 {
-    class AtomImpl
+    class Atom
     {
       private:
-        std::size_t hash_;
-
-        void validate() const;
+        loki::pddl::Atom external_;
 
       public:
-        const mimir::formalism::Predicate predicate;
-        const mimir::formalism::ObjectList arguments;
+        explicit Atom(loki::pddl::Atom external_atom);
 
-        AtomImpl(const mimir::formalism::Predicate& predicate, mimir::formalism::ObjectList&& arguments);
+        const Predicate& get_predicate() const;
 
-        AtomImpl(const mimir::formalism::Predicate& predicate, const mimir::formalism::ObjectList& arguments);
+        const TermList& get_terms() const;
 
-        bool operator==(const AtomImpl& other) const;
+        bool matches(const Atom& first_atom, const Atom& second_atom) const;
 
-        bool operator!=(const AtomImpl& other) const;
+        std::size_t hash() const;
 
-        template<typename T>
-        friend class std::hash;
+        friend std::ostream& operator<<(std::ostream& os, const Atom& atom);
     };
 
-    mimir::formalism::Atom ground_predicate(const mimir::formalism::Predicate& predicate, const mimir::formalism::ParameterAssignment& assignment);
-
-    bool matches(const Atom& first_atom, const Atom& second_atom);
-
-    Atom replace_term(const Atom& atom, uint32_t index, const mimir::formalism::Object& object);
-
-    Atom create_atom(const mimir::formalism::Predicate& predicate, mimir::formalism::ObjectList&& arguments);
-
-    Atom create_atom(const mimir::formalism::Predicate& predicate, const mimir::formalism::ObjectList& arguments);
-
-    mimir::formalism::AtomList filter(const mimir::formalism::AtomList& atom_list, const mimir::formalism::Object& obj, int32_t argument_index);
-
-    mimir::formalism::AtomList filter(const mimir::formalism::AtomList& atom_list, const mimir::formalism::ObjectList& object_list, int32_t argument_index);
-
-    mimir::formalism::AtomList exclude(const mimir::formalism::AtomList& atom_list, const mimir::formalism::AtomList& other_list);
-
-    mimir::formalism::ObjectList get_objects(const mimir::formalism::AtomList& atom_list, int32_t argument_index);
-
-    mimir::formalism::ObjectList get_unique_objects(const mimir::formalism::AtomList& atom_list, int32_t argument_index);
-
-    mimir::formalism::ObjectList concatenate(const mimir::formalism::ObjectList& left_list, const mimir::formalism::ObjectList& right_list);
-
-    mimir::formalism::ObjectList difference(const mimir::formalism::ObjectList& left_list, const mimir::formalism::ObjectList& right_list);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Atom& atom);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::AtomList& atoms);
-
-}  // namespace formalism
+    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::AtomList& atoms);
+}  // namespace mimir::formalism
 
 namespace std
 {
@@ -86,7 +55,6 @@ namespace std
     {
         bool operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const;
     };
-
 }  // namespace std
 
 #endif  // MIMIR_FORMALISM_ATOM_HPP_

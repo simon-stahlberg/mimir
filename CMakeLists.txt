@@ -47,6 +47,7 @@ file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/extern/loki")
 add_subdirectory(extern/loki)
 set(Loki_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/extern/loki/include)
+include_directories(${Loki_INCLUDE_DIRS})
 
 # ------------
 # Target Mimir

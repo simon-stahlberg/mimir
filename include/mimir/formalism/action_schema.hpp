@@ -7,55 +7,34 @@
 #include "literal.hpp"
 #include "object.hpp"
 
+#include <loki/common/pddl/types.hpp>
+#include <loki/domain/pddl/action.hpp>
 #include <string>
 
 namespace mimir::formalism
 {
-    class ActionSchemaImpl
+
+    class ActionSchema
     {
+      private:
+        loki::pddl::Action external_;
+
       public:
-        std::string name;
-        int32_t arity;
-        bool complete;
-        mimir::formalism::ParameterList parameters;
-        mimir::formalism::LiteralList precondition;
-        mimir::formalism::LiteralList unconditional_effect;
-        mimir::formalism::ImplicationList conditional_effect;
-        mimir::formalism::Function cost;
+        explicit ActionSchema(loki::pddl::Action external_action);
 
-        /**
-         * @brief Construct a new action achema object.
-         *
-         * @param name The name of the action schema.
-         * @param parameters The parameters (free variables) of the action schema.
-         * @param precondition The precondition of the action schema (interpreted as conjunction of literals).
-         * @param effect The effect of the action schema (interpreted as conjunction of literals).
-         */
-        ActionSchemaImpl(const std::string& name,
-                         const mimir::formalism::ParameterList& parameters,
-                         const mimir::formalism::LiteralList& precondition,
-                         const mimir::formalism::LiteralList& effect,
-                         const mimir::formalism::ImplicationList& conditional_effect,
-                         const mimir::formalism::Function& cost);
+        ActionSchema delete_relax(ActionSchemaFactory& factory) const;
+
+        bool affects_predicate(const mimir::formalism::Predicate& predicate) const;  // TODO: Is this one used?
+
+        friend std::ostream& operator<<(std::ostream& os, const ActionSchema& action_schema);
     };
-
-    ActionSchema create_action_schema(const std::string& name,
-                                      const mimir::formalism::ParameterList& parameters,
-                                      const mimir::formalism::LiteralList& precondition,
-                                      const mimir::formalism::LiteralList& effect,
-                                      const mimir::formalism::ImplicationList& conditional_effect,
-                                      const mimir::formalism::Function& cost);
-
-    ActionSchema relax(const mimir::formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list);
-
-    bool affects_predicate(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::Predicate& predicate);
 
     bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchema& action_schema);
-
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas);
-}  // namespace formalism
+
+    using ActionSchemaList = std::vector<ActionSchema>;
+}  // namespace mimir::formalism
 
 namespace std
 {
