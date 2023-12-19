@@ -43,6 +43,11 @@ include_directories(include)
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
 file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 
+# Setup prefix path for third-party libraries
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/extern/loki")
+add_subdirectory(extern/loki)
+set(Loki_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/extern/loki/include)
+
 # ------------
 # Target Mimir
 # ------------
