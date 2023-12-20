@@ -20,7 +20,7 @@
 
 namespace mimir::planners
 {
-    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::ProblemDescription& problem) : domain(problem->domain), problem(problem) {}
+    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::Problem& problem) : domain(problem->domain), problem(problem) {}
 
     StateSpaceImpl::~StateSpaceImpl()
     {

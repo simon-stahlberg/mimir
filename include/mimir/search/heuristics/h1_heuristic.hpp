@@ -18,7 +18,7 @@ namespace mimir::planners
       private:
         using InternalAction = std::tuple<std::vector<int32_t>, std::vector<int32_t>, std::vector<int32_t>, double>;
 
-        mimir::formalism::ProblemDescription problem_;
+        mimir::formalism::Problem problem_;
         std::vector<InternalAction> actions_;
         std::vector<int32_t> goal_;
         mutable std::vector<double> table_;
@@ -28,13 +28,12 @@ namespace mimir::planners
         void fill_tables(const mimir::formalism::State& state) const;
 
       public:
-        H1Heuristic(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator);
+        H1Heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
 
         double evaluate(const mimir::formalism::State& state) const override;
     };
 
-    std::shared_ptr<H1Heuristic> create_h1_heuristic(const mimir::formalism::ProblemDescription& problem,
-                                                     const mimir::planners::SuccessorGenerator& successor_generator);
+    std::shared_ptr<H1Heuristic> create_h1_heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
 }  // namespace planners
 
 #endif  // MIMIR_PLANNERS_HEURISTIC_H1_HPP_

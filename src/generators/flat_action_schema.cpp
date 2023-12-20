@@ -35,7 +35,7 @@ namespace mimir::planners
     {
     }
 
-    FlatActionSchema::FlatActionSchema(const mimir::formalism::DomainDescription& domain, const mimir::formalism::ActionSchema& action_schema) :
+    FlatActionSchema::FlatActionSchema(const mimir::formalism::Domain& domain, const mimir::formalism::ActionSchema& action_schema) :
         parameter_indices_(),
         index_parameters_(),
         source(action_schema),

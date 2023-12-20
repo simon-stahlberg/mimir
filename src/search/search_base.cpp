@@ -2,7 +2,7 @@
 
 namespace mimir::planners
 {
-    SearchBase::SearchBase(const mimir::formalism::ProblemDescription& problem) :
+    SearchBase::SearchBase(const mimir::formalism::Problem& problem) :
         event_handlers_(),
         initial_state(mimir::formalism::create_state(problem->initial, problem)),
         should_abort(false)

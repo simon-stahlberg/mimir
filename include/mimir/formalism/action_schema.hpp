@@ -2,10 +2,6 @@
 #define MIMIR_FORMALISM_ACTION_SCHEMA_HPP_
 
 #include "declarations.hpp"
-#include "function.hpp"
-#include "implication.hpp"
-#include "literal.hpp"
-#include "object.hpp"
 
 #include <loki/common/pddl/types.hpp>
 #include <loki/domain/pddl/action.hpp>
@@ -13,27 +9,41 @@
 
 namespace mimir::formalism
 {
-
     class ActionSchema
     {
       private:
         loki::pddl::Action external_;
 
-      public:
         explicit ActionSchema(loki::pddl::Action external_action);
 
-        ActionSchema delete_relax(ActionSchemaFactory& factory) const;
+        LiteralList parse_conjunctive_literals(loki::pddl::Condition condition) const;
 
-        bool affects_predicate(const mimir::formalism::Predicate& predicate) const;  // TODO: Is this one used?
+      public:
+        const std::string& get_name() const;
+        std::size_t get_arity() const;
+        TermList get_parameters() const;
+        LiteralList get_precondition() const;
+        LiteralList get_effect() const;
+
+        ActionSchema delete_relax(ActionSchemaFactory& ref_factory) const;
+
+        // bool affects_predicate(const mimir::formalism::Predicate& predicate) const;  // TODO: Is this one used?
+
+        std::size_t hash() const;
+
+        bool operator<(const ActionSchema& other) const;
+        bool operator>(const ActionSchema& other) const;
+        bool operator==(const ActionSchema& other) const;
+        bool operator!=(const ActionSchema& other) const;
+        bool operator<=(const ActionSchema& other) const;
 
         friend std::ostream& operator<<(std::ostream& os, const ActionSchema& action_schema);
     };
 
-    bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
+    // bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas);
+    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas);
 
-    using ActionSchemaList = std::vector<ActionSchema>;
 }  // namespace mimir::formalism
 
 namespace std

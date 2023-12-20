@@ -15,145 +15,55 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../include/mimir/formalism/action_schema.hpp"
 #include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/term.hpp"
+#include "../../include/mimir/formalism/type.hpp"
 #include "help_functions.hpp"
 
 #include <algorithm>
 
 namespace mimir::formalism
 {
-    DomainImpl::DomainImpl(const std::string& name,
-                           const mimir::formalism::RequirementList& requirements,
-                           const mimir::formalism::TypeList& types,
-                           const mimir::formalism::ObjectList& constants,
-                           const mimir::formalism::PredicateList& predicates,
-                           const mimir::formalism::PredicateList& functions,
-                           const mimir::formalism::ActionSchemaList& action_schemas) :
-        name(name),
-        requirements(requirements),
-        types(types),
-        constants(constants),
-        predicates(predicates),
-        static_predicates(),
-        functions(functions),
-        action_schemas(action_schemas)
+
+    Domain::Domain(loki::pddl::Domain external_domain) : external_(external_domain) {}
+
+    TypeList Domain::get_types() const { throw std::runtime_error("not implemented"); }
+
+    TermList Domain::get_constants() const { throw std::runtime_error("not implemented"); }
+
+    PredicateList Domain::get_predicates() const { throw std::runtime_error("not implemented"); }
+
+    ActionSchemaList Domain::get_action_schemas() const { throw std::runtime_error("not implemented"); }
+
+    std::map<std::string, Type> Domain::get_type_map() const { throw std::runtime_error("not implemented"); }
+
+    std::map<std::string, Predicate> Domain::get_predicate_name_map() const { throw std::runtime_error("not implemented"); }
+
+    std::map<std::string, Predicate> Domain::get_function_name_map() const { throw std::runtime_error("not implemented"); }
+
+    std::map<uint32_t, Predicate> Domain::get_predicate_id_map() const { throw std::runtime_error("not implemented"); }
+
+    std::map<std::string, Term> Domain::get_constant_map() const { throw std::runtime_error("not implemented"); }
+
+    std::ostream& operator<<(std::ostream& os, const Domain& domain)
     {
-        for (const auto& predicate : predicates)
-        {
-            if (!affect_predicate(action_schemas, predicate))
-            {
-                static_predicates.push_back(predicate);
-            }
-        }
-    }
-
-    std::map<std::string, mimir::formalism::Type> DomainImpl::get_type_map() const
-    {
-        std::map<std::string, mimir::formalism::Type> map;
-
-        for (const auto& type : types)
-        {
-            map.insert(std::make_pair(type->name, type));
-        }
-
-        return map;
-    }
-
-    std::map<std::string, mimir::formalism::Predicate> DomainImpl::get_predicate_name_map() const
-    {
-        std::map<std::string, mimir::formalism::Predicate> map;
-
-        for (const auto& predicate : predicates)
-        {
-            map.insert(std::make_pair(predicate->name, predicate));
-        }
-
-        return map;
-    }
-
-    std::map<std::string, mimir::formalism::Predicate> DomainImpl::get_function_name_map() const
-    {
-        std::map<std::string, mimir::formalism::Predicate> map;
-
-        for (const auto& predicate : functions)
-        {
-            map.insert(std::make_pair(predicate->name, predicate));
-        }
-
-        return map;
-    }
-
-    std::map<uint32_t, mimir::formalism::Predicate> DomainImpl::get_predicate_id_map() const
-    {
-        std::map<uint32_t, mimir::formalism::Predicate> map;
-
-        for (const auto& predicate : predicates)
-        {
-            map.insert(std::make_pair(predicate->id, predicate));
-        }
-
-        return map;
-    }
-
-    std::map<std::string, mimir::formalism::Object> DomainImpl::get_constant_map() const
-    {
-        std::map<std::string, mimir::formalism::Object> map;
-
-        for (const auto& constant : constants)
-        {
-            map.insert(std::make_pair(constant->name, constant));
-        }
-
-        return map;
-    }
-
-    DomainDescription create_domain(const std::string& name,
-                                    const mimir::formalism::RequirementList& requirements,
-                                    const mimir::formalism::TypeList& types,
-                                    const mimir::formalism::ObjectList& constants,
-                                    const mimir::formalism::PredicateList& predicates,
-                                    const mimir::formalism::PredicateList& functions,
-                                    const mimir::formalism::ActionSchemaList& action_schemas)
-    {
-        return std::make_shared<DomainImpl>(name, requirements, types, constants, predicates, functions, action_schemas);
-    }
-
-    DomainDescription relax(const mimir::formalism::DomainDescription& domain, bool remove_negative_preconditions, bool remove_delete_list)
-    {
-        mimir::formalism::ActionSchemaList relaxed_action_schemas;
-        relaxed_action_schemas.reserve(domain->action_schemas.size());
-        std::transform(domain->action_schemas.cbegin(),
-                       domain->action_schemas.cend(),
-                       std::back_insert_iterator(relaxed_action_schemas),
-                       [&](const mimir::formalism::ActionSchema& action_schema)
-                       { return mimir::formalism::relax(action_schema, remove_negative_preconditions, remove_delete_list); });
-
-        return create_domain(domain->name,
-                             domain->requirements,
-                             domain->types,
-                             domain->constants,
-                             domain->predicates,
-                             domain->functions,
-                             relaxed_action_schemas);
-    }
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::DomainDescription& domain)
-    {
-        os << "Domain: " << domain->name << std::endl;
-        os << "Requirements: ";
-        print_vector(os, domain->requirements);
-        os << std::endl;
+        os << "Domain: " << domain.get_name() << std::endl;
+        // os << "Requirements: ";
+        // print_vector(os, domain.get_requirements());
+        // os << std::endl;
         os << "Types: ";
-        print_vector(os, domain->types);
+        print_vector(os, domain.get_types());
         os << std::endl;
         os << "Constants: ";
-        print_vector(os, domain->constants);
+        print_vector(os, domain.get_constants());
         os << std::endl;
         os << "Predicates: ";
-        print_vector(os, domain->predicates);
+        print_vector(os, domain.get_predicates());
         os << std::endl;
         os << "Action Schemas: ";
-        print_vector(os, domain->action_schemas);
+        print_vector(os, domain.get_action_schemas());
         os << std::endl;
         return os;
     }
@@ -162,22 +72,22 @@ namespace mimir::formalism
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::DomainDescription>::operator()(const mimir::formalism::DomainDescription& domain) const
+    std::size_t hash<mimir::formalism::Domain>::operator()(const mimir::formalism::Domain& domain) const
     {
-        return hash_combine(domain->name, domain->types, domain->constants, domain->predicates, domain->action_schemas);
+        return hash_combine(domain.get_name(), domain.get_types(), domain.get_constants(), domain.get_predicates(), domain.get_action_schemas());
     }
 
-    bool less<mimir::formalism::DomainDescription>::operator()(const mimir::formalism::DomainDescription& left_domain,
-                                                               const mimir::formalism::DomainDescription& right_domain) const
+    bool less<mimir::formalism::Domain>::operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const
     {
-        return less_combine(std::make_tuple(left_domain->name, left_domain->constants, left_domain->predicates, left_domain->action_schemas),
-                            std::make_tuple(right_domain->name, right_domain->constants, right_domain->predicates, right_domain->action_schemas));
+        return less_combine(
+            std::make_tuple(left_domain.get_name(), left_domain.get_constants(), left_domain.get_predicates(), left_domain.get_action_schemas()),
+            std::make_tuple(right_domain.get_name(), right_domain.get_constants(), right_domain.get_predicates(), right_domain.get_action_schemas()));
     }
 
-    bool equal_to<mimir::formalism::DomainDescription>::operator()(const mimir::formalism::DomainDescription& left_domain,
-                                                                   const mimir::formalism::DomainDescription& right_domain) const
+    bool equal_to<mimir::formalism::Domain>::operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const
     {
-        return equal_to_combine(std::make_tuple(left_domain->name, left_domain->constants, left_domain->predicates, left_domain->action_schemas),
-                                std::make_tuple(right_domain->name, right_domain->constants, right_domain->predicates, right_domain->action_schemas));
+        return equal_to_combine(
+            std::make_tuple(left_domain.get_name(), left_domain.get_constants(), left_domain.get_predicates(), left_domain.get_action_schemas()),
+            std::make_tuple(right_domain.get_name(), right_domain.get_constants(), right_domain.get_predicates(), right_domain.get_action_schemas()));
     }
 }  // namespace std

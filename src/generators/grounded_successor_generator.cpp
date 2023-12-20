@@ -28,8 +28,7 @@ namespace mimir::planners
 
     LeafNode::LeafNode(const mimir::formalism::ActionList& actions) : actions_(actions) {}
 
-    GroundedSuccessorGenerator::GroundedSuccessorGenerator(const mimir::formalism::ProblemDescription& problem,
-                                                           const mimir::formalism::ActionList& ground_actions) :
+    GroundedSuccessorGenerator::GroundedSuccessorGenerator(const mimir::formalism::Problem& problem, const mimir::formalism::ActionList& ground_actions) :
         problem_(problem),
         actions_(ground_actions),
         root_(nullptr)
@@ -37,7 +36,7 @@ namespace mimir::planners
         root_ = build_decision_tree(problem, ground_actions);
     }
 
-    mimir::formalism::ProblemDescription GroundedSuccessorGenerator::get_problem() const { return problem_; }
+    mimir::formalism::Problem GroundedSuccessorGenerator::get_problem() const { return problem_; }
 
     const mimir::formalism::ActionList& GroundedSuccessorGenerator::get_actions() const { return actions_; }
 
@@ -85,7 +84,7 @@ namespace mimir::planners
         return next_atom;
     }
 
-    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const mimir::formalism::ProblemDescription& problem,
+    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const mimir::formalism::Problem& problem,
                                                                                   const mimir::formalism::ActionList& ground_actions)
     {
         const auto& static_predicates = problem->domain->static_predicates;
@@ -132,7 +131,7 @@ namespace mimir::planners
         return build_decision_tree_recursive(problem, ground_actions, atoms, atoms.begin());
     }
 
-    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree_recursive(const mimir::formalism::ProblemDescription& problem,
+    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree_recursive(const mimir::formalism::Problem& problem,
                                                                                             const mimir::formalism::ActionList& ground_actions,
                                                                                             const mimir::formalism::AtomList& atoms,
                                                                                             mimir::formalism::AtomList::const_iterator next_atom)

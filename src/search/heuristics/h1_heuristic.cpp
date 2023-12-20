@@ -26,7 +26,7 @@
 
 namespace mimir::planners
 {
-    H1Heuristic::H1Heuristic(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator) :
+    H1Heuristic::H1Heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator) :
         problem_(problem),
         actions_(),
         goal_(),
@@ -195,8 +195,7 @@ namespace mimir::planners
         return evaluate(goal_);
     }
 
-    std::shared_ptr<H1Heuristic> create_h1_heuristic(const mimir::formalism::ProblemDescription& problem,
-                                                     const mimir::planners::SuccessorGenerator& successor_generator)
+    std::shared_ptr<H1Heuristic> create_h1_heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
     {
         return std::make_shared<H1Heuristic>(problem, successor_generator);
     }

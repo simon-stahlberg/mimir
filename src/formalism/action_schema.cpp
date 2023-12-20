@@ -16,132 +16,101 @@
  */
 
 #include "../../include/mimir/formalism/action_schema.hpp"
+#include "../../include/mimir/formalism/literal.hpp"
+#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
 
 #include <algorithm>
+#include <deque>
 
 namespace mimir::formalism
 {
-    ActionSchemaImpl::ActionSchemaImpl(const std::string& name,
-                                       const mimir::formalism::ParameterList& parameters,
-                                       const mimir::formalism::LiteralList& precondition,
-                                       const mimir::formalism::LiteralList& unconditional_effect,
-                                       const mimir::formalism::ImplicationList& conditional_effect,
-                                       const mimir::formalism::Function& cost) :
-        name(name),
-        arity(parameters.size()),
-        complete(true),
-        parameters(parameters),
-        precondition(precondition),
-        unconditional_effect(unconditional_effect),
-        conditional_effect(conditional_effect),
-        cost(cost)
+    ActionSchema::ActionSchema(loki::pddl::Action external_action) : external_(external_action) {}
+
+    LiteralList ActionSchema::parse_conjunctive_literals(loki::pddl::Condition condition) const
     {
-    }
+        LiteralList precondition;
 
-    ActionSchema create_action_schema(const std::string& name,
-                                      const mimir::formalism::ParameterList& parameters,
-                                      const mimir::formalism::LiteralList& precondition,
-                                      const mimir::formalism::LiteralList& unconditional_effect,
-                                      const mimir::formalism::ImplicationList& conditional_effect,
-                                      const mimir::formalism::Function& cost)
-    {
-        return std::make_shared<ActionSchemaImpl>(name, parameters, precondition, unconditional_effect, conditional_effect, cost);
-    }
+        std::deque<loki::pddl::Condition> conditions { condition };
 
-    ActionSchema relax(const mimir::formalism::ActionSchema& action_schema, bool remove_negative_preconditions, bool remove_delete_list)
-    {
-        std::vector<mimir::formalism::Literal> relaxed_precondition;
-
-        const auto positive_literal = [](const mimir::formalism::Literal& literal) { return !literal->negated; };
-
-        if (remove_negative_preconditions)
+        while (conditions.size() > 0)
         {
-            std::copy_if(action_schema->precondition.cbegin(), action_schema->precondition.cend(), std::back_inserter(relaxed_precondition), positive_literal);
+            const auto current_condition = conditions.front();
+            conditions.pop_front();
+
+            if (loki::pddl::ConditionLiteral literal = dynamic_cast<loki::pddl::ConditionLiteral>(current_condition))
+            {
+                precondition.emplace_back(Literal(literal->get_literal()));
+            }
+            if (loki::pddl::ConditionAnd conjunction = dynamic_cast<loki::pddl::ConditionAnd>(current_condition))
+            {
+                for (const auto& condition : conjunction->get_conditions())
+                {
+                    conditions.emplace_back(condition);
+                }
+            }
+            else
+            {
+                throw std::runtime_error("not implemented: we only support conjunction of literals");
+            }
+        }
+
+        return precondition;
+    }
+
+    const std::string& ActionSchema::get_name() const { return external_->get_name(); }
+
+    std::size_t ActionSchema::get_arity() const { return external_->get_parameters().size(); }
+
+    TermList ActionSchema::get_parameters() const
+    {
+        TermList parameters;
+
+        for (const auto& parameter : external_->get_parameters())
+        {
+            parameters.emplace_back(Term(parameter->get_variable()));
+        }
+
+        return parameters;
+    }
+
+    LiteralList ActionSchema::get_precondition() const
+    {
+        auto external_precondition = external_->get_condition();
+
+        if (external_precondition.has_value())
+        {
+            auto condition = external_precondition.value();
+            return parse_conjunctive_literals(condition);
         }
         else
         {
-            relaxed_precondition.insert(relaxed_precondition.end(), action_schema->precondition.cbegin(), action_schema->precondition.cend());
+            return LiteralList();
         }
-
-        std::vector<mimir::formalism::Literal> relaxed_effect;
-
-        if (remove_delete_list)
-        {
-            std::copy_if(action_schema->unconditional_effect.cbegin(),
-                         action_schema->unconditional_effect.cend(),
-                         std::back_inserter(relaxed_effect),
-                         positive_literal);
-
-            for (const auto& [_, consequence] : action_schema->conditional_effect)
-            {
-                std::copy_if(consequence.cbegin(), consequence.cend(), std::back_inserter(relaxed_effect), positive_literal);
-            }
-        }
-        else
-        {
-            relaxed_effect.insert(relaxed_effect.end(), action_schema->unconditional_effect.cbegin(), action_schema->unconditional_effect.cend());
-        }
-
-        return create_action_schema(action_schema->name, action_schema->parameters, relaxed_precondition, relaxed_effect, {}, action_schema->cost);
     }
 
-    bool affects_predicate(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::Predicate& predicate)
-    {
-        if (contains_predicate(action_schema->unconditional_effect, predicate))
-        {
-            return true;
-        }
+    LiteralList ActionSchema::get_effect() const { throw std::runtime_error("not implemented"); }
 
-        for (const auto& [_, consequence] : action_schema->conditional_effect)
-        {
-            if (contains_predicate(consequence, predicate))
-            {
-                return true;
-            }
-        }
+    ActionSchema ActionSchema::delete_relax(ActionSchemaFactory& ref_factory) const { throw std::runtime_error("not implemented"); }
 
-        return false;
-    }
+    std::size_t ActionSchema::hash() const { throw std::runtime_error("not implemented"); }
 
-    bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate)
-    {
-        for (const auto& action_schema : action_schemas)
-        {
-            if (affects_predicate(action_schema, predicate))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    bool ActionSchema::operator<(const ActionSchema& other) const { return external_ < other.external_; }
+    bool ActionSchema::operator>(const ActionSchema& other) const { return external_ > other.external_; }
+    bool ActionSchema::operator==(const ActionSchema& other) const { return external_ == other.external_; }
+    bool ActionSchema::operator!=(const ActionSchema& other) const { return !(*this == other); }
+    bool ActionSchema::operator<=(const ActionSchema& other) const { return (*this < other) || (*this == other); }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchema& action_schema)
     {
-        return os << action_schema->name << "/" << action_schema->arity;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas)
-    {
-        print_vector(os, action_schemas);
-        return os;
+        return os << action_schema.get_name() << "/" << action_schema.get_arity();
     }
 }  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& action_schema) const
-    {
-        return hash_combine(action_schema->name,
-                            action_schema->arity,
-                            action_schema->parameters,
-                            action_schema->precondition,
-                            action_schema->unconditional_effect,
-                            action_schema->conditional_effect,
-                            action_schema->cost);
-    }
+    std::size_t hash<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& action_schema) const { return action_schema.hash(); }
 
     std::size_t hash<mimir::formalism::ActionSchemaList>::operator()(const mimir::formalism::ActionSchemaList& action_schemas) const
     {
@@ -151,34 +120,12 @@ namespace std
     bool less<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& left_action_schema,
                                                           const mimir::formalism::ActionSchema& right_action_schema) const
     {
-        return less_combine(std::make_tuple(left_action_schema->name,
-                                            left_action_schema->parameters,
-                                            left_action_schema->precondition,
-                                            left_action_schema->unconditional_effect,
-                                            left_action_schema->conditional_effect,
-                                            left_action_schema->cost),
-                            std::make_tuple(right_action_schema->name,
-                                            right_action_schema->parameters,
-                                            right_action_schema->precondition,
-                                            right_action_schema->unconditional_effect,
-                                            right_action_schema->conditional_effect,
-                                            right_action_schema->cost));
+        return left_action_schema < right_action_schema;
     }
 
     bool equal_to<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& left_action_schema,
                                                               const mimir::formalism::ActionSchema& right_action_schema) const
     {
-        return equal_to_combine(std::make_tuple(left_action_schema->name,
-                                                left_action_schema->parameters,
-                                                left_action_schema->precondition,
-                                                left_action_schema->unconditional_effect,
-                                                left_action_schema->conditional_effect,
-                                                left_action_schema->cost),
-                                std::make_tuple(right_action_schema->name,
-                                                right_action_schema->parameters,
-                                                right_action_schema->precondition,
-                                                right_action_schema->unconditional_effect,
-                                                right_action_schema->conditional_effect,
-                                                right_action_schema->cost));
+        return left_action_schema == right_action_schema;
     }
 }  // namespace std

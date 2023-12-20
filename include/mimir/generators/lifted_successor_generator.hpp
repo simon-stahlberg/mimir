@@ -17,13 +17,13 @@ namespace mimir::planners
     class LiftedSuccessorGenerator : public SuccessorGeneratorBase
     {
       private:
-        mimir::formalism::ProblemDescription problem_;
+        mimir::formalism::Problem problem_;
         std::map<mimir::formalism::ActionSchema, LiftedSchemaSuccessorGenerator> generators_;
 
       public:
-        LiftedSuccessorGenerator(const mimir::formalism::ProblemDescription& problem);
+        LiftedSuccessorGenerator(const mimir::formalism::Problem& problem);
 
-        mimir::formalism::ProblemDescription get_problem() const override;
+        mimir::formalism::Problem get_problem() const override;
 
         mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const override;
 

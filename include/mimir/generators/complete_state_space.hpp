@@ -24,7 +24,7 @@ namespace mimir::planners
         mutable std::vector<std::vector<int32_t>> state_distances_;
 
         // Since we return references of internal vectors, ensure that only create_statespaces can create this object.
-        CompleteStateSpaceImpl(const mimir::formalism::ProblemDescription& problem);
+        CompleteStateSpaceImpl(const mimir::formalism::Problem& problem);
 
         bool add_or_get_state(const mimir::formalism::State& state, uint64_t& out_index);
 
@@ -97,11 +97,10 @@ namespace mimir::planners
 
         uint64_t num_dead_end_states() const override;
 
-        friend CompleteStateSpace
-        create_complete_state_space(const mimir::formalism::ProblemDescription&, const mimir::planners::SuccessorGenerator&, uint32_t);
+        friend CompleteStateSpace create_complete_state_space(const mimir::formalism::Problem&, const mimir::planners::SuccessorGenerator&, uint32_t);
     };
 
-    CompleteStateSpace create_complete_state_space(const mimir::formalism::ProblemDescription& problem,
+    CompleteStateSpace create_complete_state_space(const mimir::formalism::Problem& problem,
                                                    const mimir::planners::SuccessorGenerator& successor_generator,
                                                    uint32_t max_states = std::numeric_limits<uint32_t>::max());
 

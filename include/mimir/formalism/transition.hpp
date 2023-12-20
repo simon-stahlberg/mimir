@@ -3,29 +3,27 @@
 
 #include "action.hpp"
 #include "declarations.hpp"
+#include "state.hpp"
 
 #include <memory>
 
 namespace mimir::formalism
 {
-    class TransitionImpl
+    class Transition
     {
       public:
-        mimir::formalism::State source_state;
-        mimir::formalism::State target_state;
-        mimir::formalism::Action action;
+        State source_state;
+        State target_state;
+        Action action;
 
-        TransitionImpl(const mimir::formalism::State& source_state, const mimir::formalism::Action& action, const mimir::formalism::State& target_state);
+        Transition(const State& source_state, const Action& action, const State& target_state);
     };
 
-    Transition
-    create_transition(const mimir::formalism::State& source_state, const mimir::formalism::Action& action, const mimir::formalism::State& target_state);
+    Transition create_transition(const State& source_state, const Action& action, const State& target_state);
 
-    StateTransitions to_state_transitions(const mimir::formalism::ProblemDescription& problem, const mimir::formalism::TransitionList& transitions);
+    // StateTransitions to_state_transitions(const Problem& problem, const TransitionList& transitions);
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Transition& transition);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::TransitionList& transitions);
+    std::ostream& operator<<(std::ostream& os, const Transition& transition);
 
 }  // namespace formalism
 

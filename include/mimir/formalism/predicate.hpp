@@ -3,32 +3,38 @@
 
 #include "declarations.hpp"
 
+#include <loki/domain/pddl/predicate.hpp>
 #include <string>
+#include <vector>
 
 namespace mimir::formalism
 {
-    class PredicateImpl
+    class Predicate
     {
       private:
-        std::size_t hash_;
+        loki::pddl::Predicate external_;
+
+        explicit Predicate(loki::pddl::Predicate external_predicate);
 
       public:
-        const uint32_t id;
-        const std::string name;
-        const mimir::formalism::ObjectList parameters;
-        const uint32_t arity;
+        const std::string& get_name() const;
 
-        PredicateImpl(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters);
+        TermList get_parameters() const;
 
-        template<typename T>
-        friend class std::hash;
+        std::size_t hash() const;
+
+        bool operator<(const Predicate& other) const;
+        bool operator>(const Predicate& other) const;
+        bool operator==(const Predicate& other) const;
+        bool operator!=(const Predicate& other) const;
+        bool operator<=(const Predicate& other) const;
+
+        friend std::ostream& operator<<(std::ostream& os, const Predicate& predicate);
+        friend class Atom;
+        friend class Domain;
     };
 
-    Predicate create_predicate(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Predicate& predicate);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::PredicateList& predicates);
+    // Predicate create_predicate(const uint32_t id, const std::string& name, const ObjectList& parameters);
 
 }  // namespace formalism
 

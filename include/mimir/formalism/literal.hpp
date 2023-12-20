@@ -1,7 +1,7 @@
 #ifndef MIMIR_FORMALISM_LITERAL_HPP_
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
-#include "atom.hpp"
+// #include "atom.hpp"
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/literal.hpp>
@@ -15,20 +15,28 @@ namespace mimir::formalism
       private:
         loki::pddl::Literal external_;
 
-      public:
         explicit Literal(loki::pddl::Literal external_literal);
 
-        explicit Literal(Atom atom, bool negated);
+      public:
+        bool is_negated() const;
+
+        Atom get_atom() const;
 
         Literal ground_literal(const ParameterAssignment& assignment) const;
-
-        Atom as_atom() const;
 
         bool contains_predicate(const Predicate& predicate);
 
         std::size_t hash() const;
 
+        bool operator<(const Literal& other) const;
+        bool operator>(const Literal& other) const;
+        bool operator==(const Literal& other) const;
+        bool operator!=(const Literal& other) const;
+        bool operator<=(const Literal& other) const;
+
         friend std::ostream& operator<<(std::ostream& os, const Literal& literal);
+        friend class ActionSchema;
+        friend class Problem;
     };
 
     // bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate);

@@ -2,8 +2,9 @@
 #define MIMIR_FORMALISM_ATOM_HPP_
 
 #include "declarations.hpp"
-#include "object.hpp"
-#include "predicate.hpp"
+
+#include <loki/domain/pddl/atom.hpp>
+#include <vector>
 
 namespace mimir::formalism
 {
@@ -12,21 +13,29 @@ namespace mimir::formalism
       private:
         loki::pddl::Atom external_;
 
-      public:
         explicit Atom(loki::pddl::Atom external_atom);
 
-        const Predicate& get_predicate() const;
-
-        const TermList& get_terms() const;
+      public:
+        Predicate get_predicate() const;
+        TermList get_terms() const;
 
         bool matches(const Atom& first_atom, const Atom& second_atom) const;
 
         std::size_t hash() const;
 
+        bool operator<(const Atom& other) const;
+        bool operator>(const Atom& other) const;
+        bool operator==(const Atom& other) const;
+        bool operator!=(const Atom& other) const;
+        bool operator<=(const Atom& other) const;
+
         friend std::ostream& operator<<(std::ostream& os, const Atom& atom);
+        friend class Literal;
+        friend class Problem;
     };
 
     // std::ostream& operator<<(std::ostream& os, const mimir::formalism::AtomList& atoms);
+
 }  // namespace mimir::formalism
 
 namespace std

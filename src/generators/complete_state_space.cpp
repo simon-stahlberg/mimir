@@ -47,7 +47,7 @@ namespace mimir::planners
         }
     };
 
-    CompleteStateSpaceImpl::CompleteStateSpaceImpl(const mimir::formalism::ProblemDescription& problem) :
+    CompleteStateSpaceImpl::CompleteStateSpaceImpl(const mimir::formalism::Problem& problem) :
         StateSpaceImpl(problem),
         states_(),
         goal_states_(),
@@ -339,9 +339,8 @@ namespace mimir::planners
         return num_dead_ends;
     }
 
-    CompleteStateSpace create_complete_state_space(const mimir::formalism::ProblemDescription& problem,
-                                                   const mimir::planners::SuccessorGenerator& successor_generator,
-                                                   uint32_t max_states)
+    CompleteStateSpace
+    create_complete_state_space(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator, uint32_t max_states)
     {
         if (problem != successor_generator->get_problem())
         {

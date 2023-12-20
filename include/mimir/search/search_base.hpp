@@ -21,7 +21,7 @@ namespace mimir::planners
         mimir::formalism::State initial_state = nullptr;
         volatile bool should_abort = false;
 
-        SearchBase(const mimir::formalism::ProblemDescription& problem);
+        SearchBase(const mimir::formalism::Problem& problem);
 
         /// @brief Notify all registered handlers
         void notify_handlers() const;

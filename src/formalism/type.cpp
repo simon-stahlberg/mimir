@@ -22,60 +22,40 @@
 
 namespace mimir::formalism
 {
-    TypeImpl::TypeImpl(const std::string& name, mimir::formalism::Type base) : name(name), base(base) {}
+    Type::Type(loki::pddl::Type external_type) : external_(external_type) {}
 
-    bool is_subtype_of(const mimir::formalism::Type& type, const mimir::formalism::Type& base_type)
-    {
-        mimir::formalism::Type current = type;
+    const std::string& Type::get_name() const { return external_->get_name(); }
 
-        while (current != nullptr)
-        {
-            if (current == base_type)
-            {
-                return true;
-            }
+    TypeList Type::get_bases() const { throw std::runtime_error("not implemented"); }
 
-            current = current->base;
-        }
+    bool is_subtype_of(const mimir::formalism::Type& type, const mimir::formalism::Type& base_type) { throw std::runtime_error("not implemented"); }
 
-        return false;
-    }
+    bool Type::operator<(const Type& other) const { throw std::runtime_error("not implemented"); }
+    bool Type::operator>(const Type& other) const { throw std::runtime_error("not implemented"); }
+    bool Type::operator==(const Type& other) const { throw std::runtime_error("not implemented"); }
+    bool Type::operator!=(const Type& other) const { throw std::runtime_error("not implemented"); }
+    bool Type::operator<=(const Type& other) const { throw std::runtime_error("not implemented"); }
 
-    Type create_type(const std::string& name, mimir::formalism::Type base) { return std::make_shared<TypeImpl>(name, base); }
+    std::size_t Type::hash() const { throw std::runtime_error("not implemented"); }
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Type& type)
-    {
-        os << type->name;
-        return os;
-    }
+    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Type& type) { return os << type.get_name(); }
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::TypeList& types)
-    {
-        print_vector(os, types);
-        return os;
-    }
 }  // namespace mimir::formalism
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Type>::operator()(const mimir::formalism::Type& type) const
-    {
-        std::hash<std::string> hash_name;
-        return hash_name(type->name);
-    }
+    std::size_t hash<mimir::formalism::Type>::operator()(const mimir::formalism::Type& type) const { return type.hash(); }
 
     std::size_t hash<mimir::formalism::TypeList>::operator()(const mimir::formalism::TypeList& types) const { return hash_vector(types); }
 
     bool less<mimir::formalism::Type>::operator()(const mimir::formalism::Type& left_type, const mimir::formalism::Type& right_type) const
     {
-        const std::less<std::string> less_name;
-        return less_name(left_type->name, right_type->name);
+        return left_type < right_type;
     }
 
     bool equal_to<mimir::formalism::Type>::operator()(const mimir::formalism::Type& left_type, const mimir::formalism::Type& right_type) const
     {
-        const std::equal_to<std::string> equal_to_name;
-        return equal_to_name(left_type->name, right_type->name);
+        return left_type == right_type;
     }
 }  // namespace std

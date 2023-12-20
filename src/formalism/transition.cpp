@@ -20,47 +20,39 @@
 
 namespace mimir::formalism
 {
-    TransitionImpl::TransitionImpl(const mimir::formalism::State& source_state,
-                                   const mimir::formalism::Action& action,
-                                   const mimir::formalism::State& target_state) :
+    Transition::Transition(const mimir::formalism::State& source_state, const mimir::formalism::Action& action, const mimir::formalism::State& target_state) :
         source_state(source_state),
         target_state(target_state),
         action(action)
     {
     }
 
-    Transition
-    create_transition(const mimir::formalism::State& source_state, const mimir::formalism::Action& action, const mimir::formalism::State& target_state)
-    {
-        return std::make_shared<TransitionImpl>(source_state, action, target_state);
-    }
+    // StateTransitions to_state_transitions(const mimir::formalism::Problem& problem, const mimir::formalism::TransitionList& transitions)
+    // {
+    //     if (transitions.size() == 0)
+    //     {
+    //         throw std::invalid_argument("transitions is empty");
+    //     }
 
-    StateTransitions to_state_transitions(const mimir::formalism::ProblemDescription& problem, const mimir::formalism::TransitionList& transitions)
-    {
-        if (transitions.size() == 0)
-        {
-            throw std::invalid_argument("transitions is empty");
-        }
+    //     const auto& state = transitions[0]->source_state;
+    //     StateList successors;
 
-        const auto& state = transitions[0]->source_state;
-        StateList successors;
+    //     for (const auto& transition : transitions)
+    //     {
+    //         if (transition->source_state != state)
+    //         {
+    //             throw std::invalid_argument("source states do not match");
+    //         }
 
-        for (const auto& transition : transitions)
-        {
-            if (transition->source_state != state)
-            {
-                throw std::invalid_argument("source states do not match");
-            }
+    //         successors.push_back(transition->target_state);
+    //     }
 
-            successors.push_back(transition->target_state);
-        }
-
-        return std::make_tuple(state, std::move(successors), problem);
-    }
+    //     return std::make_tuple(state, std::move(successors), problem);
+    // }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::Transition& transition)
     {
-        os << transition->action;
+        os << transition.action;
         return os;
     }
 
@@ -76,20 +68,20 @@ namespace std
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     std::size_t hash<mimir::formalism::Transition>::operator()(const mimir::formalism::Transition& transition) const
     {
-        return hash_combine(transition->action, transition->source_state, transition->target_state);
+        return hash_combine(transition.action, transition.source_state, transition.target_state);
     }
 
     bool less<mimir::formalism::Transition>::operator()(const mimir::formalism::Transition& left_transition,
                                                         const mimir::formalism::Transition& right_transition) const
     {
-        return less_combine(std::make_tuple(left_transition->action, left_transition->source_state, left_transition->target_state),
-                            std::make_tuple(right_transition->action, right_transition->source_state, right_transition->target_state));
+        return less_combine(std::make_tuple(left_transition.action, left_transition.source_state, left_transition.target_state),
+                            std::make_tuple(right_transition.action, right_transition.source_state, right_transition.target_state));
     }
 
     bool equal_to<mimir::formalism::Transition>::operator()(const mimir::formalism::Transition& left_transition,
                                                             const mimir::formalism::Transition& right_transition) const
     {
-        return equal_to_combine(std::make_tuple(left_transition->action, left_transition->source_state, left_transition->target_state),
-                                std::make_tuple(right_transition->action, right_transition->source_state, right_transition->target_state));
+        return equal_to_combine(std::make_tuple(left_transition.action, left_transition.source_state, left_transition.target_state),
+                                std::make_tuple(right_transition.action, right_transition.source_state, right_transition.target_state));
     }
 }  // namespace std

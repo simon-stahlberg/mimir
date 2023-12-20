@@ -1,15 +1,12 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
-#include "action_schema.hpp"
 #include "declarations.hpp"
-#include "object.hpp"
-#include "predicate.hpp"
-#include "type.hpp"
 
 #include <loki/domain/pddl/domain.hpp>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace mimir::formalism
 {
@@ -18,20 +15,31 @@ namespace mimir::formalism
       private:
         loki::pddl::Domain external_;
 
-      public:
         explicit Domain(loki::pddl::Domain external_domain);
 
+      public:
+        const std::string& get_name() const;
+
+        TypeList get_types() const;
+        TermList get_constants() const;
+        PredicateList get_predicates() const;
+        ActionSchemaList get_action_schemas() const;
         std::map<std::string, Type> get_type_map() const;
-
         std::map<std::string, Predicate> get_predicate_name_map() const;
-
         std::map<std::string, Predicate> get_function_name_map() const;
-
         std::map<uint32_t, Predicate> get_predicate_id_map() const;
+        std::map<std::string, Term> get_constant_map() const;
+        // const Requirements& get_requirements() const;
+        // const FunctionSkeletonList& get_functions() const;
 
-        std::map<std::string, Object> get_constant_map() const;
+        bool operator<(const Domain& other) const;
+        bool operator>(const Domain& other) const;
+        bool operator==(const Domain& other) const;
+        bool operator!=(const Domain& other) const;
+        bool operator<=(const Domain& other) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Domain& domain);
+        friend class Problem;
     };
 
 }  // namespace mimir::formalism

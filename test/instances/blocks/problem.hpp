@@ -7,7 +7,7 @@
 
 namespace test::blocks
 {
-    static ProblemParseResult problem_parse_result __attribute__((unused)) = { num_objects : 4, num_initial : 9, num_goal : 3 };
+    static ProblemParseResult problem_parse_result __attribute__((unused)) = { .num_objects = 4, .num_initial = 9, .num_goal = 3 };
 
     static int32_t bfs_result[] = { 0, 1, 5, 17, 41, 77, 101 };
 

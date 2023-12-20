@@ -21,7 +21,7 @@
 
 namespace mimir::planners
 {
-    LiftedSuccessorGenerator::LiftedSuccessorGenerator(const mimir::formalism::ProblemDescription& problem) : problem_(problem), generators_()
+    LiftedSuccessorGenerator::LiftedSuccessorGenerator(const mimir::formalism::Problem& problem) : problem_(problem), generators_()
     {
         for (const auto& action_schema : problem->domain->action_schemas)
         {
@@ -44,7 +44,7 @@ namespace mimir::planners
         return applicable_actions;
     }
 
-    mimir::formalism::ProblemDescription LiftedSuccessorGenerator::get_problem() const { return problem_; }
+    mimir::formalism::Problem LiftedSuccessorGenerator::get_problem() const { return problem_; }
 
     bool LiftedSuccessorGenerator::get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
                                                           const mimir::formalism::State& state,

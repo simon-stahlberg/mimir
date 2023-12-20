@@ -22,7 +22,7 @@
 namespace mimir::planners
 {
     bool compute_relaxed_reachable_actions(const std::chrono::high_resolution_clock::time_point end_time,
-                                           const mimir::formalism::ProblemDescription& problem,
+                                           const mimir::formalism::Problem& problem,
                                            mimir::formalism::ActionList& out_actions)
     {
         const auto relaxed_domain = relax(problem->domain, true, true);
@@ -116,7 +116,7 @@ namespace mimir::planners
         return true;
     }
 
-    SuccessorGenerator create_sucessor_generator(const mimir::formalism::ProblemDescription& problem, SuccessorGeneratorType type)
+    SuccessorGenerator create_sucessor_generator(const mimir::formalism::Problem& problem, SuccessorGeneratorType type)
     {
         switch (type)
         {

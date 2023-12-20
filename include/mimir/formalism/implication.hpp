@@ -1,4 +1,3 @@
-/*
 #ifndef MIMIR_FORMALISM_CONDITIONAL_HPP_
 #define MIMIR_FORMALISM_CONDITIONAL_HPP_
 
@@ -22,10 +21,10 @@ namespace mimir::formalism
         operator std::tuple<LiteralList&, LiteralList&>();
         operator std::tuple<const LiteralList&, const LiteralList&>() const;
 
-        bool operator<(const Implication& rhs) const;
-        bool operator>(const Implication& rhs) const;
-        bool operator==(const Implication& rhs) const;
-        bool operator!=(const Implication& rhs) const;
+        bool operator<(const Implication& other) const;
+        bool operator>(const Implication& other) const;
+        bool operator==(const Implication& other) const;
+        bool operator!=(const Implication& other) const;
     };
 
     using ImplicationList = std::vector<Implication>;
@@ -71,4 +70,3 @@ namespace std
 }  // namespace std
 
 #endif  // MIMIR_FORMALISM_CONDITIONAL_HPP_
-*/

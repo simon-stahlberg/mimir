@@ -6,8 +6,7 @@
 
 namespace mimir::planners
 {
-    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const mimir::formalism::ProblemDescription& problem,
-                                                   const mimir::planners::SuccessorGenerator& successor_generator) :
+    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator) :
         SearchBase(problem),
         problem_(problem),
         successor_generator_(successor_generator),
@@ -126,8 +125,7 @@ namespace mimir::planners
         return SearchResult::UNSOLVABLE;
     }
 
-    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::ProblemDescription& problem,
-                                                   const mimir::planners::SuccessorGenerator& successor_generator)
+    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
     {
         return std::make_shared<BreadthFirstSearchImpl>(problem, successor_generator);
     }

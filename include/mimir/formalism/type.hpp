@@ -1,32 +1,43 @@
 #ifndef MIMIR_FORMALISM_TYPE_HPP_
 #define MIMIR_FORMALISM_TYPE_HPP_
 
+#include "declarations.hpp"
+
+#include <loki/domain/pddl/type.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace mimir::formalism
 {
-    struct TypeImpl;
-
-    using Type = std::shared_ptr<TypeImpl>;
-    using TypeList = std::vector<mimir::formalism::Type>;
-
-    struct TypeImpl
+    class Type
     {
-        std::string name;
-        mimir::formalism::Type base;
+      private:
+        loki::pddl::Type external_;
 
-        TypeImpl(const std::string& name, mimir::formalism::Type base = nullptr);
+        explicit Type(loki::pddl::Type external_type);
+
+      public:
+        const std::string& get_name() const;
+
+        TypeList get_bases() const;
+
+        bool is_subtype_of(const Type& type) const;
+
+        bool operator<(const Type& other) const;
+        bool operator>(const Type& other) const;
+        bool operator==(const Type& other) const;
+        bool operator!=(const Type& other) const;
+        bool operator<=(const Type& other) const;
+
+        std::size_t hash() const;
+
+        friend std::ostream& operator<<(std::ostream& os, const mimir::formalism::Type& type);
+        friend class Domain;
+        friend class Term;
     };
 
-    bool is_subtype_of(const mimir::formalism::Type& type, const mimir::formalism::Type& base_type);
-
-    Type create_type(const std::string& name, mimir::formalism::Type base = nullptr);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Type& type);
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::TypeList& types);
+    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::TypeList& types);
 
 }  // namespace formalism
 

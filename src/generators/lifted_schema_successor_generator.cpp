@@ -54,8 +54,8 @@ namespace mimir::planners
      *
      * @return A set for each predicate that contains possible compatible assignments.
      */
-    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const mimir::formalism::DomainDescription& domain,
-                                                                                         const mimir::formalism::ProblemDescription& problem,
+    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const mimir::formalism::Domain& domain,
+                                                                                         const mimir::formalism::Problem& problem,
                                                                                          const std::vector<uint32_t>& ranks)
     {
         const auto num_objects = problem->objects.size();
@@ -301,7 +301,7 @@ namespace mimir::planners
     }
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const mimir::formalism::ActionSchema& action_schema,
-                                                                   const mimir::formalism::ProblemDescription& problem) :
+                                                                   const mimir::formalism::Problem& problem) :
         domain_(problem->domain),
         problem_(problem),
         flat_action_schema_(FlatActionSchema(problem->domain, action_schema)),

@@ -19,7 +19,6 @@
 #include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/grounded_successor_generator.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
-#include "../include/mimir/pddl/parsers.hpp"
 #include "../include/mimir/search/breadth_first_search.hpp"
 #include "../include/mimir/search/eager_astar_search.hpp"
 #include "../include/mimir/search/heuristics/h1_heuristic.hpp"
@@ -88,7 +87,7 @@ void operator delete[](void* ptr) noexcept { operator delete(ptr); }
 
 std::vector<std::string> successor_generator_types() { return std::vector<std::string>({ "automatic", "lifted", "grounded" }); }
 
-void bfs(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void bfs(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     mimir::planners::Search search = mimir::planners::create_breadth_first_search(problem, successor_generator);
     const auto time_start = std::chrono::high_resolution_clock::now();
@@ -134,13 +133,13 @@ void bfs(const mimir::formalism::ProblemDescription& problem, const mimir::plann
     }
 }
 
-void state_space(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void state_space(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     const auto state_space = mimir::planners::create_complete_state_space(problem, successor_generator, 100'000);
 
     if (state_space)
     {
-        const auto num_objects = problem->num_objects();
+        const auto num_objects = problem.get_objects().size();
         const auto num_states = state_space->num_states();
         const auto num_dead_end_states = state_space->num_dead_end_states();
         const auto num_goal_states = state_space->num_goal_states();
@@ -156,7 +155,7 @@ void state_space(const mimir::formalism::ProblemDescription& problem, const mimi
     }
 }
 
-void astar(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void astar(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     const auto time_start = std::chrono::high_resolution_clock::now();
     const auto heuristic = mimir::planners::create_h1_heuristic(problem, successor_generator);
@@ -208,7 +207,7 @@ void astar(const mimir::formalism::ProblemDescription& problem, const mimir::pla
     }
 }
 
-void dijkstra(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     // dijkstra's until a goal state is found
 
@@ -255,7 +254,7 @@ void dijkstra(const mimir::formalism::ProblemDescription& problem, const mimir::
             std::cout << "[f = " << last_f << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_f_ms << " ms]" << std::endl;
         }
 
-        if (mimir::formalism::literals_hold(problem->goal, frame.state))
+        if (mimir::formalism::literals_hold(problem.get_goal_literals(), frame.state))
         {
             std::cout << "Found goal state at f-value " << frame.f << std::endl;
             break;
@@ -267,7 +266,7 @@ void dijkstra(const mimir::formalism::ProblemDescription& problem, const mimir::
 
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = mimir::formalism::apply(action, frame.state);
+            const auto successor_state = action.apply(frame.state);
             auto& successor_index = state_indices[successor_state];
 
             // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
@@ -275,7 +274,7 @@ void dijkstra(const mimir::formalism::ProblemDescription& problem, const mimir::
             if (successor_index == 0)
             {
                 ++generated;
-                const auto successor_f_value = frame.f + action->cost;
+                const auto successor_f_value = frame.f + action.get_cost();
                 successor_index = static_cast<uint32_t>(frame_list.size());
                 frame_list.emplace_back(Frame { successor_state, successor_f_value });
                 priority_queue.emplace(successor_f_value, successor_index);
@@ -358,8 +357,8 @@ int main(int argc, char* argv[])
     {
         const auto grounded_successor_generator = std::static_pointer_cast<mimir::planners::GroundedSuccessorGenerator>(successor_generator);
         std::cout << "Number of ground actions: " << grounded_successor_generator->get_actions().size() << std::endl;
-        std::cout << "Number of atoms: " << problem->get_encountered_atoms().size() << std::endl;
-        std::cout << "Number of static atoms: " << problem->get_static_atoms().size() << std::endl;
+        // std::cout << "Number of atoms: " << problem->get_encountered_atoms().size() << std::endl;
+        std::cout << "Number of static atoms: " << problem.get_static_atoms().size() << std::endl;
     }
 
     std::cout << std::endl;

@@ -15,7 +15,7 @@ namespace mimir::planners
         GROUNDED
     };
 
-    SuccessorGenerator create_sucessor_generator(const mimir::formalism::ProblemDescription& problem, SuccessorGeneratorType type);
+    SuccessorGenerator create_sucessor_generator(const mimir::formalism::Problem& problem, SuccessorGeneratorType type);
 }  // namespace planners
 
 #endif  // MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_

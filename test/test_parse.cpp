@@ -1,6 +1,5 @@
 #include "../include/mimir/formalism/domain.hpp"
 #include "../include/mimir/formalism/problem.hpp"
-#include "../include/mimir/pddl/parsers.hpp"
 
 // Test instances
 
@@ -19,19 +18,19 @@
 
 namespace test
 {
-    void assert_domain_parse(const mimir::formalism::DomainDescription& domain, const test::DomainParseResult& expect)
+    void assert_domain_parse(const mimir::formalism::Domain& domain, const test::DomainParseResult& expect)
     {
-        ASSERT_EQ(domain->action_schemas.size(), expect.num_action_schemas);
-        ASSERT_EQ(domain->predicates.size(), expect.num_predicates);
-        ASSERT_EQ(domain->constants.size(), expect.num_constants);
-        ASSERT_EQ(domain->types.size(), expect.num_types);
+        ASSERT_EQ(domain.get_action_schemas.size(), expect.num_action_schemas);
+        ASSERT_EQ(domain.get_predicates().size(), expect.num_predicates);
+        ASSERT_EQ(domain.get_constants().size(), expect.num_constants);
+        ASSERT_EQ(domain.get_types().size(), expect.num_types);
     }
 
-    void assert_problem_parse(const mimir::formalism::ProblemDescription& problem, const test::ProblemParseResult& expect)
+    void assert_problem_parse(const mimir::formalism::Problem& problem, const test::ProblemParseResult& expect)
     {
-        ASSERT_EQ(problem->objects.size(), expect.num_objects);
-        ASSERT_EQ(problem->initial.size(), expect.num_initial);
-        ASSERT_EQ(problem->goal.size(), expect.num_goal);
+        ASSERT_EQ(problem.get_objects().size(), expect.num_objects);
+        ASSERT_EQ(problem.get_initial().size(), expect.num_initial);
+        ASSERT_EQ(problem.get_goal().size(), expect.num_goal);
     }
 
     class ParseTest : public testing::TestWithParam<std::tuple<std::string, DomainParseResult, std::string, ProblemParseResult>>

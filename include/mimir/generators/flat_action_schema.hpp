@@ -59,7 +59,7 @@ namespace mimir::planners
         std::vector<ParameterIndexOrConstantId> cost_arguments;
         uint32_t arity;
 
-        FlatActionSchema(const mimir::formalism::DomainDescription& domain, const mimir::formalism::ActionSchema& action_schema);
+        FlatActionSchema(const mimir::formalism::Domain& domain, const mimir::formalism::ActionSchema& action_schema);
 
         const std::vector<mimir::formalism::Object>& get_parameters() const;
 

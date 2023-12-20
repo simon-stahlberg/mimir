@@ -11,11 +11,11 @@ namespace mimir::planners
     class PDBBase : public HeuristicBase
     {
       private:
-        mimir::formalism::ProblemDescription problem_;
+        mimir::formalism::Problem problem_;
         std::vector<mimir::formalism::ActionList> relevant_actions_;  // An action is in the list at index i if it affects the atom with rank i
 
       protected:
-        PDBBase(const mimir::formalism::ProblemDescription& problem, const mimir::planners::SuccessorGenerator& successor_generator);
+        PDBBase(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
 
         std::vector<double> compute_table(const std::vector<int32_t>& pattern);
 

@@ -7,7 +7,7 @@
 
 namespace test::gripper
 {
-    static ProblemParseResult problem_parse_result __attribute__((unused)) = { num_objects : 8, num_initial : 15, num_goal : 4 };
+    static ProblemParseResult problem_parse_result __attribute__((unused)) = { .num_objects = 8, .num_initial = 15, .num_goal = 4 };
 
     static int32_t bfs_result[] = { 0, 1, 10, 30, 46, 74, 104, 134, 182, 218, 234, 246 };
 

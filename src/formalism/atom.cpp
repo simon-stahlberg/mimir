@@ -16,253 +16,52 @@
  */
 
 #include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
 
 #include <algorithm>
 
 namespace mimir::formalism
 {
-    void AtomImpl::validate() const
-    {
-        if (predicate->arity != static_cast<uint32_t>(arguments.size()))
-        {
-            throw std::invalid_argument("size of arguments does not match predicate");
-        }
+    Atom::Atom(loki::pddl::Atom external_atom) : external_(external_atom) {}
 
-        for (uint32_t index = 0; index < predicate->arity; ++index)
-        {
-            const auto& argument_type = arguments[index]->type;
-            const auto& parameter_type = predicate->parameters[index]->type;
+    // mimir::formalism::Atom ground_predicate(const mimir::formalism::Predicate& predicate, const mimir::formalism::ParameterAssignment& assignment)
+    // {
+    //     mimir::formalism::ObjectList arguments;
 
-            if (!mimir::formalism::is_subtype_of(argument_type, parameter_type))
-            {
-                const auto error_message = "type mismatch at index " + std::to_string(index) + ": expected \"" + parameter_type->name + "\" but got \""
-                                           + argument_type->name + "\" (" + arguments[index]->name + ")";
-                throw std::invalid_argument(error_message);
-            }
-        }
-    }
+    //     for (const auto& parameter : predicate->parameters)
+    //     {
+    //         arguments.push_back(assignment.at(parameter));
+    //     }
 
-    AtomImpl::AtomImpl(const mimir::formalism::Predicate& predicate, mimir::formalism::ObjectList&& arguments) :
-        hash_(0),
-        predicate(predicate),
-        arguments(std::move(arguments))
-    {
-        // validate();  // For performance reasons, skip validation for this constructor.
-    }
+    //     return create_atom(predicate, arguments);
+    // }
 
-    AtomImpl::AtomImpl(const mimir::formalism::Predicate& predicate, const mimir::formalism::ObjectList& arguments) :
-        hash_(0),
-        predicate(predicate),
-        arguments(arguments)
-    {
-        validate();
-    }
+    bool Atom::operator<(const Atom& other) const { throw std::runtime_error("not implemented"); }
 
-    bool AtomImpl::operator==(const AtomImpl& other) const
-    {
-        // Assumes pointers to the same predicate and objects
+    bool Atom::operator>(const Atom& other) const { throw std::runtime_error("not implemented"); }
 
-        if (this->predicate != other.predicate)
-        {
-            return false;
-        }
+    bool Atom::operator==(const Atom& other) const { throw std::runtime_error("not implemented"); }
 
-        if (this->arguments.size() != other.arguments.size())
-        {
-            return false;
-        }
+    bool Atom::operator!=(const Atom& other) const { throw std::runtime_error("not implemented"); }
 
-        for (uint32_t index = 0; index < this->arguments.size(); ++index)
-        {
-            const auto& lhs_arg = this->arguments.at(index);
-            const auto& rhs_arg = other.arguments.at(index);
+    bool Atom::operator<=(const Atom& other) const { throw std::runtime_error("not implemented"); }
 
-            if (lhs_arg != rhs_arg)
-            {
-                return false;
-            }
-        }
+    bool Atom::matches(const Atom& first_atom, const Atom& second_atom) const { throw std::runtime_error("not implemented"); }
 
-        return true;
-    }
-
-    bool AtomImpl::operator!=(const AtomImpl& other) const { return !(this->operator==(other)); }
-
-    mimir::formalism::Atom ground_predicate(const mimir::formalism::Predicate& predicate, const mimir::formalism::ParameterAssignment& assignment)
-    {
-        mimir::formalism::ObjectList arguments;
-
-        for (const auto& parameter : predicate->parameters)
-        {
-            arguments.push_back(assignment.at(parameter));
-        }
-
-        return create_atom(predicate, arguments);
-    }
-
-    bool matches(const Atom& first_atom, const Atom& second_atom)
-    {
-        if (first_atom->predicate != second_atom->predicate)
-        {
-            return false;
-        }
-
-        for (uint32_t index = 0; index < first_atom->arguments.size(); ++index)
-        {
-            const auto& first_argument = first_atom->arguments.at(index);
-            const auto& second_argument = second_atom->arguments.at(index);
-
-            if (!first_argument->is_free_variable() && !second_argument->is_free_variable() && (first_argument != second_argument))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    Atom replace_term(const Atom& atom, uint32_t index, const mimir::formalism::Object& object)
-    {
-        auto terms = atom->arguments;
-
-        if (index >= terms.size())
-        {
-            throw std::invalid_argument("index is out of range");
-        }
-
-        terms[index] = object;
-
-        return create_atom(atom->predicate, terms);
-    }
-
-    Atom create_atom(const mimir::formalism::Predicate& predicate, mimir::formalism::ObjectList&& arguments)
-    {
-        return std::make_shared<mimir::formalism::AtomImpl>(predicate, std::move(arguments));
-    }
-
-    Atom create_atom(const mimir::formalism::Predicate& predicate, const mimir::formalism::ObjectList& arguments)
-    {
-        return std::make_shared<mimir::formalism::AtomImpl>(predicate, arguments);
-    }
-
-    mimir::formalism::AtomList filter(const mimir::formalism::AtomList& atom_list, const mimir::formalism::Object& obj, int32_t argument_index)
-    {
-        mimir::formalism::AtomList filtered_atom_list;
-
-        for (const auto& atom : atom_list)
-        {
-            if (atom->arguments.at(argument_index) == obj)
-            {
-                filtered_atom_list.push_back(atom);
-            }
-        }
-
-        return filtered_atom_list;
-    }
-
-    mimir::formalism::AtomList filter(const mimir::formalism::AtomList& atom_list, const mimir::formalism::ObjectList& object_list, int32_t argument_index)
-    {
-        mimir::formalism::AtomSet filtered_atom_set;
-
-        for (const auto& atom : atom_list)
-        {
-            if (std::count(object_list.begin(), object_list.end(), atom->arguments.at(argument_index)))
-            {
-                filtered_atom_set.insert(atom);
-            }
-        }
-
-        return mimir::formalism::AtomList(filtered_atom_set.begin(), filtered_atom_set.end());
-    }
-
-    mimir::formalism::AtomList exclude(const mimir::formalism::AtomList& atom_list, const mimir::formalism::AtomList& other_list)
-    {
-        AtomList excluded_atom_list;
-
-        std::equal_to<Atom> equal_to;
-
-        for (const auto& atom : atom_list)
-        {
-            bool any = false;
-
-            for (const auto& other_atom : other_list)
-            {
-                if (equal_to(atom, other_atom))
-                {
-                    any = true;
-                    break;
-                }
-            }
-
-            if (!any)
-            {
-                excluded_atom_list.push_back(atom);
-            }
-        }
-
-        return excluded_atom_list;
-    }
-
-    mimir::formalism::ObjectList get_objects(const mimir::formalism::AtomList& atom_list, int32_t argument_index)
-    {
-        mimir::formalism::ObjectList object_list;
-
-        for (const auto& atom : atom_list)
-        {
-            object_list.push_back(atom->arguments.at(argument_index));
-        }
-
-        return object_list;
-    }
-
-    mimir::formalism::ObjectList get_unique_objects(const mimir::formalism::AtomList& atom_list, int32_t argument_index)
-    {
-        mimir::tsl::robin_set<mimir::formalism::Object> object_set;
-
-        for (const auto& atom : atom_list)
-        {
-            object_set.insert(atom->arguments.at(argument_index));
-        }
-
-        return mimir::formalism::ObjectList(object_set.begin(), object_set.end());
-    }
-
-    mimir::formalism::ObjectList concatenate(const mimir::formalism::ObjectList& left_list, const mimir::formalism::ObjectList& right_list)
-    {
-        auto concatenated = left_list;
-        concatenated.insert(concatenated.end(), right_list.begin(), left_list.end());
-        return concatenated;
-    }
-
-    mimir::formalism::ObjectList difference(const mimir::formalism::ObjectList& left_list, const mimir::formalism::ObjectList& right_list)
-    {
-        mimir::formalism::ObjectList sorted_right_list = right_list;
-        std::sort(sorted_right_list.begin(), sorted_right_list.end());
-
-        mimir::formalism::ObjectList difference;
-
-        for (const auto& obj : left_list)
-        {
-            if (!std::binary_search(sorted_right_list.begin(), sorted_right_list.end(), obj))
-            {
-                difference.push_back(obj);
-            }
-        }
-
-        return difference;
-    }
+    std::size_t Atom::hash() const { throw std::runtime_error("not implemented"); }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::Atom& atom)
     {
-        os << atom->predicate->name << "(";
+        os << atom.get_predicate().get_name() << "(";
 
-        for (uint32_t argument_index = 0; argument_index < atom->arguments.size(); ++argument_index)
+        for (uint32_t argument_index = 0; argument_index < atom.get_terms().size(); ++argument_index)
         {
-            const auto object = atom->arguments.at(argument_index);
-            os << object->name;
+            const auto term = atom.get_terms().at(argument_index);
+            os << term.get_name();
 
-            if ((argument_index + 1) < atom->arguments.size())
+            if ((argument_index + 1) < atom.get_terms().size())
             {
                 os << ", ";
             }
@@ -282,52 +81,18 @@ namespace mimir::formalism
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& atom) const
-    {
-        if (!atom)
-        {
-            return 0;
-        }
-
-        if (!atom->hash_)
-        {
-            atom->hash_ = hash_combine(atom->predicate, atom->arguments);
-        }
-
-        return atom->hash_;
-    }
+    std::size_t hash<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& atom) const { throw std::runtime_error("not implemented"); }
 
     std::size_t hash<mimir::formalism::AtomList>::operator()(const mimir::formalism::AtomList& atoms) const { return hash_vector(atoms); }
 
     bool less<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const
     {
-        return less_combine(std::make_tuple(left_atom->predicate, left_atom->arguments), std::make_tuple(right_atom->predicate, right_atom->arguments));
+        return less_combine(std::make_tuple(left_atom.get_predicate(), left_atom.get_terms()),
+                            std::make_tuple(right_atom.get_predicate(), right_atom.get_terms()));
     }
 
     bool equal_to<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const
     {
-        if (left_atom == right_atom)
-        {
-            return true;
-        }
-
-        if (!left_atom || !right_atom)
-        {
-            return false;
-        }
-
-        const std::hash<mimir::formalism::Atom> hash;
-
-        if (hash(left_atom) != hash(right_atom))
-        {
-            return false;
-        }
-
-        if (left_atom->predicate != right_atom->predicate)
-        {
-            return false;
-        }
-
-        return left_atom->arguments == right_atom->arguments;
+        throw std::runtime_error("not implemented");
     }
 }  // namespace std

@@ -6,7 +6,7 @@
 
 namespace mimir::planners
 {
-    EagerAStarSearchImpl::EagerAStarSearchImpl(const mimir::formalism::ProblemDescription& problem,
+    EagerAStarSearchImpl::EagerAStarSearchImpl(const mimir::formalism::Problem& problem,
                                                const mimir::planners::SuccessorGenerator& successor_generator,
                                                const mimir::planners::Heuristic& heuristic,
                                                const mimir::planners::OpenList& open_list) :
@@ -186,7 +186,7 @@ namespace mimir::planners
         return SearchResult::UNSOLVABLE;
     }
 
-    EagerAStarSearch create_eager_astar(const mimir::formalism::ProblemDescription& problem,
+    EagerAStarSearch create_eager_astar(const mimir::formalism::Problem& problem,
                                         const mimir::planners::SuccessorGenerator& successor_generator,
                                         const mimir::planners::Heuristic& heuristic,
                                         const mimir::planners::OpenList& open_list)

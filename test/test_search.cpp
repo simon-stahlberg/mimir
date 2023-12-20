@@ -3,7 +3,6 @@
 #include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/successor_generator.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
-#include "../include/mimir/pddl/parsers.hpp"
 #include "../include/mimir/search/breadth_first_search.hpp"
 
 // Test instances

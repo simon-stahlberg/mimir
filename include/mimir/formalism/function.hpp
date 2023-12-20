@@ -43,7 +43,7 @@ namespace mimir::formalism
 
     Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant);
 
-    Function create_unit_cost_function(const mimir::formalism::DomainDescription& domain);
+    Function create_unit_cost_function(const mimir::formalism::Domain& domain);
 }  // namespace formalism
 
 #endif  // MIMIR_FORMALISM_FUNCTION_HPP_

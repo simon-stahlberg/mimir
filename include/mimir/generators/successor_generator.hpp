@@ -13,7 +13,7 @@ namespace mimir::planners
       public:
         virtual ~SuccessorGeneratorBase() = default;
 
-        virtual mimir::formalism::ProblemDescription get_problem() const = 0;
+        virtual mimir::formalism::Problem get_problem() const = 0;
 
         virtual mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const = 0;
     };

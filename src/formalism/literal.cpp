@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../include/mimir/formalism/atom.hpp"
 #include "../../include/mimir/formalism/literal.hpp"
 #include "help_functions.hpp"
 
@@ -24,102 +25,45 @@
 
 namespace mimir::formalism
 {
-    LiteralImpl::LiteralImpl(const Atom& atom, const bool negated) : hash_(0), atom(atom), negated(negated) {}
+    Literal::Literal(loki::pddl::Literal external_literal) : external_(external_literal) {}
 
-    mimir::formalism::Literal create_literal(const Atom& atom, const bool negated) { return std::make_shared<LiteralImpl>(atom, negated); }
+    bool Literal::is_negated() const { return external_->is_negated(); }
 
-    mimir::formalism::Literal ground_literal(const mimir::formalism::Literal& literal, const mimir::formalism::ParameterAssignment& assignment)
+    Atom Literal::get_atom() const { return Atom(external_->get_atom()); }
+
+    Literal ground_literal(const Literal& literal, const ParameterAssignment& assignment) { throw std::runtime_error("not implemented"); }
+
+    LiteralList ground_literal_list(const LiteralList& literal_list, const ParameterAssignment& assignment)
     {
-        // Note: the assignment might not be complete, in which case a partially ground literal is returned.
-
-        mimir::formalism::ObjectList arguments;
-        arguments.reserve(literal->atom->arguments.size());
-
-        for (const auto& parameter : literal->atom->arguments)
-        {
-            if (parameter->is_free_variable())
-            {
-                const auto assignment_handler = assignment.find(parameter);
-
-                if (assignment_handler != assignment.end())
-                {
-                    arguments.emplace_back(assignment_handler->second);
-                }
-                else
-                {
-                    arguments.emplace_back(parameter);
-                }
-            }
-            else
-            {
-                arguments.emplace_back(parameter);
-            }
-        }
-
-        const auto ground_atom = mimir::formalism::create_atom(literal->atom->predicate, arguments);
-        return mimir::formalism::create_literal(ground_atom, literal->negated);
-    }
-
-    mimir::formalism::LiteralList ground_literal_list(const mimir::formalism::LiteralList& literal_list,
-                                                      const mimir::formalism::ParameterAssignment& assignment)
-    {
-        mimir::formalism::LiteralList ground_literal_list;
+        LiteralList ground_literal_list;
 
         for (const auto& literal : literal_list)
         {
-            ground_literal_list.push_back(mimir::formalism::ground_literal(literal, assignment));
+            ground_literal_list.push_back(ground_literal(literal, assignment));
         }
 
         return ground_literal_list;
     }
 
-    mimir::formalism::AtomList as_atoms(const mimir::formalism::LiteralList& literals)
+    AtomList as_atoms(const LiteralList& literals) { throw std::runtime_error("not implemented"); }
+
+    bool contains_predicate(const LiteralList& literals, const Predicate& predicate) { throw std::runtime_error("not implemented"); }
+
+    std::ostream& operator<<(std::ostream& os, const Literal& literal)
     {
-        mimir::formalism::AtomList atoms;
-
-        for (const auto& literal : literals)
-        {
-            if (literal->negated)
-            {
-                throw std::invalid_argument("literal is negated");
-            }
-            else
-            {
-                atoms.push_back(literal->atom);
-            }
-        }
-
-        return atoms;
-    }
-
-    bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate)
-    {
-        for (const auto& literal : literals)
-        {
-            if (literal->atom->predicate == predicate)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Literal& literal)
-    {
-        if (literal->negated)
+        if (literal.is_negated())
         {
             os << "-";
         }
 
-        os << literal->atom;
+        os << literal.get_atom();
 
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::LiteralList& literals)
+    std::ostream& operator<<(std::ostream& os, const LiteralList& literals)
     {
-        print_vector<mimir::formalism::Literal>(os, literals);
+        print_vector<Literal>(os, literals);
         return os;
     }
 }  // namespace mimir::formalism
@@ -127,20 +71,7 @@ namespace mimir::formalism
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& literal) const
-    {
-        if (!literal)
-        {
-            return 0;
-        }
-
-        if (!literal->hash_)
-        {
-            literal->hash_ = hash_combine(literal->atom, literal->negated);
-        }
-
-        return literal->hash_;
-    }
+    std::size_t hash<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& literal) const { return literal.hash(); }
 
     std::size_t hash<mimir::formalism::LiteralList>::operator()(const mimir::formalism::LiteralList& literals) const
     {
@@ -149,21 +80,12 @@ namespace std
 
     bool less<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& left_literal, const mimir::formalism::Literal& right_literal) const
     {
-        return less_combine(std::make_tuple(left_literal->atom, left_literal->negated), std::make_tuple(right_literal->atom, right_literal->negated));
+        return less_combine(std::make_tuple(left_literal.get_atom(), left_literal.is_negated()),
+                            std::make_tuple(right_literal.get_atom(), right_literal.is_negated()));
     }
 
     bool equal_to<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& left_literal, const mimir::formalism::Literal& right_literal) const
     {
-        if (left_literal == right_literal)
-        {
-            return true;
-        }
-
-        if (!left_literal || !right_literal)
-        {
-            return false;
-        }
-
         const std::hash<mimir::formalism::Literal> hash;
 
         if (hash(left_literal) != hash(right_literal))
@@ -171,11 +93,11 @@ namespace std
             return false;
         }
 
-        if (left_literal->negated != right_literal->negated)
+        if (left_literal.is_negated() != right_literal.is_negated())
         {
             return false;
         }
 
-        return std::equal_to<mimir::formalism::Atom>()(left_literal->atom, right_literal->atom);
+        return std::equal_to<mimir::formalism::Atom>()(left_literal.get_atom(), right_literal.get_atom());
     }
 }  // namespace std

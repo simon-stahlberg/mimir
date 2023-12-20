@@ -7,7 +7,7 @@
 
 namespace test::spanner
 {
-    static ProblemParseResult problem_parse_result __attribute__((unused)) = { num_objects : 8, num_initial : 9, num_goal : 1 };
+    static ProblemParseResult problem_parse_result __attribute__((unused)) = { .num_objects = 8, .num_initial = 9, .num_goal = 1 };
 
     static int32_t bfs_result[] = { 0, 1, 2, 3, 4, 6, 7 };
 

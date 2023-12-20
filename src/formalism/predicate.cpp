@@ -15,38 +15,38 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/object.hpp"
 #include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
 
 #include <string>
 
 namespace mimir::formalism
 {
-    PredicateImpl::PredicateImpl(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters) :
-        hash_(0),
-        id(id),
-        name(name),
-        parameters(parameters),
-        arity(parameters.size())
-    {
-    }
+    Predicate::Predicate(loki::pddl::Predicate external_predicate) : external_(external_predicate) {}
 
-    Predicate create_predicate(const uint32_t id, const std::string& name, const mimir::formalism::ObjectList& parameters)
-    {
-        return std::make_shared<mimir::formalism::PredicateImpl>(id, name, parameters);
-    }
+    const std::string& Predicate::get_name() const { throw std::runtime_error("not implemented"); }
+
+    TermList Predicate::get_parameters() const { throw std::runtime_error("not implemented"); }
+
+    std::size_t Predicate::hash() const { throw std::runtime_error("not implemented"); }
+
+    bool Predicate::operator<(const Predicate& other) const { throw std::runtime_error("not implemented"); }
+    bool Predicate::operator>(const Predicate& other) const { throw std::runtime_error("not implemented"); }
+    bool Predicate::operator==(const Predicate& other) const { throw std::runtime_error("not implemented"); }
+    bool Predicate::operator!=(const Predicate& other) const { throw std::runtime_error("not implemented"); }
+    bool Predicate::operator<=(const Predicate& other) const { throw std::runtime_error("not implemented"); }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::Predicate& predicate)
     {
-        os << predicate->name << "(";
+        os << predicate.get_name() << "(";
 
-        for (uint32_t index = 0; index < predicate->parameters.size(); ++index)
+        for (uint32_t index = 0; index < predicate.get_parameters().size(); ++index)
         {
-            const auto object = predicate->parameters.at(index);
-            os << object->name;
+            const auto parameter = predicate.get_parameters().at(index);
+            os << parameter.get_name();
 
-            if ((index + 1) < predicate->parameters.size())
+            if ((index + 1) < predicate.get_parameters().size())
             {
                 os << ", ";
             }
@@ -56,11 +56,6 @@ namespace mimir::formalism
         return os;
     }
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::PredicateList& predicates)
-    {
-        print_vector<mimir::formalism::Predicate>(os, predicates);
-        return os;
-    }
 }  // namespace mimir::formalism
 
 namespace std
@@ -68,17 +63,7 @@ namespace std
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     std::size_t hash<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& predicate) const
     {
-        if (!predicate)
-        {
-            return 0;
-        }
-
-        if (!predicate->hash_)
-        {
-            predicate->hash_ = hash_combine(predicate->id, predicate->name, predicate->parameters);
-        }
-
-        return predicate->hash_;
+        throw std::runtime_error("not implemented");
     }
 
     std::size_t hash<mimir::formalism::PredicateList>::operator()(const mimir::formalism::PredicateList& predicates) const { return hash_vector(predicates); }
@@ -86,31 +71,12 @@ namespace std
     bool less<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& left_predicate,
                                                        const mimir::formalism::Predicate& right_predicate) const
     {
-        return less_combine(std::make_tuple(left_predicate->id, left_predicate->name, left_predicate->parameters),
-                            std::make_tuple(right_predicate->id, right_predicate->name, right_predicate->parameters));
+        throw std::runtime_error("not implemented");
     }
 
     bool equal_to<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& left_predicate,
                                                            const mimir::formalism::Predicate& right_predicate) const
     {
-        if (left_predicate == right_predicate)
-        {
-            return true;
-        }
-
-        if (!left_predicate || !right_predicate)
-        {
-            return false;
-        }
-
-        const std::hash<mimir::formalism::Predicate> hash;
-
-        if (hash(left_predicate) != hash(right_predicate))
-        {
-            return false;
-        }
-
-        return equal_to_combine(std::make_tuple(left_predicate->id, left_predicate->name, left_predicate->parameters),
-                                std::make_tuple(right_predicate->id, right_predicate->name, right_predicate->parameters));
+        throw std::runtime_error("not implemented");
     }
 }  // namespace std
