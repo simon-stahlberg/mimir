@@ -23,17 +23,28 @@
 #include "help_functions.hpp"
 
 #include <algorithm>
+#include <loki/domain/parser.hpp>
 
 namespace mimir::formalism
 {
 
     Domain::Domain(loki::pddl::Domain external_domain) : external_(external_domain) {}
 
+    Domain Domain::parse(const std::string& path)
+    {
+        loki::DomainParser parser(path);
+        return Domain(parser.get_domain());
+    }
+
+    const std::string& Domain::get_name() const { return external_->get_name(); }
+
     TypeList Domain::get_types() const { throw std::runtime_error("not implemented"); }
 
     TermList Domain::get_constants() const { throw std::runtime_error("not implemented"); }
 
     PredicateList Domain::get_predicates() const { throw std::runtime_error("not implemented"); }
+
+    PredicateList Domain::get_static_predicates() const { throw std::runtime_error("not implemented"); }
 
     ActionSchemaList Domain::get_action_schemas() const { throw std::runtime_error("not implemented"); }
 

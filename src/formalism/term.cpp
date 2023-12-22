@@ -18,15 +18,28 @@
 #include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
 
+#include <loki/domain/pddl/object.hpp>
+#include <loki/domain/pddl/parameter.hpp>
+
 namespace mimir::formalism
 {
     Term::Term(loki::pddl::Variable variable) : external_parameter_(variable), external_object_(nullptr) {}
     Term::Term(loki::pddl::Object object) : external_parameter_(nullptr), external_object_(object) {}
 
-    bool Term::is_free_variable() const { return external_parameter_ != nullptr; }
+    const std::string& Term::get_name() const { throw std::runtime_error("not implemented"); }
+    uint32_t Term::get_id() const { throw std::runtime_error("not implemented"); }
+    const TypeList& Term::get_bases() const { throw std::runtime_error("not implemented"); }
+
+    bool Term::is_variable() const { return external_parameter_ != nullptr; }
     bool Term::is_constant() const { return external_object_ != nullptr; }
 
     std::size_t Term::hash() const { throw std::runtime_error("not implemented"); }
+
+    bool Term::operator<(const Term& other) const { throw std::runtime_error("not implemented"); }
+    bool Term::operator>(const Term& other) const { throw std::runtime_error("not implemented"); }
+    bool Term::operator==(const Term& other) const { throw std::runtime_error("not implemented"); }
+    bool Term::operator!=(const Term& other) const { throw std::runtime_error("not implemented"); }
+    bool Term::operator<=(const Term& other) const { throw std::runtime_error("not implemented"); }
 
     std::ostream& operator<<(std::ostream& os, const Term& term)
     {  //

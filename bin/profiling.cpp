@@ -16,6 +16,7 @@
  */
 
 #include "../include/mimir/datastructures/robin_map.hpp"
+#include "../include/mimir/formalism/state_repository.hpp"
 #include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/grounded_successor_generator.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
@@ -217,6 +218,10 @@ void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::S
         double f;
     };
 
+    auto state_repository = mimir::formalism::create_state_repository(problem);
+    const auto& initial_atoms = problem.get_initial_atoms();
+    const auto& goal_literals = problem.get_goal_literals();
+
     mimir::tsl::robin_map<mimir::formalism::State, uint32_t> state_indices;
     std::deque<Frame> frame_list;
     const auto comparator = [](const std::pair<double, int>& lhs, const std::pair<double, int>& rhs) { return lhs.first > rhs.first; };
@@ -224,11 +229,11 @@ void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::S
 
     {  // Initialize data-structures
         // We want the index of the initial state to be 1 for convenience.
-        frame_list.emplace_back(Frame { nullptr, 0 });
+        frame_list.emplace_back(Frame { state_repository->create_state({}), 0 });
 
         // Add the initial state to the data-structures
         const uint32_t initial_index = static_cast<uint32_t>(frame_list.size());
-        const auto initial_state = mimir::formalism::create_state(problem->initial, problem);
+        const auto initial_state = state_repository->create_state(initial_atoms);
         state_indices[initial_state] = initial_index;
         frame_list.emplace_back(Frame { initial_state, 0 });
         priority_queue.emplace(0.0, initial_index);
@@ -254,7 +259,7 @@ void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::S
             std::cout << "[f = " << last_f << "] Expanded: " << expanded << "; Generated: " << generated << " [" << time_f_ms << " ms]" << std::endl;
         }
 
-        if (mimir::formalism::literals_hold(problem.get_goal_literals(), frame.state))
+        if (frame.state.holds(goal_literals))
         {
             std::cout << "Found goal state at f-value " << frame.f << std::endl;
             break;
@@ -326,13 +331,7 @@ int main(int argc, char* argv[])
 
     // parse PDDL files
 
-    mimir::parsers::DomainParser domain_parser(domain_path);
-    const auto domain = domain_parser.parse();
-    std::cout << domain << std::endl;
-
-    mimir::parsers::ProblemParser problem_parser(problem_path);
-    const auto problem = problem_parser.parse(domain);
-    std::cout << problem << std::endl;
+    const auto problem = mimir::formalism::Problem::parse(domain_path, problem_path);
 
     // find  plan
 

@@ -12,7 +12,7 @@ namespace mimir::planners
         {
             for (const auto& parameter : atom->arguments)
             {
-                if (parameter->is_free_variable())
+                if (parameter->is_variable())
                 {
                     return false;
                 }
@@ -102,7 +102,7 @@ namespace mimir::planners
             {
                 for (const auto& term : atom->arguments)
                 {
-                    if (term->is_free_variable() && !parameter_map.count(term->name))
+                    if (term->is_variable() && !parameter_map.count(term->name))
                     {
                         const auto id = static_cast<uint32_t>(parameter_map.size());
                         const auto new_parameter = mimir::formalism::create_object(id, term->name, term->type);
@@ -120,7 +120,7 @@ namespace mimir::planners
 
                 for (const auto& term : atom->arguments)
                 {
-                    if (term->is_free_variable())
+                    if (term->is_variable())
                     {
                         new_terms.emplace_back(parameter_map.at(term->name));
                     }

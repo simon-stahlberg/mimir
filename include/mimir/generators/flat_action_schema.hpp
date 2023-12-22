@@ -4,6 +4,7 @@
 #include "../formalism/action.hpp"
 #include "../formalism/action_schema.hpp"
 
+#include <map>
 #include <vector>
 
 namespace mimir::planners
@@ -32,7 +33,7 @@ namespace mimir::planners
         uint32_t arity;
         bool negated;
 
-        FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Object, uint32_t> parameter_indices);
+        FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Term, uint32_t> parameter_indices);
     };
 
     class FlatImplication
@@ -47,8 +48,8 @@ namespace mimir::planners
     class FlatActionSchema
     {
       private:
-        std::map<mimir::formalism::Object, uint32_t> parameter_indices_;
-        std::vector<mimir::formalism::Object> index_parameters_;
+        std::map<mimir::formalism::Term, uint32_t> parameter_indices_;
+        std::vector<mimir::formalism::Term> index_parameters_;
 
       public:
         mimir::formalism::ActionSchema source;
@@ -61,9 +62,9 @@ namespace mimir::planners
 
         FlatActionSchema(const mimir::formalism::Domain& domain, const mimir::formalism::ActionSchema& action_schema);
 
-        const std::vector<mimir::formalism::Object>& get_parameters() const;
+        const std::vector<mimir::formalism::Term>& get_parameters() const;
 
-        uint32_t get_parameter_index(const mimir::formalism::Object& parameter) const;
+        uint32_t get_parameter_index(const mimir::formalism::Term& parameter) const;
     };
 }  // namespace planners
 

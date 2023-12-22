@@ -23,12 +23,17 @@ namespace mimir::planners
 
     class StateSpaceImpl
     {
+      private:
+        mimir::formalism::Domain domain_;
+        mimir::formalism::Problem problem_;
+
       protected:
         StateSpaceImpl(const mimir::formalism::Problem& problem);
 
       public:
-        mimir::formalism::Domain domain;
-        mimir::formalism::Problem problem;
+        virtual mimir::formalism::Domain get_domain() const;
+
+        virtual mimir::formalism::Problem get_problem() const;
 
         virtual ~StateSpaceImpl();
 

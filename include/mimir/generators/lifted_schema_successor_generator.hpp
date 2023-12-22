@@ -60,12 +60,11 @@ namespace mimir::planners
                                     const Assignment& first_assignment,
                                     const Assignment& second_assignment) const;
 
-        mimir::formalism::ObjectList ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
-                                                       const mimir::formalism::ObjectList& terms) const;
+        mimir::formalism::TermList ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters, const mimir::formalism::TermList& terms) const;
 
-        mimir::formalism::Literal ground_literal(const FlatLiteral& literal, const mimir::formalism::ObjectList& terms) const;
+        mimir::formalism::Literal ground_literal(const FlatLiteral& literal, const mimir::formalism::TermList& terms) const;
 
-        mimir::formalism::Action create_action(mimir::formalism::ObjectList&& terms) const;
+        mimir::formalism::Action create_action(mimir::formalism::TermList&& terms) const;
 
         bool nullary_preconditions_hold(const mimir::formalism::State& state) const;
 

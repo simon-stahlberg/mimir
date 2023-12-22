@@ -20,13 +20,9 @@
 
 namespace mimir::planners
 {
-    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::Problem& problem) : domain(problem->domain), problem(problem) {}
+    StateSpaceImpl::StateSpaceImpl(const mimir::formalism::Problem& problem) : domain_(problem.get_domain()), problem_(problem) {}
 
-    StateSpaceImpl::~StateSpaceImpl()
-    {
-        domain = nullptr;
-        problem = nullptr;
-    }
+    StateSpaceImpl::~StateSpaceImpl() {}
 
     const std::vector<mimir::formalism::Transition>& StateSpaceImpl::get_forward_transitions(const mimir::formalism::State& state) const
     {

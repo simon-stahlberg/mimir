@@ -25,10 +25,33 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <loki/domain/parser.hpp>
+#include <loki/problem/parser.hpp>
 
 namespace mimir::formalism
 {
     Problem::Problem(loki::pddl::Problem external_problem) : external_(std::move(external_problem)) {}
+
+    Problem Problem::parse(const std::string& domain_path, const std::string& problem_path)
+    {
+        loki::DomainParser domain_parser(domain_path);
+        loki::ProblemParser problem_parser(problem_path, domain_parser);
+        return Problem(problem_parser.get_problem());
+    }
+
+    ProblemList Problem::parse(const std::string& domain_path, const std::vector<std::string>& problem_paths)
+    {
+        ProblemList problems;
+        loki::DomainParser domain_parser(domain_path);
+
+        for (const auto& path : problem_paths)
+        {
+            loki::ProblemParser problem_parser(path, domain_parser);
+            problems.emplace_back(Problem(problem_parser.get_problem()));
+        }
+
+        return problems;
+    }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::Problem& problem)
     {

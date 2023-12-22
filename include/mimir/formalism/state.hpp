@@ -36,6 +36,8 @@ namespace mimir::formalism
         AtomList get_static_atoms() const;
         AtomList get_dynamic_atoms() const;
 
+        bool holds(const LiteralList& literals) const;
+
         std::vector<uint32_t> get_ranks() const;
         std::vector<uint32_t> get_static_ranks() const;
         std::vector<uint32_t> get_dynamic_ranks() const;

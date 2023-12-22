@@ -17,11 +17,11 @@ namespace mimir::formalism
         loki::pddl::Object external_object_;
 
         explicit Term(loki::pddl::Variable variable);
-
         explicit Term(loki::pddl::Object object);
 
       public:
         const std::string& get_name() const;
+        uint32_t get_id() const;
         const TypeList& get_bases() const;
 
         bool is_variable() const;

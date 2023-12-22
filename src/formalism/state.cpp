@@ -147,6 +147,8 @@ namespace mimir::formalism
         // return atoms;
     }
 
+    bool State::holds(const LiteralList& literals) const { throw std::runtime_error("not implemented"); }
+
     std::vector<uint32_t> State::get_ranks() const
     {
         throw std::runtime_error("not implemented");
@@ -382,8 +384,6 @@ namespace mimir::formalism
 
     bool State::operator<=(const State& other) const { return (*this < other) || (*this == other); }
 
-    bool State::operator!=(const State& other) const { return !(this->operator==(other)); }
-
     std::size_t State::hash() const { return hash_; }
 
     // bool is_in_state(uint32_t rank, const State& state)
@@ -533,7 +533,8 @@ namespace mimir::formalism
 
     std::ostream& operator<<(std::ostream& os, const State& state)
     {
-        os << state.get_atoms();
+        throw std::runtime_error("not implemented");
+        // os << state.get_atoms();
         return os;
     }
 
@@ -547,7 +548,7 @@ namespace mimir::formalism
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructu1
-    std::size_t hash<mimir::formalism::State>::operator()(const mimir::formalism::State& state) const { return !state ? 0 : state->hash_; }
+    std::size_t hash<mimir::formalism::State>::operator()(const mimir::formalism::State& state) const { return state.hash(); }
 
     bool less<mimir::formalism::State>::operator()(const mimir::formalism::State& left_state, const mimir::formalism::State& right_state) const
     {

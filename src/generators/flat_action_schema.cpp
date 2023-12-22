@@ -1,3 +1,8 @@
+#include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/literal.hpp"
+#include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/problem.hpp"
 #include "../../include/mimir/generators/flat_action_schema.hpp"
 
 #include <map>
@@ -12,19 +17,19 @@ namespace mimir::planners
 
     uint32_t ParameterIndexOrConstantId::get_value() const { return is_constant() ? ~value : value; }
 
-    FlatLiteral::FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Object, uint32_t> parameter_indices) :
+    FlatLiteral::FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Term, uint32_t> parameter_indices) :
         source(literal),
         arguments(),
-        predicate_id(literal->atom->predicate->id),
-        arity(literal->atom->predicate->arity),
-        negated(literal->negated)
+        predicate_id(literal.get_atom().get_predicate().get_id()),
+        arity(literal.get_atom().get_predicate().get_arity()),
+        negated(literal.is_negated())
     {
-        arguments.reserve(literal->atom->arguments.size());
+        arguments.reserve(literal.get_atom().get_terms().size());
 
-        for (const auto& obj : literal->atom->arguments)
+        for (const auto& term : literal.get_atom().get_terms())
         {
-            const auto is_constant = obj->is_constant();
-            const auto value = is_constant ? obj->id : parameter_indices.at(obj);
+            const auto is_constant = term.is_constant();
+            const auto value = is_constant ? term.get_id() : parameter_indices.at(term);
             arguments.push_back(ParameterIndexOrConstantId(value, is_constant));
         }
     }
@@ -44,19 +49,20 @@ namespace mimir::planners
         unconditional_effect(),
         conditional_effect(),
         cost_arguments(),
-        arity(static_cast<uint32_t>(action_schema->arity))
+        arity(static_cast<uint32_t>(action_schema.get_arity()))
     {
-        for (const auto& parameter : action_schema->parameters)
+        for (const auto& parameter : action_schema.get_parameters())
         {
             parameter_indices_.emplace(parameter, static_cast<uint32_t>(parameter_indices_.size()));
             index_parameters_.emplace_back(parameter);
         }
 
-        const mimir::formalism::PredicateSet static_predicates(domain->static_predicates.begin(), domain->static_predicates.end());
+        const auto static_predicates = domain.get_static_predicates();
+        const mimir::formalism::PredicateSet static_predicates(static_predicates.begin(), static_predicates.end());
 
-        for (const auto& literal : action_schema->precondition)
+        for (const auto& literal : action_schema.get_precondition())
         {
-            if (static_predicates.find(literal->atom->predicate) != static_predicates.end())
+            if (static_predicates.find(literal.get_atom().get_predicate()) != static_predicates.end())
             {
                 static_precondition.emplace_back(literal, parameter_indices_);
             }
@@ -66,12 +72,12 @@ namespace mimir::planners
             }
         }
 
-        for (const auto& literal : action_schema->unconditional_effect)
+        for (const auto& literal : action_schema.get_effect())
         {
             unconditional_effect.emplace_back(literal, parameter_indices_);
         }
 
-        for (const auto& [antecedent, consequence] : action_schema->conditional_effect)
+        for (const auto& [antecedent, consequence] : action_schema.get_conditional_effect())
         {
             std::vector<FlatLiteral> flat_antecedent;
             std::vector<FlatLiteral> flat_consequence;
@@ -103,7 +109,7 @@ namespace mimir::planners
         }
     }
 
-    const std::vector<mimir::formalism::Object>& FlatActionSchema::get_parameters() const { return index_parameters_; }
+    const std::vector<mimir::formalism::Term>& FlatActionSchema::get_parameters() const { return index_parameters_; }
 
-    uint32_t FlatActionSchema::get_parameter_index(const mimir::formalism::Object& parameter) const { return parameter_indices_.at(parameter); }
+    uint32_t FlatActionSchema::get_parameter_index(const mimir::formalism::Term& parameter) const { return parameter_indices_.at(parameter); }
 }  // namespace planners

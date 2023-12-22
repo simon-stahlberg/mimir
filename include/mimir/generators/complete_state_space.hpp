@@ -1,6 +1,7 @@
 #ifndef MIMIR_PLANNERS_COMPLETE_STATE_SPACE_HPP_
 #define MIMIR_PLANNERS_COMPLETE_STATE_SPACE_HPP_
 
+#include "../formalism/declarations.hpp"
 #include "state_space.hpp"
 
 namespace mimir::planners
@@ -13,6 +14,7 @@ namespace mimir::planners
     class CompleteStateSpaceImpl : public StateSpaceImpl
     {
       private:
+        mimir::formalism::StateRepository repository_;
         std::vector<mimir::formalism::State> states_;
         std::vector<mimir::formalism::State> goal_states_;
         std::vector<StateInfo> state_infos_;

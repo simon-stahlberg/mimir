@@ -91,6 +91,8 @@ namespace mimir::formalism
 
     LiteralList ActionSchema::get_effect() const { throw std::runtime_error("not implemented"); }
 
+    ImplicationList ActionSchema::get_conditional_effect() const { throw std::runtime_error("not implemented"); }
+
     ActionSchema ActionSchema::delete_relax(ActionSchemaFactory& ref_factory) const { throw std::runtime_error("not implemented"); }
 
     std::size_t ActionSchema::hash() const { throw std::runtime_error("not implemented"); }

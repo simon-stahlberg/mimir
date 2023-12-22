@@ -18,8 +18,9 @@ namespace mimir::formalism
 
       public:
         const std::string& get_name() const;
-
+        uint32_t get_id() const;
         TermList get_parameters() const;
+        std::size_t get_arity() const;
 
         std::size_t hash() const;
 

@@ -18,11 +18,14 @@ namespace mimir::formalism
         explicit Domain(loki::pddl::Domain external_domain);
 
       public:
+        static Domain parse(const std::string& path);
+
         const std::string& get_name() const;
 
         TypeList get_types() const;
         TermList get_constants() const;
         PredicateList get_predicates() const;
+        PredicateList get_static_predicates() const;
         ActionSchemaList get_action_schemas() const;
         std::map<std::string, Type> get_type_map() const;
         std::map<std::string, Predicate> get_predicate_name_map() const;

@@ -8,8 +8,9 @@
 
 namespace mimir::formalism
 {
-    struct Implication
+    class Implication
     {
+      public:
         LiteralList antecedent;
         LiteralList consequence;
 

@@ -18,7 +18,7 @@ namespace mimir::planners
         std::vector<std::function<void()>> event_handlers_;
 
       protected:
-        mimir::formalism::State initial_state = nullptr;
+        mimir::formalism::State initial_state;
         volatile bool should_abort = false;
 
         SearchBase(const mimir::formalism::Problem& problem);

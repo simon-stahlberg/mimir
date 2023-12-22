@@ -2,6 +2,7 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "../datastructures/robin_map.hpp"
+#include "declarations.hpp"
 
 #include <loki/problem/pddl/problem.hpp>
 #include <memory>
@@ -20,6 +21,8 @@ namespace mimir::formalism
         Problem(loki::pddl::Problem problem);
 
       public:
+        static Problem parse(const std::string& domain_path, const std::string& problem_path);
+        static ProblemList parse(const std::string& domain_path, const std::vector<std::string>& problem_paths);
         // Problem replace_initial(const AtomList& initial) const;
 
         Domain get_domain() const;

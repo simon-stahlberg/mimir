@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../include/mimir/formalism/state_repository.hpp"
 #include "../../include/mimir/generators/complete_state_space.hpp"
 #include "../../include/mimir/generators/successor_generator_factory.hpp"
 #include "../formalism/help_functions.hpp"
@@ -49,6 +50,7 @@ namespace mimir::planners
 
     CompleteStateSpaceImpl::CompleteStateSpaceImpl(const mimir::formalism::Problem& problem) :
         StateSpaceImpl(problem),
+        repository_(mimir::formalism::create_state_repository(problem)),
         states_(),
         goal_states_(),
         state_infos_(),
@@ -90,7 +92,7 @@ namespace mimir::planners
             backward_transitions_.push_back(std::vector<mimir::formalism::Transition>());
             state_indices_.insert(std::make_pair(state, out_index));
 
-            if (literals_hold(problem->goal, state))
+            if (state.holds(get_problem().get_goal_literals()))
             {
                 goal_states_.push_back(state);
             }
@@ -167,7 +169,7 @@ namespace mimir::planners
 
     const std::vector<mimir::formalism::State>& CompleteStateSpaceImpl::get_states() const { return states_; }
 
-    mimir::formalism::State CompleteStateSpaceImpl::get_initial_state() const { return mimir::formalism::create_state(problem->initial, problem); }
+    mimir::formalism::State CompleteStateSpaceImpl::get_initial_state() const { return repository_->create_state(get_problem().get_initial_atoms()); }
 
     uint64_t CompleteStateSpaceImpl::get_unique_index_of_state(const mimir::formalism::State& state) const { return get_state_index(state); }
 
@@ -220,8 +222,8 @@ namespace mimir::planners
             {
                 for (const auto& transition : transitions)
                 {
-                    const auto source_index = get_state_index(transition->source_state);
-                    const auto target_index = get_state_index(transition->target_state);
+                    const auto source_index = get_state_index(transition.source_state);
+                    const auto target_index = get_state_index(transition.target_state);
                     state_distances_[source_index][target_index] = 1;
                 }
             }
@@ -356,7 +358,7 @@ namespace mimir::planners
         {
             uint64_t initial_index;
 
-            if (state_space->add_or_get_state(mimir::formalism::create_state(problem->initial, problem), initial_index))
+            if (state_space->add_or_get_state(state_space->repository_->create_state(problem.get_initial_atoms()), initial_index))
             {
                 state_space->set_distance_from_initial_state(initial_index, 0);
                 is_expanded.push_back(false);
@@ -365,7 +367,7 @@ namespace mimir::planners
             queue.push_back(initial_index);
         }
 
-        const auto goal = problem->goal;
+        const auto goal = problem.get_goal_literals();
 
         while ((queue.size() > 0) && (state_space->num_states() < max_states))
         {
@@ -379,7 +381,7 @@ namespace mimir::planners
 
             const auto state = state_space->get_state(state_index);
             const auto distance_from_initial_state = state_space->get_distance_from_initial(state_index);
-            const auto is_goal_state = mimir::formalism::literals_hold(goal, state);
+            const auto is_goal_state = state.holds(goal);
 
             if (is_goal_state)
             {
@@ -393,7 +395,7 @@ namespace mimir::planners
 
             for (const auto& ground_action : ground_actions)
             {
-                const auto successor_state = mimir::formalism::apply(ground_action, state);
+                const auto successor_state = ground_action.apply(state);
                 uint64_t successor_state_index;
                 bool successor_is_new_state;
 
@@ -445,7 +447,7 @@ namespace mimir::planners
 
             for (const auto& backward_transition : backward_transitions)
             {
-                const auto predecessor_state_index = state_space->get_state_index(backward_transition->source_state);
+                const auto predecessor_state_index = state_space->get_state_index(backward_transition.source_state);
                 const auto predecessor_is_new_state = state_space->get_distance_to_goal(predecessor_state_index) < 0;
 
                 if (predecessor_is_new_state)

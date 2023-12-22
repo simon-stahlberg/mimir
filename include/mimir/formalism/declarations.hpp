@@ -32,12 +32,17 @@ namespace mimir::formalism
 
     class Predicate;
     using PredicateList = std::vector<Predicate>;
+    using PredicateSet = std::unordered_set<Predicate>;
 
     class Problem;
     using ProblemList = std::vector<Problem>;
 
     class State;
     using StateList = std::vector<State>;
+
+    class StateRepositoryImpl;
+    using StateRepository = std::shared_ptr<StateRepositoryImpl>;
+    using StateRepositoryPtr = const StateRepositoryImpl const*;
 
     class Term;
     using TermList = std::vector<Term>;
