@@ -39,6 +39,8 @@ namespace mimir::formalism
         friend class Problem;
     };
 
+    AtomList as_atoms(const LiteralList& literals);
+
     // bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate);
 
     // std::ostream& operator<<(std::ostream& os, const mimir::formalism::LiteralList& literals);

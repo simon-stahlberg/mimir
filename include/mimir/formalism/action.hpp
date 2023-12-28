@@ -4,6 +4,7 @@
 #include "action_schema.hpp"
 #include "bitset.hpp"
 #include "declarations.hpp"
+#include "implication.hpp"
 #include "literal.hpp"
 #include "problem.hpp"
 #include "term.hpp"

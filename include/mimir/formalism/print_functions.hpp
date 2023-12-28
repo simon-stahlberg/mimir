@@ -9,14 +9,14 @@ namespace mimir::formalism
 {
     void print_atom(const mimir::formalism::Atom& atom)
     {
-        std::cout << atom->predicate->name << "(";
+        std::cout << atom.get_predicate()->name << "(";
 
-        for (uint32_t argument_index = 0; argument_index < atom->arguments.size(); ++argument_index)
+        for (uint32_t argument_index = 0; argument_index < atom.get_terms().size(); ++argument_index)
         {
-            const auto object = atom->arguments.at(argument_index);
+            const auto object = atom.get_terms().at(argument_index);
             std::cout << object->name;
 
-            if ((argument_index + 1) < atom->arguments.size())
+            if ((argument_index + 1) < atom.get_terms().size())
             {
                 std::cout << ", ";
             }

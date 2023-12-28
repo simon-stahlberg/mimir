@@ -38,14 +38,14 @@ namespace mimir::formalism
     //     return create_atom(predicate, arguments);
     // }
 
+    uint32_t Atom::get_id() const { throw std::invalid_argument("not implemented"); }
+    Predicate Atom::get_predicate() const { throw std::invalid_argument("not implemented"); }
+    TermList Atom::get_terms() const { throw std::invalid_argument("not implemented"); }
+
     bool Atom::operator<(const Atom& other) const { throw std::runtime_error("not implemented"); }
-
     bool Atom::operator>(const Atom& other) const { throw std::runtime_error("not implemented"); }
-
     bool Atom::operator==(const Atom& other) const { throw std::runtime_error("not implemented"); }
-
     bool Atom::operator!=(const Atom& other) const { throw std::runtime_error("not implemented"); }
-
     bool Atom::operator<=(const Atom& other) const { throw std::runtime_error("not implemented"); }
 
     bool Atom::matches(const Atom& first_atom, const Atom& second_atom) const { throw std::runtime_error("not implemented"); }

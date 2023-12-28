@@ -1,5 +1,7 @@
 #include "../../include/mimir/formalism/atom.hpp"
 #include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/function.hpp"
+#include "../../include/mimir/formalism/implication.hpp"
 #include "../../include/mimir/formalism/literal.hpp"
 #include "../../include/mimir/formalism/predicate.hpp"
 #include "../../include/mimir/formalism/problem.hpp"
@@ -57,8 +59,8 @@ namespace mimir::planners
             index_parameters_.emplace_back(parameter);
         }
 
-        const auto static_predicates = domain.get_static_predicates();
-        const mimir::formalism::PredicateSet static_predicates(static_predicates.begin(), static_predicates.end());
+        const auto static_predicates_list = domain.get_static_predicates();
+        const mimir::formalism::PredicateSet static_predicates(static_predicates_list.begin(), static_predicates_list.end());
 
         for (const auto& literal : action_schema.get_precondition())
         {
@@ -95,17 +97,20 @@ namespace mimir::planners
             conditional_effect.emplace_back(std::move(flat_antecedent), std::move(flat_consequence));
         }
 
-        if (action_schema->cost->has_atom())
-        {
-            const auto cost_atom = action_schema->cost->get_atom();
-            cost_arguments.reserve(cost_atom->arguments.size());
+        const auto cost = action_schema.get_cost();
 
-            for (const auto& parameter : cost_atom->arguments)
-            {
-                const auto is_constant = parameter->is_constant();
-                const auto value = is_constant ? parameter->id : parameter_indices_.at(parameter);
-                cost_arguments.emplace_back(ParameterIndexOrConstantId(value, is_constant));
-            }
+        if (cost.is_defined())
+        {
+            throw std::runtime_error("not implemented");
+            // const auto cost_atom = action_schema->cost->get_atom();
+            // cost_arguments.reserve(cost_atom.get_terms().size());
+
+            // for (const auto& parameter : cost_atom.get_terms())
+            // {
+            //     const auto is_constant = parameter->is_constant();
+            //     const auto value = is_constant ? parameter->id : parameter_indices_.at(parameter);
+            //     cost_arguments.emplace_back(ParameterIndexOrConstantId(value, is_constant));
+            // }
         }
     }
 

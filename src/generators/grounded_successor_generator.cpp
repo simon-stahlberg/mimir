@@ -16,6 +16,11 @@
  */
 
 #include "../../include/mimir/datastructures/robin_map.hpp"
+#include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/problem.hpp"
+#include "../../include/mimir/formalism/state.hpp"
 #include "../../include/mimir/generators/grounded_successor_generator.hpp"
 
 #include <algorithm>
@@ -42,7 +47,7 @@ namespace mimir::planners
 
     mimir::formalism::ActionList GroundedSuccessorGenerator::get_applicable_actions(const mimir::formalism::State& state) const
     {
-        if (problem_ != state->get_problem())
+        if (problem_ != state.get_problem())
         {
             throw std::invalid_argument("successor generator is built for a different problem");
         }
@@ -69,9 +74,9 @@ namespace mimir::planners
 
             for (const auto& ground_action : ground_actions)
             {
-                for (const auto& literal : ground_action->get_precondition())
+                for (const auto& literal : ground_action.get_precondition())
                 {
-                    if (equal_to(literal->atom, atom))
+                    if (equal_to(literal.get_atom(), atom))
                     {
                         return next_atom;
                     }
@@ -87,30 +92,31 @@ namespace mimir::planners
     std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const mimir::formalism::Problem& problem,
                                                                                   const mimir::formalism::ActionList& ground_actions)
     {
-        const auto& static_predicates = problem->domain->static_predicates;
-        const auto& static_atoms = problem->get_static_atoms();
+        const auto& static_predicates = problem.get_domain().get_static_predicates();
+        const auto& static_atoms = problem.get_static_atoms();
 
         mimir::tsl::robin_map<mimir::formalism::Atom, uint32_t> atom_occurrances;
 
         // Find unique atoms from ground action preconditions
         for (const auto& action : ground_actions)
         {
-            for (const auto& literal : action->get_precondition())
+            for (const auto& literal : action.get_precondition())
             {
-                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal->atom->predicate);
+                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal.get_atom().get_predicate());
 
                 if (is_static_predicate)
                 {
                     // We can disregard static atoms, provided that all actions in "ground_actions" meet the precondition for doing so
+                    const auto atom_is_static = static_atoms.find(literal.get_atom()) != static_atoms.end();
 
-                    if (static_atoms.contains(literal->atom) == literal->negated)
+                    if (atom_is_static == literal.is_negated())
                     {
                         throw std::runtime_error("ground_actions contains an always inapplicable action");
                     }
                 }
                 else
                 {
-                    ++atom_occurrances[literal->atom];
+                    ++atom_occurrances[literal.get_atom()];
                 }
             }
         }
@@ -156,11 +162,11 @@ namespace mimir::planners
             bool present = false;
             bool not_present = false;
 
-            for (const auto& literal : ground_action->get_precondition())
+            for (const auto& literal : ground_action.get_precondition())
             {
-                if (equal_to(literal->atom, branching_atom))
+                if (equal_to(literal.get_atom(), branching_atom))
                 {
-                    if (literal->negated)
+                    if (literal.is_negated())
                     {
                         not_present = true;
                     }
@@ -195,7 +201,7 @@ namespace mimir::planners
         }
         else
         {
-            auto branch_node = std::make_unique<BranchNode>(problem->get_rank(branching_atom));
+            auto branch_node = std::make_unique<BranchNode>(branching_atom.get_id());
             branch_node->present_ = build_decision_tree_recursive(problem, present_actions, atoms, next_atom);
             branch_node->not_present_ = build_decision_tree_recursive(problem, not_present_actions, atoms, next_atom);
             branch_node->dont_care_ = build_decision_tree_recursive(problem, dont_care_actions, atoms, next_atom);
@@ -205,7 +211,7 @@ namespace mimir::planners
 
     void BranchNode::get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const
     {
-        const bool atom_present = mimir::formalism::is_in_state(rank_, state);
+        const bool atom_present = state.contains(rank_);
 
         if (atom_present)
         {

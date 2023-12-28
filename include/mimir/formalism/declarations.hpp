@@ -2,6 +2,7 @@
 #define MIMIR_FORMALISM_DECLARATIONS_HPP_
 
 #include "../datastructures/robin_map.hpp"
+#include "../datastructures/robin_set.hpp"
 
 #include <loki/common/persistent_factory.hpp>
 #include <loki/domain/pddl/action.hpp>
@@ -24,6 +25,9 @@ namespace mimir::formalism
     class Domain;
     using DomainList = std::vector<Domain>;
 
+    class Function;
+    using FunctionList = std::vector<Function>;
+
     class Implication;
     using ImplicationList = std::vector<Implication>;
 
@@ -32,7 +36,7 @@ namespace mimir::formalism
 
     class Predicate;
     using PredicateList = std::vector<Predicate>;
-    using PredicateSet = std::unordered_set<Predicate>;
+    using PredicateSet = mimir::tsl::robin_set<Predicate>;
 
     class Problem;
     using ProblemList = std::vector<Problem>;
@@ -42,7 +46,7 @@ namespace mimir::formalism
 
     class StateRepositoryImpl;
     using StateRepository = std::shared_ptr<StateRepositoryImpl>;
-    using StateRepositoryPtr = const StateRepositoryImpl const*;
+    using StateRepositoryPtr = const StateRepositoryImpl*;
 
     class Term;
     using TermList = std::vector<Term>;

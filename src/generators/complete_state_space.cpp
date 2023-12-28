@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../include/mimir/formalism/atom.hpp"
 #include "../../include/mimir/formalism/state_repository.hpp"
 #include "../../include/mimir/generators/complete_state_space.hpp"
 #include "../../include/mimir/generators/successor_generator_factory.hpp"

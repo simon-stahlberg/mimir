@@ -25,6 +25,7 @@ namespace mimir::formalism
         LiteralList get_precondition() const;
         LiteralList get_effect() const;
         ImplicationList get_conditional_effect() const;
+        Function get_cost() const;
 
         ActionSchema delete_relax(ActionSchemaFactory& ref_factory) const;
 

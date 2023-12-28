@@ -16,6 +16,7 @@
  */
 
 #include "../../include/mimir/formalism/action_schema.hpp"
+#include "../../include/mimir/formalism/function.hpp"
 #include "../../include/mimir/formalism/literal.hpp"
 #include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
@@ -92,6 +93,8 @@ namespace mimir::formalism
     LiteralList ActionSchema::get_effect() const { throw std::runtime_error("not implemented"); }
 
     ImplicationList ActionSchema::get_conditional_effect() const { throw std::runtime_error("not implemented"); }
+
+    Function ActionSchema::get_cost() const { throw std::runtime_error("not implemented"); }
 
     ActionSchema ActionSchema::delete_relax(ActionSchemaFactory& ref_factory) const { throw std::runtime_error("not implemented"); }
 

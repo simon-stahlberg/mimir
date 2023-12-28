@@ -4,6 +4,7 @@
 #include "../datastructures/robin_map.hpp"
 #include "../formalism/action.hpp"
 #include "../formalism/action_schema.hpp"
+#include "../formalism/domain.hpp"
 #include "../formalism/problem.hpp"
 #include "../formalism/state.hpp"
 #include "flat_action_schema.hpp"

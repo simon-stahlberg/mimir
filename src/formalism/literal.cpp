@@ -17,6 +17,7 @@
 
 #include "../../include/mimir/formalism/atom.hpp"
 #include "../../include/mimir/formalism/literal.hpp"
+#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
 
 #include <memory>

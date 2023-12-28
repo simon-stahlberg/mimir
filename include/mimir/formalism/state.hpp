@@ -36,13 +36,16 @@ namespace mimir::formalism
         AtomList get_static_atoms() const;
         AtomList get_dynamic_atoms() const;
 
+        bool contains(uint32_t atom_id) const;
+        bool contains(const Atom& atom) const;
+        bool contains_all(const AtomList& atoms) const;
         bool holds(const LiteralList& literals) const;
 
         std::vector<uint32_t> get_ranks() const;
         std::vector<uint32_t> get_static_ranks() const;
         std::vector<uint32_t> get_dynamic_ranks() const;
 
-        // Problem get_problem() const;
+        Problem get_problem() const;
 
         std::map<Predicate, AtomList> get_atoms_grouped_by_predicate() const;
 
@@ -55,9 +58,9 @@ namespace mimir::formalism
 
         // friend State apply(const Action& action, const State& state);
 
-        // friend bool is_in_state(uint32_t rank, const State& state);
+        // friend bool contains(uint32_t rank, const State& state);
 
-        // friend bool is_in_state(const Atom& atom, const State& state);
+        // friend bool contains(const Atom& atom, const State& state);
 
         bool operator<(const State& other) const;
         bool operator>(const State& other) const;
@@ -78,9 +81,9 @@ namespace mimir::formalism
 
     // State apply(const Action& action, const State& state);
 
-    // bool is_in_state(uint32_t rank, const State& state);
+    // bool contains(uint32_t rank, const State& state);
 
-    // bool is_in_state(const Atom& atom, const State& state);
+    // bool contains(const Atom& atom, const State& state);
 
     // bool subset_of_state(const std::vector<uint32_t>& ranks, const State& state);
 

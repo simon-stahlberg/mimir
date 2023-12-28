@@ -1,5 +1,12 @@
+#include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/literal.hpp"
+#include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/problem.hpp"
+#include "../../include/mimir/formalism/term.hpp"
 #include "../../include/mimir/generators/goal_matcher.hpp"
 #include "../../include/mimir/generators/lifted_schema_successor_generator.hpp"
+#include "../../include/mimir/generators/state_space.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -10,9 +17,9 @@ namespace mimir::planners
     {
         for (const auto& atom : goal)
         {
-            for (const auto& parameter : atom->arguments)
+            for (const auto& parameter : atom.get_terms())
             {
-                if (parameter->is_variable())
+                if (parameter.is_variable())
                 {
                     return false;
                 }
@@ -76,82 +83,86 @@ namespace mimir::planners
 
     std::pair<mimir::formalism::State, int32_t> GoalMatcher::best_match(const mimir::formalism::State& from_state, const mimir::formalism::AtomList& goal)
     {
-        if (is_ground(goal))
-        {
-            const auto goal_ranks = state_space_->problem->to_ranks(goal);
+        throw std::runtime_error("not implemented");
 
-            for (const auto& [to_state, distance] : get_state_distances(from_state))
-            {
-                if (mimir::formalism::subset_of_state(goal_ranks, to_state))
-                {
-                    return std::make_pair(to_state, distance);
-                }
-            }
+        // if (is_ground(goal))
+        // {
+        //     const auto goal_literals = state_space_->get_problem().get_goal_literals();
 
-            return std::make_pair(nullptr, -1);
-        }
-        else
-        {
-            std::map<std::string, mimir::formalism::Parameter> parameter_map;
-            mimir::formalism::ParameterList parameters;
-            mimir::formalism::LiteralList precondition;
+        //     for (const auto& [to_state, distance] : get_state_distances(from_state))
+        //     {
+        //         if (to_state.holds(goal_literals))
+        //         {
+        //             return std::make_pair(to_state, distance);
+        //         }
+        //     }
 
-            // Create new parameters
+        //     throw std::runtime_error("not implemented");
 
-            for (const auto& atom : goal)
-            {
-                for (const auto& term : atom->arguments)
-                {
-                    if (term->is_variable() && !parameter_map.count(term->name))
-                    {
-                        const auto id = static_cast<uint32_t>(parameter_map.size());
-                        const auto new_parameter = mimir::formalism::create_object(id, term->name, term->type);
-                        parameter_map.emplace(term->name, new_parameter);
-                        parameters.emplace_back(new_parameter);
-                    }
-                }
-            }
+        //     // return std::make_pair(nullptr, -1);
+        // }
+        // else
+        // {
+        //     std::map<std::string, mimir::formalism::Term> parameter_map;
+        //     mimir::formalism::TermList parameters;
+        //     mimir::formalism::LiteralList precondition;
 
-            // Create new atoms
+        //     // Create new parameters
 
-            for (const auto& atom : goal)
-            {
-                mimir::formalism::ParameterList new_terms;
+        //     for (const auto& atom : goal)
+        //     {
+        //         for (const auto& term : atom.get_terms())
+        //         {
+        //             if (term.is_variable() && !parameter_map.count(term.get_name()))
+        //             {
+        //                 const auto id = static_cast<uint32_t>(parameter_map.size());
+        //                 const auto new_parameter = mimir::formalism::create_object(id, term.get_name(), term->type);
+        //                 parameter_map.emplace(term.get_name(), new_parameter);
+        //                 parameters.emplace_back(new_parameter);
+        //             }
+        //         }
+        //     }
 
-                for (const auto& term : atom->arguments)
-                {
-                    if (term->is_variable())
-                    {
-                        new_terms.emplace_back(parameter_map.at(term->name));
-                    }
-                    else
-                    {
-                        new_terms.emplace_back(term);
-                    }
-                }
+        //     // Create new atoms
 
-                const auto new_atom = mimir::formalism::create_atom(atom->predicate, new_terms);
-                const auto new_literal = mimir::formalism::create_literal(new_atom, false);
-                precondition.emplace_back(new_literal);
-            }
+        //     for (const auto& atom : goal)
+        //     {
+        //         mimir::formalism::TermList new_terms;
 
-            // Create action schema
+        //         for (const auto& term : atom.get_terms())
+        //         {
+        //             if (term.is_variable())
+        //             {
+        //                 new_terms.emplace_back(parameter_map.at(term.get_name()));
+        //             }
+        //             else
+        //             {
+        //                 new_terms.emplace_back(term);
+        //             }
+        //         }
 
-            const auto unit_cost = mimir::formalism::create_unit_cost_function(state_space_->domain);
-            const auto action_schema = mimir::formalism::create_action_schema("dummy", parameters, precondition, {}, {}, unit_cost);
-            mimir::planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state_space_->problem);
+        //         const auto new_atom = mimir::formalism::create_atom(atom.get_predicate(), new_terms);
+        //         const auto new_literal = mimir::formalism::create_literal(new_atom, false);
+        //         precondition.emplace_back(new_literal);
+        //     }
 
-            for (const auto& [to_state, distance] : get_state_distances(from_state))
-            {
-                const auto matches = successor_generator.get_applicable_actions(to_state);
+        //     // Create action schema
 
-                if (matches.size() > 0)
-                {
-                    return std::make_pair(to_state, distance);
-                }
-            }
+        //     const auto unit_cost = mimir::formalism::create_unit_cost_function(state_space_.get_domain());
+        //     const auto action_schema = mimir::formalism::create_action_schema("dummy", parameters, precondition, {}, {}, unit_cost);
+        //     mimir::planners::LiftedSchemaSuccessorGenerator successor_generator(action_schema, state_space_->problem);
 
-            return std::make_pair(nullptr, -1);
-        }
+        //     for (const auto& [to_state, distance] : get_state_distances(from_state))
+        //     {
+        //         const auto matches = successor_generator.get_applicable_actions(to_state);
+
+        //         if (matches.size() > 0)
+        //         {
+        //             return std::make_pair(to_state, distance);
+        //         }
+        //     }
+
+        //     return std::make_pair(nullptr, -1);
+        // }
     }
 }  // namespace planners

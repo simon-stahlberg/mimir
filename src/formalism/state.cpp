@@ -147,6 +147,12 @@ namespace mimir::formalism
         // return atoms;
     }
 
+    bool State::contains(uint32_t atom_id) const { throw std::invalid_argument("not implemented"); }
+
+    bool State::contains(const Atom& atom) const { throw std::invalid_argument("not implemented"); }
+
+    bool State::contains_all(const AtomList& atoms) const { throw std::invalid_argument("not implemented"); }
+
     bool State::holds(const LiteralList& literals) const { throw std::runtime_error("not implemented"); }
 
     std::vector<uint32_t> State::get_ranks() const
@@ -231,7 +237,7 @@ namespace mimir::formalism
         // return static_ranks;
     }
 
-    // Problem State::get_problem() const { return problem_; }
+    Problem State::get_problem() const { throw std::runtime_error("not implemented"); }
 
     std::map<Predicate, AtomList> State::get_atoms_grouped_by_predicate() const
     {
@@ -241,7 +247,7 @@ namespace mimir::formalism
 
         // for (const auto& atom : get_atoms())
         // {
-        //     const auto& predicate = atom->predicate;
+        //     const auto& predicate = atom.get_predicate();
 
         //     if (grouped_atoms.find(predicate) == grouped_atoms.end())
         //     {
@@ -265,17 +271,17 @@ namespace mimir::formalism
 
         // for (const auto& atom : get_atoms())
         // {
-        //     const auto& predicate = atom->predicate;
+        //     const auto& predicate = atom.get_predicate();
 
         //     if (packed_ids.find(predicate->id) == packed_ids.end())
         //     {
         //         packed_ids.insert(std::make_pair(predicate->id, std::vector<uint32_t>()));
-        //         id_to_name_arity.insert(std::make_pair(predicate->id, std::make_pair(predicate->name, predicate->arity)));
+        //         id_to_name_arity.insert(std::make_pair(predicate->id, std::make_pair(predicate->name, predicate.get_arity())));
         //     }
 
         //     auto& atom_list = packed_ids.at(predicate->id);
 
-        //     for (const auto& object : atom->arguments)
+        //     for (const auto& object : atom.get_terms())
         //     {
         //         atom_list.push_back(object->id);
         //     }
@@ -327,17 +333,17 @@ namespace mimir::formalism
         //         }
 
         //         const auto atom = literal->atom;
-        //         const auto predicate_id = static_cast<uint32_t>(num_predicates) + atom->predicate->id;
+        //         const auto predicate_id = static_cast<uint32_t>(num_predicates) + atom.get_predicate()->id;
 
         //         if (packed_ids.find(predicate_id) == packed_ids.end())
         //         {
         //             packed_ids.emplace(predicate_id, std::vector<uint32_t>());
-        //             id_to_name_arity.insert(std::make_pair(predicate_id, std::make_pair(atom->predicate->name + "_goal", atom->predicate->arity)));
+        //             id_to_name_arity.insert(std::make_pair(predicate_id, std::make_pair(atom.get_predicate()->name + "_goal", atom.get_predicate()->arity)));
         //         }
 
         //         auto& atom_list = packed_ids.at(predicate_id);
 
-        //         for (const auto& object : atom->arguments)
+        //         for (const auto& object : atom.get_terms())
         //         {
         //             atom_list.push_back(object->id);
         //         }
@@ -386,16 +392,16 @@ namespace mimir::formalism
 
     std::size_t State::hash() const { return hash_; }
 
-    // bool is_in_state(uint32_t rank, const State& state)
+    // bool contains(uint32_t rank, const State& state)
     // {
     //     throw std::runtime_error("not implemented");
     //     //  return state->bitset_.get(rank);
     // }
 
-    // bool is_in_state(const Atom& atom, const State& state)
+    // bool contains(const Atom& atom, const State& state)
     // {
     //     throw std::runtime_error("not implemented");
-    //     // return is_in_state(state->get_problem()->get_rank(atom), state);
+    //     // return contains(state->get_problem()->get_rank(atom), state);
     // }
 
     // bool subset_of_state(const std::vector<uint32_t>& ranks, const State& state)
@@ -404,7 +410,7 @@ namespace mimir::formalism
 
     //     // for (auto rank : ranks)
     //     // {
-    //     //     if (!is_in_state(rank, state))
+    //     //     if (!contains(rank, state))
     //     //     {
     //     //         return false;
     //     //     }
@@ -417,7 +423,7 @@ namespace mimir::formalism
     // {
     //     for (const auto& atom : atoms)
     //     {
-    //         if (!is_in_state(atom, state))
+    //         if (!contains(atom, state))
     //         {
     //             return false;
     //         }
@@ -492,7 +498,7 @@ namespace mimir::formalism
     // {
     //     for (const auto& atom : atoms)
     //     {
-    //         if (!is_in_state(atom, state))
+    //         if (!contains(atom, state))
     //         {
     //             return false;
     //         }
@@ -501,13 +507,13 @@ namespace mimir::formalism
     //     return true;
     // }
 
-    // bool literal_holds(const Literal& literal, const State& state) { return is_in_state(literal->atom, state) != literal->negated; }
+    // bool literal_holds(const Literal& literal, const State& state) { return contains(literal->atom, state) != literal->negated; }
 
     // bool literals_hold(const LiteralList& literal_list, const State& state, std::size_t min_arity)
     // {
     //     for (const auto& literal : literal_list)
     //     {
-    //         const auto predicate_arity = literal->atom->predicate->arity;
+    //         const auto predicate_arity = literal->atom.get_predicate()->arity;
 
     //         if ((predicate_arity >= min_arity) && !literal_holds(literal, state))
     //         {

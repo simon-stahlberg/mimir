@@ -74,7 +74,7 @@ namespace mimir::planners
         {
             for (const auto& literal : ground_action->get_precondition())
             {
-                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal->atom->predicate);
+                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal->atom.get_predicate());
 
                 if (is_static_predicate && (static_atoms.contains(literal->atom) == literal->negated))
                 {

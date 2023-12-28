@@ -16,6 +16,7 @@ namespace mimir::formalism
         explicit Atom(loki::pddl::Atom external_atom);
 
       public:
+        uint32_t get_id() const;
         Predicate get_predicate() const;
         TermList get_terms() const;
 

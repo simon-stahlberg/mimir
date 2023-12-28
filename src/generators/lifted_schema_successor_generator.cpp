@@ -17,6 +17,7 @@
 
 #include "../../include/mimir/algorithms/kpkc.hpp"
 #include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/predicate.hpp"
 #include "../../include/mimir/formalism/type.hpp"
 #include "../../include/mimir/generators/lifted_schema_successor_generator.hpp"
 #include "../formalism/help_functions.hpp"
@@ -56,24 +57,24 @@ namespace mimir::planners
      */
     std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const mimir::formalism::Domain& domain,
                                                                                          const mimir::formalism::Problem& problem,
-                                                                                         const std::vector<uint32_t>& ranks)
+                                                                                         const std::vector<uint32_t>& atom_ids)
     {
-        const auto num_objects = problem->objects.size();
-        const auto& predicates = domain->predicates;
+        const auto num_objects = problem.get_objects().size();
+        const auto& predicates = domain.get_predicates();
         std::vector<std::vector<bool>> assignment_sets;
         assignment_sets.resize(predicates.size());
 
         for (const auto& predicate : predicates)
         {
-            auto& assignment_set = assignment_sets[predicate->id];
-            assignment_set.resize(num_assignments(predicate->arity, num_objects));
+            auto& assignment_set = assignment_sets[predicate.get_id()];
+            assignment_set.resize(num_assignments(predicate.get_arity(), num_objects));
         }
 
-        for (const auto& rank : ranks)
+        for (const auto& atom_id : atom_ids)
         {
-            const auto& predicate_arity = problem->get_arity(rank);
-            const auto& predicate_id = problem->get_predicate_id(rank);
-            const auto& argument_ids = problem->get_argument_ids(rank);
+            const auto& predicate_arity = problem->get_arity(atom_id);
+            const auto& predicate_id = problem->get_predicate_id(atom_id);
+            const auto& argument_ids = problem->get_argument_ids(atom_id);
             auto& assignment_set = assignment_sets[predicate_id];
 
             for (size_t first_position = 0; first_position < predicate_arity; ++first_position)
@@ -178,7 +179,7 @@ namespace mimir::planners
                                                                      second_position,
                                                                      second_object_id,
                                                                      static_cast<int32_t>(literal.arity),
-                                                                     static_cast<int32_t>(problem_->objects.size()));
+                                                                     static_cast<int32_t>(problem_.get_objects().size()));
 
                 const auto consistent_with_state = assignment_set[assignment_rank];
 
@@ -196,10 +197,10 @@ namespace mimir::planners
         return true;
     }
 
-    mimir::formalism::ObjectList LiftedSchemaSuccessorGenerator::ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
-                                                                                   const mimir::formalism::ObjectList& terms) const
+    mimir::formalism::TermList LiftedSchemaSuccessorGenerator::ground_parameters(const std::vector<ParameterIndexOrConstantId>& parameters,
+                                                                                 const mimir::formalism::TermList& terms) const
     {
-        mimir::formalism::ObjectList atom_terms;
+        mimir::formalism::TermList atom_terms;
 
         for (const auto& term : parameters)
         {
@@ -216,14 +217,14 @@ namespace mimir::planners
         return atom_terms;
     }
 
-    mimir::formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const mimir::formalism::ObjectList& terms) const
+    mimir::formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const mimir::formalism::TermList& terms) const
     {
-        const auto& atom_predicate = literal.source->atom->predicate;
+        const auto& atom_predicate = literal.source.get_atom().get_predicate();
         const auto ground_atom = mimir::formalism::create_atom(atom_predicate, ground_parameters(literal.arguments, terms));
         return mimir::formalism::create_literal(ground_atom, literal.negated);
     }
 
-    mimir::formalism::Action LiftedSchemaSuccessorGenerator::create_action(mimir::formalism::ObjectList&& terms) const
+    mimir::formalism::Action LiftedSchemaSuccessorGenerator::create_action(mimir::formalism::TermList&& terms) const
     {
         // Get the precondition of the ground action
 
@@ -302,9 +303,9 @@ namespace mimir::planners
 
     LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const mimir::formalism::ActionSchema& action_schema,
                                                                    const mimir::formalism::Problem& problem) :
-        domain_(problem->domain),
+        domain_(problem.get_domain()),
         problem_(problem),
-        flat_action_schema_(FlatActionSchema(problem->domain, action_schema)),
+        flat_action_schema_(FlatActionSchema(problem.get_domain(), action_schema)),
         objects_by_parameter_type(),
         to_vertex_assignment(),
         statically_consistent_assignments(),
@@ -320,7 +321,7 @@ namespace mimir::planners
             {
                 std::vector<uint32_t> compatible_objects;
 
-                for (const auto& object : problem->objects)
+                for (const auto& object : problem.get_objects())
                 {
                     if (mimir::formalism::is_subtype_of(object->type, parameter->type))
                     {
@@ -415,7 +416,7 @@ namespace mimir::planners
             return false;
         }
 
-        const auto action = create_action(mimir::formalism::ObjectList {});
+        const auto action = create_action(mimir::formalism::TermList {});
 
         if (mimir::formalism::literals_hold(action->get_precondition(), state))
         {
@@ -510,7 +511,7 @@ namespace mimir::planners
                 return false;
             }
 
-            mimir::formalism::ObjectList terms(flat_action_schema_.arity);
+            mimir::formalism::TermList terms(flat_action_schema_.arity);
 
             for (std::size_t vertex_index = 0; vertex_index < flat_action_schema_.arity; ++vertex_index)
             {
