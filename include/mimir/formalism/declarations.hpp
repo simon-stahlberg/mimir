@@ -4,14 +4,11 @@
 #include "../datastructures/robin_map.hpp"
 #include "../datastructures/robin_set.hpp"
 
-#include <loki/common/persistent_factory.hpp>
 #include <loki/domain/pddl/action.hpp>
 #include <vector>
 
 namespace mimir::formalism
 {
-    using ActionSchemaFactory = loki::PersistentFactory<loki::pddl::ActionImpl>;
-
     class ActionSchema;
     using ActionSchemaList = std::vector<ActionSchema>;
 

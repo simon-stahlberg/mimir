@@ -37,17 +37,16 @@ endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
+# Setup prefix path for third-party libraries
+add_subdirectory(extern/loki)
+set(Loki_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/extern/loki/include)
+link_libraries(sketches)
+include_directories(${Loki_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(include)
 
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
 file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
-
-# Setup prefix path for third-party libraries
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/extern/loki")
-add_subdirectory(extern/loki)
-set(Loki_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/extern/loki/include)
-include_directories(${Loki_INCLUDE_DIRS})
 
 # ------------
 # Target Mimir
@@ -119,9 +118,10 @@ if(BUILD_PYMIMIR)
     endif()
 
     if(MSVC)
-        # Add MSVC specific library linking here
+    # Add MSVC specific library linking here
     else()
         target_link_libraries(pymimir -lstdc++fs)
+
         # These settings seem to cause issues with torch.
         # target_link_libraries(pymimir -static-libstdc++ -static-libgcc)
     endif()

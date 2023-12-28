@@ -30,33 +30,35 @@ namespace mimir::formalism
 
     LiteralList ActionSchema::parse_conjunctive_literals(loki::pddl::Condition condition) const
     {
-        LiteralList precondition;
+        throw std::runtime_error("not implemented");
 
-        std::deque<loki::pddl::Condition> conditions { condition };
+        // LiteralList precondition;
 
-        while (conditions.size() > 0)
-        {
-            const auto current_condition = conditions.front();
-            conditions.pop_front();
+        // std::deque<loki::pddl::Condition> conditions { condition };
 
-            if (loki::pddl::ConditionLiteral literal = dynamic_cast<loki::pddl::ConditionLiteral>(current_condition))
-            {
-                precondition.emplace_back(Literal(literal->get_literal()));
-            }
-            if (loki::pddl::ConditionAnd conjunction = dynamic_cast<loki::pddl::ConditionAnd>(current_condition))
-            {
-                for (const auto& condition : conjunction->get_conditions())
-                {
-                    conditions.emplace_back(condition);
-                }
-            }
-            else
-            {
-                throw std::runtime_error("not implemented: we only support conjunction of literals");
-            }
-        }
+        // while (conditions.size() > 0)
+        // {
+        //     const auto current_condition = conditions.front();
+        //     conditions.pop_front();
 
-        return precondition;
+        //     if (loki::pddl::ConditionLiteral literal = dynamic_cast<loki::pddl::ConditionLiteral>(current_condition))
+        //     {
+        //         precondition.emplace_back(Literal(literal->get_literal()));
+        //     }
+        //     if (loki::pddl::ConditionAnd conjunction = dynamic_cast<loki::pddl::ConditionAnd>(current_condition))
+        //     {
+        //         for (const auto& condition : conjunction->get_conditions())
+        //         {
+        //             conditions.emplace_back(condition);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         throw std::runtime_error("not implemented: we only support conjunction of literals");
+        //     }
+        // }
+
+        // return precondition;
     }
 
     const std::string& ActionSchema::get_name() const { return external_->get_name(); }

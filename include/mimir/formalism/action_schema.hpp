@@ -2,6 +2,7 @@
 #define MIMIR_FORMALISM_ACTION_SCHEMA_HPP_
 
 #include "declarations.hpp"
+#include "factories.hpp"
 
 #include <loki/common/pddl/types.hpp>
 #include <loki/domain/pddl/action.hpp>

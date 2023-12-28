@@ -23,7 +23,7 @@ namespace mimir::planners
 {
     LiftedSuccessorGenerator::LiftedSuccessorGenerator(const mimir::formalism::Problem& problem) : problem_(problem), generators_()
     {
-        for (const auto& action_schema : problem->domain->action_schemas)
+        for (const auto& action_schema : problem.get_domain().get_action_schemas())
         {
             generators_.insert(std::make_pair(action_schema, LiftedSchemaSuccessorGenerator(action_schema, problem)));
         }
@@ -33,7 +33,7 @@ namespace mimir::planners
     {
         mimir::formalism::ActionList applicable_actions;
 
-        const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(problem_->domain, problem_, state->get_dynamic_ranks());
+        const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(problem_.get_domain(), problem_, state.get_dynamic_ranks());
 
         for (const auto& [_, generator] : generators_)
         {

@@ -15,6 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../include/mimir/formalism/action.hpp"
+#include "../../include/mimir/formalism/action_schema.hpp"
+#include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/literal.hpp"
+#include "../../include/mimir/formalism/problem.hpp"
+#include "../../include/mimir/formalism/state.hpp"
 #include "../../include/mimir/generators/grounded_successor_generator.hpp"
 #include "../../include/mimir/generators/lifted_successor_generator.hpp"
 #include "../../include/mimir/generators/successor_generator_factory.hpp"
@@ -25,14 +32,18 @@ namespace mimir::planners
                                            const mimir::formalism::Problem& problem,
                                            mimir::formalism::ActionList& out_actions)
     {
-        const auto relaxed_domain = relax(problem->domain, true, true);
-        const auto relaxed_problem =
-            mimir::formalism::create_problem(problem->name, relaxed_domain, problem->objects, problem->initial, problem->goal, problem->atom_costs);
+        const auto relaxed_domain = relax(problem.get_domain(), true, true);
+        const auto relaxed_problem = mimir::formalism::create_problem(problem.get_name(),
+                                                                      relaxed_domain,
+                                                                      problem.get_objects(),
+                                                                      problem.get_initial_atoms(),
+                                                                      problem.get_goal_literals(),
+                                                                      problem.get_cost_atoms());
         const mimir::planners::LiftedSuccessorGenerator successor_generator(relaxed_problem);
 
         std::equal_to<mimir::formalism::State> equals;
         mimir::formalism::ActionList relaxed_actions;
-        mimir::formalism::State state = mimir::formalism::create_state(relaxed_problem->initial, relaxed_problem);
+        mimir::formalism::State state = mimir::formalism::create_state(relaxed_problem.get_initial_atoms(), relaxed_problem);
 
         while (true)
         {
@@ -47,7 +58,7 @@ namespace mimir::planners
             for (const auto& action : relaxed_actions)
             {
                 // Since there are no negative preconditions and negative effects, all actions are still applicable in the resulting state.
-                next_state = mimir::formalism::apply(action, next_state);
+                next_state = action.apply(next_state);
             }
 
             if (equals(state, next_state))
@@ -62,21 +73,22 @@ namespace mimir::planners
 
         std::map<std::string, mimir::formalism::ActionSchema> action_schemas;
 
-        for (const auto& action_schema : problem->domain->action_schemas)
+        for (const auto& action_schema : problem.get_domain().get_action_schemas())
         {
-            action_schemas.emplace(action_schema->name, action_schema);
+            action_schemas.emplace(action_schema.get_name(), action_schema);
         }
 
-        const auto& static_predicates = problem->domain->static_predicates;
-        const auto& static_atoms = problem->get_static_atoms();
+        const auto& static_predicates = problem.get_domain().get_static_predicates();
+        const auto& static_atoms = problem.get_static_atoms();
 
         const auto is_statically_inapplicable = [&static_predicates, &static_atoms](const mimir::formalism::Action& ground_action)
         {
-            for (const auto& literal : ground_action->get_precondition())
+            for (const auto& literal : ground_action.get_precondition())
             {
                 const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal->atom.get_predicate());
+                const auto is_static_atom = static_atoms.find(literal.get_atom()) != static_atoms.end();
 
-                if (is_static_predicate && (static_atoms.contains(literal->atom) == literal->negated))
+                if (is_static_predicate && (is_static_atom == literal.is_negated()))
                 {
                     return true;
                 }
@@ -87,14 +99,14 @@ namespace mimir::planners
 
         // Make sure that each atom in the initial state and goal has a rank, they don't necessarily have to be mentioned in a ground action
 
-        for (const auto& atom : problem->initial)
+        for (const auto& atom : problem.get_initial_atoms())
         {
             problem->get_rank(atom);
         }
 
-        for (const auto& literal : problem->goal)
+        for (const auto& literal : problem.get_goal_literals())
         {
-            problem->get_rank(literal->atom);
+            problem->get_rank(literal.get_atom());
         }
 
         // Create all ground actions for the original problem
