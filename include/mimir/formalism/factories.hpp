@@ -1,8 +1,6 @@
 #ifndef MIMIR_FORMALISM_FACTORIES_HPP_
 #define MIMIR_FORMALISM_FACTORIES_HPP_
 
-#include "declarations.hpp"
-
 #include <loki/common/pddl/persistent_factory.hpp>
 #include <loki/domain/pddl/action.hpp>
 #include <loki/domain/pddl/atom.hpp>

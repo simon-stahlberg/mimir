@@ -2,7 +2,6 @@
 #define MIMIR_FORMALISM_TRANSITION_HPP_
 
 #include "action.hpp"
-#include "declarations.hpp"
 #include "state.hpp"
 
 #include <memory>

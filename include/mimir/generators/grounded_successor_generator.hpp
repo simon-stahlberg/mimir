@@ -2,7 +2,6 @@
 #define MIMIR_PLANNERS_GROUNDED_SUCCESSOR_GENERATOR_HPP_
 
 #include "../formalism/action.hpp"
-#include "../formalism/declarations.hpp"
 #include "../formalism/state.hpp"
 #include "successor_generator.hpp"
 

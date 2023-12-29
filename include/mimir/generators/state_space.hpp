@@ -1,7 +1,6 @@
 #ifndef MIMIR_PLANNERS_STATE_SPACE_HPP_
 #define MIMIR_PLANNERS_STATE_SPACE_HPP_
 
-#include "../formalism/declarations.hpp"
 #include "../formalism/domain.hpp"
 #include "../formalism/problem.hpp"
 #include "../formalism/state.hpp"

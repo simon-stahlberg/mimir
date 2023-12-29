@@ -1,7 +1,6 @@
 #ifndef MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
 #define MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
 
-#include "../formalism/declarations.hpp"
 #include "successor_generator.hpp"
 
 #include <memory>

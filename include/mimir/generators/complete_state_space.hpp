@@ -1,7 +1,6 @@
 #ifndef MIMIR_PLANNERS_COMPLETE_STATE_SPACE_HPP_
 #define MIMIR_PLANNERS_COMPLETE_STATE_SPACE_HPP_
 
-#include "../formalism/declarations.hpp"
 #include "state_space.hpp"
 
 namespace mimir::planners
