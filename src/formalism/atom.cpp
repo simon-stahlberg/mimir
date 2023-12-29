@@ -36,7 +36,7 @@ namespace mimir::formalism
     //     return create_atom(predicate, arguments);
     // }
 
-    uint32_t Atom::get_id() const { throw std::invalid_argument("not implemented"); }
+    uint32_t Atom::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
     Predicate Atom::get_predicate() const { throw std::invalid_argument("not implemented"); }
     TermList Atom::get_terms() const { throw std::invalid_argument("not implemented"); }
 

@@ -24,8 +24,8 @@ namespace mimir::formalism
 {
     Predicate::Predicate(loki::pddl::Predicate external_predicate) : external_(external_predicate) {}
 
+    uint32_t Predicate::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
     const std::string& Predicate::get_name() const { throw std::runtime_error("not implemented"); }
-    uint32_t Predicate::get_id() const { throw std::runtime_error("not implemented"); }
     TermList Predicate::get_parameters() const { throw std::runtime_error("not implemented"); }
     std::size_t Predicate::get_arity() const { return get_parameters().size(); }
     std::size_t Predicate::hash() const { throw std::runtime_error("not implemented"); }

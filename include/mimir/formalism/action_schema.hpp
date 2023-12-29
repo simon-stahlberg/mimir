@@ -26,6 +26,7 @@ namespace mimir::formalism
       public:
         explicit ActionSchema();
 
+        uint32_t get_id() const;
         const std::string& get_name() const;
         std::size_t get_arity() const;
         TermList get_parameters() const;

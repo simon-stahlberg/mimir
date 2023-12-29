@@ -63,6 +63,8 @@ namespace mimir::formalism
 
     ActionSchema::ActionSchema() : external_(nullptr) {}
 
+    uint32_t ActionSchema::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
+
     const std::string& ActionSchema::get_name() const { return external_->get_name(); }
 
     std::size_t ActionSchema::get_arity() const { return external_->get_parameters().size(); }

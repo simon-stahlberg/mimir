@@ -33,6 +33,8 @@ namespace mimir::formalism
 
     Literal::Literal(loki::pddl::Literal external_literal) : external_(external_literal) {}
 
+    uint32_t Literal::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
+
     bool Literal::is_negated() const { return external_->is_negated(); }
 
     Atom Literal::get_atom() const { return Atom(external_->get_atom()); }

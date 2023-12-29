@@ -53,6 +53,8 @@ namespace mimir::formalism
         return problems;
     }
 
+    uint32_t Problem::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
+
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::Problem& problem)
     {
         os << "Name: " << problem.get_name() << std::endl;

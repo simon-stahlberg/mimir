@@ -19,6 +19,7 @@ namespace mimir::formalism
         explicit Literal(loki::pddl::Literal external_literal);
 
       public:
+        uint32_t get_id() const;
         bool is_negated() const;
         Atom get_atom() const;
         uint32_t get_atom_id() const;

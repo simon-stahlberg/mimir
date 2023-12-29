@@ -18,8 +18,8 @@ namespace mimir::formalism
         explicit Predicate(loki::pddl::Predicate external_predicate);
 
       public:
-        const std::string& get_name() const;
         uint32_t get_id() const;
+        const std::string& get_name() const;
         TermList get_parameters() const;
         std::size_t get_arity() const;
 

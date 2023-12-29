@@ -24,6 +24,7 @@ namespace mimir::formalism
       public:
         static Domain parse(const std::string& path);
 
+        uint32_t get_id() const;
         const std::string& get_name() const;
 
         TypeList get_types() const;

@@ -24,6 +24,8 @@ namespace mimir::formalism
 {
     Type::Type(loki::pddl::Type external_type) : external_(external_type) {}
 
+    uint32_t Type::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
+
     const std::string& Type::get_name() const { return external_->get_name(); }
 
     TypeList Type::get_bases() const { throw std::runtime_error("not implemented"); }

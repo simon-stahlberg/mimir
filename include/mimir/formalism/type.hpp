@@ -20,10 +20,9 @@ namespace mimir::formalism
         explicit Type(loki::pddl::Type external_type);
 
       public:
+        uint32_t get_id() const;
         const std::string& get_name() const;
-
         TypeList get_bases() const;
-
         bool is_subtype_of(const Type& type) const;
 
         bool operator<(const Type& other) const;

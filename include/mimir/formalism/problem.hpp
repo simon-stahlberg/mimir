@@ -32,6 +32,7 @@ namespace mimir::formalism
         static ProblemList parse(const std::string& domain_path, const std::vector<std::string>& problem_paths);
         // Problem replace_initial(const AtomList& initial) const;
 
+        uint32_t get_id() const;
         Domain get_domain() const;
         const std::string& get_name() const;
         TermList get_objects() const;

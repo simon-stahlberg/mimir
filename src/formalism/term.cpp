@@ -28,7 +28,11 @@ namespace mimir::formalism
     Term::Term() : external_parameter_(nullptr), external_object_(nullptr) {}
 
     const std::string& Term::get_name() const { throw std::runtime_error("not implemented"); }
-    uint32_t Term::get_id() const { throw std::runtime_error("not implemented"); }
+    uint32_t Term::get_id() const
+    {
+        // TODO: Do variable and object ids overlap?
+        throw std::runtime_error("not implemented");
+    }
     const TypeList& Term::get_bases() const { throw std::runtime_error("not implemented"); }
 
     bool Term::is_subtype_of(const Type& type) const { throw std::runtime_error("not implemented"); }

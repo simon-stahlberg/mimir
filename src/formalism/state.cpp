@@ -89,6 +89,8 @@ namespace mimir::formalism
 
     State::State(Bitset&& bitset) : bitset_(std::move(bitset)), hash_(compute_state_hash(bitset_)) {}  // , const Problem& problem  // problem_(problem),
 
+    uint32_t State::get_id() const { throw std::runtime_error("not implemented"); }
+
     // State::State(const std::vector<uint32_t>& ranks) :
     //     // , const Problem& problem
     //     bitset_(*std::max_element(ranks.cbegin(), ranks.cend()) + 1),

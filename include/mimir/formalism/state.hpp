@@ -94,6 +94,7 @@ namespace mimir::formalism
         // State(const AtomList& atoms);  // , const Problem& problem
         // State(const AtomSet& atoms);  // , const Problem& problem
 
+        uint32_t get_id() const;
         AtomList get_atoms() const;
         AtomList get_static_atoms() const;
         AtomList get_dynamic_atoms() const;

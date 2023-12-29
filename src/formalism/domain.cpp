@@ -36,6 +36,8 @@ namespace mimir::formalism
         return Domain(parser.get_domain());
     }
 
+    uint32_t Domain::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
+
     const std::string& Domain::get_name() const { return external_->get_name(); }
 
     TypeList Domain::get_types() const { throw std::runtime_error("not implemented"); }
