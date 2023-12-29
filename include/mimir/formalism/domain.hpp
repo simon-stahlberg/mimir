@@ -1,10 +1,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
-#include "declarations.hpp"
+#include "action_schema.hpp"
+#include "predicate.hpp"
+#include "term.hpp"
+#include "type.hpp"
 
 #include <loki/domain/pddl/domain.hpp>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -44,6 +48,8 @@ namespace mimir::formalism
         friend std::ostream& operator<<(std::ostream& os, const Domain& domain);
         friend class Problem;
     };
+
+    using DomainList = std::vector<Domain>;
 
 }  // namespace mimir::formalism
 

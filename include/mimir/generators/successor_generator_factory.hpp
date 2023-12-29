@@ -1,7 +1,7 @@
 #ifndef MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
 #define MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_
 
-#include "../formalism/problem.hpp"
+#include "../formalism/declarations.hpp"
 #include "successor_generator.hpp"
 
 #include <memory>
@@ -15,7 +15,7 @@ namespace mimir::planners
         GROUNDED
     };
 
-    SuccessorGenerator create_sucessor_generator(const mimir::formalism::Problem& problem, SuccessorGeneratorType type);
+    SuccessorGenerator create_sucessor_generator(const mimir::formalism::Repository& repository, SuccessorGeneratorType type);
 }  // namespace planners
 
 #endif  // MIMIR_PLANNERS_SUCCESSOR_GENERATOR_FACTORY_HPP_

@@ -6,9 +6,10 @@
 
 namespace mimir::planners
 {
-    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator) :
-        SearchBase(problem),
-        problem_(problem),
+    BreadthFirstSearchImpl::BreadthFirstSearchImpl(const mimir::formalism::Repository& repository,
+                                                   const mimir::planners::SuccessorGenerator& successor_generator) :
+        SearchBase(repository),
+        problem_(repository->get_problem()),
         successor_generator_(successor_generator),
         max_g_value_(-1),
         max_depth_(-1),
@@ -49,19 +50,19 @@ namespace mimir::planners
             double g_value;
         };
 
-        mimir::tsl::robin_map<mimir::formalism::State, int32_t> state_indices;
+        std::unordered_map<mimir::formalism::State, int32_t> state_indices;
         std::deque<Frame> frame_list;
         std::deque<int32_t> open_list;
 
         {  // Initialize data-structures
             // We want the index of the initial state to be 1 for convenience.
-            frame_list.emplace_back(Frame { nullptr, nullptr, -1, 0, 0.0 });
+            frame_list.emplace_back(Frame { mimir::formalism::State(), mimir::formalism::Action(), -1, 0, 0.0 });
 
             // Add the initial state to the data-structures
             const int32_t initial_index = static_cast<int32_t>(frame_list.size());
             const auto initial_state = this->initial_state;
             state_indices[initial_state] = initial_index;
-            frame_list.emplace_back(Frame { initial_state, nullptr, -1, 0, 0.0 });
+            frame_list.emplace_back(Frame { initial_state, mimir::formalism::Action(), -1, 0, 0.0 });
             open_list.emplace_back(initial_index);
         }
 
@@ -85,13 +86,13 @@ namespace mimir::planners
                 return SearchResult::ABORTED;
             }
 
-            if (mimir::formalism::literals_hold(problem_->goal, frame.state))
+            if (frame.state.holds(problem_.get_goal_literals()))
             {
                 // Reconstruct the path to the goal state
                 out_plan.clear();
                 auto current_frame = frame;
 
-                while (current_frame.predecessor_action)
+                while (current_frame.predecessor_action.is_valid())
                 {
                     out_plan.emplace_back(current_frame.predecessor_action);
                     current_frame = frame_list.at(current_frame.predecessor_index);
@@ -107,7 +108,7 @@ namespace mimir::planners
 
             for (const auto& action : applicable_actions)
             {
-                const auto successor_state = mimir::formalism::apply(action, frame.state);
+                const auto successor_state = frame.state.apply(action);
                 auto& successor_index = state_indices[successor_state];  // Reference is used to update state_indices
 
                 if (successor_index == 0)
@@ -116,7 +117,7 @@ namespace mimir::planners
 
                     ++generated_;
                     successor_index = static_cast<int32_t>(frame_list.size());
-                    frame_list.emplace_back(Frame { successor_state, action, index, frame.depth + 1, frame.g_value + action->cost });
+                    frame_list.emplace_back(Frame { successor_state, action, index, frame.depth + 1, frame.g_value + action.get_cost() });
                     open_list.emplace_back(successor_index);
                 }
             }
@@ -125,8 +126,9 @@ namespace mimir::planners
         return SearchResult::UNSOLVABLE;
     }
 
-    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::Repository& repository,
+                                                   const mimir::planners::SuccessorGenerator& successor_generator)
     {
-        return std::make_shared<BreadthFirstSearchImpl>(problem, successor_generator);
+        return std::make_shared<BreadthFirstSearchImpl>(repository, successor_generator);
     }
 }  // namespace planners

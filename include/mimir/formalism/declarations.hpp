@@ -1,10 +1,12 @@
 #ifndef MIMIR_FORMALISM_DECLARATIONS_HPP_
 #define MIMIR_FORMALISM_DECLARATIONS_HPP_
 
-#include "../datastructures/robin_map.hpp"
-#include "../datastructures/robin_set.hpp"
-
+// #include "../datastructures/robin_map.hpp"
+// #include "../datastructures/robin_set.hpp"
+/*
 #include <loki/domain/pddl/action.hpp>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir::formalism
@@ -33,7 +35,7 @@ namespace mimir::formalism
 
     class Predicate;
     using PredicateList = std::vector<Predicate>;
-    using PredicateSet = mimir::tsl::robin_set<Predicate>;
+    using PredicateSet = std::unordered_set<Predicate>;
 
     class Problem;
     using ProblemList = std::vector<Problem>;
@@ -41,9 +43,9 @@ namespace mimir::formalism
     class State;
     using StateList = std::vector<State>;
 
-    class StateRepositoryImpl;
-    using StateRepository = std::shared_ptr<StateRepositoryImpl>;
-    using StateRepositoryPtr = const StateRepositoryImpl*;
+    class RepositoryImpl;
+    using Repository = std::shared_ptr<RepositoryImpl>;
+    using StateRepositoryPtr = const RepositoryImpl*;
 
     class Term;
     using TermList = std::vector<Term>;
@@ -56,11 +58,11 @@ namespace mimir::formalism
 
     // using Parameter = Object;
     // using ParameterList = ObjectList;
-    using ParameterAssignment = mimir::tsl::robin_map<Term, Term>;
+    using ParameterAssignment = std::unordered_map<Term, Term>;
 
     // class TransitionImpl;
     // using Transition = std::shared_ptr<TransitionImpl>;
     // using TransitionList = std::vector<Transition>;
 }  // namespace mimir::formalism
-
+*/
 #endif  // MIMIR_FORMALISM_DECLARATIONS_HPP_

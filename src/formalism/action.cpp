@@ -33,6 +33,24 @@ namespace mimir::formalism
 
     void Action::initialize_effect() { throw std::runtime_error("not implemented"); }
 
+    Action::Action() :
+        applicability_positive_precondition_bitset_(0),
+        applicability_negative_precondition_bitset_(0),
+        unconditional_positive_effect_bitset_(0),
+        unconditional_negative_effect_bitset_(0),
+        conditional_positive_precondition_bitsets_(),
+        conditional_negative_precondition_bitsets_(),
+        conditional_positive_effect_bitsets_(),
+        conditional_negative_effect_bitsets_(),
+        arguments_(),
+        applicability_precondition_(),
+        unconditional_effect_(),
+        conditional_effect_(),
+        schema_(),
+        cost_(0)
+    {
+    }
+
     Action::Action(const ActionSchema& schema,
                    TermList&& arguments,
                    LiteralList&& precondition,
@@ -58,6 +76,8 @@ namespace mimir::formalism
         throw std::runtime_error("not implemented");
     }
 
+    bool Action::is_valid() const { return schema_.is_valid(); }
+
     // Action::Action(const ActionSchema& schema, TermList&& arguments, int32_t cost = 1) { throw std::runtime_error("not implemented"); }
 
     // Action::Action(const ActionSchema& schema, const ParameterAssignment& assignment) { throw std::runtime_error("not implemented"); }
@@ -73,10 +93,6 @@ namespace mimir::formalism
     const ImplicationList& Action::get_conditional_effect() const { throw std::runtime_error("not implemented"); }
 
     double Action::get_cost() const { throw std::runtime_error("not implemented"); }
-
-    bool Action::is_applicable(const State& state) const { throw std::runtime_error("not implemented"); }
-
-    State Action::apply(const State& state) const { throw std::runtime_error("not implemented"); }
 
     // mimir::formalism::ObjectList create_arguments(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::ParameterAssignment&
     // assignment)

@@ -1,26 +1,30 @@
 #ifndef MIMIR_FORMALISM_CONDITIONAL_HPP_
 #define MIMIR_FORMALISM_CONDITIONAL_HPP_
 
-#include "declarations.hpp"
 #include "literal.hpp"
 
+#include <stdexcept>
+#include <tuple>
 #include <vector>
 
 namespace mimir::formalism
 {
     class Implication
     {
-      public:
+      private:
         LiteralList antecedent;
         LiteralList consequence;
 
-        Implication();
-        Implication(const LiteralList& ante, const LiteralList& cons);
-        Implication(const Implication& other);
-        Implication(Implication&& other) noexcept;
+      public:
+        explicit Implication();
+        explicit Implication(const LiteralList& ante, const LiteralList& cons);
+        explicit Implication(const Implication& other);
+        explicit Implication(Implication&& other) noexcept;
 
-        operator std::tuple<LiteralList&, LiteralList&>();
-        operator std::tuple<const LiteralList&, const LiteralList&>() const;
+        Implication& operator=(const Implication& other);
+
+        const LiteralList& get_antecedent() const;
+        const LiteralList& get_consequence() const;
 
         bool operator<(const Implication& other) const;
         bool operator>(const Implication& other) const;
@@ -29,6 +33,7 @@ namespace mimir::formalism
     };
 
     using ImplicationList = std::vector<Implication>;
+
 }  // namespace formalism
 
 namespace std

@@ -1,9 +1,11 @@
 #ifndef MIMIR_FORMALISM_ATOM_HPP_
 #define MIMIR_FORMALISM_ATOM_HPP_
 
-#include "declarations.hpp"
+#include "predicate.hpp"
+#include "term.hpp"
 
 #include <loki/domain/pddl/atom.hpp>
+#include <stdexcept>
 #include <vector>
 
 namespace mimir::formalism
@@ -36,6 +38,9 @@ namespace mimir::formalism
     };
 
     // std::ostream& operator<<(std::ostream& os, const mimir::formalism::AtomList& atoms);
+
+    using AtomList = std::vector<Atom>;
+    using AtomSet = std::unordered_set<Atom>;
 
 }  // namespace mimir::formalism
 

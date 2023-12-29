@@ -25,11 +25,67 @@
 
 namespace mimir::formalism
 {
+    /*
+     * RepositoryImpl Member Functions
+     */
+
+    RepositoryImpl::~RepositoryImpl() {}
+
+    Atom RepositoryImpl::create_atom(const Predicate& predicate, TermList&& terms) { throw std::runtime_error("not implemented"); }
+
+    Literal RepositoryImpl::create_literal(const Atom& atom, bool is_negated) { throw std::runtime_error("not implemented"); }
+
+    State RepositoryImpl::create_state(const AtomList& atoms) { throw std::runtime_error("not implemented"); }
+
+    Action RepositoryImpl::create_action(const ActionSchema& schema, TermList&& terms, double cost) { throw std::runtime_error("not implemented"); }
+
+    Action RepositoryImpl::create_action(const ActionSchema& schema,
+                                         TermList&& terms,
+                                         LiteralList&& precondition,
+                                         LiteralList&& unconditional_effect,
+                                         ImplicationList&& conditional_effect,
+                                         double cost)
+    {
+        throw std::runtime_error("not implemented");
+    }
+
+    Repository RepositoryImpl::delete_relax() { throw std::runtime_error("not implemented"); }
+
+    Domain RepositoryImpl::get_domain() const { throw std::runtime_error("not implemented"); }
+
+    Problem RepositoryImpl::get_problem() const { throw std::runtime_error("not implemented"); }
+
+    uint32_t RepositoryImpl::get_arity(uint32_t atom_id) const { throw std::runtime_error("not implemented"); }
+
+    uint32_t RepositoryImpl::get_predicate_id(uint32_t atom_id) const { throw std::runtime_error("not implemented"); }
+
+    Term RepositoryImpl::get_object(uint32_t object_id) const { throw std::runtime_error("not implemented"); }
+
+    std::vector<Atom> RepositoryImpl::get_encountered_atoms() const
+    {
+        // TODO: Ensure that the initial and goal atoms are added.
+        throw std::runtime_error("not implemented");
+    }
+
+    std::vector<uint32_t> RepositoryImpl::get_term_ids(uint32_t atom_id) const { throw std::runtime_error("not implemented"); }
+
+    /*
+     * RepositoryImpl Namespace Functions
+     */
+
+    Repository create_repository(const Problem& problem) { throw std::runtime_error("not implemented"); }
+
+    /*
+     * State Member Functions
+     */
+
     inline static std::size_t compute_state_hash(const Bitset& bitset)  // , const Problem& problem
     {
         // TODO: Add problem to hash
         return std::hash<Bitset>()(bitset);
     }
+
+    State::State() : bitset_(0), hash_(0) { throw std::runtime_error("not implemented"); }
 
     State::State(Bitset&& bitset) : bitset_(std::move(bitset)), hash_(compute_state_hash(bitset_)) {}  // , const Problem& problem  // problem_(problem),
 
@@ -147,13 +203,19 @@ namespace mimir::formalism
         // return atoms;
     }
 
+    Repository State::get_repository() const { throw std::invalid_argument("not implemented"); }
+
     bool State::contains(uint32_t atom_id) const { throw std::invalid_argument("not implemented"); }
 
     bool State::contains(const Atom& atom) const { throw std::invalid_argument("not implemented"); }
 
     bool State::contains_all(const AtomList& atoms) const { throw std::invalid_argument("not implemented"); }
 
+    bool State::holds(const Literal& literal) const { throw std::runtime_error("not implemented"); }
+
     bool State::holds(const LiteralList& literals) const { throw std::runtime_error("not implemented"); }
+
+    bool State::holds(const LiteralList& literals, uint32_t min_arity) const { throw std::runtime_error("not implemented"); }
 
     std::vector<uint32_t> State::get_ranks() const
     {
@@ -236,6 +298,10 @@ namespace mimir::formalism
 
         // return static_ranks;
     }
+
+    bool State::is_applicable(const Action& action) const { throw std::runtime_error("not implemented"); }
+
+    State State::apply(const Action& action) const { throw std::runtime_error("not implemented"); }
 
     Problem State::get_problem() const { throw std::runtime_error("not implemented"); }
 
@@ -359,6 +425,8 @@ namespace mimir::formalism
 
     // State create_state(const AtomSet& atoms, Problem problem) { return std::make_shared<State>(atoms, problem); }
 
+    std::size_t State::hash() const { return hash_; }
+
     bool State::operator<(const State& other) const
     {
         // if (problem_ != other.problem_)
@@ -389,8 +457,6 @@ namespace mimir::formalism
     bool State::operator!=(const State& other) const { return !(*this == other); }
 
     bool State::operator<=(const State& other) const { return (*this < other) || (*this == other); }
-
-    std::size_t State::hash() const { return hash_; }
 
     // bool contains(uint32_t rank, const State& state)
     // {

@@ -16,7 +16,7 @@
  */
 
 #include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/state_repository.hpp"
+#include "../../include/mimir/formalism/state.hpp"
 #include "../../include/mimir/generators/complete_state_space.hpp"
 #include "../../include/mimir/generators/successor_generator_factory.hpp"
 #include "../formalism/help_functions.hpp"
@@ -51,7 +51,7 @@ namespace mimir::planners
 
     CompleteStateSpaceImpl::CompleteStateSpaceImpl(const mimir::formalism::Problem& problem) :
         StateSpaceImpl(problem),
-        repository_(mimir::formalism::create_state_repository(problem)),
+        repository_(mimir::formalism::create_repository(problem)),
         states_(),
         goal_states_(),
         state_infos_(),
@@ -396,7 +396,7 @@ namespace mimir::planners
 
             for (const auto& ground_action : ground_actions)
             {
-                const auto successor_state = ground_action.apply(state);
+                const auto successor_state = state.apply(ground_action);
                 uint64_t successor_state_index;
                 bool successor_is_new_state;
 

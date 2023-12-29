@@ -10,8 +10,19 @@ namespace mimir::formalism
     Implication::Implication(const Implication& other) : antecedent(other.antecedent), consequence(other.consequence) {}
     Implication::Implication(Implication&& other) noexcept : antecedent(std::move(other.antecedent)), consequence(std::move(other.consequence)) {}
 
-    Implication::operator std::tuple<LiteralList&, LiteralList&>() { return std::tie(antecedent, consequence); }
-    Implication::operator std::tuple<const LiteralList&, const LiteralList&>() const { return std::tie(antecedent, consequence); }
+    Implication& Implication::operator=(const Implication& other)
+    {
+        if (this != &other)
+        {
+            antecedent = other.antecedent;
+            consequence = other.consequence;
+        }
+
+        return *this;
+    }
+
+    const LiteralList& Implication::get_antecedent() const { return antecedent; }
+    const LiteralList& Implication::get_consequence() const { return consequence; }
 
     bool Implication::operator<(const Implication& rhs) const { return std::less<Implication>()(*this, rhs); }
     bool Implication::operator>(const Implication& rhs) const { return std::less<Implication>()(rhs, *this); }
@@ -23,22 +34,22 @@ namespace std
 {
     std::size_t hash<mimir::formalism::Implication>::operator()(const mimir::formalism::Implication& implication) const
     {
-        return hash_combine(implication.antecedent, implication.consequence);
+        return hash_combine(implication.get_antecedent(), implication.get_consequence());
     }
 
     bool less<mimir::formalism::Implication>::operator()(const mimir::formalism::Implication& lhs, const mimir::formalism::Implication& rhs) const
     {
-        if (lhs.antecedent != rhs.antecedent)
+        if (lhs.get_antecedent() != rhs.get_antecedent())
         {
-            return lhs.antecedent < rhs.antecedent;
+            return lhs.get_antecedent() < rhs.get_antecedent();
         }
 
-        return lhs.consequence < rhs.consequence;
+        return lhs.get_consequence() < rhs.get_consequence();
     }
 
     bool equal_to<mimir::formalism::Implication>::operator()(const mimir::formalism::Implication& lhs, const mimir::formalism::Implication& rhs) const
     {
-        return lhs.antecedent == rhs.antecedent && lhs.consequence == rhs.consequence;
+        return lhs.get_antecedent() == rhs.get_antecedent() && lhs.get_consequence() == rhs.get_consequence();
     }
 
     std::size_t hash<mimir::formalism::ImplicationList>::operator()(const mimir::formalism::ImplicationList& implication_list) const

@@ -22,8 +22,8 @@ namespace mimir::planners
     FlatLiteral::FlatLiteral(const mimir::formalism::Literal& literal, const std::map<mimir::formalism::Term, uint32_t> parameter_indices) :
         source(literal),
         arguments(),
-        predicate_id(literal.get_atom().get_predicate().get_id()),
-        arity(literal.get_atom().get_predicate().get_arity()),
+        predicate_id(literal.get_predicate().get_id()),
+        arity(literal.get_predicate().get_arity()),
         negated(literal.is_negated())
     {
         arguments.reserve(literal.get_atom().get_terms().size());
@@ -64,7 +64,7 @@ namespace mimir::planners
 
         for (const auto& literal : action_schema.get_precondition())
         {
-            if (static_predicates.find(literal.get_atom().get_predicate()) != static_predicates.end())
+            if (static_predicates.find(literal.get_predicate()) != static_predicates.end())
             {
                 static_precondition.emplace_back(literal, parameter_indices_);
             }
@@ -79,17 +79,17 @@ namespace mimir::planners
             unconditional_effect.emplace_back(literal, parameter_indices_);
         }
 
-        for (const auto& [antecedent, consequence] : action_schema.get_conditional_effect())
+        for (const auto& implication : action_schema.get_conditional_effect())
         {
             std::vector<FlatLiteral> flat_antecedent;
             std::vector<FlatLiteral> flat_consequence;
 
-            for (const auto& literal : antecedent)
+            for (const auto& literal : implication.get_antecedent())
             {
                 flat_antecedent.emplace_back(literal, parameter_indices_);
             }
 
-            for (const auto& literal : consequence)
+            for (const auto& literal : implication.get_consequence())
             {
                 flat_consequence.emplace_back(literal, parameter_indices_);
             }

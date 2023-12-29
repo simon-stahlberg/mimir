@@ -21,11 +21,11 @@
 
 namespace mimir::planners
 {
-    LiftedSuccessorGenerator::LiftedSuccessorGenerator(const mimir::formalism::Problem& problem) : problem_(problem), generators_()
+    LiftedSuccessorGenerator::LiftedSuccessorGenerator(const mimir::formalism::Repository& repository) : repository_(repository)
     {
-        for (const auto& action_schema : problem.get_domain().get_action_schemas())
+        for (const auto& action_schema : repository_->get_domain().get_action_schemas())
         {
-            generators_.insert(std::make_pair(action_schema, LiftedSchemaSuccessorGenerator(action_schema, problem)));
+            generators_.insert(std::make_pair(action_schema, LiftedSchemaSuccessorGenerator(repository_, action_schema)));
         }
     }
 
@@ -33,7 +33,7 @@ namespace mimir::planners
     {
         mimir::formalism::ActionList applicable_actions;
 
-        const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(problem_.get_domain(), problem_, state.get_dynamic_ranks());
+        const auto assignment_sets = LiftedSchemaSuccessorGenerator::build_assignment_sets(repository_, state.get_dynamic_ranks());
 
         for (const auto& [_, generator] : generators_)
         {
@@ -44,7 +44,7 @@ namespace mimir::planners
         return applicable_actions;
     }
 
-    mimir::formalism::Problem LiftedSuccessorGenerator::get_problem() const { return problem_; }
+    mimir::formalism::Problem LiftedSuccessorGenerator::get_problem() const { return repository_->get_problem(); }
 
     bool LiftedSuccessorGenerator::get_applicable_actions(const std::chrono::high_resolution_clock::time_point end_time,
                                                           const mimir::formalism::State& state,

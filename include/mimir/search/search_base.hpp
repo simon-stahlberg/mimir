@@ -2,6 +2,7 @@
 #define MIMIR_PLANNERS_SEARCH_BASE_HPP_
 
 #include "../formalism/action.hpp"
+#include "../formalism/state.hpp"
 #include "search_result.hpp"
 
 #include <map>
@@ -21,7 +22,7 @@ namespace mimir::planners
         mimir::formalism::State initial_state;
         volatile bool should_abort = false;
 
-        SearchBase(const mimir::formalism::Problem& problem);
+        SearchBase(const mimir::formalism::Repository& repository);
 
         /// @brief Notify all registered handlers
         void notify_handlers() const;

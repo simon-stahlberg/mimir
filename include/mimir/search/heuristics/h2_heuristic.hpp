@@ -2,7 +2,6 @@
 #define MIMIR_PLANNERS_HEURISTIC_H2_HPP_
 
 #include "../../formalism/atom.hpp"
-#include "../../formalism/problem.hpp"
 #include "../../formalism/state.hpp"
 #include "../../generators/successor_generator.hpp"
 #include "heuristic_base.hpp"
@@ -18,7 +17,7 @@ namespace mimir::planners
       private:
         using InternalAction = std::tuple<std::vector<int32_t>, std::vector<int32_t>, std::vector<int32_t>, double>;
 
-        mimir::formalism::Problem problem_;
+        mimir::formalism::Repository repository_;
         std::vector<InternalAction> actions_;
         std::vector<int32_t> goal_;
         mutable std::vector<double> h1_table_;
@@ -31,12 +30,13 @@ namespace mimir::planners
         void fill_tables(const mimir::formalism::State& state) const;
 
       public:
-        H2Heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
+        H2Heuristic(const mimir::formalism::Repository& repository, const mimir::planners::SuccessorGenerator& successor_generator);
 
         double evaluate(const mimir::formalism::State& state) const override;
     };
 
-    std::shared_ptr<H2Heuristic> create_h2_heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
+    std::shared_ptr<H2Heuristic> create_h2_heuristic(const mimir::formalism::Repository& repository,
+                                                     const mimir::planners::SuccessorGenerator& successor_generator);
 }  // namespace planners
 
 #endif  // MIMIR_PLANNERS_HEURISTIC_H2_HPP_

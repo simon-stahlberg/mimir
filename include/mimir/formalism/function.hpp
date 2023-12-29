@@ -1,7 +1,8 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_HPP_
 #define MIMIR_FORMALISM_FUNCTION_HPP_
 
-#include "declarations.hpp"
+#include <stdexcept>
+#include <vector>
 
 namespace mimir::formalism
 {
@@ -50,6 +51,9 @@ namespace mimir::formalism
     // Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant);
 
     // Function create_unit_cost_function(const mimir::formalism::Domain& domain);
+
+    using FunctionList = std::vector<Function>;
+
 }  // namespace formalism
 
 #endif  // MIMIR_FORMALISM_FUNCTION_HPP_

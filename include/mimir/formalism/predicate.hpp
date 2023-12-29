@@ -1,9 +1,10 @@
 #ifndef MIMIR_FORMALISM_PREDICATE_HPP_
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
-#include "declarations.hpp"
+#include "term.hpp"
 
 #include <loki/domain/pddl/predicate.hpp>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -33,9 +34,13 @@ namespace mimir::formalism
         friend std::ostream& operator<<(std::ostream& os, const Predicate& predicate);
         friend class Atom;
         friend class Domain;
+        friend class Literal;
     };
 
     // Predicate create_predicate(const uint32_t id, const std::string& name, const ObjectList& parameters);
+
+    using PredicateList = std::vector<Predicate>;
+    using PredicateSet = std::unordered_set<Predicate>;
 
 }  // namespace formalism
 

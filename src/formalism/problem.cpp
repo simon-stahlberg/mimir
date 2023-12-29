@@ -72,6 +72,20 @@ namespace mimir::formalism
 
     LiteralList Problem::get_goal_literals() const { throw std::runtime_error("not implemented"); }
 
+    const AtomSet& Problem::get_static_atoms() const { throw std::runtime_error("not implemented"); }
+
+    std::size_t Problem::hash() const { throw std::runtime_error("not implemented"); }
+
+    bool Problem::operator<(const Problem& other) const { throw std::runtime_error("not implemented"); }
+
+    bool Problem::operator>(const Problem& other) const { throw std::runtime_error("not implemented"); }
+
+    bool Problem::operator==(const Problem& other) const { throw std::runtime_error("not implemented"); }
+
+    bool Problem::operator!=(const Problem& other) const { throw std::runtime_error("not implemented"); }
+
+    bool Problem::operator<=(const Problem& other) const { throw std::runtime_error("not implemented"); }
+
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ProblemList& problems)
     {
         print_vector(os, problems);
@@ -82,30 +96,15 @@ namespace mimir::formalism
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& problem) const
-    {
-        throw std::runtime_error("not implemented");
-        // return hash_combine(problem->name, problem->domain, problem->objects, problem->initial, problem->goal);
-    }
+    std::size_t hash<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& problem) const { return problem.hash(); }
 
     bool less<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& left_problem, const mimir::formalism::Problem& right_problem) const
     {
-        throw std::runtime_error("not implemented");
-        // return less_combine(std::make_tuple(left_problem->name, left_problem->domain, left_problem->objects, left_problem->initial, left_problem->goal),
-        //                     std::make_tuple(right_problem->name, right_problem->domain, right_problem->objects, right_problem->initial,
-        //                     right_problem->goal));
+        return left_problem < right_problem;
     }
 
     bool equal_to<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& left_problem, const mimir::formalism::Problem& right_problem) const
     {
-        throw std::runtime_error("not implemented");
-        // if (left_problem.get() == right_problem.get())
-        // {
-        //     return true;
-        // }
-
-        // return equal_to_combine(
-        //     std::make_tuple(left_problem->name, left_problem->domain, left_problem->objects, left_problem->initial, left_problem->goal),
-        //     std::make_tuple(right_problem->name, right_problem->domain, right_problem->objects, right_problem->initial, right_problem->goal));
+        return left_problem == right_problem;
     }
 }  // namespace std

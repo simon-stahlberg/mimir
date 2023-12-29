@@ -27,6 +27,8 @@ namespace mimir::formalism
     {
     }
 
+    Transition create_transition(const State& source_state, const Action& action, const State& target_state) { throw std::runtime_error("not implemented"); }
+
     // StateTransitions to_state_transitions(const mimir::formalism::Problem& problem, const mimir::formalism::TransitionList& transitions)
     // {
     //     if (transitions.size() == 0)

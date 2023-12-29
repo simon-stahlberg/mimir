@@ -3,7 +3,6 @@
 
 #include "../formalism/action.hpp"
 #include "../formalism/declarations.hpp"
-#include "../formalism/problem.hpp"
 #include "../formalism/state.hpp"
 #include "successor_generator.hpp"
 
@@ -46,12 +45,12 @@ namespace mimir::planners
     class GroundedSuccessorGenerator : public SuccessorGeneratorBase
     {
       private:
-        mimir::formalism::Problem problem_;
+        mimir::formalism::Repository repository_;
         mimir::formalism::ActionList actions_;
         std::unique_ptr<DecisionNode> root_;
 
       public:
-        GroundedSuccessorGenerator(const mimir::formalism::Problem& problem, const mimir::formalism::ActionList& ground_actions);
+        GroundedSuccessorGenerator(const mimir::formalism::Repository& repository, const mimir::formalism::ActionList& ground_actions);
 
         mimir::formalism::Problem get_problem() const override;
 
@@ -64,10 +63,9 @@ namespace mimir::planners
                                                                          const mimir::formalism::AtomList& atoms,
                                                                          mimir::formalism::AtomList::const_iterator next_atom);
 
-        std::unique_ptr<DecisionNode> build_decision_tree(const mimir::formalism::Problem& problem, const mimir::formalism::ActionList& ground_actions);
+        std::unique_ptr<DecisionNode> build_decision_tree(const mimir::formalism::Repository& repository, const mimir::formalism::ActionList& ground_actions);
 
-        std::unique_ptr<DecisionNode> build_decision_tree_recursive(const mimir::formalism::Problem& problem,
-                                                                    const mimir::formalism::ActionList& ground_actions,
+        std::unique_ptr<DecisionNode> build_decision_tree_recursive(const mimir::formalism::ActionList& ground_actions,
                                                                     const mimir::formalism::AtomList& atoms,
                                                                     mimir::formalism::AtomList::const_iterator next_atom);
     };

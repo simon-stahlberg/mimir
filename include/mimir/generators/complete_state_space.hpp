@@ -14,7 +14,7 @@ namespace mimir::planners
     class CompleteStateSpaceImpl : public StateSpaceImpl
     {
       private:
-        mimir::formalism::StateRepository repository_;
+        mimir::formalism::Repository repository_;
         std::vector<mimir::formalism::State> states_;
         std::vector<mimir::formalism::State> goal_states_;
         std::vector<StateInfo> state_infos_;
@@ -22,7 +22,7 @@ namespace mimir::planners
         std::vector<std::vector<mimir::formalism::State>> states_by_distance_;
         std::vector<std::vector<mimir::formalism::Transition>> forward_transitions_;
         std::vector<std::vector<mimir::formalism::Transition>> backward_transitions_;
-        mimir::tsl::robin_map<mimir::formalism::State, uint64_t> state_indices_;
+        std::unordered_map<mimir::formalism::State, uint64_t> state_indices_;
         mutable std::vector<std::vector<int32_t>> state_distances_;
 
         // Since we return references of internal vectors, ensure that only create_statespaces can create this object.

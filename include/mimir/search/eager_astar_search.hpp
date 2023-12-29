@@ -2,6 +2,7 @@
 #define MIMIR_PLANNERS_EAGER_ASTAR_SEARCH_HPP_
 
 #include "../formalism/problem.hpp"
+#include "../formalism/state.hpp"
 #include "../generators/successor_generator.hpp"
 #include "heuristics/heuristic_base.hpp"
 #include "openlists/open_list_base.hpp"
@@ -28,7 +29,7 @@ namespace mimir::planners
         void reset_statistics();
 
       public:
-        EagerAStarSearchImpl(const mimir::formalism::Problem& problem,
+        EagerAStarSearchImpl(const mimir::formalism::Repository& repository,
                              const mimir::planners::SuccessorGenerator& successor_generator,
                              const mimir::planners::Heuristic& heuristic,
                              const mimir::planners::OpenList& open_list);
@@ -40,7 +41,7 @@ namespace mimir::planners
 
     using EagerAStarSearch = std::shared_ptr<EagerAStarSearchImpl>;
 
-    EagerAStarSearch create_eager_astar(const mimir::formalism::Problem& problem,
+    EagerAStarSearch create_eager_astar(const mimir::formalism::Repository& repository,
                                         const mimir::planners::SuccessorGenerator& successor_generator,
                                         const mimir::planners::Heuristic& heuristic,
                                         const mimir::planners::OpenList& open_list);

@@ -44,17 +44,15 @@ namespace mimir::planners
     class LiftedSchemaSuccessorGenerator
     {
       private:
-        mimir::formalism::Domain domain_;
-        mimir::formalism::Problem problem_;
+        mimir::formalism::Repository repository_;
         mimir::planners::FlatActionSchema flat_action_schema_;
-        mimir::tsl::robin_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
+        std::unordered_map<uint32_t, std::vector<uint32_t>> objects_by_parameter_type;
 
         std::vector<Assignment> to_vertex_assignment;
         std::vector<AssignmentPair> statically_consistent_assignments;
         std::vector<std::vector<std::size_t>> partitions_;
 
-        static std::vector<std::vector<bool>>
-        build_assignment_sets(const mimir::formalism::Domain& domain, const mimir::formalism::Problem& problem, const std::vector<uint32_t>& ranks);
+        static std::vector<std::vector<bool>> build_assignment_sets(const mimir::formalism::Repository& repository, const std::vector<uint32_t>& ranks);
 
         bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
                                     const std::vector<mimir::planners::FlatLiteral>& literals,
@@ -95,7 +93,7 @@ namespace mimir::planners
         friend class LiftedSuccessorGenerator;
 
       public:
-        LiftedSchemaSuccessorGenerator(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::Problem& problem);
+        LiftedSchemaSuccessorGenerator(const mimir::formalism::Repository& repository, const mimir::formalism::ActionSchema& action_schema);
 
         mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const;
 

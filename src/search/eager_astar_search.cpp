@@ -6,12 +6,12 @@
 
 namespace mimir::planners
 {
-    EagerAStarSearchImpl::EagerAStarSearchImpl(const mimir::formalism::Problem& problem,
+    EagerAStarSearchImpl::EagerAStarSearchImpl(const mimir::formalism::Repository& repository,
                                                const mimir::planners::SuccessorGenerator& successor_generator,
                                                const mimir::planners::Heuristic& heuristic,
                                                const mimir::planners::OpenList& open_list) :
-        SearchBase(problem),
-        problem_(problem),
+        SearchBase(repository),
+        problem_(repository->get_problem()),
         successor_generator_(successor_generator),
         heuristic_(heuristic),
         open_list_(open_list),
@@ -67,19 +67,19 @@ namespace mimir::planners
             bool closed;
         };
 
-        mimir::tsl::robin_map<mimir::formalism::State, int32_t> state_indices;
+        std::unordered_map<mimir::formalism::State, int32_t> state_indices;
         std::deque<Frame> frame_list;
 
         {  // Initialize data-structures
             // We want the index of the initial state to be 1 for convenience.
-            frame_list.emplace_back(Frame { nullptr, nullptr, -1, 0, 0.0, 0.0, true });
+            frame_list.emplace_back(Frame { mimir::formalism::State(), mimir::formalism::Action(), -1, 0, 0.0, 0.0, true });
 
             // Add the initial state to the data-structures
             const int32_t initial_index = static_cast<int32_t>(frame_list.size());
             const auto initial_state = this->initial_state;
             const auto initial_h_value = heuristic_->evaluate(initial_state);
             state_indices[initial_state] = initial_index;
-            frame_list.emplace_back(Frame { initial_state, nullptr, -1, 0, 0.0, initial_h_value, false });
+            frame_list.emplace_back(Frame { initial_state, mimir::formalism::Action(), -1, 0, 0.0, initial_h_value, false });
             open_list_->insert(initial_index, 0.0);
             ++evaluated_;
         }
@@ -111,14 +111,14 @@ namespace mimir::planners
                 return SearchResult::ABORTED;
             }
 
-            if (mimir::formalism::literals_hold(problem_->goal, frame.state))
+            if (frame.state.holds(problem_.get_goal_literals()))
             {
                 // Reconstruct the path to the goal state
 
                 out_plan.clear();
                 auto current_frame = frame;
 
-                while (current_frame.predecessor_action)
+                while (current_frame.predecessor_action.is_valid())
                 {
                     out_plan.emplace_back(current_frame.predecessor_action);
                     current_frame = frame_list.at(current_frame.predecessor_index);
@@ -134,7 +134,7 @@ namespace mimir::planners
 
             for (const auto& action : applicable_actions)
             {
-                const auto succ_state = mimir::formalism::apply(action, frame.state);
+                const auto succ_state = frame.state.apply(action);
                 auto& succ_index = state_indices[succ_state];  // Reference is used to update state_indices
 
                 if (succ_index == 0)
@@ -142,7 +142,7 @@ namespace mimir::planners
                     // If succ_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier
 
                     succ_index = static_cast<int32_t>(frame_list.size());
-                    const auto succ_g_value = frame.g_value + action->cost;
+                    const auto succ_g_value = frame.g_value + action.get_cost();
                     const auto succ_h_value = heuristic_->evaluate(succ_state);
                     const auto succ_f_value = succ_g_value + succ_h_value;
                     const auto succ_dead_end = HeuristicBase::is_dead_end(succ_h_value);
@@ -159,7 +159,7 @@ namespace mimir::planners
                 else
                 {
                     auto& succ_frame = frame_list[succ_index];
-                    const auto succ_g_value = frame.g_value + action->cost;
+                    const auto succ_g_value = frame.g_value + action.get_cost();
 
                     if (!succ_frame.closed && (succ_g_value < succ_frame.g_value))
                     {
@@ -186,11 +186,11 @@ namespace mimir::planners
         return SearchResult::UNSOLVABLE;
     }
 
-    EagerAStarSearch create_eager_astar(const mimir::formalism::Problem& problem,
+    EagerAStarSearch create_eager_astar(const mimir::formalism::Repository& repository,
                                         const mimir::planners::SuccessorGenerator& successor_generator,
                                         const mimir::planners::Heuristic& heuristic,
                                         const mimir::planners::OpenList& open_list)
     {
-        return std::make_shared<EagerAStarSearchImpl>(problem, successor_generator, heuristic, open_list);
+        return std::make_shared<EagerAStarSearchImpl>(repository, successor_generator, heuristic, open_list);
     }
 }  // namespace planners

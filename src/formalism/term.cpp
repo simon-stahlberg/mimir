@@ -25,13 +25,17 @@ namespace mimir::formalism
 {
     Term::Term(loki::pddl::Variable variable) : external_parameter_(variable), external_object_(nullptr) {}
     Term::Term(loki::pddl::Object object) : external_parameter_(nullptr), external_object_(object) {}
+    Term::Term() : external_parameter_(nullptr), external_object_(nullptr) {}
 
     const std::string& Term::get_name() const { throw std::runtime_error("not implemented"); }
     uint32_t Term::get_id() const { throw std::runtime_error("not implemented"); }
     const TypeList& Term::get_bases() const { throw std::runtime_error("not implemented"); }
 
+    bool Term::is_subtype_of(const Type& type) const { throw std::runtime_error("not implemented"); }
+    bool Term::is_subtype_of_one(const TypeList& types) const { throw std::runtime_error("not implemented"); }
     bool Term::is_variable() const { return external_parameter_ != nullptr; }
     bool Term::is_constant() const { return external_object_ != nullptr; }
+    bool Term::is_valid() const { return is_variable() || is_constant(); }
 
     std::size_t Term::hash() const { throw std::runtime_error("not implemented"); }
 

@@ -2,6 +2,7 @@
 #define MIMIR_PLANNERS_BREADTH_FIRST_SEARCH_HPP_
 
 #include "../formalism/problem.hpp"
+#include "../formalism/state.hpp"
 #include "../generators/successor_generator.hpp"
 #include "search_base.hpp"
 
@@ -22,7 +23,7 @@ namespace mimir::planners
         void reset_statistics();
 
       public:
-        BreadthFirstSearchImpl(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
+        BreadthFirstSearchImpl(const mimir::formalism::Repository& repository, const mimir::planners::SuccessorGenerator& successor_generator);
 
         std::map<std::string, std::variant<int32_t, double>> get_statistics() const override;
 
@@ -31,7 +32,8 @@ namespace mimir::planners
 
     using BreadthFirstSearch = std::shared_ptr<BreadthFirstSearchImpl>;
 
-    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator);
+    BreadthFirstSearch create_breadth_first_search(const mimir::formalism::Repository& repository,
+                                                   const mimir::planners::SuccessorGenerator& successor_generator);
 }  // namespace planners
 
 #endif  // MIMIR_PLANNERS_BREADTH_FIRST_SEARCH_HPP_

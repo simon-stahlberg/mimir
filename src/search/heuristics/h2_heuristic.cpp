@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "../../../include/mimir/formalism/problem.hpp"
 #include "../../../include/mimir/generators/grounded_successor_generator.hpp"
 #include "../../../include/mimir/search/heuristics/h2_heuristic.hpp"
 
@@ -26,13 +27,14 @@
 
 namespace mimir::planners
 {
-    H2Heuristic::H2Heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator) :
-        problem_(problem),
+    H2Heuristic::H2Heuristic(const mimir::formalism::Repository& repository, const mimir::planners::SuccessorGenerator& successor_generator) :
+        repository_(repository),
         actions_(),
         goal_(),
         h1_table_(),
         h2_table_()
     {
+        const auto& problem = repository_->get_problem();
         const auto grounded_successor_generator = std::dynamic_pointer_cast<mimir::planners::GroundedSuccessorGenerator>(successor_generator);
 
         if (!grounded_successor_generator)
@@ -40,7 +42,7 @@ namespace mimir::planners
             throw std::invalid_argument("successor generator must be grounded");
         }
 
-        const auto num_ranks = static_cast<int32_t>(problem->num_ranks());
+        const auto num_ranks = static_cast<int32_t>(repository_->get_encountered_atoms().size());
 
         // Pre-allocate memory for ht1 and ht2
 
@@ -54,14 +56,14 @@ namespace mimir::planners
 
         // Convert the goal to the internal format
 
-        for (const auto& literal : problem->goal)
+        for (const auto& literal : problem.get_goal_literals())
         {
-            if (literal->negated)
+            if (literal.is_negated())
             {
                 throw std::invalid_argument("negative literals in the goal are not supported");
             }
 
-            goal_.push_back(problem->get_rank(literal->atom));
+            goal_.push_back(literal.get_atom_id());
         }
 
         // Convert all actions to the internal format
@@ -75,37 +77,37 @@ namespace mimir::planners
             std::vector<int32_t> delete_effect;
             std::vector<int32_t> delete_effect_complement;
 
-            for (const auto& literal : action->get_precondition())
+            for (const auto& literal : action.get_precondition())
             {
-                if (!literal->negated)
+                if (!literal.is_negated())
                 {
-                    precondition.emplace_back(problem->get_rank(literal->atom));
+                    precondition.emplace_back(literal.get_atom_id());
                 }
             }
 
-            for (const auto& literal : action->get_unconditional_effect())
+            for (const auto& literal : action.get_unconditional_effect())
             {
-                if (literal->negated)
+                if (literal.is_negated())
                 {
-                    delete_effect.emplace_back(problem->get_rank(literal->atom));
+                    delete_effect.emplace_back(literal.get_atom_id());
                 }
                 else
                 {
-                    add_effect.emplace_back(problem->get_rank(literal->atom));
+                    add_effect.emplace_back(literal.get_atom_id());
                 }
             }
 
-            for (const auto& [antecedent, consequence] : action->get_conditional_effect())
+            for (const auto& implication : action.get_conditional_effect())
             {
-                for (const auto& literal : consequence)
+                for (const auto& literal : implication.get_consequence())
                 {
-                    if (literal->negated)
+                    if (literal.is_negated())
                     {
-                        delete_effect.emplace_back(problem->get_rank(literal->atom));
+                        delete_effect.emplace_back(literal.get_atom_id());
                     }
                     else
                     {
-                        add_effect.emplace_back(problem->get_rank(literal->atom));
+                        add_effect.emplace_back(literal.get_atom_id());
                     }
                 }
             }
@@ -118,7 +120,7 @@ namespace mimir::planners
                 }
             }
 
-            actions_.emplace_back(precondition, add_effect, delete_effect_complement, action->cost);
+            actions_.emplace_back(precondition, add_effect, delete_effect_complement, action.get_cost());
         }
     }
 
@@ -211,12 +213,12 @@ namespace mimir::planners
             }
         }
 
-        const auto& state_atoms = state->get_atoms();
+        const auto& state_atoms = state.get_atoms();
         std::vector<int32_t> state_ids;
 
         for (const auto& atom : state_atoms)
         {
-            state_ids.emplace_back(problem_->get_rank(atom));
+            state_ids.emplace_back(atom.get_id());
         }
 
         for (std::size_t i = 0; i < state_ids.size(); ++i)
@@ -276,17 +278,18 @@ namespace mimir::planners
 
     double H2Heuristic::evaluate(const mimir::formalism::State& state) const
     {
-        if (state->get_problem() != problem_)
+        if (repository_ != state.get_repository())
         {
-            throw std::invalid_argument("heuristic is constructed for a different problem");
+            throw std::invalid_argument("heuristic is constructed for a different repository");
         }
 
         fill_tables(state);
         return evaluate(goal_);
     }
 
-    std::shared_ptr<H2Heuristic> create_h2_heuristic(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+    std::shared_ptr<H2Heuristic> create_h2_heuristic(const mimir::formalism::Repository& repository,
+                                                     const mimir::planners::SuccessorGenerator& successor_generator)
     {
-        return std::make_shared<H2Heuristic>(problem, successor_generator);
+        return std::make_shared<H2Heuristic>(repository, successor_generator);
     }
 }  // namespace planners

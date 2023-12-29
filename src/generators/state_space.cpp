@@ -24,6 +24,10 @@ namespace mimir::planners
 
     StateSpaceImpl::~StateSpaceImpl() {}
 
+    mimir::formalism::Domain StateSpaceImpl::get_domain() const { throw std::runtime_error("not implemented"); }
+
+    mimir::formalism::Problem StateSpaceImpl::get_problem() const { throw std::runtime_error("not implemented"); }
+
     const std::vector<mimir::formalism::Transition>& StateSpaceImpl::get_forward_transitions(const mimir::formalism::State& state) const
     {
         throw std::runtime_error("not implemented");

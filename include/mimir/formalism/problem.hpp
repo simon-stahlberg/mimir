@@ -1,16 +1,23 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
-#include "../datastructures/robin_map.hpp"
-#include "declarations.hpp"
+// #include "../datastructures/robin_map.hpp"
+#include "atom.hpp"
+#include "domain.hpp"
+#include "literal.hpp"
+#include "term.hpp"
 
 #include <loki/problem/pddl/problem.hpp>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace mimir::formalism
 {
+    class Problem;
+    using ProblemList = std::vector<Problem>;
+
     class Problem
     {
       private:
@@ -33,6 +40,8 @@ namespace mimir::formalism
         // const Requirements& get_requirements() const;
         const AtomSet& get_static_atoms() const;
         // uint32_t get_rank(const Atom& atom) const;
+
+        std::size_t hash() const;
 
         // std::vector<uint32_t> to_ranks(const AtomList& atoms) const;
         // uint32_t num_ranks() const;

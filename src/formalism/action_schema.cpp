@@ -61,6 +61,8 @@ namespace mimir::formalism
         // return precondition;
     }
 
+    ActionSchema::ActionSchema() : external_(nullptr) {}
+
     const std::string& ActionSchema::get_name() const { return external_->get_name(); }
 
     std::size_t ActionSchema::get_arity() const { return external_->get_parameters().size(); }
@@ -98,7 +100,7 @@ namespace mimir::formalism
 
     Function ActionSchema::get_cost() const { throw std::runtime_error("not implemented"); }
 
-    ActionSchema ActionSchema::delete_relax(ActionSchemaFactory& ref_factory) const { throw std::runtime_error("not implemented"); }
+    bool ActionSchema::is_valid() const { return external_ != nullptr; }
 
     std::size_t ActionSchema::hash() const { throw std::runtime_error("not implemented"); }
 

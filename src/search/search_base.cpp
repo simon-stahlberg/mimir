@@ -1,10 +1,13 @@
+#include "../../include/mimir/formalism/atom.hpp"
+#include "../../include/mimir/formalism/problem.hpp"
+#include "../../include/mimir/formalism/state.hpp"
 #include "../../include/mimir/search/search_base.hpp"
 
 namespace mimir::planners
 {
-    SearchBase::SearchBase(const mimir::formalism::Problem& problem) :
+    SearchBase::SearchBase(const mimir::formalism::Repository& repository) :
         event_handlers_(),
-        initial_state(mimir::formalism::create_state(problem->initial, problem)),
+        initial_state(repository->create_state(repository->get_problem().get_initial_atoms())),
         should_abort(false)
     {
     }

@@ -31,11 +31,11 @@ namespace mimir::planners
         StateSpaceImpl(const mimir::formalism::Problem& problem);
 
       public:
+        virtual ~StateSpaceImpl();
+
         virtual mimir::formalism::Domain get_domain() const;
 
         virtual mimir::formalism::Problem get_problem() const;
-
-        virtual ~StateSpaceImpl();
 
         virtual const std::vector<mimir::formalism::Transition>& get_forward_transitions(const mimir::formalism::State& state) const;
 

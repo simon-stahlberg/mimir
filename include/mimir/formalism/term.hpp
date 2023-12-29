@@ -1,12 +1,14 @@
 #ifndef MIMIR_FORMALISM_TERM_HPP_
 #define MIMIR_FORMALISM_TERM_HPP_
 
-#include "declarations.hpp"
+#include "type.hpp"
 
 #include <iostream>
 #include <loki/domain/pddl/parameter.hpp>
 #include <loki/domain/pddl/variable.hpp>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace mimir::formalism
 {
@@ -20,12 +22,17 @@ namespace mimir::formalism
         explicit Term(loki::pddl::Object object);
 
       public:
+        explicit Term();
+
         const std::string& get_name() const;
         uint32_t get_id() const;
         const TypeList& get_bases() const;
 
+        bool is_subtype_of(const Type& type) const;
+        bool is_subtype_of_one(const TypeList& types) const;
         bool is_variable() const;
         bool is_constant() const;
+        bool is_valid() const;
 
         std::size_t hash() const;
 
@@ -48,6 +55,9 @@ namespace mimir::formalism
     // std::ostream& operator<<(std::ostream& os, const mimir::formalism::Object& object);
 
     // std::ostream& operator<<(std::ostream& os, const mimir::formalism::ObjectList& objects);
+
+    using TermList = std::vector<Term>;
+    using ParameterAssignment = std::unordered_map<Term, Term>;
 
 }  // namespace mimir::formalism
 

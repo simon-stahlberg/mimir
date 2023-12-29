@@ -25,6 +25,8 @@ namespace mimir::formalism
 
     std::ostream& operator<<(std::ostream& os, const Transition& transition);
 
+    using TransitionList = std::vector<Transition>;
+
 }  // namespace formalism
 
 namespace std

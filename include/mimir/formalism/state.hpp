@@ -1,9 +1,14 @@
 #ifndef MIMIR_FORMALISM_STATE_HPP_
 #define MIMIR_FORMALISM_STATE_HPP_
 
-// #include "atom.hpp"
+#include "action.hpp"
+#include "atom.hpp"
 #include "bitset.hpp"
-#include "declarations.hpp"
+#include "domain.hpp"
+#include "factories.hpp"
+#include "literal.hpp"
+#include "problem.hpp"
+#include "term.hpp"
 
 #include <map>
 #include <memory>
@@ -11,6 +16,63 @@
 
 namespace mimir::formalism
 {
+    class State;
+    using StateList = std::vector<State>;
+
+    class RepositoryImpl;
+    using Repository = std::shared_ptr<RepositoryImpl>;
+    using StateRepositoryPtr = const RepositoryImpl*;
+
+    // TODO: Should the name of repository be "instance"?
+    class RepositoryImpl
+    {
+      private:
+        Domain domain_;
+        Problem problem_;
+        // TermFactory term_factory_;
+        AtomFactory atom_factory_;
+
+        // Declare the copy constructor and copy assignment operator as deleted
+        RepositoryImpl(const RepositoryImpl&) = delete;
+        RepositoryImpl& operator=(const RepositoryImpl&) = delete;
+
+        // Declare the move constructor and move assignment operator as deleted
+        RepositoryImpl(RepositoryImpl&&) = delete;
+        RepositoryImpl& operator=(RepositoryImpl&&) = delete;
+
+        RepositoryImpl(const Problem& problem);
+
+      public:
+        virtual ~RepositoryImpl();
+
+        Atom create_atom(const Predicate& predicate, TermList&& terms);
+        Literal create_literal(const Atom& atom, bool is_negated);
+        State create_state(const AtomList& atoms);
+
+        Action create_action(const ActionSchema& schema, TermList&& terms, double cost);
+        Action create_action(const ActionSchema& schema,
+                             TermList&& terms,
+                             LiteralList&& precondition,
+                             LiteralList&& unconditional_effect,
+                             ImplicationList&& conditional_effect,
+                             double cost);
+
+        Repository delete_relax();
+
+        Domain get_domain() const;
+        Problem get_problem() const;
+        uint32_t get_arity(uint32_t atom_id) const;
+        uint32_t get_predicate_id(uint32_t atom_id) const;
+        Term get_object(uint32_t object_id) const;
+
+        std::vector<Atom> get_encountered_atoms() const;  // TODO: Ensure that the initial and goal atoms are added.
+        std::vector<uint32_t> get_term_ids(uint32_t atom_id) const;
+
+        friend Repository create_repository(const Problem&);
+    };
+
+    Repository create_repository(const Problem& problem);
+
     class State
     {
       private:
@@ -35,15 +97,21 @@ namespace mimir::formalism
         AtomList get_atoms() const;
         AtomList get_static_atoms() const;
         AtomList get_dynamic_atoms() const;
+        Repository get_repository() const;
 
         bool contains(uint32_t atom_id) const;
         bool contains(const Atom& atom) const;
         bool contains_all(const AtomList& atoms) const;
+        bool holds(const Literal& literal) const;
         bool holds(const LiteralList& literals) const;
+        bool holds(const LiteralList& literals, uint32_t min_arity) const;
 
         std::vector<uint32_t> get_ranks() const;
         std::vector<uint32_t> get_static_ranks() const;
         std::vector<uint32_t> get_dynamic_ranks() const;
+
+        bool is_applicable(const Action& action) const;
+        State apply(const Action& state) const;
 
         Problem get_problem() const;
 

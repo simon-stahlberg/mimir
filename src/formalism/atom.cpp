@@ -16,8 +16,6 @@
  */
 
 #include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
 
 #include <algorithm>

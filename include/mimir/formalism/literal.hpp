@@ -1,11 +1,12 @@
 #ifndef MIMIR_FORMALISM_LITERAL_HPP_
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
-// #include "atom.hpp"
-#include "declarations.hpp"
+#include "atom.hpp"
+#include "predicate.hpp"
 
 #include <loki/domain/pddl/literal.hpp>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 namespace mimir::formalism
@@ -19,12 +20,13 @@ namespace mimir::formalism
 
       public:
         bool is_negated() const;
-
         Atom get_atom() const;
+        uint32_t get_atom_id() const;
+        Predicate get_predicate() const;
 
         Literal ground_literal(const ParameterAssignment& assignment) const;
 
-        bool contains_predicate(const Predicate& predicate);
+        bool contains(const Predicate& predicate) const;
 
         std::size_t hash() const;
 
@@ -39,7 +41,11 @@ namespace mimir::formalism
         friend class Problem;
     };
 
+    using LiteralList = std::vector<Literal>;
+
     AtomList as_atoms(const LiteralList& literals);
+
+    LiteralList ground_literals(const LiteralList& literal_list, const ParameterAssignment& assignment);
 
     // bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate);
 

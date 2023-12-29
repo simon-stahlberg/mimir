@@ -18,6 +18,7 @@
 #include "../../include/mimir/algorithms/kpkc.hpp"
 #include "../../include/mimir/formalism/atom.hpp"
 #include "../../include/mimir/formalism/predicate.hpp"
+#include "../../include/mimir/formalism/state.hpp"
 #include "../../include/mimir/formalism/type.hpp"
 #include "../../include/mimir/generators/lifted_schema_successor_generator.hpp"
 #include "../formalism/help_functions.hpp"
@@ -55,12 +56,11 @@ namespace mimir::planners
      *
      * @return A set for each predicate that contains possible compatible assignments.
      */
-    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const mimir::formalism::Domain& domain,
-                                                                                         const mimir::formalism::Problem& problem,
+    std::vector<std::vector<bool>> LiftedSchemaSuccessorGenerator::build_assignment_sets(const mimir::formalism::Repository& repository,
                                                                                          const std::vector<uint32_t>& atom_ids)
     {
-        const auto num_objects = problem.get_objects().size();
-        const auto& predicates = domain.get_predicates();
+        const auto num_objects = repository->get_problem().get_objects().size();
+        const auto& predicates = repository->get_domain().get_predicates();
         std::vector<std::vector<bool>> assignment_sets;
         assignment_sets.resize(predicates.size());
 
@@ -72,17 +72,17 @@ namespace mimir::planners
 
         for (const auto& atom_id : atom_ids)
         {
-            const auto& predicate_arity = problem->get_arity(atom_id);
-            const auto& predicate_id = problem->get_predicate_id(atom_id);
-            const auto& argument_ids = problem->get_argument_ids(atom_id);
+            const auto& predicate_arity = repository->get_arity(atom_id);
+            const auto& predicate_id = repository->get_predicate_id(atom_id);
+            const auto& argument_ids = repository->get_term_ids(atom_id);
             auto& assignment_set = assignment_sets[predicate_id];
 
-            for (size_t first_position = 0; first_position < predicate_arity; ++first_position)
+            for (uint32_t first_position = 0; first_position < predicate_arity; ++first_position)
             {
                 const auto& first_object_id = argument_ids[first_position];
                 assignment_set[get_assignment_position(first_position, first_object_id, -1, -1, predicate_arity, num_objects)] = true;
 
-                for (size_t second_position = first_position + 1; second_position < predicate_arity; ++second_position)
+                for (uint32_t second_position = first_position + 1; second_position < predicate_arity; ++second_position)
                 {
                     const auto& second_object_id = argument_ids[second_position];
                     assignment_set[get_assignment_position(second_position, second_object_id, -1, -1, predicate_arity, num_objects)] = true;
@@ -179,7 +179,7 @@ namespace mimir::planners
                                                                      second_position,
                                                                      second_object_id,
                                                                      static_cast<int32_t>(literal.arity),
-                                                                     static_cast<int32_t>(problem_.get_objects().size()));
+                                                                     static_cast<int32_t>(repository_->get_problem().get_objects().size()));
 
                 const auto consistent_with_state = assignment_set[assignment_rank];
 
@@ -206,7 +206,7 @@ namespace mimir::planners
         {
             if (term.is_constant())
             {
-                atom_terms.emplace_back(problem_->get_object(term.get_value()));
+                atom_terms.emplace_back(repository_->get_object(term.get_value()));
             }
             else
             {
@@ -219,9 +219,10 @@ namespace mimir::planners
 
     mimir::formalism::Literal LiftedSchemaSuccessorGenerator::ground_literal(const FlatLiteral& literal, const mimir::formalism::TermList& terms) const
     {
-        const auto& atom_predicate = literal.source.get_atom().get_predicate();
-        const auto ground_atom = mimir::formalism::create_atom(atom_predicate, ground_parameters(literal.arguments, terms));
-        return mimir::formalism::create_literal(ground_atom, literal.negated);
+        const auto& atom_predicate = literal.source.get_predicate();
+        const auto ground_atom = repository_->create_atom(atom_predicate, ground_parameters(literal.arguments, terms));
+        const auto ground_literal = repository_->create_literal(ground_atom, literal.negated);
+        return ground_literal;
     }
 
     mimir::formalism::Action LiftedSchemaSuccessorGenerator::create_action(mimir::formalism::TermList&& terms) const
@@ -271,46 +272,56 @@ namespace mimir::planners
 
         // Get the cost of the ground action
 
-        double cost;
-        const auto cost_function = flat_action_schema_.source->cost;
+        throw std::runtime_error("not implemented");
 
-        if (cost_function->is_constant())
-        {
-            cost = cost_function->get_constant();
-        }
-        else
-        {
-            const auto cost_atom_schema = flat_action_schema_.source->cost->get_atom();
-            const auto cost_atom = mimir::formalism::create_atom(cost_atom_schema->predicate, ground_parameters(flat_action_schema_.cost_arguments, terms));
-            cost = problem_->atom_costs.at(cost_atom);
-        }
+        double cost = 1.0;
+        // const auto cost_function = flat_action_schema_.source->cost;
 
-        if (cost_function->get_operation() == mimir::formalism::FunctionOperation::DECREASE)
-        {
-            cost = -cost;
-        }
+        // if (cost_function->is_constant())
+        // {
+        //     cost = cost_function->get_constant();
+        // }
+        // else
+        // {
+        //     const auto cost_atom_schema = flat_action_schema_.source->cost->get_atom();
+        //     const auto cost_atom = mimir::formalism::create_atom(cost_atom_schema->predicate, ground_parameters(flat_action_schema_.cost_arguments, terms));
+        //     cost = problem_->atom_costs.at(cost_atom);
+        // }
+
+        // if (cost_function->get_operation() == mimir::formalism::FunctionOperation::DECREASE)
+        // {
+        //     cost = -cost;
+        // }
 
         // Finally, create the ground action
 
-        return mimir::formalism::create_action(problem_,
-                                               flat_action_schema_.source,
-                                               std::move(terms),
-                                               std::move(precondition),
-                                               std::move(unconditional_effect),
-                                               std::move(conditional_effect),
-                                               cost);
+        return repository_->create_action(flat_action_schema_.source,
+                                          std::move(terms),
+                                          std::move(precondition),
+                                          std::move(unconditional_effect),
+                                          std::move(conditional_effect),
+                                          cost);
+
+        // return mimir::formalism::create_action(problem_,
+        //                                        flat_action_schema_.source,
+        //                                        std::move(terms),
+        //                                        std::move(precondition),
+        //                                        std::move(unconditional_effect),
+        //                                        std::move(conditional_effect),
+        //                                        cost);
     }
 
-    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const mimir::formalism::ActionSchema& action_schema,
-                                                                   const mimir::formalism::Problem& problem) :
-        domain_(problem.get_domain()),
-        problem_(problem),
-        flat_action_schema_(FlatActionSchema(problem.get_domain(), action_schema)),
+    LiftedSchemaSuccessorGenerator::LiftedSchemaSuccessorGenerator(const mimir::formalism::Repository& repository,
+                                                                   const mimir::formalism::ActionSchema& action_schema) :
+        repository_(repository),
+        flat_action_schema_(FlatActionSchema(repository->get_domain(), action_schema)),
         objects_by_parameter_type(),
         to_vertex_assignment(),
         statically_consistent_assignments(),
         partitions_()
     {
+        const auto problem = repository->get_problem();
+
         // Type information is used by the unary and general case
 
         if (flat_action_schema_.arity >= 1)
@@ -323,9 +334,9 @@ namespace mimir::planners
 
                 for (const auto& object : problem.get_objects())
                 {
-                    if (mimir::formalism::is_subtype_of(object->type, parameter->type))
+                    if (object.is_subtype_of_one(parameter.get_bases()))
                     {
-                        compatible_objects.emplace_back(object->id);
+                        compatible_objects.emplace_back(object.get_id());
                     }
                 }
 
@@ -354,8 +365,8 @@ namespace mimir::planners
             }
 
             // Filter assignment based on static atoms
-            const auto initial_state = mimir::formalism::create_state(problem->initial, problem);
-            const auto assignment_sets = build_assignment_sets(domain_, problem_, initial_state->get_static_ranks());
+            const auto initial_state = repository->create_state(problem.get_initial_atoms());
+            const auto assignment_sets = build_assignment_sets(repository, initial_state.get_static_ranks());
 
             for (size_t first_id = 0; first_id < to_vertex_assignment.size(); ++first_id)
             {
@@ -380,9 +391,10 @@ namespace mimir::planners
             {
                 if (literal.arity == 0)
                 {
-                    const auto negated = literal.source->negated;
-                    const auto& atom = literal.source->atom;
-                    const auto contains = static_cast<bool>(std::count(problem_->initial.cbegin(), problem_->initial.cend(), atom));
+                    const auto initial_atoms = problem.get_initial_atoms();
+                    const auto negated = literal.source.is_negated();
+                    const auto& atom = literal.source.get_atom();
+                    const auto contains = static_cast<bool>(std::count(initial_atoms.cbegin(), initial_atoms.cend(), atom));
 
                     if (contains == negated)
                     {
@@ -398,7 +410,7 @@ namespace mimir::planners
     {
         for (const auto& literal : flat_action_schema_.fluent_precondition)
         {
-            if ((literal.arity == 0) && !mimir::formalism::literal_holds(literal.source, state))
+            if ((literal.arity == 0) && !state.holds(literal.source))
             {
                 return false;
             }
@@ -418,7 +430,7 @@ namespace mimir::planners
 
         const auto action = create_action(mimir::formalism::TermList {});
 
-        if (mimir::formalism::literals_hold(action->get_precondition(), state))
+        if (state.holds(action.get_precondition()))
         {
             out_actions.push_back(action);
         }
@@ -444,9 +456,9 @@ namespace mimir::planners
                 return false;
             }
 
-            const auto action = create_action({ problem_->get_object(object_id) });
+            const auto action = create_action({ repository_->get_object(object_id) });
 
-            if (mimir::formalism::literals_hold(action->get_precondition(), state))
+            if (state.holds(action.get_precondition()))
             {
                 out_actions.push_back(action);
             }
@@ -519,12 +531,12 @@ namespace mimir::planners
                 const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
                 const auto parameter_index = vertex_assignment.parameter_index;
                 const auto object_id = vertex_assignment.object_id;
-                terms[parameter_index] = problem_->get_object(object_id);
+                terms[parameter_index] = repository_->get_object(object_id);
             }
 
             const auto action = create_action(std::move(terms));
 
-            if (mimir::formalism::literals_hold(action->get_precondition(), state, 3))
+            if (state.holds(action.get_precondition(), 3))
             {
                 out_actions.push_back(action);
             }
@@ -565,7 +577,7 @@ namespace mimir::planners
 
     mimir::formalism::ActionList LiftedSchemaSuccessorGenerator::get_applicable_actions(const mimir::formalism::State& state) const
     {
-        const auto assignment_sets = build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
+        const auto assignment_sets = build_assignment_sets(repository_, state.get_dynamic_ranks());
         return get_applicable_actions(state, assignment_sets);
     }
 
@@ -591,7 +603,7 @@ namespace mimir::planners
 
         if (flat_action_schema_.arity > 1)
         {
-            const auto assignment_sets = build_assignment_sets(domain_, problem_, state->get_dynamic_ranks());
+            const auto assignment_sets = build_assignment_sets(repository_, state.get_dynamic_ranks());
 
             if (!general_case(end_time, state, assignment_sets, out_actions))
             {

@@ -40,7 +40,7 @@ message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 # Setup prefix path for third-party libraries
 add_subdirectory(extern/loki)
 set(Loki_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/extern/loki/include)
-link_libraries(sketches)
+link_libraries(loki::parsers)
 include_directories(${Loki_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(include)

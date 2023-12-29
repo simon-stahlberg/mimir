@@ -16,7 +16,7 @@
  */
 
 #include "../include/mimir/datastructures/robin_map.hpp"
-#include "../include/mimir/formalism/state_repository.hpp"
+#include "../include/mimir/formalism/state.hpp"
 #include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/grounded_successor_generator.hpp"
 #include "../include/mimir/generators/successor_generator_factory.hpp"
@@ -90,7 +90,8 @@ std::vector<std::string> successor_generator_types() { return std::vector<std::s
 
 void bfs(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
-    mimir::planners::Search search = mimir::planners::create_breadth_first_search(problem, successor_generator);
+    auto repository = mimir::formalism::create_repository(problem);
+    mimir::planners::Search search = mimir::planners::create_breadth_first_search(repository, successor_generator);
     const auto time_start = std::chrono::high_resolution_clock::now();
 
     search->register_handler(
@@ -158,10 +159,11 @@ void state_space(const mimir::formalism::Problem& problem, const mimir::planners
 
 void astar(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
+    auto repository = mimir::formalism::create_repository(problem);
     const auto time_start = std::chrono::high_resolution_clock::now();
-    const auto heuristic = mimir::planners::create_h1_heuristic(problem, successor_generator);
+    const auto heuristic = mimir::planners::create_h1_heuristic(repository, successor_generator);
     const auto open_list = mimir::planners::create_priority_queue_open_list();
-    auto search = mimir::planners::create_eager_astar(problem, successor_generator, heuristic, open_list);
+    auto search = mimir::planners::create_eager_astar(repository, successor_generator, heuristic, open_list);
 
     search->register_handler(
         [&time_start, &search]()
@@ -218,7 +220,7 @@ void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::S
         double f;
     };
 
-    auto state_repository = mimir::formalism::create_state_repository(problem);
+    auto state_repository = mimir::formalism::create_repository(problem);
     const auto& initial_atoms = problem.get_initial_atoms();
     const auto& goal_literals = problem.get_goal_literals();
 
@@ -271,7 +273,7 @@ void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::S
 
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = action.apply(frame.state);
+            const auto successor_state = frame.state.apply(action);
             auto& successor_index = state_indices[successor_state];
 
             // If successor_index is 0, then we haven't seen the state as it is reserved by the dummy frame that we added earlier.
@@ -349,7 +351,8 @@ int main(int argc, char* argv[])
     std::cout << "Using " << generator_name << " successor generator" << std::endl << std::endl;
 
     std::cout << "Creating successor generator... ";
-    const auto successor_generator = mimir::planners::create_sucessor_generator(problem, generator);
+    const auto repository = mimir::formalism::create_repository(problem);
+    const auto successor_generator = mimir::planners::create_sucessor_generator(repository, generator);
     std::cout << "Done" << std::endl;
 
     if (generator == mimir::planners::SuccessorGeneratorType::GROUNDED)

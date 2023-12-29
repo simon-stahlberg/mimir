@@ -1,12 +1,16 @@
 #ifndef MIMIR_FORMALISM_ACTION_SCHEMA_HPP_
 #define MIMIR_FORMALISM_ACTION_SCHEMA_HPP_
 
-#include "declarations.hpp"
-#include "factories.hpp"
+#include "function.hpp"
+#include "implication.hpp"
+#include "literal.hpp"
+#include "term.hpp"
 
 #include <loki/common/pddl/types.hpp>
 #include <loki/domain/pddl/action.hpp>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace mimir::formalism
 {
@@ -20,6 +24,8 @@ namespace mimir::formalism
         LiteralList parse_conjunctive_literals(loki::pddl::Condition condition) const;
 
       public:
+        explicit ActionSchema();
+
         const std::string& get_name() const;
         std::size_t get_arity() const;
         TermList get_parameters() const;
@@ -27,8 +33,7 @@ namespace mimir::formalism
         LiteralList get_effect() const;
         ImplicationList get_conditional_effect() const;
         Function get_cost() const;
-
-        ActionSchema delete_relax(ActionSchemaFactory& ref_factory) const;
+        bool is_valid() const;
 
         // bool affects_predicate(const mimir::formalism::Predicate& predicate) const;  // TODO: Is this one used?
 
@@ -46,6 +51,8 @@ namespace mimir::formalism
     // bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
 
     // std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas);
+
+    using ActionSchemaList = std::vector<ActionSchema>;
 
 }  // namespace mimir::formalism
 

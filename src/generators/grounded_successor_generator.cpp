@@ -18,6 +18,7 @@
 #include "../../include/mimir/datastructures/robin_map.hpp"
 #include "../../include/mimir/formalism/atom.hpp"
 #include "../../include/mimir/formalism/domain.hpp"
+#include "../../include/mimir/formalism/implication.hpp"
 #include "../../include/mimir/formalism/predicate.hpp"
 #include "../../include/mimir/formalism/problem.hpp"
 #include "../../include/mimir/formalism/state.hpp"
@@ -33,23 +34,23 @@ namespace mimir::planners
 
     LeafNode::LeafNode(const mimir::formalism::ActionList& actions) : actions_(actions) {}
 
-    GroundedSuccessorGenerator::GroundedSuccessorGenerator(const mimir::formalism::Problem& problem, const mimir::formalism::ActionList& ground_actions) :
-        problem_(problem),
+    GroundedSuccessorGenerator::GroundedSuccessorGenerator(const mimir::formalism::Repository& repository, const mimir::formalism::ActionList& ground_actions) :
+        repository_(repository),
         actions_(ground_actions),
         root_(nullptr)
     {
-        root_ = build_decision_tree(problem, ground_actions);
+        root_ = build_decision_tree(repository, ground_actions);
     }
 
-    mimir::formalism::Problem GroundedSuccessorGenerator::get_problem() const { return problem_; }
+    mimir::formalism::Problem GroundedSuccessorGenerator::get_problem() const { return repository_->get_problem(); }
 
     const mimir::formalism::ActionList& GroundedSuccessorGenerator::get_actions() const { return actions_; }
 
     mimir::formalism::ActionList GroundedSuccessorGenerator::get_applicable_actions(const mimir::formalism::State& state) const
     {
-        if (problem_ != state.get_problem())
+        if (repository_ != state.get_repository())
         {
-            throw std::invalid_argument("successor generator is built for a different problem");
+            throw std::invalid_argument("successor generator is built for a different repository");
         }
 
         mimir::formalism::ActionList applicable_actions;
@@ -89,20 +90,21 @@ namespace mimir::planners
         return next_atom;
     }
 
-    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const mimir::formalism::Problem& problem,
+    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree(const mimir::formalism::Repository& repository,
                                                                                   const mimir::formalism::ActionList& ground_actions)
     {
+        const auto& problem = repository->get_problem();
         const auto& static_predicates = problem.get_domain().get_static_predicates();
         const auto& static_atoms = problem.get_static_atoms();
 
-        mimir::tsl::robin_map<mimir::formalism::Atom, uint32_t> atom_occurrances;
+        std::unordered_map<mimir::formalism::Atom, uint32_t> atom_occurrances;
 
         // Find unique atoms from ground action preconditions
         for (const auto& action : ground_actions)
         {
             for (const auto& literal : action.get_precondition())
             {
-                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal.get_atom().get_predicate());
+                const auto is_static_predicate = std::count(static_predicates.begin(), static_predicates.end(), literal.get_predicate());
 
                 if (is_static_predicate)
                 {
@@ -134,11 +136,10 @@ namespace mimir::planners
 
         std::sort(atoms.begin(), atoms.end(), occurance_descending);
 
-        return build_decision_tree_recursive(problem, ground_actions, atoms, atoms.begin());
+        return build_decision_tree_recursive(ground_actions, atoms, atoms.begin());
     }
 
-    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree_recursive(const mimir::formalism::Problem& problem,
-                                                                                            const mimir::formalism::ActionList& ground_actions,
+    std::unique_ptr<DecisionNode> GroundedSuccessorGenerator::build_decision_tree_recursive(const mimir::formalism::ActionList& ground_actions,
                                                                                             const mimir::formalism::AtomList& atoms,
                                                                                             mimir::formalism::AtomList::const_iterator next_atom)
     {
@@ -197,14 +198,14 @@ namespace mimir::planners
 
         if ((present_actions.size() == 0) && (not_present_actions.size() == 0) && (dont_care_actions.size() > 0))
         {
-            return build_decision_tree_recursive(problem, dont_care_actions, atoms, next_atom);
+            return build_decision_tree_recursive(dont_care_actions, atoms, next_atom);
         }
         else
         {
             auto branch_node = std::make_unique<BranchNode>(branching_atom.get_id());
-            branch_node->present_ = build_decision_tree_recursive(problem, present_actions, atoms, next_atom);
-            branch_node->not_present_ = build_decision_tree_recursive(problem, not_present_actions, atoms, next_atom);
-            branch_node->dont_care_ = build_decision_tree_recursive(problem, dont_care_actions, atoms, next_atom);
+            branch_node->present_ = build_decision_tree_recursive(present_actions, atoms, next_atom);
+            branch_node->not_present_ = build_decision_tree_recursive(not_present_actions, atoms, next_atom);
+            branch_node->dont_care_ = build_decision_tree_recursive(dont_care_actions, atoms, next_atom);
             return branch_node;
         }
     }

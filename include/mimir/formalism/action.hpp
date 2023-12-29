@@ -3,13 +3,13 @@
 
 #include "action_schema.hpp"
 #include "bitset.hpp"
-#include "declarations.hpp"
 #include "implication.hpp"
 #include "literal.hpp"
-#include "problem.hpp"
 #include "term.hpp"
 
 #include <iostream>
+#include <stdexcept>
+#include <vector>
 
 namespace mimir::formalism
 {
@@ -28,7 +28,6 @@ namespace mimir::formalism
         LiteralList applicability_precondition_;
         LiteralList unconditional_effect_;
         ImplicationList conditional_effect_;
-        // Problem problem_;
         ActionSchema schema_;
         double cost_;
 
@@ -37,6 +36,8 @@ namespace mimir::formalism
         void initialize_effect();
 
       public:
+        Action();
+
         Action(const ActionSchema& schema,
                TermList&& arguments,
                LiteralList&& precondition,
@@ -47,6 +48,8 @@ namespace mimir::formalism
         // Action(const ActionSchema& schema, TermList&& arguments, int32_t cost = 1);
 
         // Action(const ActionSchema& schema, const ParameterAssignment& assignment);
+
+        bool is_valid() const;
 
         const ActionSchema& get_schema() const;
 
@@ -60,9 +63,9 @@ namespace mimir::formalism
 
         double get_cost() const;
 
-        bool is_applicable(const State& state) const;
+        // bool is_applicable(const State& state) const;
 
-        State apply(const State& state) const;
+        // State apply(const State& state) const;
 
         bool operator<(const Action& other) const;
         bool operator>(const Action& other) const;
@@ -72,6 +75,8 @@ namespace mimir::formalism
 
         friend std::ostream& operator<<(std::ostream& os, const Action& action);
     };
+
+    using ActionList = std::vector<Action>;
 
 }  // namespace mimir::formalism
 
