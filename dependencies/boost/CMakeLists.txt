@@ -3,7 +3,10 @@ project(DownloadBoost)
 
 include(ExternalProject)
 
-message(STATUS "Preparing external project \"boost\":")
+
+### Download and extract boost, no installation required
+
+message(STATUS "Preparing external project \"boost\"")
 
 ExternalProject_Add(
     boost
