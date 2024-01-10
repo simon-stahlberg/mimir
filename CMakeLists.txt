@@ -57,13 +57,14 @@ find_package(loki 0.1 COMPONENTS parsers REQUIRED)
 
 
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
+file(GLOB_RECURSE MIMIR_HEADER_FILES "include/*.hpp" "include/**/*.hpp")
 file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 
 # ------------
 # Target Mimir
 # ------------
 if(BUILD_LIBMIMIR)
-    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES})
+    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES} ${MIMIR_HEADER_FILES})
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
     target_link_libraries(mimir loki::parsers)
 
