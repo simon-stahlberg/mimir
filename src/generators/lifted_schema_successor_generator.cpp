@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <boost/dynamic_bitset.hpp>
+#include <cassert>
 #include <limits>
 #include <set>
 
@@ -479,7 +480,8 @@ namespace mimir::planners
                                                       const std::vector<std::vector<bool>>& assignment_sets,
                                                       mimir::formalism::ActionList& out_actions) const
     {
-        assert(state);
+        // Dominik: state now has value semantics
+        // assert(state);
 
         if (std::chrono::high_resolution_clock::now() >= end_time)
         {

@@ -12,13 +12,15 @@ option(BUILD_PROFILING "Build" ON)
 # ---------------
 # Common Settings
 # ---------------
-find_package(Boost REQUIRED)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+
+# make cache variables for install destinations
+include(GNUInstallDirs)
+
+list(APPEND CMAKE_MODULE_PATH
+  "${PROJECT_SOURCE_DIR}/cmake"
+)
+include("configure_boost")
+include("configure_ccache")
 
 if(MSVC)
     if(NOT CMAKE_BUILD_TYPE)
@@ -37,13 +39,22 @@ endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
-# Setup prefix path for third-party libraries
-add_subdirectory(extern/loki)
-set(Loki_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/extern/loki/include)
-link_libraries(loki::parsers)
-include_directories(${Loki_INCLUDE_DIRS})
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(include)
+# CCache
+configure_ccache()
+
+# Boost
+# Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
+configure_boost()
+# set(CMAKE_FIND_DEBUG_MODE ON)
+message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
+# Loki
+find_package(loki 0.1 REQUIRED parsers)
+
 
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
 file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
@@ -54,6 +65,7 @@ file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 if(BUILD_LIBMIMIR)
     add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES})
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
+    target_link_libraries(mimir loki::parsers)
 
     target_include_directories(mimir PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -127,6 +139,7 @@ if(BUILD_PYMIMIR)
     endif()
 
     # Add pybind11 include directory
+    # TODO (Dominik): Use find_package instead
     set(PYBIND11_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/extern/pybind11/include)
     target_include_directories(pymimir PRIVATE ${PYBIND11_INCLUDE_DIR})
 
@@ -143,6 +156,7 @@ endif()
 # Target Profiling
 # ----------------
 if(BUILD_PROFILING)
+    find_package(benchmark REQUIRED)
     add_executable(mimir-profile bin/profiling.cpp ${MIMIR_SRC_FILES})
     set_property(TARGET mimir-profile PROPERTY CXX_STANDARD 17)
 endif()
@@ -152,9 +166,7 @@ endif()
 # -----------
 if(BUILD_TESTS)
     find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
-    include(GoogleTest)
     add_executable(mimir-test ${MIMIR_TEST_FILES} ${MIMIR_SRC_FILES})
-    target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} pthread)
+    target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} GTest::GTest GTest::Main)
     gtest_discover_tests(mimir-test)
 endif()

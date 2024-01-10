@@ -5,7 +5,9 @@
 #include "term.hpp"
 
 #include <loki/domain/pddl/atom.hpp>
+
 #include <stdexcept>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir::formalism

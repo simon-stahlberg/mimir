@@ -4,8 +4,10 @@
 #include "term.hpp"
 
 #include <loki/domain/pddl/predicate.hpp>
+
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir::formalism

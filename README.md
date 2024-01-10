@@ -8,6 +8,38 @@ Mimir can handle STRIPS planning problems with negative preconditions and typing
 
 ## Getting Started
 
+
+
+
+
+We provide a CMake project that takes care of downloading, configuring, building, and installing all dependencies.
+
+```console
+# Configure dependencies
+cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs
+# Build and install dependencies
+cmake --build dependencies/build -j16
+```
+
+To use Mimir, you can use the following steps to configure, build, and install.
+
+```console
+# Configure with installation prefixes of all dependencies
+cmake -S . -B build -DCMAKE_PREFIX_PATH=dependencies/installs
+# Build
+cmake --build build -j16
+# Install (optional)
+cmake --install build --prefix=<path/to/installation-directory>
+```
+
+
+
+
+
+
+
+
+
 1. Clone this repository, and make sure submodules are cloned as well:
     - `git submodule init`
     - `git submodule update --recursive`

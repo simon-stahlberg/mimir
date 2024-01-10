@@ -11,7 +11,7 @@ namespace mimir::formalism
     class AtomFactory
     {
       private:
-        loki::PersistentFactory<loki::pddl::AtomImpl> external_;
+        loki::PersistentFactory<loki::pddl::AtomImpl, 1000> external_;
 
       public:
         Atom get_or_add();
@@ -20,7 +20,7 @@ namespace mimir::formalism
     class TermFactory
     {
       private:
-        loki::PersistentFactory<loki::pddl::ObjectImpl> external_;
+        loki::PersistentFactory<loki::pddl::ObjectImpl, 1000> external_;
 
       public:
         Term get_or_add();
@@ -29,7 +29,7 @@ namespace mimir::formalism
     class ActionSchemaFactory
     {
       private:
-        loki::PersistentFactory<loki::pddl::ActionImpl> external_;
+        loki::PersistentFactory<loki::pddl::ActionImpl, 100> external_;
 
       public:
         ActionSchema get_or_add();
