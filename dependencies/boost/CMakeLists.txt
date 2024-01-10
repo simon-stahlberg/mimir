@@ -3,20 +3,17 @@ project(DownloadBoost)
 
 include(ExternalProject)
 
-
-### Download and extract boost, no installation required
-
-message(STATUS "Preparing external project \"boost\"")
+message(STATUS "Preparing external project \"boost\":")
 
 ExternalProject_Add(
-    boost
-    # URL https://boostorg.jfrog.io/artifactory/main/release/1.84.0/source/boost_1_84_0.tar.gz  ## the official link is broken
+    BoostHeaders
     URL https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.gz
+    PREFIX ${CMAKE_BINARY_DIR}/external/boost
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    UPDATE_DISCONNECTED true
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost ${CMAKE_INSTALL_PREFIX}/include/boost
+            COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/tools/cmake ${CMAKE_INSTALL_PREFIX}/lib/cmake
+    UPDATE_DISCONNECTED 1
 )
 
-ExternalProject_Get_Property(boost source_dir)
-set(BOOST_INCLUDE_DIRS ${source_dir})
+set(BOOST_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX})

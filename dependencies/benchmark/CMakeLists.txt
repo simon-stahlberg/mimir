@@ -3,16 +3,18 @@ project(InstallBenchmark)
 
 include(ExternalProject)
 
-
-### Configure, build, and install benchmark
-
-message(STATUS "Preparing external project \"benchmark\"")
-
 list(APPEND CMAKE_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/benchmark-install"
+    "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}"
     "-DCMAKE_BUILD_TYPE=Release"
     "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
     )
+
+message(${CMAKE_BINARY_DIR}/benchmark-install)
+
+message(STATUS "Preparing external project \"benchmark\" with args:")
+foreach(CMAKE_ARG ${CMAKE_ARGS})
+    message(STATUS "-- ${CMAKE_ARG}")
+endforeach()
 
 ExternalProject_Add(
     benchmark
