@@ -53,7 +53,7 @@ if(Boost_FOUND)
 endif()
 
 # Loki
-find_package(loki 0.1 REQUIRED parsers)
+find_package(loki 0.1 COMPONENTS parsers REQUIRED)
 
 
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
@@ -67,9 +67,10 @@ if(BUILD_LIBMIMIR)
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
     target_link_libraries(mimir loki::parsers)
 
-    target_include_directories(mimir PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    target_include_directories(mimir
+        INTERFACE
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+            "$<INSTALL_INTERFACE:include>"
     )
 
     install(TARGETS mimir
