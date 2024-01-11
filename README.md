@@ -6,9 +6,14 @@ Mimir is a C++ package designed to facilitate the parsing and inspection of Plan
 
 Mimir can handle STRIPS planning problems with negative preconditions and typing.
 
+
 ## Getting Started
 
-We provide a CMake project that takes care of downloading, configuring, building, and installing all dependencies.
+### Dependencies
+
+Loki depends on a fraction of [Boost's](boost.org) header-only libraries (Fusion, Spirit x3, Container), its performance benchmarking framework depends on [GoogleBenchmark](https://github.com/google/benchmark), and its testing framework depends on [GoogleTest](https://github.com/google/googletest).
+
+We provide a CMake Superbuild project that takes care of downloading, building, and installing all dependencies.
 
 ```console
 # Configure dependencies
@@ -17,18 +22,20 @@ cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/
 cmake --build dependencies/build -j16
 ```
 
-To use Mimir, you can use the following steps to configure, build, and install.
+
+### Build Instructions
 
 ```console
 # Configure with installation prefixes of all dependencies
-cmake -S . -B build -DCMAKE_PREFIX_PATH=dependencies/installs
+cmake -S . -B build -DCMAKE_PREFIX_PATH=${PWD}/dependencies/installs
 # Build
 cmake --build build -j16
 # Install (optional)
 cmake --install build --prefix=<path/to/installation-directory>
 ```
 
-## IDE Support
+
+### IDE Support
 
 We developed Loki in Visual Studio Code. We recommend installing the `C/C++` and `CMake Tools` extensions by Microsoft. To get maximum IDE support, you should set the following `Cmake: Configure Args` in the `CMake Tools` extension settings under `Workspace`:
 
@@ -37,6 +44,7 @@ We developed Loki in Visual Studio Code. We recommend installing the `C/C++` and
 - `-DENABLE_BENCHMARKING=ON`
 
 After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you should see all include paths being correctly resolved.
+
 
 ## Example Usage
 
