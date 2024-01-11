@@ -1,7 +1,7 @@
-#include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/problem.hpp"
-#include "../../include/mimir/formalism/state.hpp"
-#include "../../include/mimir/search/search_base.hpp"
+#include <mimir/formalism/atom.hpp>
+#include <mimir/formalism/problem.hpp>
+#include <mimir/formalism/state.hpp>
+#include <mimir/search/search_base.hpp>
 
 namespace mimir::planners
 {

@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/datastructures/robin_map.hpp"
-#include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/domain.hpp"
-#include "../../include/mimir/formalism/implication.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/problem.hpp"
-#include "../../include/mimir/formalism/state.hpp"
-#include "../../include/mimir/generators/grounded_successor_generator.hpp"
+#include <mimir/datastructures/robin_map.hpp>
+#include <mimir/formalism/atom.hpp>
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/implication.hpp>
+#include <mimir/formalism/predicate.hpp>
+#include <mimir/formalism/problem.hpp>
+#include <mimir/formalism/state.hpp>
+#include <mimir/generators/grounded_successor_generator.hpp>
 
 #include <algorithm>
 

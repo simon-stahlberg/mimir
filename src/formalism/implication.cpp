@@ -1,5 +1,6 @@
-#include "../../include/mimir/formalism/implication.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/implication.hpp>
 
 #include <algorithm>
 

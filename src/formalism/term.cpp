@@ -15,8 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/term.hpp>
 
 #include <loki/domain/pddl/object.hpp>
 #include <loki/domain/pddl/parameter.hpp>

@@ -15,17 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/action.hpp"
-#include "../../include/mimir/formalism/action_schema.hpp"
-#include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/domain.hpp"
-#include "../../include/mimir/formalism/literal.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/problem.hpp"
-#include "../../include/mimir/formalism/state.hpp"
-#include "../../include/mimir/generators/grounded_successor_generator.hpp"
-#include "../../include/mimir/generators/lifted_successor_generator.hpp"
-#include "../../include/mimir/generators/successor_generator_factory.hpp"
+#include <mimir/formalism/action.hpp>
+#include <mimir/formalism/action_schema.hpp>
+#include <mimir/formalism/atom.hpp>
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/literal.hpp>
+#include <mimir/formalism/predicate.hpp>
+#include <mimir/formalism/problem.hpp>
+#include <mimir/formalism/state.hpp>
+#include <mimir/generators/grounded_successor_generator.hpp>
+#include <mimir/generators/lifted_successor_generator.hpp>
+#include <mimir/generators/successor_generator_factory.hpp>
 
 namespace mimir::planners
 {

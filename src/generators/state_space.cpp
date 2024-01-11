@@ -15,8 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/generators/state_space.hpp"
 #include "../formalism/help_functions.hpp"
+
+#include <mimir/generators/state_space.hpp>
+
 
 namespace mimir::planners
 {

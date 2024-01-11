@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/algorithms/murmurhash3.hpp"
-#include "../../include/mimir/formalism/bitset.hpp"
+#include <mimir/algorithms/murmurhash3.hpp>
+#include <mimir/formalism/bitset.hpp>
 
 #include <algorithm>
 #include <cassert>

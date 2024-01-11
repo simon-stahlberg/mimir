@@ -1,9 +1,3 @@
-#include "../include/mimir/formalism/domain.hpp"
-#include "../include/mimir/formalism/problem.hpp"
-#include "../include/mimir/generators/complete_state_space.hpp"
-#include "../include/mimir/generators/goal_matcher.hpp"
-#include "../include/mimir/generators/successor_generator_factory.hpp"
-
 // Test instances
 
 #include "instances/blocks/domain.hpp"
@@ -14,6 +8,12 @@
 #include "instances/spanner/problem.hpp"
 #include "instances/spider/domain.hpp"
 #include "instances/spider/problem.hpp"
+
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/problem.hpp>
+#include <mimir/generators/complete_state_space.hpp>
+#include <mimir/generators/goal_matcher.hpp>
+#include <mimir/generators/successor_generator_factory.hpp>
 
 #include <gtest/gtest.h>
 #include <sstream>

@@ -1,11 +1,11 @@
-#include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/domain.hpp"
-#include "../../include/mimir/formalism/function.hpp"
-#include "../../include/mimir/formalism/implication.hpp"
-#include "../../include/mimir/formalism/literal.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/problem.hpp"
-#include "../../include/mimir/generators/flat_action_schema.hpp"
+#include <mimir/formalism/atom.hpp>
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/function.hpp>
+#include <mimir/formalism/implication.hpp>
+#include <mimir/formalism/literal.hpp>
+#include <mimir/formalism/predicate.hpp>
+#include <mimir/formalism/problem.hpp>
+#include <mimir/generators/flat_action_schema.hpp>
 
 #include <map>
 

@@ -9,6 +9,10 @@ option(BUILD_PYMIMIR "Build" OFF)
 option(BUILD_TESTS "Build" ON)
 option(BUILD_PROFILING "Build" ON)
 
+if (BUILD_PYMIMIR OR BUILD_TESTS OR BUILD_PROFILING)
+  set(BUILD_LIBMIMIR ON)
+endif()
+
 # ---------------
 # Common Settings
 # ---------------
@@ -52,67 +56,74 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-# Loki
-find_package(loki 0.1 COMPONENTS parsers REQUIRED)
-
-
-file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
-file(GLOB_RECURSE MIMIR_PRIVATE_HEADER_FILES "src/*.hpp" "src/**/*.hpp")
-file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES "include/*.hpp" "include/**/*.hpp")
-file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 
 # ------------
 # Target Mimir
 # ------------
 if(BUILD_LIBMIMIR)
-    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES} ${MIMIR_PRIVATE_HEADER_FILES} ${MIMIR_HEADER_FILES})
+    find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
+    file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
+    file(GLOB_RECURSE MIMIR_PRIVATE_HEADER_FILES "src/*.hpp" "src/**/*.hpp")
+    file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES "include/*.hpp" "include/**/*.hpp")
+    add_library(mimir STATIC "lib/mimir.cpp" "${MIMIR_SRC_FILES}" "${MIMIR_PRIVATE_HEADER_FILES}" "${MIMIR_PUBLIC_HEADER_FILES}")
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
     target_link_libraries(mimir loki::parsers)
 
+    # Use include depending on building or using from installed location
     target_include_directories(mimir
         PUBLIC
             "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
             "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     )
 
+    # https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
+
+    # Install the target and create export-set
     install(
         TARGETS mimir
-        EXPORT MimirTargets
+        EXPORT mimirTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 
-    install(DIRECTORY include/ DESTINATION include)
-    export(TARGETS mimir NAMESPACE mimir:: FILE MimirConfig.cmake)
+    # Generate and install export file
+    install(EXPORT mimirTargets
+        COMPONENT mimir
+        FILE mimirTargets.cmake
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
+    )
+
+    # Generate build tree export file
+    export(EXPORT mimirTargets
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/mimirTargets.cmake"
+    )
+
     include(CMakePackageConfigHelpers)
 
+    # Generate the version file for the config file
     write_basic_package_version_file(
-        "MimirConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
+        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
+        VERSION "${mimir_VERSION}"
+        COMPATIBILITY ExactVersion
     )
 
-    install(
-        EXPORT MimirTargets
-        FILE MimirTargets.cmake
-        NAMESPACE mimir::
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/loki"
+    # Create config file
+    # https://cmake.org/cmake/help/book/mastering-cmake/cmake/Help/guide/importing-exporting/index.html
+    # https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html#generating-a-package-configuration-file
+    configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
+        NO_CHECK_REQUIRED_COMPONENTS_MACRO
     )
 
+    # Install config files
     install(
-        EXPORT MimirTargets
-        FILE MimirConfig.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
-
-    install(
-        EXPORT MimirTargets
-        FILE MimirConfigVersion.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
     )
 endif()
 
@@ -120,8 +131,10 @@ endif()
 # Target Python Mimir
 # -------------------
 if(BUILD_PYMIMIR)
+    # TODO (Dominik): link against mimir to get target properties such as include paths
     find_package(Python REQUIRED)
     find_package(PythonLibs REQUIRED)
+    find_package(pybind11 2.11.1 REQUIRED)
     set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
     include_directories(${PYTHON_INCLUDE_DIRS})
     add_library(pymimir MODULE lib/pymimir.cpp ${MIMIR_SRC_FILES})
@@ -142,11 +155,6 @@ if(BUILD_PYMIMIR)
         # target_link_libraries(pymimir -static-libstdc++ -static-libgcc)
     endif()
 
-    # Add pybind11 include directory
-    # TODO (Dominik): Use find_package instead
-    set(PYBIND11_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/extern/pybind11/include)
-    target_include_directories(pymimir PRIVATE ${PYBIND11_INCLUDE_DIR})
-
     # Generate pyi files, add generate_pyi_files dependent on pymimir
     add_custom_target(generate_pyi_files ALL
         COMMENT "Generating .pyi files"
@@ -161,7 +169,8 @@ endif()
 # ----------------
 if(BUILD_PROFILING)
     find_package(benchmark REQUIRED)
-    add_executable(mimir-profile bin/profiling.cpp ${MIMIR_SRC_FILES})
+    add_executable(mimir-profile "bin/profiling.cpp")
+    target_link_libraries(mimir-profile mimir)
     set_property(TARGET mimir-profile PROPERTY CXX_STANDARD 17)
 endif()
 
@@ -170,7 +179,11 @@ endif()
 # -----------
 if(BUILD_TESTS)
     find_package(GTest REQUIRED)
-    add_executable(mimir-test ${MIMIR_TEST_FILES} ${MIMIR_SRC_FILES})
-    target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} GTest::GTest GTest::Main)
+    file(GLOB_RECURSE MIMIR_TEST_SOURCE_FILES
+        "test/*.cpp" "test/**/*.cpp")
+    file(GLOB_RECURSE MIMIR_TEST_HEADER_FILES
+        "test/*.hpp" "test/**/*.hpp")
+    add_executable(mimir-test ${MIMIR_TEST_SOURCE_FILES} ${MIMIR_TEST_HEADER_FILES})
+    target_link_libraries(mimir-test mimir GTest::GTest GTest::Main)
     gtest_discover_tests(mimir-test)
 endif()

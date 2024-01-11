@@ -1,4 +1,4 @@
-#include "../../../include/mimir/search/openlists/priority_queue_open_list.hpp"
+#include <mimir/search/openlists/priority_queue_open_list.hpp>
 
 namespace mimir::planners
 {

@@ -15,12 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/action_schema.hpp"
-#include "../../include/mimir/formalism/domain.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/term.hpp"
-#include "../../include/mimir/formalism/type.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/action_schema.hpp>
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/predicate.hpp>
+#include <mimir/formalism/term.hpp>
+#include <mimir/formalism/type.hpp>
 
 #include <algorithm>
 #include <loki/domain/parser.hpp>

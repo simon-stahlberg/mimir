@@ -1,6 +1,3 @@
-#include "../include/mimir/formalism/domain.hpp"
-#include "../include/mimir/formalism/problem.hpp"
-
 // Test instances
 
 #include "instances/blocks/domain.hpp"
@@ -11,6 +8,9 @@
 #include "instances/spanner/problem.hpp"
 #include "instances/spider/domain.hpp"
 #include "instances/spider/problem.hpp"
+
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/problem.hpp>
 
 #include <gtest/gtest.h>
 #include <sstream>

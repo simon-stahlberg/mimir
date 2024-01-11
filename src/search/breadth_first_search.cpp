@@ -1,5 +1,5 @@
-#include "../../include/mimir/datastructures/robin_map.hpp"
-#include "../../include/mimir/search/breadth_first_search.hpp"
+#include <mimir/datastructures/robin_map.hpp>
+#include <mimir/search/breadth_first_search.hpp>
 
 #include <algorithm>
 #include <deque>

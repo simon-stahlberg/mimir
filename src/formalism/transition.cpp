@@ -15,8 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/transition.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/transition.hpp>
 
 namespace mimir::formalism
 {

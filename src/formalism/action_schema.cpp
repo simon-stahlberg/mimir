@@ -15,11 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/action_schema.hpp"
-#include "../../include/mimir/formalism/function.hpp"
-#include "../../include/mimir/formalism/literal.hpp"
-#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/action_schema.hpp>
+#include <mimir/formalism/function.hpp>
+#include <mimir/formalism/literal.hpp>
+#include <mimir/formalism/term.hpp>
 
 #include <algorithm>
 #include <deque>

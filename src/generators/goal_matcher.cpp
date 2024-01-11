@@ -1,12 +1,12 @@
-#include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/domain.hpp"
-#include "../../include/mimir/formalism/literal.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/problem.hpp"
-#include "../../include/mimir/formalism/term.hpp"
-#include "../../include/mimir/generators/goal_matcher.hpp"
-#include "../../include/mimir/generators/lifted_schema_successor_generator.hpp"
-#include "../../include/mimir/generators/state_space.hpp"
+#include <mimir/formalism/atom.hpp>
+#include <mimir/formalism/domain.hpp>
+#include <mimir/formalism/literal.hpp>
+#include <mimir/formalism/predicate.hpp>
+#include <mimir/formalism/problem.hpp>
+#include <mimir/formalism/term.hpp>
+#include <mimir/generators/goal_matcher.hpp>
+#include <mimir/generators/lifted_schema_successor_generator.hpp>
+#include <mimir/generators/state_space.hpp>
 
 #include <algorithm>
 #include <vector>

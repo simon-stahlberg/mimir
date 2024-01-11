@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../../include/mimir/generators/grounded_successor_generator.hpp"
-#include "../../../include/mimir/search/heuristics/h1_heuristic.hpp"
+#include <mimir/generators/grounded_successor_generator.hpp>
+#include <mimir/search/heuristics/h1_heuristic.hpp>
 
 #include <algorithm>
 #include <cmath>

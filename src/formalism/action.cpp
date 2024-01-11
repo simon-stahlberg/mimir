@@ -15,13 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/action.hpp"
-#include "../../include/mimir/formalism/action_schema.hpp"
-#include "../../include/mimir/formalism/implication.hpp"
-#include "../../include/mimir/formalism/literal.hpp"
-#include "../../include/mimir/formalism/state.hpp"
-#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/action.hpp>
+#include <mimir/formalism/action_schema.hpp>
+#include <mimir/formalism/implication.hpp>
+#include <mimir/formalism/literal.hpp>
+#include <mimir/formalism/state.hpp>
+#include <mimir/formalism/term.hpp>
 
 #include <algorithm>
 #include <memory>

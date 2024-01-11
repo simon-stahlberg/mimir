@@ -15,11 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/formalism/atom.hpp"
-#include "../../include/mimir/formalism/literal.hpp"
-#include "../../include/mimir/formalism/predicate.hpp"
-#include "../../include/mimir/formalism/term.hpp"
 #include "help_functions.hpp"
+
+#include <mimir/formalism/atom.hpp>
+#include <mimir/formalism/literal.hpp>
+#include <mimir/formalism/predicate.hpp>
+#include <mimir/formalism/term.hpp>
 
 #include <memory>
 #include <stdexcept>

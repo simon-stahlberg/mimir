@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/algorithms/kpkc.hpp"
+#include <mimir/algorithms/kpkc.hpp>
 
 namespace mimir::algorithms
 {

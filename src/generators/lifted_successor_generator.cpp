@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../../include/mimir/generators/lifted_successor_generator.hpp"
+#include <mimir/generators/lifted_successor_generator.hpp>
 
 #include <chrono>
 
