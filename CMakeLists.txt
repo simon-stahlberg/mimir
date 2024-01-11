@@ -61,129 +61,59 @@ endif()
 # Target Mimir
 # ------------
 if(BUILD_LIBMIMIR)
-    find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
-    file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
-    file(GLOB_RECURSE MIMIR_PRIVATE_HEADER_FILES "src/*.hpp" "src/**/*.hpp")
-    file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES "include/*.hpp" "include/**/*.hpp")
-    add_library(mimir STATIC "lib/mimir.cpp" "${MIMIR_SRC_FILES}" "${MIMIR_PRIVATE_HEADER_FILES}" "${MIMIR_PUBLIC_HEADER_FILES}")
-    set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
-    target_link_libraries(mimir loki::parsers)
-
-    # Use include depending on building or using from installed location
-    target_include_directories(mimir
-        PUBLIC
-            "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
-            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-    )
-
-    # https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
-
-    # Install the target and create export-set
-    install(
-        TARGETS mimir
-        EXPORT mimirTargets
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    )
-
-    # Generate and install export file
-    install(EXPORT mimirTargets
-        COMPONENT mimir
-        FILE mimirTargets.cmake
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
-    )
-
-    # Generate build tree export file
-    export(EXPORT mimirTargets
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/mimirTargets.cmake"
-    )
-
-    include(CMakePackageConfigHelpers)
-
-    # Generate the version file for the config file
-    write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
-        VERSION "${mimir_VERSION}"
-        COMPATIBILITY ExactVersion
-    )
-
-    # Create config file
-    # https://cmake.org/cmake/help/book/mastering-cmake/cmake/Help/guide/importing-exporting/index.html
-    # https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html#generating-a-package-configuration-file
-    configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
-        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
-        NO_CHECK_REQUIRED_COMPONENTS_MACRO
-    )
-
-    # Install config files
-    install(
-        FILES
-            "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
-            "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
-    )
+    add_subdirectory(src)
 endif()
 
 # -------------------
 # Target Python Mimir
 # -------------------
 if(BUILD_PYMIMIR)
-    # TODO (Dominik): link against mimir to get target properties such as include paths
-    find_package(Python REQUIRED)
-    find_package(PythonLibs REQUIRED)
-    find_package(pybind11 2.11.1 REQUIRED)
-    set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
-    include_directories(${PYTHON_INCLUDE_DIRS})
-    add_library(pymimir MODULE lib/pymimir.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET pymimir PROPERTY CXX_STANDARD 17)
-    set_target_properties(pymimir PROPERTIES PREFIX "")
-    target_link_libraries(pymimir ${PYTHON_LIBRARIES})
-
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_compile_definitions(pymimir PRIVATE NDEBUG)
-    endif()
-
-    if(MSVC)
-    # Add MSVC specific library linking here
-    else()
-        target_link_libraries(pymimir -lstdc++fs)
-
-        # These settings seem to cause issues with torch.
-        # target_link_libraries(pymimir -static-libstdc++ -static-libgcc)
-    endif()
-
-    # Generate pyi files, add generate_pyi_files dependent on pymimir
-    add_custom_target(generate_pyi_files ALL
-        COMMENT "Generating .pyi files"
-        COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --output-dir ${CMAKE_CURRENT_BINARY_DIR} pymimir
-    )
-
-    add_dependencies(generate_pyi_files pymimir)
+    add_subdirectory(lib)
 endif()
 
 # ----------------
 # Target Profiling
 # ----------------
 if(BUILD_PROFILING)
-    find_package(benchmark REQUIRED)
-    add_executable(mimir-profile "bin/profiling.cpp")
-    target_link_libraries(mimir-profile mimir)
-    set_property(TARGET mimir-profile PROPERTY CXX_STANDARD 17)
+    add_subdirectory(benchmark)
 endif()
 
 # -----------
 # Target Test
 # -----------
 if(BUILD_TESTS)
-    find_package(GTest REQUIRED)
-    file(GLOB_RECURSE MIMIR_TEST_SOURCE_FILES
-        "test/*.cpp" "test/**/*.cpp")
-    file(GLOB_RECURSE MIMIR_TEST_HEADER_FILES
-        "test/*.hpp" "test/**/*.hpp")
-    add_executable(mimir-test ${MIMIR_TEST_SOURCE_FILES} ${MIMIR_TEST_HEADER_FILES})
-    target_link_libraries(mimir-test mimir GTest::GTest GTest::Main)
-    gtest_discover_tests(mimir-test)
+    add_subdirectory(test)
 endif()
+
+
+# -------
+# Exports
+# -------
+
+# https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
+
+include(CMakePackageConfigHelpers)
+
+# Generate the version file for the config file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
+    VERSION "${mimir_VERSION}"
+    COMPATIBILITY ExactVersion
+)
+
+# Create config file
+# https://cmake.org/cmake/help/book/mastering-cmake/cmake/Help/guide/importing-exporting/index.html
+# https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html#generating-a-package-configuration-file
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+# Install config files
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
+)
