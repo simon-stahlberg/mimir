@@ -57,29 +57,31 @@ find_package(loki 0.1 COMPONENTS parsers REQUIRED)
 
 
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
-file(GLOB_RECURSE MIMIR_HEADER_FILES "include/*.hpp" "include/**/*.hpp")
+file(GLOB_RECURSE MIMIR_PRIVATE_HEADER_FILES "src/*.hpp" "src/**/*.hpp")
+file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES "include/*.hpp" "include/**/*.hpp")
 file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 
 # ------------
 # Target Mimir
 # ------------
 if(BUILD_LIBMIMIR)
-    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES} ${MIMIR_HEADER_FILES})
+    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES} ${MIMIR_PRIVATE_HEADER_FILES} ${MIMIR_HEADER_FILES})
     set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
     target_link_libraries(mimir loki::parsers)
 
     target_include_directories(mimir
-        INTERFACE
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-            "$<INSTALL_INTERFACE:include>"
+        PUBLIC
+            "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
+            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     )
 
-    install(TARGETS mimir
+    install(
+        TARGETS mimir
         EXPORT MimirTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 
     install(DIRECTORY include/ DESTINATION include)
@@ -96,7 +98,7 @@ if(BUILD_LIBMIMIR)
         EXPORT MimirTargets
         FILE MimirTargets.cmake
         NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/loki"
     )
 
     install(
