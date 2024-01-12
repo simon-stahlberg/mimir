@@ -46,7 +46,7 @@ endforeach()
 ##############################################################
 
 find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
-
+find_package(mimir REQUIRED)
 
 ##############################################################
 # Add library and executable targets
