@@ -43,14 +43,19 @@ endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
+# We installed the dependencies into the subdirectory loki-dependencies
+# and hence must append it to the cmake_prefix_path.
+list(APPEND CMAKE_PREFIX_PATH
+    "${CMAKE_PREFIX_PATH}/loki-dependencies")
+# set(CMAKE_FIND_DEBUG_MODE ON)
+message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+
 # CCache
 configure_ccache()
 
 # Boost
 # Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
 configure_boost()
-# set(CMAKE_FIND_DEBUG_MODE ON)
-message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 find_package(Boost ${BOOST_MIN_VERSION} REQUIRED)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
