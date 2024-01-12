@@ -1,0 +1,39 @@
+name: Integration Tests
+on: [push, pull_request]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MIMIR_INSTALL_DIR: ${{ github.workspace }}/mimir-install
+
+    steps:
+    - name: Checkout Mimir
+      uses: actions/checkout@v2
+      with:
+        ref: loki
+
+    # Must be adapted
+    #- name: Cache Dependencies
+    #  id: cache-dependencies
+    #  uses: actions/cache@v2
+    #  with:
+    #    path: |
+    #        dependencies/benchmark-install
+    #        dependencies/boost
+    #        dependencies/googletest-install
+    #    key: ${{ runner.os }}-benchmark-${{ hashFiles('**/dependencies/benchmark/CMakeLists.txt', '**/dependencies/boost/CMakeLists.txt', '**/dependencies/googletest/CMakeLists.txt') }}  # Unique key based on OS and CMake files
+
+    - name: Configure, Build, and Install Dependencies
+      # if: steps.cache-dependencies.outputs.cache-hit != 'true'
+      run: |
+        cd tests/integration/dependencies
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/tests/integration/dependencies/installs
+        cmake --build build -j$(nproc)
+
+    - name: Build and Test Project
+      run: |
+        cd tests/integration
+        cmake -S . -B build -DCMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/tests/integration/dependencies/installs"
+        cmake --build build -j$(nproc)

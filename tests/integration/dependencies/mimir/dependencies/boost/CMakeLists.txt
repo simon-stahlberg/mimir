@@ -8,7 +8,7 @@ message(STATUS "Preparing external project \"boost\":")
 ExternalProject_Add(
     mimir_boost
     URL https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.gz
-    PREFIX ${CMAKE_BINARY_DIR}/external/boost
+    PREFIX ${CMAKE_BINARY_DIR}/mimir-dependencies/boost
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost ${CMAKE_INSTALL_PREFIX}/mimir-dependencies/include/boost

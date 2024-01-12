@@ -9,8 +9,6 @@ list(APPEND CMAKE_ARGS
     "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
     )
 
-message(${CMAKE_BINARY_DIR}/benchmark-install)
-
 message(STATUS "Preparing external project \"benchmark\" with args:")
 foreach(CMAKE_ARG ${CMAKE_ARGS})
     message(STATUS "-- ${CMAKE_ARG}")
