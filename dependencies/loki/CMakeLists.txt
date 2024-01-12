@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.13)
-project(InstallGoogletest)
+cmake_minimum_required(VERSION 3.21)
+project(InstallLoki)
 
 include(ExternalProject)
 

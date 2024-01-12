@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.13)
-project(DownloadBoost)
+cmake_minimum_required(VERSION 3.21)
+project(InstallBoost)
 
 include(ExternalProject)
 

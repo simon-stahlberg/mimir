@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.13)
-project(InstallBenchmark)
+cmake_minimum_required(VERSION 3.21)
+project(InstallMimirBenchmark)
 
 include(ExternalProject)
 
