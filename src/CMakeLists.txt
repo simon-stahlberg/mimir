@@ -5,15 +5,18 @@ file(GLOB_RECURSE MIMIR_PRIVATE_HEADER_FILES
 file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES
     "../include/*.hpp" "../include/**/*.hpp")
 
-add_library(mimir STATIC "${MIMIR_SRC_FILES}" "${MIMIR_PRIVATE_HEADER_FILES}" "${MIMIR_PUBLIC_HEADER_FILES}")
+add_library(core STATIC ${MIMIR_SRC_FILES} ${MIMIR_PRIVATE_HEADER_FILES} ${MIMIR_PUBLIC_HEADER_FILES})
+set_target_properties(core PROPERTIES CXX_STANDARD 17)
+set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 
-set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
+# Create an alias for simpler reference
+add_library(mimir::core ALIAS core)
 
 find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
-target_link_libraries(mimir loki::parsers)
+target_link_libraries(core loki::parsers)
 
 # Use include depending on building or using from installed location
-target_include_directories(mimir
+target_include_directories(core
     PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
@@ -21,8 +24,8 @@ target_include_directories(mimir
 
 # Install the target and create export-set
 install(
-    TARGETS mimir
-    EXPORT mimirTargets
+    TARGETS core
+    EXPORT mimircoreTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -30,13 +33,15 @@ install(
 )
 
 # Generate and install export file
-install(EXPORT mimirTargets
-    COMPONENT mimir
-    FILE mimirTargets.cmake
+install(EXPORT mimircoreTargets
+    NAMESPACE mimir::
+    COMPONENT core
+    FILE mimircoreTargets.cmake
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
 )
 
 # Generate build tree export file
-export(EXPORT mimirTargets
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/mimirTargets.cmake"
+export(EXPORT mimircoreTargets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/mimircoreTargets.cmake"
+    NAMESPACE mimir::
 )

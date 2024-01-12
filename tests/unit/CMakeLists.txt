@@ -13,7 +13,7 @@ add_executable(${TEST_NAME} ${MIMIR_TEST_SOURCE_FILES} ${MIMIR_TEST_HEADER_FILES
 
 target_link_libraries(${TEST_NAME}
     PRIVATE
-        mimir
+        mimir::core
         GTest::GTest
         GTest::Main)
 

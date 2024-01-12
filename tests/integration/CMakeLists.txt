@@ -18,27 +18,23 @@ project(integration_example VERSION "0.0.1" LANGUAGES C CXX)
 
 
 ##############################################################
-# Dependency handling
+# CMake modules and macro files
 ##############################################################
 
-# We installed the dependencies into the subdirectories under the install prefix.
-# Hence must append them to the single cmake_prefix_path.
-message("Configure dependencies of Loki:")
-message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
-list(LENGTH CMAKE_PREFIX_PATH PREFIX_PATH_COUNT)
-if(PREFIX_PATH_COUNT GREATER 1)
-    message(FATAL_ERROR "Only one prefix path is allowed. Found multiple paths in CMAKE_PREFIX_PATH. Please add dependencies to the CMake Superbuild.")
-endif()
+list(APPEND CMAKE_MODULE_PATH
+  "${PROJECT_SOURCE_DIR}/cmake"
+)
+include("configure_dependencies")
 
-list(APPEND MODIFIED_CMAKE_PREFIX_PATH
-    "${CMAKE_PREFIX_PATH}/mimir")
-message(${MODIFIED_CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH ${MODIFIED_CMAKE_PREFIX_PATH})
-message(STATUS "MODIFIED_CMAKE_PREFIX_PATH:")
-foreach(CMAKE_PREFIX_PATH_ARG ${CMAKE_PREFIX_PATH})
-    message(STATUS "-- ${CMAKE_PREFIX_PATH_ARG}")
-endforeach()
+
+##############################################################
+# Dependency Handling
+##############################################################
+
 # set(CMAKE_FIND_DEBUG_MODE ON)
+
+set(DEPENDENCY_NAMES_LIST loki mimir)
+configure_dependencies("${DEPENDENCY_NAMES_LIST}")
 
 
 ##############################################################
@@ -46,14 +42,15 @@ endforeach()
 ##############################################################
 
 find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
-find_package(mimir REQUIRED)
+find_package(mimir COMPONENTS core REQUIRED)
 
 ##############################################################
 # Add library and executable targets
 ##############################################################
 
+
 add_executable(integration_standalone "main.cpp")
-target_link_libraries(integration_standalone loki::parsers)
+target_link_libraries(integration_standalone mimir loki::parsers)
 
 add_custom_target(example_domain ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/gripper/domain.pddl" "${CMAKE_BINARY_DIR}/gripper/domain.pddl")
