@@ -44,10 +44,10 @@ configure_dependencies("${DEPENDENCY_NAMES_LIST}")
 find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
 find_package(mimir COMPONENTS core REQUIRED)
 
+
 ##############################################################
 # Add library and executable targets
 ##############################################################
-
 
 add_executable(integration_standalone "main.cpp")
 target_link_libraries(integration_standalone mimir::core loki::parsers)

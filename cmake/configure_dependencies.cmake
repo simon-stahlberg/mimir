@@ -1,6 +1,9 @@
+# Appends each name from the given list to the CMAKE_PREFIX_PATH
+# E.g. for list of names [boost, loki]
+#      CMAKE_PREFIX_PATH = [CMAKE_PREFIX_PATH/boost, CMAKE_PREFIX_PATH/loki]
+# Assumes that CMAKE_PREFIX_PATH consists of a single path.
+# We require that the user adds dependencies to the Superbuild.
 macro(configure_dependencies list_of_dependencies)
-    # We installed the dependencies into the subdirectories under the install prefix.
-    # Hence must append them to the single cmake_prefix_path.
     message("Configure dependencies of Loki:")
     message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
     list(LENGTH CMAKE_PREFIX_PATH PREFIX_PATH_COUNT)
