@@ -21,7 +21,7 @@ endforeach()
 
 ExternalProject_Add(
     mimir_dependencies
-    GIT_REPOSITORY https://github.com/simon-stahlberg.git
+    GIT_REPOSITORY https://github.com/simon-stahlberg/mimir.git
     GIT_TAG loki
     PREFIX ${CMAKE_BINARY_DIR}/mimir/dependencies
     SOURCE_SUBDIR dependencies
@@ -47,7 +47,7 @@ endforeach()
 
 ExternalProject_Add(
     mimir
-    GIT_REPOSITORY https://github.com/simon-stahlberg.git
+    GIT_REPOSITORY https://github.com/simon-stahlberg/mimir.git
     GIT_TAG loki
     PREFIX ${CMAKE_BINARY_DIR}/mimir
     DEPENDS mimir_dependencies
