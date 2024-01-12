@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 project(mimir VERSION 0.1.1)
 
-# -------------
+
+##############################################################
 # Build Targets
-# -------------
+##############################################################
 option(BUILD_LIBMIMIR "Build" ON)
 option(BUILD_PYMIMIR "Build" OFF)
 option(BUILD_TESTS "Build" ON)
@@ -13,18 +14,13 @@ if (BUILD_PYMIMIR OR BUILD_TESTS OR BUILD_PROFILING)
   set(BUILD_LIBMIMIR ON)
 endif()
 
-# ---------------
+
+##############################################################
 # Common Settings
-# ---------------
+##############################################################
 
 # make cache variables for install destinations
 include(GNUInstallDirs)
-
-list(APPEND CMAKE_MODULE_PATH
-  "${PROJECT_SOURCE_DIR}/cmake"
-)
-include("configure_boost")
-include("configure_ccache")
 
 if(MSVC)
     if(NOT CMAKE_BUILD_TYPE)
@@ -44,30 +40,51 @@ endif()
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
 
-# -------------------
-# Dependency handling
-# -------------------
-
-# We installed the indirect (transitive) dependencies into the subdirectories under the install prefix.
-# Hence must append them to the single cmake_prefix_path.
-message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
-if(PREFIX_PATH_COUNT GREATER 1)
-    message(FATAL_ERROR "Only one prefix path is allowed. Found multiple paths in CMAKE_PREFIX_PATH. Please add dependencies to the CMake Superbuild.")
-endif()
-set(ORIGINAL_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
-list(LENGTH ORIGINAL_CMAKE_PREFIX_PATH PREFIX_PATH_COUNT)
-list(APPEND CMAKE_PREFIX_PATH
-    "${ORIGINAL_CMAKE_PREFIX_PATH}/loki-dependencies")
-message(STATUS "MODIFIED_CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
-# set(CMAKE_FIND_DEBUG_MODE ON)
-
-
-# -----------------------------
+##############################################################
 # CMake modules and macro files
-# -----------------------------
+##############################################################
+
+list(APPEND CMAKE_MODULE_PATH
+  "${PROJECT_SOURCE_DIR}/cmake"
+)
+include("configure_boost")
+include("configure_ccache")
+
+
+##############################################################
+# CCache
+##############################################################
 
 # CCache
 configure_ccache()
+
+
+##############################################################
+# Dependency Handling
+##############################################################
+
+# We installed the dependencies into the subdirectories under the install prefix.
+# Hence must append them to the single cmake_prefix_path.
+message("Configure dependencies of Loki:")
+message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+list(LENGTH CMAKE_PREFIX_PATH PREFIX_PATH_COUNT)
+if(PREFIX_PATH_COUNT GREATER 1)
+    message(FATAL_ERROR "Only one prefix path is allowed. Found multiple paths in CMAKE_PREFIX_PATH. Please add dependencies to the CMake Superbuild.")
+endif()
+
+list(APPEND MODIFIED_CMAKE_PREFIX_PATH
+    "${CMAKE_PREFIX_PATH}/benchmark"
+    "${CMAKE_PREFIX_PATH}/boost"
+    "${CMAKE_PREFIX_PATH}/googletest"
+    "${CMAKE_PREFIX_PATH}/loki"
+    "${CMAKE_PREFIX_PATH}/pybind11")
+message(${MODIFIED_CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH ${MODIFIED_CMAKE_PREFIX_PATH})
+message(STATUS "MODIFIED_CMAKE_PREFIX_PATH:")
+foreach(CMAKE_PREFIX_PATH_ARG ${CMAKE_PREFIX_PATH})
+    message(STATUS "-- ${CMAKE_PREFIX_PATH_ARG}")
+endforeach()
+# set(CMAKE_FIND_DEBUG_MODE ON)
 
 # Boost
 # Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
@@ -77,6 +94,10 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+
+##############################################################
+# Add library and executable targets
+##############################################################
 
 # ------------
 # Target Mimir
@@ -107,9 +128,9 @@ if(BUILD_TESTS)
 endif()
 
 
-# -------
-# Install
-# -------
+###########
+# Install #
+###########
 
 # Install header files
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir"
@@ -122,9 +143,9 @@ install(
 )
 
 
-# -------
-# Exports
-# -------
+###########
+# Exports #
+###########
 
 # https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
 

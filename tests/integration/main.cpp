@@ -18,6 +18,8 @@
 #include <loki/domain/parser.hpp>
 #include <loki/problem/parser.hpp>
 
+#include <mimir/algorithms/kpkc.hpp>
+
 #include <iostream>
 
 
