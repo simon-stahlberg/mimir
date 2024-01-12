@@ -3,7 +3,7 @@ project(InstallMimir)
 
 include(ExternalProject)
 
-set(MIMIR_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/loki")
+set(MIMIR_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mimir")
 
 
 ######################
