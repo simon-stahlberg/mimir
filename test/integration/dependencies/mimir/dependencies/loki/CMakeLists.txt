@@ -31,7 +31,7 @@ add_subdirectory(dependencies/boost)
 
 list(APPEND CMAKE_ARGS
     "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-    "-DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}/loki-dependencies"
+    "-DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}/mimir-dependencies/loki-dependencies"
     "-DCMAKE_BUILD_TYPE=Release"
     )
 
@@ -41,10 +41,10 @@ foreach(CMAKE_ARG ${CMAKE_ARGS})
 endforeach()
 
 ExternalProject_Add(
-    loki
+    mimir_loki
     GIT_REPOSITORY https://github.com/drexlerd/Loki.git
     GIT_TAG main
-    PREFIX ${CMAKE_BINARY_DIR}/loki
+    PREFIX ${CMAKE_BINARY_DIR}/mimir-dependencies/loki
     DEPENDS loki_googletest loki_benchmark loki_boost
     CMAKE_ARGS "${CMAKE_ARGS}"
 )

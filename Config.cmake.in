@@ -26,7 +26,7 @@ foreach(_comp ${mimir_FIND_COMPONENTS})
     set(mimir_FOUND False)
     set(mimir_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
   endif()
-  include("${CMAKE_CURRENT_LIST_DIR}/mimir${_comp}Targets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/${_comp}Targets.cmake")
 endforeach()
 
 get_filename_component(MIMIR_CONFIG_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)

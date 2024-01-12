@@ -43,12 +43,28 @@ endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
-# We installed the dependencies into the subdirectory loki-dependencies
-# and hence must append it to the cmake_prefix_path.
-list(APPEND CMAKE_PREFIX_PATH
-    "${CMAKE_PREFIX_PATH}/loki-dependencies")
-# set(CMAKE_FIND_DEBUG_MODE ON)
+
+# -------------------
+# Dependency handling
+# -------------------
+
+# We installed the indirect (transitive) dependencies into the subdirectories under the install prefix.
+# Hence must append them to the single cmake_prefix_path.
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+if(PREFIX_PATH_COUNT GREATER 1)
+    message(FATAL_ERROR "Only one prefix path is allowed. Found multiple paths in CMAKE_PREFIX_PATH. Please add dependencies to the CMake Superbuild.")
+endif()
+set(ORIGINAL_CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH})
+list(LENGTH ORIGINAL_CMAKE_PREFIX_PATH PREFIX_PATH_COUNT)
+list(APPEND CMAKE_PREFIX_PATH
+    "${ORIGINAL_CMAKE_PREFIX_PATH}/loki-dependencies")
+message(STATUS "MODIFIED_CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+# set(CMAKE_FIND_DEBUG_MODE ON)
+
+
+# -----------------------------
+# CMake modules and macro files
+# -----------------------------
 
 # CCache
 configure_ccache()
@@ -89,6 +105,21 @@ endif()
 if(BUILD_TESTS)
     add_subdirectory(test)
 endif()
+
+
+# -------
+# Install
+# -------
+
+# Install header files
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Install cmake scripts
+install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir/cmake"
+)
 
 
 # -------
