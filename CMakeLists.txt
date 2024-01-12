@@ -49,6 +49,7 @@ list(APPEND CMAKE_MODULE_PATH
 )
 include("configure_boost")
 include("configure_ccache")
+include("configure_dependencies")
 
 
 ##############################################################
@@ -63,28 +64,10 @@ configure_ccache()
 # Dependency Handling
 ##############################################################
 
-# We installed the dependencies into the subdirectories under the install prefix.
-# Hence must append them to the single cmake_prefix_path.
-message("Configure dependencies of Loki:")
-message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
-list(LENGTH CMAKE_PREFIX_PATH PREFIX_PATH_COUNT)
-if(PREFIX_PATH_COUNT GREATER 1)
-    message(FATAL_ERROR "Only one prefix path is allowed. Found multiple paths in CMAKE_PREFIX_PATH. Please add dependencies to the CMake Superbuild.")
-endif()
-
-list(APPEND MODIFIED_CMAKE_PREFIX_PATH
-    "${CMAKE_PREFIX_PATH}/benchmark"
-    "${CMAKE_PREFIX_PATH}/boost"
-    "${CMAKE_PREFIX_PATH}/googletest"
-    "${CMAKE_PREFIX_PATH}/loki"
-    "${CMAKE_PREFIX_PATH}/pybind11")
-message(${MODIFIED_CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH ${MODIFIED_CMAKE_PREFIX_PATH})
-message(STATUS "MODIFIED_CMAKE_PREFIX_PATH:")
-foreach(CMAKE_PREFIX_PATH_ARG ${CMAKE_PREFIX_PATH})
-    message(STATUS "-- ${CMAKE_PREFIX_PATH_ARG}")
-endforeach()
 # set(CMAKE_FIND_DEBUG_MODE ON)
+
+set(DEPENDENCY_NAMES_LIST benchmark boost googletest loki pybind11)
+configure_dependencies("${DEPENDENCY_NAMES_LIST}")
 
 # Boost
 # Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
