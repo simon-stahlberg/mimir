@@ -50,7 +50,7 @@ find_package(mimir COMPONENTS core REQUIRED)
 
 
 add_executable(integration_standalone "main.cpp")
-target_link_libraries(integration_standalone mimir loki::parsers)
+target_link_libraries(integration_standalone mimir::core loki::parsers)
 
 add_custom_target(example_domain ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_SOURCE_DIR}/gripper/domain.pddl" "${CMAKE_BINARY_DIR}/gripper/domain.pddl")

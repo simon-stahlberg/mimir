@@ -15,24 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Test loki include
 #include <loki/domain/parser.hpp>
-#include <loki/problem/parser.hpp>
 
+// Test boost include
+#include <boost/container/small_vector.hpp>
+
+// Test mimir include
 #include <mimir/algorithms/kpkc.hpp>
-
-#include <iostream>
 
 
 int main() {
-    // Parse the domain
-    auto domain_parser = loki::DomainParser("data/gripper/domain.pddl");
-    const auto domain = domain_parser.get_domain();
-    std::cout << *domain << std::endl;
-
-    // Parse the problem
-    const auto problem_parser = loki::ProblemParser("data/gripper/p-2-0.pddl", domain_parser);
-    const auto problem = problem_parser.get_problem();
-    std::cout << *problem << std::endl;
-
     return 0;
 }
+

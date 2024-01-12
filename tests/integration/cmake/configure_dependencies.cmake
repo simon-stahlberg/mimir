@@ -1,6 +1,4 @@
 macro(configure_dependencies list_of_dependencies)
-    separate_arguments(list_of_dependencies)
-    message("${list_of_dependencies}")
     # We installed the dependencies into the subdirectories under the install prefix.
     # Hence must append them to the single cmake_prefix_path.
     message("Configure dependencies of Loki:")
