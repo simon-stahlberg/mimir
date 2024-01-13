@@ -5,7 +5,6 @@
 #include "atom.hpp"
 #include "bitset.hpp"
 #include "domain.hpp"
-#include "factories.hpp"
 #include "literal.hpp"
 #include "problem.hpp"
 #include "term.hpp"
@@ -23,14 +22,15 @@ namespace mimir::formalism
     using Repository = std::shared_ptr<RepositoryImpl>;
     using StateRepositoryPtr = const RepositoryImpl*;
 
-    // TODO: Should the name of repository be "instance"?
+    // TODO (Dominik): Should the name of repository be "instance"?
     class RepositoryImpl
     {
       private:
         Domain domain_;
         Problem problem_;
         // TermFactory term_factory_;
-        AtomFactory atom_factory_;
+        // TODO (Dominik): Use factory from parser, not need to create another one for loki types
+        // AtomFactory atom_factory_;
 
         // Declare the copy constructor and copy assignment operator as deleted
         RepositoryImpl(const RepositoryImpl&) = delete;
@@ -43,8 +43,6 @@ namespace mimir::formalism
         RepositoryImpl(const Problem& problem);
 
       public:
-        virtual ~RepositoryImpl();
-
         Atom create_atom(const Predicate& predicate, TermList&& terms);
         Literal create_literal(const Atom& atom, bool is_negated);
         State create_state(const AtomList& atoms);

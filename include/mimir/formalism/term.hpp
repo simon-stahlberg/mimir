@@ -3,9 +3,10 @@
 
 #include "type.hpp"
 
-#include <iostream>
 #include <loki/domain/pddl/parameter.hpp>
 #include <loki/domain/pddl/variable.hpp>
+
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@ namespace mimir::formalism
     class Term
     {
       private:
+        // TODO (Dominik): why not loki::pddl::Term?
         loki::pddl::Variable external_parameter_;
         loki::pddl::Object external_object_;
 

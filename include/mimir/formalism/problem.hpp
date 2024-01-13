@@ -8,6 +8,7 @@
 #include "term.hpp"
 
 #include <loki/problem/pddl/problem.hpp>
+
 #include <memory>
 #include <stdexcept>
 #include <string>

@@ -30,8 +30,6 @@ namespace mimir::formalism
      * RepositoryImpl Member Functions
      */
 
-    RepositoryImpl::~RepositoryImpl() {}
-
     Atom RepositoryImpl::create_atom(const Predicate& predicate, TermList&& terms) { throw std::runtime_error("not implemented"); }
 
     Literal RepositoryImpl::create_literal(const Atom& atom, bool is_negated) { throw std::runtime_error("not implemented"); }

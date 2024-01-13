@@ -2,6 +2,7 @@
 #define MIMIR_FORMALISM_TYPE_HPP_
 
 #include <loki/domain/pddl/type.hpp>
+
 #include <memory>
 #include <stdexcept>
 #include <string>
