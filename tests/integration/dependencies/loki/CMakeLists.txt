@@ -5,9 +5,9 @@ include(ExternalProject)
 
 
 list(APPEND CMAKE_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-    "-DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}"
-    "-DCMAKE_BUILD_TYPE=Release"
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_BUILD_TYPE=Release
     )
 
 message(STATUS "Preparing external project \"loki\" with args:")
@@ -21,5 +21,5 @@ ExternalProject_Add(
     GIT_TAG main
     PREFIX ${CMAKE_BINARY_DIR}/loki
     DEPENDS boost
-    CMAKE_ARGS "${CMAKE_ARGS}"
+    CMAKE_ARGS ${CMAKE_ARGS}
 )

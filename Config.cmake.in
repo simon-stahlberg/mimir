@@ -20,17 +20,18 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/configure_boost.cmake")
 
 # Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
 configure_boost()
-find_dependency(Boost ${BOOST_MIN_VERSION} REQUIRED PATHS "${PACKAGE_PREFIX_DIR}" NO_DEFAULT_PATH)
+find_dependency(Boost ${BOOST_MIN_VERSION} REQUIRED PATHS ${PACKAGE_PREFIX_DIR} NO_DEFAULT_PATH)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
+  message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")
 endif()
 
 # ----
 # Loki
 # ----
 
-find_dependency(loki COMPONENTS parsers REQUIRED PATHS "${CMAKE_PREFIX_PATH}" NO_DEFAULT_PATH)
+find_dependency(loki COMPONENTS parsers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
 
 ############
@@ -48,4 +49,4 @@ foreach(_comp ${mimir_FIND_COMPONENTS})
 endforeach()
 
 get_filename_component(MIMIR_CONFIG_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-message(STATUS "Found mimir: ${MIMIR_CONFIG_DIR} (found version \"${mimir_VERSION}\")")
+message(STATUS "Found mimir: ${MIMIR_CONFIG_DIR} (found version ${mimir_VERSION})")
