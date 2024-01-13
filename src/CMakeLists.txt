@@ -35,7 +35,7 @@ install(
 install(EXPORT mimircoreTargets
     NAMESPACE mimir::
     COMPONENT core
-    FILE mimircoreTargets.cmake
+    FILE "mimircoreTargets.cmake"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
 )
 
