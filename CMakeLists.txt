@@ -80,9 +80,7 @@ find_package(loki 0.0.1 COMPONENTS parsers REQUIRED PATHS ${CMAKE_PREFIX_PATH} N
 # ------------
 # Target Mimir
 # ------------
-if(BUILD_LIBMIMIR)
-    add_subdirectory(src)
-endif()
+add_subdirectory(src)
 
 # -------------------
 # Target Python Mimir
