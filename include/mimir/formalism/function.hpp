@@ -1,12 +1,14 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_HPP_
 #define MIMIR_FORMALISM_FUNCTION_HPP_
 
+#include "../common/mixins.hpp"
+
 #include <stdexcept>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class Function
+    class Function : public BaseMixin<Function>
     {
         // loki::pddl::Function
       public:

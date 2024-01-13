@@ -7,13 +7,15 @@
 #include "literal.hpp"
 #include "term.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <iostream>
 #include <stdexcept>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class Action
+    class Action : public BaseMixin<Action>
     {
       private:
         Bitset applicability_positive_precondition_bitset_;

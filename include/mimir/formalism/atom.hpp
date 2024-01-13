@@ -4,6 +4,8 @@
 #include "predicate.hpp"
 #include "term.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/domain/pddl/atom.hpp>
 
 #include <stdexcept>
@@ -12,7 +14,7 @@
 
 namespace mimir::formalism
 {
-    class Atom
+    class Atom : public BaseMixin<Atom>
     {
       private:
         loki::pddl::Atom external_;

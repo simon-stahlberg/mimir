@@ -4,7 +4,10 @@
 #include "action.hpp"
 #include "state.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <memory>
+
 
 namespace mimir::formalism
 {

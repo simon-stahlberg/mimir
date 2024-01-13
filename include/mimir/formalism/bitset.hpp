@@ -1,12 +1,14 @@
 #ifndef MIMIR_FORMALISM_BITSET_HPP_
 #define MIMIR_FORMALISM_BITSET_HPP_
 
+#include "../common/mixins.hpp"
+
 #include <algorithm>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class Bitset
+    class Bitset : public BaseMixin<Bitset> //, UncopyableMixin<Bitset>
     {
       private:
         std::vector<std::size_t> data;

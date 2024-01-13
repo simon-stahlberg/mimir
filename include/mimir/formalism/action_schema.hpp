@@ -6,15 +6,18 @@
 #include "literal.hpp"
 #include "term.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/common/pddl/types.hpp>
 #include <loki/domain/pddl/action.hpp>
+
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class ActionSchema
+    class ActionSchema : public BaseMixin<ActionSchema>
     {
       private:
         loki::pddl::Action external_;

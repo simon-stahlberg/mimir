@@ -3,6 +3,8 @@
 
 #include "term.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/domain/pddl/predicate.hpp>
 
 #include <stdexcept>
@@ -12,7 +14,7 @@
 
 namespace mimir::formalism
 {
-    class Predicate
+    class Predicate : public BaseMixin<Predicate>
     {
       private:
         loki::pddl::Predicate external_;

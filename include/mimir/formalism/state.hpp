@@ -9,6 +9,8 @@
 #include "problem.hpp"
 #include "term.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <map>
 #include <memory>
 #include <vector>
@@ -71,7 +73,7 @@ namespace mimir::formalism
 
     Repository create_repository(const Problem& problem);
 
-    class State
+    class State : public BaseMixin<State>
     {
       private:
         //  TODO: In the future, structure the state into two parts: a 'grounded' section and a 'lifted' section. The grounded segment should use an FDR

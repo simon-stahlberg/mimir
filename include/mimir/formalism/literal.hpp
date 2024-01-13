@@ -4,14 +4,18 @@
 #include "atom.hpp"
 #include "predicate.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/domain/pddl/literal.hpp>
+
 #include <memory>
 #include <stdexcept>
 #include <vector>
 
+
 namespace mimir::formalism
 {
-    class Literal
+    class Literal : public BaseMixin<Literal>
     {
       private:
         loki::pddl::Literal external_;

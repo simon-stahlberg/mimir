@@ -3,6 +3,8 @@
 
 #include "type.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/domain/pddl/parameter.hpp>
 #include <loki/domain/pddl/variable.hpp>
 
@@ -13,7 +15,7 @@
 
 namespace mimir::formalism
 {
-    class Term
+    class Term : public BaseMixin<Term>
     {
       private:
         // TODO (Dominik): why not loki::pddl::Term?

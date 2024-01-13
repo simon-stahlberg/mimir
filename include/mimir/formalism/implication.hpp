@@ -3,13 +3,15 @@
 
 #include "literal.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <stdexcept>
 #include <tuple>
 #include <vector>
 
 namespace mimir::formalism
 {
-    class Implication
+    class Implication : public BaseMixin<Implication>
     {
       private:
         LiteralList antecedent;

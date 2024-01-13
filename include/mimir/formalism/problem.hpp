@@ -7,6 +7,8 @@
 #include "literal.hpp"
 #include "term.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/problem/pddl/problem.hpp>
 
 #include <memory>
@@ -19,7 +21,7 @@ namespace mimir::formalism
     class Problem;
     using ProblemList = std::vector<Problem>;
 
-    class Problem
+    class Problem : public BaseMixin<ActionSchema>
     {
       private:
         loki::pddl::Problem external_;

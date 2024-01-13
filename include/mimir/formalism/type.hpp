@@ -1,6 +1,8 @@
 #ifndef MIMIR_FORMALISM_TYPE_HPP_
 #define MIMIR_FORMALISM_TYPE_HPP_
 
+#include "../common/mixins.hpp"
+
 #include <loki/domain/pddl/type.hpp>
 
 #include <memory>
@@ -13,7 +15,7 @@ namespace mimir::formalism
     class Type;
     using TypeList = std::vector<Type>;
 
-    class Type
+    class Type : public BaseMixin<Type>
     {
       private:
         loki::pddl::Type external_;

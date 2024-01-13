@@ -6,7 +6,10 @@
 #include "term.hpp"
 #include "type.hpp"
 
+#include "../common/mixins.hpp"
+
 #include <loki/domain/pddl/domain.hpp>
+
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -14,7 +17,7 @@
 
 namespace mimir::formalism
 {
-    class Domain
+    class Domain : public BaseMixin<Domain>
     {
       private:
         loki::pddl::Domain external_;
