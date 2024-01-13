@@ -15,16 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "../include/mimir/datastructures/robin_map.hpp"
-#include "../include/mimir/formalism/state.hpp"
-#include "../include/mimir/generators/complete_state_space.hpp"
-#include "../include/mimir/generators/grounded_successor_generator.hpp"
-#include "../include/mimir/generators/successor_generator_factory.hpp"
-#include "../include/mimir/search/breadth_first_search.hpp"
-#include "../include/mimir/search/eager_astar_search.hpp"
-#include "../include/mimir/search/heuristics/h1_heuristic.hpp"
-#include "../include/mimir/search/heuristics/h2_heuristic.hpp"
-#include "../include/mimir/search/openlists/priority_queue_open_list.hpp"
+#include <mimir/datastructures/robin_map.hpp>
+#include <mimir/formalism/state.hpp>
+#include <mimir/generators/complete_state_space.hpp>
+#include <mimir/generators/grounded_successor_generator.hpp>
+#include <mimir/generators/successor_generator_factory.hpp>
+#include <mimir/search/breadth_first_search.hpp>
+#include <mimir/search/eager_astar_search.hpp>
+#include <mimir/search/heuristics/h1_heuristic.hpp>
+#include <mimir/search/heuristics/h2_heuristic.hpp>
+#include <mimir/search/openlists/priority_queue_open_list.hpp>
+
+#include <benchmark/benchmark.h>
 
 #include <algorithm>
 #include <chrono>

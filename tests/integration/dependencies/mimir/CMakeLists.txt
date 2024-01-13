@@ -3,45 +3,15 @@ project(InstallMimir)
 
 include(ExternalProject)
 
-set(MIMIR_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mimir")
 
-
-######################
-# Mimir-dependencies #
-######################
-list(APPEND MIMIR_DEPENDENCIES_CMAKE_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${MIMIR_INSTALL_PREFIX}"
-    "-DCMAKE_BUILD_TYPE=Release"
-    )
-
-message(STATUS "Preparing external project \"mimir_dependencies\" with args:")
-foreach(CMAKE_ARG ${MIMIR_DEPENDENCIES_CMAKE_ARGS})
-    message(STATUS "-- ${CMAKE_ARG}")
-endforeach()
-
-ExternalProject_Add(
-    mimir_dependencies
-    GIT_REPOSITORY https://github.com/simon-stahlberg/mimir.git
-    GIT_TAG loki
-    PREFIX ${CMAKE_BINARY_DIR}/mimir/dependencies
-    SOURCE_SUBDIR dependencies
-    CMAKE_ARGS "${MIMIR_DEPENDENCIES_CMAKE_ARGS}"
-    INSTALL_COMMAND ""
-)
-
-
-#########
-# Mimir #
-#########
-
-list(APPEND MIMIR_CMAKE_ARGS
-    "-DCMAKE_INSTALL_PREFIX=${MIMIR_INSTALL_PREFIX}"
-    "-DCMAKE_PREFIX_PATH=${MIMIR_INSTALL_PREFIX}"
+list(APPEND CMAKE_ARGS
+    "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+    "-DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}"
     "-DCMAKE_BUILD_TYPE=Release"
     )
 
 message(STATUS "Preparing external project \"mimir\" with args:")
-foreach(CMAKE_ARG ${MIMIR_CMAKE_ARGS})
+foreach(CMAKE_ARG ${CMAKE_ARGS})
     message(STATUS "-- ${CMAKE_ARG}")
 endforeach()
 
@@ -50,6 +20,6 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/simon-stahlberg/mimir.git
     GIT_TAG loki
     PREFIX ${CMAKE_BINARY_DIR}/mimir
-    DEPENDS mimir_dependencies
+    DEPENDS loki boost
     CMAKE_ARGS "${MIMIR_CMAKE_ARGS}"
 )

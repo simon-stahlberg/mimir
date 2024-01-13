@@ -4,10 +4,10 @@ project(InstallGoogletest)
 include(ExternalProject)
 
 list(APPEND CMAKE_ARGS
-    "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}/googletest"
+    "-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}"
     )
 
-message(STATUS "Preparing external project \"mimir_googletest\" with args:")
+message(STATUS "Preparing external project \"googletest\" with args:")
 foreach(CMAKE_ARG ${CMAKE_ARGS})
     message(STATUS "-- ${CMAKE_ARG}")
 endforeach()

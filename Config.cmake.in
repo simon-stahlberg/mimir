@@ -14,30 +14,23 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/configure_boost.cmake")
 # Dependency Handling
 ##############################################################
 
-# Our integration superbuild installs its dependencies
-# in respective subdirectories, e.g., boost, googletest, benchmark
-list(APPEND CMAKE_PREFIX_PATH "${PACKAGE_PREFIX_DIR}/loki")
-list(APPEND CMAKE_PREFIX_PATH "${PACKAGE_PREFIX_DIR}/boost")
-
-
-# ----
-# Loki
-# ----
-
-find_dependency(loki REQUIRED)
-
-
 # -----
 # Boost
 # -----
 
 # Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
 configure_boost()
-find_dependency(Boost ${BOOST_MIN_VERSION} REQUIRED)
+find_dependency(Boost ${BOOST_MIN_VERSION} REQUIRED PATHS "${PACKAGE_PREFIX_DIR}" NO_DEFAULT_PATH)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
+
+# ----
+# Loki
+# ----
+
+find_dependency(loki COMPONENTS parsers REQUIRED PATHS "${CMAKE_PREFIX_PATH}" NO_DEFAULT_PATH)
 
 
 ############

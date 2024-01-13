@@ -12,7 +12,6 @@ set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 # Create an alias for simpler reference
 add_library(mimir::core ALIAS core)
 
-find_package(loki 0.0.1 COMPONENTS parsers REQUIRED)
 target_link_libraries(core loki::parsers)
 
 # Use include depending on building or using from installed location

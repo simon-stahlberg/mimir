@@ -1,6 +1,8 @@
 enable_testing()
 
-find_package(GTest REQUIRED)
+find_package(GTest "1.11.0" REQUIRED COMPONENTS GTest Main PATHS "${CMAKE_PREFIX_PATH}" NO_DEFAULT_PATH)
+# Set result variables
+find_package(GTest)
 
 file(GLOB_RECURSE MIMIR_TEST_SOURCE_FILES
     "*.cpp" "**/*.cpp")
