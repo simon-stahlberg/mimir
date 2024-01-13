@@ -5,14 +5,10 @@ project(mimir VERSION 0.1.1)
 ##############################################################
 # Build Targets
 ##############################################################
-option(BUILD_LIBMIMIR "Build" ON)
-option(BUILD_PYMIMIR "Build" OFF)
-option(BUILD_TESTS "Build" ON)
-option(BUILD_PROFILING "Build" ON)
 
-if (BUILD_PYMIMIR OR BUILD_TESTS OR BUILD_PROFILING)
-  set(BUILD_LIBMIMIR ON)
-endif()
+option(BUILD_PYMIMIR "Build" OFF)
+option(BUILD_TESTS "Build" OFF)
+option(BUILD_PROFILING "Build" OFF)
 
 
 ##############################################################

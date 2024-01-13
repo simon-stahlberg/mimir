@@ -21,5 +21,5 @@ ExternalProject_Add(
     GIT_TAG loki
     PREFIX ${CMAKE_BINARY_DIR}/mimir
     DEPENDS loki boost
-    CMAKE_ARGS "${MIMIR_CMAKE_ARGS}"
+    CMAKE_ARGS "${CMAKE_ARGS}"
 )
