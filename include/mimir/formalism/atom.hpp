@@ -14,7 +14,7 @@
 
 namespace mimir::formalism
 {
-    class Atom : public BaseMixin<Atom>
+    class Atom : public FormattingMixin<Atom>
     {
       private:
         loki::pddl::Atom external_;

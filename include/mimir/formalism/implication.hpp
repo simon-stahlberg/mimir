@@ -11,7 +11,7 @@
 
 namespace mimir::formalism
 {
-    class Implication : public BaseMixin<Implication>
+    class Implication : public FormattingMixin<Implication>
     {
       private:
         LiteralList antecedent;

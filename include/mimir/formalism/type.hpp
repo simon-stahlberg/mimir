@@ -15,7 +15,7 @@ namespace mimir::formalism
     class Type;
     using TypeList = std::vector<Type>;
 
-    class Type : public BaseMixin<Type>
+    class Type : public FormattingMixin<Type>
     {
       private:
         loki::pddl::Type external_;
@@ -36,7 +36,9 @@ namespace mimir::formalism
 
         std::size_t hash() const;
 
+        // TODO (Dominik): the FormattingMixin provides this overload
         friend std::ostream& operator<<(std::ostream& os, const mimir::formalism::Type& type);
+        // TODO (Dominik): Do we still need this?
         friend class Domain;
         friend class Term;
     };

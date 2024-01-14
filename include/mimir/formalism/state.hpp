@@ -30,8 +30,8 @@ namespace mimir::formalism
       private:
         Domain domain_;
         Problem problem_;
-        // TermFactory term_factory_;
         // TODO (Dominik): Use factory from parser, not need to create another one for loki types
+        // TermFactory term_factory_;
         // AtomFactory atom_factory_;
 
         // Declare the copy constructor and copy assignment operator as deleted
@@ -61,11 +61,15 @@ namespace mimir::formalism
 
         Domain get_domain() const;
         Problem get_problem() const;
+        // TODO (Dominik): What about switching from integer identifiers to Handle<T> for more type safety? The signature would look cleaner "get_arity(Handle<Atom> id) const" with less opportunities for missuse.
         uint32_t get_arity(uint32_t atom_id) const;
+        // TODO (Dominik): Same idea of using Handle<T>
         uint32_t get_predicate_id(uint32_t atom_id) const;
+        // TODO (Dominik): Same idea of using Handle<T>
         Term get_object(uint32_t object_id) const;
 
         std::vector<Atom> get_encountered_atoms() const;  // TODO: Ensure that the initial and goal atoms are added.
+        // TODO (Dominik): Same idea of using Handle<T>
         std::vector<uint32_t> get_term_ids(uint32_t atom_id) const;
 
         friend Repository create_repository(const Problem&);
@@ -73,14 +77,20 @@ namespace mimir::formalism
 
     Repository create_repository(const Problem& problem);
 
-    class State : public BaseMixin<State>
+    // TODO (Dominik): A state should not be copyable, we should use UncopyableMixin<State> to express that
+    class State : public FormattingMixin<State>
     {
       private:
         //  TODO: In the future, structure the state into two parts: a 'grounded' section and a 'lifted' section. The grounded segment should use an FDR
         //  representation instead of a bitset. Even in a lifted configuration, identifying certain FDR variables, such as the location of a truck, should be
         //  straightforward through the analysis of action schemas and the initial state. In a grounded configuration, a more in-depth mutex analysis can be
         //  performed to construct FDR variables (leaving the lifted part empty). This should improve performance significantly in some domains.
+        // TODO (Dominik): What about providing a GroundState and a LiftedState?
+        //                 Then templatize our concepts by a State and provide spezializations for different state representations?
+        //                 This provides additional flexibility in optimizing grounded and lifted planning
+        //                 separately and adding alternative representations.
 
+        // TODO (Dominik): I recommend using a bitset view, to some persistent preallocated buffer
         Bitset bitset_;
         // Problem problem_;
         std::size_t hash_;

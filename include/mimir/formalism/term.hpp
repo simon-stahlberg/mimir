@@ -15,7 +15,7 @@
 
 namespace mimir::formalism
 {
-    class Term : public BaseMixin<Term>
+    class Term : public FormattingMixin<Term>
     {
       private:
         // TODO (Dominik): why not loki::pddl::Term?

@@ -14,7 +14,7 @@
 
 namespace mimir::formalism
 {
-    class Predicate : public BaseMixin<Predicate>
+    class Predicate : public FormattingMixin<Predicate>
     {
       private:
         loki::pddl::Predicate external_;

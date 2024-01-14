@@ -15,7 +15,7 @@
 
 namespace mimir::formalism
 {
-    class Literal : public BaseMixin<Literal>
+    class Literal : public FormattingMixin<Literal>
     {
       private:
         loki::pddl::Literal external_;

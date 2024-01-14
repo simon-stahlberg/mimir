@@ -8,7 +8,7 @@
 
 namespace mimir::formalism
 {
-    class Function : public BaseMixin<Function>
+    class Function : public FormattingMixin<Function>
     {
         // loki::pddl::Function
       public:

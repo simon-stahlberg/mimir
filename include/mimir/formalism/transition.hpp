@@ -14,6 +14,7 @@ namespace mimir::formalism
     class Transition
     {
       public:
+        // TODO (Dominik): make this more lightweight.
         State source_state;
         State target_state;
         Action action;

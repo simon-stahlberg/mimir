@@ -17,7 +17,7 @@
 
 namespace mimir::formalism
 {
-    class Domain : public BaseMixin<Domain>
+    class Domain : public FormattingMixin<Domain>
     {
       private:
         loki::pddl::Domain external_;

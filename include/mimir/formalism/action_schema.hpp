@@ -17,7 +17,7 @@
 
 namespace mimir::formalism
 {
-    class ActionSchema : public BaseMixin<ActionSchema>
+    class ActionSchema : public FormattingMixin<ActionSchema>
     {
       private:
         loki::pddl::Action external_;

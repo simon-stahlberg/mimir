@@ -15,7 +15,7 @@
 
 namespace mimir::formalism
 {
-    class Action : public BaseMixin<Action>
+    class Action : public FormattingMixin<Action>
     {
       private:
         Bitset applicability_positive_precondition_bitset_;

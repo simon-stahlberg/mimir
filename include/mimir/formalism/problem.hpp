@@ -21,7 +21,7 @@ namespace mimir::formalism
     class Problem;
     using ProblemList = std::vector<Problem>;
 
-    class Problem : public BaseMixin<ActionSchema>
+    class Problem : public FormattingMixin<Problem>
     {
       private:
         loki::pddl::Problem external_;

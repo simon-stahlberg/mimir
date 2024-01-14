@@ -8,7 +8,7 @@
 
 namespace mimir::formalism
 {
-    class Bitset : public BaseMixin<Bitset> //, UncopyableMixin<Bitset>
+    class Bitset : public FormattingMixin<Bitset> //, UncopyableMixin<Bitset>
     {
       private:
         std::vector<std::size_t> data;
