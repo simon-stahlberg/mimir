@@ -4,8 +4,7 @@
 #include <sstream>
 
 
-/// @brief In this header, we define common mixins that express some constraints
-///        or define some orthogonal functionalities.
+/// @brief In this header, we define common mixins.
 ///        We distinguish two types of mixins with different naming conventions.
 ///           1. Mixins that add functionality should use present participle to emphasize action,
 ///              e.g., FormattingMixin
