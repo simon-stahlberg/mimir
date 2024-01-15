@@ -29,22 +29,25 @@ public:
 
 /// @brief Templatize a concrete state by a configuration.
 template<typename Configuration>
-class State : public StateBase<State<Configuration>> { 
-    // Implement configuration independent functionality. 
+class State : public StateBase<State<Configuration>> {
+private:
+    // Implement configuration independent functionality.
 };
 
 
 /// @brief Concrete implementation of a grounded state.
 template<>
 class State<Grounded> : public StateBase<State<Grounded>> {
-    // Implement configuration specific functionality. 
+private:
+    // Implement configuration specific functionality.
 };
 
 
 /// @brief Concrete implementation of a lifted state.
 template<>
 class State<Lifted> : public StateBase<State<Lifted>> {
-    // Implement configuration specific functionality. 
+private:
+    // Implement configuration specific functionality.
 };
 
 }  // namespace mimir::search

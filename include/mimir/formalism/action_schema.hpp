@@ -52,8 +52,6 @@ namespace mimir::formalism
 
     // bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
 
-    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchemaList& action_schemas);
-
     using ActionSchemaList = std::vector<ActionSchema>;
 
 }  // namespace mimir::formalism

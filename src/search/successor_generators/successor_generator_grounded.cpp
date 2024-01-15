@@ -1,4 +1,4 @@
-#include <mimir/search/successor_generator.hpp> 
+#include <mimir/search/successor_generators/successor_generator_lifted.hpp>
 
 
 namespace mimir::search {

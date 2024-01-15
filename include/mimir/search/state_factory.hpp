@@ -37,16 +37,17 @@ public:
 
 
 template<typename Configuration>
-class StateFactory : StateFactoryBase<StateFactory<Configuration>> { 
-    // Implement configuration independent functionality. 
+class StateFactory : StateFactoryBase<StateFactory<Configuration>> {
+private:
+    // Implement configuration independent functionality.
 };
 
 
 /// @brief Concrete implementation of a state factory for grounded states.
 template<>
 class StateFactory<Grounded> : public StateFactoryBase<StateFactory<Grounded>> {
-    // Implement configuration specific functionality. 
-public:
+private:
+    // Implement configuration specific functionality.
     template<typename... Args>
     State<Grounded> create_impl(Args&& ...args) {
         // create a grounded state.
@@ -58,8 +59,8 @@ public:
 /// @brief Concrete implementation of a state factory for grounded states.
 template<>
 class StateFactory<Lifted> : public StateFactoryBase<StateFactory<Lifted>> {
-    // Implement configuration specific functionality. 
-public:
+private:
+    // Implement configuration specific functionality.
     template<typename... Args>
     State<Lifted> create_impl(Args&& ...args) {
         // create a lifted state.

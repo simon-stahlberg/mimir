@@ -113,10 +113,6 @@ namespace mimir::formalism
     bool ActionSchema::operator!=(const ActionSchema& other) const { return !(*this == other); }
     bool ActionSchema::operator<=(const ActionSchema& other) const { return (*this < other) || (*this == other); }
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionSchema& action_schema)
-    {
-        return os << action_schema.get_name() << "/" << action_schema.get_arity();
-    }
 }  // namespace mimir::formalism
 
 /*
