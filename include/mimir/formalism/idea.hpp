@@ -12,21 +12,21 @@ namespace mimir::formalism
 /// @brief CRTP based interface (Mixin) for State.
 /// @tparam Derived
 template<typename Derived>
-class StateMixin {
+class StateBase {
 private:
-    StateMixin() = default;
+    StateBase() = default;
     friend Derived;
 
 public:
     // Define common interface for states.
 };
 
-class GroundedState : public StateMixin<GroundedState> {
+class GroundedState : public StateBase<GroundedState> {
 public:
     // Implement interface
 };
 
-class LiftedState : public StateMixin<GroundedState> {
+class LiftedState : public StateBase<GroundedState> {
 public:
     // Implement interface
 };
@@ -35,10 +35,10 @@ public:
 /// @brief CRTP based interface (Mixin) for StateFactory.
 /// @tparam Derived
 /// @tparam State
-template<typename Derived, typename State>
-class StateFactoryMixin {
+template<typename Derived>
+class StateFactoryBase {
 private:
-    StateFactoryMixin() = default;
+    StateFactoryBase() = default;
     friend Derived;
 
 public:
@@ -51,13 +51,13 @@ public:
     /// @param ...args are the arguments.
     /// @return
     template<typename... Args>
-    State create(Args&& ...args) {
+    auto create(Args&& ...args) {
         return self().create_impl(std::forward<Args>(args)...);
     }
 };
 
 /// @brief Concrete implementation to construct grounded states.
-class GroundedStateFactory : public StateFactoryMixin<GroundedStateFactory, GroundedState> {
+class GroundedStateFactory : public StateFactoryBase<GroundedStateFactory> {
 public:
     template<typename... Args>
     GroundedState create_impl(Args&& ...args) {
@@ -70,10 +70,10 @@ public:
 /* Example search algorithm where the common State interface is insufficient.
    Again, we simply use CRTP based interface (Mixin). */
 /// @brief CRTP based interface (Mixin) for a BrFS search algorithm
-template<typename Derived, typename State>
-class BreadthFirstSearchMixin {
+template<typename Derived>
+class SearchBase {
 private:
-    BreadthFirstSearch() = default;
+    SearchBase() = default;
     friend Derived;
 
 public:
@@ -86,7 +86,15 @@ public:
 };
 
 
-class GroundedBreadthFirstSearch : public BreadthFirstSearchMixin<GroundedBreadthFirstSearch, GroundedState> {
+template<typename State>
+class BreadthFirstSearch : public SearchBase<BreadthFirstSearch<State>> {
+    // The above interface should allow a general implementation of BrFs independent of the type of the state
+};
+
+
+// In cases where we really need specializations, which we should not on high level code.
+template<>
+class BreadthFirstSearch<GroundedState> : public SearchBase<BreadthFirstSearch<GroundedState>> {
 public:
     void search_impl() {
         // implementation
