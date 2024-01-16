@@ -16,6 +16,12 @@ private:
 };
 
 
+template<typename Configuration>
+struct TypeTraits<AStar<Configuration>> {
+    using ConfigurationType = Configuration;
+};
+
+
 
 }  // namespace mimir
 

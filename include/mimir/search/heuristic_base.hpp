@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ALGORITHM_BASE_HPP_
-#define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
+#ifndef MIMIR_SEARCH_HEURISTIC_BASE_HPP_
+#define MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 
 #include "type_traits.hpp"
 
@@ -9,14 +9,12 @@
 namespace mimir
 {
 
-/// @brief CRTP based interface for a search algorithm
-/// @tparam Derived
 template<typename Derived>
-class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
+class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
     using Configuration = typename TypeTraits<Derived>::ConfigurationType;
 
-    AlgorithmBase() = default;
+    HeuristicBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -24,11 +22,12 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void search() {
-        self().search_impl();
+    double compute_heuristic(const State<Configuration>& state) {
+        return self().compute_heuristic_impl(state);
     }
 };
 
+
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_ALGORITHM_BASE_HPP_
+#endif  // MIMIR_SEARCH_OPEN_LIST_BASE_HPP_

@@ -2,8 +2,7 @@
 #define MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
 
 #include "state_base.hpp"
-
-#include "../common/config.hpp"
+#include "type_traits.hpp"
 
 #include "../formalism/action.hpp"
 
@@ -14,18 +13,12 @@
 namespace mimir
 {
 
-/// @brief Provide access to nested type information.
-/// @tparam T 
-template<typename T>
-struct SuccessorGeneratorTypeTrait;
-
-
 /// @brief Top-level CRTP based interface for a SuccessorGenerator.
 /// @tparam Derived
 template<typename Derived>
 class SuccessorGeneratorBase : public UncopyableMixin<SuccessorGeneratorBase<Derived>> {
 private:
-    using Configuration = typename SuccessorGeneratorTypeTrait<Derived>::ConfigurationType;
+    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
 
     SuccessorGeneratorBase() = default;
     friend Derived;
@@ -50,9 +43,8 @@ private:
 };
 
 
-// Specialize for each specific Derived type
 template<typename Configuration>
-struct SuccessorGeneratorTypeTrait<SuccessorGenerator<Configuration>> {
+struct TypeTraits<SuccessorGenerator<Configuration>> {
     using ConfigurationType = Configuration;
 };
 

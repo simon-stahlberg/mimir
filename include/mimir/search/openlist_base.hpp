@@ -1,22 +1,19 @@
 #ifndef MIMIR_SEARCH_OPEN_LIST_BASE_HPP_
 #define MIMIR_SEARCH_OPEN_LIST_BASE_HPP_
 
+#include "type_traits.hpp"
+
 #include "../common/mixins.hpp"
 
 
 namespace mimir
 {
 
-/// @brief Provide access to nested type information.
-/// @tparam T 
-template<typename T>
-struct OpenListTypeTrait;
-
 
 template<typename Derived>
 class OpenListBase : public UncopyableMixin<OpenListBase<Derived>> {
 private:
-    using T = typename OpenListTypeTrait<Derived>::ValueType;
+    using T = typename TypeTraits<Derived>::ValueType;
 
     OpenListBase() = default;
     friend Derived;
@@ -26,6 +23,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
+    // TODO (Dominik): What should T be? An index or a something like a search node?
     void insert(const T& item, double priority) {
         return self().insert_impl(item, priority);
     }

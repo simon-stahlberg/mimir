@@ -1,11 +1,10 @@
 #ifndef MIMIR_SEARCH_GROUNDED_STATE_FACTORY_HPP_
 #define MIMIR_SEARCH_GROUNDED_STATE_FACTORY_HPP_
 
-#include "../state_factory_base.hpp"
-
 #include "state.hpp"
 
-#include "../../common/config.hpp"
+#include "../config.hpp"
+#include "../state_factory_base.hpp"
 #include "../../common/mixins.hpp"
 
 #include <stdexcept>

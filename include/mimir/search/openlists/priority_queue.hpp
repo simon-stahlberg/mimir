@@ -31,11 +31,12 @@ private:
     friend class OpenListBase<PriorityQueue>;
 };
 
-// Specialize for each specific Derived type
+
 template<typename T>
-struct OpenListTypeTrait<PriorityQueue<T>> {
+struct TypeTraits<PriorityQueue<T>> {
     using ValueType = T;
 };
+
 
 
 }  // namespace mimir

@@ -1,4 +1,4 @@
-#include <mimir/common/config.hpp>
+#include <mimir/search/config.hpp>
 #include <mimir/search/lifted/state.hpp>
 
 #include <gtest/gtest.h>

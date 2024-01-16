@@ -1,9 +1,8 @@
 #ifndef MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
 #define MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
 
+#include "../config.hpp"
 #include "../successor_generator_base.hpp"
-
-#include "../../common/config.hpp"
 #include "../../common/mixins.hpp"
 
 #include <stdexcept>

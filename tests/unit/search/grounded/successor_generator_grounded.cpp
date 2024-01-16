@@ -1,4 +1,4 @@
-#include <mimir/common/config.hpp>
+#include <mimir/search/config.hpp>
 #include <mimir/search/grounded/successor_generator.hpp>
 
 #include <gtest/gtest.h>

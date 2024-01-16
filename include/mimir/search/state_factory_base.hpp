@@ -2,8 +2,8 @@
 #define MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_
 
 #include "state_base.hpp"
+#include "type_traits.hpp"
 
-#include "../common/config.hpp"
 #include "../common/mixins.hpp"
 
 #include <stdexcept>
@@ -41,6 +41,12 @@ template<typename Configuration>
 class StateFactory : StateFactoryBase<StateFactory<Configuration>> {
 private:
     // Implement configuration independent functionality.
+};
+
+
+template<typename Configuration>
+struct TypeTraits<StateFactory<Configuration>> {
+    using ConfigurationType = Configuration;
 };
 
 }  // namespace mimir

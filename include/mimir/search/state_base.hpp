@@ -1,7 +1,8 @@
 #ifndef MIMIR_SEARCH_STATE_BASE_HPP_
 #define MIMIR_SEARCH_STATE_BASE_HPP_
 
-#include "../common/config.hpp"
+#include "type_traits.hpp"
+
 #include "../common/mixins.hpp"
 
 #include <stdexcept>
@@ -33,6 +34,12 @@ template<typename Configuration>
 class State : public StateBase<State<Configuration>> {
 private:
     // Implement configuration independent functionality.
+};
+
+
+template<typename Configuration>
+struct TypeTraits<State<Configuration>> {
+    using ConfigurationType = Configuration;
 };
 
 }  // namespace mimir
