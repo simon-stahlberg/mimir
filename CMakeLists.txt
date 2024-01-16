@@ -1,154 +1,85 @@
 cmake_minimum_required(VERSION 3.18)
-project(mimir VERSION 0.1.1)
+project(mimir VERSION 0.1.1 LANGUAGES CXX C)
 
 # -------------
 # Build Targets
 # -------------
 option(BUILD_LIBMIMIR "Build" ON)
-option(BUILD_PYMIMIR "Build" OFF)
+option(BUILD_PYMIMIR "Build" ON)
 option(BUILD_TESTS "Build" ON)
 option(BUILD_PROFILING "Build" ON)
 
+option(ENABLE_CACHE "Enable cache if available" ON)
+option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" OFF)
+option(ENABLE_CPPCHECK "Enable static analysis with cppcheck" OFF)
+option(ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF)
+option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)" OFF)
+option(ENABLE_PCH "Enable Precompiled Headers" ON)
+option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
+option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" OFF)
+option(ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" OFF)
+option(ENABLE_SANITIZER_THREAD "Enable thread sanitizer" OFF)
+option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)
+option(ENABLE_WARNING_PADDING "Warn when structs are memory padded" OFF)
+
+option(USE_PYBIND11_FINDPYTHON "Use pybind11 to search for the python library" OFF)
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 # ---------------
 # Common Settings
 # ---------------
-find_package(Boost REQUIRED)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(PROJ_CXX_STD_FEATURE cxx_std_20)
+set(PROJ_CXX_STANDARD C++20)
 
-if(MSVC)
-    if(NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-    endif()
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W1 /EHsc /bigobj /MP")
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " /IGNORE:4006,4044,4075")
-else()
-    # TODO: Add -Wextra and fix all warnings
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
-endif()
+# if cmake is called within a virtual env then we want to use that python interpreter to run e.g. stub-gen
+# This exectuable has to be passed in though! (-DPTYHON_VENV_EXE=...)
+set(PYTHON_VENV_EXECUTABLE)
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
-
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(include)
 
 file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
 file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
 
-# ------------
-# Target Mimir
-# ------------
-if(BUILD_LIBMIMIR)
-    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
 
-    target_include_directories(mimir PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    )
+# Link this 'library' to set the c++ standard / compile-time options requested
+add_library(project_options INTERFACE)
+# Link this 'library' to use the warnings specified in CompilerWarnings.cmake
+add_library(project_warnings INTERFACE)
 
-    install(TARGETS mimir
-        EXPORT MimirTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
-    )
+target_compile_features(project_options INTERFACE ${PROJ_CXX_STD_FEATURE})
 
-    install(DIRECTORY include/ DESTINATION include)
-    export(TARGETS mimir NAMESPACE mimir:: FILE MimirConfig.cmake)
-    include(CMakePackageConfigHelpers)
+# set the compiler options
+include(cmake/settings/compiler_options.cmake)
+set_project_compiler_options(project_options)
+# include target printing utilities (property printing)
+include(cmake/settings/utilities.cmake)
+# the deps to be downloaded by cpm
+#include(cmake/settings/cpm.cmake)
+#include(deps/CPM_deps.cmake)
+# set the standard project settings
+include(cmake/settings/standard_project_settings.cmake)
+# enable cache system
+include(cmake/settings/cache.cmake)
+# standard compiler warnings
+include(cmake/settings/compiler_warnings.cmake)
+set_project_warnings(project_warnings)
+# sanitizer options if supported by compiler
+include(cmake/settings/sanitizers.cmake)
+enable_sanitizers(project_options)
+# load extra clang dev tools
+include(cmake/settings/clang-cxx-dev-tools.cmake)
+# enable cache system
+include(cmake/settings/cache.cmake)
+# allow for static analysis options
+include(cmake/settings/static_analyzers.cmake)
 
-    write_basic_package_version_file(
-        "MimirConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
-    )
+find_package(Boost REQUIRED)
 
-    install(
-        EXPORT MimirTargets
-        FILE MimirTargets.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
+include(cmake/targets/mimir.cmake)
+include(cmake/targets/pymimir.cmake)
+include(cmake/targets/test.cmake)
+include(cmake/targets/profiling.cmake)
 
-    install(
-        EXPORT MimirTargets
-        FILE MimirConfig.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
 
-    install(
-        EXPORT MimirTargets
-        FILE MimirConfigVersion.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
-endif()
-
-# -------------------
-# Target Python Mimir
-# -------------------
-if(BUILD_PYMIMIR)
-    find_package(Python REQUIRED)
-    find_package(PythonLibs REQUIRED)
-    set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
-    include_directories(${PYTHON_INCLUDE_DIRS})
-    add_library(pymimir MODULE lib/pymimir.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET pymimir PROPERTY CXX_STANDARD 17)
-    set_target_properties(pymimir PROPERTIES PREFIX "")
-    target_link_libraries(pymimir ${PYTHON_LIBRARIES})
-
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_compile_definitions(pymimir PRIVATE NDEBUG)
-    endif()
-
-    if(MSVC)
-        # Add MSVC specific library linking here
-    else()
-        target_link_libraries(pymimir -lstdc++fs)
-        # These settings seem to cause issues with torch.
-        # target_link_libraries(pymimir -static-libstdc++ -static-libgcc)
-    endif()
-
-    # Add pybind11 include directory
-    set(PYBIND11_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/extern/pybind11/include)
-    target_include_directories(pymimir PRIVATE ${PYBIND11_INCLUDE_DIR})
-
-    # Generate pyi files, add generate_pyi_files dependent on pymimir
-    add_custom_target(generate_pyi_files ALL
-        COMMENT "Generating .pyi files"
-        COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --output-dir ${CMAKE_CURRENT_BINARY_DIR} pymimir
-    )
-
-    add_dependencies(generate_pyi_files pymimir)
-endif()
-
-# ----------------
-# Target Profiling
-# ----------------
-if(BUILD_PROFILING)
-    add_executable(mimir-profile bin/profiling.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET mimir-profile PROPERTY CXX_STANDARD 17)
-endif()
-
-# -----------
-# Target Test
-# -----------
-if(BUILD_TESTS)
-    find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
-    include(GoogleTest)
-    add_executable(mimir-test ${MIMIR_TEST_FILES} ${MIMIR_SRC_FILES})
-    target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} pthread)
-    gtest_discover_tests(mimir-test)
-endif()
+# This prints a summary of found dependencies
+include(FeatureSummary)
+feature_summary(WHAT ALL)

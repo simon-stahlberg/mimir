@@ -1,0 +1,8 @@
+prefix=${pcfiledir}/../..
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: mimir
+Description: A PDDL Parser and Planner Toolkit
+Url: https://github.com/simon-stahlberg/mimir
+Version: @PROJECT_VERSION@
+Cflags: -I${includedir}

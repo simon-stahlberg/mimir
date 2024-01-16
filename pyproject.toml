@@ -1,3 +1,24 @@
 [build-system]
-requires = ["cmake>=3.12", "pybind11_stubgen", "setuptools>=42", "wheel"]
+requires = ["setuptools>=61", "cmake>=3.17", "pybind11_stubgen", "wheel", "ninja", "conan>=2.0.5"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymimir"
+version = "0.1.1"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Simon Stahlberg", email = "simon.stahlberg@gmail.com" },
+    { name = "Michael Aichmueller", email = "m.aichmueller@gmail.com" },
+]
+description = "Mimir: PDDL Parser and Planner Toolkit"
+requires-python = ">=3.7"
+dynamic = ["readme"]
+
+[tool.setuptools.dynamic]
+readme = { file = "README.md", content-type = "text/markdown"}
+
+[project.urls]
+homepage = "https://github.com/simon-stahlberg/mimir"
+
+[tool.setuptools]
+zip-safe = false
