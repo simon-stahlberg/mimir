@@ -44,6 +44,7 @@ function(set_project_compiler_options project_name)
             "-fconcepts-diagnostics-depth=5"
             # various optimizations (link time optimization, unrolling loops, omitting frame pointers(=increasing stack register mem for data))
             "-flto"
+            "-ffat-lto-objects"
             "-funroll-loops"
             ">"
     )
