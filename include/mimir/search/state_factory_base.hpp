@@ -15,15 +15,16 @@ namespace mimir
 /// @brief Top-level CRTP based interface for a StateFactory.
 /// @tparam Derived
 template<typename Derived>
-class StateFactoryBase {
+class StateFactoryBase : public UncopyableMixin<StateFactoryBase<Derived>> {
 private:
     StateFactoryBase() = default;
     friend Derived;
 
-public:
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
 
+public:
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
     /// @tparam ...Args are the argument types to create a state.

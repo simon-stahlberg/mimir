@@ -23,7 +23,7 @@ struct SuccessorGeneratorTypeTrait;
 /// @brief Top-level CRTP based interface for a SuccessorGenerator.
 /// @tparam Derived
 template<typename Derived>
-class SuccessorGeneratorBase {
+class SuccessorGeneratorBase : public UncopyableMixin<SuccessorGeneratorBase<Derived>> {
 private:
     using Configuration = typename SuccessorGeneratorTypeTrait<Derived>::ConfigurationType;
 
@@ -32,6 +32,7 @@ private:
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
     /// @brief Generate all applicable actions for a given state.

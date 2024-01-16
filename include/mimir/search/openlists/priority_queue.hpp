@@ -1,16 +1,15 @@
-#ifndef MIMIR_SEARCH_OPEN_LISTS_PRIORITY_QUEUE_HPP_
-#define MIMIR_SEARCH_OPEN_LISTS_PRIORITY_QUEUE_HPP_
+#ifndef MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
+#define MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 
-#include "../open_list_base.hpp"
+#include "../openlist_base.hpp"
 
-#include <functional>
 #include <queue>
 
 namespace mimir
 {
 
 template<typename T>
-class PriorityQueue : public OpenListBase<PriorityQueue, T> {
+class PriorityQueue : public OpenListBase<PriorityQueue<T>> {
     // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
@@ -29,9 +28,16 @@ private:
         return priority_queue_.size();
     }
 
-    friend class OpenListBase<PriorityQueue, T>;
+    friend class OpenListBase<PriorityQueue>;
 };
+
+// Specialize for each specific Derived type
+template<typename T>
+struct OpenListTypeTrait<PriorityQueue<T>> {
+    using ValueType = T;
+};
+
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_OPEN_LISTS_PRIORITY_QUEUE_HPP_
+#endif  // MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_

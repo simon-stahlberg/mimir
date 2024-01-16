@@ -21,9 +21,9 @@ private:
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-
     // Define common interface for states.
 };
 
