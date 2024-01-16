@@ -10,7 +10,7 @@ namespace mimir
 /// @brief A general implementation of a breadth-first-search.
 /// @tparam Configuration
 template<typename Configuration>
-class BreadthFirstSearch : public SearchBase<BreadthFirstSearch<Configuration>> {
+class BreadthFirstSearch : public AlgorithmBase<BreadthFirstSearch<Configuration>> {
 private:
     // Implement configuration independent functionality.
 };

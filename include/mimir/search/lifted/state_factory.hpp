@@ -17,13 +17,16 @@ namespace mimir
 /// @brief Concrete implementation of a state factory for lifted states.
 template<>
 class StateFactory<Lifted> : public StateFactoryBase<StateFactory<Lifted>> {
-private:
     // Implement configuration specific functionality.
+private:
     template<typename... Args>
     State<Lifted> create_impl(Args&& ...args) {
         // create a lifted state.
         return State<Lifted>(std::forward<Args>(args)...);
     }
+
+    // Give access to the private interface implementations.
+    friend class StateFactoryBase<StateFactory<Lifted>>;
 };
 
 }  // namespace mimir

@@ -16,8 +16,10 @@ namespace mimir
 /// @brief Concrete implementation of a lifted state.
 template<>
 class State<Lifted> : public StateBase<State<Lifted>> {
-private:
     // Implement configuration specific functionality.
+private:
+
+public:
 };
 
 }  // namespace mimir

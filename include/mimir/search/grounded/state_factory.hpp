@@ -17,13 +17,16 @@ namespace mimir
 /// @brief Concrete implementation of a state factory for grounded states.
 template<>
 class StateFactory<Grounded> : public StateFactoryBase<StateFactory<Grounded>> {
-private:
     // Implement configuration specific functionality.
+private:
     template<typename... Args>
     State<Grounded> create_impl(Args&& ...args) {
         // create a grounded state.
         return State<Grounded>(std::forward<Args>(args)...);
     }
+
+    // Give access to the private interface implementations.
+    friend class StateFactoryBase<StateFactory<Grounded>>;
 };
 
 }  // namespace mimir

@@ -11,6 +11,7 @@ namespace mimir
 
 template<typename T>
 class PriorityQueue : public OpenListBase<PriorityQueue, T> {
+    // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
 
@@ -27,6 +28,8 @@ private:
     std::size_t size_impl() {
         return priority_queue_.size();
     }
+
+    friend class OpenListBase<PriorityQueue, T>;
 };
 
 }  // namespace mimir

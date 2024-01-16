@@ -16,6 +16,7 @@ namespace mimir
 /// @brief Concrete implementation of a lifted successor generator.
 template<>
 class SuccessorGenerator<Lifted> : public SuccessorGeneratorBase<SuccessorGenerator<Lifted>> {
+    // Implement configuration specific functionality.
 private:
     ActionList generate_applicable_actions_impl(const State<Lifted>& state) {
         return ActionList();

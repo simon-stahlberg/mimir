@@ -10,7 +10,7 @@ namespace mimir
 /// @brief A general implementation of AStar.
 /// @tparam Configuration
 template<typename Configuration>
-class AStar : public SearchBase<AStar<Configuration>> {
+class AStar : public AlgorithmBase<AStar<Configuration>> {
 private:
     // Implement configuration independent functionality.
 };

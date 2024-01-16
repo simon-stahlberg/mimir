@@ -16,6 +16,7 @@ namespace mimir
 /// @brief Concrete implementation of a grounded successor generator.
 template<>
 class SuccessorGenerator<Grounded> : public SuccessorGeneratorBase<SuccessorGenerator<Grounded>> {
+    // Implement configuration specific functionality.
 private:
     ActionList generate_applicable_actions_impl(const State<Lifted>& state) {
         return ActionList();

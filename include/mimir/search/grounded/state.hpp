@@ -16,8 +16,10 @@ namespace mimir
 /// @brief Concrete implementation of a grounded state.
 template<>
 class State<Grounded> : public StateBase<State<Grounded>> {
-private:
     // Implement configuration specific functionality.
+private:
+
+public:
 };
 
 }  // namespace mimir
