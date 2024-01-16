@@ -18,10 +18,9 @@ template<>
 class StateRepository<Grounded> : public StateRepositoryBase<StateRepository<Grounded>> {
     // Implement configuration specific functionality.
 private:
-    template<typename... Args>
-    State<Grounded> create_impl(Args&& ...args) {
+    State<Grounded> create_impl(const StateBuilder<Grounded>& builder) {
         // create a grounded state.
-        return State<Grounded>(std::forward<Args>(args)...);
+        return State<Grounded>();
     }
 
     // Give access to the private interface implementations.

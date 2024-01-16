@@ -9,15 +9,23 @@ namespace mimir
 
 /// @brief A general implementation of AStar.
 /// @tparam Configuration
-template<typename Configuration>
-class AStar : public AlgorithmBase<AStar<Configuration>> {
+template<typename Configuration, template<typename> class Heuristic>
+class AStar : public AlgorithmBase<AStar<Configuration, Heuristic>> {
 private:
+    Heuristic<Configuration> m_heuristic;
+
     // Implement configuration independent functionality.
+
+    void find_solution_impl() {
+        // TODO (Dominik): implement
+    }
+
+    friend class AlgorithmBase<AStar<Configuration, Heuristic>>;
 };
 
 
-template<typename Configuration>
-struct TypeTraits<AStar<Configuration>> {
+template<typename Configuration, template<typename> class Heuristic>
+struct TypeTraits<AStar<Configuration, Heuristic>> {
     using ConfigurationType = Configuration;
 };
 

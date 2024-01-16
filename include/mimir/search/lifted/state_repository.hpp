@@ -18,10 +18,9 @@ template<>
 class StateRepository<Lifted> : public StateRepositoryBase<StateRepository<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    template<typename... Args>
-    State<Lifted> create_impl(Args&& ...args) {
+    State<Lifted> create_impl(const StateBuilder<Lifted>& builder) {
         // create a lifted state.
-        return State<Lifted>(std::forward<Args>(args)...);
+        return State<Lifted>();
     }
 
     // Give access to the private interface implementations.
