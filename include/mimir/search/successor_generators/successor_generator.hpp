@@ -17,9 +17,6 @@ namespace mimir
 template<typename Configuration>
 class SuccessorGenerator : public SuccessorGeneratorBase<SuccessorGenerator<Configuration>> {
 private:
-    using ConfigurationType = Configuration;
-    friend class SuccessorGeneratorBase<SuccessorGenerator<Configuration>>;
-
     // Implement configuration independent functionality.
 };
 

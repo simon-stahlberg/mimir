@@ -29,6 +29,7 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
 
 public:
+    /// @brief Generate all applicable actions for a given state.
     ActionList generate_applicable_actions(const State<Configuration>& state) {
         return self().generate_applicable_actions_impl(state);
     }

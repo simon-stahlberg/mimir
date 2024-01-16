@@ -5,6 +5,8 @@
 namespace mimir
 {
 
+/// @brief A trait struct to associate a specific Configuration type with a template class.
+/// @tparam T The template class for which the Configuration type is defined.
 template<typename T>
 struct ConfigurationTypeTrait;
 
