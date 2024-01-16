@@ -62,6 +62,6 @@ public:
     UncopyableMixin& operator=(UncopyableMixin&& other) = default;
 };
 
-}
+}  // namespace mimir
 
-#endif
+#endif  // MIMIR_COMMON_MIXINS_HPP_

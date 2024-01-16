@@ -19,7 +19,7 @@
 
 #include <memory>
 
-namespace mimir::formalism
+namespace mimir
 {
     Type::Type(loki::pddl::Type external_type) : external_(external_type) {}
 
@@ -29,7 +29,7 @@ namespace mimir::formalism
 
     TypeList Type::get_bases() const { throw std::runtime_error("not implemented"); }
 
-    bool is_subtype_of(const mimir::formalism::Type& type, const mimir::formalism::Type& base_type) { throw std::runtime_error("not implemented"); }
+    bool is_subtype_of(const mimir::Type& type, const mimir::Type& base_type) { throw std::runtime_error("not implemented"); }
 
     bool Type::operator<(const Type& other) const { throw std::runtime_error("not implemented"); }
     bool Type::operator>(const Type& other) const { throw std::runtime_error("not implemented"); }
@@ -39,22 +39,22 @@ namespace mimir::formalism
 
     std::size_t Type::hash() const { throw std::runtime_error("not implemented"); }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Type>::operator()(const mimir::formalism::Type& type) const { return type.hash(); }
+    std::size_t hash<mimir::Type>::operator()(const mimir::Type& type) const { return type.hash(); }
 
-    std::size_t hash<mimir::formalism::TypeList>::operator()(const mimir::formalism::TypeList& types) const { return hash_vector(types); }
+    std::size_t hash<mimir::TypeList>::operator()(const mimir::TypeList& types) const { return hash_vector(types); }
 
-    bool less<mimir::formalism::Type>::operator()(const mimir::formalism::Type& left_type, const mimir::formalism::Type& right_type) const
+    bool less<mimir::Type>::operator()(const mimir::Type& left_type, const mimir::Type& right_type) const
     {
         return left_type < right_type;
     }
 
-    bool equal_to<mimir::formalism::Type>::operator()(const mimir::formalism::Type& left_type, const mimir::formalism::Type& right_type) const
+    bool equal_to<mimir::Type>::operator()(const mimir::Type& left_type, const mimir::Type& right_type) const
     {
         return left_type == right_type;
     }

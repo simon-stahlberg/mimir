@@ -9,7 +9,7 @@ namespace mimir::tests
 
 TEST(MimirTests, LiftedSuccessorGeneratorTest) {
     // Instantiate lifted version
-    auto lifted_successor_generator = search::SuccessorGenerator<Lifted>();
+    auto lifted_successor_generator = SuccessorGenerator<Lifted>();
 }
 
 }

@@ -9,13 +9,13 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedBrFSTest) {
     // Instantiate grounded version
-    auto grounded_brfs = search::BreadthFirstSearch<Grounded>();
+    auto grounded_brfs = BreadthFirstSearch<Grounded>();
 }
 
 
 TEST(MimirTests, LiftedBrFSTest) {
     // Instantiate lifted version
-    auto lifted_brfs = search::BreadthFirstSearch<Lifted>();
+    auto lifted_brfs = BreadthFirstSearch<Lifted>();
 }
 
 }

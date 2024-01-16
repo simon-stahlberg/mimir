@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Domain : public FormattingMixin<Domain>
     {
@@ -54,28 +54,28 @@ namespace mimir::formalism
 
     using DomainList = std::vector<Domain>;
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Domain>
+    struct hash<mimir::Domain>
     {
-        std::size_t operator()(const mimir::formalism::Domain& domain) const;
+        std::size_t operator()(const mimir::Domain& domain) const;
     };
 
     template<>
-    struct less<mimir::formalism::Domain>
+    struct less<mimir::Domain>
     {
-        bool operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const;
+        bool operator()(const mimir::Domain& left_domain, const mimir::Domain& right_domain) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Domain>
+    struct equal_to<mimir::Domain>
     {
-        bool operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const;
+        bool operator()(const mimir::Domain& left_domain, const mimir::Domain& right_domain) const;
     };
 
 }  // namespace std

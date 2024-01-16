@@ -13,7 +13,7 @@
 #include <vector>
 
 
-namespace mimir::formalism
+namespace mimir
 {
     class Literal : public FormattingMixin<Literal>
     {
@@ -51,38 +51,38 @@ namespace mimir::formalism
 
     LiteralList ground_literals(const LiteralList& literal_list, const ParameterAssignment& assignment);
 
-    // bool contains_predicate(const mimir::formalism::LiteralList& literals, const mimir::formalism::Predicate& predicate);
+    // bool contains_predicate(const mimir::LiteralList& literals, const mimir::Predicate& predicate);
 
-    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::LiteralList& literals);
+    // std::ostream& operator<<(std::ostream& os, const mimir::LiteralList& literals);
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Literal>
+    struct hash<mimir::Literal>
     {
-        std::size_t operator()(const mimir::formalism::Literal& literal) const;
+        std::size_t operator()(const mimir::Literal& literal) const;
     };
 
     template<>
-    struct hash<mimir::formalism::LiteralList>
+    struct hash<mimir::LiteralList>
     {
-        std::size_t operator()(const mimir::formalism::LiteralList& literals) const;
+        std::size_t operator()(const mimir::LiteralList& literals) const;
     };
 
     template<>
-    struct less<mimir::formalism::Literal>
+    struct less<mimir::Literal>
     {
-        bool operator()(const mimir::formalism::Literal& left_literal, const mimir::formalism::Literal& right_literal) const;
+        bool operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Literal>
+    struct equal_to<mimir::Literal>
     {
-        bool operator()(const mimir::formalism::Literal& left_literal, const mimir::formalism::Literal& right_literal) const;
+        bool operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const;
     };
 
 }  // namespace std

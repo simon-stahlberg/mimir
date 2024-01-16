@@ -12,7 +12,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Atom : public FormattingMixin<Atom>
     {
@@ -43,33 +43,33 @@ namespace mimir::formalism
     using AtomList = std::vector<Atom>;
     using AtomSet = std::unordered_set<Atom>;
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Atom>
+    struct hash<mimir::Atom>
     {
-        std::size_t operator()(const mimir::formalism::Atom& atom) const;
+        std::size_t operator()(const mimir::Atom& atom) const;
     };
 
     template<>
-    struct hash<mimir::formalism::AtomList>
+    struct hash<mimir::AtomList>
     {
-        std::size_t operator()(const mimir::formalism::AtomList& atoms) const;
+        std::size_t operator()(const mimir::AtomList& atoms) const;
     };
 
     template<>
-    struct less<mimir::formalism::Atom>
+    struct less<mimir::Atom>
     {
-        bool operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const;
+        bool operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Atom>
+    struct equal_to<mimir::Atom>
     {
-        bool operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const;
+        bool operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const;
     };
 }  // namespace std
 

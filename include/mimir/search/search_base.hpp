@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_SEARCH_HPP_
 
 
-namespace mimir::search
+namespace mimir
 {
 
 /// @brief CRTP based interface for a search algorithm
@@ -22,6 +22,6 @@ public:
     }
 };
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_SEARCH_HPP_

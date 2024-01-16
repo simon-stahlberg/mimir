@@ -4,7 +4,7 @@
 #include "../search_base.hpp"
 
 
-namespace mimir::search
+namespace mimir
 {
 
 /// @brief A general implementation of a breadth-first-search.
@@ -15,6 +15,6 @@ private:
     // Implement configuration independent functionality.
 };
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_

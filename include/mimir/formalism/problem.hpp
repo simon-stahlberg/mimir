@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Problem;
     using ProblemList = std::vector<Problem>;
@@ -67,28 +67,28 @@ namespace mimir::formalism
         bool operator<=(const Problem& other) const;
     };
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Problem>
+    struct hash<mimir::Problem>
     {
-        std::size_t operator()(const mimir::formalism::Problem& problem) const;
+        std::size_t operator()(const mimir::Problem& problem) const;
     };
 
     template<>
-    struct less<mimir::formalism::Problem>
+    struct less<mimir::Problem>
     {
-        bool operator()(const mimir::formalism::Problem& left_problem, const mimir::formalism::Problem& right_problem) const;
+        bool operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Problem>
+    struct equal_to<mimir::Problem>
     {
-        bool operator()(const mimir::formalism::Problem& left_problem, const mimir::formalism::Problem& right_problem) const;
+        bool operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const;
     };
 
 }  // namespace std

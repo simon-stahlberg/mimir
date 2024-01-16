@@ -71,7 +71,6 @@ struct hash_container_type {
     }
 };
 
-}
+}  // namespace mimir
 
-
-#endif
+#endif  // MIMIR_COMMON_HASH_HPP_

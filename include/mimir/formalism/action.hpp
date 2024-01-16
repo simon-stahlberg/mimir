@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Action : public FormattingMixin<Action>
     {
@@ -78,27 +78,27 @@ namespace mimir::formalism
 
     using ActionList = std::vector<Action>;
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Action>
+    struct hash<mimir::Action>
     {
-        std::size_t operator()(const mimir::formalism::Action& action) const;
+        std::size_t operator()(const mimir::Action& action) const;
     };
 
     template<>
-    struct less<mimir::formalism::Action>
+    struct less<mimir::Action>
     {
-        bool operator()(const mimir::formalism::Action& left_action, const mimir::formalism::Action& right_action) const;
+        bool operator()(const mimir::Action& left_action, const mimir::Action& right_action) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Action>
+    struct equal_to<mimir::Action>
     {
-        bool operator()(const mimir::formalism::Action& left_action, const mimir::formalism::Action& right_action) const;
+        bool operator()(const mimir::Action& left_action, const mimir::Action& right_action) const;
     };
 
 }  // namespace std

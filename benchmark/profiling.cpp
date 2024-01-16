@@ -90,9 +90,9 @@ void operator delete[](void* ptr) noexcept { operator delete(ptr); }
 
 std::vector<std::string> successor_generator_types() { return std::vector<std::string>({ "automatic", "lifted", "grounded" }); }
 
-void bfs(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void bfs(const mimir::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
-    auto repository = mimir::formalism::create_repository(problem);
+    auto repository = mimir::create_repository(problem);
     mimir::planners::Search search = mimir::planners::create_breadth_first_search(repository, successor_generator);
     const auto time_start = std::chrono::high_resolution_clock::now();
 
@@ -109,7 +109,7 @@ void bfs(const mimir::formalism::Problem& problem, const mimir::planners::Succes
             std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
         });
 
-    mimir::formalism::ActionList plan;
+    mimir::ActionList plan;
     const auto result = search->plan(plan);
 
     std::cout << std::endl;
@@ -137,7 +137,7 @@ void bfs(const mimir::formalism::Problem& problem, const mimir::planners::Succes
     }
 }
 
-void state_space(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void state_space(const mimir::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     const auto state_space = mimir::planners::create_complete_state_space(problem, successor_generator, 100'000);
 
@@ -159,9 +159,9 @@ void state_space(const mimir::formalism::Problem& problem, const mimir::planners
     }
 }
 
-void astar(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void astar(const mimir::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
-    auto repository = mimir::formalism::create_repository(problem);
+    auto repository = mimir::create_repository(problem);
     const auto time_start = std::chrono::high_resolution_clock::now();
     const auto heuristic = mimir::planners::create_h1_heuristic(repository, successor_generator);
     const auto open_list = mimir::planners::create_priority_queue_open_list();
@@ -184,7 +184,7 @@ void astar(const mimir::formalism::Problem& problem, const mimir::planners::Succ
             std::cout << ((total_memory_allocated - total_memory_deallocated) / 1000) << " KB; " << (peak_memory_usage / 1000) << " KB peak]" << std::endl;
         });
 
-    mimir::formalism::ActionList plan;
+    mimir::ActionList plan;
     const auto result = search->plan(plan);
 
     std::cout << std::endl;
@@ -212,21 +212,21 @@ void astar(const mimir::formalism::Problem& problem, const mimir::planners::Succ
     }
 }
 
-void dijkstra(const mimir::formalism::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
+void dijkstra(const mimir::Problem& problem, const mimir::planners::SuccessorGenerator& successor_generator)
 {
     // dijkstra's until a goal state is found
 
     struct Frame
     {
-        mimir::formalism::State state;
+        mimir::State state;
         double f;
     };
 
-    auto state_repository = mimir::formalism::create_repository(problem);
+    auto state_repository = mimir::create_repository(problem);
     const auto& initial_atoms = problem.get_initial_atoms();
     const auto& goal_literals = problem.get_goal_literals();
 
-    mimir::tsl::robin_map<mimir::formalism::State, uint32_t> state_indices;
+    mimir::tsl::robin_map<mimir::State, uint32_t> state_indices;
     std::deque<Frame> frame_list;
     const auto comparator = [](const std::pair<double, int>& lhs, const std::pair<double, int>& rhs) { return lhs.first > rhs.first; };
     std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, decltype(comparator)> priority_queue(comparator);
@@ -335,7 +335,7 @@ int main(int argc, char* argv[])
 
     // parse PDDL files
 
-    const auto problem = mimir::formalism::Problem::parse(domain_path, problem_path);
+    const auto problem = mimir::Problem::parse(domain_path, problem_path);
 
     // find  plan
 
@@ -353,7 +353,7 @@ int main(int argc, char* argv[])
     std::cout << "Using " << generator_name << " successor generator" << std::endl << std::endl;
 
     std::cout << "Creating successor generator... ";
-    const auto repository = mimir::formalism::create_repository(problem);
+    const auto repository = mimir::create_repository(problem);
     const auto successor_generator = mimir::planners::create_sucessor_generator(repository, generator);
     std::cout << "Done" << std::endl;
 

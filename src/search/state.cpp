@@ -1,7 +1,7 @@
-#include <mimir/search/state.hpp> 
+#include <mimir/search/state.hpp>
 
 
-namespace mimir::search {
+namespace mimir {
 
 /* Fully instantiated templates can be define in source */
 

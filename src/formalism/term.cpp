@@ -20,7 +20,7 @@
 #include <loki/domain/pddl/object.hpp>
 #include <loki/domain/pddl/parameter.hpp>
 
-namespace mimir::formalism
+namespace mimir
 {
     Term::Term(loki::pddl::Variable variable) : external_parameter_(variable), external_object_(nullptr) {}
     Term::Term(loki::pddl::Object object) : external_parameter_(nullptr), external_object_(object) {}
@@ -48,25 +48,25 @@ namespace mimir::formalism
     bool Term::operator!=(const Term& other) const { throw std::runtime_error("not implemented"); }
     bool Term::operator<=(const Term& other) const { throw std::runtime_error("not implemented"); }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Term>::operator()(const mimir::formalism::Term& term) const { return term.hash(); }
+    std::size_t hash<mimir::Term>::operator()(const mimir::Term& term) const { return term.hash(); }
 
-    std::size_t hash<mimir::formalism::TermList>::operator()(const mimir::formalism::TermList& objects) const
+    std::size_t hash<mimir::TermList>::operator()(const mimir::TermList& objects) const
     {
-        return hash_vector<mimir::formalism::Term>(objects);
+        return hash_vector<mimir::Term>(objects);
     }
 
-    bool less<mimir::formalism::Term>::operator()(const mimir::formalism::Term& left_term, const mimir::formalism::Term& right_term) const
+    bool less<mimir::Term>::operator()(const mimir::Term& left_term, const mimir::Term& right_term) const
     {
         return left_term < right_term;
     }
 
-    bool equal_to<mimir::formalism::Term>::operator()(const mimir::formalism::Term& left_term, const mimir::formalism::Term& right_term) const
+    bool equal_to<mimir::Term>::operator()(const mimir::Term& left_term, const mimir::Term& right_term) const
     {
         return left_term == right_term;
     }

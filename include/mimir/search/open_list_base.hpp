@@ -3,7 +3,7 @@
 
 #include <memory>
 
-namespace mimir::search
+namespace mimir
 {
 
 template<typename Derived, typename T>
@@ -29,6 +29,6 @@ public:
     }
 };
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_OPEN_LIST_BASE_HPP_

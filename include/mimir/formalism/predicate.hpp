@@ -12,7 +12,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Predicate : public FormattingMixin<Predicate>
     {
@@ -52,27 +52,27 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Predicate>
+    struct hash<mimir::Predicate>
     {
-        std::size_t operator()(const mimir::formalism::Predicate& predicate) const;
+        std::size_t operator()(const mimir::Predicate& predicate) const;
     };
 
     template<>
-    struct hash<mimir::formalism::PredicateList>
+    struct hash<mimir::PredicateList>
     {
-        std::size_t operator()(const mimir::formalism::PredicateList& predicates) const;
+        std::size_t operator()(const mimir::PredicateList& predicates) const;
     };
 
     template<>
-    struct less<mimir::formalism::Predicate>
+    struct less<mimir::Predicate>
     {
-        bool operator()(const mimir::formalism::Predicate& left_predicate, const mimir::formalism::Predicate& right_predicate) const;
+        bool operator()(const mimir::Predicate& left_predicate, const mimir::Predicate& right_predicate) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Predicate>
+    struct equal_to<mimir::Predicate>
     {
-        bool operator()(const mimir::formalism::Predicate& left_predicate, const mimir::formalism::Predicate& right_predicate) const;
+        bool operator()(const mimir::Predicate& left_predicate, const mimir::Predicate& right_predicate) const;
     };
 
 }  // namespace std

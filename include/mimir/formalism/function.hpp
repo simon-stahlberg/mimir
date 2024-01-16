@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Function : public FormattingMixin<Function>
     {
@@ -25,19 +25,19 @@ namespace mimir::formalism
     // {
     //   private:
     //     FunctionOperation operation_;
-    //     mimir::formalism::Predicate variable_;
-    //     mimir::formalism::Atom atom_;
+    //     mimir::Predicate variable_;
+    //     mimir::Atom atom_;
     //     double constant_;
     //     bool is_constant_;
 
     //   public:
-    //     FunctionImpl(FunctionOperation operation, const mimir::formalism::Predicate& variable, const mimir::formalism::Atom& atom);
+    //     FunctionImpl(FunctionOperation operation, const mimir::Predicate& variable, const mimir::Atom& atom);
 
-    //     FunctionImpl(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant);
+    //     FunctionImpl(FunctionOperation operation, const mimir::Predicate& variable, double constant);
 
     //     FunctionOperation get_operation();
 
-    //     mimir::formalism::Predicate get_variable();
+    //     mimir::Predicate get_variable();
 
     //     bool is_constant();
 
@@ -45,14 +45,14 @@ namespace mimir::formalism
 
     //     bool has_atom();
 
-    //     mimir::formalism::Atom get_atom();
+    //     mimir::Atom get_atom();
     // };
 
-    // Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, const mimir::formalism::Atom& atom);
+    // Function create_function(FunctionOperation operation, const mimir::Predicate& variable, const mimir::Atom& atom);
 
-    // Function create_function(FunctionOperation operation, const mimir::formalism::Predicate& variable, double constant);
+    // Function create_function(FunctionOperation operation, const mimir::Predicate& variable, double constant);
 
-    // Function create_unit_cost_function(const mimir::formalism::Domain& domain);
+    // Function create_unit_cost_function(const mimir::Domain& domain);
 
     using FunctionList = std::vector<Function>;
 

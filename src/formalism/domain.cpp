@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <loki/domain/parser.hpp>
 
-namespace mimir::formalism
+namespace mimir
 {
 
     Domain::Domain(loki::pddl::Domain external_domain) : external_(external_domain) {}
@@ -59,25 +59,25 @@ namespace mimir::formalism
 
     std::map<std::string, Term> Domain::get_constant_map() const { throw std::runtime_error("not implemented"); }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Domain>::operator()(const mimir::formalism::Domain& domain) const
+    std::size_t hash<mimir::Domain>::operator()(const mimir::Domain& domain) const
     {
         return hash_combine(domain.get_name(), domain.get_types(), domain.get_constants(), domain.get_predicates(), domain.get_action_schemas());
     }
 
-    bool less<mimir::formalism::Domain>::operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const
+    bool less<mimir::Domain>::operator()(const mimir::Domain& left_domain, const mimir::Domain& right_domain) const
     {
         return less_combine(
             std::make_tuple(left_domain.get_name(), left_domain.get_constants(), left_domain.get_predicates(), left_domain.get_action_schemas()),
             std::make_tuple(right_domain.get_name(), right_domain.get_constants(), right_domain.get_predicates(), right_domain.get_action_schemas()));
     }
 
-    bool equal_to<mimir::formalism::Domain>::operator()(const mimir::formalism::Domain& left_domain, const mimir::formalism::Domain& right_domain) const
+    bool equal_to<mimir::Domain>::operator()(const mimir::Domain& left_domain, const mimir::Domain& right_domain) const
     {
         return equal_to_combine(
             std::make_tuple(left_domain.get_name(), left_domain.get_constants(), left_domain.get_predicates(), left_domain.get_action_schemas()),

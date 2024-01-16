@@ -9,7 +9,7 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedSuccessorGeneratorTest) {
     // Instantiate grounded version
-    auto grounded_successor_generator = search::SuccessorGenerator<Grounded>();
+    auto grounded_successor_generator = SuccessorGenerator<Grounded>();
 }
 
 }

@@ -25,7 +25,7 @@
 #include <memory>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     void Action::initialize_precondition() { throw std::runtime_error("not implemented"); }
 
@@ -92,10 +92,10 @@ namespace mimir::formalism
 
     double Action::get_cost() const { throw std::runtime_error("not implemented"); }
 
-    // mimir::formalism::ObjectList create_arguments(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::ParameterAssignment&
+    // mimir::ObjectList create_arguments(const mimir::ActionSchema& action_schema, const mimir::ParameterAssignment&
     // assignment)
     // {
-    //     mimir::formalism::ObjectList arguments;
+    //     mimir::ObjectList arguments;
 
     //     for (const auto& parameter : action_schema->parameters)
     //     {
@@ -105,10 +105,10 @@ namespace mimir::formalism
     //     return arguments;
     // }
 
-    // mimir::formalism::LiteralList create_precondition(const mimir::formalism::ActionSchema& action_schema, const mimir::formalism::ObjectList&
+    // mimir::LiteralList create_precondition(const mimir::ActionSchema& action_schema, const mimir::ObjectList&
     // arguments)
     // {
-    //     mimir::formalism::ParameterAssignment assignment;
+    //     mimir::ParameterAssignment assignment;
 
     //     for (uint32_t index = 0; index < arguments.size(); ++index)
     //     {
@@ -117,13 +117,13 @@ namespace mimir::formalism
     //         assignment.insert(std::make_pair(parameter, argument));
     //     }
 
-    //     return mimir::formalism::ground_literal_list(action_schema->precondition, assignment);
+    //     return mimir::ground_literal_list(action_schema->precondition, assignment);
     // }
 
-    // mimir::formalism::LiteralList create_unconditional_effect(const mimir::formalism::ActionSchema& action_schema,
-    //                                                           const mimir::formalism::ObjectList& arguments)
+    // mimir::LiteralList create_unconditional_effect(const mimir::ActionSchema& action_schema,
+    //                                                           const mimir::ObjectList& arguments)
     // {
-    //     mimir::formalism::ParameterAssignment assignment;
+    //     mimir::ParameterAssignment assignment;
 
     //     for (uint32_t index = 0; index < arguments.size(); ++index)
     //     {
@@ -132,13 +132,13 @@ namespace mimir::formalism
     //         assignment.insert(std::make_pair(parameter, argument));
     //     }
 
-    //     return mimir::formalism::ground_literal_list(action_schema->unconditional_effect, assignment);
+    //     return mimir::ground_literal_list(action_schema->unconditional_effect, assignment);
     // }
 
-    // mimir::formalism::ImplicationList create_conditional_effect(const mimir::formalism::ActionSchema& action_schema,
-    //                                                             const mimir::formalism::ObjectList& arguments)
+    // mimir::ImplicationList create_conditional_effect(const mimir::ActionSchema& action_schema,
+    //                                                             const mimir::ObjectList& arguments)
     // {
-    //     mimir::formalism::ParameterAssignment assignment;
+    //     mimir::ParameterAssignment assignment;
 
     //     for (uint32_t index = 0; index < arguments.size(); ++index)
     //     {
@@ -147,21 +147,21 @@ namespace mimir::formalism
     //         assignment.insert(std::make_pair(parameter, argument));
     //     }
 
-    //     mimir::formalism::ImplicationList implications;
+    //     mimir::ImplicationList implications;
 
     //     for (const auto& implication : action_schema->conditional_effect)
     //     {
-    //         implications.emplace_back(mimir::formalism::ground_literal_list(implication.antecedent, assignment),
-    //                                   mimir::formalism::ground_literal_list(implication.consequence, assignment));
+    //         implications.emplace_back(mimir::ground_literal_list(implication.antecedent, assignment),
+    //                                   mimir::ground_literal_list(implication.consequence, assignment));
     //     }
 
     //     return implications;
     // }
 
-    // void convert_to_bitsets(const mimir::formalism::Problem& problem,
-    //                         const mimir::formalism::LiteralList& literals,
-    //                         mimir::formalism::Bitset& positive,
-    //                         mimir::formalism::Bitset& negative)
+    // void convert_to_bitsets(const mimir::Problem& problem,
+    //                         const mimir::LiteralList& literals,
+    //                         mimir::Bitset& positive,
+    //                         mimir::Bitset& negative)
     // {
     //     for (const auto& literal : literals)
     //     {
@@ -179,12 +179,12 @@ namespace mimir::formalism
     //     }
     // }
 
-    // Action::Action(const mimir::formalism::Problem& problem,
-    //                        const mimir::formalism::ActionSchema& schema,
-    //                        mimir::formalism::ObjectList&& arguments,
-    //                        mimir::formalism::LiteralList&& precondition,
-    //                        mimir::formalism::LiteralList&& unconditional_effect,
-    //                        mimir::formalism::ImplicationList&& conditional_effect,
+    // Action::Action(const mimir::Problem& problem,
+    //                        const mimir::ActionSchema& schema,
+    //                        mimir::ObjectList&& arguments,
+    //                        mimir::LiteralList&& precondition,
+    //                        mimir::LiteralList&& unconditional_effect,
+    //                        mimir::ImplicationList&& conditional_effect,
     //                        double cost) :
     //     applicability_positive_precondition_bitset_(0, false),
     //     applicability_negative_precondition_bitset_(0, true),
@@ -208,10 +208,10 @@ namespace mimir::formalism
 
     //     for (const auto& [antecedent, consequence] : conditional_effect_)
     //     {
-    //         mimir::formalism::Bitset positive_precondition(0, false);
-    //         mimir::formalism::Bitset negative_precondition(0, true);
-    //         mimir::formalism::Bitset positive_effect(0, false);
-    //         mimir::formalism::Bitset negative_effect(0, true);
+    //         mimir::Bitset positive_precondition(0, false);
+    //         mimir::Bitset negative_precondition(0, true);
+    //         mimir::Bitset positive_effect(0, false);
+    //         mimir::Bitset negative_effect(0, true);
 
     //         convert_to_bitsets(problem, antecedent, positive_precondition, negative_precondition);
     //         convert_to_bitsets(problem, consequence, positive_effect, negative_effect);
@@ -223,9 +223,9 @@ namespace mimir::formalism
     //     }
     // }
 
-    // Action::Action(const mimir::formalism::Problem& problem,
-    //                        const mimir::formalism::ActionSchema& schema,
-    //                        mimir::formalism::ObjectList&& arguments,
+    // Action::Action(const mimir::Problem& problem,
+    //                        const mimir::ActionSchema& schema,
+    //                        mimir::ObjectList&& arguments,
     //                        int32_t cost) :
     //     Action(problem,
     //                schema,
@@ -237,30 +237,30 @@ namespace mimir::formalism
     // {
     // }
 
-    // Action::Action(const mimir::formalism::Problem& problem,
-    //                        const mimir::formalism::ActionSchema& schema,
-    //                        const mimir::formalism::ParameterAssignment& assignment) :
+    // Action::Action(const mimir::Problem& problem,
+    //                        const mimir::ActionSchema& schema,
+    //                        const mimir::ParameterAssignment& assignment) :
     //     Action(problem, schema, create_arguments(schema, assignment), 1)
     // {
     // }
 
-    // const mimir::formalism::ObjectList& Action::get_arguments() const { return arguments_; }
+    // const mimir::ObjectList& Action::get_arguments() const { return arguments_; }
 
-    // const mimir::formalism::LiteralList& Action::get_precondition() const { return applicability_precondition_; }
+    // const mimir::LiteralList& Action::get_precondition() const { return applicability_precondition_; }
 
-    // const mimir::formalism::LiteralList& Action::get_unconditional_effect() const { return unconditional_effect_; }
+    // const mimir::LiteralList& Action::get_unconditional_effect() const { return unconditional_effect_; }
 
-    // const mimir::formalism::ImplicationList& Action::get_conditional_effect() const { return conditional_effect_; }
+    // const mimir::ImplicationList& Action::get_conditional_effect() const { return conditional_effect_; }
 
-    // Action create_action(const mimir::formalism::Problem& problem,
-    //                      const mimir::formalism::ActionSchema& schema,
-    //                      mimir::formalism::ObjectList&& arguments,
-    //                      mimir::formalism::LiteralList&& precondition,
-    //                      mimir::formalism::LiteralList&& unconditional_effect,
-    //                      mimir::formalism::ImplicationList&& conditional_effect,
+    // Action create_action(const mimir::Problem& problem,
+    //                      const mimir::ActionSchema& schema,
+    //                      mimir::ObjectList&& arguments,
+    //                      mimir::LiteralList&& precondition,
+    //                      mimir::LiteralList&& unconditional_effect,
+    //                      mimir::ImplicationList&& conditional_effect,
     //                      double cost)
     // {
-    //     return std::make_shared<mimir::formalism::Action>(problem,
+    //     return std::make_shared<mimir::Action>(problem,
     //                                                           schema,
     //                                                           std::move(arguments),
     //                                                           std::move(precondition),
@@ -269,40 +269,40 @@ namespace mimir::formalism
     //                                                           cost);
     // }
 
-    // Action create_action(const mimir::formalism::Problem& problem,
-    //                      const mimir::formalism::ActionSchema& schema,
-    //                      mimir::formalism::ObjectList&& arguments,
+    // Action create_action(const mimir::Problem& problem,
+    //                      const mimir::ActionSchema& schema,
+    //                      mimir::ObjectList&& arguments,
     //                      double cost)
     // {
-    //     return std::make_shared<mimir::formalism::Action>(problem, schema, std::move(arguments), cost);
+    //     return std::make_shared<mimir::Action>(problem, schema, std::move(arguments), cost);
     // }
 
-    // Action create_action(const mimir::formalism::Problem& problem,
-    //                      const mimir::formalism::ActionSchema& schema,
-    //                      const mimir::formalism::ParameterAssignment& assignment,
+    // Action create_action(const mimir::Problem& problem,
+    //                      const mimir::ActionSchema& schema,
+    //                      const mimir::ParameterAssignment& assignment,
     //                      double cost)
     // {
-    //     return std::make_shared<mimir::formalism::Action>(problem, schema, assignment);
+    //     return std::make_shared<mimir::Action>(problem, schema, assignment);
     // }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Action>::operator()(const mimir::formalism::Action& action) const
+    std::size_t hash<mimir::Action>::operator()(const mimir::Action& action) const
     {
         return hash_combine(action.get_schema(), action.get_arguments(), action.get_cost());
     }
 
-    bool less<mimir::formalism::Action>::operator()(const mimir::formalism::Action& left_action, const mimir::formalism::Action& right_action) const
+    bool less<mimir::Action>::operator()(const mimir::Action& left_action, const mimir::Action& right_action) const
     {
         return less_combine(std::make_tuple(left_action.get_schema(), left_action.get_arguments(), left_action.get_cost()),
                             std::make_tuple(right_action.get_schema(), right_action.get_arguments(), right_action.get_cost()));
     }
 
-    bool equal_to<mimir::formalism::Action>::operator()(const mimir::formalism::Action& left_action, const mimir::formalism::Action& right_action) const
+    bool equal_to<mimir::Action>::operator()(const mimir::Action& left_action, const mimir::Action& right_action) const
     {
         return equal_to_combine(std::make_tuple(left_action.get_schema(), left_action.get_arguments(), left_action.get_cost()),
                                 std::make_tuple(right_action.get_schema(), right_action.get_arguments(), right_action.get_cost()));

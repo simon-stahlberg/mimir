@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace mimir::search
+namespace mimir
 {
 
 /// @brief Top-level CRTP based interface for a StateFactory.
@@ -68,6 +68,6 @@ private:
     }
 };
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_STATE_FACTORY_HPP_

@@ -23,7 +23,7 @@
 #include <cmath>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     std::size_t get_lsb_position(std::size_t n)
     {
@@ -259,12 +259,12 @@ namespace mimir::formalism
 
         return true;
     }
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Bitset>::operator()(const mimir::formalism::Bitset& bitset) const
+    std::size_t hash<mimir::Bitset>::operator()(const mimir::Bitset& bitset) const
     {
         const auto default_block = bitset.default_bit_value ? bitset.block_ones : bitset.block_zeroes;
         const auto seed = static_cast<uint32_t>(default_block);
@@ -280,12 +280,12 @@ namespace std
         return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
     }
 
-    bool less<mimir::formalism::Bitset>::operator()(const mimir::formalism::Bitset& left_bitset, const mimir::formalism::Bitset& right_bitset) const
+    bool less<mimir::Bitset>::operator()(const mimir::Bitset& left_bitset, const mimir::Bitset& right_bitset) const
     {
         return left_bitset < right_bitset;
     }
 
-    bool equal_to<mimir::formalism::Bitset>::operator()(const mimir::formalism::Bitset& left_bitset, const mimir::formalism::Bitset& right_bitset) const
+    bool equal_to<mimir::Bitset>::operator()(const mimir::Bitset& left_bitset, const mimir::Bitset& right_bitset) const
     {
         return left_bitset == right_bitset;
     }

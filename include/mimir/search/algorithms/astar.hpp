@@ -4,7 +4,7 @@
 #include "../search_base.hpp"
 
 
-namespace mimir::search
+namespace mimir
 {
 
 /// @brief A general implementation of AStar.
@@ -17,6 +17,6 @@ private:
 
 
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_

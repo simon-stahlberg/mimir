@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Bitset : public FormattingMixin<Bitset> //, UncopyableMixin<Bitset>
     {
@@ -73,21 +73,21 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Bitset>
+    struct hash<mimir::Bitset>
     {
-        std::size_t operator()(const mimir::formalism::Bitset& bitset) const;
+        std::size_t operator()(const mimir::Bitset& bitset) const;
     };
 
     template<>
-    struct less<mimir::formalism::Bitset>
+    struct less<mimir::Bitset>
     {
-        bool operator()(const mimir::formalism::Bitset& left_bitset, const mimir::formalism::Bitset& right_bitset) const;
+        bool operator()(const mimir::Bitset& left_bitset, const mimir::Bitset& right_bitset) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Bitset>
+    struct equal_to<mimir::Bitset>
     {
-        bool operator()(const mimir::formalism::Bitset& left_bitset, const mimir::formalism::Bitset& right_bitset) const;
+        bool operator()(const mimir::Bitset& left_bitset, const mimir::Bitset& right_bitset) const;
     };
 }  // namespace std
 

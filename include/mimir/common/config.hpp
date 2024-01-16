@@ -9,6 +9,6 @@ struct Grounded { };
 
 struct Lifted { };
 
-}  // namespace formalism
+}  // namespace mimir
 
 #endif  // MIMIR_FORMALISM_CONFIG_HPP_

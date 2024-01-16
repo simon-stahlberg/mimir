@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <deque>
 
-namespace mimir::formalism
+namespace mimir
 {
     ActionSchema::ActionSchema(loki::pddl::Action external_action) : external_(external_action) {}
 
@@ -113,27 +113,27 @@ namespace mimir::formalism
     bool ActionSchema::operator!=(const ActionSchema& other) const { return !(*this == other); }
     bool ActionSchema::operator<=(const ActionSchema& other) const { return (*this < other) || (*this == other); }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& action_schema) const { return action_schema.hash(); }
+    std::size_t hash<mimir::ActionSchema>::operator()(const mimir::ActionSchema& action_schema) const { return action_schema.hash(); }
 
-    std::size_t hash<mimir::formalism::ActionSchemaList>::operator()(const mimir::formalism::ActionSchemaList& action_schemas) const
+    std::size_t hash<mimir::ActionSchemaList>::operator()(const mimir::ActionSchemaList& action_schemas) const
     {
         return mimir::hash_container(action_schemas);
     }
 
-    bool less<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& left_action_schema,
-                                                          const mimir::formalism::ActionSchema& right_action_schema) const
+    bool less<mimir::ActionSchema>::operator()(const mimir::ActionSchema& left_action_schema,
+                                                          const mimir::ActionSchema& right_action_schema) const
     {
         return left_action_schema < right_action_schema;
     }
 
-    bool equal_to<mimir::formalism::ActionSchema>::operator()(const mimir::formalism::ActionSchema& left_action_schema,
-                                                              const mimir::formalism::ActionSchema& right_action_schema) const
+    bool equal_to<mimir::ActionSchema>::operator()(const mimir::ActionSchema& left_action_schema,
+                                                              const mimir::ActionSchema& right_action_schema) const
     {
         return left_action_schema == right_action_schema;
     }

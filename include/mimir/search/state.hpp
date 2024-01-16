@@ -8,7 +8,7 @@
 #include <vector>
 
 
-namespace mimir::search
+namespace mimir
 {
 
 /// @brief Top-level CRTP based interface for a State.
@@ -19,9 +19,10 @@ private:
     StateBase() = default;
     friend Derived;
 
-public:
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+
+public:
 
     // Define common interface for states.
 };
@@ -50,6 +51,6 @@ private:
     // Implement configuration specific functionality.
 };
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_STATE_HPP_

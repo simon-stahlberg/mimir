@@ -9,13 +9,13 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedAstarTest) {
     // Instantiate grounded version
-    auto grounded_astar = search::AStar<Grounded>();
+    auto grounded_astar = AStar<Grounded>();
 }
 
 
 TEST(MimirTests, LiftedAstarTest) {
     // Instantiate lifted version
-    auto lifted_astar = search::AStar<Lifted>();
+    auto lifted_astar = AStar<Lifted>();
 }
 
 }

@@ -26,7 +26,7 @@
 #include <loki/domain/parser.hpp>
 #include <loki/problem/parser.hpp>
 
-namespace mimir::formalism
+namespace mimir
 {
     Problem::Problem(loki::pddl::Problem external_problem) : external_(std::move(external_problem)) {}
 
@@ -77,20 +77,20 @@ namespace mimir::formalism
 
     bool Problem::operator<=(const Problem& other) const { throw std::runtime_error("not implemented"); }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& problem) const { return problem.hash(); }
+    std::size_t hash<mimir::Problem>::operator()(const mimir::Problem& problem) const { return problem.hash(); }
 
-    bool less<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& left_problem, const mimir::formalism::Problem& right_problem) const
+    bool less<mimir::Problem>::operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const
     {
         return left_problem < right_problem;
     }
 
-    bool equal_to<mimir::formalism::Problem>::operator()(const mimir::formalism::Problem& left_problem, const mimir::formalism::Problem& right_problem) const
+    bool equal_to<mimir::Problem>::operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const
     {
         return left_problem == right_problem;
     }

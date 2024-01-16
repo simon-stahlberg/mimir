@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class ActionSchema : public FormattingMixin<ActionSchema>
     {
@@ -39,7 +39,7 @@ namespace mimir::formalism
         Function get_cost() const;
         bool is_valid() const;
 
-        // bool affects_predicate(const mimir::formalism::Predicate& predicate) const;  // TODO: Is this one used?
+        // bool affects_predicate(const mimir::Predicate& predicate) const;  // TODO: Is this one used?
 
         std::size_t hash() const;
 
@@ -50,37 +50,37 @@ namespace mimir::formalism
         bool operator<=(const ActionSchema& other) const;
     };
 
-    // bool affect_predicate(const mimir::formalism::ActionSchemaList& action_schemas, const mimir::formalism::Predicate& predicate);
+    // bool affect_predicate(const mimir::ActionSchemaList& action_schemas, const mimir::Predicate& predicate);
 
     using ActionSchemaList = std::vector<ActionSchema>;
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::ActionSchema>
+    struct hash<mimir::ActionSchema>
     {
-        std::size_t operator()(const mimir::formalism::ActionSchema& action_schema) const;
+        std::size_t operator()(const mimir::ActionSchema& action_schema) const;
     };
 
     template<>
-    struct hash<mimir::formalism::ActionSchemaList>
+    struct hash<mimir::ActionSchemaList>
     {
-        std::size_t operator()(const mimir::formalism::ActionSchemaList& action_schemas) const;
+        std::size_t operator()(const mimir::ActionSchemaList& action_schemas) const;
     };
 
     template<>
-    struct less<mimir::formalism::ActionSchema>
+    struct less<mimir::ActionSchema>
     {
-        bool operator()(const mimir::formalism::ActionSchema& left_action_schema, const mimir::formalism::ActionSchema& right_action_schema) const;
+        bool operator()(const mimir::ActionSchema& left_action_schema, const mimir::ActionSchema& right_action_schema) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::ActionSchema>
+    struct equal_to<mimir::ActionSchema>
     {
-        bool operator()(const mimir::formalism::ActionSchema& left_action_schema, const mimir::formalism::ActionSchema& right_action_schema) const;
+        bool operator()(const mimir::ActionSchema& left_action_schema, const mimir::ActionSchema& right_action_schema) const;
     };
 
 }  // namespace std

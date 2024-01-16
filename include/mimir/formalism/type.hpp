@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Type;
     using TypeList = std::vector<Type>;
@@ -41,7 +41,7 @@ namespace mimir::formalism
         friend class Term;
     };
 
-    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::TypeList& types);
+    // std::ostream& operator<<(std::ostream& os, const mimir::TypeList& types);
 
 }  // namespace formalism
 
@@ -50,27 +50,27 @@ namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Type>
+    struct hash<mimir::Type>
     {
-        std::size_t operator()(const mimir::formalism::Type& type) const;
+        std::size_t operator()(const mimir::Type& type) const;
     };
 
     template<>
-    struct hash<mimir::formalism::TypeList>
+    struct hash<mimir::TypeList>
     {
-        std::size_t operator()(const mimir::formalism::TypeList& types) const;
+        std::size_t operator()(const mimir::TypeList& types) const;
     };
 
     template<>
-    struct less<mimir::formalism::Type>
+    struct less<mimir::Type>
     {
-        bool operator()(const mimir::formalism::Type& left_type, const mimir::formalism::Type& right_type) const;
+        bool operator()(const mimir::Type& left_type, const mimir::Type& right_type) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Type>
+    struct equal_to<mimir::Type>
     {
-        bool operator()(const mimir::formalism::Type& left_type, const mimir::formalism::Type& right_type) const;
+        bool operator()(const mimir::Type& left_type, const mimir::Type& right_type) const;
     };
 
 }  // namespace std

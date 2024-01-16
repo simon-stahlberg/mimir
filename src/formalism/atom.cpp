@@ -19,13 +19,13 @@
 
 #include <algorithm>
 
-namespace mimir::formalism
+namespace mimir
 {
     Atom::Atom(loki::pddl::Atom external_atom) : external_(external_atom) {}
 
-    // mimir::formalism::Atom ground_predicate(const mimir::formalism::Predicate& predicate, const mimir::formalism::ParameterAssignment& assignment)
+    // mimir::Atom ground_predicate(const mimir::Predicate& predicate, const mimir::ParameterAssignment& assignment)
     // {
-    //     mimir::formalism::ObjectList arguments;
+    //     mimir::ObjectList arguments;
 
     //     for (const auto& parameter : predicate->parameters)
     //     {
@@ -49,7 +49,7 @@ namespace mimir::formalism
 
     std::size_t Atom::hash() const { throw std::runtime_error("not implemented"); }
 
-    std::ostream& operator<<(std::ostream& os, const mimir::formalism::Atom& atom)
+    std::ostream& operator<<(std::ostream& os, const mimir::Atom& atom)
     {
         os << atom.get_predicate().get_name() << "(";
 
@@ -68,23 +68,23 @@ namespace mimir::formalism
         return os;
     }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& atom) const { throw std::runtime_error("not implemented"); }
+    std::size_t hash<mimir::Atom>::operator()(const mimir::Atom& atom) const { throw std::runtime_error("not implemented"); }
 
-    std::size_t hash<mimir::formalism::AtomList>::operator()(const mimir::formalism::AtomList& atoms) const { return hash_vector(atoms); }
+    std::size_t hash<mimir::AtomList>::operator()(const mimir::AtomList& atoms) const { return hash_vector(atoms); }
 
-    bool less<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const
+    bool less<mimir::Atom>::operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const
     {
         return less_combine(std::make_tuple(left_atom.get_predicate(), left_atom.get_terms()),
                             std::make_tuple(right_atom.get_predicate(), right_atom.get_terms()));
     }
 
-    bool equal_to<mimir::formalism::Atom>::operator()(const mimir::formalism::Atom& left_atom, const mimir::formalism::Atom& right_atom) const
+    bool equal_to<mimir::Atom>::operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const
     {
         throw std::runtime_error("not implemented");
     }

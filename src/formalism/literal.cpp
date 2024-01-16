@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     /*
      * Member functions
@@ -76,25 +76,25 @@ namespace mimir::formalism
         return ground_literal_list;
     }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& literal) const { return literal.hash(); }
+    std::size_t hash<mimir::Literal>::operator()(const mimir::Literal& literal) const { return literal.hash(); }
 
-    std::size_t hash<mimir::formalism::LiteralList>::operator()(const mimir::formalism::LiteralList& literals) const
+    std::size_t hash<mimir::LiteralList>::operator()(const mimir::LiteralList& literals) const
     {
-        return hash_vector<mimir::formalism::Literal>(literals);
+        return hash_vector<mimir::Literal>(literals);
     }
 
-    bool less<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& left_literal, const mimir::formalism::Literal& right_literal) const
+    bool less<mimir::Literal>::operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const
     {
         return left_literal < right_literal;
     }
 
-    bool equal_to<mimir::formalism::Literal>::operator()(const mimir::formalism::Literal& left_literal, const mimir::formalism::Literal& right_literal) const
+    bool equal_to<mimir::Literal>::operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const
     {
         return left_literal == right_literal;
     }

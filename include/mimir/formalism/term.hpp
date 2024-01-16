@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace mimir::formalism
+namespace mimir
 {
     class Term : public FormattingMixin<Term>
     {
@@ -53,43 +53,43 @@ namespace mimir::formalism
         friend class Problem;
     };
 
-    // mimir::formalism::ObjectList filter(const mimir::formalism::ObjectList& object_list, const mimir::formalism::Type& type);
+    // mimir::ObjectList filter(const mimir::ObjectList& object_list, const mimir::Type& type);
 
-    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::Object& object);
+    // std::ostream& operator<<(std::ostream& os, const mimir::Object& object);
 
-    // std::ostream& operator<<(std::ostream& os, const mimir::formalism::ObjectList& objects);
+    // std::ostream& operator<<(std::ostream& os, const mimir::ObjectList& objects);
 
     using TermList = std::vector<Term>;
     using ParameterAssignment = std::unordered_map<Term, Term>;
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct hash<mimir::formalism::Term>
+    struct hash<mimir::Term>
     {
-        std::size_t operator()(const mimir::formalism::Term& term) const;
+        std::size_t operator()(const mimir::Term& term) const;
     };
 
     template<>
-    struct hash<mimir::formalism::TermList>
+    struct hash<mimir::TermList>
     {
-        std::size_t operator()(const mimir::formalism::TermList& terms) const;
+        std::size_t operator()(const mimir::TermList& terms) const;
     };
 
     template<>
-    struct less<mimir::formalism::Term>
+    struct less<mimir::Term>
     {
-        bool operator()(const mimir::formalism::Term& left_term, const mimir::formalism::Term& right_term) const;
+        bool operator()(const mimir::Term& left_term, const mimir::Term& right_term) const;
     };
 
     template<>
-    struct equal_to<mimir::formalism::Term>
+    struct equal_to<mimir::Term>
     {
-        bool operator()(const mimir::formalism::Term& left_term, const mimir::formalism::Term& right_term) const;
+        bool operator()(const mimir::Term& left_term, const mimir::Term& right_term) const;
     };
 
 }  // namespace std

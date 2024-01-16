@@ -19,7 +19,7 @@
 
 #include <string>
 
-namespace mimir::formalism
+namespace mimir
 {
     Predicate::Predicate(loki::pddl::Predicate external_predicate) : external_(external_predicate) {}
 
@@ -35,27 +35,27 @@ namespace mimir::formalism
     bool Predicate::operator!=(const Predicate& other) const { throw std::runtime_error("not implemented"); }
     bool Predicate::operator<=(const Predicate& other) const { throw std::runtime_error("not implemented"); }
 
-}  // namespace mimir::formalism
+}  // namespace mimir
 
 /*
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& predicate) const
+    std::size_t hash<mimir::Predicate>::operator()(const mimir::Predicate& predicate) const
     {
         throw std::runtime_error("not implemented");
     }
 
-    std::size_t hash<mimir::formalism::PredicateList>::operator()(const mimir::formalism::PredicateList& predicates) const { return hash_vector(predicates); }
+    std::size_t hash<mimir::PredicateList>::operator()(const mimir::PredicateList& predicates) const { return hash_vector(predicates); }
 
-    bool less<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& left_predicate,
-                                                       const mimir::formalism::Predicate& right_predicate) const
+    bool less<mimir::Predicate>::operator()(const mimir::Predicate& left_predicate,
+                                                       const mimir::Predicate& right_predicate) const
     {
         throw std::runtime_error("not implemented");
     }
 
-    bool equal_to<mimir::formalism::Predicate>::operator()(const mimir::formalism::Predicate& left_predicate,
-                                                           const mimir::formalism::Predicate& right_predicate) const
+    bool equal_to<mimir::Predicate>::operator()(const mimir::Predicate& left_predicate,
+                                                           const mimir::Predicate& right_predicate) const
     {
         throw std::runtime_error("not implemented");
     }

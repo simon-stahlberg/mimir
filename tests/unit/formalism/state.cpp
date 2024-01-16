@@ -9,13 +9,13 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedStateTest) {
     // Instantiate grounded version
-    auto grounded_state = search::State<Grounded>();
-} 
+    auto grounded_state = State<Grounded>();
+}
 
 
 TEST(MimirTests, LiftedStateTest) {
-    // Instantiate lifted version 
-    auto lifted_state = search::State<Lifted>();
-} 
+    // Instantiate lifted version
+    auto lifted_state = State<Lifted>();
+}
 
-} 
+}

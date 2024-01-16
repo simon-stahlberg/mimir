@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace mimir::formalism
+namespace mimir
 {
     Implication::Implication() = default;
     Implication::Implication(const LiteralList& ante, const LiteralList& cons) : antecedent(ante), consequence(cons) {}
@@ -32,12 +32,12 @@ namespace mimir::formalism
 /*
 namespace std
 {
-    std::size_t hash<mimir::formalism::Implication>::operator()(const mimir::formalism::Implication& implication) const
+    std::size_t hash<mimir::Implication>::operator()(const mimir::Implication& implication) const
     {
         return hash_combine(implication.get_antecedent(), implication.get_consequence());
     }
 
-    bool less<mimir::formalism::Implication>::operator()(const mimir::formalism::Implication& lhs, const mimir::formalism::Implication& rhs) const
+    bool less<mimir::Implication>::operator()(const mimir::Implication& lhs, const mimir::Implication& rhs) const
     {
         if (lhs.get_antecedent() != rhs.get_antecedent())
         {
@@ -47,17 +47,17 @@ namespace std
         return lhs.get_consequence() < rhs.get_consequence();
     }
 
-    bool equal_to<mimir::formalism::Implication>::operator()(const mimir::formalism::Implication& lhs, const mimir::formalism::Implication& rhs) const
+    bool equal_to<mimir::Implication>::operator()(const mimir::Implication& lhs, const mimir::Implication& rhs) const
     {
         return lhs.get_antecedent() == rhs.get_antecedent() && lhs.get_consequence() == rhs.get_consequence();
     }
 
-    std::size_t hash<mimir::formalism::ImplicationList>::operator()(const mimir::formalism::ImplicationList& implication_list) const
+    std::size_t hash<mimir::ImplicationList>::operator()(const mimir::ImplicationList& implication_list) const
     {
         return hash_vector(implication_list);
     }
 
-    bool less<mimir::formalism::ImplicationList>::operator()(const mimir::formalism::ImplicationList& lhs, const mimir::formalism::ImplicationList& rhs) const
+    bool less<mimir::ImplicationList>::operator()(const mimir::ImplicationList& lhs, const mimir::ImplicationList& rhs) const
     {
         if (lhs.size() != rhs.size())
         {
@@ -67,8 +67,8 @@ namespace std
         return std::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
     }
 
-    bool equal_to<mimir::formalism::ImplicationList>::operator()(const mimir::formalism::ImplicationList& lhs,
-                                                                 const mimir::formalism::ImplicationList& rhs) const
+    bool equal_to<mimir::ImplicationList>::operator()(const mimir::ImplicationList& lhs,
+                                                                 const mimir::ImplicationList& rhs) const
     {
         if (lhs.size() != rhs.size())
         {

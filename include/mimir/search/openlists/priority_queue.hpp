@@ -6,7 +6,7 @@
 #include <functional>
 #include <queue>
 
-namespace mimir::search
+namespace mimir
 {
 
 template<typename T>
@@ -29,6 +29,6 @@ private:
     }
 };
 
-}  // namespace mimir::search
+}  // namespace mimir
 
 #endif  // MIMIR_SEARCH_OPEN_LISTS_PRIORITY_QUEUE_HPP_
