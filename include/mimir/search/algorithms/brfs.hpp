@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
-#include "../search_base.hpp"
+#include "../algorithm_base.hpp"
 
 
 namespace mimir

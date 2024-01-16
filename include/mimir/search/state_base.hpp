@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_STATE_HPP_
-#define MIMIR_SEARCH_STATE_HPP_
+#ifndef MIMIR_SEARCH_STATE_BASE_HPP_
+#define MIMIR_SEARCH_STATE_BASE_HPP_
 
 #include "../common/config.hpp"
 #include "../common/mixins.hpp"
@@ -35,22 +35,6 @@ private:
     // Implement configuration independent functionality.
 };
 
-
-/// @brief Concrete implementation of a grounded state.
-template<>
-class State<Grounded> : public StateBase<State<Grounded>> {
-private:
-    // Implement configuration specific functionality.
-};
-
-
-/// @brief Concrete implementation of a lifted state.
-template<>
-class State<Lifted> : public StateBase<State<Lifted>> {
-private:
-    // Implement configuration specific functionality.
-};
-
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_STATE_HPP_
+#endif  // MIMIR_SEARCH_STATE_BASE_HPP_

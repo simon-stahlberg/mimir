@@ -1,5 +1,5 @@
 #include <mimir/common/config.hpp>
-#include <mimir/search/successor_generators/successor_generator_grounded.hpp>
+#include <mimir/search/grounded/successor_generator.hpp>
 
 #include <gtest/gtest.h>
 

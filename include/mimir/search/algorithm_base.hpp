@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SEARCH_HPP_
-#define MIMIR_SEARCH_SEARCH_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHM_BASE_HPP_
+#define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 
 namespace mimir
@@ -8,10 +8,10 @@ namespace mimir
 /// @brief CRTP based interface for a search algorithm
 /// @tparam Derived
 template<typename Derived>
-class SearchBase {
-//private:
-//    SearchBase() = default;
-//    friend Derived;
+class AlgorithmBase {
+private:
+    AlgorithmBase() = default;
+    friend Derived;
 
 public:
     /// @brief Helper to cast to Derived.
@@ -24,4 +24,4 @@ public:
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SEARCH_HPP_
+#endif  // MIMIR_SEARCH_ALGORITHM_BASE_HPP_

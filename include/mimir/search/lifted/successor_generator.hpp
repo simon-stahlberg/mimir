@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_GENERATORS_SUCCESSOR_GENERATOR_LIFTED_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_GENERATORS_SUCCESSOR_GENERATOR_LIFTED_HPP_
+#ifndef MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
+#define MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
 
-#include "successor_generator.hpp"
+#include "../successor_generator_base.hpp"
 
 #include "../../common/config.hpp"
 #include "../../common/mixins.hpp"
@@ -28,4 +28,4 @@ private:
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_GENERATORS_SUCCESSOR_GENERATOR_LIFTED_HPP_
+#endif  // MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_

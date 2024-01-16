@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_STATE_FACTORY_HPP_
-#define MIMIR_SEARCH_STATE_FACTORY_HPP_
+#ifndef MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_
+#define MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_
 
-#include "state.hpp"
+#include "state_base.hpp"
 
 #include "../common/config.hpp"
 #include "../common/mixins.hpp"
@@ -42,32 +42,6 @@ private:
     // Implement configuration independent functionality.
 };
 
-
-/// @brief Concrete implementation of a state factory for grounded states.
-template<>
-class StateFactory<Grounded> : public StateFactoryBase<StateFactory<Grounded>> {
-private:
-    // Implement configuration specific functionality.
-    template<typename... Args>
-    State<Grounded> create_impl(Args&& ...args) {
-        // create a grounded state.
-        return State<Grounded>(std::forward<Args>(args)...);
-    }
-};
-
-
-/// @brief Concrete implementation of a state factory for grounded states.
-template<>
-class StateFactory<Lifted> : public StateFactoryBase<StateFactory<Lifted>> {
-private:
-    // Implement configuration specific functionality.
-    template<typename... Args>
-    State<Lifted> create_impl(Args&& ...args) {
-        // create a lifted state.
-        return State<Lifted>(std::forward<Args>(args)...);
-    }
-};
-
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_STATE_FACTORY_HPP_
+#endif  // MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_

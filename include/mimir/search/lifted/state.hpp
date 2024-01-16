@@ -1,0 +1,25 @@
+#ifndef MIMIR_SEARCH_LIFTED_STATE_HPP_
+#define MIMIR_SEARCH_LIFTED_STATE_HPP_
+
+#include "../state_base.hpp"
+
+#include "../../common/config.hpp"
+#include "../../common/mixins.hpp"
+
+#include <stdexcept>
+#include <vector>
+
+
+namespace mimir
+{
+
+/// @brief Concrete implementation of a lifted state.
+template<>
+class State<Lifted> : public StateBase<State<Lifted>> {
+private:
+    // Implement configuration specific functionality.
+};
+
+}  // namespace mimir
+
+#endif  // MIMIR_SEARCH_LIFTED_STATE_HPP_

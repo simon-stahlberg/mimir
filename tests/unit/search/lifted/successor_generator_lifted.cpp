@@ -1,5 +1,5 @@
 #include <mimir/common/config.hpp>
-#include <mimir/search/successor_generators/successor_generator_lifted.hpp>
+#include <mimir/search/lifted/successor_generator.hpp>
 
 #include <gtest/gtest.h>
 
