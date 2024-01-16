@@ -1,4 +1,4 @@
-#include <mimir/search/lifted/state_factory.hpp>
+#include <mimir/search/lifted/state_repository.hpp>
 
 
 namespace mimir {

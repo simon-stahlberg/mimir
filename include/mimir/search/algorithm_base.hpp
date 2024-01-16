@@ -24,8 +24,8 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void search() {
-        self().search_impl();
+    void find_solution() {
+        self().find_solution_impl();
     }
 };
 

@@ -35,7 +35,7 @@ public:
 };
 
 
-/// @brief General implementation.
+/// @brief A concrete successor generator.
 template<typename Configuration>
 class SuccessorGenerator : public SuccessorGeneratorBase<SuccessorGenerator<Configuration>> {
 private:

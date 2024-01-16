@@ -1,7 +1,8 @@
-#ifndef MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_
-#define MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_
+#ifndef MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
+#define MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
 
 #include "state_base.hpp"
+#include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
 #include "../common/mixins.hpp"
@@ -12,12 +13,14 @@
 namespace mimir
 {
 
-/// @brief Top-level CRTP based interface for a StateFactory.
+/// @brief Top-level CRTP based interface for a StateRepository.
 /// @tparam Derived
 template<typename Derived>
-class StateFactoryBase : public UncopyableMixin<StateFactoryBase<Derived>> {
+class StateRepositoryBase : public UncopyableMixin<StateRepositoryBase<Derived>> {
 private:
-    StateFactoryBase() = default;
+    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+
+    StateRepositoryBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -27,28 +30,26 @@ private:
 public:
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
-    /// @tparam ...Args are the argument types to create a state.
-    /// @param ...args are the arguments.
     /// @return
-    template<typename... Args>
-    auto create(Args&& ...args) {
-        return self().create_impl(std::forward<Args>(args)...);
+    State<Configuration> create(const StateBuilder<Configuration>& builder) {
+        return self().create_impl(builder);
     }
 };
 
 
+/// @brief A concrete state repository.
 template<typename Configuration>
-class StateFactory : StateFactoryBase<StateFactory<Configuration>> {
+class StateRepository : StateRepositoryBase<StateRepository<Configuration>> {
 private:
     // Implement configuration independent functionality.
 };
 
 
 template<typename Configuration>
-struct TypeTraits<StateFactory<Configuration>> {
+struct TypeTraits<StateRepository<Configuration>> {
     using ConfigurationType = Configuration;
 };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_STATE_FACTORY_BASE_HPP_
+#endif  // MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_

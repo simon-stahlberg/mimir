@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 #define MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 
+#include "state_base.hpp"
 #include "type_traits.hpp"
 
 #include "../common/mixins.hpp"
@@ -26,7 +27,6 @@ public:
         return self().compute_heuristic_impl(state);
     }
 };
-
 
 }  // namespace mimir
 

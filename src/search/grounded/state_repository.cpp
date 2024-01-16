@@ -1,4 +1,4 @@
-#include <mimir/search/grounded/state_factory.hpp>
+#include <mimir/search/grounded/state_repository.hpp>
 
 
 namespace mimir {

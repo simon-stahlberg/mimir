@@ -17,6 +17,8 @@ namespace mimir
 template<typename Derived>
 class StateBase {
 private:
+    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+
     StateBase() = default;
     friend Derived;
 
@@ -29,7 +31,7 @@ public:
 };
 
 
-/// @brief Templatize a concrete state by a configuration.
+/// @brief A concrete state.
 template<typename Configuration>
 class State : public StateBase<State<Configuration>> {
 private:

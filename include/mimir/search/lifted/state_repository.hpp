@@ -1,10 +1,10 @@
-#ifndef MIMIR_SEARCH_LIFTED_STATE_FACTORY_HPP_
-#define MIMIR_SEARCH_LIFTED_STATE_FACTORY_HPP_
+#ifndef MIMIR_SEARCH_LIFTED_STATE_REPOSITORY_HPP_
+#define MIMIR_SEARCH_LIFTED_STATE_REPOSITORY_HPP_
 
 #include "state.hpp"
 
 #include "../config.hpp"
-#include "../state_factory_base.hpp"
+#include "../state_repository_base.hpp"
 #include "../../common/mixins.hpp"
 
 #include <stdexcept>
@@ -15,7 +15,7 @@ namespace mimir
 
 /// @brief Concrete implementation of a state factory for lifted states.
 template<>
-class StateFactory<Lifted> : public StateFactoryBase<StateFactory<Lifted>> {
+class StateRepository<Lifted> : public StateRepositoryBase<StateRepository<Lifted>> {
     // Implement configuration specific functionality.
 private:
     template<typename... Args>
@@ -25,9 +25,9 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class StateFactoryBase<StateFactory<Lifted>>;
+    friend class StateRepositoryBase<StateRepository<Lifted>>;
 };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_LIFTED_STATE_FACTORY_HPP_
+#endif  // MIMIR_SEARCH_LIFTED_STATE_REPOSITORY_HPP_

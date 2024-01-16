@@ -23,7 +23,6 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    // TODO (Dominik): What should T be? An index or a something like a search node?
     void insert(const T& item, double priority) {
         return self().insert_impl(item, priority);
     }
