@@ -43,7 +43,7 @@ function(set_project_compiler_options project_name)
             # the max level the error messages will traverse when running through concept contstained template code
             "-fconcepts-diagnostics-depth=5"
             # various optimizations (link time optimization, unrolling loops, omitting frame pointers(=increasing stack register mem for data))
-            "-flto"
+            "-flto=auto"
             "-ffat-lto-objects"
             "-funroll-loops"
             ">"
