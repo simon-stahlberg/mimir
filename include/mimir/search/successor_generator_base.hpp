@@ -6,9 +6,6 @@
 
 #include "../formalism/action.hpp"
 
-#include <stdexcept>
-#include <vector>
-
 
 namespace mimir
 {
