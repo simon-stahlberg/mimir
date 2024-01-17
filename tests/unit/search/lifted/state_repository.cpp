@@ -13,8 +13,8 @@ TEST(MimirTests, LiftedStateRepositoryTest) {
     // Instantiate lifted version
     auto lifted_state_repository = StateRepository<Lifted>();
     auto problem = static_cast<Problem>(nullptr);
-    auto initial_state = lifted_state_repository.get_or_create_initial_state(problem);
-    initial_state.get_id();
+    const auto& initial_state = lifted_state_repository.get_or_create_initial_state(problem);
+    const auto initial_state_id = initial_state.get_id();
 }
 
 }

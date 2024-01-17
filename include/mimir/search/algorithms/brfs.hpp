@@ -29,12 +29,12 @@ private:
             auto state_id = m_queue.front();
             m_queue.pop_front();
 
-            const auto state = this->m_state_repository.lookup_state(state_id);
+            const auto& state = this->m_state_repository.lookup_state(state_id);
             const auto search_node = this->m_search_space.get_or_create_node(state.get_id());
 
             const auto applicable_actions = this->m_successor_generator.generate_applicable_actions(state);
             for (const auto& action : applicable_actions) {
-                const auto successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
+                const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
 
                 // TODO (Dominik): implement rest
             }

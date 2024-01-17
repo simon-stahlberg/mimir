@@ -35,15 +35,15 @@ public:
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
     /// @return
-    State<Config> get_or_create_initial_state(const Problem& problem) {
+    const State<Config>& get_or_create_initial_state(const Problem& problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    State<Config> get_or_create_successor_state(const State<Config>& state, const GroundAction& action) {
+    const State<Config>& get_or_create_successor_state(const State<Config>& state, const GroundAction& action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 
-    State<Config> lookup_state(const ID<State<Config>>& state_id) {
+    const State<Config>& lookup_state(const ID<State<Config>>& state_id) {
         return self().lookup_state_impl(state_id);
     }
 };
