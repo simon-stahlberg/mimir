@@ -28,7 +28,7 @@ class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
     using Config = typename TypeTraits<Derived>::ConfigType;
 
-    AlgorithmBase(Problem problem)
+    AlgorithmBase(const Problem& problem)
         : m_problem(problem)
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem)) { }
 
@@ -46,7 +46,7 @@ private:
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {
-        self().find_solution_impl(out_plan);
+        return self().find_solution_impl(out_plan);
     }
 
     const State<Config>& get_initial_state() const {

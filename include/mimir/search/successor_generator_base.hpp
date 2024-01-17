@@ -27,8 +27,8 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    GroundActionList generate_applicable_actions(const State<Config>& state) {
-        return self().generate_applicable_actions_impl(state);
+    void generate_applicable_actions(const State<Config>& state, GroundActionList& out_applicable_actions) {
+        return self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 };
 

@@ -17,12 +17,13 @@ private:
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement
+        return SearchStatus::FAILED;
     }
 
     friend class AlgorithmBase<AStar<Config, Heuristic>>;
 
 public:
-    AStar(Problem problem)
+    AStar(const Problem& problem)
         : AlgorithmBase<AStar<Config, Heuristic>>(problem) { }
 };
 

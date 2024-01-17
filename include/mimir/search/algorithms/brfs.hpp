@@ -25,6 +25,8 @@ private:
         auto& initial_search_node = this->m_search_space.get_or_create_node(initial_state_id);
         // TODO (Dominik): update the data of the initial_search_node
 
+        auto applicable_actions = GroundActionList();
+
         m_queue.push_back(initial_state_id);
         while (!m_queue.empty()) {
             auto state_id = m_queue.front();
@@ -33,19 +35,20 @@ private:
             const auto& state = this->m_state_repository.lookup_state(state_id);
             const auto search_node = this->m_search_space.get_or_create_node(state.get_id());
 
-            const auto applicable_actions = this->m_successor_generator.generate_applicable_actions(state);
+            this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions) {
                 const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
 
                 // TODO (Dominik): implement rest
             }
         }
+        return SearchStatus::FAILED;
     }
 
     friend class AlgorithmBase<BrFS<Config>>;
 
 public:
-    BrFS(Problem problem)
+    BrFS(const Problem& problem)
         : AlgorithmBase<BrFS<Config>>(problem) { }
 };
 
