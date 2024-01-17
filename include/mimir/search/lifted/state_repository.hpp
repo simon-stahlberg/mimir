@@ -16,8 +16,15 @@ template<>
 class StateRepository<Lifted> : public StateRepositoryBase<StateRepository<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    State<Lifted> create_impl(const StateBuilder<Lifted>& builder) {
+    State<Lifted> get_or_create_initial_state_impl(const Problem& problem) {
         // create a lifted state.
+        // TODO (Dominik): implement
+        return State<Lifted>(0);
+    }
+
+    State<Lifted> get_or_create_successor_state_impl(const State<Lifted>& state, const GroundAction& action) {
+        // create a lifted state.
+        // TODO (Dominik): implement
         return State<Lifted>(0);
     }
 

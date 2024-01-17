@@ -1,4 +1,4 @@
-#include <mimir/formalism/problem.hpp>
+#include <mimir/formalism/problem/declarations.hpp>
 
 #include <mimir/search/config.hpp>
 #include <mimir/search/algorithms/brfs.hpp>

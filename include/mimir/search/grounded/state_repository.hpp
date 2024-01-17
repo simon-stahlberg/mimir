@@ -16,8 +16,15 @@ template<>
 class StateRepository<Grounded> : public StateRepositoryBase<StateRepository<Grounded>> {
     // Implement configuration specific functionality.
 private:
-    State<Grounded> create_impl(const StateBuilder<Grounded>& builder) {
+    State<Grounded> get_or_create_initial_state_impl(const Problem& problem) {
         // create a grounded state.
+        // TODO (Dominik): implement
+        return State<Grounded>(0);
+    }
+
+    State<Grounded> get_or_create_successor_state_impl(const State<Grounded>& state, const GroundAction& action) {
+        // create a grounded state.
+        // TODO (Dominik): implement
         return State<Grounded>(0);
     }
 

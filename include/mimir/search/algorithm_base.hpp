@@ -12,7 +12,7 @@
 #include "lifted/successor_generator.hpp"
 
 #include "../common/mixins.hpp"
-#include "../formalism/problem.hpp"
+#include "../formalism/problem/declarations.hpp"
 
 
 namespace mimir
@@ -27,7 +27,7 @@ private:
 
     AlgorithmBase(Problem problem)
         : m_problem(problem)
-        , m_initial_state(m_state_repository.create(m_state_builder))  { }  // TODO (Dominik): initialize initial state correctly
+        , m_initial_state(m_state_repository.get_or_create_initial_state(problem))  { }
 
     friend Derived;
 
@@ -37,7 +37,6 @@ private:
 
     Problem m_problem;
 
-    StateBuilder<Config> m_state_builder;
     State<Config> m_initial_state;
 
     StateRepository<Config> m_state_repository;

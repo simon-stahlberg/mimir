@@ -2,9 +2,10 @@
 #define MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
 
 #include "state_base.hpp"
+#include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
-#include "../formalism/action.hpp"
+#include "../formalism/problem/declarations.hpp"
 
 
 namespace mimir
@@ -26,7 +27,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    ActionList generate_applicable_actions(const State<Config>& state) {
+    GroundActionList generate_applicable_actions(const State<Config>& state) {
         return self().generate_applicable_actions_impl(state);
     }
 };
@@ -44,7 +45,6 @@ template<typename Config>
 struct TypeTraits<SuccessorGenerator<Config>> {
     using ConfigType = Config;
 };
-
 
 
 }  // namespace mimir

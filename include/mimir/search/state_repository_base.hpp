@@ -6,6 +6,7 @@
 #include "type_traits.hpp"
 
 #include "../common/mixins.hpp"
+#include "../formalism/problem/declarations.hpp"
 
 
 namespace mimir
@@ -25,12 +26,20 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
+    // Reuse memory to create successor states.
+    // TODO (Dominik): maybe we dont need this.
+    StateBuilder<Config> m_state_builder;
+
 public:
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
     /// @return
-    State<Config> create(const StateBuilder<Config>& builder) {
-        return self().create_impl(builder);
+    State<Config> get_or_create_initial_state(const Problem& problem) {
+        return self().get_or_create_initial_state_impl(problem);
+    }
+
+    State<Config> get_or_create_successor_state(const State<Config>& state, const GroundAction& action) {
+        return self().get_or_create_successor_state_impl(state, action);
     }
 };
 
