@@ -46,9 +46,6 @@ private:
 
     SearchSpace<Config> m_search_space;
 
-protected:
-    SearchSpace<Config>& get_search_space() { return m_search_space; }
-
 public:
     void find_solution() {
         self().find_solution_impl();
