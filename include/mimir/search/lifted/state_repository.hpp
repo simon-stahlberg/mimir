@@ -18,7 +18,7 @@ class StateRepository<Lifted> : public StateRepositoryBase<StateRepository<Lifte
 private:
     State<Lifted> create_impl(const StateBuilder<Lifted>& builder) {
         // create a lifted state.
-        return State<Lifted>();
+        return State<Lifted>(0);
     }
 
     // Give access to the private interface implementations.

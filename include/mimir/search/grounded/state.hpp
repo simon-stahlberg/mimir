@@ -8,14 +8,19 @@
 
 namespace mimir
 {
+template<typename Config>
+class StateRepository;
+
 
 /// @brief Concrete implementation of a grounded state.
 template<>
-class State<Grounded> : public StateBase<State<Grounded>> {
+class State<Grounded> : public StateBase<State<Grounded>>, IDMixin<State<Grounded>> {
     // Implement configuration specific functionality.
 private:
+    State<Grounded>(int index) : IDMixin(index) { }
 
-public:
+    friend class StateBase<State<Grounded>>;
+    friend class StateRepository<Grounded>;
 };
 
 }  // namespace mimir

@@ -9,7 +9,7 @@ namespace mimir::tests
 
 TEST(MimirTests, LiftedStateTest) {
     // Instantiate lifted version
-    auto lifted_state = State<Lifted>();
+    // auto lifted_state = State<Lifted>(0);
 }
 
 }

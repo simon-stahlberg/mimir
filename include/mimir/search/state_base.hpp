@@ -14,7 +14,7 @@ namespace mimir
 template<typename Derived>
 class StateBase {
 private:
-    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+    using Config = typename TypeTraits<Derived>::ConfigType;
 
     StateBase() = default;
     friend Derived;
@@ -29,16 +29,16 @@ public:
 
 
 /// @brief A concrete state.
-template<typename Configuration>
-class State : public StateBase<State<Configuration>> {
+template<typename Config>
+class State : public StateBase<State<Config>>, IDMixin<State<Config>> {
 private:
     // Implement configuration independent functionality.
 };
 
 
-template<typename Configuration>
-struct TypeTraits<State<Configuration>> {
-    using ConfigurationType = Configuration;
+template<typename Config>
+struct TypeTraits<State<Config>> {
+    using ConfigType = Config;
 };
 
 }  // namespace mimir

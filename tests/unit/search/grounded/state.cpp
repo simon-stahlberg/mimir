@@ -9,7 +9,7 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedStateTest) {
     // Instantiate grounded version
-    auto grounded_state = State<Grounded>();
+    //auto grounded_state = State<Grounded>(0);
 }
 
 }

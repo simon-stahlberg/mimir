@@ -8,20 +8,20 @@ namespace mimir
 {
 
 /// @brief A concrete heuristic.
-template<typename Configuration>
-class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<Configuration>> {
+template<typename Config>
+class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<Config>> {
 private:
-    double compute_heuristic_impl(const State<Configuration>& state) {
+    double compute_heuristic_impl(const State<Config>& state) {
         return 0.;
     }
 
-    friend class HeuristicBase<ZeroHeuristic<Configuration>>;
+    friend class HeuristicBase<ZeroHeuristic<Config>>;
 };
 
 
-template<typename Configuration>
-struct TypeTraits<ZeroHeuristic<Configuration>> {
-    using ConfigurationType = Configuration;
+template<typename Config>
+struct TypeTraits<ZeroHeuristic<Config>> {
+    using ConfigType = Config;
 };
 
 

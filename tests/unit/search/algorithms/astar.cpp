@@ -1,3 +1,5 @@
+#include <mimir/formalism/problem.hpp>
+
 #include <mimir/search/config.hpp>
 #include <mimir/search/algorithms/astar.hpp>
 #include <mimir/search/heuristics/zero.hpp>
@@ -10,14 +12,16 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedAstarTest) {
     // Instantiate grounded version
-    auto grounded_astar = AStar<Grounded, ZeroHeuristic>();
+    auto problem = static_cast<Problem*>(nullptr);
+    auto grounded_astar = AStar<Grounded, ZeroHeuristic>(problem);
     grounded_astar.find_solution();
 }
 
 
 TEST(MimirTests, LiftedAstarTest) {
     // Instantiate lifted version
-    auto lifted_astar = AStar<Lifted, ZeroHeuristic>();
+    auto problem = static_cast<Problem*>(nullptr);
+    auto lifted_astar = AStar<Lifted, ZeroHeuristic>(problem);
     lifted_astar.find_solution();
 }
 

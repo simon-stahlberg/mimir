@@ -8,14 +8,19 @@
 
 namespace mimir
 {
+template<typename Config>
+class StateRepository;
+
 
 /// @brief Concrete implementation of a lifted state.
 template<>
-class State<Lifted> : public StateBase<State<Lifted>> {
+class State<Lifted> : public StateBase<State<Lifted>>, IDMixin<State<Lifted>> {
     // Implement configuration specific functionality.
 private:
+    State<Lifted>(int index) : IDMixin(index) { }
 
-public:
+    friend class StateBase<State<Lifted>>;
+    friend class StateRepository<Lifted>;
 };
 
 }  // namespace mimir

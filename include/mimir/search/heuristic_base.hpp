@@ -13,7 +13,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+    using Config = typename TypeTraits<Derived>::ConfigType;
 
     HeuristicBase() = default;
     friend Derived;
@@ -23,7 +23,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    double compute_heuristic(const State<Configuration>& state) {
+    double compute_heuristic(const State<Config>& state) {
         return self().compute_heuristic_impl(state);
     }
 };

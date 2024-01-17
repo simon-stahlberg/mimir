@@ -16,7 +16,7 @@ namespace mimir
 template<typename Derived>
 class StateBuilderBase {
 private:
-    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+    using Config = typename TypeTraits<Derived>::ConfigType;
 
     StateBuilderBase() = default;
     friend Derived;
@@ -27,7 +27,7 @@ private:
 
 public:
     // Define common interface for a state builder.
-    // TODO (Dominik): probably different for each configuration
+    // TODO (Dominik): probably different for each Config
 
     /// @brief Reset the builder to be able to construct the next state.
     void reset() {
@@ -37,16 +37,16 @@ public:
 
 
 /// @brief A concrete state builder.
-template<typename Configuration>
-class StateBuilder : public StateBuilderBase<StateBuilder<Configuration>> {
+template<typename Config>
+class StateBuilder : public StateBuilderBase<StateBuilder<Config>> {
 private:
-    // Implement configuration independent functionality.
+    // Implement Config independent functionality.
 };
 
 
-template<typename Configuration>
-struct TypeTraits<StateBuilder<Configuration>> {
-    using ConfigurationType = Configuration;
+template<typename Config>
+struct TypeTraits<StateBuilder<Config>> {
+    using ConfigType = Config;
 };
 
 }  // namespace mimir

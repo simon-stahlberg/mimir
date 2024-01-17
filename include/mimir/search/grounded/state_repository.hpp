@@ -18,7 +18,7 @@ class StateRepository<Grounded> : public StateRepositoryBase<StateRepository<Gro
 private:
     State<Grounded> create_impl(const StateBuilder<Grounded>& builder) {
         // create a grounded state.
-        return State<Grounded>();
+        return State<Grounded>(0);
     }
 
     // Give access to the private interface implementations.

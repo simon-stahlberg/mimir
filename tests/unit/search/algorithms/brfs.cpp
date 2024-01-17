@@ -1,3 +1,5 @@
+#include <mimir/formalism/problem.hpp>
+
 #include <mimir/search/config.hpp>
 #include <mimir/search/algorithms/brfs.hpp>
 
@@ -9,13 +11,17 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedBrFSTest) {
     // Instantiate grounded version
-    auto grounded_brfs = BrFS<Grounded>();
+    auto problem = static_cast<Problem*>(nullptr);
+    auto grounded_brfs = BrFS<Grounded>(problem);
+    grounded_brfs.find_solution();
 }
 
 
 TEST(MimirTests, LiftedBrFSTest) {
     // Instantiate lifted version
-    auto lifted_brfs = BrFS<Lifted>();
+    auto problem = static_cast<Problem*>(nullptr);
+    auto lifted_brfs = BrFS<Lifted>(problem);
+    lifted_brfs.find_solution();
 }
 
 }

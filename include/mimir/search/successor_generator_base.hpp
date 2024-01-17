@@ -15,7 +15,7 @@ namespace mimir
 template<typename Derived>
 class SuccessorGeneratorBase : public UncopyableMixin<SuccessorGeneratorBase<Derived>> {
 private:
-    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+    using Config = typename TypeTraits<Derived>::ConfigType;
 
     SuccessorGeneratorBase() = default;
     friend Derived;
@@ -26,23 +26,23 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    ActionList generate_applicable_actions(const State<Configuration>& state) {
+    ActionList generate_applicable_actions(const State<Config>& state) {
         return self().generate_applicable_actions_impl(state);
     }
 };
 
 
 /// @brief A concrete successor generator.
-template<typename Configuration>
-class SuccessorGenerator : public SuccessorGeneratorBase<SuccessorGenerator<Configuration>> {
+template<typename Config>
+class SuccessorGenerator : public SuccessorGeneratorBase<SuccessorGenerator<Config>> {
 private:
-    // Implement configuration independent functionality.
+    // Implement Config independent functionality.
 };
 
 
-template<typename Configuration>
-struct TypeTraits<SuccessorGenerator<Configuration>> {
-    using ConfigurationType = Configuration;
+template<typename Config>
+struct TypeTraits<SuccessorGenerator<Config>> {
+    using ConfigType = Config;
 };
 
 

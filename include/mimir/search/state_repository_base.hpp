@@ -16,7 +16,7 @@ namespace mimir
 template<typename Derived>
 class StateRepositoryBase : public UncopyableMixin<StateRepositoryBase<Derived>> {
 private:
-    using Configuration = typename TypeTraits<Derived>::ConfigurationType;
+    using Config = typename TypeTraits<Derived>::ConfigType;
 
     StateRepositoryBase() = default;
     friend Derived;
@@ -29,23 +29,23 @@ public:
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
     /// @return
-    State<Configuration> create(const StateBuilder<Configuration>& builder) {
+    State<Config> create(const StateBuilder<Config>& builder) {
         return self().create_impl(builder);
     }
 };
 
 
 /// @brief A concrete state repository.
-template<typename Configuration>
-class StateRepository : StateRepositoryBase<StateRepository<Configuration>> {
+template<typename Config>
+class StateRepository : public StateRepositoryBase<StateRepository<Config>> {
 private:
-    // Implement configuration independent functionality.
+    // Implement Config independent functionality.
 };
 
 
-template<typename Configuration>
-struct TypeTraits<StateRepository<Configuration>> {
-    using ConfigurationType = Configuration;
+template<typename Config>
+struct TypeTraits<StateRepository<Config>> {
+    using ConfigType = Config;
 };
 
 }  // namespace mimir
