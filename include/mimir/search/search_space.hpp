@@ -11,7 +11,7 @@
 
 namespace mimir {
 
-template<typename ConfigType>
+template<typename Config>
 class SearchSpace {
 private:
     // Container to store SearchNodes, i.e., PerStateInformation
@@ -19,9 +19,9 @@ private:
 public:
     /// @brief Gets the SearchNode of an existing state given by its id
     ///        or creates an default initialized SearchNode.
-    SearchNode<ConfigType> get_or_create_node(ID<State<ConfigType>> state_id) {
+    SearchNode<Config> get_or_create_node(ID<State<Config>> state_id) {
         // TODO (Dominik): make this a reference to some memory.
-        return SearchNode<ConfigType>();
+        return SearchNode<Config>();
     }
 };
 
