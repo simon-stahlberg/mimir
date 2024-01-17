@@ -14,7 +14,7 @@ class StateRepository;
 
 /// @brief Concrete implementation of a lifted state.
 template<>
-class State<Lifted> : public StateBase<State<Lifted>>, IDMixin<State<Lifted>> {
+class State<Lifted> : public StateBase<State<Lifted>>, public IDMixin<State<Lifted>> {
     // Implement configuration specific functionality.
 private:
     State<Lifted>(int index) : IDMixin(index) { }

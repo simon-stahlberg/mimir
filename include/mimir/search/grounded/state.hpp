@@ -14,7 +14,7 @@ class StateRepository;
 
 /// @brief Concrete implementation of a grounded state.
 template<>
-class State<Grounded> : public StateBase<State<Grounded>>, IDMixin<State<Grounded>> {
+class State<Grounded> : public StateBase<State<Grounded>>, public IDMixin<State<Grounded>> {
     // Implement configuration specific functionality.
 private:
     State<Grounded>(int index) : IDMixin(index) { }

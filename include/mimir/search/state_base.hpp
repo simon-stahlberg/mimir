@@ -30,7 +30,7 @@ public:
 
 /// @brief A concrete state.
 template<typename Config>
-class State : public StateBase<State<Config>>, IDMixin<State<Config>> {
+class State : public StateBase<State<Config>>, public IDMixin<State<Config>> {
 private:
     // Implement configuration independent functionality.
 };

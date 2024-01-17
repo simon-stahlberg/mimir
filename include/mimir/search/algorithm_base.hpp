@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
+#include "search_space.hpp"
 #include "state_base.hpp"
 #include "type_traits.hpp"
 
@@ -42,6 +43,11 @@ private:
     StateRepository<Config> m_state_repository;
 
     SuccessorGenerator<Config> m_successor_generator;
+
+    SearchSpace<Config> m_search_space;
+
+protected:
+    SearchSpace<Config>& get_search_space() { return m_search_space; }
 
 public:
     void find_solution() {
