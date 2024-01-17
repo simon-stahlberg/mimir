@@ -44,11 +44,14 @@ public:
     void mark_as_dead_end();
 };
 
+
 template<typename Config>
 SearchNode<Config>::SearchNode()
     : status(SearchNode<Config>::NodeStatus::CLOSED)
     , g_value(0)
     , parent_state_id(ID<State<Config>>::no_id) { }
+
+
 
 } // namespace mimir
 
