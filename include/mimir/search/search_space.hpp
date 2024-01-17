@@ -23,7 +23,6 @@ public:
     /// @brief Gets the SearchNode of an existing state given by its id
     ///        or creates an default initialized SearchNode.
     SearchNode<Config>& get_or_create_node(ID<State<Config>> state_id) {
-        // TODO (Dominik): make this a reference to some memory.
         return some_search_node;
     }
 };

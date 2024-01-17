@@ -31,9 +31,6 @@ private:
     StateBuilder<Config> m_state_builder;
 
 public:
-    /// @brief Common interface for state creation.
-    ///        Take some arguments and return a state.
-    /// @return
     const State<Config>& get_or_create_initial_state(const Problem& problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
