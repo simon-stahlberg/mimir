@@ -13,7 +13,7 @@ option(ENABLE_CACHE "Enable cache if available" ON)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" OFF)
 option(ENABLE_CPPCHECK "Enable static analysis with cppcheck" OFF)
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF)
-option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)" OFF)
+option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)" ON)
 option(ENABLE_PCH "Enable Precompiled Headers" ON)
 option(ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
 option(ENABLE_SANITIZER_LEAK "Enable leak sanitizer" OFF)
@@ -22,7 +22,6 @@ option(ENABLE_SANITIZER_THREAD "Enable thread sanitizer" OFF)
 option(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Enable undefined behavior sanitizer" OFF)
 option(ENABLE_WARNING_PADDING "Warn when structs are memory padded" OFF)
 
-option(USE_PYBIND11_FINDPYTHON "Use pybind11 to search for the python library" OFF)
 option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 # ---------------
 # Common Settings
