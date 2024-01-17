@@ -19,7 +19,7 @@ jobs:
 
     - name: Configure, and Build Mimir
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=ON -S . -B build -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
+        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -S . -B build -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build -j$(nproc)
 
     - name: Test

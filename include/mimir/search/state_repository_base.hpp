@@ -31,7 +31,6 @@ private:
     StateBuilder<Config> m_state_builder;
 
 public:
-    // TODO (Dominik): return references or make state be a lightweight view
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
     /// @return
