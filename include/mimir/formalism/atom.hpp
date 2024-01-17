@@ -37,7 +37,7 @@ namespace mimir
         bool operator<=(const Atom& other) const;
 
         friend class Literal;
-        friend class Problem;
+        friend class ProblemImpl;
     };
 
     using AtomList = std::vector<Atom>;

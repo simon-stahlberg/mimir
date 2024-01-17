@@ -49,7 +49,7 @@ namespace mimir
         bool operator!=(const Domain& other) const;
         bool operator<=(const Domain& other) const;
 
-        friend class Problem;
+        friend class ProblemImpl;
     };
 
     using DomainList = std::vector<Domain>;

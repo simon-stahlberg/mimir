@@ -5,6 +5,7 @@
 #include "domain.hpp"
 #include "literal.hpp"
 #include "term.hpp"
+#include "declarations.hpp"
 
 #include "../common/mixins.hpp"
 
@@ -17,21 +18,21 @@
 
 namespace mimir
 {
-    class Problem;
-    using ProblemList = std::vector<Problem>;
-
-    class Problem : public FormattingMixin<Problem>
+    class ProblemImpl : public FormattingMixin<ProblemImpl>
     {
       private:
+        /* Members that uniquely identify the object. */
         loki::pddl::Problem external_;
+
+        /* Additional members */
+
         // AtomSet static_atoms_;
         // std::vector<bool> predicate_id_to_static_;
 
-        Problem(loki::pddl::Problem problem);
+        // TODO (Dominik): we dont need the identifier again, but the PersistentFactory of Loki requires it.
+        ProblemImpl(int indentifier, loki::pddl::Problem problem);
 
       public:
-        static Problem parse(const std::string& domain_path, const std::string& problem_path);
-        static ProblemList parse(const std::string& domain_path, const std::vector<std::string>& problem_paths);
         // Problem replace_initial(const AtomList& initial) const;
 
         uint32_t get_id() const;
@@ -40,7 +41,7 @@ namespace mimir
         TermList get_objects() const;
         AtomList get_initial_atoms() const;
         LiteralList get_goal_literals() const;
-        // const Requirements& get_requirements() const;
+        const loki::pddl::Requirements& get_requirements() const;
         const AtomSet& get_static_atoms() const;
         // uint32_t get_rank(const Atom& atom) const;
 
@@ -60,11 +61,11 @@ namespace mimir
         // Object get_object(uint32_t object_id) const;
         // uint32_t num_objects() const;
 
-        bool operator<(const Problem& other) const;
-        bool operator>(const Problem& other) const;
-        bool operator==(const Problem& other) const;
-        bool operator!=(const Problem& other) const;
-        bool operator<=(const Problem& other) const;
+        bool operator<(const ProblemImpl& other) const;
+        bool operator>(const ProblemImpl& other) const;
+        bool operator==(const ProblemImpl& other) const;
+        bool operator!=(const ProblemImpl& other) const;
+        bool operator<=(const ProblemImpl& other) const;
     };
 
 }  // namespace mimir

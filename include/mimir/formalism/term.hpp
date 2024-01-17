@@ -50,7 +50,7 @@ namespace mimir
         friend class Atom;
         friend class Domain;
         friend class Predicate;
-        friend class Problem;
+        friend class ProblemImpl;
     };
 
     // mimir::ObjectList filter(const mimir::ObjectList& object_list, const mimir::Type& type);

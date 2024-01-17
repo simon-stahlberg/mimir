@@ -28,54 +28,33 @@
 
 namespace mimir
 {
-    Problem::Problem(loki::pddl::Problem external_problem) : external_(std::move(external_problem)) {}
+    ProblemImpl::ProblemImpl(int identifier, loki::pddl::Problem external_problem) : external_(external_problem) {}
 
-    Problem Problem::parse(const std::string& domain_path, const std::string& problem_path)
-    {
-        loki::DomainParser domain_parser(domain_path);
-        loki::ProblemParser problem_parser(problem_path, domain_parser);
-        return Problem(problem_parser.get_problem());
-    }
+    uint32_t ProblemImpl::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
 
-    ProblemList Problem::parse(const std::string& domain_path, const std::vector<std::string>& problem_paths)
-    {
-        ProblemList problems;
-        loki::DomainParser domain_parser(domain_path);
+    Domain ProblemImpl::get_domain() const { throw std::runtime_error("not implemented"); }
 
-        for (const auto& path : problem_paths)
-        {
-            loki::ProblemParser problem_parser(path, domain_parser);
-            problems.emplace_back(Problem(problem_parser.get_problem()));
-        }
+    const std::string& ProblemImpl::get_name() const { throw std::runtime_error("not implemented"); }
 
-        return problems;
-    }
+    TermList ProblemImpl::get_objects() const { throw std::runtime_error("not implemented"); }
 
-    uint32_t Problem::get_id() const { return static_cast<uint32_t>(external_->get_identifier()); }
+    AtomList ProblemImpl::get_initial_atoms() const { throw std::runtime_error("not implemented"); }
 
-    Domain Problem::get_domain() const { throw std::runtime_error("not implemented"); }
+    LiteralList ProblemImpl::get_goal_literals() const { throw std::runtime_error("not implemented"); }
 
-    const std::string& Problem::get_name() const { throw std::runtime_error("not implemented"); }
+    const AtomSet& ProblemImpl::get_static_atoms() const { throw std::runtime_error("not implemented"); }
 
-    TermList Problem::get_objects() const { throw std::runtime_error("not implemented"); }
+    std::size_t ProblemImpl::hash() const { throw std::runtime_error("not implemented"); }
 
-    AtomList Problem::get_initial_atoms() const { throw std::runtime_error("not implemented"); }
+    bool ProblemImpl::operator<(const ProblemImpl& other) const { throw std::runtime_error("not implemented"); }
 
-    LiteralList Problem::get_goal_literals() const { throw std::runtime_error("not implemented"); }
+    bool ProblemImpl::operator>(const ProblemImpl& other) const { throw std::runtime_error("not implemented"); }
 
-    const AtomSet& Problem::get_static_atoms() const { throw std::runtime_error("not implemented"); }
+    bool ProblemImpl::operator==(const ProblemImpl& other) const { throw std::runtime_error("not implemented"); }
 
-    std::size_t Problem::hash() const { throw std::runtime_error("not implemented"); }
+    bool ProblemImpl::operator!=(const ProblemImpl& other) const { throw std::runtime_error("not implemented"); }
 
-    bool Problem::operator<(const Problem& other) const { throw std::runtime_error("not implemented"); }
-
-    bool Problem::operator>(const Problem& other) const { throw std::runtime_error("not implemented"); }
-
-    bool Problem::operator==(const Problem& other) const { throw std::runtime_error("not implemented"); }
-
-    bool Problem::operator!=(const Problem& other) const { throw std::runtime_error("not implemented"); }
-
-    bool Problem::operator<=(const Problem& other) const { throw std::runtime_error("not implemented"); }
+    bool ProblemImpl::operator<=(const ProblemImpl& other) const { throw std::runtime_error("not implemented"); }
 
 }  // namespace mimir
 
@@ -83,14 +62,14 @@ namespace mimir
 namespace std
 {
     // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-    std::size_t hash<mimir::Problem>::operator()(const mimir::Problem& problem) const { return problem.hash(); }
+    std::size_t hash<mimir::ProblemImpl>::operator()(const mimir::ProblemImpl& problem) const { return problem.hash(); }
 
-    bool less<mimir::Problem>::operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const
+    bool less<mimir::ProblemImpl>::operator()(const mimir::ProblemImpl& left_problem, const mimir::ProblemImpl& right_problem) const
     {
         return left_problem < right_problem;
     }
 
-    bool equal_to<mimir::Problem>::operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const
+    bool equal_to<mimir::ProblemImpl>::operator()(const mimir::ProblemImpl& left_problem, const mimir::ProblemImpl& right_problem) const
     {
         return left_problem == right_problem;
     }

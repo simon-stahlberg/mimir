@@ -42,7 +42,7 @@ namespace mimir
         bool operator<=(const Literal& other) const;
 
         friend class ActionSchema;
-        friend class Problem;
+        friend class ProblemImpl;
     };
 
     using LiteralList = std::vector<Literal>;
