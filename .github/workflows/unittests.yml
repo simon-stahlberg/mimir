@@ -13,8 +13,8 @@ jobs:
 
     - name: Configure, Build, and Install Dependencies
       run: |
-        cd tests/integration/dependencies
-        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/tests/integration/dependencies/installs
+        cd dependencies
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build -j$(nproc)
 
     - name: Configure, and Build Mimir
