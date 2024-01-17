@@ -31,6 +31,7 @@ private:
     StateBuilder<Config> m_state_builder;
 
 public:
+    // TODO (Dominik): return references or make state be a lightweight view
     /// @brief Common interface for state creation.
     ///        Take some arguments and return a state.
     /// @return
@@ -40,6 +41,10 @@ public:
 
     State<Config> get_or_create_successor_state(const State<Config>& state, const GroundAction& action) {
         return self().get_or_create_successor_state_impl(state, action);
+    }
+
+    State<Config> lookup_state(const ID<State<Config>>& state_id) {
+        return self().lookup_state_impl(state_id);
     }
 };
 

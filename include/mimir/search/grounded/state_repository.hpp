@@ -28,6 +28,12 @@ private:
         return State<Grounded>(0);
     }
 
+    State<Grounded> lookup_state_impl(const ID<State<Grounded>>& state_id) {
+        // create a lifted state.
+        // TODO (Dominik): implement
+        return State<Grounded>(0);
+    }
+
     // Give access to the private interface implementations.
     friend class StateRepositoryBase<StateRepository<Grounded>>;
 };
