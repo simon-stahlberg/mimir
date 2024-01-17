@@ -20,7 +20,7 @@ private:
     // Implement configuration independent functionality.
     std::deque<ID<State<Config>>> m_queue;
 
-    void find_solution_impl() {
+    SearchStatus find_solution_impl(GroundActionList& out_plan) {
         auto initial_state_id = this->m_initial_state.get_id();
         auto& initial_search_node = this->m_search_space.get_or_create_node(initial_state_id);
         // TODO (Dominik): update the data of the initial_search_node

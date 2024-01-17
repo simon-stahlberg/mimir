@@ -15,7 +15,7 @@ class AStar : public AlgorithmBase<AStar<Config, Heuristic>> {
 private:
     Heuristic<Config> m_heuristic;
 
-    void find_solution_impl() {
+    SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement
     }
 

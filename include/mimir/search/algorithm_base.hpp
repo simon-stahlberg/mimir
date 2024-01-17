@@ -19,6 +19,8 @@
 namespace mimir
 {
 
+enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
+
 /// @brief CRTP based interface for a search algorithm
 /// @tparam Derived
 template<typename Derived>
@@ -28,7 +30,7 @@ private:
 
     AlgorithmBase(Problem problem)
         : m_problem(problem)
-        , m_initial_state(m_state_repository.get_or_create_initial_state(problem))  { }
+        , m_initial_state(m_state_repository.get_or_create_initial_state(problem)) { }
 
     friend Derived;
 
@@ -37,18 +39,14 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-
     State<Config> m_initial_state;
-
     StateRepository<Config> m_state_repository;
-
     SuccessorGenerator<Config> m_successor_generator;
-
     SearchSpace<Config> m_search_space;
 
 public:
-    void find_solution() {
-        self().find_solution_impl();
+    SearchStatus find_solution(GroundActionList& out_plan) {
+        self().find_solution_impl(out_plan);
     }
 
     const State<Config>& get_initial_state() const {
