@@ -31,7 +31,7 @@ private:
     friend class AlgorithmBase<BrFS<Config>>;
 
 public:
-    BrFS(const Problem* problem) 
+    BrFS(Problem problem)
         : AlgorithmBase<BrFS<Config>>(problem) { }
 };
 

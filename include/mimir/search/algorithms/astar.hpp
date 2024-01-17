@@ -22,7 +22,7 @@ private:
     friend class AlgorithmBase<AStar<Config, Heuristic>>;
 
 public:
-    AStar(const Problem* problem) 
+    AStar(Problem problem)
         : AlgorithmBase<AStar<Config, Heuristic>>(problem) { }
 };
 

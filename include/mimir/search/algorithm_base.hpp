@@ -25,7 +25,7 @@ class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
     using Config = typename TypeTraits<Derived>::ConfigType;
 
-    AlgorithmBase(const Problem* problem) 
+    AlgorithmBase(Problem problem)
         : m_problem(problem)
         , m_initial_state(m_state_repository.create(m_state_builder))  { }  // TODO (Dominik): initialize initial state correctly
 
@@ -35,7 +35,7 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    const Problem* m_problem;
+    Problem m_problem;
 
     StateBuilder<Config> m_state_builder;
     State<Config> m_initial_state;
