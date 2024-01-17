@@ -1,13 +1,10 @@
-name: Integration Tests
-on: [push, pull_request]
+name: Googletest Unit Tests
 
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      MIMIR_INSTALL_DIR: ${{ github.workspace }}/mimir-install
-
     steps:
     - name: Checkout Mimir
       uses: actions/checkout@v2
@@ -20,8 +17,11 @@ jobs:
         cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/tests/integration/dependencies/installs
         cmake --build build -j$(nproc)
 
-    - name: Build and Test Project
+    - name: Configure, and Build Mimir
       run: |
-        cd tests/integration
-        cmake -S . -B build -DCMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/tests/integration/dependencies/installs"
+        cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=ON -S . -B build -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build -j$(nproc)
+
+    - name: Test
+      working-directory: build/tests/unit
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
