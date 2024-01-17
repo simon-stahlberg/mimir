@@ -3,6 +3,7 @@
 
 #include "../algorithm_base.hpp"
 #include "../state_base.hpp"
+#include "../search_space.hpp"
 
 #include <deque>
 
@@ -19,8 +20,12 @@ private:
     std::deque<ID<State<Config>>> m_queue;
 
     void find_solution_impl() {
-        auto initial_state_id = this->get_initial_state().get_id();
-        auto initial_search_node = this->get_search_space().get_or_create_node(initial_state_id);  // TODO (Dominik): make this a reference
+        // Use explicit types to make intellisense work, auto won't work:
+        const State<Config>& initial_state = this->get_initial_state();
+        SearchSpace<Config>& search_space = this->get_search_space();
+
+        ID<State<Config>> initial_state_id = initial_state.get_id();
+        SearchNode<Config> initial_search_node = search_space.get_or_create_node(initial_state_id);  // TODO (Dominik): make this a reference
 
         m_queue.push_back(initial_state_id);
         while (!m_queue.empty()) {
