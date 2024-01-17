@@ -52,9 +52,6 @@ include(cmake/settings/compiler_options.cmake)
 set_project_compiler_options(project_options)
 # include target printing utilities (property printing)
 include(cmake/settings/utilities.cmake)
-# the deps to be downloaded by cpm
-#include(cmake/settings/cpm.cmake)
-#include(deps/CPM_deps.cmake)
 # set the standard project settings
 include(cmake/settings/standard_project_settings.cmake)
 # enable cache system
