@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_STATE_BUILDER_BASE_HPP_
 #define MIMIR_SEARCH_STATE_BUILDER_BASE_HPP_
 
+#include "config.hpp"
 #include "type_traits.hpp"
 
 #include "../common/mixins.hpp"
