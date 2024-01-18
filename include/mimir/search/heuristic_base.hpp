@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 #define MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 
+#include "config.hpp"
 #include "state_base.hpp"
 #include "type_traits.hpp"
 
@@ -13,7 +14,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using Config = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     HeuristicBase() = default;
     friend Derived;
@@ -23,7 +24,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    double compute_heuristic(const State<Config>& state) {
+    double compute_heuristic(const State<C>& state) {
         return self().compute_heuristic_impl(state);
     }
 };

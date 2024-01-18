@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
+#include "config.hpp"
 #include "search_space.hpp"
 #include "state_base.hpp"
 #include "type_traits.hpp"
@@ -26,7 +27,7 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 template<typename Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
-    using Config = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
@@ -39,17 +40,17 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    State<Config> m_initial_state;
-    StateRepository<Config> m_state_repository;
-    SuccessorGenerator<Config> m_successor_generator;
-    SearchSpace<Config> m_search_space;
+    State<C> m_initial_state;
+    StateRepository<C> m_state_repository;
+    SuccessorGenerator<C> m_successor_generator;
+    SearchSpace<C> m_search_space;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {
         return self().find_solution_impl(out_plan);
     }
 
-    const State<Config>& get_initial_state() const {
+    const State<C>& get_initial_state() const {
         return m_initial_state;
     }
 };

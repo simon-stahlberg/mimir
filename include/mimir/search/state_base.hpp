@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_STATE_BASE_HPP_
 #define MIMIR_SEARCH_STATE_BASE_HPP_
 
+#include "config.hpp"
 #include "type_traits.hpp"
 
 #include "../common/mixins.hpp"
@@ -14,7 +15,7 @@ namespace mimir
 template<typename Derived>
 class StateBase {
 private:
-    using Config = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     StateBase() = default;
     friend Derived;
@@ -29,16 +30,16 @@ public:
 
 
 /// @brief A concrete state.
-template<typename Config>
-class State : public StateBase<State<Config>>, public IDMixin<State<Config>> {
+template<Config C>
+class State : public StateBase<State<C>>, public IDMixin<State<C>> {
 private:
     // Implement configuration independent functionality.
 };
 
 
-template<typename Config>
-struct TypeTraits<State<Config>> {
-    using ConfigType = Config;
+template<Config C>
+struct TypeTraits<State<C>> {
+    using ConfigType = C;
 };
 
 }  // namespace mimir

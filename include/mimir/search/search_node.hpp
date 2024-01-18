@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
+#include "config.hpp"
 #include "type_traits.hpp"
 #include "state_base.hpp"
 
@@ -10,14 +11,14 @@
 
 namespace mimir {
 
-template<typename Config>
+template<Config C>
 class SearchNode {
 private:
     enum NodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
 
     int status : 2;
     int g_value;
-    ID<State<Config>> parent_state_id;
+    ID<State<C>> parent_state_id;
     GroundAction creating_action;
 
 public:
@@ -45,11 +46,11 @@ public:
 };
 
 
-template<typename Config>
-SearchNode<Config>::SearchNode()
-    : status(SearchNode<Config>::NodeStatus::CLOSED)
+template<Config C>
+SearchNode<C>::SearchNode()
+    : status(SearchNode<C>::NodeStatus::CLOSED)
     , g_value(0)
-    , parent_state_id(ID<State<Config>>::no_id) { }
+    , parent_state_id(ID<State<C>>::no_id) { }
 
 
 

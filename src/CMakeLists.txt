@@ -6,7 +6,6 @@ file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES
     "../include/*.hpp" "../include/**/*.hpp")
 
 add_library(core STATIC ${MIMIR_SRC_FILES} ${MIMIR_PRIVATE_HEADER_FILES} ${MIMIR_PUBLIC_HEADER_FILES})
-set_target_properties(core PROPERTIES CXX_STANDARD 17)
 set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 
 # Create an alias for simpler reference

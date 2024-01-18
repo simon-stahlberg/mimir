@@ -1,14 +1,13 @@
 #ifndef MIMIR_SEARCH_GROUNDED_STATE_HPP_
 #define MIMIR_SEARCH_GROUNDED_STATE_HPP_
 
-#include "../config.hpp"
 #include "../state_base.hpp"
 #include "../../common/mixins.hpp"
 
 
 namespace mimir
 {
-template<typename Config>
+template<Config C>
 class StateRepository;
 
 
@@ -17,7 +16,7 @@ template<>
 class State<Grounded> : public StateBase<State<Grounded>>, public IDMixin<State<Grounded>> {
     // Implement configuration specific functionality.
 private:
-    State<Grounded>(int index) : IDMixin(index) { }
+    State(int index) : IDMixin(index) { }
 
     friend class StateBase<State<Grounded>>;
     friend class StateRepository<Grounded>;

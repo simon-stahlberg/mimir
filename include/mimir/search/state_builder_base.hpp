@@ -16,7 +16,7 @@ namespace mimir
 template<typename Derived>
 class StateBuilderBase {
 private:
-    using Config = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     StateBuilderBase() = default;
     friend Derived;
@@ -37,16 +37,16 @@ public:
 
 
 /// @brief A concrete state builder.
-template<typename Config>
-class StateBuilder : public StateBuilderBase<StateBuilder<Config>> {
+template<Config C>
+class StateBuilder : public StateBuilderBase<StateBuilder<C>> {
 private:
     // Implement Config independent functionality.
 };
 
 
-template<typename Config>
-struct TypeTraits<StateBuilder<Config>> {
-    using ConfigType = Config;
+template<Config C>
+struct TypeTraits<StateBuilder<C>> {
+    using ConfigType = C;
 };
 
 }  // namespace mimir

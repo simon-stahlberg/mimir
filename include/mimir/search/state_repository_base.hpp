@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
 #define MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
 
+#include "config.hpp"
 #include "state_base.hpp"
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
@@ -17,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class StateRepositoryBase : public UncopyableMixin<StateRepositoryBase<Derived>> {
 private:
-    using Config = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     StateRepositoryBase() = default;
     friend Derived;
@@ -28,34 +29,34 @@ private:
 
     // Reuse memory to create successor states.
     // TODO (Dominik): maybe we dont need this.
-    StateBuilder<Config> m_state_builder;
+    StateBuilder<C> m_state_builder;
 
 public:
-    const State<Config>& get_or_create_initial_state(const Problem& problem) {
+    const State<C>& get_or_create_initial_state(const Problem& problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    const State<Config>& get_or_create_successor_state(const State<Config>& state, const GroundAction& action) {
+    const State<C>& get_or_create_successor_state(const State<C>& state, const GroundAction& action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 
-    const State<Config>& lookup_state(const ID<State<Config>>& state_id) {
+    const State<C>& lookup_state(const ID<State<C>>& state_id) {
         return self().lookup_state_impl(state_id);
     }
 };
 
 
 /// @brief A concrete state repository.
-template<typename Config>
-class StateRepository : public StateRepositoryBase<StateRepository<Config>> {
+template<Config C>
+class StateRepository : public StateRepositoryBase<StateRepository<C>> {
 private:
     // Implement Config independent functionality.
 };
 
 
-template<typename Config>
-struct TypeTraits<StateRepository<Config>> {
-    using ConfigType = Config;
+template<Config C>
+struct TypeTraits<StateRepository<C>> {
+    using ConfigType = C;
 };
 
 }  // namespace mimir
