@@ -11,6 +11,10 @@
 
 namespace mimir {
 
+/// TODO (Dominik): This a a case of the buffer pattern,
+///      add a builder and make this
+///      a view on the memory layout created by the builder.
+
 template<Config C>
 class SearchNode {
 private:

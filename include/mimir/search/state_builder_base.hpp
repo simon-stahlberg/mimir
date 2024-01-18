@@ -10,6 +10,8 @@
 namespace mimir
 {
 
+/// TODO (Dominik): This a a case of the buffer pattern, make state a view on the memory layout created by the builder.
+
 /// @brief Top-level CRTP based interface for a StateBuilder.
 ///        A StateBuilder acts as an intermediate representation of a State
 ///        with the additional purpose of reusing memory.
