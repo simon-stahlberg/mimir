@@ -24,7 +24,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    double compute_heuristic(const State<C>& state) {
+    [[nodiscard]] double compute_heuristic(const State<C>& state) {
         return self().compute_heuristic_impl(state);
     }
 };

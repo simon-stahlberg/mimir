@@ -49,10 +49,6 @@ public:
     SearchStatus find_solution(GroundActionList& out_plan) {
         return self().find_solution_impl(out_plan);
     }
-
-    const State<C>& get_initial_state() const {
-        return m_initial_state;
-    }
 };
 
 }  // namespace mimir

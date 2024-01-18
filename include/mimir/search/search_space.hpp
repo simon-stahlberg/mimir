@@ -22,7 +22,7 @@ private:
 public:
     /// @brief Gets the SearchNode of an existing state given by its id
     ///        or creates an default initialized SearchNode.
-    SearchNode<C>& get_or_create_node(ID<State<C>> state_id) {
+    [[nodiscard]] SearchNode<C>& get_or_create_node(ID<State<C>> state_id) {
         return some_search_node;
     }
 };

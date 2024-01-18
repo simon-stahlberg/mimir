@@ -32,15 +32,15 @@ private:
     StateBuilder<C> m_state_builder;
 
 public:
-    const State<C>& get_or_create_initial_state(const Problem& problem) {
+    [[nodiscard]] const State<C>& get_or_create_initial_state(const Problem& problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    const State<C>& get_or_create_successor_state(const State<C>& state, const GroundAction& action) {
+    [[nodiscard]] const State<C>& get_or_create_successor_state(const State<C>& state, const GroundAction& action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 
-    const State<C>& lookup_state(const ID<State<C>>& state_id) {
+    [[nodiscard]] const State<C>& lookup_state(const ID<State<C>>& state_id) {
         return self().lookup_state_impl(state_id);
     }
 };

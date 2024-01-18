@@ -27,7 +27,7 @@ public:
         return self().insert_impl(item, priority);
     }
 
-    T pop() {
+    [[nodiscard]] T pop() {
         return self().pop_impl();
     }
 
