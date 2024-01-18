@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
-#define MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
+#ifndef MIMIR_FORMALISM_DOMAIN_TYPE_HPP_
+#define MIMIR_FORMALISM_DOMAIN_TYPE_HPP_
 
 #include "declarations.hpp"
 
 #include "../../common/mixins.hpp"
 
-#include <loki/domain/pddl/object.hpp>
+#include <loki/domain/pddl/type.hpp>
 
 #include <string>
 
@@ -34,12 +34,12 @@ class PersistentFactory;
 
 
 namespace mimir {
-class ObjectImpl : public loki::Base<ObjectImpl> {
+class TypeImpl : public loki::Base<TypeImpl> {
 private:
-    loki::pddl::Object external_;
+    loki::pddl::Type external_;
 
     std::string m_name;
-    TypeList m_types;
+    TypeList m_bases;
 
     // Add additional members if needed.
     // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
@@ -47,42 +47,40 @@ private:
     // We can optimize it by flattening it into a byte array and using this class as as a view
     // that reads offsets from the bytes and reinterprets bytes.
 
-    ObjectImpl(int identifier, loki::pddl::Object external, std::string name, TypeList types={});
+    TypeImpl(int identifier, loki::pddl::Type external, std::string name, TypeList bases = {});
 
     // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const TypeImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<ObjectImpl>;
+    friend class loki::Base<TypeImpl>;
 
 public:
     const std::string& get_name() const;
     const TypeList& get_bases() const;
 };
-
-}  // namespace mimir
+}
 
 
 namespace std {
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<mimir::Object>
+    struct less<loki::pddl::Type>
     {
-        bool operator()(const mimir::Object& left_object, const mimir::Object& right_object) const;
+        bool operator()(const loki::pddl::Type& left_type, const loki::pddl::Type& right_type) const;
     };
 
     template<>
-    struct hash<mimir::ObjectImpl>
+    struct hash<loki::pddl::TypeImpl>
     {
-        std::size_t operator()(const mimir::ObjectImpl& object) const;
+        std::size_t operator()(const loki::pddl::TypeImpl& type) const;
     };
-}  // namespace std
+}
 
-
-#endif  // MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
+#endif

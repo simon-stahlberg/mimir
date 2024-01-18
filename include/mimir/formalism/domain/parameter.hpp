@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
-#define MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
+#ifndef MIMIR_FORMALISM_DOMAIN_PARAMETER_HPP_
+#define MIMIR_FORMALISM_DOMAIN_PARAMETER_HPP_
 
 #include "declarations.hpp"
 
 #include "../../common/mixins.hpp"
 
-#include <loki/domain/pddl/object.hpp>
+#include <loki/domain/pddl/parameter.hpp>
 
 #include <string>
 
@@ -34,11 +34,12 @@ class PersistentFactory;
 
 
 namespace mimir {
-class ObjectImpl : public loki::Base<ObjectImpl> {
-private:
-    loki::pddl::Object external_;
 
-    std::string m_name;
+class ParameterImpl : public loki::Base<ParameterImpl> {
+private:
+    loki::pddl::Parameter external_;
+
+    Variable m_variable;
     TypeList m_types;
 
     // Add additional members if needed.
@@ -47,42 +48,44 @@ private:
     // We can optimize it by flattening it into a byte array and using this class as as a view
     // that reads offsets from the bytes and reinterprets bytes.
 
-    ObjectImpl(int identifier, loki::pddl::Object external, std::string name, TypeList types={});
+    ParameterImpl(int identifier, loki::pddl::Parameter external, Variable variable, TypeList types);
 
     // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const ParameterImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<ObjectImpl>;
+    friend class loki::Base<ParameterImpl>;
 
 public:
-    const std::string& get_name() const;
+    /// @brief Returns a parseable string representation in the context of a domain.
+    void str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
+
+    const Variable& get_variable() const;
     const TypeList& get_bases() const;
 };
 
-}  // namespace mimir
+}
 
 
 namespace std {
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<mimir::Object>
+    struct less<loki::pddl::Parameter>
     {
-        bool operator()(const mimir::Object& left_object, const mimir::Object& right_object) const;
+        bool operator()(const loki::pddl::Parameter& left_parameter, const loki::pddl::Parameter& right_parameter) const;
     };
 
     template<>
-    struct hash<mimir::ObjectImpl>
+    struct hash<loki::pddl::ParameterImpl>
     {
-        std::size_t operator()(const mimir::ObjectImpl& object) const;
+        std::size_t operator()(const loki::pddl::ParameterImpl& parameter) const;
     };
-}  // namespace std
+}
 
-
-#endif  // MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
+#endif

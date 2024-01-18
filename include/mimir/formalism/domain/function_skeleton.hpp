@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
-#define MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
+#ifndef MIMIR_FORMALISM_DOMAIN_FUNCTION_SKELETON_HPP_
+#define MIMIR_FORMALISM_DOMAIN_FUNCTION_SKELETON_HPP_
 
 #include "declarations.hpp"
 
 #include "../../common/mixins.hpp"
 
-#include <loki/domain/pddl/object.hpp>
+#include <loki/domain/pddl/function_skeleton.hpp>
 
 #include <string>
 
@@ -34,12 +34,13 @@ class PersistentFactory;
 
 
 namespace mimir {
-class ObjectImpl : public loki::Base<ObjectImpl> {
+class FunctionSkeletonImpl : public loki::Base<FunctionSkeletonImpl> {
 private:
-    loki::pddl::Object external_;
+    loki::pddl::FunctionSkeleton external_;
 
     std::string m_name;
-    TypeList m_types;
+    ParameterList m_parameters;
+    Type m_type;
 
     // Add additional members if needed.
     // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
@@ -47,42 +48,45 @@ private:
     // We can optimize it by flattening it into a byte array and using this class as as a view
     // that reads offsets from the bytes and reinterprets bytes.
 
-    ObjectImpl(int identifier, loki::pddl::Object external, std::string name, TypeList types={});
+    FunctionSkeletonImpl(int identifier, loki::pddl::FunctionSkeleton external, std::string name, ParameterList parameters, Type type);
 
     // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<ObjectImpl>;
+    friend class loki::Base<FunctionSkeletonImpl>;
 
 public:
+    /// @brief Returns a parseable string representation in the context of a domain.
+    void str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
+
     const std::string& get_name() const;
-    const TypeList& get_bases() const;
+    const ParameterList& get_parameters() const;
+    const Type& get_type() const;
 };
 
-}  // namespace mimir
+}
 
 
 namespace std {
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<mimir::Object>
+    struct less<loki::pddl::FunctionSkeleton>
     {
-        bool operator()(const mimir::Object& left_object, const mimir::Object& right_object) const;
+        bool operator()(const loki::pddl::FunctionSkeleton& left_function, const loki::pddl::FunctionSkeleton& right_function) const;
     };
 
     template<>
-    struct hash<mimir::ObjectImpl>
+    struct hash<loki::pddl::FunctionSkeletonImpl>
     {
-        std::size_t operator()(const mimir::ObjectImpl& object) const;
+        std::size_t operator()(const loki::pddl::FunctionSkeletonImpl& function) const;
     };
-}  // namespace std
+}
 
-
-#endif  // MIMIR_FORMALISM_DOMAIN_OBJECT_HPP_
+#endif
