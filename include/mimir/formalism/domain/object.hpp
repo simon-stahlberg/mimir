@@ -20,12 +20,7 @@
 
 #include "declarations.hpp"
 
-#include "../common/base.hpp"
-
 #include <loki/domain/pddl/object.hpp>
-
-#include <string>
-#include <functional>
 
 
 namespace loki {
@@ -35,7 +30,7 @@ class PersistentFactory;
 
 
 namespace mimir {
-class ObjectImpl : public Base<ObjectImpl> {
+class ObjectImpl : public loki::Base<ObjectImpl> {
 private:
     loki::pddl::Object external_;
 
@@ -48,7 +43,7 @@ private:
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const FormattingOptions& options) const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class Base<ObjectImpl>;
