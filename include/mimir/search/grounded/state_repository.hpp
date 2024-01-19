@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_GROUNDED_STATE_REPOSITORY_HPP_
 #define MIMIR_SEARCH_GROUNDED_STATE_REPOSITORY_HPP_
 
-#include "state_view.hpp"
+#include "state.hpp"
 
 #include "../config.hpp"
 #include "../state_repository_base.hpp"

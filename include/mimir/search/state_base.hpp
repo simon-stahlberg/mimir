@@ -4,17 +4,19 @@
 #include "config.hpp"
 #include "type_traits.hpp"
 
-#include "../buffer/view_base.hpp"
 #include "../common/mixins.hpp"
 
 
 namespace mimir
 {
 
-// Common interface, do not add members to keep the view lightweight.
+/// @brief Top-level CRTP based interface for a State.
+/// @tparam Derived
 template<typename Derived>
 class StateBase {
 private:
+    using C = typename TypeTraits<Derived>::ConfigType;
+
     StateBase() = default;
     friend Derived;
 
@@ -22,22 +24,26 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
+    int m_id;
+
 public:
     // Define common interface for states.
-    int get_id() const { return self().get_id_impl(); }
+    int get_id() const { return m_id; }
 };
 
 
-// ID class for a state
+/// @brief A concrete state.
 template<Config C>
-struct State { };
-
-
-// View class
-template<Config C>
-class View<State<C>> : public StateBase<View<State<C>>> {
+class StateImpl : public StateBase<StateImpl<C>> {
+private:
+    // Implement configuration independent functionality.
 };
 
+
+template<Config C>
+struct TypeTraits<StateImpl<C>> {
+    using ConfigType = C;
+};
 
 }  // namespace mimir
 

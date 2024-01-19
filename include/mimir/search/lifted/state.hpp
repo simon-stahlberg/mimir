@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_LIFTED_STATE_VIEW_HPP_
-#define MIMIR_SEARCH_LIFTED_STATE_VIEW_HPP_
+#ifndef MIMIR_SEARCH_LIFTED_STATE_HPP_
+#define MIMIR_SEARCH_LIFTED_STATE_HPP_
 
-#include "../state_view_base.hpp"
+#include "../state_base.hpp"
 #include "../../common/mixins.hpp"
 
 
@@ -13,14 +13,11 @@ class StateRepository;
 
 /// @brief Concrete implementation of a lifted state.
 template<>
-class View<State<Lifted>> : public StateBase<View<State<Lifted>>> {
+class StateImpl<Lifted> : public StateBase<StateImpl<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    friend class StateBase<View<State<Lifted>>>;
+    friend class StateBase<StateImpl<Lifted>>;
     friend class StateRepository<Lifted>;
-
-public:
-    View(char* data, size_t size) : m_data(data), m_size(size) { }
 };
 
 

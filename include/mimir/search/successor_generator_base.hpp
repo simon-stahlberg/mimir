@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
 
-#include "state_view_base.hpp"
+#include "state_base.hpp"
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
@@ -28,9 +28,9 @@ private:
 public:
     /// @brief Generate all applicable actions for a given state.
     // TODO: This function should return a view to a GroundActionList at some point.
-    // The user must assume that GroundActionList becomes
+    // The user must assume that GroundActionList becomes 
     // invalidated when calling generate_application_actions again.
-    GroundActionList generate_applicable_actions(const View<State<C>> state) {
+    GroundActionList generate_applicable_actions(State<C> state) {
         return self().generate_applicable_actions_impl(state);
     }
 };

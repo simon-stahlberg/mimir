@@ -6,22 +6,27 @@
 
 namespace mimir {
 
-template<typename T>
-class View;
+template<Config C> 
+class StateImpl;
+template<Config C>
+using State = const StateImpl<C>*;
 
-/* State */
 template<Config C>
-class State;
-template<Config C>
-class View<State<C>>;
+using StatePtr = const StateImpl<C>*;
+template<Config C> 
+using ConstStatePtr = const StateImpl<C>*;
 
-/* SearchNode */
 template<Config C>
-class SearchNode;
+class SearchNodeImpl;
 template<Config C>
-class View<SearchNode<C>>;
+using SearchNode = SearchNodeImpl<C>*;
+
+template<Config C>
+using SearchNodePtr = SearchNodeImpl<C>*;
+template<Config C>
+using ConstSearchNodePtr = const SearchNodeImpl<C>*;
 
 }
 
 
-#endif
+#endif 

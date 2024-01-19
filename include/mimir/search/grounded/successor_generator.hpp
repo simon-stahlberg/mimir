@@ -15,7 +15,7 @@ template<>
 class SuccessorGenerator<Grounded> : public SuccessorGeneratorBase<SuccessorGenerator<Grounded>> {
     // Implement configuration specific functionality.
 private:
-    GroundActionList generate_applicable_actions_impl(const View<State<Grounded>> state) {
+    GroundActionList generate_applicable_actions_impl(State<Grounded> state) {
         return GroundActionList();
     }
 
