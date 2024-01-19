@@ -19,6 +19,8 @@
 namespace mimir
 {
 
+// TODO (Dominik): Make this InformationByState or PerStateInformation and templatize it by the type
+
 /// @brief Top-level CRTP based interface for a StateRepository.
 /// @tparam Derived
 template<Config C>
