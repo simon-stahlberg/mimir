@@ -3,7 +3,6 @@
 
 #include "../algorithm_base.hpp"
 #include "../state_base.hpp"
-#include "../search_node_repository.hpp"
 #include "../state_repository_base.hpp"
 
 #include <deque>
@@ -21,7 +20,7 @@ private:
     std::deque<State<Config>> m_queue;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
-        auto initial_search_node = this->m_search_node_repository.get_or_create_search_node(this->m_initial_state);
+        auto initial_search_node = this->m_search_nodes[this->m_initial_state->get_id()];
         // TODO (Dominik): update the data of the initial_search_node
 
         m_queue.push_back(this->m_initial_state);
@@ -29,7 +28,7 @@ private:
             const auto state = m_queue.front();
             m_queue.pop_front();
 
-            const auto search_node = this->m_search_node_repository.get_or_create_search_node(state);
+            const auto search_node = this->m_search_nodes[state->get_id()];
 
             auto applicable_actions = this->m_successor_generator.generate_applicable_actions(state);
             for (const auto& action : applicable_actions) {

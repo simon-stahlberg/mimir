@@ -59,7 +59,7 @@ template<typename T>
 class AutomaticVector : public UncopyableMixin<AutomaticVector<T>> {
 private:
     // Persistent storage
-    buffer::CharStreamSegmented<100000> m_storage;
+    CharStreamSegmented<100000> m_storage;
 
     // Data to be accessed
     std::vector<View<T>> m_data;
@@ -82,20 +82,25 @@ public:
     }
 
     [[nodiscard]] View<T> operator[](size_t pos) {
-        assert(pos <= static_cast<int>(get_size()));
+        if (pos >= get_size()) {
+            resize(pos);
+        }
         return m_data[pos];
     }
 
     [[nodiscard]] const View<T> operator[](size_t pos) const {
-        assert(pos <= static_cast<int>(get_size()));
+        if (pos >= get_size()) {
+            resize(pos);
+        }
         return m_data[pos];
     }
 
     void resize(size_t size) {
         const char* default_data = m_default_builder.get_data();
         size_t default_size = m_default_builder.get_size();
-        while (get_size() < size) {
-            m_data.push_back(View<T>(m_storage.write(default_data, default_size), default_size));
+        while (get_size() <= size) {
+            char* written_data = m_storage.write(default_data, default_size);
+            m_data.push_back(View<T>(written_data, default_size));
         }
     }
 

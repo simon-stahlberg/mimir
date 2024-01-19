@@ -31,6 +31,11 @@ private:
     }
 
 public:
+    CharStreamSegmented() {
+        // allocate first block of memory
+        increase_capacity();
+    }
+
     /// @brief Write the data starting from the cur_segment_pos
     ///        in the segment with cur_segment_id, if it fits,
     ///        and otherwise, push_back a new segment first.

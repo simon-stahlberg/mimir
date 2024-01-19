@@ -10,7 +10,7 @@
 namespace mimir {
 
 template<typename Derived>
-class BuilderBase : public UncopyableMixin<BuilderBase<Derived>> {
+class BuilderBase {
 private:
     BuilderBase() = default;
     friend Derived;
@@ -27,16 +27,14 @@ public:
     const char* get_data() const { return m_buffer.get_data(); }
     int get_size() const { return m_buffer.get_size(); }
 
-    void clear() { m_buffer.clear() }
+    void clear() { m_buffer.clear(); }
 };
 
 
 /// @brief User must provide a fully instantiated template.
 /// @tparam T
 template<typename T>
-class Builder : public BuilderBase<Builder<T>> {
-    friend class BuilderBase<Builder<T>>;
-};
+class Builder : public BuilderBase<Builder<T>> {};
 
 }
 

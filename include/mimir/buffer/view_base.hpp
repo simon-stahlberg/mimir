@@ -38,7 +38,7 @@ public:
 
 // Can be specialized for view of specific types T.
 template<typename T>
-class View : public ViewBase<View> { /* this should remain empty */ };
+class View : public ViewBase<View<T>> {};
 
 }
 

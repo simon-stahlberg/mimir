@@ -2,10 +2,11 @@
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 #include "config.hpp"
-#include "search_node_repository.hpp"
 #include "state_base.hpp"
 #include "type_traits.hpp"
 
+#include "search_node.hpp"
+#include "search_node_builder.hpp"
 #include "grounded/state_builder.hpp"
 #include "grounded/state_repository.hpp"
 #include "grounded/successor_generator.hpp"
@@ -13,6 +14,7 @@
 #include "lifted/state_repository.hpp"
 #include "lifted/successor_generator.hpp"
 
+#include "../buffer/containers/vector.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -32,7 +34,8 @@ private:
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
         , m_state_repository(StateRepository<C>())
-        , m_initial_state(m_state_repository.get_or_create_initial_state(problem)) { }
+        , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
+        , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, nullptr, nullptr))) { }
 
     friend Derived;
 
@@ -44,7 +47,7 @@ private:
     StateRepository<C> m_state_repository;
     State<C> m_initial_state;
     SuccessorGenerator<C> m_successor_generator;
-    SearchNodeRepository<C> m_search_node_repository;
+    AutomaticVector<SearchNode<C>> m_search_nodes;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {
