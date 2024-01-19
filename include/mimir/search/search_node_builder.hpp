@@ -7,7 +7,7 @@
 #include "declarations.hpp"
 #include "search_node.hpp"
 
-#include "../buffers/buffer.hpp"
+#include "../buffer/char_stream.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -24,7 +24,7 @@ private:
     State<C> m_parent_state;
     GroundAction m_creating_action;
 
-    BinaryBuffer m_buffer;
+    buffer::CharStream m_buffer;
 
 public:
     void set_status(SearchNodeStatus status) { m_status = status; }
@@ -32,7 +32,7 @@ public:
     void set_parent_state(State<C> parent_state) { m_parent_state = parent_state; }
     void set_ground_action(GroundAction creating_action) { m_creating_action = creating_action; }
 
-    void finish() { 
+    void finish() {
         m_buffer.write(reinterpret_cast<const char*>(&m_status), sizeof(SearchNodeStatus));
         m_buffer.write(reinterpret_cast<const char*>(&m_g_value), sizeof(int));
         m_buffer.write(reinterpret_cast<const char*>(&m_parent_state), sizeof(State<C>));

@@ -7,7 +7,7 @@
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
-#include "../buffers/segmented_binary_vector.hpp"
+#include "../buffer/char_stream_segmented.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -32,7 +32,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     // Persistent storage
-    SegmentedBinaryVector<100000> m_data;
+    buffer::CharStreamSegmented<100000> m_data;
 
     // Creates states uniquely
     std::unordered_set<State<C>> m_uniqueness;

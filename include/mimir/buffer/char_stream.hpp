@@ -1,28 +1,28 @@
-#ifndef MIMIR_BUFFERS_BUFFER_HPP_
-#define MIMIR_BUFFERS_BUFFER_HPP_
+#ifndef MIMIR_BUFFER_CHAR_STREAM_HPP_
+#define MIMIR_BUFFER_CHAR_STREAM_HPP_
 
-#include <cstdint>
 #include <cstddef>
 #include <vector>
 
 
-namespace mimir {
+namespace mimir::buffer {
 
-class BinaryBuffer {
+class CharStream {
 private:
     std::vector<char> m_data;
 
 public:
-    void write(const char* data, int size) {
-        m_data.insert(m_data.end(), data, data + size);
+    void write(const char* data, size_t amount) {
+        m_data.insert(m_data.end(), data, data + amount);
     }
 
     void clear() { m_data.clear(); }
 
     const char* get_data() const { return m_data.data(); }
+
     size_t get_size() const { return m_data.size(); }
 };
 
 }  // namespace mimir
 
-#endif // MIMIR_BUFFERS_BUFFER_HPP_
+#endif // MIMIR_BUFFERS_CHAR_STREAM_HPP_

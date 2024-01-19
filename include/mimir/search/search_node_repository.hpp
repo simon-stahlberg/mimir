@@ -8,7 +8,7 @@
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
-#include "../buffers/segmented_binary_vector.hpp"
+#include "../buffer/char_stream_segmented.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -27,7 +27,7 @@ template<Config C>
 class SearchNodeRepository : public UncopyableMixin<SearchNodeRepository<C>> {
 private:
     // Persistent storage
-    SegmentedBinaryVector<100000> m_data;
+    buffer::CharStreamSegmented<100000> m_data;
 
     // Access search node by state
     std::vector<SearchNode<C>> m_node_by_state_id;
@@ -42,11 +42,11 @@ public:
         assert(state_id <= static_cast<int>(m_node_by_state_id.size()));
         if (state_id < static_cast<int>(m_node_by_state_id.size())) {
             return m_node_by_state_id[state_id];
-        } 
+        }
         m_search_node_builder.clear();
         m_search_node_builder.finish();
         auto search_node = reinterpret_cast<SearchNode<C>>(
-            m_data.push_back(
+            m_data.write(
                 m_search_node_builder.get_buffer_pointer(),
                 m_search_node_builder.get_size()));
         m_node_by_state_id.push_back(search_node);
