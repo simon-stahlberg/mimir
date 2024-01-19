@@ -13,7 +13,9 @@
 
 namespace mimir {
 
-// Interface class
+/**
+ * Interface class
+*/
 template<typename Derived>
 class SearchNodeBuilderBase {
 private:
@@ -34,7 +36,9 @@ public:
 };
 
 
-// Implementation class
+/**
+ * Implementation class
+*/
 template<Config C>
 class Builder<SearchNode<C>> : public BuilderBase<Builder<SearchNode<C>>>, public SearchNodeBuilderBase<Builder<SearchNode<C>>> {
 private:
@@ -60,11 +64,16 @@ private:
 
 public:
     Builder() = default;
+
+    /// @brief Construct a builder with custom default values.
     Builder(SearchNodeStatus status, int g_value, State<C> parent_state, GroundAction creating_action)
         : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) { }
 };
 
 
+/**
+ * Type traits.
+*/
 template<Config C>
 struct TypeTraits<Builder<SearchNode<C>>> {
     using ConfigType = C;

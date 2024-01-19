@@ -11,6 +11,9 @@ class StateImpl;
 template<Config C>
 using State = const StateImpl<C>*;
 
+/* State */
+
+
 /* SearchNode */
 template<typename T>
 class View;

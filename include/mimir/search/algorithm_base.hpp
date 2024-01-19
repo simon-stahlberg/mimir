@@ -6,6 +6,7 @@
 #include "type_traits.hpp"
 
 #include "search_node.hpp"
+#include "search_node_view.hpp"
 #include "search_node_builder.hpp"
 #include "grounded/state_builder.hpp"
 #include "grounded/state_repository.hpp"
