@@ -20,13 +20,13 @@ private:
     [[nodiscard]] State<Lifted> get_or_create_initial_state_impl(Problem problem) {
         // create a lifted state.
         // TODO (Dominik): implement
-        return nullptr;
+        return new StateImpl<Lifted>();
     }
 
     [[nodiscard]] State<Lifted> get_or_create_successor_state_impl(State<Lifted> state, GroundAction action) {
         // create a lifted state.
         // TODO (Dominik): implement
-        return nullptr;
+        return new StateImpl<Lifted>();
     }
 
     // Give access to the private interface implementations.

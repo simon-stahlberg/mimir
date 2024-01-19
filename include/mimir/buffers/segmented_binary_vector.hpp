@@ -17,13 +17,20 @@ class SegmentedBinaryVector {
 private:
     std::vector<std::vector<char>> m_segments;
 
-    int size;
-    int capacity;
+    size_t size;
+    size_t capacity;
 
     void increase_capacity();
 
 public:
-    char* push_back(char* data, int size);
+    /// @brief 
+    /// @param data 
+    /// @param size 
+    /// @return the pointer to the position at which the data was inserted
+    char* push_back(const char* data, int size) {
+        // TODO (Dominik): implement
+        return nullptr;
+    }
 };
 
 }  // namespace mimir

@@ -12,6 +12,9 @@
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
+#include <cassert>
+#include <unordered_map>
+
 
 namespace mimir
 {
@@ -24,13 +27,28 @@ private:
     // Persistent storage
     SegmentedBinaryVector<100000> m_data;
 
-    // Reuse memory to create successor states.
-    SearchNodeBuilder<C> m_state_builder;
+    // Access search node by state
+    std::vector<SearchNode<C>> m_node_by_state_id;
+
+    // Reuse memory to construct search nodes.
+    SearchNodeBuilder<C> m_search_node_builder;
 
 public:
     [[nodiscard]] SearchNode<C> get_or_create_search_node(State<C> state) {
-        // TODO (Dominik): implement
-        return nullptr;
+        int state_id = state->get_id();
+        // If with index i is new then we already created search nodes for states with index 0,...,i-1
+        assert(state_id <= static_cast<int>(m_node_by_state_id.size()));
+        if (state_id < static_cast<int>(m_node_by_state_id.size())) {
+            return m_node_by_state_id[state_id];
+        } 
+        m_search_node_builder.clear();
+        m_search_node_builder.finish();
+        auto search_node = reinterpret_cast<SearchNode<C>>(
+            m_data.push_back(
+                m_search_node_builder.get_buffer_pointer(),
+                m_search_node_builder.get_size()));
+        m_node_by_state_id.push_back(search_node);
+        return search_node;
     }
 };
 

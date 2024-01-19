@@ -11,6 +11,8 @@
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
+#include <unordered_set>
+
 
 namespace mimir
 {
@@ -31,6 +33,9 @@ private:
 
     // Persistent storage
     SegmentedBinaryVector<100000> m_data;
+
+    // Creates states uniquely
+    std::unordered_set<State<C>> m_uniqueness;
 
     // Reuse memory to create states.
     StateBuilder<C> m_state_builder;

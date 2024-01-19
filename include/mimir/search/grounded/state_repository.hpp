@@ -21,13 +21,13 @@ private:
     [[nodiscard]] State<Grounded> get_or_create_initial_state_impl(Problem problem) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return nullptr;
+        return new StateImpl<Grounded>();
     }
 
     [[nodiscard]] State<Grounded> get_or_create_successor_state_impl(State<Grounded> state, GroundAction action) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return nullptr;
+        return new StateImpl<Grounded>();
     }
 
     // Give access to the private interface implementations.
