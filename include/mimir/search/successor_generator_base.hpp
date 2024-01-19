@@ -28,6 +28,8 @@ private:
 public:
     /// @brief Generate all applicable actions for a given state.
     // TODO: This function should return a view to a GroundActionList at some point.
+    // The user must assume that GroundActionList becomes 
+    // invalidated when calling generate_application_actions again.
     GroundActionList generate_applicable_actions(State<C> state) {
         return self().generate_applicable_actions_impl(state);
     }
