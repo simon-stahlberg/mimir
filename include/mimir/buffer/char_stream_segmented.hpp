@@ -1,5 +1,7 @@
-#ifndef MIMIR_BUFFER_SEGMENTED_BINARY_VECTOR_HPP_
-#define MIMIR_BUFFER_SEGMENTED_BINARY_VECTOR_HPP_
+#ifndef MIMIR_BUFFER_CHAR_STREAM_SEGMENTED_HPP_
+#define MIMIR_BUFFER_CHAR_STREAM_SEGMENTED_HPP_
+
+#include "../common/mixins.hpp"
 
 #include <cassert>
 #include <cstddef>
@@ -11,7 +13,7 @@ namespace mimir::buffer {
 /// @tparam N the amount of bytes per segments.
 ///         Reasonable numbers are 10000-100000.
 template<size_t N>
-class CharStreamSegmented {
+class CharStreamSegmented : public UncopyableMixin<CharStreamSegmented<N>> {
 private:
     std::vector<std::vector<char>> m_segments;
 

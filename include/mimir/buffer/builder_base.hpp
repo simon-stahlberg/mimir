@@ -2,7 +2,7 @@
 #ifndef MIMIR_BUFFER_BUILDER_BASE_HPP_
 #define MIMIR_BUFFER_BUILDER_BASE_HPP_
 
-#include "buffer.hpp"
+#include "char_stream.hpp"
 
 #include "../common/mixins.hpp"
 
@@ -19,7 +19,7 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    BinaryBuffer m_buffer;
+    CharStream m_buffer;
 
 public:
     void finish() { self().finish_impl(); }
@@ -29,6 +29,12 @@ public:
 
     void clear() { m_buffer.clear() }
 };
+
+
+/// @brief User must provide a fully instantiated template.
+/// @tparam T
+template<typename T>
+class Builder : public BuilderBase<Builder<T>> { };
 
 }
 

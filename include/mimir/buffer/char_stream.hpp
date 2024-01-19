@@ -1,13 +1,15 @@
 #ifndef MIMIR_BUFFER_CHAR_STREAM_HPP_
 #define MIMIR_BUFFER_CHAR_STREAM_HPP_
 
+#include "../common/mixins.hpp"
+
 #include <cstddef>
 #include <vector>
 
 
 namespace mimir::buffer {
 
-class CharStream {
+class CharStream : public UncopyableMixin<CharStream> {
 private:
     std::vector<char> m_data;
 
