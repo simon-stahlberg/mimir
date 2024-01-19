@@ -8,7 +8,7 @@
 #include <vector>
 
 
-namespace mimir::buffer {
+namespace mimir {
 
 /// @tparam N the amount of bytes per segments.
 ///         Reasonable numbers are 10000-100000.

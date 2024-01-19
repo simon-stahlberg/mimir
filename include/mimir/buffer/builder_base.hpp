@@ -7,7 +7,7 @@
 #include "../common/mixins.hpp"
 
 
-namespace mimir::buffer {
+namespace mimir {
 
 template<typename Derived>
 class BuilderBase : public UncopyableMixin<BuilderBase<Derived>> {
@@ -34,7 +34,9 @@ public:
 /// @brief User must provide a fully instantiated template.
 /// @tparam T
 template<typename T>
-class Builder : public BuilderBase<Builder<T>> { };
+class Builder : public BuilderBase<Builder<T>> {
+    friend class BuilderBase<Builder<T>>;
+};
 
 }
 

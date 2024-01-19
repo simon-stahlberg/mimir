@@ -9,21 +9,16 @@
 #include <unordered_set>
 
 
-namespace mimir::buffer {
+namespace mimir {
 
-/// @brief Top-level CRTP based interface for a StateRepository.
-/// @tparam Derived
 template<typename T>
 class UnorderedSet : public UncopyableMixin<UnorderedSet<T>> {
 private:
     // Persistent storage
-    buffer::CharStreamSegmented<100000> m_data;
+    CharStreamSegmented<100000> m_storage;
 
-    // Creates states uniquely
-    std::unordered_set<View<T>> m_uniqueness;
-
-    // Reuse memory to create states.
-    Builder<T> m_builder;
+    // Data to be accessed
+    std::unordered_set<View<T>> m_data;
 
 public:
     [[nodiscard]] auto insert(const Builder<T>& builder) {

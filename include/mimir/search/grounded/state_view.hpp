@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_GROUNDED_STATE_HPP_
-#define MIMIR_SEARCH_GROUNDED_STATE_HPP_
+#ifndef MIMIR_SEARCH_GROUNDED_STATE_VIEW_HPP_
+#define MIMIR_SEARCH_GROUNDED_STATE_VIEW_HPP_
 
-#include "../state_base.hpp"
+#include "../state_view_base.hpp"
 #include "../../common/mixins.hpp"
 
 
@@ -13,10 +13,10 @@ class StateRepository;
 
 /// @brief Concrete implementation of a grounded state.
 template<>
-class StateImpl<Grounded> : public StateBase<StateImpl<Grounded>> {
+class View<State<Grounded>> : public StateBase<View<State<Grounded>>> {
     // Implement configuration specific functionality.
 private:
-    friend class StateBase<StateImpl<Grounded>>;
+    friend class StateBase<View<State<Grounded>>>;
     friend class StateRepository<Grounded>;
 };
 

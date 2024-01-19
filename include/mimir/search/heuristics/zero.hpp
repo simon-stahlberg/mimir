@@ -11,7 +11,7 @@ namespace mimir
 template<typename Config>
 class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<Config>> {
 private:
-    double compute_heuristic_impl(const State<Config>& state) {
+    double compute_heuristic_impl(const View<State<Config>>& state) {
         return 0.;
     }
 

@@ -3,7 +3,7 @@
 
 #include "config.hpp"
 #include "search_node_repository.hpp"
-#include "state_base.hpp"
+#include "state_view_base.hpp"
 #include "type_traits.hpp"
 
 #include "grounded/state_builder.hpp"

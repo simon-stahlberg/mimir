@@ -4,11 +4,12 @@
 #include "config.hpp"
 #include "declarations.hpp"
 #include "search_node_builder.hpp"
-#include "state_base.hpp"
+#include "state_view_base.hpp"
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
 #include "../buffer/char_stream_segmented.hpp"
+#include "../buffer/containers/vector.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -19,6 +20,8 @@
 namespace mimir
 {
 
+
+
 // TODO (Dominik): Make this InformationByState or PerStateInformation and templatize it by the type
 
 /// @brief Top-level CRTP based interface for a StateRepository.
@@ -27,16 +30,11 @@ template<Config C>
 class SearchNodeRepository : public UncopyableMixin<SearchNodeRepository<C>> {
 private:
     // Persistent storage
-    buffer::CharStreamSegmented<100000> m_data;
-
-    // Access search node by state
-    std::vector<SearchNode<C>> m_node_by_state_id;
-
-    // Reuse memory to construct search nodes.
-    SearchNodeBuilder<C> m_search_node_builder;
+    // AutomaticVector m_data;
 
 public:
-    [[nodiscard]] SearchNode<C> get_or_create_search_node(State<C> state) {
+    [[nodiscard]] View<SearchNode<C>> get_or_create_search_node(const View<State<C>> state) {
+        state.get_id();
         int state_id = state->get_id();
         // If with index i is new then we already created search nodes for states with index 0,...,i-1
         assert(state_id <= static_cast<int>(m_node_by_state_id.size()));

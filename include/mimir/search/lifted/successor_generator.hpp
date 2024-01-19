@@ -15,7 +15,7 @@ template<>
 class SuccessorGenerator<Lifted> : public SuccessorGeneratorBase<SuccessorGenerator<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    GroundActionList generate_applicable_actions_impl(State<Lifted> state) {
+    GroundActionList generate_applicable_actions_impl(const View<State<Lifted>> state) {
         return GroundActionList();
     }
 

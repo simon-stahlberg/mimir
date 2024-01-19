@@ -7,7 +7,7 @@
 #include <vector>
 
 
-namespace mimir::buffer {
+namespace mimir {
 
 class CharStream : public UncopyableMixin<CharStream> {
 private:

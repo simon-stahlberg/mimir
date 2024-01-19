@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "../algorithm_base.hpp"
-#include "../state_base.hpp"
+#include "../state_view_base.hpp"
 #include "../search_node_repository.hpp"
 #include "../state_repository_base.hpp"
 

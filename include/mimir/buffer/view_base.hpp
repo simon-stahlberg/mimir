@@ -8,20 +8,24 @@
 #include <functional>
 
 
-namespace mimir::buffer {
+namespace mimir {
 
-/// @brief User must provide a fully instantiated template.
-template<typename T>
-class View {
+/// @brief Top-level CRTP based interface for a View.
+/// @tparam Derived
+template<typename Derived>
+class ViewBase {
 private:
+    ViewBase() = default;
+    friend Derived;
+
     // Basic meta data that every view must contain to be equality comparable and hashable
     char* m_data;
     size_t m_size;
 
 public:
-    View(char* data, size_t size) : m_data(data), m_size(size) { }
+    ViewBase(char* data, size_t size) : m_data(data), m_size(size) { }
 
-    bool operator==(const View& other) const {
+    bool operator==(const ViewBase& other) const {
         if (get_size() != other.get_size()) return false;
         return (std::memcmp(get_data(), other.get_data(), get_size()) == 0);
     }
@@ -31,13 +35,19 @@ public:
     size_t get_size() const { return m_size; }
 };
 
+
+// Can be specialized for view of specific types T.
+template<typename T>
+class View : public ViewBase<View> { /* this should remain empty */ };
+
 }
+
 
 namespace std {
     template<typename T>
-    struct hash<mimir::buffer::View<T>>
+    struct hash<mimir::View<T>>
     {
-        std::size_t operator()(const mimir::buffer::View<T>& view) const {
+        std::size_t operator()(const mimir::View<T>& view) const {
             size_t seed = view.get_size();
             int64_t hash[2];
             MurmurHash3_x64_128(view.get_data(), view.get_size(), seed, hash);

@@ -3,11 +3,11 @@
 
 #include "config.hpp"
 #include "declarations.hpp"
-#include "state_base.hpp"
+#include "state_view_base.hpp"
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
-#include "../buffer/char_stream_segmented.hpp"
+#include "../buffer/containers/unordered_set.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -31,21 +31,14 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    // Persistent storage
-    buffer::CharStreamSegmented<100000> m_data;
-
-    // Creates states uniquely
-    std::unordered_set<State<C>> m_uniqueness;
-
-    // Reuse memory to create states.
-    StateBuilder<C> m_state_builder;
+    UnorderedSet<State<C>> m_data;
 
 public:
-    [[nodiscard]] State<C> get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] const View<State<C>> get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] State<C> get_or_create_successor_state(State<C> state, GroundAction action) {
+    [[nodiscard]] const View<State<C>> get_or_create_successor_state(const View<State<C>> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };
