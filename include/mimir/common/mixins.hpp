@@ -1,8 +1,6 @@
 #ifndef MIMIR_COMMON_MIXINS_HPP_
 #define MIMIR_COMMON_MIXINS_HPP_
 
-#include "id.hpp"
-
 #include <sstream>
 
 
@@ -62,19 +60,6 @@ public:
     UncopyableMixin& operator=(const UncopyableMixin& other) = delete;
     UncopyableMixin(UncopyableMixin&& other) = default;
     UncopyableMixin& operator=(UncopyableMixin&& other) = default;
-};
-
-
-/// @brief Provide functionality to construct and get an ID.
-template<typename Derived> 
-class IDMixin {
-private:
-    ID<Derived> m_id;
-
-public:
-    explicit IDMixin(int id) : m_id(ID<Derived>(id)) { }
-
-    ID<Derived> get_id() const { return m_id; }
 };
 
 }  // namespace mimir

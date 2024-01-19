@@ -29,12 +29,6 @@ private:
         return nullptr;
     }
 
-    [[nodiscard]] State<Lifted> lookup_state_impl(ID<State<Lifted>> state_id) {
-        // create a lifted state.
-        // TODO (Dominik): implement
-        return nullptr;
-    }
-
     // Give access to the private interface implementations.
     friend class StateRepositoryBase<StateRepository<Lifted>>;
 

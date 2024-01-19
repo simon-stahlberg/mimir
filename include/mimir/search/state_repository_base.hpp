@@ -40,10 +40,6 @@ public:
     [[nodiscard]] State<C> get_or_create_successor_state(State<C> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
-
-    [[nodiscard]] State<C> lookup_state(State<C> state_id) {
-        return self().lookup_state_impl(state_id);
-    }
 };
 
 
