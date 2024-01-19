@@ -6,8 +6,6 @@
 
 #include "../common/mixins.hpp"
 
-#include <cstdint>
-
 
 namespace mimir
 {
@@ -30,12 +28,16 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
+    // Add some data members that will be reused before writing to the buffer.
+
+    std::ostringstream m_buffer;
+
 public:
     void set_fact(/* todo */) { self().set_fact_impl(/* todo */); }
 
     void finish();
 
-    const uint8_t* get_buffer_pointer();
+    const char* get_buffer_pointer();
     int get_size() const;
 };
 

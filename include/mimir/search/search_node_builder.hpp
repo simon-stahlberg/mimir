@@ -10,7 +10,8 @@
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
-#include <cstdint>
+#include <sstream>
+
 
 namespace mimir {
 
@@ -19,23 +20,21 @@ class SearchNodeBuilder {
 private:
 
     SearchNodeStatus status;
-    int32_t g_value;
+    int g_value;
     State<C> parent_state;
     GroundAction creating_action;
 
-    // binary ostream?
+    std::ostringstream m_buffer;
 
 public:
-    SearchNodeBuilder();
-
     void set_status(SearchNodeStatus status);
-    void set_g_value(int32_t g_value);
+    void set_g_value(int g_value);
     void set_parent_state(State<C> state);
     void set_ground_action(GroundAction action);
 
     void finish();
 
-    const uint8_t* get_buffer_pointer() const;
+    const char* get_buffer_pointer() const;
     int get_size() const;
 };
 

@@ -7,6 +7,7 @@
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
 
+#include "../buffers/segmented_binary_vector.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -28,8 +29,10 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    // Reuse memory to create successor states.
-    // TODO (Dominik): maybe we dont need this.
+    // Persistent storage
+    SegmentedBinaryVector<100000> m_data;
+
+    // Reuse memory to create states.
     StateBuilder<C> m_state_builder;
 
 public:

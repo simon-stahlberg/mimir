@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 #include "config.hpp"
-#include "search_space.hpp"
+#include "search_node_repository.hpp"
 #include "state_base.hpp"
 #include "type_traits.hpp"
 
@@ -44,7 +44,7 @@ private:
     StateRepository<C> m_state_repository;
     State<C> m_initial_state;
     SuccessorGenerator<C> m_successor_generator;
-    SearchSpace<C> m_search_space;
+    SearchNodeRepository<C> m_search_node_repository;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {

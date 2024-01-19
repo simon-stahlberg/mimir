@@ -18,10 +18,15 @@ enum SearchNodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
 template<Config C>
 class SearchNodeImpl {
 private:
-    SearchNodeStatus* get_status() { return reinterpret_cast<SearchNodeStatus*>(this); }
-    int32_t* get_g_value() { return reinterpret_cast<uint32_t*>(this + sizeof(SearchNodeStatus)); }
-    State<C> get_parent_state() { return reinterpret_cast<State<C>>(this + sizeof(SearchNodeStatus) + sizeof(int32_t)); }
-    GroundAction get_ground_action() { return reinterpret_cast<GroundAction>(this + sizeof(SearchNodeStatus) + sizeof(int32_t) + sizeof(int32_t)); }
+    static constexpr size_t s_status_offset = 0;
+    static constexpr size_t s_g_value_offset = s_status_offset + sizeof(SearchNodeStatus);
+    static constexpr size_t s_parent_state_offset = s_g_value_offset + sizeof(int);
+    static constexpr size_t s_ground_action = s_parent_state_offset + sizeof(State<C>);
+
+    SearchNodeStatus get_status() { return reinterpret_cast<SearchNodeStatus>(this + s_status_offset); }
+    int get_g_value() { return reinterpret_cast<int>(this + s_g_value_offset); }
+    State<C> get_parent_state() { return reinterpret_cast<State<C>>(this + s_parent_state_offset); }
+    GroundAction get_ground_action() { return reinterpret_cast<GroundAction>(this + s_ground_action); }
 };
 
 

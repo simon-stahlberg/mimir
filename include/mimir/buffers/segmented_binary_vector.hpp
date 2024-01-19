@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
-#define MIMIR_SEARCH_SEARCH_NODE_HPP_
+#ifndef MIMIR_BUFFERS_SEGMENTED_BINARY_VECTOR_HPP_
+#define MIMIR_BUFFERS_SEGMENTED_BINARY_VECTOR_HPP_
 
 #include <cstdint>
 #include <cstddef>
@@ -15,8 +15,7 @@ namespace mimir {
 template<size_t N>
 class SegmentedBinaryVector {
 private:
-    std::vector<std::vector<uint8_t>> m_segments;
-    std::vector<uint32_t> m_begin_by_index;
+    std::vector<std::vector<char>> m_segments;
 
     int size;
     int capacity;
@@ -24,11 +23,9 @@ private:
     void increase_capacity();
 
 public:
-    uint8_t* push_back(uint8_t* data, int size);
-
-    uint8_t* operator[](uint32_t index);
+    char* push_back(char* data, int size);
 };
 
-}
+}  // namespace mimir
 
-#endif 
+#endif // MIMIR_BUFFERS_SEGMENTED_BINARY_VECTOR_HPP_

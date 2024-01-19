@@ -27,8 +27,9 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(State<C> state, GroundActionList& out_applicable_actions) {
-        return self().generate_applicable_actions_impl(state, out_applicable_actions);
+    // TODO: This function should return a view to a GroundActionList at some point.
+    GroundActionList generate_applicable_actions(State<C> state) {
+        return self().generate_applicable_actions_impl(state);
     }
 };
 
