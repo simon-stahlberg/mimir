@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
 
 #include "config.hpp"
+#include "declarations.hpp"
 #include "state_base.hpp"
 #include "state_builder_base.hpp"
 #include "type_traits.hpp"
@@ -32,15 +33,15 @@ private:
     StateBuilder<C> m_state_builder;
 
 public:
-    [[nodiscard]] const State<C>& get_or_create_initial_state(const Problem& problem) {
+    [[nodiscard]] State<C> get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] const State<C>& get_or_create_successor_state(const State<C>& state, const GroundAction& action) {
+    [[nodiscard]] State<C> get_or_create_successor_state(State<C> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 
-    [[nodiscard]] const State<C>& lookup_state(const ID<State<C>>& state_id) {
+    [[nodiscard]] State<C> lookup_state(State<C> state_id) {
         return self().lookup_state_impl(state_id);
     }
 };

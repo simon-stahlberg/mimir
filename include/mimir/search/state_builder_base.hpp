@@ -6,6 +6,8 @@
 
 #include "../common/mixins.hpp"
 
+#include <cstdint>
+
 
 namespace mimir
 {
@@ -29,13 +31,12 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    // Define common interface for a state builder.
-    // TODO (Dominik): probably different for each Config
+    void set_fact(/* todo */) { self().set_fact_impl(/* todo */); }
 
-    /// @brief Reset the builder to be able to construct the next state.
-    void reset() {
-        self().reset_impl();
-    }
+    void finish();
+
+    const uint8_t* get_buffer_pointer();
+    int get_size() const;
 };
 
 

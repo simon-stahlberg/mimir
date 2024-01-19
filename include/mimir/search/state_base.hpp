@@ -31,14 +31,14 @@ public:
 
 /// @brief A concrete state.
 template<Config C>
-class State : public StateBase<State<C>>, public IDMixin<State<C>> {
+class StateImpl : public StateBase<StateImpl<C>> {
 private:
     // Implement configuration independent functionality.
 };
 
 
 template<Config C>
-struct TypeTraits<State<C>> {
+struct TypeTraits<StateImpl<C>> {
     using ConfigType = C;
 };
 

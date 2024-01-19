@@ -31,6 +31,7 @@ private:
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
+        , m_state_repository(StateRepository<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem)) { }
 
     friend Derived;
@@ -40,8 +41,8 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    State<C> m_initial_state;
     StateRepository<C> m_state_repository;
+    State<C> m_initial_state;
     SuccessorGenerator<C> m_successor_generator;
     SearchSpace<C> m_search_space;
 

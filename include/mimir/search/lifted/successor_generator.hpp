@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
 
 #include "../config.hpp"
+#include "../declarations.hpp"
 #include "../successor_generator_base.hpp"
 #include "../../common/mixins.hpp"
 
@@ -14,7 +15,7 @@ template<>
 class SuccessorGenerator<Lifted> : public SuccessorGeneratorBase<SuccessorGenerator<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    void generate_applicable_actions_impl(const State<Lifted>& state, GroundActionList& out_applicable_actions) {
+    void generate_applicable_actions_impl(State<Lifted> state, GroundActionList& out_applicable_actions) {
     }
 
     // Give access to the private interface implementations.

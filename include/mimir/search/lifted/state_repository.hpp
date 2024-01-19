@@ -16,26 +16,23 @@ template<>
 class StateRepository<Lifted> : public StateRepositoryBase<StateRepository<Lifted>> {
     // Implement configuration specific functionality.
 
-    // TODO (Dominik): just temporary to get a reference returned. implement the storage
-    State<Lifted> some_state;
-
 private:
-    const State<Lifted>& get_or_create_initial_state_impl(const Problem& problem) {
+    [[nodiscard]] State<Lifted> get_or_create_initial_state_impl(Problem problem) {
         // create a lifted state.
         // TODO (Dominik): implement
-        return some_state;
+        return nullptr;
     }
 
-    const State<Lifted>& get_or_create_successor_state_impl(const State<Lifted>& state, const GroundAction& action) {
+    [[nodiscard]] State<Lifted> get_or_create_successor_state_impl(State<Lifted> state, GroundAction action) {
         // create a lifted state.
         // TODO (Dominik): implement
-        return some_state;
+        return nullptr;
     }
 
-    const State<Lifted>& lookup_state_impl(const ID<State<Lifted>>& state_id) {
+    [[nodiscard]] State<Lifted> lookup_state_impl(ID<State<Lifted>> state_id) {
         // create a lifted state.
         // TODO (Dominik): implement
-        return some_state;
+        return nullptr;
     }
 
     // Give access to the private interface implementations.
@@ -43,7 +40,7 @@ private:
 
 
 public:
-    StateRepository() : some_state(State<Lifted>(0)) { }
+    StateRepository() { }
 };
 
 }  // namespace mimir

@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 
 #include "config.hpp"
+#include "declarations.hpp"
 #include "state_base.hpp"
 #include "type_traits.hpp"
 
@@ -24,7 +25,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] double compute_heuristic(const State<C>& state) {
+    [[nodiscard]] double compute_heuristic(State<C> state) {
         return self().compute_heuristic_impl(state);
     }
 };

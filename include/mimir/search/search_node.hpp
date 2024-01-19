@@ -8,53 +8,22 @@
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
+#include <cstdint>
+
 
 namespace mimir {
 
-/// TODO (Dominik): This a a case of the buffer pattern,
-///      add a builder and make this
-///      a view on the memory layout created by the builder.
+enum SearchNodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
 
 template<Config C>
-class SearchNode {
+class SearchNodeImpl {
 private:
-    enum NodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
-
-    int status : 2;
-    int g_value;
-    ID<State<C>> parent_state_id;
-    GroundAction creating_action;
-
-public:
-    SearchNode();
-
-    bool is_new() const;
-    bool is_open() const;
-    bool is_closed() const;
-    bool is_dead_end() const;
-
-    int get_g() const;
-
-    void open_initial();
-    void open(const SearchNode& parent_node,
-              const GroundAction& parent_action,
-              int adjusted_cost);
-    void reopen(const SearchNode& parent_node,
-                const GroundAction& parent_action,
-                int adjusted_cost);
-    void update_parent(const SearchNode& parent_node,
-                       const GroundAction& parent_action,
-                       int adjusted_cost);
-    void close();
-    void mark_as_dead_end();
+    SearchNodeStatus* get_status() { return reinterpret_cast<SearchNodeStatus*>(this); }
+    int32_t* get_g_value() { return reinterpret_cast<uint32_t*>(this + sizeof(SearchNodeStatus)); }
+    State<C> get_parent_state() { return reinterpret_cast<State<C>>(this + sizeof(SearchNodeStatus) + sizeof(int32_t)); }
+    GroundAction get_ground_action() { return reinterpret_cast<GroundAction>(this + sizeof(SearchNodeStatus) + sizeof(int32_t) + sizeof(int32_t)); }
 };
 
-
-template<Config C>
-SearchNode<C>::SearchNode()
-    : status(SearchNode<C>::NodeStatus::CLOSED)
-    , g_value(0)
-    , parent_state_id(ID<State<C>>::no_id) { }
 
 
 
