@@ -25,9 +25,14 @@ TEST(MimirTests, SearchNodeBuilderTest) {
 }
 
 TEST(MimirTests, SearchNodeVectorTest) {
-    auto vector = AutomaticVector<SearchNode<Grounded>>(Builder<SearchNode<Grounded>>(SearchNodeStatus::CLOSED, 42, nullptr, nullptr));
-    auto search_node_0 = vector[0];
+    /* A vector that automatically resizes when accessing elements at index i
+       and creating default constructed objects.
+       There is only 1 heap allocation every few thousand nodes that are being created. */
+    auto vector = AutomaticVector<SearchNode<Grounded>>(
+        Builder<SearchNode<Grounded>>(SearchNodeStatus::CLOSED, 42, nullptr, nullptr));
+
     // Test default initialization a search node
+    auto search_node_0 = vector[0];
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
     EXPECT_EQ(search_node_0.get_parent_state(), nullptr);

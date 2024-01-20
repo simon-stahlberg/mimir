@@ -2,6 +2,8 @@
 #ifndef MIMIR_BUFFER_VIEW_BASE_HPP_
 #define MIMIR_BUFFER_VIEW_BASE_HPP_
 
+#include "types.hpp"
+
 #include "../algorithms/murmurhash3.hpp"
 
 #include <cstring> // For std::memcmp
@@ -29,7 +31,7 @@ protected:
     [[nodiscard]] const char* get_data() const { return m_data; }
 
     /// @brief The first 4 bytes are always reserved for the size.
-    [[nodiscard]] uint32_t get_size() const { return reinterpret_cast<uint32_t>(m_data); }
+    [[nodiscard]] DataSizeType get_size() const { return reinterpret_cast<DataSizeType>(m_data); }
 
 public:
     [[nodiscard]] bool operator==(const ViewBase& other) const {

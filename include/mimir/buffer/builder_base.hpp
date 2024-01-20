@@ -2,6 +2,7 @@
 #ifndef MIMIR_BUFFER_BUILDER_BASE_HPP_
 #define MIMIR_BUFFER_BUILDER_BASE_HPP_
 
+#include "types.hpp"
 #include "char_stream.hpp"
 
 #include "../common/mixins.hpp"
@@ -9,6 +10,9 @@
 
 namespace mimir {
 
+/**
+ * Interface class
+*/
 template<typename Derived>
 class BuilderBase {
 private:
@@ -25,8 +29,8 @@ private:
     bool m_is_finished;
 
 protected:
-    uint32_t calculate_size() const {
-        return sizeof(uint32_t)  // first 4 bytes are reserved for the amount of data.
+    DataSizeType calculate_size() const {
+        return sizeof(DataSizeType)  // first 4 bytes are reserved for the amount of data.
              + self().calculate_size_impl();  // the remaining bytes of Derived
     }
 
@@ -54,8 +58,10 @@ public:
 };
 
 
-/// @brief User must provide a fully instantiated template.
-/// @tparam T
+/**
+ * Implementation class for some type T.
+ * Provide an implementation for T by providing fully specified template.
+*/
 template<typename T>
 class Builder : public BuilderBase<Builder<T>> {};
 

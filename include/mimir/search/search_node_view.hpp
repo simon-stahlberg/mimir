@@ -52,7 +52,7 @@ public:
 template<Config C>
 class View<SearchNode<C>> : public ViewBase<View<SearchNode<C>>>, public SearchNodeViewBase<View<SearchNode<C>>> {
 private:
-    static constexpr size_t s_status_offset = sizeof(uint32_t);
+    static constexpr size_t s_status_offset = sizeof(DataSizeType);
     static constexpr size_t s_g_value_offset = s_status_offset + sizeof(SearchNodeStatus);
     static constexpr size_t s_parent_state_offset = s_g_value_offset + sizeof(int);
     static constexpr size_t s_ground_action = s_parent_state_offset + sizeof(State<C>);

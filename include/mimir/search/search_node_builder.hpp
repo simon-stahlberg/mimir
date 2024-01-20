@@ -53,8 +53,8 @@ private:
     }
 
     void finish_impl() {
-        uint32_t size = this->calculate_size();
-        this->m_buffer.write(reinterpret_cast<const char*>(&size), sizeof(uint32_t));
+        DataSizeType size = this->calculate_size();
+        this->m_buffer.write(reinterpret_cast<const char*>(&size), sizeof(DataSizeType));
         this->m_buffer.write(reinterpret_cast<const char*>(&m_status), sizeof(SearchNodeStatus));
         this->m_buffer.write(reinterpret_cast<const char*>(&m_g_value), sizeof(int));
         this->m_buffer.write(reinterpret_cast<const char*>(&m_parent_state), sizeof(State<C>));
