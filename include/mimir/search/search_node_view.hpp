@@ -3,7 +3,7 @@
 
 #include "config.hpp"
 #include "search_node.hpp"
-#include "state_base.hpp"
+#include "state_view.hpp"
 #include "type_traits.hpp"
 
 #include "declarations.hpp"
@@ -35,13 +35,13 @@ public:
     /* Mutable getters. */
     [[nodiscard]] SearchNodeStatus& get_status() { return self().get_status_impl(); }
     [[nodiscard]] int& get_g_value() { return self().get_g_value_impl(); }
-    [[nodiscard]] State<C> get_parent_state() { return self().get_parent_state_impl(); }
+    [[nodiscard]] View<State<C>> get_parent_state() { return self().get_parent_state_impl(); }
     [[nodiscard]] GroundAction get_ground_action() { return self().get_ground_action_impl(); }
 
     /* Immutable getters. */
     [[nodiscard]] const SearchNodeStatus& get_status() const { return self().get_status_impl(); }
     [[nodiscard]] const int& get_g_value() const { return self().get_g_value_impl(); }
-    [[nodiscard]] const State<C> get_parent_state() const { return self().get_parent_state_impl(); }
+    [[nodiscard]] const View<State<C>> get_parent_state() const { return self().get_parent_state_impl(); }
     [[nodiscard]] const GroundAction get_ground_action() const { return self().get_ground_action_impl(); }
 };
 
@@ -55,16 +55,27 @@ private:
     static constexpr size_t s_status_offset = sizeof(DataSizeType);
     static constexpr size_t s_g_value_offset = s_status_offset + sizeof(SearchNodeStatus);
     static constexpr size_t s_parent_state_offset = s_g_value_offset + sizeof(int);
-    static constexpr size_t s_ground_action = s_parent_state_offset + sizeof(State<C>);
+    static constexpr size_t s_ground_action = s_parent_state_offset + sizeof(char*);
 
+    /* Implement ViewBase has no interface: no methods must be overriden */
+
+    /* Implement SearchNodeViewBase interface */
     [[nodiscard]] SearchNodeStatus& get_status_impl() {
         return *reinterpret_cast<SearchNodeStatus*>(this->get_data() + s_status_offset); }
+
     [[nodiscard]] int& get_g_value_impl() {
         return  *reinterpret_cast<int*>(this->get_data() + s_g_value_offset); }
-    [[nodiscard]] State<C> get_parent_state_impl() {
-        return reinterpret_cast<State<C>>(*reinterpret_cast<uintptr_t*>(this->get_data() + s_parent_state_offset)); }
+
+    [[nodiscard]] View<State<C>> get_parent_state_impl() {
+        uintptr_t ptr_address = *reinterpret_cast<uintptr_t*>(this->get_data() + s_parent_state_offset);
+        char* data_address = reinterpret_cast<char*>(ptr_address);
+        return View<State<C>>(data_address);
+    }
     [[nodiscard]] GroundAction get_ground_action_impl() {
-        return reinterpret_cast<GroundAction>(*reinterpret_cast<uintptr_t*>(this->get_data() + s_ground_action)); }
+        uintptr_t ptr_address = *reinterpret_cast<uintptr_t*>(this->get_data() + s_ground_action);
+        GroundAction action_ptr = reinterpret_cast<GroundAction>(ptr_address);
+        return action_ptr;
+    }
 
     friend class SearchNodeViewBase<View<SearchNode<C>>>;
 

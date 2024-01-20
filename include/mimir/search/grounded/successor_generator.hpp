@@ -4,7 +4,6 @@
 #include "../config.hpp"
 #include "../declarations.hpp"
 #include "../successor_generator_base.hpp"
-#include "../../common/mixins.hpp"
 
 
 namespace mimir
@@ -15,7 +14,7 @@ template<>
 class SuccessorGenerator<Grounded> : public SuccessorGeneratorBase<SuccessorGenerator<Grounded>> {
     // Implement configuration specific functionality.
 private:
-    GroundActionList generate_applicable_actions_impl(State<Grounded> state) {
+    GroundActionList generate_applicable_actions_impl(View<State<Grounded>> state) {
         return GroundActionList();
     }
 

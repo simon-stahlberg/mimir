@@ -15,6 +15,7 @@ TEST(MimirTests, GroundedBrFSTest) {
     auto grounded_brfs = BrFS<Grounded>(problem);
     GroundActionList plan;
     const auto search_status = grounded_brfs.find_solution(plan);
+
 }
 
 

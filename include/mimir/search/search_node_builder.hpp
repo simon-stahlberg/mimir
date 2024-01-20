@@ -3,7 +3,8 @@
 
 #include "config.hpp"
 #include "type_traits.hpp"
-#include "state_base.hpp"
+#include "grounded/state_view.hpp"
+#include "lifted/state_view.hpp"
 #include "declarations.hpp"
 #include "search_node.hpp"
 
@@ -31,7 +32,7 @@ private:
 public:
     void set_status(SearchNodeStatus status) { self().set_status_impl(status); }
     void set_g_value(int g_value) { self().set_g_value_impl(g_value); }
-    void set_parent_state(State<C> parent_state) { self().set_parent_state_impl(parent_state); }
+    void set_parent_state(View<State<C>> parent_state) { self().set_parent_state_impl(parent_state); }
     void set_ground_action(GroundAction creating_action) { self().set_ground_action_impl(creating_action); }
 };
 
@@ -44,21 +45,27 @@ class Builder<SearchNode<C>> : public BuilderBase<Builder<SearchNode<C>>>, publi
 private:
     SearchNodeStatus m_status;
     int m_g_value;
-    State<C> m_parent_state;
+    View<State<C>> m_parent_state;
     GroundAction m_creating_action;
 
     /* Implement BuilderBase interface */
     uint32_t calculate_size_impl() const {
-        return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(State<C>) + sizeof(GroundAction);
+        return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(char*) + sizeof(GroundAction);
     }
 
     void finish_impl() {
         DataSizeType size = this->calculate_size();
         this->m_buffer.write(reinterpret_cast<const char*>(&size), sizeof(DataSizeType));
+
         this->m_buffer.write(reinterpret_cast<const char*>(&m_status), sizeof(SearchNodeStatus));
+
         this->m_buffer.write(reinterpret_cast<const char*>(&m_g_value), sizeof(int));
-        this->m_buffer.write(reinterpret_cast<const char*>(&m_parent_state), sizeof(State<C>));
-        this->m_buffer.write(reinterpret_cast<const char*>(&m_creating_action), sizeof(GroundAction));
+
+        uintptr_t state_address = reinterpret_cast<uintptr_t>(m_parent_state.get_data());
+        this->m_buffer.write(reinterpret_cast<const char*>(&state_address), sizeof(state_address));
+
+        uintptr_t action_address = reinterpret_cast<uintptr_t>(m_creating_action);
+        this->m_buffer.write(reinterpret_cast<const char*>(&action_address), sizeof(action_address));
     }
 
     friend class BuilderBase<Builder<SearchNode<C>>>;
@@ -66,16 +73,16 @@ private:
     /* Implement SearchNodeBuilderBase interface */
     void set_status_impl(SearchNodeStatus status) { m_status = status; }
     void set_g_value_impl(int g_value) { m_g_value = g_value; }
-    void set_parent_state_impl(State<C> parent_state) { m_parent_state = parent_state; }
+    void set_parent_state_impl(View<State<C>> parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
 
     friend class SearchNodeBuilderBase<Builder<SearchNode<C>>>;
 
 public:
-    Builder() = default;
+    Builder() : m_parent_state(View<State<C>>(nullptr)) { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, State<C> parent_state, GroundAction creating_action)
+    Builder(SearchNodeStatus status, int g_value, View<State<C>> parent_state, GroundAction creating_action)
         : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
         this->finish();
     }

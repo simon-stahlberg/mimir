@@ -3,11 +3,13 @@
 
 #include "config.hpp"
 #include "declarations.hpp"
-#include "state_base.hpp"
-#include "state_builder_base.hpp"
+#include "state.hpp"
+#include "state_builder.hpp"
+#include "state_view.hpp"
+#include "state_view.hpp"
 #include "type_traits.hpp"
 
-#include "../buffers/segmented_binary_vector.hpp"
+#include "../buffer/containers/unordered_set.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
 
@@ -17,8 +19,9 @@
 namespace mimir
 {
 
-/// @brief Top-level CRTP based interface for a StateRepository.
-/// @tparam Derived
+/**
+ * Interface class
+*/
 template<typename Derived>
 class StateRepositoryBase : public UncopyableMixin<StateRepositoryBase<Derived>> {
 private:
@@ -31,34 +34,32 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    // Persistent storage
-    SegmentedBinaryVector<100000> m_data;
+protected:
+    UnorderedSet<State<C>> m_states;
 
-    // Creates states uniquely
-    std::unordered_set<State<C>> m_uniqueness;
-
-    // Reuse memory to create states.
-    StateBuilder<C> m_state_builder;
+    Builder<State<C>> m_state_builder;
 
 public:
-    [[nodiscard]] State<C> get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] View<State<C>> get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] State<C> get_or_create_successor_state(State<C> state, GroundAction action) {
+    [[nodiscard]] View<State<C>> get_or_create_successor_state(View<State<C>> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };
 
 
-/// @brief A concrete state repository.
+/**
+ * Implementation class (general)
+*/
 template<Config C>
-class StateRepository : public StateRepositoryBase<StateRepository<C>> {
-private:
-    // Implement Config independent functionality.
-};
+class StateRepository : public StateRepositoryBase<StateRepository<C>> { };
 
 
+/**
+ * Type traits
+*/
 template<Config C>
 struct TypeTraits<StateRepository<C>> {
     using ConfigType = C;

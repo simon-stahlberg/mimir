@@ -26,18 +26,18 @@ private:
 protected:
     explicit ViewBase(char* data) : m_data(data) { }
 
-    /// @brief Access the data to be interpreted by derived classes.
-    [[nodiscard]] char* get_data() { return m_data; }
-    [[nodiscard]] const char* get_data() const { return m_data; }
-
-    /// @brief The first 4 bytes are always reserved for the size.
-    [[nodiscard]] DataSizeType get_size() const { return reinterpret_cast<DataSizeType>(m_data); }
-
 public:
     [[nodiscard]] bool operator==(const ViewBase& other) const {
         if (get_size() != other.get_size()) return false;
         return (std::memcmp(get_data(), other.get_data(), get_size()) == 0);
     }
+
+    /// @brief Access the data to be interpreted by derived classes.
+    [[nodiscard]] char* get_data() { return m_data; }
+    [[nodiscard]] const char* get_data() const { return m_data; }
+
+    /// @brief The first 4 bytes are always reserved for the size.
+    [[nodiscard]] DataSizeType get_size() const { return *reinterpret_cast<DataSizeType*>(m_data); }
 };
 
 

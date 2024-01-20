@@ -1,5 +1,5 @@
 #include <mimir/search/config.hpp>
-#include <mimir/search/lifted/state.hpp>
+//#include <mimir/search/lifted/state.hpp>
 
 #include <gtest/gtest.h>
 

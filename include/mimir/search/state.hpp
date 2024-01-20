@@ -2,14 +2,17 @@
 #define MIMIR_SEARCH_STATE_BASE_HPP_
 
 #include "config.hpp"
-#include "type_traits.hpp"
-
-#include "../common/mixins.hpp"
 
 
 namespace mimir
 {
 
+/**
+ * ID class
+*/
+template<Config C> class State { };
+
+/*
 /// @brief Top-level CRTP based interface for a State.
 /// @tparam Derived
 template<typename Derived>
@@ -44,6 +47,7 @@ template<Config C>
 struct TypeTraits<StateImpl<C>> {
     using ConfigType = C;
 };
+*/
 
 }  // namespace mimir
 

@@ -24,7 +24,8 @@ private:
 
 public:
     AStar(const Problem& problem)
-        : AlgorithmBase<AStar<Config, Heuristic>>(problem) { }
+        : AlgorithmBase<AStar<Config, Heuristic>>(problem) {
+        }
 };
 
 

@@ -54,6 +54,13 @@ public:
         return result_data;
     }
 
+    /// @brief Erase the last amount many bytes
+    /// @param amount
+    void erase(size_t amount) {
+        assert(m_segments.back().size() >= amount);
+        m_segments.back().resize(m_segments.back().size() - amount);
+    }
+
     /// @brief Set the write head to the beginning.
     void clear() {
         cur_segment_id = 0;

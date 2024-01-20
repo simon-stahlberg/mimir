@@ -2,8 +2,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "../algorithm_base.hpp"
-#include "../state_base.hpp"
-#include "../state_repository_base.hpp"
+#include "../state_view.hpp"
 
 #include <deque>
 
@@ -17,10 +16,10 @@ template<typename Config>
 class BrFS : public AlgorithmBase<BrFS<Config>> {
 private:
     // Implement configuration independent functionality.
-    std::deque<State<Config>> m_queue;
+    std::deque<View<State<Config>>> m_queue;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
-        auto initial_search_node = this->m_search_nodes[this->m_initial_state->get_id()];
+        auto initial_search_node = this->m_search_nodes[this->m_initial_state.get_id()];
         // TODO (Dominik): update the data of the initial_search_node
 
         m_queue.push_back(this->m_initial_state);
@@ -28,7 +27,7 @@ private:
             const auto state = m_queue.front();
             m_queue.pop_front();
 
-            const auto search_node = this->m_search_nodes[state->get_id()];
+            const auto search_node = this->m_search_nodes[state.get_id()];
 
             auto applicable_actions = this->m_successor_generator.generate_applicable_actions(state);
             for (const auto& action : applicable_actions) {
