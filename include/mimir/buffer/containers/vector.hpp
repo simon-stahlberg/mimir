@@ -96,11 +96,11 @@ public:
     }
 
     void resize(size_t size) {
-        const char* default_data = m_default_builder.get_data();
-        size_t default_size = m_default_builder.get_size();
+        const char* default_data = m_default_builder.get_buffer().get_data();
+        size_t default_size = m_default_builder.get_buffer().get_size();
         while (get_size() <= size) {
             char* written_data = m_storage.write(default_data, default_size);
-            m_data.push_back(View<T>(written_data, default_size));
+            m_data.push_back(View<T>(written_data));
         }
     }
 

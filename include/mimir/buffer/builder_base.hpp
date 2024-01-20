@@ -12,7 +12,7 @@ namespace mimir {
 template<typename Derived>
 class BuilderBase {
 private:
-    BuilderBase() = default;
+    BuilderBase() : m_is_finished(false) { }
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -21,13 +21,36 @@ private:
 
     CharStream m_buffer;
 
+    // do not allow data access in unfinished state.
+    bool m_is_finished;
+
+protected:
+    uint32_t calculate_size() const {
+        return sizeof(uint32_t)  // first 4 bytes are reserved for the amount of data.
+             + self().calculate_size_impl();  // the remaining bytes of Derived
+    }
+
 public:
-    void finish() { self().finish_impl(); }
+    /// @brief Write the data to the buffer.
+    void finish() {
+        self().finish_impl();
+        m_is_finished = true;
+    }
 
-    [[nodiscard]] const char* get_data() const { return m_buffer.get_data(); }
-    [[nodiscard]] int get_size() const { return m_buffer.get_size(); }
+    /// @brief Retrieve the buffer.
+    ///        The user can copy it to the final location.
+    [[nodiscard]] const CharStream& get_buffer() const {
+        if (!m_is_finished) {
+            throw std::runtime_error("Accessing buffer of unfinished building process is not allowed. Call finish() first.");
+        }
+        return m_buffer;
+    }
 
-    void clear() { m_buffer.clear(); }
+    /// @brief Clear the builder for reuse.
+    void clear() {
+        m_buffer.clear();
+        m_is_finished = false;
+    }
 };
 
 

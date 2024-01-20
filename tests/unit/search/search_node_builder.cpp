@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <cstdint>
 
 
 namespace mimir::tests
@@ -19,8 +20,8 @@ TEST(MimirTests, SearchNodeBuilderTest) {
     builder.set_parent_state(nullptr);
     builder.set_ground_action(nullptr);
     builder.finish();
-    EXPECT_NE(builder.get_data(), nullptr);
-    EXPECT_EQ(builder.get_size(), 24);
+    EXPECT_NE(builder.get_buffer().get_data(), nullptr);
+    EXPECT_EQ(builder.get_buffer().get_size(), 28);
 }
 
 TEST(MimirTests, SearchNodeVectorTest) {

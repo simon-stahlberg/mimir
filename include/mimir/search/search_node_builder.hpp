@@ -47,12 +47,14 @@ private:
     State<C> m_parent_state;
     GroundAction m_creating_action;
 
-    void set_status_impl(SearchNodeStatus status) { m_status = status; }
-    void set_g_value_impl(int g_value) { m_g_value = g_value; }
-    void set_parent_state_impl(State<C> parent_state) { m_parent_state = parent_state; }
-    void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
+    /* Implement BuilderBase interface */
+    uint32_t calculate_size_impl() const {
+        return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(State<C>) + sizeof(GroundAction);
+    }
 
     void finish_impl() {
+        uint32_t size = this->calculate_size();
+        this->m_buffer.write(reinterpret_cast<const char*>(&size), sizeof(uint32_t));
         this->m_buffer.write(reinterpret_cast<const char*>(&m_status), sizeof(SearchNodeStatus));
         this->m_buffer.write(reinterpret_cast<const char*>(&m_g_value), sizeof(int));
         this->m_buffer.write(reinterpret_cast<const char*>(&m_parent_state), sizeof(State<C>));
@@ -60,6 +62,13 @@ private:
     }
 
     friend class BuilderBase<Builder<SearchNode<C>>>;
+
+    /* Implement SearchNodeBuilderBase interface */
+    void set_status_impl(SearchNodeStatus status) { m_status = status; }
+    void set_g_value_impl(int g_value) { m_g_value = g_value; }
+    void set_parent_state_impl(State<C> parent_state) { m_parent_state = parent_state; }
+    void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
+
     friend class SearchNodeBuilderBase<Builder<SearchNode<C>>>;
 
 public:

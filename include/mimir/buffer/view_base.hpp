@@ -10,33 +10,39 @@
 
 namespace mimir {
 
-/// @brief Top-level CRTP based interface for a View.
-/// @tparam Derived
+/**
+ * Interface class
+*/
 template<typename Derived>
 class ViewBase {
 private:
-    ViewBase() = default;
     friend Derived;
 
     // Basic meta data that every view must contain to be equality comparable and hashable
     char* m_data;
-    size_t m_size;
+
+protected:
+    explicit ViewBase(char* data) : m_data(data) { }
+
+    /// @brief Access the data to be interpreted by derived classes.
+    [[nodiscard]] char* get_data() { return m_data; }
+    [[nodiscard]] const char* get_data() const { return m_data; }
+
+    /// @brief The first 4 bytes are always reserved for the size.
+    [[nodiscard]] uint32_t get_size() const { return reinterpret_cast<uint32_t>(m_data); }
 
 public:
-    ViewBase(char* data, size_t size) : m_data(data), m_size(size) { }
-
     [[nodiscard]] bool operator==(const ViewBase& other) const {
         if (get_size() != other.get_size()) return false;
         return (std::memcmp(get_data(), other.get_data(), get_size()) == 0);
     }
-
-    [[nodiscard]] char* get_data() { return m_data; }
-    [[nodiscard]] const char* get_data() const { return m_data; }
-    [[nodiscard]] size_t get_size() const { return m_size; }
 };
 
 
-// Can be specialized for view of specific types T.
+/**
+ * Implementation class for some type T.
+ * Provide an implementation for T by providing fully specified template.
+*/
 template<typename T>
 class View : public ViewBase<View<T>> {};
 
