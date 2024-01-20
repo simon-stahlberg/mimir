@@ -35,7 +35,7 @@ protected:
     [[nodiscard]] char* get_data() { return m_data; }
     [[nodiscard]] const char* get_data() const { return m_data; }
     /// @brief The first 4 bytes are always reserved for the size.
-    [[nodiscard]] DataSizeType get_size() const { return read_value<DataSizeType>(m_data); }
+    [[nodiscard]] data_size_type get_size() const { return read_value<data_size_type>(m_data); }
 
 public:
     [[nodiscard]] bool operator==(const Derived& other) const {

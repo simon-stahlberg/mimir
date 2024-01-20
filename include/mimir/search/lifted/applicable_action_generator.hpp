@@ -2,7 +2,6 @@
 #define MIMIR_SEARCH_LIFTED_APPLICABLE_ACTION_GENERATOR_HPP_
 
 #include "../config.hpp"
-#include "../declarations.hpp"
 #include "../applicable_action_generator.hpp"
 
 

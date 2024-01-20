@@ -29,8 +29,8 @@ private:
     bool m_is_finished;
 
 protected:
-    DataSizeType calculate_size() const {
-        return sizeof(DataSizeType)  // first 4 bytes are reserved for the amount of data.
+    data_size_type calculate_size() const {
+        return sizeof(data_size_type)  // first 4 bytes are reserved for the amount of data.
              + self().calculate_size_impl();  // the remaining bytes of Derived
     }
 
@@ -38,7 +38,7 @@ public:
     /// @brief Write the data to the buffer.
     void finish() {
         // write the amount of data to be written first.
-        DataSizeType size = this->calculate_size();
+        data_size_type size = this->calculate_size();
         // write the derived data.
         this->m_buffer.write(size);
         self().finish_impl();
@@ -47,9 +47,18 @@ public:
 
     /// @brief Retrieve the buffer.
     ///        The user can copy it to the final location.
+    [[nodiscard]] CharStream& get_buffer() {
+        if (!m_is_finished) {
+            throw std::runtime_error("Attempted to retrieve buffer of unfinished builder. Call finish() first.");
+        }
+        return m_buffer;
+    }
+
+    /// @brief Retrieve the buffer.
+    ///        The user can copy it to the final location.
     [[nodiscard]] const CharStream& get_buffer() const {
         if (!m_is_finished) {
-            throw std::runtime_error("Accessing buffer of unfinished building process is not allowed. Call finish() first.");
+            throw std::runtime_error("Attempted to retrieve buffer of unfinished builder. Call finish() first.");
         }
         return m_buffer;
     }

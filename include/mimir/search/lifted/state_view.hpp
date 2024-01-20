@@ -13,8 +13,8 @@ namespace mimir
 template<>
 class View<State<Lifted>> : public ViewBase<View<State<Lifted>>>, public StateViewBase<View<State<Lifted>>> {
 private:
-    static constexpr size_t s_id_offset =  sizeof(DataSizeType);
-    static constexpr size_t s_data_ofset = sizeof(DataSizeType) + sizeof(uint32_t);
+    static constexpr size_t s_id_offset =  sizeof(data_size_type);
+    static constexpr size_t s_data_ofset = sizeof(data_size_type) + sizeof(state_id_type);
 
     /* Implement ViewBase interface */
     [[nodiscard]] bool operator_equal_impl(const View<State<Lifted>>& other) const {
@@ -37,8 +37,8 @@ private:
     friend class ViewBase<View<State<Lifted>>>;
 
     /* Implement SearchNodeViewBase interface */
-    [[nodiscard]] uint32_t get_id_impl() const {
-        return read_value<uint32_t>(this->get_data() + s_id_offset);
+    [[nodiscard]] state_id_type get_id_impl() const {
+        return read_value<state_id_type>(this->get_data() + s_id_offset);
     }
 
     friend class StateViewBase<View<State<Lifted>>>;

@@ -6,7 +6,6 @@
 #include "state_view.hpp"
 #include "type_traits.hpp"
 
-#include "declarations.hpp"
 #include "../buffer/view_base.hpp"
 #include "../buffer/char_stream_utils.hpp"
 #include "../formalism/problem/declarations.hpp"
@@ -35,13 +34,13 @@ private:
 public:
     /* Mutable getters. */
     [[nodiscard]] SearchNodeStatus& get_status() { return self().get_status_impl(); }
-    [[nodiscard]] int& get_g_value() { return self().get_g_value_impl(); }
+    [[nodiscard]] g_value_type& get_g_value() { return self().get_g_value_impl(); }
     [[nodiscard]] View<State<C>> get_parent_state() { return self().get_parent_state_impl(); }
     [[nodiscard]] GroundAction get_ground_action() { return self().get_ground_action_impl(); }
 
     /* Immutable getters. */
     [[nodiscard]] const SearchNodeStatus& get_status() const { return self().get_status_impl(); }
-    [[nodiscard]] const int& get_g_value() const { return self().get_g_value_impl(); }
+    [[nodiscard]] const g_value_type& get_g_value() const { return self().get_g_value_impl(); }
     [[nodiscard]] const View<State<C>> get_parent_state() const { return self().get_parent_state_impl(); }
     [[nodiscard]] const GroundAction get_ground_action() const { return self().get_ground_action_impl(); }
 };
@@ -53,10 +52,10 @@ public:
 template<Config C>
 class View<SearchNode<C>> : public ViewBase<View<SearchNode<C>>>, public SearchNodeViewBase<View<SearchNode<C>>> {
 private:
-    static constexpr size_t s_status_offset =       sizeof(DataSizeType);
-    static constexpr size_t s_g_value_offset =      sizeof(DataSizeType) + sizeof(SearchNodeStatus);
-    static constexpr size_t s_parent_state_offset = sizeof(DataSizeType) + sizeof(SearchNodeStatus) + sizeof(int);
-    static constexpr size_t s_ground_action =       sizeof(DataSizeType) + sizeof(SearchNodeStatus) + sizeof(int) + sizeof(View<State<C>>);
+    static constexpr size_t s_status_offset =       sizeof(data_size_type);
+    static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);
+    static constexpr size_t s_parent_state_offset = sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type);
+    static constexpr size_t s_ground_action =       sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type) + sizeof(View<State<C>>);
 
     /* Implement ViewBase has no interface: no methods must be overriden */
 
@@ -65,8 +64,8 @@ private:
         return read_value<SearchNodeStatus>(this->get_data() + s_status_offset);
     }
 
-    [[nodiscard]] int& get_g_value_impl() {
-        return read_value<int>(this->get_data() + s_g_value_offset);
+    [[nodiscard]] g_value_type& get_g_value_impl() {
+        return read_value<g_value_type>(this->get_data() + s_g_value_offset);
     }
 
     [[nodiscard]] View<State<C>> get_parent_state_impl() {

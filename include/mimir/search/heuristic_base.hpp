@@ -1,8 +1,6 @@
 #ifndef MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 #define MIMIR_SEARCH_HEURISTIC_BASE_HPP_
 
-#include "config.hpp"
-#include "declarations.hpp"
 #include "state_view.hpp"
 #include "type_traits.hpp"
 

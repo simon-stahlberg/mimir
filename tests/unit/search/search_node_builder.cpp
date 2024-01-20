@@ -1,5 +1,7 @@
 #include <mimir/search/config.hpp>
 #include <mimir/search/state_view.hpp>
+#include <mimir/search/grounded/state_builder.hpp>
+#include <mimir/search/grounded/state_view.hpp>
 #include <mimir/search/search_node_builder.hpp>
 #include <mimir/search/search_node_view.hpp>
 #include <mimir/search/search_node.hpp>
@@ -7,23 +9,36 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-#include <cstdint>
-
 
 namespace mimir::tests
 {
 
 TEST(MimirTests, SearchNodeBuilderTest) {
-    auto builder = Builder<SearchNode<Grounded>>();
-    builder.set_status(mimir::SearchNodeStatus::OPEN);
-    builder.set_g_value(42);
-    builder.set_parent_state(View<State<Grounded>>(nullptr));
-    builder.set_ground_action(nullptr);
-    builder.finish();
-    EXPECT_NE(builder.get_buffer().get_data(), nullptr);
-    EXPECT_EQ(builder.get_buffer().get_size(), 28);
+    // Build a state.
+    auto state_builder = Builder<State<Grounded>>();
+    state_builder.set_id(5);
+    state_builder.finish();
+    EXPECT_NE(state_builder.get_buffer().get_data(), nullptr);
+    EXPECT_EQ(state_builder.get_buffer().get_size(), 8);
+    auto state_view = View<State<Grounded>>(state_builder.get_buffer().get_data());
+
+    // Build a search node.
+    auto search_node_builder = Builder<SearchNode<Grounded>>();
+    search_node_builder.set_status(SearchNodeStatus::OPEN);
+    search_node_builder.set_g_value(42);
+    search_node_builder.set_parent_state(state_view);
+    search_node_builder.set_ground_action(nullptr);
+    search_node_builder.finish();
+    EXPECT_NE(search_node_builder.get_buffer().get_data(), nullptr);
+    EXPECT_EQ(search_node_builder.get_buffer().get_size(), 28);
+
+    // View the data generated in the builder.
+    auto search_node_view = View<SearchNode<Grounded>>(search_node_builder.get_buffer().get_data());
+    EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
+    EXPECT_EQ(search_node_view.get_g_value(), 42);
+    EXPECT_EQ(search_node_view.get_parent_state().get_id(), 5);
 }
+
 
 TEST(MimirTests, SearchNodeBuilderVectorTest) {
     /* A vector that automatically resizes when accessing elements at index i

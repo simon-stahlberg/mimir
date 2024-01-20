@@ -6,7 +6,7 @@
 
 namespace mimir {
 
-using DataSizeType = uint32_t;
+using data_size_type = uint32_t;
 
 }  // namespace mimir
 

@@ -2,7 +2,6 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
 
 #include "config.hpp"
-#include "declarations.hpp"
 #include "state.hpp"
 #include "state_builder.hpp"
 #include "state_view.hpp"

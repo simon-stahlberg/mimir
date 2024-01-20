@@ -11,11 +11,11 @@ namespace mimir
 /// @brief Concrete implementation of a grounded state.
 template<>
 class Builder<State<Lifted>> : public BuilderBase<Builder<State<Lifted>>>, public StateBuilderBase<Builder<State<Lifted>>> {
-    uint32_t m_id;
+    state_id_type m_id;
 
     /* Implement BuilderBase interface */
-    uint32_t calculate_size_impl() const {
-        return sizeof(uint32_t);
+    data_size_type calculate_size_impl() const {
+        return sizeof(state_id_type);
     }
 
     void finish_impl() {
@@ -25,7 +25,7 @@ class Builder<State<Lifted>> : public BuilderBase<Builder<State<Lifted>>>, publi
     friend class BuilderBase<Builder<State<Lifted>>>;
 
     /* Implement StateBuilderBase interface */
-    void set_id_impl(uint32_t id) { m_id = id; }
+    void set_id_impl(state_id_type id) { m_id = id; }
 
     friend class StateBuilderBase<Builder<State<Lifted>>>;
 };

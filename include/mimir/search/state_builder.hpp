@@ -4,7 +4,6 @@
 #include "config.hpp"
 #include "type_traits.hpp"
 #include "state.hpp"
-#include "declarations.hpp"
 #include "search_node.hpp"
 
 #include "../buffer/builder_base.hpp"
@@ -29,7 +28,7 @@ private:
 
 public:
     // TODO (Dominik): implement
-    void set_id(uint32_t id) { self().set_id_impl(id); }
+    void set_id(state_id_type id) { self().set_id_impl(id); }
 };
 
 

@@ -45,6 +45,7 @@ public:
 
     void clear() { m_data.clear(); }
 
+    [[nodiscard]] char* get_data() { return m_data.data(); }
     [[nodiscard]] const char* get_data() const { return m_data.data(); }
 
     [[nodiscard]] size_t get_size() const { return m_data.size(); }

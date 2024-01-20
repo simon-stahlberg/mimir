@@ -5,7 +5,6 @@
 #include "state.hpp"
 #include "type_traits.hpp"
 
-#include "declarations.hpp"
 #include "../buffer/view_base.hpp"
 
 #include <cstdint>
@@ -33,7 +32,7 @@ public:
     /* Mutable getters. */
 
     /* Immutable getters. */
-    uint32_t get_id() const { return self().get_id_impl(); }
+    state_id_type get_id() const { return self().get_id_impl(); }
 };
 
 

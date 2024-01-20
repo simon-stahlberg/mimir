@@ -5,7 +5,6 @@
 #include "type_traits.hpp"
 #include "grounded/state_view.hpp"
 #include "lifted/state_view.hpp"
-#include "declarations.hpp"
 #include "search_node.hpp"
 
 #include "../buffer/builder_base.hpp"
@@ -49,7 +48,7 @@ private:
     GroundAction m_creating_action;
 
     /* Implement BuilderBase interface */
-    uint32_t calculate_size_impl() const {
+    data_size_type calculate_size_impl() const {
         return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(char*) + sizeof(GroundAction);
     }
 
