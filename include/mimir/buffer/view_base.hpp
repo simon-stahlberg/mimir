@@ -25,14 +25,14 @@ private:
 public:
     ViewBase(char* data, size_t size) : m_data(data), m_size(size) { }
 
-    bool operator==(const ViewBase& other) const {
+    [[nodiscard]] bool operator==(const ViewBase& other) const {
         if (get_size() != other.get_size()) return false;
         return (std::memcmp(get_data(), other.get_data(), get_size()) == 0);
     }
 
-    char* get_data() { return m_data; }
-    const char* get_data() const { return m_data; }
-    size_t get_size() const { return m_size; }
+    [[nodiscard]] char* get_data() { return m_data; }
+    [[nodiscard]] const char* get_data() const { return m_data; }
+    [[nodiscard]] size_t get_size() const { return m_size; }
 };
 
 

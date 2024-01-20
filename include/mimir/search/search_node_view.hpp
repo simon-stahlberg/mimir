@@ -11,6 +11,7 @@
 #include "../formalism/problem/declarations.hpp"
 
 #include <cstdint>
+#include <iostream>
 
 
 namespace mimir {
@@ -31,10 +32,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    SearchNodeStatus get_status() { return self().get_status_impl(); }
-    int get_g_value() { return self().get_g_value_impl(); }
-    State<C> get_parent_state() { return self().get_g_value_impl(); }
-    GroundAction get_ground_action() { return self().get_ground_action(); }
+    [[nodiscard]] SearchNodeStatus get_status() { return self().get_status_impl(); }
+    [[nodiscard]] int get_g_value() { return self().get_g_value_impl(); }
+    [[nodiscard]] State<C> get_parent_state() { return self().get_parent_state_impl(); }
+    [[nodiscard]] GroundAction get_ground_action() { return self().get_ground_action_impl(); }
 };
 
 
@@ -49,10 +50,10 @@ private:
     static constexpr size_t s_parent_state_offset = s_g_value_offset + sizeof(int);
     static constexpr size_t s_ground_action = s_parent_state_offset + sizeof(State<C>);
 
-    SearchNodeStatus get_status_impl() { return reinterpret_cast<SearchNodeStatus>(this->get_data() + s_status_offset); }
-    int get_g_value_impl() { return reinterpret_cast<int>(this->get_data() + s_g_value_offset); }
-    State<C> get_parent_state_impl() { return reinterpret_cast<State<C>>(this->get_data() + s_parent_state_offset); }
-    GroundAction get_ground_action_impl() { return reinterpret_cast<GroundAction>(this->get_data() + s_ground_action); }
+    [[nodiscard]] SearchNodeStatus get_status_impl() { return *reinterpret_cast<SearchNodeStatus*>(this->get_data() + s_status_offset); }
+    [[nodiscard]] int get_g_value_impl() { return *reinterpret_cast<int*>(this->get_data() + s_g_value_offset); }
+    [[nodiscard]] State<C> get_parent_state_impl() { return reinterpret_cast<State<C>>(*(this->get_data() + s_parent_state_offset)); }
+    [[nodiscard]] GroundAction get_ground_action_impl() { return reinterpret_cast<GroundAction>(*(this->get_data() + s_ground_action)); }
 
     friend class SearchNodeViewBase<View<SearchNode<C>>>;
 

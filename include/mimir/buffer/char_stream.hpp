@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <iostream>
 
 
 namespace mimir {
@@ -20,9 +21,9 @@ public:
 
     void clear() { m_data.clear(); }
 
-    const char* get_data() const { return m_data.data(); }
+    [[nodiscard]] const char* get_data() const { return m_data.data(); }
 
-    size_t get_size() const { return m_data.size(); }
+    [[nodiscard]] size_t get_size() const { return m_data.size(); }
 };
 
 }  // namespace mimir

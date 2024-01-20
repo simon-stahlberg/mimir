@@ -67,7 +67,9 @@ public:
 
     /// @brief Construct a builder with custom default values.
     Builder(SearchNodeStatus status, int g_value, State<C> parent_state, GroundAction creating_action)
-        : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) { }
+        : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
+        this->finish();
+    }
 };
 
 

@@ -24,7 +24,8 @@ private:
     size_t capacity;
 
     void increase_capacity() {
-        m_segments.push_back(std::vector<char>(N));
+        m_segments.resize(m_segments.size() + 1);
+        m_segments.back().reserve(N);
         ++cur_segment_id;
         cur_segment_pos = 0;
         capacity += N;
@@ -59,16 +60,16 @@ public:
         cur_segment_pos = 0;
     }
 
-    const char* get_data(size_t segment_id) const {
+    [[nodiscard]] const char* get_data(size_t segment_id) const {
         assert(segment_id <= m_segments.size());
         m_segments[segment_id].data();
     }
-    size_t get_size(size_t segment_id) const {
+    [[nodiscard]] size_t get_size(size_t segment_id) const {
         assert(segment_id <= m_segments.size());
         return m_segments[segment_id].size();
     }
 
-    size_t get_size() const { return size; }
+    [[nodiscard]] size_t get_size() const { return size; }
 };
 
 }  // namespace mimir

@@ -24,8 +24,8 @@ private:
 public:
     void finish() { self().finish_impl(); }
 
-    const char* get_data() const { return m_buffer.get_data(); }
-    int get_size() const { return m_buffer.get_size(); }
+    [[nodiscard]] const char* get_data() const { return m_buffer.get_data(); }
+    [[nodiscard]] int get_size() const { return m_buffer.get_size(); }
 
     void clear() { m_buffer.clear(); }
 };
