@@ -48,6 +48,7 @@ public:
     [[nodiscard]] const char* get_data() const { return m_data.data(); }
 
     [[nodiscard]] size_t get_size() const { return m_data.size(); }
+    [[nodiscard]] size_t get_capacity() const { return m_data.capacity(); }
 };
 
 }  // namespace mimir

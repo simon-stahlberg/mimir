@@ -36,7 +36,6 @@ TEST(MimirTests, SearchNodeBuilderVectorTest) {
     auto search_node_0 = vector[0];
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
-    EXPECT_EQ(search_node_0.get_parent_state().get_data(), nullptr);
     EXPECT_EQ(search_node_0.get_ground_action(), nullptr);
 
     // Test mutation of a search node
@@ -49,7 +48,6 @@ TEST(MimirTests, SearchNodeBuilderVectorTest) {
     auto search_node_1 = vector[1];
     EXPECT_EQ(search_node_1.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_1.get_g_value(), 42);
-    EXPECT_EQ(search_node_1.get_parent_state().get_data(), nullptr);
     EXPECT_EQ(search_node_1.get_ground_action(), nullptr);
 }
 

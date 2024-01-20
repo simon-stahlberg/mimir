@@ -23,6 +23,8 @@ private:
     size_t size;
     size_t capacity;
 
+    size_t last_written;
+
     void increase_capacity() {
         m_segments.resize(m_segments.size() + 1);
         m_segments.back().reserve(N);
@@ -32,7 +34,12 @@ private:
     }
 
 public:
-    CharStreamSegmented() {
+    CharStreamSegmented()
+        : cur_segment_id(0)
+        , cur_segment_pos(0)
+        , size(0)
+        , capacity(0)
+        , last_written(0) {
         // allocate first block of memory
         increase_capacity();
     }
@@ -51,20 +58,23 @@ public:
         char* result_data = cur_segment.end().base();
         cur_segment.insert(cur_segment.end(), data, data + amount);
         size += amount;
+        last_written += amount;
         return result_data;
     }
 
-    /// @brief Erase the last amount many bytes
+    /// @brief Undo the last write operation.
     /// @param amount
-    void erase(size_t amount) {
-        assert(m_segments.back().size() >= amount);
-        m_segments.back().resize(m_segments.back().size() - amount);
+    void undo_last_written() {
+        m_segments.back().resize(m_segments.back().size() - last_written);
+        last_written = 0;
     }
 
     /// @brief Set the write head to the beginning.
     void clear() {
         cur_segment_id = 0;
         cur_segment_pos = 0;
+        size = 0;
+        last_written = 0;
     }
 
     [[nodiscard]] const char* get_data(size_t segment_id) const {
@@ -77,6 +87,7 @@ public:
     }
 
     [[nodiscard]] size_t get_size() const { return size; }
+    [[nodiscard]] size_t get_capacity() const { return capacity; }
 };
 
 }  // namespace mimir

@@ -30,7 +30,7 @@ public:
         auto it = m_data.find(view);
         if (it != m_data.end()) {
             // not unique, mark the storage as free again
-            m_storage.erase(amount);
+            m_storage.undo_last_written();
             return *it;
         }
         auto result = m_data.insert(view);
