@@ -9,11 +9,11 @@
 #include "search_node_view.hpp"
 #include "search_node_builder.hpp"
 #include "grounded/state_builder.hpp"
-#include "grounded/state_repository.hpp"
-#include "grounded/successor_generator.hpp"
+#include "grounded/applicable_action_generator.hpp"
+#include "grounded/successor_state_generator.hpp"
 #include "lifted/state_builder.hpp"
-#include "lifted/state_repository.hpp"
-#include "lifted/successor_generator.hpp"
+#include "lifted/applicable_action_generator.hpp"
+#include "lifted/successor_state_generator.hpp"
 
 #include "../buffer/containers/vector.hpp"
 #include "../common/mixins.hpp"
@@ -34,7 +34,7 @@ private:
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(StateRepository<C>())
+        , m_state_repository(SuccessorStateGenerator<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
 
@@ -45,9 +45,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    StateRepository<C> m_state_repository;
+    SuccessorStateGenerator<C> m_state_repository;
     View<State<C>> m_initial_state;
-    SuccessorGenerator<C> m_successor_generator;
+    ApplicableActionGenerator<C> m_successor_generator;
     AutomaticVector<SearchNode<C>> m_search_nodes;
 
 public:

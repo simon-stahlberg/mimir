@@ -8,6 +8,7 @@
 
 #include "declarations.hpp"
 #include "../buffer/view_base.hpp"
+#include "../buffer/char_stream_utils.hpp"
 #include "../formalism/problem/declarations.hpp"
 
 #include <cstdint>
@@ -61,20 +62,18 @@ private:
 
     /* Implement SearchNodeViewBase interface */
     [[nodiscard]] SearchNodeStatus& get_status_impl() {
-        return *reinterpret_cast<SearchNodeStatus*>(this->get_data() + s_status_offset); }
+        return read_value<SearchNodeStatus>(this->get_data() + s_status_offset);
+    }
 
     [[nodiscard]] int& get_g_value_impl() {
-        return  *reinterpret_cast<int*>(this->get_data() + s_g_value_offset); }
+        return read_value<int>(this->get_data() + s_g_value_offset);
+    }
 
     [[nodiscard]] View<State<C>> get_parent_state_impl() {
-        uintptr_t ptr_address = *reinterpret_cast<uintptr_t*>(this->get_data() + s_parent_state_offset);
-        char* data_address = reinterpret_cast<char*>(ptr_address);
-        return View<State<C>>(data_address);
+        return View<State<C>>(read_pointer<char>(this->get_data() + s_parent_state_offset));
     }
     [[nodiscard]] GroundAction get_ground_action_impl() {
-        uintptr_t ptr_address = *reinterpret_cast<uintptr_t*>(this->get_data() + s_ground_action);
-        GroundAction action_ptr = reinterpret_cast<GroundAction>(ptr_address);
-        return action_ptr;
+        return read_pointer<const GroundActionImpl>(this->get_data() + s_ground_action);
     }
 
     friend class SearchNodeViewBase<View<SearchNode<C>>>;

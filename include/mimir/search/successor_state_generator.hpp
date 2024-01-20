@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
-#define MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
 
 #include "config.hpp"
 #include "declarations.hpp"
@@ -23,11 +23,11 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class StateRepositoryBase : public UncopyableMixin<StateRepositoryBase<Derived>> {
+class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
 private:
     using C = typename TypeTraits<Derived>::ConfigType;
 
-    StateRepositoryBase() = default;
+    SuccessorStateGeneratorBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -54,17 +54,17 @@ public:
  * Implementation class (general)
 */
 template<Config C>
-class StateRepository : public StateRepositoryBase<StateRepository<C>> { };
+class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };
 
 
 /**
  * Type traits
 */
 template<Config C>
-struct TypeTraits<StateRepository<C>> {
+struct TypeTraits<SuccessorStateGenerator<C>> {
     using ConfigType = C;
 };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_STATE_REPOSITORY_BASE_HPP_
+#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_

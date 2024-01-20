@@ -1,12 +1,12 @@
-#ifndef MIMIR_SEARCH_LIFTED_STATE_REPOSITORY_HPP_
-#define MIMIR_SEARCH_LIFTED_STATE_REPOSITORY_HPP_
+#ifndef MIMIR_SEARCH_LIFTED_SUCCESSOR_STATE_GENERATOR_HPP_
+#define MIMIR_SEARCH_LIFTED_SUCCESSOR_STATE_GENERATOR_HPP_
 
 #include "../state.hpp"
 #include "state_view.hpp"
 #include "state_builder.hpp"
 
 #include "../config.hpp"
-#include "../state_repository.hpp"
+#include "../successor_state_generator.hpp"
 
 
 namespace mimir
@@ -14,7 +14,7 @@ namespace mimir
 
 /// @brief Concrete implementation of a state factory for lifted states.
 template<>
-class StateRepository<Lifted> : public StateRepositoryBase<StateRepository<Lifted>> {
+class SuccessorStateGenerator<Lifted> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Lifted>> {
 private:
     [[nodiscard]] View<State<Lifted>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
@@ -32,9 +32,9 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class StateRepositoryBase<StateRepository<Lifted>>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<Lifted>>;
 };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_LIFTED_STATE_REPOSITORY_HPP_
+#endif  // MIMIR_SEARCH_LIFTED_SUCCESSOR_STATE_GENERATOR_HPP_

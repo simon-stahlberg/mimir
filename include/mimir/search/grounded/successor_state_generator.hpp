@@ -1,11 +1,11 @@
-#ifndef MIMIR_SEARCH_GROUNDED_STATE_REPOSITORY_HPP_
-#define MIMIR_SEARCH_GROUNDED_STATE_REPOSITORY_HPP_
+#ifndef MIMIR_SEARCH_GROUNDED_SUCCESSOR_STATE_GENERATOR_HPP_
+#define MIMIR_SEARCH_GROUNDED_SUCCESSOR_STATE_GENERATOR_HPP_
 
 #include "state_view.hpp"
 #include "state_builder.hpp"
 
 #include "../config.hpp"
-#include "../state_repository.hpp"
+#include "../successor_state_generator.hpp"
 
 
 namespace mimir
@@ -13,7 +13,7 @@ namespace mimir
 
 /// @brief Concrete implementation of a state factory for grounded states.
 template<>
-class StateRepository<Grounded> : public StateRepositoryBase<StateRepository<Grounded>> {
+class SuccessorStateGenerator<Grounded> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>> {
 private:
     [[nodiscard]] View<State<Grounded>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
@@ -31,9 +31,9 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class StateRepositoryBase<StateRepository<Grounded>>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>>;
 };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_GROUNDED_STATE_REPOSITORY_HPP_
+#endif  // MIMIR_SEARCH_GROUNDED_SUCCESSOR_STATE_GENERATOR_HPP_

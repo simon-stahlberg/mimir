@@ -25,7 +25,7 @@ TEST(MimirTests, SearchNodeBuilderTest) {
     EXPECT_EQ(builder.get_buffer().get_size(), 28);
 }
 
-TEST(MimirTests, SearchNodeVectorTest) {
+TEST(MimirTests, SearchNodeBuilderVectorTest) {
     /* A vector that automatically resizes when accessing elements at index i
        and creating default constructed objects.
        There is only 1 heap allocation every few thousand nodes that are being created. */

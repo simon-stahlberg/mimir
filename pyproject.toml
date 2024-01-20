@@ -1,3 +1,0 @@
-[build-system]
-requires = ["cmake>=3.12", "pybind11_stubgen", "setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"

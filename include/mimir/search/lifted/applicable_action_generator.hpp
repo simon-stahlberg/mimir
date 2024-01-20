@@ -1,9 +1,9 @@
-#ifndef MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
-#define MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
+#ifndef MIMIR_SEARCH_LIFTED_APPLICABLE_ACTION_GENERATOR_HPP_
+#define MIMIR_SEARCH_LIFTED_APPLICABLE_ACTION_GENERATOR_HPP_
 
 #include "../config.hpp"
 #include "../declarations.hpp"
-#include "../successor_generator_base.hpp"
+#include "../applicable_action_generator.hpp"
 
 
 namespace mimir
@@ -11,7 +11,7 @@ namespace mimir
 
 /// @brief Concrete implementation of a lifted successor generator.
 template<>
-class SuccessorGenerator<Lifted> : public SuccessorGeneratorBase<SuccessorGenerator<Lifted>> {
+class ApplicableActionGenerator<Lifted> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<Lifted>> {
     // Implement configuration specific functionality.
 private:
     GroundActionList generate_applicable_actions_impl(View<State<Lifted>> state) {
@@ -19,10 +19,10 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class SuccessorGeneratorBase<SuccessorGenerator<Lifted>>;
+    friend class ApplicableActionGeneratorBase<ApplicableActionGenerator<Lifted>>;
 };
 
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_LIFTED_SUCCESSOR_GENERATOR_HPP_
+#endif  // MIMIR_SEARCH_LIFTED_APPLICABLE_ACTION_GENERATOR_HPP_

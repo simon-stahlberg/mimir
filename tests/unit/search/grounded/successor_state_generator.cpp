@@ -1,7 +1,7 @@
 #include <mimir/formalism/problem/declarations.hpp>
 
 #include <mimir/search/config.hpp>
-#include <mimir/search/grounded/state_repository.hpp>
+#include <mimir/search/grounded/successor_state_generator.hpp>
 
 #include <gtest/gtest.h>
 
@@ -9,9 +9,9 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, GroundedStateRepositoryTest) {
+TEST(MimirTests, GroundedSuccessorStateGeneratorTest) {
     // Instantiate grounded version
-    auto grounded_state_repository = StateRepository<Grounded>();
+    auto grounded_state_repository = SuccessorStateGenerator<Grounded>();
     auto problem = static_cast<Problem>(nullptr);
     const auto initial_state = grounded_state_repository.get_or_create_initial_state(problem);
 }

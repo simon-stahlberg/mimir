@@ -55,17 +55,11 @@ private:
 
     void finish_impl() {
         DataSizeType size = this->calculate_size();
-        this->m_buffer.write(reinterpret_cast<const char*>(&size), sizeof(DataSizeType));
-
-        this->m_buffer.write(reinterpret_cast<const char*>(&m_status), sizeof(SearchNodeStatus));
-
-        this->m_buffer.write(reinterpret_cast<const char*>(&m_g_value), sizeof(int));
-
-        uintptr_t state_address = reinterpret_cast<uintptr_t>(m_parent_state.get_data());
-        this->m_buffer.write(reinterpret_cast<const char*>(&state_address), sizeof(state_address));
-
-        uintptr_t action_address = reinterpret_cast<uintptr_t>(m_creating_action);
-        this->m_buffer.write(reinterpret_cast<const char*>(&action_address), sizeof(action_address));
+        this->m_buffer.write(size);
+        this->m_buffer.write(m_status);
+        this->m_buffer.write(m_g_value);
+        this->m_buffer.write(m_parent_state.get_data());
+        this->m_buffer.write(m_creating_action);
     }
 
     friend class BuilderBase<Builder<SearchNode<C>>>;

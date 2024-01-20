@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
 
 #include "state.hpp"
 #include "state_builder.hpp"
@@ -13,14 +13,14 @@
 namespace mimir
 {
 
-/// @brief Top-level CRTP based interface for a SuccessorGenerator.
+/// @brief Top-level CRTP based interface for a ApplicableActionGenerator.
 /// @tparam Derived
 template<typename Derived>
-class SuccessorGeneratorBase : public UncopyableMixin<SuccessorGeneratorBase<Derived>> {
+class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
 private:
     using C = typename TypeTraits<Derived>::ConfigType;
 
-    SuccessorGeneratorBase() = default;
+    ApplicableActionGeneratorBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -40,18 +40,18 @@ public:
 
 /// @brief A concrete successor generator.
 template<Config C>
-class SuccessorGenerator : public SuccessorGeneratorBase<SuccessorGenerator<C>> {
+class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<C>> {
 private:
     // Implement Config independent functionality.
 };
 
 
 template<Config C>
-struct TypeTraits<SuccessorGenerator<C>> {
+struct TypeTraits<ApplicableActionGenerator<C>> {
     using ConfigType = C;
 };
 
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_GENERATOR_BASE_HPP_
+#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
