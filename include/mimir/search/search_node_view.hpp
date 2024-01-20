@@ -36,6 +36,11 @@ public:
     [[nodiscard]] int get_g_value() { return self().get_g_value_impl(); }
     [[nodiscard]] State<C> get_parent_state() { return self().get_parent_state_impl(); }
     [[nodiscard]] GroundAction get_ground_action() { return self().get_ground_action_impl(); }
+
+    void set_status(SearchNodeStatus status) { return self().set_status_impl(status); }
+    void set_g_value(int g_value) { return self().set_g_value_impl(g_value); }
+    void set_parent_state(State<C> parent_state) { return self().set_parent_state_impl(parent_state); }
+    void set_ground_action(GroundAction ground_action) { return self().set_ground_action_impl(ground_action); }
 };
 
 

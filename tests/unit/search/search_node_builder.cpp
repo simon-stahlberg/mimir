@@ -25,11 +25,17 @@ TEST(MimirTests, SearchNodeBuilderTest) {
 
 TEST(MimirTests, SearchNodeBuilderVectorTest) {
     auto vector = AutomaticVector<SearchNode<Grounded>>(Builder<SearchNode<Grounded>>(SearchNodeStatus::CLOSED, 42, nullptr, nullptr));
-    auto search_node = vector[0];
-    EXPECT_EQ(search_node.get_status(), SearchNodeStatus::CLOSED);
-    EXPECT_EQ(search_node.get_g_value(), 42);
-    EXPECT_EQ(search_node.get_parent_state(), nullptr);
-    EXPECT_EQ(search_node.get_ground_action(), nullptr);
+    auto search_node_0 = vector[0];
+    EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
+    EXPECT_EQ(search_node_0.get_g_value(), 42);
+    EXPECT_EQ(search_node_0.get_parent_state(), nullptr);
+    EXPECT_EQ(search_node_0.get_ground_action(), nullptr);
+
+    auto search_node_1 = vector[1];
+    EXPECT_EQ(search_node_1.get_status(), SearchNodeStatus::CLOSED);
+    EXPECT_EQ(search_node_1.get_g_value(), 42);
+    EXPECT_EQ(search_node_1.get_parent_state(), nullptr);
+    EXPECT_EQ(search_node_1.get_ground_action(), nullptr);
 }
 
 }
