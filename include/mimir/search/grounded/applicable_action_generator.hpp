@@ -14,8 +14,7 @@ template<>
 class ApplicableActionGenerator<Grounded> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<Grounded>> {
     // Implement configuration specific functionality.
 private:
-    GroundActionList generate_applicable_actions_impl(View<State<Grounded>> state) {
-        return GroundActionList();
+    void generate_applicable_actions_impl(View<State<Grounded>> state, GroundActionList& out_applicable_actions) {
     }
 
     // Give access to the private interface implementations.
