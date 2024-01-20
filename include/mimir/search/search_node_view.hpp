@@ -53,10 +53,10 @@ public:
 template<Config C>
 class View<SearchNode<C>> : public ViewBase<View<SearchNode<C>>>, public SearchNodeViewBase<View<SearchNode<C>>> {
 private:
-    static constexpr size_t s_status_offset = sizeof(DataSizeType);
-    static constexpr size_t s_g_value_offset = s_status_offset + sizeof(SearchNodeStatus);
-    static constexpr size_t s_parent_state_offset = s_g_value_offset + sizeof(int);
-    static constexpr size_t s_ground_action = s_parent_state_offset + sizeof(char*);
+    static constexpr size_t s_status_offset =       sizeof(DataSizeType);
+    static constexpr size_t s_g_value_offset =      sizeof(DataSizeType) + sizeof(SearchNodeStatus);
+    static constexpr size_t s_parent_state_offset = sizeof(DataSizeType) + sizeof(SearchNodeStatus) + sizeof(int);
+    static constexpr size_t s_ground_action =       sizeof(DataSizeType) + sizeof(SearchNodeStatus) + sizeof(int) + sizeof(View<State<C>>);
 
     /* Implement ViewBase has no interface: no methods must be overriden */
 
@@ -70,8 +70,9 @@ private:
     }
 
     [[nodiscard]] View<State<C>> get_parent_state_impl() {
-        return View<State<C>>(read_pointer<char>(this->get_data() + s_parent_state_offset));
+        return read_value<View<State<C>>>(this->get_data() + s_parent_state_offset);
     }
+
     [[nodiscard]] GroundAction get_ground_action_impl() {
         return read_pointer<const GroundActionImpl>(this->get_data() + s_ground_action);
     }

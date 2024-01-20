@@ -3,6 +3,8 @@
 
 #include "../state_view.hpp"
 
+#include "../../buffer/char_stream_utils.hpp"
+
 
 namespace mimir
 {
@@ -17,7 +19,8 @@ private:
 
     /* Implement SearchNodeViewBase interface */
     [[nodiscard]] uint32_t get_id_impl() const {
-        return *reinterpret_cast<const uint32_t*>(this->get_data() + s_id_offset); }
+        return read_value<uint32_t>(this->get_data() + s_id_offset);
+    }
 
     friend class StateViewBase<View<State<Grounded>>>;
 

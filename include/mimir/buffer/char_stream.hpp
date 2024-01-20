@@ -25,11 +25,11 @@ class CharStream : public UncopyableMixin<CharStream> {
 private:
     std::vector<char> m_data;
 
-public:
     void write(const char* data, size_t amount) {
         m_data.insert(m_data.end(), data, data + amount);
     }
 
+public:
     /// @brief Writes a value to the stream.
     template<TriviallyCopyable T>
     void write(const T& value) {

@@ -2,6 +2,7 @@
 #ifndef MIMIR_BUFFER_VIEW_BASE_HPP_
 #define MIMIR_BUFFER_VIEW_BASE_HPP_
 
+#include "char_stream_utils.hpp"
 #include "types.hpp"
 
 #include "../algorithms/murmurhash3.hpp"
@@ -37,7 +38,7 @@ public:
     [[nodiscard]] const char* get_data() const { return m_data; }
 
     /// @brief The first 4 bytes are always reserved for the size.
-    [[nodiscard]] DataSizeType get_size() const { return *reinterpret_cast<DataSizeType*>(m_data); }
+    [[nodiscard]] DataSizeType get_size() const { return read_value<DataSizeType>(m_data); }
 };
 
 

@@ -37,6 +37,10 @@ protected:
 public:
     /// @brief Write the data to the buffer.
     void finish() {
+        // write the amount of data to be written first.
+        DataSizeType size = this->calculate_size();
+        // write the derived data.
+        this->m_buffer.write(size);
         self().finish_impl();
         m_is_finished = true;
     }

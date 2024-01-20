@@ -19,9 +19,7 @@ class Builder<State<Lifted>> : public BuilderBase<Builder<State<Lifted>>>, publi
     }
 
     void finish_impl() {
-        DataSizeType size = this->calculate_size();
-        this->m_buffer.write(reinterpret_cast<const char*>(&size), sizeof(DataSizeType));
-        this->m_buffer.write(reinterpret_cast<const char*>(&m_id), sizeof(uint32_t));
+        this->m_buffer.write(m_id);
     }
 
     friend class BuilderBase<Builder<State<Lifted>>>;

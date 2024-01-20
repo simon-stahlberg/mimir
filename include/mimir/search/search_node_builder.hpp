@@ -54,11 +54,9 @@ private:
     }
 
     void finish_impl() {
-        DataSizeType size = this->calculate_size();
-        this->m_buffer.write(size);
         this->m_buffer.write(m_status);
         this->m_buffer.write(m_g_value);
-        this->m_buffer.write(m_parent_state.get_data());
+        this->m_buffer.write(m_parent_state);
         this->m_buffer.write(m_creating_action);
     }
 
