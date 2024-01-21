@@ -50,7 +50,11 @@ public:
 
 
 /**
- * Implementation class (general)
+ * Implementation class.
+ *
+ * We provide specialized implementations for
+ * - Grounded in grounded/successor_state_generator.hpp
+ * - Lifted in lifted/successor_state_generator.hpp
 */
 template<Config C>
 class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };

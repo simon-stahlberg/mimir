@@ -38,6 +38,12 @@ public:
 
 /**
  * Implementation class
+ *
+ * The search node builder extends the builder base memory layout as follows:
+ *  ____________________________________________________________________
+ * |                |        |         |              |                 |
+ * | data_size_type | status | g_value | parent_state | creating_action |
+ * |________________|________|_________|______________|_________________|
 */
 template<Config C>
 class Builder<SearchNode<C>> : public BuilderBase<Builder<SearchNode<C>>>, public SearchNodeBuilderBase<Builder<SearchNode<C>>> {

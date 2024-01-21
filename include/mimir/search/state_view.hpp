@@ -37,7 +37,11 @@ public:
 
 
 /**
- * Implementation class
+ * Implementation class.
+ *
+ * We provide specialized implementations for
+ * - Grounded in grounded/state_view.hpp
+ * - Lifted in lifted/state_view.hpp
 */
 template<Config C>
 class View<State<C>> : public ViewBase<View<State<C>>>, public StateViewBase<View<State<C>>> { };

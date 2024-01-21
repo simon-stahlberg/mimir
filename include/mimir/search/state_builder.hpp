@@ -27,7 +27,6 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    // TODO (Dominik): implement
     void set_id(state_id_type id) { self().set_id_impl(id); }
 };
 

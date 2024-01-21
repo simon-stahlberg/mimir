@@ -31,7 +31,7 @@ public:
         return self().pop_impl();
     }
 
-    std::size_t size() const {
+    [[nodiscard]] std::size_t size() const {
         return self().size_impl();
     }
 };

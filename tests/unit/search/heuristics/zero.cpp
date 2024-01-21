@@ -9,10 +9,10 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchHeuristicsZeroTest) {
     // Instantiate ground version
-    auto zero_heuristic_grounded = ZeroHeuristic<Grounded>();
+    auto zero_heuristic_grounded = Heuristic<ZeroHeuristicID<Grounded>>();
 
     // Instantiate lifted version
-    auto zero_heuristic_lifted = ZeroHeuristic<Lifted>();
+    auto zero_heuristic_lifted = Heuristic<ZeroHeuristicID<Lifted>>();
 }
 
 }

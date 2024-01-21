@@ -8,7 +8,17 @@
 namespace mimir
 {
 
-/// @brief Concrete implementation of a grounded state.
+/**
+ * Implementation class
+ *
+ * The grounded state builder extends the builder base memory layout as follows:
+ *  __________________________________
+ * |                |          |      |
+ * | data_size_type | state_id | TODO |
+ * |________________|__________|______|
+ *
+ *
+*/
 template<>
 class Builder<State<Grounded>> : public BuilderBase<Builder<State<Grounded>>>, public StateBuilderBase<Builder<State<Grounded>>> {
     state_id_type m_id;

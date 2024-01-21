@@ -12,6 +12,12 @@ namespace mimir {
 
 /**
  * Interface class
+ *
+ * The builder base creates the following base memory layout:
+ *  ____________________________________________
+ * |                |                           |
+ * | data_size_type | <Data of derived builder> |
+ * |________________|___________________________|
 */
 template<typename Derived>
 class BuilderBase {
@@ -37,10 +43,10 @@ protected:
 public:
     /// @brief Write the data to the buffer.
     void finish() {
-        // write the amount of data to be written first.
+        // write the base data.
         data_size_type size = this->calculate_size();
-        // write the derived data.
         this->m_buffer.write(size);
+        // write the derived data.
         self().finish_impl();
         m_is_finished = true;
     }
