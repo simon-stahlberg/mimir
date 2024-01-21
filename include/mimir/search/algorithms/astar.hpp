@@ -14,7 +14,7 @@ namespace mimir
 */
 template<Config C, template<typename> typename HeuristicTag>
 struct AStarAlgorithmTag {
-    //using H = Heuristic<HeuristicTag<C>>;
+    // TODO (Dominik): can we use this class to make the instantiation below simpler?
 };
 
 

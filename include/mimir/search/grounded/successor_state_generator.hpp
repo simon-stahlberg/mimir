@@ -7,7 +7,14 @@
 namespace mimir
 {
 
-/// @brief Concrete implementation of a state factory for grounded states.
+/**
+ * No ID class since we want to provide a single implementation.
+*/
+
+
+/**
+ * Implementation class
+*/
 template<>
 class SuccessorStateGenerator<GroundedTag> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<GroundedTag>> {
 private:

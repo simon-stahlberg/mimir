@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_OPEN_LIST_BASE_HPP_
-#define MIMIR_SEARCH_OPEN_LIST_BASE_HPP_
+#ifndef MIMIR_SEARCH_OPEN_LIST_HPP_
+#define MIMIR_SEARCH_OPEN_LIST_HPP_
 
 #include "type_traits.hpp"
 
@@ -9,7 +9,9 @@
 namespace mimir
 {
 
-
+/**
+ * Interface class
+*/
 template<typename Derived>
 class OpenListBase : public UncopyableMixin<OpenListBase<Derived>> {
 private:
@@ -37,6 +39,15 @@ public:
 };
 
 
+/**
+ * Implementation class
+ *
+ * We provide specializations for
+ * - PriorityQueueOpenListTag, a priority based open list in openlists/priority_queue.hpp
+*/
+template<typename T>
+class OpenList : public OpenListBase<OpenList<T>> { };
+
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_OPEN_LIST_BASE_HPP_
+#endif  // MIMIR_SEARCH_OPEN_LIST_HPP_

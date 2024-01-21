@@ -12,8 +12,9 @@
 namespace mimir
 {
 
-/// @brief Top-level CRTP based interface for a ApplicableActionGenerator.
-/// @tparam Derived
+/**
+ * Interface class.
+*/
 template<typename Derived>
 class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
 private:
@@ -34,7 +35,9 @@ public:
 };
 
 
-/// @brief A concrete successor generator.
+/**
+ * Implementation class.
+*/
 template<Config C>
 class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<C>> {
 private:
@@ -42,6 +45,9 @@ private:
 };
 
 
+/**
+ * Type traits.
+*/
 template<Config C>
 struct TypeTraits<ApplicableActionGenerator<C>> {
     using ConfigType = C;

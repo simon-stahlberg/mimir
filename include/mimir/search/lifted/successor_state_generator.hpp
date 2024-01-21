@@ -7,7 +7,14 @@
 namespace mimir
 {
 
-/// @brief Concrete implementation of a state factory for lifted states.
+/**
+ * No ID class since we want to provide a single implementation.
+*/
+
+
+/**
+ * Implementation class
+*/
 template<>
 class SuccessorStateGenerator<LiftedTag> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<LiftedTag>> {
 private:

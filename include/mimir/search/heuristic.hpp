@@ -40,7 +40,7 @@ public:
  * Implementation class
  *
  * We provide specializations for
- * - ZeroHeuristic, a heuristic that always returns 0 in heursitics/zero.hpp
+ * - ZeroHeuristicTag, a heuristic that always returns 0 in heursitics/zero.hpp
 */
 template<typename HeursticTag>
 class Heuristic : public HeuristicBase<Heuristic<HeursticTag>> { };

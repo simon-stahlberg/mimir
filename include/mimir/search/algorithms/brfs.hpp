@@ -11,10 +11,17 @@ namespace mimir
 {
 
 /**
+ * ID class.
+*/
+template<Config C>
+struct BrFSAlgorithmTag { };
+
+
+/**
  * Implementation class.
 */
 template<Config C>
-class BrFS : public AlgorithmBase<BrFS<C>> {
+class Algorithm<BrFSAlgorithmTag<C>> : public AlgorithmBase<Algorithm<BrFSAlgorithmTag<C>>> {
 private:
     // Implement configuration independent functionality.
     std::deque<View<StateTag<C>>> m_queue;
@@ -43,19 +50,19 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<BrFS<C>>;
+    friend class AlgorithmBase<Algorithm<BrFSAlgorithmTag<C>>>;
 
 public:
-    BrFS(const Problem& problem)
-        : AlgorithmBase<BrFS<C>>(problem) { }
+    Algorithm(const Problem& problem)
+        : AlgorithmBase<Algorithm<BrFSAlgorithmTag<C>>>(problem) { }
 };
 
 
 /**
  * Type traits.
 */
-template<typename C>
-struct TypeTraits<BrFS<C>> {
+template<Config C>
+struct TypeTraits<Algorithm<BrFSAlgorithmTag<C>>> {
     using ConfigTag = C;
 };
 

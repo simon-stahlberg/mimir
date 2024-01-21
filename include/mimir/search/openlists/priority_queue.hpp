@@ -1,15 +1,25 @@
 #ifndef MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 #define MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 
-#include "../openlist_base.hpp"
+#include "../openlist.hpp"
 
 #include <queue>
 
 namespace mimir
 {
 
+/**
+ * ID class
+*/
 template<typename T>
-class PriorityQueue : public OpenListBase<PriorityQueue<T>> {
+struct PriorityQueueOpenListTag { };
+
+
+/**
+ * Implementation class
+*/
+template<typename T>
+class OpenList<PriorityQueueOpenListTag<T>> : public OpenListBase<OpenList<PriorityQueueOpenListTag<T>>> {
     // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
@@ -28,12 +38,12 @@ private:
         return priority_queue_.size();
     }
 
-    friend class OpenListBase<PriorityQueue>;
+    friend class OpenListBase<OpenList<PriorityQueueOpenListTag<T>>>;
 };
 
 
 template<typename T>
-struct TypeTraits<PriorityQueue<T>> {
+struct TypeTraits<OpenList<PriorityQueueOpenListTag<T>>> {
     using ValueType = T;
 };
 

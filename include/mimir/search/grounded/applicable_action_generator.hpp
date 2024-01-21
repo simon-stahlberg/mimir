@@ -7,7 +7,14 @@
 namespace mimir
 {
 
-/// @brief Concrete implementation of a grounded successor generator.
+/**
+ * No ID class since we want to provide a single implementation.
+*/
+
+
+/**
+ * Implementation class
+*/
 template<>
 class ApplicableActionGenerator<GroundedTag> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<GroundedTag>> {
     // Implement configuration specific functionality.

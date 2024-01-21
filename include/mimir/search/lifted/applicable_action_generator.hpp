@@ -7,7 +7,14 @@
 namespace mimir
 {
 
-/// @brief Concrete implementation of a lifted successor generator.
+/**
+ * No ID class since we want to provide a single implementation.
+*/
+
+
+/**
+ * Implementation class
+*/
 template<>
 class ApplicableActionGenerator<LiftedTag> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<LiftedTag>> {
     // Implement configuration specific functionality.

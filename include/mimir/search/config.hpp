@@ -7,10 +7,17 @@
 namespace mimir
 {
 
+/**
+ * ID classes
+*/
 struct GroundedTag { };
 
 struct LiftedTag { };
 
+
+/**
+ * Concepts
+*/
 template<typename Tag>
 concept Config = std::is_same_v<Tag, GroundedTag> || std::is_same_v<Tag, LiftedTag>;
 

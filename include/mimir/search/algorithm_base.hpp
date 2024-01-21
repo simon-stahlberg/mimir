@@ -61,8 +61,8 @@ public:
  * Implementation class
  *
  * We provide specializations for
- * - BrFsAlgorithm, a breadth-first search algorithm in algorithms/brfs.hpp
- * - AStarAlgorithm, an astar search algorithm in algorithms/astar.hpp
+ * - BrFsAlgorithmTag, a breadth-first search algorithm in algorithms/brfs.hpp
+ * - AStarAlgorithmTag, an astar search algorithm in algorithms/astar.hpp
 */
 template<typename AlgorithmTag>
 class Algorithm : public AlgorithmBase<Algorithm<AlgorithmTag>> { };

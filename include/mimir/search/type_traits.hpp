@@ -5,11 +5,14 @@
 namespace mimir
 {
 
-/// @brief Define type traits that can be accessed in the base class.
-///
-///        We use it to define member functions or attributes
-///        that depend on the nested Configuration type.
-/// @tparam T is the class for which we define the type traits.
+/**
+ * Type traits.
+ *
+ * Define type traits that can be accessed in the base class
+ * by specialization the trait for a type T.
+ * This allows us to add constraints on the template parameters
+ * in the attributes or functions in the interface of the base class.
+*/
 template<typename T>
 struct TypeTraits { };
 
