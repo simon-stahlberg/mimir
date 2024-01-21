@@ -1,10 +1,10 @@
 # Mimir: Planner library
 
-Mimir is a C++20 planning library for implementing grounded and lifted search algorithms. Mimir provides implementations of standard search algorithms such as breadth-first search and AStar search.
+Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) easy to integrate, use, and extend, and 3) used in multi-threaded machine learning applications. Mimir implements standard search algorithms such as breadth-first search and AStar search.
 
 **Templated design:** The class interfaces are based on static polymorphism through the curiously recurring template pattern (CRTP) to enable heavy compiler optimizations.
 
-**Zero heap-allocations:** Mimir implements a sub-library for serializing objects with fully customizable memory layouts and zero-cost de-serialization. Memory is reused and the buffers are moved in memory with zero heap allocations and deallocations.
+**Zero heap-allocations:** Mimir implements a sub-library for serializing objects with fully customizable memory layouts and zero-cost de-serialization. Mimir reuses memory by moving buffers around in memory with zero heap allocations and deallocations.
 
 
 ## Getting Started
