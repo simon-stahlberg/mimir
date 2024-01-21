@@ -3,7 +3,7 @@
 #define MIMIR_BUFFER_CONTAINERS_VECTOR_HPP_
 
 #include "../builder_base.hpp"
-#include "../char_stream_segmented.hpp"
+#include "../byte_stream_segmented.hpp"
 #include "../view_base.hpp"
 
 #include <cassert>
@@ -18,7 +18,7 @@ template<typename T>
 class Vector : public UncopyableMixin<Vector<T>> {
 private:
     // Persistent storage
-    CharStreamSegmented<100000> m_storage;
+    ByteStreamSegmented<100000> m_storage;
 
     // Data to be accessed
     std::vector<View<T>> m_data;
@@ -59,7 +59,7 @@ template<typename T>
 class AutomaticVector : public UncopyableMixin<AutomaticVector<T>> {
 private:
     // Persistent storage
-    CharStreamSegmented<100000> m_storage;
+    ByteStreamSegmented<100000> m_storage;
 
     // Data to be accessed
     std::vector<View<T>> m_data;

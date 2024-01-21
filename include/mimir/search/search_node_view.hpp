@@ -9,7 +9,7 @@
 #include "type_traits.hpp"
 
 #include "../buffer/view_base.hpp"
-#include "../buffer/char_stream_utils.hpp"
+#include "../buffer/byte_stream_utils.hpp"
 #include "../formalism/problem/declarations.hpp"
 
 

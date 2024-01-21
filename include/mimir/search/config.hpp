@@ -11,8 +11,8 @@ struct GroundedTag { };
 
 struct LiftedTag { };
 
-template<typename T>
-concept Config = std::is_same_v<T, GroundedTag> || std::is_same_v<T, LiftedTag>;
+template<typename Tag>
+concept Config = std::is_same_v<Tag, GroundedTag> || std::is_same_v<Tag, LiftedTag>;
 
 }  // namespace mimir
 

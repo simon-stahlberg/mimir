@@ -2,8 +2,8 @@
 #ifndef MIMIR_BUFFER_VIEW_BASE_HPP_
 #define MIMIR_BUFFER_VIEW_BASE_HPP_
 
-#include "char_stream_utils.hpp"
-#include "types.hpp"
+#include "builder_base.hpp"
+#include "byte_stream_utils.hpp"
 
 #include "../algorithms/murmurhash3.hpp"
 
@@ -63,17 +63,17 @@ public:
  * Implementation class for some type T.
  * Provide an implementation for T by providing fully specified template.
 */
-template<typename T>
-class View : public ViewBase<View<T>> {};
+template<typename Tag>
+class View : public ViewBase<View<Tag>> {};
 
 }
 
 
 namespace std {
-    template<typename T>
-    struct hash<mimir::View<T>>
+    template<typename Tag>
+    struct hash<mimir::View<Tag>>
     {
-        std::size_t operator()(const mimir::View<T>& view) const {
+        std::size_t operator()(const mimir::View<Tag>& view) const {
             return view.hash();
         }
     };

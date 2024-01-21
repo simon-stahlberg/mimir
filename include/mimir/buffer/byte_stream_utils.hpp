@@ -1,5 +1,5 @@
-#ifndef MIMIR_BUFFER_CHAR_STREAM_UTILS_HPP_
-#define MIMIR_BUFFER_CHAR_STREAM_UTILS_HPP_
+#ifndef MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
+#define MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
 
 #include "../common/mixins.hpp"
 
@@ -32,4 +32,4 @@ const T* read_pointer(const char* data) {
 
 }  // namespace mimir
 
-#endif // MIMIR_BUFFERS_CHAR_STREAM_HPP_
+#endif // MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_

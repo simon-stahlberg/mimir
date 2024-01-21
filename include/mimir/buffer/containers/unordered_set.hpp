@@ -2,7 +2,7 @@
 #ifndef MIMIR_BUFFER_CONTAINERS_UNORDERED_SET_HPP_
 #define MIMIR_BUFFER_CONTAINERS_UNORDERED_SET_HPP_
 
-#include "../char_stream_segmented.hpp"
+#include "../byte_stream_segmented.hpp"
 #include "../builder_base.hpp"
 #include "../view_base.hpp"
 
@@ -15,7 +15,7 @@ template<typename T>
 class UnorderedSet : public UncopyableMixin<UnorderedSet<T>> {
 private:
     // Persistent storage
-    CharStreamSegmented<100000> m_storage;
+    ByteStreamSegmented<100000> m_storage;
 
     // Data to be accessed
     std::unordered_set<View<T>> m_data;
@@ -30,7 +30,7 @@ public:
         auto it = m_data.find(view);
         if (it != m_data.end()) {
             // not unique, mark the storage as free again
-            m_storage.undo_last_written();
+            m_storage.undo_last_write();
             return *it;
         }
         auto result = m_data.insert(view);

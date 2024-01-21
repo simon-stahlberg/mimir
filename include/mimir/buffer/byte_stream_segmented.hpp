@@ -1,5 +1,5 @@
-#ifndef MIMIR_BUFFER_CHAR_STREAM_SEGMENTED_HPP_
-#define MIMIR_BUFFER_CHAR_STREAM_SEGMENTED_HPP_
+#ifndef MIMIR_BUFFER_BYTE_STREAM_SEGMENTED_HPP_
+#define MIMIR_BUFFER_BYTE_STREAM_SEGMENTED_HPP_
 
 #include "../common/mixins.hpp"
 
@@ -13,7 +13,7 @@ namespace mimir {
 /// @tparam N the amount of bytes per segments.
 ///         Reasonable numbers are 10000-100000.
 template<size_t N>
-class CharStreamSegmented : public UncopyableMixin<CharStreamSegmented<N>> {
+class ByteStreamSegmented : public UncopyableMixin<ByteStreamSegmented<N>> {
 private:
     std::vector<std::vector<char>> m_segments;
 
@@ -34,7 +34,7 @@ private:
     }
 
 public:
-    CharStreamSegmented()
+    ByteStreamSegmented()
         : cur_segment_id(0)
         , cur_segment_pos(0)
         , size(0)
@@ -64,7 +64,7 @@ public:
 
     /// @brief Undo the last write operation.
     /// @param amount
-    void undo_last_written() {
+    void undo_last_write() {
         m_segments.back().resize(m_segments.back().size() - last_written);
         last_written = 0;
     }
@@ -92,4 +92,4 @@ public:
 
 }  // namespace mimir
 
-#endif // MIMIR_BUFFERS_SEGMENTED_BINARY_VECTOR_HPP_
+#endif // MIMIR_BUFFER_BYTE_STREAM_SEGMENTED_HPP_

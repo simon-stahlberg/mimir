@@ -2,13 +2,20 @@
 #ifndef MIMIR_BUFFER_BUILDER_BASE_HPP_
 #define MIMIR_BUFFER_BUILDER_BASE_HPP_
 
-#include "types.hpp"
-#include "char_stream.hpp"
+#include "byte_stream.hpp"
 
 #include "../common/mixins.hpp"
 
+#include <cstdint>
+
 
 namespace mimir {
+
+/**
+ * Data types.
+*/
+using data_size_type = uint32_t;
+
 
 /**
  * Interface class
@@ -29,7 +36,7 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    CharStream m_buffer;
+    ByteStream m_buffer;
 
     // do not allow data access in unfinished state.
     bool m_is_finished;
@@ -53,7 +60,7 @@ public:
 
     /// @brief Retrieve the buffer.
     ///        The user can copy it to the final location.
-    [[nodiscard]] CharStream& get_buffer() {
+    [[nodiscard]] ByteStream& get_buffer() {
         if (!m_is_finished) {
             throw std::runtime_error("Attempted to retrieve buffer of unfinished builder. Call finish() first.");
         }
@@ -62,7 +69,7 @@ public:
 
     /// @brief Retrieve the buffer.
     ///        The user can copy it to the final location.
-    [[nodiscard]] const CharStream& get_buffer() const {
+    [[nodiscard]] const ByteStream& get_buffer() const {
         if (!m_is_finished) {
             throw std::runtime_error("Attempted to retrieve buffer of unfinished builder. Call finish() first.");
         }
@@ -81,8 +88,8 @@ public:
  * Implementation class for some type T.
  * Provide an implementation for T by providing fully specified template.
 */
-template<typename T>
-class Builder : public BuilderBase<Builder<T>> {};
+template<typename Tag>
+class Builder : public BuilderBase<Builder<Tag>> {};
 
 }
 

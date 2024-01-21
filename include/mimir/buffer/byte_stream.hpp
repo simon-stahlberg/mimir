@@ -1,5 +1,5 @@
-#ifndef MIMIR_BUFFER_CHAR_STREAM_HPP_
-#define MIMIR_BUFFER_CHAR_STREAM_HPP_
+#ifndef MIMIR_BUFFER_BYTE_STREAM_HPP_
+#define MIMIR_BUFFER_BYTE_STREAM_HPP_
 
 #include "../common/mixins.hpp"
 
@@ -21,7 +21,7 @@ template<typename T>
 concept TriviallyCopyable = std::is_trivially_copyable_v<T>;
 
 
-class CharStream : public UncopyableMixin<CharStream> {
+class ByteStream : public UncopyableMixin<ByteStream> {
 private:
     std::vector<char> m_data;
 
@@ -54,4 +54,4 @@ public:
 
 }  // namespace mimir
 
-#endif // MIMIR_BUFFERS_CHAR_STREAM_HPP_
+#endif // MIMIR_BUFFER_BYTE_STREAM_HPP_
