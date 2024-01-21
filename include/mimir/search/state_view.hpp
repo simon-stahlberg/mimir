@@ -19,7 +19,7 @@ namespace mimir {
 template<typename Derived>
 class StateViewBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTag;
+    using C = typename TypeTraits<Derived>::ConfigTagType;
 
     StateViewBase() = default;
     friend Derived;
@@ -52,7 +52,7 @@ class View<StateTag<C>> : public ViewBase<View<StateTag<C>>>, public StateViewBa
 */
 template<Config C>
 struct TypeTraits<View<StateTag<C>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
 };
 
 

@@ -33,7 +33,7 @@ public:
 
 template<Config C>
 struct TypeTraits<Heuristic<ZeroHeuristicTag<C>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
 };
 
 

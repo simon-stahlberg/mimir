@@ -14,7 +14,7 @@ namespace mimir
 */
 template<Config C, template<typename> typename HeuristicTag>
 struct AStarAlgorithmTag {
-    // TODO (Dominik): can we use this class to make the instantiation below simpler?
+    using HeuristicType = Heuristic<HeuristicTag<C>>;  // match configuration to heuristic.
 };
 
 
@@ -25,7 +25,7 @@ template<Config C, template<typename> typename HeuristicTag>
 class Algorithm<AStarAlgorithmTag<C, HeuristicTag>> : public AlgorithmBase<Algorithm<AStarAlgorithmTag<C, HeuristicTag>>> {
     // Implement configuration independent functionality.
 private:
-    Heuristic<HeuristicTag<C>> m_heuristic;
+    typename AStarAlgorithmTag<C, HeuristicTag>::HeuristicType m_heuristic;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement
@@ -46,7 +46,8 @@ public:
 */
 template<Config C, template<typename> typename HeuristicTag>
 struct TypeTraits<Algorithm<AStarAlgorithmTag<C, HeuristicTag>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
+    using HeuristicTagType = AStarAlgorithmTag<C, HeuristicTag>::HeuristicType;
 };
 
 

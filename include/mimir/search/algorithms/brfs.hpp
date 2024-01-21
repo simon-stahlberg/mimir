@@ -63,7 +63,7 @@ public:
 */
 template<Config C>
 struct TypeTraits<Algorithm<BrFSAlgorithmTag<C>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
 };
 
 

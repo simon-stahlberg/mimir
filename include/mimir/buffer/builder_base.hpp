@@ -85,7 +85,8 @@ public:
 
 
 /**
- * Implementation class for some type T.
+ * Implementation class.
+ *
  * Provide an implementation for T by providing fully specified template.
 */
 template<typename Tag>

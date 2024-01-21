@@ -22,7 +22,7 @@ namespace mimir
 template<typename Derived>
 class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigTagType;
 
     SuccessorStateGeneratorBase() = default;
     friend Derived;
@@ -63,7 +63,7 @@ class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStat
 */
 template<Config C>
 struct TypeTraits<SuccessorStateGenerator<C>> {
-    using ConfigType = C;
+    using ConfigTagType = C;
 };
 
 }  // namespace mimir

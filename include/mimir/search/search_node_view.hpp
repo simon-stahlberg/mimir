@@ -22,7 +22,7 @@ namespace mimir {
 template<typename Derived>
 class SearchNodeViewBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTag;
+    using C = typename TypeTraits<Derived>::ConfigTagType;
 
     SearchNodeViewBase() = default;
     friend Derived;
@@ -92,7 +92,7 @@ public:
 */
 template<Config C>
 struct TypeTraits<View<SearchNodeTag<C>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
 };
 
 

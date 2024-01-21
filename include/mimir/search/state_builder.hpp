@@ -22,7 +22,7 @@ using state_id_type = uint32_t;
 template<typename Derived>
 class StateBuilderBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTag;
+    using C = typename TypeTraits<Derived>::ConfigTagType;
 
     StateBuilderBase() = default;
     friend Derived;
@@ -48,7 +48,7 @@ class Builder<StateTag<C>> : public BuilderBase<Builder<StateTag<C>>>, public St
 */
 template<Config C>
 struct TypeTraits<Builder<StateTag<C>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
 };
 
 

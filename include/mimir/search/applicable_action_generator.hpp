@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigTagType;
 
     ApplicableActionGeneratorBase() = default;
     friend Derived;
@@ -50,7 +50,7 @@ private:
 */
 template<Config C>
 struct TypeTraits<ApplicableActionGenerator<C>> {
-    using ConfigType = C;
+    using ConfigTagType = C;
 };
 
 

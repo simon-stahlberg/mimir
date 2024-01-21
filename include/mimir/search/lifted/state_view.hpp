@@ -8,7 +8,7 @@ namespace mimir
 {
 
 /**
- * No ID class since we want to provide a single implementation.
+ * No ID class since we have all tags.
 */
 
 

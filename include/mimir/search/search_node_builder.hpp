@@ -27,7 +27,7 @@ using g_value_type = int;
 template<typename Derived>
 class SearchNodeBuilderBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTag;
+    using C = typename TypeTraits<Derived>::ConfigTagType;
 
     SearchNodeBuilderBase() = default;
     friend Derived;
@@ -99,7 +99,7 @@ public:
 */
 template<Config C>
 struct TypeTraits<Builder<SearchNodeTag<C>>> {
-    using ConfigTag = C;
+    using ConfigTagType = C;
 };
 
 
