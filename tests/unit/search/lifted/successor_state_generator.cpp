@@ -11,7 +11,7 @@ namespace mimir::tests
 
 TEST(MimirTests, LiftedSuccessorStateGeneratorTest) {
     // Instantiate lifted version
-    auto lifted_state_repository = SuccessorStateGenerator<Lifted>();
+    auto lifted_state_repository = SuccessorStateGenerator<LiftedTag>();
     auto problem = static_cast<Problem>(nullptr);
     const auto initial_state = lifted_state_repository.get_or_create_initial_state(problem);
 }

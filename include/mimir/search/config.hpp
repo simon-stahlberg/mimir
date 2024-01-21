@@ -7,12 +7,12 @@
 namespace mimir
 {
 
-struct Grounded { };
+struct GroundedTag { };
 
-struct Lifted { };
+struct LiftedTag { };
 
 template<typename T>
-concept Config = std::is_same_v<T, Grounded> || std::is_same_v<T, Lifted>;
+concept Config = std::is_same_v<T, GroundedTag> || std::is_same_v<T, LiftedTag>;
 
 }  // namespace mimir
 

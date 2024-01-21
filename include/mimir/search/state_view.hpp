@@ -2,13 +2,13 @@
 #define MIMIR_SEARCH_STATE_VIEW_HPP_
 
 #include "config.hpp"
-#include "state.hpp"
+#include "state_tag.hpp"
+#include "grounded/state_builder.hpp"
+#include "lifted/state_builder.hpp"
 #include "type_traits.hpp"
 
 #include "../buffer/view_base.hpp"
-
-#include <cstdint>
-#include <iostream>
+#include "../buffer/char_stream_utils.hpp"
 
 
 namespace mimir {
@@ -19,7 +19,7 @@ namespace mimir {
 template<typename Derived>
 class StateViewBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigTag;
 
     StateViewBase() = default;
     friend Derived;
@@ -40,19 +40,19 @@ public:
  * Implementation class.
  *
  * We provide specialized implementations for
- * - Grounded in grounded/state_view.hpp
- * - Lifted in lifted/state_view.hpp
+ * - GroundedTag in grounded/state_view.hpp
+ * - LiftedTag in lifted/state_view.hpp
 */
 template<Config C>
-class View<State<C>> : public ViewBase<View<State<C>>>, public StateViewBase<View<State<C>>> { };
+class View<StateTag<C>> : public ViewBase<View<StateTag<C>>>, public StateViewBase<View<StateTag<C>>> { };
 
 
 /**
  * Type traits
 */
 template<Config C>
-struct TypeTraits<View<State<C>>> {
-    using ConfigType = C;
+struct TypeTraits<View<StateTag<C>>> {
+    using ConfigTag = C;
 };
 
 

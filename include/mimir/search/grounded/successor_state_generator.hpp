@@ -1,10 +1,6 @@
 #ifndef MIMIR_SEARCH_GROUNDED_SUCCESSOR_STATE_GENERATOR_HPP_
 #define MIMIR_SEARCH_GROUNDED_SUCCESSOR_STATE_GENERATOR_HPP_
 
-#include "state_view.hpp"
-#include "state_builder.hpp"
-
-#include "../config.hpp"
 #include "../successor_state_generator.hpp"
 
 
@@ -13,9 +9,9 @@ namespace mimir
 
 /// @brief Concrete implementation of a state factory for grounded states.
 template<>
-class SuccessorStateGenerator<Grounded> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>> {
+class SuccessorStateGenerator<GroundedTag> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<GroundedTag>> {
 private:
-    [[nodiscard]] View<State<Grounded>> get_or_create_initial_state_impl(Problem problem) {
+    [[nodiscard]] View<StateTag<GroundedTag>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
         // create the state
         int next_state_id = this->m_states.get_size();
@@ -24,14 +20,14 @@ private:
         return this->m_states.insert(this->m_state_builder);
     }
 
-    [[nodiscard]] View<State<Grounded>> get_or_create_successor_state_impl(View<State<Grounded>> state, GroundAction action) {
+    [[nodiscard]] View<StateTag<GroundedTag>> get_or_create_successor_state_impl(View<StateTag<GroundedTag>> state, GroundAction action) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return View<State<Grounded>>(nullptr);
+        return View<StateTag<GroundedTag>>(nullptr);
     }
 
     // Give access to the private interface implementations.
-    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<GroundedTag>>;
 };
 
 }  // namespace mimir

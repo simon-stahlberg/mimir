@@ -2,17 +2,15 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
 
 #include "config.hpp"
-#include "state.hpp"
-#include "state_builder.hpp"
-#include "state_view.hpp"
-#include "state_view.hpp"
+#include "grounded/state_view.hpp"
+#include "grounded/state_builder.hpp"
+#include "lifted/state_view.hpp"
+#include "lifted/state_builder.hpp"
 #include "type_traits.hpp"
 
 #include "../buffer/containers/unordered_set.hpp"
 #include "../common/mixins.hpp"
 #include "../formalism/problem/declarations.hpp"
-
-#include <unordered_set>
 
 
 namespace mimir
@@ -34,16 +32,16 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
-    UnorderedSet<State<C>> m_states;
+    UnorderedSet<StateTag<C>> m_states;
 
-    Builder<State<C>> m_state_builder;
+    Builder<StateTag<C>> m_state_builder;
 
 public:
-    [[nodiscard]] View<State<C>> get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] View<StateTag<C>> get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] View<State<C>> get_or_create_successor_state(View<State<C>> state, GroundAction action) {
+    [[nodiscard]] View<StateTag<C>> get_or_create_successor_state(View<StateTag<C>> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };
@@ -53,8 +51,8 @@ public:
  * Implementation class.
  *
  * We provide specialized implementations for
- * - Grounded in grounded/successor_state_generator.hpp
- * - Lifted in lifted/successor_state_generator.hpp
+ * - GroundedTag in grounded/successor_state_generator.hpp
+ * - LiftedTag in lifted/successor_state_generator.hpp
 */
 template<Config C>
 class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };

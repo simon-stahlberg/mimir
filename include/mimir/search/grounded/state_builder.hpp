@@ -1,7 +1,6 @@
 #ifndef MIMIR_SEARCH_GROUNDED_STATE_BUILDER_HPP_
 #define MIMIR_SEARCH_GROUNDED_STATE_BUILDER_HPP_
 
-#include "../config.hpp"
 #include "../state_builder.hpp"
 
 
@@ -20,7 +19,7 @@ namespace mimir
  *
 */
 template<>
-class Builder<State<Grounded>> : public BuilderBase<Builder<State<Grounded>>>, public StateBuilderBase<Builder<State<Grounded>>> {
+class Builder<StateTag<GroundedTag>> : public BuilderBase<Builder<StateTag<GroundedTag>>>, public StateBuilderBase<Builder<StateTag<GroundedTag>>> {
     state_id_type m_id;
 
     /* Implement BuilderBase interface */
@@ -32,12 +31,12 @@ class Builder<State<Grounded>> : public BuilderBase<Builder<State<Grounded>>>, p
         this->m_buffer.write(m_id);
     }
 
-    friend class BuilderBase<Builder<State<Grounded>>>;
+    friend class BuilderBase<Builder<StateTag<GroundedTag>>>;
 
     /* Implement StateBuilderBase interface */
     void set_id_impl(state_id_type id) { m_id = id; }
 
-    friend class StateBuilderBase<Builder<State<Grounded>>>;
+    friend class StateBuilderBase<Builder<StateTag<GroundedTag>>>;
 };
 
 }  // namespace mimir

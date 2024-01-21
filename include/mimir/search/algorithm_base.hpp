@@ -2,18 +2,18 @@
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 #include "config.hpp"
-#include "state_view.hpp"
-#include "type_traits.hpp"
-
-#include "search_node.hpp"
+#include "search_node_tag.hpp"
 #include "search_node_view.hpp"
 #include "search_node_builder.hpp"
-#include "grounded/state_builder.hpp"
+#include "type_traits.hpp"
 #include "grounded/applicable_action_generator.hpp"
 #include "grounded/successor_state_generator.hpp"
-#include "lifted/state_builder.hpp"
+#include "grounded/state_builder.hpp"
+#include "grounded/state_view.hpp"
 #include "lifted/applicable_action_generator.hpp"
 #include "lifted/successor_state_generator.hpp"
+#include "lifted/state_builder.hpp"
+#include "lifted/state_view.hpp"
 
 #include "../buffer/containers/vector.hpp"
 #include "../common/mixins.hpp"
@@ -30,13 +30,13 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 template<typename Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigTag;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
         , m_state_repository(SuccessorStateGenerator<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
+        , m_search_nodes(AutomaticVector(Builder<SearchNodeTag<C>>(SearchNodeStatus::CLOSED, 0, View<StateTag<C>>(nullptr), nullptr))) { }
 
     friend Derived;
 
@@ -46,9 +46,9 @@ private:
 
     Problem m_problem;
     SuccessorStateGenerator<C> m_state_repository;
-    View<State<C>> m_initial_state;
+    View<StateTag<C>> m_initial_state;
     ApplicableActionGenerator<C> m_successor_generator;
-    AutomaticVector<SearchNode<C>> m_search_nodes;
+    AutomaticVector<SearchNodeTag<C>> m_search_nodes;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {

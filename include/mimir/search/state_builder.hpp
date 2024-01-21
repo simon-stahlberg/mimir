@@ -2,9 +2,8 @@
 #define MIMIR_SEARCH_STATE_BUILDER_HPP_
 
 #include "config.hpp"
+#include "state_tag.hpp"
 #include "type_traits.hpp"
-#include "state.hpp"
-#include "search_node.hpp"
 
 #include "../buffer/builder_base.hpp"
 
@@ -12,12 +11,18 @@
 namespace mimir {
 
 /**
+ * Data types
+*/
+using state_id_type = uint32_t;
+
+
+/**
  * Interface class
 */
 template<typename Derived>
 class StateBuilderBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::ConfigTag;
 
     StateBuilderBase() = default;
     friend Derived;
@@ -35,15 +40,15 @@ public:
  * Implementation class
 */
 template<Config C>
-class Builder<State<C>> : public BuilderBase<Builder<State<C>>>, public StateBuilderBase<Builder<State<C>>> { };
+class Builder<StateTag<C>> : public BuilderBase<Builder<StateTag<C>>>, public StateBuilderBase<Builder<StateTag<C>>> { };
 
 
 /**
  * Type traits.
 */
 template<Config C>
-struct TypeTraits<Builder<State<C>>> {
-    using ConfigType = C;
+struct TypeTraits<Builder<StateTag<C>>> {
+    using ConfigTag = C;
 };
 
 

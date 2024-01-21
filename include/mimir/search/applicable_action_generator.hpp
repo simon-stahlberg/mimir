@@ -1,10 +1,9 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
 
-#include "state.hpp"
-#include "state_builder.hpp"
-#include "state_view.hpp"
-#include "state_builder.hpp"
+#include "state_tag.hpp"
+#include "grounded/state_view.hpp"
+#include "lifted/state_view.hpp"
 #include "type_traits.hpp"
 
 #include "../formalism/problem/declarations.hpp"
@@ -29,7 +28,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(View<State<C>> state, GroundActionList& out_applicable_actions) {
+    void generate_applicable_actions(View<StateTag<C>> state, GroundActionList& out_applicable_actions) {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 };

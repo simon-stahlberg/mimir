@@ -51,3 +51,7 @@ After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you s
 ### Argument passing
 
 - Use prefix `ref_` for initialized output parameters and `out_` for non-initialized output parameters. Try to keep the number of output parameters as small as possible. Never use stack-allocated types as output parameters.
+
+### Header includes
+
+- Include specialized header implementations if available to obtain the right instantiation. Do not include the interface headers again.

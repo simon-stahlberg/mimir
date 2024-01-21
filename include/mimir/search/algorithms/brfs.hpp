@@ -10,13 +10,14 @@
 namespace mimir
 {
 
-/// @brief A general implementation of a breadth-first-search.
-/// @tparam Config
-template<typename Config>
-class BrFS : public AlgorithmBase<BrFS<Config>> {
+/**
+ * Implementation class.
+*/
+template<Config C>
+class BrFS : public AlgorithmBase<BrFS<C>> {
 private:
     // Implement configuration independent functionality.
-    std::deque<View<State<Config>>> m_queue;
+    std::deque<View<StateTag<C>>> m_queue;
 
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
@@ -42,17 +43,20 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<BrFS<Config>>;
+    friend class AlgorithmBase<BrFS<C>>;
 
 public:
     BrFS(const Problem& problem)
-        : AlgorithmBase<BrFS<Config>>(problem) { }
+        : AlgorithmBase<BrFS<C>>(problem) { }
 };
 
 
-template<typename Config>
-struct TypeTraits<BrFS<Config>> {
-    using ConfigType = Config;
+/**
+ * Type traits.
+*/
+template<typename C>
+struct TypeTraits<BrFS<C>> {
+    using ConfigTag = C;
 };
 
 
