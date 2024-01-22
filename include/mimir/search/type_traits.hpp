@@ -8,10 +8,8 @@ namespace mimir
 /**
  * Type traits.
  *
- * Define type traits that can be accessed in the base class
- * by specialization the trait for a type T.
- * This allows us to add constraints on the template parameters
- * in the attributes or functions in the interface of the base class.
+ * Define type traits to access nested types.
+ * This is useful to constrain interfaces more explicitly.
 */
 template<typename T>
 struct TypeTraits { };

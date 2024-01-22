@@ -13,7 +13,7 @@ namespace mimir
  * ID class.
 */
 template<typename C, typename H>
-requires IsConfig<C> && IsHeuristic<H>
+requires IsConfig<C> && IsHeuristic<H> && HaveEqualConfig<C, H>
 struct AStar { };
 
 

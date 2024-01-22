@@ -51,6 +51,7 @@ class Builder<State<C>> : public BuilderBase<Builder<State<C>>>, public StateBui
 template<typename C>
 requires IsConfig<C>
 struct TypeTraits<Builder<State<C>>> {
+    using State = State<C>;
     using Config = C;
 };
 

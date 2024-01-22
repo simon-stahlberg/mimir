@@ -14,14 +14,6 @@ TEST(MimirTests, GroundedAstarTest) {
     // Instantiate grounded version
     auto problem = static_cast<Problem>(nullptr);
     auto grounded_astar = Algorithm<AStar<Grounded, Heuristic<Zero<Grounded>>>>(problem);
-    // different syntax:
-    // auto ... = Algorithm<AStarTag<GroundedTag, Heuristic<ZeroTag<GroundedTag>>>>(problem);
-    // is a little bit more expressive than
-    // auto ... = AStar<GroundedTag, ZeroHeuristic<GroundedTag>>>>(problem);
-    // But also allows providing new alternatives easily:
-    // auto ... = AStar2<GroundedTag, ZeroHeuristic<GroundedTag>>>>(problem);
-
-    // auto grounded_astar = Algorithm<AStar2Tag<GroundedTag, Heuristic<ZeroTag<GroundedTag>>>>(problem);
     GroundActionList plan;
     const auto search_status = grounded_astar.find_solution(plan);
 }
