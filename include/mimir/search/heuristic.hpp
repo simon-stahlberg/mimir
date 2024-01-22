@@ -13,7 +13,10 @@ namespace mimir
 {
 
 /**
- * Interface class
+ * Interface class.
+ *
+ * We provide implementations for
+ * - ZeroHeuristic, a heuristic that always returns 0 in heuristics/zero.hpp
 */
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
@@ -35,18 +38,10 @@ public:
     }
 };
 
-
-/**
- * General implementation class.
-*/
-template<typename T> 
-class Heuristic : public HeuristicBase<Heuristic<T>> { };
-
-
 /**
  * Concepts
 */
-template<class Derived> 
+template<class Derived>
 concept IsHeuristic = std::derived_from<Derived, HeuristicBase<Derived>>;
 
 }  // namespace mimir

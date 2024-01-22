@@ -27,6 +27,10 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 
 /**
  * Interface class.
+ *
+ * We provide implementations for
+ * - BrFsAlgorithm, a breadth-first search algorithm in algorithms/brfs.hpp
+ * - AStarAlgorithm, an astar search algorithm in algorithms/astar.hpp
 */
 template<typename Derived>
 requires HasConfig<Derived>
@@ -60,19 +64,9 @@ public:
 
 
 /**
- * General implementation class.
- * We provide specializations for
- * - BrFs, a breadth-first search algorithm in algorithms/brfs.hpp
- * - AStar, an astar search algorithm in algorithms/astar.hpp
-*/
-template<typename T>
-class Algorithm : public AlgorithmBase<Algorithm<T>> { };
-
-
-/**
  * Concepts
 */
-template<class Derived> 
+template<class Derived>
 concept IsAlgorithm = std::derived_from<Derived, AlgorithmBase<Derived>>;
 
 

@@ -10,18 +10,10 @@ namespace mimir
 {
 
 /**
- * ID class.
-*/
-template<typename C, typename H>
-requires IsConfig<C> && IsHeuristic<H>
-struct AStar { };
-
-
-/**
  * Spezialized implementation class.
 */
 template<typename C, typename H>
-class Algorithm<AStar<C, H>> : public AlgorithmBase<Algorithm<AStar<C, H>>> {
+class AStarAlgorithm : public AlgorithmBase<AStarAlgorithm<C, H>> {
 private:
     H m_heuristic;
 
@@ -30,11 +22,11 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<Algorithm<AStar<C, H>>>;
+    friend class AlgorithmBase<AStarAlgorithm<C, H>>;
 
 public:
-    Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AStar<C, H>>>(problem)
+    AStarAlgorithm(const Problem& problem)
+        : AlgorithmBase<AStarAlgorithm<C, H>>(problem)
         , m_heuristic(problem) { }
 };
 
@@ -44,8 +36,9 @@ public:
 */
 template<typename C, typename H>
 requires IsConfig<C>
-struct TypeTraits<Algorithm<AStar<C, H>>> {
+struct TypeTraits<AStarAlgorithm<C, H>> {
     using Config = C;
+    using Heuristic = H;
 };
 
 

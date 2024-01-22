@@ -8,28 +8,20 @@ namespace mimir
 {
 
 /**
- * ID class.
-*/
-template<typename C>
-requires IsConfig<C>
-struct Zero { };
-
-
-/**
  * Implementation class
 */
 template<typename C>
 requires IsConfig<C>
-class Heuristic<Zero<C>> : public HeuristicBase<Heuristic<Zero<C>>> {
+class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<C>> {
 private:
     double compute_heuristic_impl(const View<State<C>>& state) {
         return 0.;
     }
 
-    friend class HeuristicBase<Heuristic<Zero<C>>>;
+    friend class HeuristicBase<ZeroHeuristic<C>>;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<Zero<C>>>(problem) { }
+    ZeroHeuristic(Problem problem) : HeuristicBase<ZeroHeuristic<C>>(problem) { }
 };
 
 
@@ -38,25 +30,9 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-struct TypeTraits<Heuristic<Zero<C>>> {
-    using Tag = Zero<C>;
+struct TypeTraits<ZeroHeuristic<C>> {
     using Config = C;
 };
-
-template<typename C>
-requires IsConfig<C>
-struct TypeTraits<Zero<C>> {
-    using Config = C;
-};
-
-
-
-/**
- * Aliases
-*/
-template<typename C>
-requires IsConfig<C>
-using ZeroHeuristic = Heuristic<Zero<C>>;
 
 
 }  // namespace mimir
