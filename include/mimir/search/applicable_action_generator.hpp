@@ -38,7 +38,7 @@ public:
 /**
  * Implementation class.
 */
-template<Config C>
+template<IsConfig C>
 class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<C>> {
 private:
     // Implement Config independent functionality.
@@ -48,7 +48,7 @@ private:
 /**
  * Type traits.
 */
-template<Config C>
+template<IsConfig C>
 struct TypeTraits<ApplicableActionGenerator<C>> {
     using ConfigTagType = C;
 };

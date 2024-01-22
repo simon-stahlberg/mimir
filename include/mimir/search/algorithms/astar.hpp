@@ -12,8 +12,8 @@ namespace mimir
 /**
  * Implementation class.
 */
-template<typename C, template<typename> class H>
-requires Config<C> && Heuristic<H<C>>
+template<typename C, template<typename> typename H>
+requires IsConfig<C> && IsHeuristic<H<C>>
 class AStar : public AlgorithmBase<AStar<C, H>> {
 private:
     H<C> m_heuristic;
@@ -35,9 +35,10 @@ public:
 /**
  * Type traits.
 */
-template<Config C, template<typename> class H>
+template<typename C, template<typename> class H>
+requires IsConfig<C>
 struct TypeTraits<AStar<C, H>> {
-    using ConfigType = C;
+    using Config = C;
 };
 
 

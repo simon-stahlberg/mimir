@@ -10,7 +10,7 @@ namespace mimir
 {
 
 /**
- * ID classes
+ * Configuration classes to dispatch the grounded or lifted implementation
 */
 struct Grounded { };
 
@@ -20,13 +20,15 @@ struct Lifted { };
 /**
  * Concepts
 */
-template<typename Tag>
-concept Config = std::is_same_v<Tag, Grounded> || std::is_same_v<Tag, Lifted>;
-
+template<typename C>
+concept IsConfig = std::is_same_v<C, Grounded> || std::is_same_v<C, Lifted>;
 
 template<typename T>
 concept hasConfig = requires {
-    typename TypeTraits<T>::ConfigTagType;
+    // Check that the type trait was defined
+    typename TypeTraits<T>::Config;
+    // Check that the type trait is a config
+    requires IsConfig<typename TypeTraits<T>::Config>;
 };
 
 

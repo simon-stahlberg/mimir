@@ -39,14 +39,14 @@ public:
 /**
  * Implementation class
 */
-template<Config C>
+template<IsConfig C>
 class Builder<StateTag<C>> : public BuilderBase<Builder<StateTag<C>>>, public StateBuilderBase<Builder<StateTag<C>>> { };
 
 
 /**
  * Type traits.
 */
-template<Config C>
+template<IsConfig C>
 struct TypeTraits<Builder<StateTag<C>>> {
     using ConfigTagType = C;
 };

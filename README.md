@@ -54,4 +54,11 @@ After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you s
 
 ### Header includes
 
-- Include specialized header implementations if available to obtain the right instantiation. Do not include the interface headers again.
+- Include only the most specialized headers to obtain the correct instantiation.
+- Make use of inherited headers to keep the number of includes small. 
+
+### Concepts
+
+- Use prefixes `Is` or `Has` to obtain more meaningful names. 
+- Apply concepts only in the requires part to make the distinction clearer
+

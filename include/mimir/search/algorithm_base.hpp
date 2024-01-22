@@ -25,12 +25,14 @@ namespace mimir
 
 enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 
-/// @brief CRTP based interface for a search algorithm
-/// @tparam Derived
+/**
+ * Interface class.
+*/
 template<typename Derived>
+requires hasConfig<Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::Config;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)

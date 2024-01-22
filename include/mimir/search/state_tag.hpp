@@ -12,7 +12,7 @@ namespace mimir
 /**
  * ID class
 */
-template<Config C> class StateTag { };
+template<IsConfig C> class StateTag { };
 
 }  // namespace mimir
 

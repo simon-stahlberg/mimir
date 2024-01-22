@@ -54,14 +54,14 @@ public:
  * - Grounded in grounded/successor_state_generator.hpp
  * - Lifted in lifted/successor_state_generator.hpp
 */
-template<Config C>
+template<IsConfig C>
 class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };
 
 
 /**
  * Type traits
 */
-template<Config C>
+template<IsConfig C>
 struct TypeTraits<SuccessorStateGenerator<C>> {
     using ConfigTagType = C;
 };

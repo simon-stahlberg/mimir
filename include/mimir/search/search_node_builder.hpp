@@ -53,7 +53,7 @@ public:
  * | data_size_type | status | g_value | parent_state | creating_action |
  * |________________|________|_________|______________|_________________|
 */
-template<Config C>
+template<IsConfig C>
 class Builder<SearchNodeTag<C>> : public BuilderBase<Builder<SearchNodeTag<C>>>, public SearchNodeBuilderBase<Builder<SearchNodeTag<C>>> {
 private:
     SearchNodeStatus m_status;
@@ -97,7 +97,7 @@ public:
 /**
  * Type traits.
 */
-template<Config C>
+template<IsConfig C>
 struct TypeTraits<Builder<SearchNodeTag<C>>> {
     using ConfigTagType = C;
 };

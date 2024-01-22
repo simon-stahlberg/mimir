@@ -43,14 +43,14 @@ public:
  * - Grounded in grounded/state_view.hpp
  * - Lifted in lifted/state_view.hpp
 */
-template<Config C>
+template<IsConfig C>
 class View<StateTag<C>> : public ViewBase<View<StateTag<C>>>, public StateViewBase<View<StateTag<C>>> { };
 
 
 /**
  * Type traits
 */
-template<Config C>
+template<IsConfig C>
 struct TypeTraits<View<StateTag<C>>> {
     using ConfigTagType = C;
 };

@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigType;
+    using C = typename TypeTraits<Derived>::Config;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
@@ -40,7 +40,7 @@ public:
  * Concepts
 */
 template<class Derived> 
-concept Heuristic = std::derived_from<Derived, HeuristicBase<Derived>>;
+concept IsHeuristic = std::derived_from<Derived, HeuristicBase<Derived>>;
 
 }  // namespace mimir
 

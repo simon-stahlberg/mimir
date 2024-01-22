@@ -13,7 +13,8 @@ namespace mimir
 /**
  * Implementation class.
 */
-template<Config C>
+template<typename C>
+requires IsConfig<C>
 class BrFS : public AlgorithmBase<BrFS<C>> {
 private:
     // Implement configuration independent functionality.
@@ -54,9 +55,10 @@ public:
 /**
  * Type traits.
 */
-template<Config C>
+template<typename C>
+requires IsConfig<C>
 struct TypeTraits<BrFS<C>> {
-    using ConfigType = C;
+    using Config = C;
 };
 
 

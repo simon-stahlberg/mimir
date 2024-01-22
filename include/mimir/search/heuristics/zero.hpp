@@ -10,7 +10,8 @@ namespace mimir
 /**
  * Implementation class
 */
-template<Config C>
+template<typename C>
+requires IsConfig<C>
 class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<C>> {
 private:
     double compute_heuristic_impl(const View<StateTag<C>>& state) {
@@ -24,9 +25,10 @@ public:
 };
 
 
-template<Config C>
+template<typename C>
+requires IsConfig<C>
 struct TypeTraits<ZeroHeuristic<C>> {
-    using ConfigType = C;
+    using Config = C;
 };
 
 
