@@ -17,7 +17,7 @@ template<typename C>
 class BrFSAlgorithm : public AlgorithmBase<BrFSAlgorithm<C>> {
 private:
     // Implement configuration independent functionality.
-    std::deque<View<State<C>>> m_queue;
+    std::deque<StateView<C>> m_queue;
 
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {

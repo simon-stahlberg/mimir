@@ -2,7 +2,6 @@
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 #include "config.hpp"
-#include "search_node.hpp"
 #include "search_node_view.hpp"
 #include "search_node_builder.hpp"
 #include "type_traits.hpp"
@@ -42,7 +41,7 @@ private:
         : m_problem(problem)
         , m_state_repository(SuccessorStateGenerator<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
+        , m_search_nodes(AutomaticVector(Builder<SearchNodeView<C>>(SearchNodeStatus::CLOSED, 0, StateView<C>(nullptr), nullptr))) { }
 
     friend Derived;
 
@@ -52,9 +51,9 @@ private:
 
     Problem m_problem;
     SuccessorStateGenerator<C> m_state_repository;
-    View<State<C>> m_initial_state;
+    StateView<C> m_initial_state;
     ApplicableActionGenerator<C> m_successor_generator;
-    AutomaticVector<SearchNode<C>> m_search_nodes;
+    AutomaticVector<SearchNodeView<C>> m_search_nodes;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {

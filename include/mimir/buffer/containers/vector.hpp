@@ -14,34 +14,34 @@ namespace mimir {
 
 /// @brief Vector handle different sized objects but only allows push_back and access, no resize.
 /// @tparam T
-template<typename T>
-class Vector : public UncopyableMixin<Vector<T>> {
+template<typename V>
+class Vector : public UncopyableMixin<Vector<V>> {
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;
 
     // Data to be accessed
-    std::vector<View<T>> m_data;
+    std::vector<V> m_data;
 
 public:
-    void push_back(const Builder<T>& builder) {
-        m_data.push_back(View<T>(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
+    void push_back(const Builder<V>& builder) {
+        m_data.push_back(V(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
     }
 
-    [[nodiscard]] View<T> back() {
+    [[nodiscard]] V back() {
         return m_data.back();
     }
 
-    [[nodiscard]] const View<T> back() const {
+    [[nodiscard]] const V back() const {
         return m_data.back();
     }
 
-    [[nodiscard]] View<T> operator[](size_t pos) {
+    [[nodiscard]] V operator[](size_t pos) {
         assert(pos <= static_cast<int>(get_size()));
         return m_data[pos];
     }
 
-    [[nodiscard]] const View<T> operator[](size_t pos) const {
+    [[nodiscard]] const V operator[](size_t pos) const {
         assert(pos <= static_cast<int>(get_size()));
         return m_data[pos];
     }
@@ -55,40 +55,40 @@ public:
 /// @brief AutomaticVector handle handles only equally sized objects but allows for resize.
 ///        AUtomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
 /// @tparam T
-template<typename T>
-class AutomaticVector : public UncopyableMixin<AutomaticVector<T>> {
+template<typename V>
+class AutomaticVector : public UncopyableMixin<AutomaticVector<V>> {
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;
 
     // Data to be accessed
-    std::vector<View<T>> m_data;
+    std::vector<V> m_data;
 
-    const Builder<T> m_default_builder;
+    const Builder<V> m_default_builder;
 
 public:
-    AutomaticVector(Builder<T>&& default_builder) : m_default_builder(std::move(default_builder)) { }
+    AutomaticVector(Builder<V>&& default_builder) : m_default_builder(std::move(default_builder)) { }
 
-    void push_back(const Builder<T>& builder) {
-        m_data.push_back(View<T>(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
+    void push_back(const Builder<V>& builder) {
+        m_data.push_back(V(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
     }
 
-    [[nodiscard]] View<T> back() {
+    [[nodiscard]] V back() {
         return m_data.back();
     }
 
-    [[nodiscard]] const View<T> back() const {
+    [[nodiscard]] const V back() const {
         return m_data.back();
     }
 
-    [[nodiscard]] View<T> operator[](size_t pos) {
+    [[nodiscard]] V operator[](size_t pos) {
         if (pos >= get_size()) {
             resize(pos);
         }
         return m_data[pos];
     }
 
-    [[nodiscard]] const View<T> operator[](size_t pos) const {
+    [[nodiscard]] const V operator[](size_t pos) const {
         if (pos >= get_size()) {
             resize(pos);
         }
@@ -100,7 +100,7 @@ public:
         size_t default_size = m_default_builder.get_buffer().get_size();
         while (get_size() <= size) {
             char* written_data = m_storage.write(default_data, default_size);
-            m_data.push_back(View<T>(written_data));
+            m_data.push_back(V(written_data));
         }
     }
 

@@ -14,7 +14,7 @@ template<typename C>
 requires IsConfig<C>
 class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<C>> {
 private:
-    double compute_heuristic_impl(const View<State<C>>& state) {
+    double compute_heuristic_impl(const StateView<C>& state) {
         return 0.;
     }
 

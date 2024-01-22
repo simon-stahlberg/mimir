@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_STATE_BUILDER_HPP_
 
 #include "config.hpp"
-#include "state.hpp"
+#include "state_view.hpp"
 #include "type_traits.hpp"
 
 #include "../buffer/builder_base.hpp"
@@ -42,17 +42,7 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-class Builder<State<C>> : public BuilderBase<Builder<State<C>>>, public StateBuilderBase<Builder<State<C>>> { };
-
-
-/**
- * Type traits.
-*/
-template<typename C>
-requires IsConfig<C>
-struct TypeTraits<Builder<State<C>>> {
-    using Config = C;
-};
+class StateBuilder : public BuilderBase<StateBuilder<C>>, public StateBuilderBase<StateBuilder<C>> { };
 
 
 

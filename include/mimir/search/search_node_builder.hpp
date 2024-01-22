@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_SEARCH_NODE_BUILDER_HPP_
 
 #include "config.hpp"
-#include "search_node.hpp"
+#include "search_node_view.hpp"
 #include "lifted/state_view.hpp"
 #include "grounded/state_view.hpp"
 #include "type_traits.hpp"
@@ -56,11 +56,11 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-class Builder<SearchNode<C>> : public BuilderBase<Builder<SearchNode<C>>>, public SearchNodeBuilderBase<Builder<SearchNode<C>>> {
+class SearchNodeBuilder : public BuilderBase<SearchNodeBuilder<SearchNodeView<C>>>, public SearchNodeBuilderBase<SearchNodeBuilder<SearchNodeView<C>>> {
 private:
     SearchNodeStatus m_status;
     int m_g_value;
-    View<State<C>> m_parent_state;
+    StateView<C> m_parent_state;
     GroundAction m_creating_action;
 
     /* Implement BuilderBase interface */
@@ -75,7 +75,7 @@ private:
         this->m_buffer.write(m_creating_action);
     }
 
-    friend class BuilderBase<Builder<SearchNode<C>>>;
+    friend class BuilderBase<SearchNodeBuilder<SearchNodeView<C>>>;
 
     /* Implement SearchNodeBuilderBase interface */
     void set_status_impl(SearchNodeStatus status) { m_status = status; }
@@ -83,13 +83,13 @@ private:
     void set_parent_state_impl(View<State<C>> parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
 
-    friend class SearchNodeBuilderBase<Builder<SearchNode<C>>>;
+    friend class SearchNodeBuilderBase<SearchNodeBuilder<SearchNodeView<C>>>;
 
 public:
-    Builder() : m_parent_state(View<State<C>>(nullptr)) { }
+    SearchNodeBuilder() : m_parent_state(StateView<C>(nullptr)) { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, View<State<C>> parent_state, GroundAction creating_action)
+    SearchNodeBuilder(SearchNodeStatus status, int g_value, StateView<C> parent_state, GroundAction creating_action)
         : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
         this->finish();
     }
@@ -100,7 +100,7 @@ public:
  * Type traits.
 */
 template<IsConfig C>
-struct TypeTraits<Builder<SearchNode<C>>> {
+struct TypeTraits<SearchNodeBuilder<SearchNodeView<C>>> {
     using Config = C;
 };
 

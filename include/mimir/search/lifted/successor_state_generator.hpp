@@ -18,7 +18,7 @@ namespace mimir
 template<>
 class SuccessorStateGenerator<Lifted> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Lifted>> {
 private:
-    [[nodiscard]] View<State<Lifted>> get_or_create_initial_state_impl(Problem problem) {
+    [[nodiscard]] StateView<Lifted> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
         // create the state
         int next_state_id = this->m_states.get_size();
@@ -27,10 +27,10 @@ private:
         return this->m_states.insert(this->m_state_builder);
     }
 
-    [[nodiscard]] View<State<Lifted>> get_or_create_successor_state_impl(View<State<Lifted>> state, GroundAction action) {
+    [[nodiscard]] StateView<Lifted> get_or_create_successor_state_impl(StateView<Lifted> state, GroundAction action) {
         // create a lifted state.
         // TODO (Dominik): implement
-        return View<State<Lifted>>(nullptr);
+        return StateView<Lifted>(nullptr);
     }
 
     // Give access to the private interface implementations.

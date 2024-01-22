@@ -4,7 +4,6 @@
 #include <mimir/search/grounded/state_view.hpp>
 #include <mimir/search/search_node_builder.hpp>
 #include <mimir/search/search_node_view.hpp>
-#include <mimir/search/search_node.hpp>
 #include <mimir/buffer/containers/vector.hpp>
 
 #include <gtest/gtest.h>
@@ -15,15 +14,15 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchNodeBuilderTest) {
     // Build a state.
-    auto state_builder = Builder<State<Grounded>>();
+    auto state_builder = StateBuilder<Grounded>();
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer().get_data(), nullptr);
     EXPECT_EQ(state_builder.get_buffer().get_size(), 8);
-    auto state_view = View<State<Grounded>>(state_builder.get_buffer().get_data());
+    auto state_view = StateView<Grounded>(state_builder.get_buffer().get_data());
 
     // Build a search node.
-    auto search_node_builder = Builder<SearchNode<Grounded>>();
+    auto search_node_builder = SearchNodeBuilder<Grounded>();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
     search_node_builder.set_parent_state(state_view);
@@ -33,7 +32,7 @@ TEST(MimirTests, SearchNodeBuilderTest) {
     EXPECT_EQ(search_node_builder.get_buffer().get_size(), 28);
 
     // View the data generated in the builder.
-    auto search_node_view = View<SearchNode<Grounded>>(search_node_builder.get_buffer().get_data());
+    auto search_node_view = SearchNodeView<Grounded>(search_node_builder.get_buffer().get_data());
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
     EXPECT_EQ(search_node_view.get_parent_state().get_id(), 5);
@@ -44,8 +43,8 @@ TEST(MimirTests, SearchNodeBuilderVectorTest) {
     /* A vector that automatically resizes when accessing elements at index i
        and creating default constructed objects.
        There is only 1 heap allocation every few thousand nodes that are being created. */
-    auto vector = AutomaticVector<SearchNode<Grounded>>(
-        Builder<SearchNode<Grounded>>(SearchNodeStatus::CLOSED, 42, View<State<Grounded>>(nullptr), nullptr));
+    auto vector = AutomaticVector<SearchNodeView<Grounded>>(
+        SearchNodeBuilderBase<SearchNodeView<Grounded>>(SearchNodeStatus::CLOSED, 42, StateView<Grounded>(nullptr), nullptr));
 
     // Test default initialization a search node
     auto search_node_0 = vector[0];

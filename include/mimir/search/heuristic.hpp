@@ -33,7 +33,7 @@ private:
     Problem m_problem;
 
 public:
-    [[nodiscard]] double compute_heuristic(View<State<C>> state) {
+    [[nodiscard]] double compute_heuristic(StateView<C> state) {
         return self().compute_heuristic_impl(state);
     }
 };

@@ -84,14 +84,6 @@ public:
 };
 
 
-/**
- * Implementation class.
- *
- * Provide an implementation for T by providing fully specified template.
-*/
-template<typename Tag>
-class Builder : public BuilderBase<Builder<Tag>> {};
-
 }
 
 
