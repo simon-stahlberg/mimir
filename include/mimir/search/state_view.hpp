@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_STATE_VIEW_HPP_
 
 #include "config.hpp"
-#include "state_tag.hpp"
+#include "state.hpp"
 #include "grounded/state_builder.hpp"
 #include "lifted/state_builder.hpp"
 #include "type_traits.hpp"
@@ -44,14 +44,14 @@ public:
  * - Lifted in lifted/state_view.hpp
 */
 template<IsConfig C>
-class View<StateTag<C>> : public ViewBase<View<StateTag<C>>>, public StateViewBase<View<StateTag<C>>> { };
+class View<State<C>> : public ViewBase<View<State<C>>>, public StateViewBase<View<State<C>>> { };
 
 
 /**
  * Type traits
 */
 template<IsConfig C>
-struct TypeTraits<View<StateTag<C>>> {
+struct TypeTraits<View<State<C>>> {
     using ConfigTagType = C;
 };
 

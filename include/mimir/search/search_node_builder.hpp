@@ -39,7 +39,7 @@ private:
 public:
     void set_status(SearchNodeStatus status) { self().set_status_impl(status); }
     void set_g_value(int g_value) { self().set_g_value_impl(g_value); }
-    void set_parent_state(View<StateTag<C>> parent_state) { self().set_parent_state_impl(parent_state); }
+    void set_parent_state(View<State<C>> parent_state) { self().set_parent_state_impl(parent_state); }
     void set_ground_action(GroundAction creating_action) { self().set_ground_action_impl(creating_action); }
 };
 
@@ -58,7 +58,7 @@ class Builder<SearchNodeTag<C>> : public BuilderBase<Builder<SearchNodeTag<C>>>,
 private:
     SearchNodeStatus m_status;
     int m_g_value;
-    View<StateTag<C>> m_parent_state;
+    View<State<C>> m_parent_state;
     GroundAction m_creating_action;
 
     /* Implement BuilderBase interface */
@@ -78,16 +78,16 @@ private:
     /* Implement SearchNodeBuilderBase interface */
     void set_status_impl(SearchNodeStatus status) { m_status = status; }
     void set_g_value_impl(int g_value) { m_g_value = g_value; }
-    void set_parent_state_impl(View<StateTag<C>> parent_state) { m_parent_state = parent_state; }
+    void set_parent_state_impl(View<State<C>> parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
 
     friend class SearchNodeBuilderBase<Builder<SearchNodeTag<C>>>;
 
 public:
-    Builder() : m_parent_state(View<StateTag<C>>(nullptr)) { }
+    Builder() : m_parent_state(View<State<C>>(nullptr)) { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, View<StateTag<C>> parent_state, GroundAction creating_action)
+    Builder(SearchNodeStatus status, int g_value, View<State<C>> parent_state, GroundAction creating_action)
         : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
         this->finish();
     }

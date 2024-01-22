@@ -30,10 +30,17 @@ private:
     Problem m_problem;
 
 public:
-    [[nodiscard]] double compute_heuristic(View<StateTag<C>> state) {
+    [[nodiscard]] double compute_heuristic(View<State<C>> state) {
         return self().compute_heuristic_impl(state);
     }
 };
+
+
+/**
+ * General implementation class.
+*/
+template<typename T> 
+class Heuristic : public HeuristicBase<Heuristic<T>> { };
 
 
 /**

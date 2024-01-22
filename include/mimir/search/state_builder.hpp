@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_STATE_BUILDER_HPP_
 
 #include "config.hpp"
-#include "state_tag.hpp"
+#include "state.hpp"
 #include "type_traits.hpp"
 
 #include "../buffer/builder_base.hpp"
@@ -40,14 +40,14 @@ public:
  * Implementation class
 */
 template<IsConfig C>
-class Builder<StateTag<C>> : public BuilderBase<Builder<StateTag<C>>>, public StateBuilderBase<Builder<StateTag<C>>> { };
+class Builder<State<C>> : public BuilderBase<Builder<State<C>>>, public StateBuilderBase<Builder<State<C>>> { };
 
 
 /**
  * Type traits.
 */
 template<IsConfig C>
-struct TypeTraits<Builder<StateTag<C>>> {
+struct TypeTraits<Builder<State<C>>> {
     using ConfigTagType = C;
 };
 

@@ -19,7 +19,7 @@ template<>
 class ApplicableActionGenerator<Lifted> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    void generate_applicable_actions_impl(View<StateTag<Lifted>> state, GroundActionList& out_applicable_actions) {
+    void generate_applicable_actions_impl(View<State<Lifted>> state, GroundActionList& out_applicable_actions) {
     }
 
     // Give access to the private interface implementations.

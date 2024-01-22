@@ -11,14 +11,22 @@ namespace mimir
 {
 
 /**
- * Implementation class.
+ * ID class.
 */
 template<typename C>
 requires IsConfig<C>
-class BrFS : public AlgorithmBase<BrFS<C>> {
+struct BrFS { };
+
+
+/**
+ * Spezialized implementation class.
+*/
+template<typename C>
+requires IsConfig<C>
+class Algorithm<BrFS<C>> : public AlgorithmBase<Algorithm<BrFS<C>>> {
 private:
     // Implement configuration independent functionality.
-    std::deque<View<StateTag<C>>> m_queue;
+    std::deque<View<State<C>>> m_queue;
 
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
@@ -44,11 +52,11 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<BrFS<C>>;
+    friend class AlgorithmBase<Algorithm<BrFS<C>>>;
 
 public:
-    BrFS(const Problem& problem)
-        : AlgorithmBase<BrFS<C>>(problem) { }
+    Algorithm(const Problem& problem)
+        : AlgorithmBase<Algorithm<BrFS<C>>>(problem) { }
 };
 
 
@@ -57,7 +65,7 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-struct TypeTraits<BrFS<C>> {
+struct TypeTraits<Algorithm<BrFS<C>>> {
     using Config = C;
 };
 

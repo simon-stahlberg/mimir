@@ -15,12 +15,12 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchNodeBuilderTest) {
     // Build a state.
-    auto state_builder = Builder<StateTag<Grounded>>();
+    auto state_builder = Builder<State<Grounded>>();
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer().get_data(), nullptr);
     EXPECT_EQ(state_builder.get_buffer().get_size(), 8);
-    auto state_view = View<StateTag<Grounded>>(state_builder.get_buffer().get_data());
+    auto state_view = View<State<Grounded>>(state_builder.get_buffer().get_data());
 
     // Build a search node.
     auto search_node_builder = Builder<SearchNodeTag<Grounded>>();
@@ -45,7 +45,7 @@ TEST(MimirTests, SearchNodeBuilderVectorTest) {
        and creating default constructed objects.
        There is only 1 heap allocation every few thousand nodes that are being created. */
     auto vector = AutomaticVector<SearchNodeTag<Grounded>>(
-        Builder<SearchNodeTag<Grounded>>(SearchNodeStatus::CLOSED, 42, View<StateTag<Grounded>>(nullptr), nullptr));
+        Builder<SearchNodeTag<Grounded>>(SearchNodeStatus::CLOSED, 42, View<State<Grounded>>(nullptr), nullptr));
 
     // Test default initialization a search node
     auto search_node_0 = vector[0];

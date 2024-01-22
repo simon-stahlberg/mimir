@@ -60,20 +60,20 @@ public:
 
 
 /**
- * Implementation class for some type T.
+ * Implementation class.
  * Provide an implementation for T by providing fully specified template.
 */
-template<typename Tag>
-class View : public ViewBase<View<Tag>> {};
+template<typename T>
+class View : public ViewBase<View<T>> {};
 
 }
 
 
 namespace std {
-    template<typename Tag>
-    struct hash<mimir::View<Tag>>
+    template<typename T>
+    struct hash<mimir::View<T>>
     {
-        std::size_t operator()(const mimir::View<Tag>& view) const {
+        std::size_t operator()(const mimir::View<T>& view) const {
             return view.hash();
         }
     };

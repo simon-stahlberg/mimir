@@ -35,13 +35,13 @@ public:
     /* Mutable getters. */
     [[nodiscard]] SearchNodeStatus& get_status() { return self().get_status_impl(); }
     [[nodiscard]] g_value_type& get_g_value() { return self().get_g_value_impl(); }
-    [[nodiscard]] View<StateTag<C>> get_parent_state() { return self().get_parent_state_impl(); }
+    [[nodiscard]] View<State<C>> get_parent_state() { return self().get_parent_state_impl(); }
     [[nodiscard]] GroundAction get_ground_action() { return self().get_ground_action_impl(); }
 
     /* Immutable getters. */
     [[nodiscard]] const SearchNodeStatus& get_status() const { return self().get_status_impl(); }
     [[nodiscard]] const g_value_type& get_g_value() const { return self().get_g_value_impl(); }
-    [[nodiscard]] const View<StateTag<C>> get_parent_state() const { return self().get_parent_state_impl(); }
+    [[nodiscard]] const View<State<C>> get_parent_state() const { return self().get_parent_state_impl(); }
     [[nodiscard]] const GroundAction get_ground_action() const { return self().get_ground_action_impl(); }
 };
 
@@ -57,7 +57,7 @@ private:
     static constexpr size_t s_status_offset =       sizeof(data_size_type);
     static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);
     static constexpr size_t s_parent_state_offset = sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type);
-    static constexpr size_t s_ground_action =       sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type) + sizeof(View<StateTag<C>>);
+    static constexpr size_t s_ground_action =       sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type) + sizeof(View<State<C>>);
 
     /* Implement ViewBase interface: */
     [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return 0; }
@@ -71,8 +71,8 @@ private:
         return read_value<g_value_type>(this->get_data() + s_g_value_offset);
     }
 
-    [[nodiscard]] View<StateTag<C>> get_parent_state_impl() {
-        return read_value<View<StateTag<C>>>(this->get_data() + s_parent_state_offset);
+    [[nodiscard]] View<State<C>> get_parent_state_impl() {
+        return read_value<View<State<C>>>(this->get_data() + s_parent_state_offset);
     }
 
     [[nodiscard]] GroundAction get_ground_action_impl() {

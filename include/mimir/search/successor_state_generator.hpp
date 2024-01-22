@@ -32,16 +32,16 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
-    UnorderedSet<StateTag<C>> m_states;
+    UnorderedSet<State<C>> m_states;
 
-    Builder<StateTag<C>> m_state_builder;
+    Builder<State<C>> m_state_builder;
 
 public:
-    [[nodiscard]] View<StateTag<C>> get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] View<State<C>> get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] View<StateTag<C>> get_or_create_successor_state(View<StateTag<C>> state, GroundAction action) {
+    [[nodiscard]] View<State<C>> get_or_create_successor_state(View<State<C>> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };

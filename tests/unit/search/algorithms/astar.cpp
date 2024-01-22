@@ -13,7 +13,7 @@ namespace mimir::tests
 TEST(MimirTests, GroundedAstarTest) {
     // Instantiate grounded version
     auto problem = static_cast<Problem>(nullptr);
-    auto grounded_astar = AStar<Grounded, ZeroHeuristic>(problem);
+    auto grounded_astar = Algorithm<AStar<Grounded, ZeroHeuristic>>(problem);
     GroundActionList plan;
     const auto search_status = grounded_astar.find_solution(plan);
 }
@@ -22,7 +22,7 @@ TEST(MimirTests, GroundedAstarTest) {
 TEST(MimirTests, LiftedAstarTest) {
     // Instantiate lifted version
     auto problem = static_cast<Problem>(nullptr);
-    auto lifted_astar = AStar<Lifted, ZeroHeuristic>(problem);
+    auto lifted_astar = Algorithm<AStar<Lifted, ZeroHeuristic>>(problem);
     GroundActionList plan;
     const auto search_status = lifted_astar.find_solution(plan);
 }

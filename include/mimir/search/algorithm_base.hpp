@@ -38,7 +38,7 @@ private:
         : m_problem(problem)
         , m_state_repository(SuccessorStateGenerator<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_search_nodes(AutomaticVector(Builder<SearchNodeTag<C>>(SearchNodeStatus::CLOSED, 0, View<StateTag<C>>(nullptr), nullptr))) { }
+        , m_search_nodes(AutomaticVector(Builder<SearchNodeTag<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
 
     friend Derived;
 
@@ -48,7 +48,7 @@ private:
 
     Problem m_problem;
     SuccessorStateGenerator<C> m_state_repository;
-    View<StateTag<C>> m_initial_state;
+    View<State<C>> m_initial_state;
     ApplicableActionGenerator<C> m_successor_generator;
     AutomaticVector<SearchNodeTag<C>> m_search_nodes;
 
@@ -57,6 +57,16 @@ public:
         return self().find_solution_impl(out_plan);
     }
 };
+
+
+/**
+ * General implementation class.
+ * We provide specializations for
+ * - BrFs, a breadth-first search algorithm in algorithms/brfs.hpp
+ * - AStar, an astar search algorithm in algorithms/astar.hpp
+*/
+template<typename T>
+class Algorithm : public AlgorithmBase<Algorithm<T>> { };
 
 }  // namespace mimir
 
