@@ -18,7 +18,7 @@ namespace mimir
 template<>
 class SuccessorStateGenerator<Grounded> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>> {
 private:
-    [[nodiscard]] StateView<Grounded> get_or_create_initial_state_impl(Problem problem) {
+    [[nodiscard]] View<State<Grounded>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
         // create the state
         int next_state_id = this->m_states.get_size();
@@ -27,10 +27,10 @@ private:
         return this->m_states.insert(this->m_state_builder);
     }
 
-    [[nodiscard]] StateView<Grounded> get_or_create_successor_state_impl(StateView<Grounded> state, GroundAction action) {
+    [[nodiscard]] View<State<Grounded>> get_or_create_successor_state_impl(View<State<Grounded>> state, GroundAction action) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return StateView<Grounded>(nullptr);
+        return View<State<Grounded>>(nullptr);
     }
 
     // Give access to the private interface implementations.

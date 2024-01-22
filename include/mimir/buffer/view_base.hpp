@@ -59,6 +59,25 @@ public:
 };
 
 
+/**
+ * Implementation class.
+ * Provide an implementation for T by providing fully specified template.
+*/
+template<typename T>
+class View : public ViewBase<View<T>> {};
+
 }
+
+
+namespace std {
+    template<typename T>
+    struct hash<mimir::View<T>>
+    {
+        std::size_t operator()(const mimir::View<T>& view) const {
+            return view.hash();
+        }
+    };
+}  // namespace std
+
 
 #endif

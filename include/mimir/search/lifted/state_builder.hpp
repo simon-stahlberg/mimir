@@ -24,7 +24,7 @@ namespace mimir
  *
 */
 template<>
-class StateBuilder<Lifted> : public BuilderBase<StateBuilder<Lifted>>, public StateBuilderBase<StateBuilder<Lifted>> {
+class Builder<State<Lifted>> : public BuilderBase<Builder<State<Lifted>>>, public StateBuilderBase<Builder<State<Lifted>>> {
     state_id_type m_id;
 
     /* Implement BuilderBase interface */
@@ -36,12 +36,12 @@ class StateBuilder<Lifted> : public BuilderBase<StateBuilder<Lifted>>, public St
         this->m_buffer.write(m_id);
     }
 
-    friend class BuilderBase<StateBuilder<Lifted>>;
+    friend class BuilderBase<Builder<State<Lifted>>>;
 
     /* Implement StateBuilderBase interface */
     void set_id_impl(state_id_type id) { m_id = id; }
 
-    friend class StateBuilderBase<StateBuilder<Lifted>>;
+    friend class StateBuilderBase<Builder<State<Lifted>>>;
 };
 
 }  // namespace mimir

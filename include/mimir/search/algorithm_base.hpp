@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 #include "config.hpp"
+#include "search_node.hpp"
 #include "search_node_view.hpp"
 #include "search_node_builder.hpp"
 #include "type_traits.hpp"
@@ -26,10 +27,6 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 
 /**
  * Interface class.
- *
- * We provide implementations for
- * - BrFsAlgorithm, a breadth-first search algorithm in algorithms/brfs.hpp
- * - AStarAlgorithm, an astar search algorithm in algorithms/astar.hpp
 */
 template<typename Derived>
 requires HasConfig<Derived>
@@ -41,7 +38,7 @@ private:
         : m_problem(problem)
         , m_state_repository(SuccessorStateGenerator<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_search_nodes(AutomaticVector(Builder<SearchNodeView<C>>(SearchNodeStatus::CLOSED, 0, StateView<C>(nullptr), nullptr))) { }
+        , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
 
     friend Derived;
 
@@ -51,9 +48,9 @@ private:
 
     Problem m_problem;
     SuccessorStateGenerator<C> m_state_repository;
-    StateView<C> m_initial_state;
+    View<State<C>> m_initial_state;
     ApplicableActionGenerator<C> m_successor_generator;
-    AutomaticVector<SearchNodeView<C>> m_search_nodes;
+    AutomaticVector<SearchNode<C>> m_search_nodes;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {
@@ -63,9 +60,19 @@ public:
 
 
 /**
+ * General implementation class.
+ * We provide specializations for
+ * - BrFs, a breadth-first search algorithm in algorithms/brfs.hpp
+ * - AStar, an astar search algorithm in algorithms/astar.hpp
+*/
+template<typename T>
+class Algorithm : public AlgorithmBase<Algorithm<T>> { };
+
+
+/**
  * Concepts
 */
-template<class Derived>
+template<class Derived> 
 concept IsAlgorithm = std::derived_from<Derived, AlgorithmBase<Derived>>;
 
 

@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_SEARCH_NODE_VIEW_HPP_
 
 #include "config.hpp"
+#include "search_node.hpp"
 #include "search_node_builder.hpp"
 #include "lifted/state_view.hpp"
 #include "grounded/state_view.hpp"
@@ -53,7 +54,7 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-class SearchNodeView : public ViewBase<SearchNodeView<C>>, public SearchNodeViewBase<SearchNodeView<C>> {
+class View<SearchNode<C>> : public ViewBase<View<SearchNode<C>>>, public SearchNodeViewBase<View<SearchNode<C>>> {
 private:
     static constexpr size_t s_status_offset =       sizeof(data_size_type);
     static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);
@@ -62,8 +63,6 @@ private:
 
     /* Implement ViewBase interface: */
     [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return 0; }
-
-    friend class ViewBase<SearchNodeView<C>>;
 
     /* Implement SearchNodeViewBase interface */
     [[nodiscard]] SearchNodeStatus& get_status_impl() {
@@ -82,11 +81,11 @@ private:
         return read_pointer<const GroundActionImpl>(this->get_data() + s_ground_action);
     }
 
-    friend class SearchNodeViewBase<SearchNodeView<C>>;
+    friend class SearchNodeViewBase<View<SearchNode<C>>>;
 
 public:
     /// @brief Create a view on a SearchNode.
-    explicit SearchNodeView(char* data) : ViewBase<SearchNodeView<C>>(data) { }
+    explicit View(char* data) : ViewBase<View<SearchNode<C>>>(data) { }
 };
 
 
@@ -95,7 +94,7 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-struct TypeTraits<SearchNodeView<C>> {
+struct TypeTraits<View<SearchNode<C>>> {
     using Config = C;
 };
 

@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_STATE_VIEW_HPP_
 
 #include "config.hpp"
+#include "state.hpp"
 #include "grounded/state_builder.hpp"
 #include "lifted/state_builder.hpp"
 #include "type_traits.hpp"
@@ -45,7 +46,7 @@ public:
 */
 template<typename C>
 requires IsConfig<C>
-class StateView : public ViewBase<StateView<C>>, public StateViewBase<StateView<C>> { };
+class View<State<C>> : public ViewBase<View<State<C>>>, public StateViewBase<View<State<C>>> { };
 
 
 /**
@@ -53,12 +54,13 @@ class StateView : public ViewBase<StateView<C>>, public StateViewBase<StateView<
 */
 template<typename C>
 requires IsConfig<C>
-struct TypeTraits<StateView<C>> {
+struct TypeTraits<View<State<C>>> {
     using Config = C;
 };
 
 
 } // namespace mimir
+
 
 
 #endif  // MIMIR_SEARCH_SEARCH_NODE_VIEW_HPP_

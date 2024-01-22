@@ -11,22 +11,22 @@
 
 namespace mimir {
 
-template<typename V>
-class UnorderedSet : public UncopyableMixin<UnorderedSet<V>> {
+template<typename T>
+class UnorderedSet : public UncopyableMixin<UnorderedSet<T>> {
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;
 
     // Data to be accessed
-    std::unordered_set<V> m_data;
+    std::unordered_set<View<T>> m_data;
 
 public:
-    [[nodiscard]] V insert(const Builder<V>& builder) {
+    [[nodiscard]] View<T> insert(const Builder<T>& builder) {
         // TODO (Dominik): implement
         const char* data = builder.get_buffer().get_data();
         size_t amount = builder.get_buffer().get_size();
         char* new_data = m_storage.write(data, amount);
-        auto view = V(new_data);
+        auto view = View<T>(new_data);
         auto it = m_data.find(view);
         if (it != m_data.end()) {
             // not unique, mark the storage as free again

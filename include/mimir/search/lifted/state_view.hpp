@@ -43,16 +43,4 @@ public:
 }  // namespace mimir
 
 
-namespace std {
-    template<>
-    struct hash<mimir::View<mimir::State<mimir::Grounded>>>
-    {
-        std::size_t operator()(const mimir::View<mimir::State<mimir::Grounded>>& view) const {
-            return view.hash();
-        }
-    };
-}  // namespace std
-
-
-
 #endif  // MIMIR_SEARCH_LIFTED_STATE_VIEW_HPP_
