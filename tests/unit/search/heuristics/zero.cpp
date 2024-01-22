@@ -11,10 +11,10 @@ TEST(MimirTests, SearchHeuristicsZeroTest) {
     auto problem = Problem(nullptr);
 
     // Instantiate ground version
-    auto zero_heuristic_grounded = Heuristic<ZeroHeuristicTag<GroundedTag>>(problem);
+    auto zero_heuristic_grounded = ZeroHeuristic<Grounded>(problem);
 
     // Instantiate lifted version
-    auto zero_heuristic_lifted = Heuristic<ZeroHeuristicTag<LiftedTag>>(problem);
+    auto zero_heuristic_lifted = ZeroHeuristic<Lifted>(problem);
 }
 
 

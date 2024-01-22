@@ -16,14 +16,14 @@ namespace mimir
  * Implementation class
 */
 template<>
-class ApplicableActionGenerator<LiftedTag> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<LiftedTag>> {
+class ApplicableActionGenerator<Lifted> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<Lifted>> {
     // Implement configuration specific functionality.
 private:
-    void generate_applicable_actions_impl(View<StateTag<LiftedTag>> state, GroundActionList& out_applicable_actions) {
+    void generate_applicable_actions_impl(View<StateTag<Lifted>> state, GroundActionList& out_applicable_actions) {
     }
 
     // Give access to the private interface implementations.
-    friend class ApplicableActionGeneratorBase<ApplicableActionGenerator<LiftedTag>>;
+    friend class ApplicableActionGeneratorBase<ApplicableActionGenerator<Lifted>>;
 };
 
 

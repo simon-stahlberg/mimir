@@ -30,7 +30,7 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 template<typename Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTagType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
@@ -55,17 +55,6 @@ public:
         return self().find_solution_impl(out_plan);
     }
 };
-
-
-/**
- * Implementation class
- *
- * We provide specializations for
- * - BrFsAlgorithmTag, a breadth-first search algorithm in algorithms/brfs.hpp
- * - AStarAlgorithmTag, an astar search algorithm in algorithms/astar.hpp
-*/
-template<typename Tag>
-class Algorithm : public AlgorithmBase<Algorithm<Tag>> { };
 
 }  // namespace mimir
 

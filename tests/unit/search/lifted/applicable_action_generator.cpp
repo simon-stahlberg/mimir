@@ -9,7 +9,7 @@ namespace mimir::tests
 
 TEST(MimirTests, LiftedApplicableActionGeneratorTest) {
     // Instantiate lifted version
-    auto lifted_successor_generator = ApplicableActionGenerator<LiftedTag>();
+    auto lifted_successor_generator = ApplicableActionGenerator<Lifted>();
 }
 
 }

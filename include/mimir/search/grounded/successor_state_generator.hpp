@@ -16,9 +16,9 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SuccessorStateGenerator<GroundedTag> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<GroundedTag>> {
+class SuccessorStateGenerator<Grounded> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>> {
 private:
-    [[nodiscard]] View<StateTag<GroundedTag>> get_or_create_initial_state_impl(Problem problem) {
+    [[nodiscard]] View<StateTag<Grounded>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
         // create the state
         int next_state_id = this->m_states.get_size();
@@ -27,14 +27,14 @@ private:
         return this->m_states.insert(this->m_state_builder);
     }
 
-    [[nodiscard]] View<StateTag<GroundedTag>> get_or_create_successor_state_impl(View<StateTag<GroundedTag>> state, GroundAction action) {
+    [[nodiscard]] View<StateTag<Grounded>> get_or_create_successor_state_impl(View<StateTag<Grounded>> state, GroundAction action) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return View<StateTag<GroundedTag>>(nullptr);
+        return View<StateTag<Grounded>>(nullptr);
     }
 
     // Give access to the private interface implementations.
-    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<GroundedTag>>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<Grounded>>;
 };
 
 }  // namespace mimir

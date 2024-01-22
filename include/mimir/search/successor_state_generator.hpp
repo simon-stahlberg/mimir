@@ -51,8 +51,8 @@ public:
  * Implementation class.
  *
  * We provide specialized implementations for
- * - GroundedTag in grounded/successor_state_generator.hpp
- * - LiftedTag in lifted/successor_state_generator.hpp
+ * - Grounded in grounded/successor_state_generator.hpp
+ * - Lifted in lifted/successor_state_generator.hpp
 */
 template<Config C>
 class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };

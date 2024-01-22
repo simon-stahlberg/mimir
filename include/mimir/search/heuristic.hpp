@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTagType;
+    using C = typename TypeTraits<Derived>::ConfigType;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
@@ -37,14 +37,10 @@ public:
 
 
 /**
- * Implementation class
- *
- * We provide specializations for
- * - ZeroHeuristicTag, a heuristic that always returns 0 in heursitics/zero.hpp
+ * Concepts
 */
-template<typename HeursticTag>
-class Heuristic : public HeuristicBase<Heuristic<HeursticTag>> { };
-
+template<class Derived> 
+concept Heuristic = std::derived_from<Derived, HeuristicBase<Derived>>;
 
 }  // namespace mimir
 

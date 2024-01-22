@@ -40,8 +40,8 @@ public:
  * Implementation class.
  *
  * We provide specialized implementations for
- * - GroundedTag in grounded/state_view.hpp
- * - LiftedTag in lifted/state_view.hpp
+ * - Grounded in grounded/state_view.hpp
+ * - Lifted in lifted/state_view.hpp
 */
 template<Config C>
 class View<StateTag<C>> : public ViewBase<View<StateTag<C>>>, public StateViewBase<View<StateTag<C>>> { };

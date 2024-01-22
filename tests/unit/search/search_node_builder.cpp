@@ -15,15 +15,15 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchNodeBuilderTest) {
     // Build a state.
-    auto state_builder = Builder<StateTag<GroundedTag>>();
+    auto state_builder = Builder<StateTag<Grounded>>();
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer().get_data(), nullptr);
     EXPECT_EQ(state_builder.get_buffer().get_size(), 8);
-    auto state_view = View<StateTag<GroundedTag>>(state_builder.get_buffer().get_data());
+    auto state_view = View<StateTag<Grounded>>(state_builder.get_buffer().get_data());
 
     // Build a search node.
-    auto search_node_builder = Builder<SearchNodeTag<GroundedTag>>();
+    auto search_node_builder = Builder<SearchNodeTag<Grounded>>();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
     search_node_builder.set_parent_state(state_view);
@@ -33,7 +33,7 @@ TEST(MimirTests, SearchNodeBuilderTest) {
     EXPECT_EQ(search_node_builder.get_buffer().get_size(), 28);
 
     // View the data generated in the builder.
-    auto search_node_view = View<SearchNodeTag<GroundedTag>>(search_node_builder.get_buffer().get_data());
+    auto search_node_view = View<SearchNodeTag<Grounded>>(search_node_builder.get_buffer().get_data());
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
     EXPECT_EQ(search_node_view.get_parent_state().get_id(), 5);
@@ -44,8 +44,8 @@ TEST(MimirTests, SearchNodeBuilderVectorTest) {
     /* A vector that automatically resizes when accessing elements at index i
        and creating default constructed objects.
        There is only 1 heap allocation every few thousand nodes that are being created. */
-    auto vector = AutomaticVector<SearchNodeTag<GroundedTag>>(
-        Builder<SearchNodeTag<GroundedTag>>(SearchNodeStatus::CLOSED, 42, View<StateTag<GroundedTag>>(nullptr), nullptr));
+    auto vector = AutomaticVector<SearchNodeTag<Grounded>>(
+        Builder<SearchNodeTag<Grounded>>(SearchNodeStatus::CLOSED, 42, View<StateTag<Grounded>>(nullptr), nullptr));
 
     // Test default initialization a search node
     auto search_node_0 = vector[0];

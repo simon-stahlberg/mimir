@@ -8,32 +8,25 @@ namespace mimir
 {
 
 /**
- * ID class
-*/
-template<Config C>
-struct ZeroHeuristicTag { };
-
-
-/**
  * Implementation class
 */
 template<Config C>
-class Heuristic<ZeroHeuristicTag<C>> : public HeuristicBase<Heuristic<ZeroHeuristicTag<C>>> {
+class ZeroHeuristic : public HeuristicBase<ZeroHeuristic<C>> {
 private:
     double compute_heuristic_impl(const View<StateTag<C>>& state) {
         return 0.;
     }
 
-    friend class HeuristicBase<Heuristic<ZeroHeuristicTag<C>>>;
+    friend class HeuristicBase<ZeroHeuristic<C>>;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<ZeroHeuristicTag<C>>>(problem) { }
+    ZeroHeuristic(Problem problem) : HeuristicBase<ZeroHeuristic<C>>(problem) { }
 };
 
 
 template<Config C>
-struct TypeTraits<Heuristic<ZeroHeuristicTag<C>>> {
-    using ConfigTagType = C;
+struct TypeTraits<ZeroHeuristic<C>> {
+    using ConfigType = C;
 };
 
 
