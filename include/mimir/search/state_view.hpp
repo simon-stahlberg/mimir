@@ -17,9 +17,10 @@ namespace mimir {
  * Interface class
 */
 template<typename Derived>
+requires HasConfig<Derived>
 class StateViewBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTagType;
+    using C = typename TypeTraits<Derived>::Config;
 
     StateViewBase() = default;
     friend Derived;
@@ -43,16 +44,18 @@ public:
  * - Grounded in grounded/state_view.hpp
  * - Lifted in lifted/state_view.hpp
 */
-template<IsConfig C>
+template<typename C>
+requires IsConfig<C>
 class View<State<C>> : public ViewBase<View<State<C>>>, public StateViewBase<View<State<C>>> { };
 
 
 /**
  * Type traits
 */
-template<IsConfig C>
+template<typename C>
+requires IsConfig<C>
 struct TypeTraits<View<State<C>>> {
-    using ConfigTagType = C;
+    using Config = C;
 };
 
 

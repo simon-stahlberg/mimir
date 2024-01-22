@@ -20,9 +20,10 @@ using state_id_type = uint32_t;
  * Interface class
 */
 template<typename Derived>
+requires HasConfig<Derived>
 class StateBuilderBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTagType;
+    using C = typename TypeTraits<Derived>::Config;
 
     StateBuilderBase() = default;
     friend Derived;
@@ -37,18 +38,20 @@ public:
 
 
 /**
- * Implementation class
+ * General implementation class
 */
-template<IsConfig C>
+template<typename C>
+requires IsConfig<C>
 class Builder<State<C>> : public BuilderBase<Builder<State<C>>>, public StateBuilderBase<Builder<State<C>>> { };
 
 
 /**
  * Type traits.
 */
-template<IsConfig C>
+template<typename C>
+requires IsConfig<C>
 struct TypeTraits<Builder<State<C>>> {
-    using ConfigTagType = C;
+    using Config = C;
 };
 
 

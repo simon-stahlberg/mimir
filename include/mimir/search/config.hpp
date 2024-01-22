@@ -24,7 +24,7 @@ template<typename C>
 concept IsConfig = std::is_same_v<C, Grounded> || std::is_same_v<C, Lifted>;
 
 template<typename T>
-concept hasConfig = requires {
+concept HasConfig = requires {
     // Check that the type trait was defined
     typename TypeTraits<T>::Config;
     // Check that the type trait is a config

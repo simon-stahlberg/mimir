@@ -20,9 +20,10 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
+requires HasConfig<Derived>
 class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTagType;
+    using C = typename TypeTraits<Derived>::Config;
 
     SuccessorStateGeneratorBase() = default;
     friend Derived;
@@ -54,16 +55,18 @@ public:
  * - Grounded in grounded/successor_state_generator.hpp
  * - Lifted in lifted/successor_state_generator.hpp
 */
-template<IsConfig C>
+template<typename C>
+requires IsConfig<C>
 class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };
 
 
 /**
  * Type traits
 */
-template<IsConfig C>
+template<typename C>
+requires IsConfig<C>
 struct TypeTraits<SuccessorStateGenerator<C>> {
-    using ConfigTagType = C;
+    using Config = C;
 };
 
 }  // namespace mimir

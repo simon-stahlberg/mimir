@@ -43,10 +43,10 @@ public:
  * Implementation class
  *
  * We provide specializations for
- * - PriorityQueueOpenListTag, a priority based open list in openlists/priority_queue.hpp
+ * - PriorityQueue, a priority based open list in openlists/priority_queue.hpp
 */
-template<typename OpenListTag>
-class OpenList : public OpenListBase<OpenList<OpenListTag>> { };
+template<typename T>
+class OpenList : public OpenListBase<OpenList<T>> { };
 
 }  // namespace mimir
 

@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
 
 #include "config.hpp"
-#include "search_node_tag.hpp"
+#include "search_node.hpp"
 #include "search_node_view.hpp"
 #include "search_node_builder.hpp"
 #include "type_traits.hpp"
@@ -29,7 +29,7 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
  * Interface class.
 */
 template<typename Derived>
-requires hasConfig<Derived>
+requires HasConfig<Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
     using C = typename TypeTraits<Derived>::Config;
@@ -38,7 +38,7 @@ private:
         : m_problem(problem)
         , m_state_repository(SuccessorStateGenerator<C>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_search_nodes(AutomaticVector(Builder<SearchNodeTag<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
+        , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
 
     friend Derived;
 
@@ -50,7 +50,7 @@ private:
     SuccessorStateGenerator<C> m_state_repository;
     View<State<C>> m_initial_state;
     ApplicableActionGenerator<C> m_successor_generator;
-    AutomaticVector<SearchNodeTag<C>> m_search_nodes;
+    AutomaticVector<SearchNode<C>> m_search_nodes;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {

@@ -36,7 +36,7 @@ private:
     friend class StateViewBase<View<State<Lifted>>>;
 
 public:
-    /// @brief Create a view on a SearchNodeTag.
+    /// @brief Create a view on a SearchNode.
     explicit View(char* data) : ViewBase<View<State<Lifted>>>(data) { }
 };
 

@@ -9,7 +9,9 @@ namespace mimir {
 /**
  * ID class
 */
-template<IsConfig C> class SearchNodeTag { };
+template<typename C>
+requires IsConfig<C>
+class SearchNode { };
 
 
 } // namespace mimir

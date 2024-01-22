@@ -12,14 +12,14 @@ namespace mimir
  * ID class
 */
 template<typename T>
-struct PriorityQueueOpenListTag { };
+struct PriorityQueue { };
 
 
 /**
  * Implementation class
 */
 template<typename T>
-class OpenList<PriorityQueueOpenListTag<T>> : public OpenListBase<OpenList<PriorityQueueOpenListTag<T>>> {
+class OpenList<PriorityQueue<T>> : public OpenListBase<OpenList<PriorityQueue<T>>> {
     // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
@@ -38,12 +38,12 @@ private:
         return priority_queue_.size();
     }
 
-    friend class OpenListBase<OpenList<PriorityQueueOpenListTag<T>>>;
+    friend class OpenListBase<OpenList<PriorityQueue<T>>>;
 };
 
 
 template<typename T>
-struct TypeTraits<OpenList<PriorityQueueOpenListTag<T>>> {
+struct TypeTraits<OpenList<PriorityQueue<T>>> {
     using ValueType = T;
 };
 

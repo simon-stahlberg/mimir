@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_SEARCH_NODE_BUILDER_HPP_
 
 #include "config.hpp"
-#include "search_node_tag.hpp"
+#include "search_node.hpp"
 #include "lifted/state_view.hpp"
 #include "grounded/state_view.hpp"
 #include "type_traits.hpp"
@@ -25,9 +25,10 @@ using g_value_type = int;
  * Interface class
 */
 template<typename Derived>
+requires HasConfig<Derived>
 class SearchNodeBuilderBase {
 private:
-    using C = typename TypeTraits<Derived>::ConfigTagType;
+    using C = typename TypeTraits<Derived>::Config;
 
     SearchNodeBuilderBase() = default;
     friend Derived;
@@ -53,8 +54,9 @@ public:
  * | data_size_type | status | g_value | parent_state | creating_action |
  * |________________|________|_________|______________|_________________|
 */
-template<IsConfig C>
-class Builder<SearchNodeTag<C>> : public BuilderBase<Builder<SearchNodeTag<C>>>, public SearchNodeBuilderBase<Builder<SearchNodeTag<C>>> {
+template<typename C>
+requires IsConfig<C>
+class Builder<SearchNode<C>> : public BuilderBase<Builder<SearchNode<C>>>, public SearchNodeBuilderBase<Builder<SearchNode<C>>> {
 private:
     SearchNodeStatus m_status;
     int m_g_value;
@@ -73,7 +75,7 @@ private:
         this->m_buffer.write(m_creating_action);
     }
 
-    friend class BuilderBase<Builder<SearchNodeTag<C>>>;
+    friend class BuilderBase<Builder<SearchNode<C>>>;
 
     /* Implement SearchNodeBuilderBase interface */
     void set_status_impl(SearchNodeStatus status) { m_status = status; }
@@ -81,7 +83,7 @@ private:
     void set_parent_state_impl(View<State<C>> parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
 
-    friend class SearchNodeBuilderBase<Builder<SearchNodeTag<C>>>;
+    friend class SearchNodeBuilderBase<Builder<SearchNode<C>>>;
 
 public:
     Builder() : m_parent_state(View<State<C>>(nullptr)) { }
@@ -98,8 +100,8 @@ public:
  * Type traits.
 */
 template<IsConfig C>
-struct TypeTraits<Builder<SearchNodeTag<C>>> {
-    using ConfigTagType = C;
+struct TypeTraits<Builder<SearchNode<C>>> {
+    using Config = C;
 };
 
 
