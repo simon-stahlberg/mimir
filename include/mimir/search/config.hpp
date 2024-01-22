@@ -31,6 +31,14 @@ concept HasConfig = requires {
     requires IsConfig<typename TypeTraits<T>::Config>;
 };
 
+template<typename T1, typename T2>
+concept HaveEqualConfig = requires {
+    requires HasConfig<T1>;
+    requires HasConfig<T2>;
+    requires std::is_same_v<typename TypeTraits<T1>::Config, typename TypeTraits<T2>::Config>;
+};
+
+
 
 }  // namespace mimir
 

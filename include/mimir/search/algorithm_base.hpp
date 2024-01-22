@@ -68,6 +68,14 @@ public:
 template<typename T>
 class Algorithm : public AlgorithmBase<Algorithm<T>> { };
 
+
+/**
+ * Concepts
+*/
+template<class Derived> 
+concept IsAlgorithm = std::derived_from<Derived, AlgorithmBase<Derived>>;
+
+
 }  // namespace mimir
 
 #endif  // MIMIR_SEARCH_ALGORITHM_BASE_HPP_

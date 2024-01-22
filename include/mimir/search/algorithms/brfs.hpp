@@ -22,7 +22,6 @@ struct BrFS { };
  * Spezialized implementation class.
 */
 template<typename C>
-requires IsConfig<C>
 class Algorithm<BrFS<C>> : public AlgorithmBase<Algorithm<BrFS<C>>> {
 private:
     // Implement configuration independent functionality.

@@ -39,8 +39,16 @@ public:
 template<typename C>
 requires IsConfig<C>
 struct TypeTraits<Heuristic<Zero<C>>> {
+    using Tag = Zero<C>;
     using Config = C;
 };
+
+template<typename C>
+requires IsConfig<C>
+struct TypeTraits<Zero<C>> {
+    using Config = C;
+};
+
 
 
 /**

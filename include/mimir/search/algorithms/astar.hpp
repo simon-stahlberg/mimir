@@ -12,19 +12,18 @@ namespace mimir
 /**
  * ID class.
 */
-template<typename C, template<typename> typename H>
-requires IsConfig<C> && IsHeuristic<H<C>>
+template<typename C, typename H>
+requires IsConfig<C> && IsHeuristic<H>
 struct AStar { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<typename C, template<typename> typename H>
-requires IsConfig<C> && IsHeuristic<H<C>>
+template<typename C, typename H>
 class Algorithm<AStar<C, H>> : public AlgorithmBase<Algorithm<AStar<C, H>>> {
 private:
-    H<C> m_heuristic;
+    H m_heuristic;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement
@@ -36,14 +35,14 @@ private:
 public:
     Algorithm(const Problem& problem)
         : AlgorithmBase<Algorithm<AStar<C, H>>>(problem)
-        , m_heuristic(H<C>(problem)) { }
+        , m_heuristic(problem) { }
 };
 
 
 /**
  * Type traits.
 */
-template<typename C, template<typename> class H>
+template<typename C, typename H>
 requires IsConfig<C>
 struct TypeTraits<Algorithm<AStar<C, H>>> {
     using Config = C;
