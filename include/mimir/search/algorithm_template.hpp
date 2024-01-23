@@ -44,7 +44,7 @@ private:
     Problem m_problem;
     DefaultSuccessorStateGenerator<P>  m_state_repository;
     View<State<P>> m_initial_state;
-    ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<AG, P>> m_successor_generator;
+    ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<AG, P>, P> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
 
 public:

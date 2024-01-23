@@ -15,11 +15,9 @@ namespace mimir
 /**
  * Interface class.
 */
-template<typename Derived>
-class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
+template<typename Derived, IsPlanningModeTag P>
+class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived, P>> {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
-
     ApplicableActionGeneratorBase() = default;
     friend Derived;
 
@@ -69,8 +67,8 @@ concept IsApplicableActionGeneratorInstantiation = requires {
  *
  * Spezialize it with your derived tag to provide your own implementation of an applicable action generator.
 */
-template<IsApplicableActionGeneratorInstantiation A>
-class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<A>> { };
+template<IsApplicableActionGeneratorInstantiation A, IsPlanningModeTag P>
+class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<A, P>, P> { };
 
 
 
