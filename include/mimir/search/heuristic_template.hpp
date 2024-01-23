@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_HEURISTIC_HPP_
-#define MIMIR_SEARCH_HEURISTIC_HPP_
+#ifndef MIMIR_SEARCH_HEURISTIC_TEMPLATE_HPP_
+#define MIMIR_SEARCH_HEURISTIC_TEMPLATE_HPP_
 
 #include "grounded/state_view.hpp"
 #include "lifted/state_view.hpp"
@@ -58,4 +58,4 @@ class Heuristic : public HeuristicBase<Heuristic<T>> { };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_HEURISTIC_HPP_
+#endif  // MIMIR_SEARCH_HEURISTIC_TEMPLATE_HPP_

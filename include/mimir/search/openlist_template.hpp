@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_OPEN_LIST_HPP_
-#define MIMIR_SEARCH_OPEN_LIST_HPP_
+#ifndef MIMIR_SEARCH_OPENLIST_TEMPLATE_HPP_
+#define MIMIR_SEARCH_OPENLIST_TEMPLATE_HPP_
 
 #include "type_traits.hpp"
 
@@ -64,4 +64,4 @@ class OpenList : public OpenListBase<OpenList<T>> { };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_OPEN_LIST_HPP_
+#endif  // MIMIR_SEARCH_OPENLIST_TEMPLATE_HPP_

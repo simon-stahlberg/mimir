@@ -1,7 +1,7 @@
 #include <mimir/formalism/problem/declarations.hpp>
 
-#include <mimir/search/config.hpp>
-#include <mimir/search/algorithms/brfs.hpp>
+#include <mimir/search/algorithms.hpp>
+#include <mimir/search/heuristics.hpp>
 
 #include <gtest/gtest.h>
 

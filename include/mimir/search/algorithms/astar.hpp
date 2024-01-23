@@ -1,9 +1,9 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
-#include "../algorithm_base.hpp"
+#include "../algorithm_template.hpp"
 
-#include "../heuristic.hpp"
+#include "../heuristics.hpp"
 
 
 namespace mimir

@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
-#include "../algorithm_base.hpp"
+#include "../algorithm_template.hpp"
 #include "../state_view.hpp"
 
 #include <deque>

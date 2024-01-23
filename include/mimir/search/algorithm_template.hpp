@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ALGORITHM_BASE_HPP_
-#define MIMIR_SEARCH_ALGORITHM_BASE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHM_TEMPLATE_HPP_
+#define MIMIR_SEARCH_ALGORITHM_TEMPLATE_HPP_
 
 #include "config.hpp"
 #include "search_node.hpp"
@@ -85,4 +85,4 @@ class Algorithm : public AlgorithmBase<Algorithm<T>> { };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_ALGORITHM_BASE_HPP_
+#endif  // MIMIR_SEARCH_ALGORITHM_TEMPLATE_HPP_

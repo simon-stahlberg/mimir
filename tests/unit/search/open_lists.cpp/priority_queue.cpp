@@ -1,5 +1,4 @@
-#include <mimir/search/config.hpp>
-#include <mimir/search/openlists/priority_queue.hpp>
+#include <mimir/search/openlists.hpp>
 
 #include <gtest/gtest.h>
 

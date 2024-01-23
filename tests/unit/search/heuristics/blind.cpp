@@ -1,5 +1,4 @@
-#include <mimir/search/config.hpp>
-#include <mimir/search/heuristics/blind.hpp>
+#include <mimir/search/heuristics.hpp>
 
 #include <gtest/gtest.h>
 

@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 #define MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 
-#include "../openlist.hpp"
+#include "../openlist_template.hpp"
 
 #include <queue>
 
