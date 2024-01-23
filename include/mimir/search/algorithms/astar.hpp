@@ -12,7 +12,7 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P, IsHeuristicTag H>
+template<IsHeuristicTag H>
 struct AStar : public AlgorithmBaseTag { };
 
 
@@ -20,7 +20,7 @@ struct AStar : public AlgorithmBaseTag { };
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG>
-class Algorithm<AStar<P, H>, AG> : public AlgorithmBase<Algorithm<AStar<P, H>, AG>, AG> {
+class Algorithm<AStar<H>, P, AG> : public AlgorithmBase<Algorithm<AStar<H>, P, AG>, P, AG> {
 private:
     Heuristic<HeuristicInstantiation<H, P>> m_heuristic;
 
@@ -30,21 +30,12 @@ private:
     }
 
     // Correct friend declaration
-    friend class AlgorithmBase<Algorithm<AStar<P, H>, AG>, AG>;
+    friend class AlgorithmBase<Algorithm<AStar<H>, P, AG>, P, AG>;
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AStar<P, H>, AG>, AG>(problem)
+        : AlgorithmBase<Algorithm<AStar<H>, P, AG>, P, AG>(problem)
         , m_heuristic(problem) { }
-};
-
-
-/**
- * Type traits.
-*/
-template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG>
-struct TypeTraits<Algorithm<AStar<P, H>, AG>> {
-    using PlanningMode = P;
 };
 
 

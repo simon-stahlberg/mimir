@@ -13,7 +13,6 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P>
 struct BrFS : public AlgorithmBaseTag { };
 
 
@@ -21,7 +20,7 @@ struct BrFS : public AlgorithmBaseTag { };
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG>
-class Algorithm<BrFS<P>, AG> : public AlgorithmBase<Algorithm<BrFS<P>, AG>, AG> {
+class Algorithm<BrFS, P, AG> : public AlgorithmBase<Algorithm<BrFS, P, AG>, P, AG> {
 private:
     // Implement configuration independent functionality.
     std::deque<View<State<P>>> m_queue;
@@ -50,20 +49,11 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<Algorithm<BrFS<P>, AG>, AG>;
+    friend class AlgorithmBase<Algorithm<BrFS, P, AG>, P, AG>;
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<BrFS<P>, AG>, AG>(problem) { }
-};
-
-
-/**
- * Type traits.
-*/
-template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG>
-struct TypeTraits<Algorithm<BrFS<P>, AG>> {
-    using PlanningMode = P;
+        : AlgorithmBase<Algorithm<BrFS, P, AG>, P, AG>(problem) { }
 };
 
 

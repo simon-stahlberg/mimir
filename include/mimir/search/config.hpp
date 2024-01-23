@@ -31,18 +31,6 @@ concept HasPlanningModeTag = requires {
     requires IsPlanningModeTag<typename TypeTraits<Tag>::PlanningMode>;
 };
 
-template<typename Tag1, typename Tag2>
-concept HaveEqualPlanningModeTags =
-    // Test all 4 cases where T1 or T2 can directly be a config or ae other types which must have a nested config.
-    (IsPlanningModeTag<Tag1> && IsPlanningModeTag<Tag2> && std::is_same_v<Tag1, Tag2>) ||
-    (IsPlanningModeTag<Tag1> && requires { typename TypeTraits<Tag2>::PlanningMode; requires std::is_same_v<Tag1, typename TypeTraits<Tag2>::PlanningMode>; }) ||
-    (IsPlanningModeTag<Tag2> && requires { typename TypeTraits<Tag1>::PlanningMode; requires std::is_same_v<typename TypeTraits<Tag1>::PlanningMode, Tag2>; }) ||
-    (requires {
-        requires HasPlanningModeTag<Tag1>;
-        requires HasPlanningModeTag<Tag2>;
-        requires std::is_same_v<typename TypeTraits<Tag1>::PlanningMode, typename TypeTraits<Tag2>::PlanningMode>;
-    });
-
 
 }  // namespace mimir
 
