@@ -29,7 +29,7 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 template<typename Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
     using AG = typename TypeTraits<Derived>::ApplicableActionGeneratorTag;
     using SG = typename TypeTraits<Derived>::SuccessorStateGeneratorTag;
 

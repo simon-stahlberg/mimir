@@ -63,7 +63,7 @@ public:
 */
 template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
 struct TypeTraits<Algorithm<BrFSTag<P, AG, SG>>> {
-    using PlanningMode = P;
+    using PlanningModeTag = P;
     using ApplicableActionGeneratorTag = AG;
     using SuccessorStateGeneratorTag = SG;
 };

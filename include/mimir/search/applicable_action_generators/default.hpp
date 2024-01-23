@@ -25,7 +25,7 @@ using DefaultApplicableActionGenerator = ApplicableActionGenerator<ApplicableAct
 */
 template<IsPlanningModeTag P>
 struct TypeTraits<DefaultApplicableActionGenerator<P>> {
-    using PlanningMode = P;
+    using PlanningModeTag = P;
 };
 
 

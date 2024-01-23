@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;

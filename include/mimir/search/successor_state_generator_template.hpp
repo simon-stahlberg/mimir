@@ -22,7 +22,7 @@ namespace mimir
 template<typename Derived>
 class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
 
     SuccessorStateGeneratorBase() = default;
     friend Derived;

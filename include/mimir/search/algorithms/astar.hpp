@@ -44,7 +44,7 @@ public:
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
 struct TypeTraits<Algorithm<AStarTag<P, H, AG, SG>>> {
-    using PlanningMode = P;
+    using PlanningModeTag = P;
     using HeuristicTag = H;
     using ApplicableActionGeneratorTag = AG;
     using SuccessorStateGeneratorTag = SG;

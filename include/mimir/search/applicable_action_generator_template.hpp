@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
 
     ApplicableActionGeneratorBase() = default;
     friend Derived;

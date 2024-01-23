@@ -25,7 +25,7 @@ using DefaultSuccessorStateGenerator = SuccessorStateGenerator<SuccessorStateGen
 */
 template<IsPlanningModeTag P>
 struct TypeTraits<DefaultSuccessorStateGenerator<P>> {
-    using PlanningMode = P;
+    using PlanningModeTag = P;
 };
 
 
