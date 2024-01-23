@@ -22,7 +22,7 @@ struct AStarTag : public AlgorithmBaseTag { };
 template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG>
 class Algorithm<AStarTag<H>, P, AG> : public AlgorithmBase<Algorithm<AStarTag<H>, P, AG>, P, AG> {
 private:
-    Heuristic<HeuristicInstantiation<H, P>> m_heuristic;
+    Heuristic<HeuristicInstantiation<H, P>, P> m_heuristic;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement

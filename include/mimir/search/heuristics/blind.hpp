@@ -17,26 +17,16 @@ struct BlindTag : public HeuristicBaseTag { };
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P>
-class Heuristic<HeuristicInstantiation<BlindTag,P>> : public HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>>> {
+class Heuristic<HeuristicInstantiation<BlindTag,P>, P> : public HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>, P>, P> {
 private:
     double compute_heuristic_impl(const View<State<P>>& state) {
         return 0.;
     }
 
-    friend class HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>>>;
+    friend class HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>, P>, P>;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>>>(problem) { }
-};
-
-
-/**
- * Type traits.
-*/
-template<IsPlanningModeTag P>
-struct TypeTraits<Heuristic<HeuristicInstantiation<BlindTag,P>>> {
-    using HeuristicTag = BlindTag;
-    using PlanningModeTag = P;
+    Heuristic(Problem problem) : HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>, P>, P>(problem) { }
 };
 
 

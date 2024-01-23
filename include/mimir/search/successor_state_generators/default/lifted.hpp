@@ -8,15 +8,10 @@ namespace mimir
 {
 
 /**
- * No ID class since we have all tags.
-*/
-
-
-/**
  * Implementation class
 */
 template<>
-class SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>>> {
+class SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>, LiftedTag> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>, LiftedTag>, LiftedTag> {
 private:
     [[nodiscard]] View<State<LiftedTag>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
@@ -28,13 +23,13 @@ private:
     }
 
     [[nodiscard]] View<State<LiftedTag>> get_or_create_successor_state_impl(View<State<LiftedTag>> state, GroundAction action) {
-        // create a lifted state.
+        // create a grounded state.
         // TODO (Dominik): implement
         return View<State<LiftedTag>>(nullptr);
     }
 
     // Give access to the private interface implementations.
-    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>>>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>, LiftedTag>, LiftedTag>;
 };
 
 }  // namespace mimir
