@@ -37,32 +37,44 @@ class CMakeBuild(build_ext):
             f"-DBUILD_PROFILING=OFF",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE=Release",  # Is not used with MSVC, but causes no harm
+            f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
         ]
 
-        # Build package
+        # Build dependencies
         subprocess.run(
-            ["cmake", ext.sourcedir, *cmake_args], cwd=temp_directory, check=True
+            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs"], cwd=temp_directory, check=True
         )
 
         subprocess.run(
-            ["cmake", "--build", ".", "--config", "Release"], cwd=temp_directory, check=True  # Is used with MSVC
+            ["cmake", "--build", f"{str(temp_directory)}/dependencies/build", "-j16"]
+        )
+
+        # Build package
+        subprocess.run(
+            ["cmake", "-S", ext.sourcedir, "-B", f"{str(temp_directory)}/build", *cmake_args], cwd=temp_directory, check=True
+        )
+
+        subprocess.run(
+            ["cmake", "--build", f"{str(temp_directory)}/build", "-j16", "--config", "Release"], cwd=temp_directory, check=True  # --config Release is is used with MSVC
         )
 
         # Copy relevant files to output directory
 
+        lib_directory = (temp_directory / "build") / "lib"
+
         # Copy stub files
-        if Path.exists(temp_directory / "pymimir-stubs"):
-            shutil.copytree(temp_directory / "pymimir-stubs", output_directory / "pymimir-stubs")
-        elif Path.exists(temp_directory / "pymimir.pyi"):
-            shutil.copy(temp_directory / "pymimir.pyi", output_directory / "pymimir.pyi")
+        if Path.exists(lib_directory / "pymimir-stubs"):
+            shutil.copytree(lib_directory / "pymimir-stubs", output_directory / "pymimir-stubs")
+        elif Path.exists(lib_directory / "pymimir.pyi"):
+            shutil.copy(lib_directory / "pymimir.pyi", output_directory / "pymimir.pyi")
 
         # Copy the shared object file
-        if Path.exists(temp_directory / "pymimir.so"):
-            shutil.copy(temp_directory / "pymimir.so", output_directory / "pymimir.so")
-        elif Path.exists(temp_directory / "Release" / "pymimir.dll"):
-            shutil.copy(temp_directory / "Release" / "pymimir.dll", output_directory / "pymimir.pyd")
+        if Path.exists(lib_directory / "pymimir.so"):
+            shutil.copy(lib_directory / "pymimir.so", output_directory / "pymimir.so")
+        elif Path.exists(lib_directory / "Release" / "pymimir.dll"):
+            shutil.copy(lib_directory / "Release" / "pymimir.dll", output_directory / "pymimir.pyd")
         else:
-            raise FileNotFoundError(f"could not find 'pymimir.so' or 'pymimir.dll' ({temp_directory})")
+            raise FileNotFoundError(f"could not find 'pymimir.so' or 'pymimir.dll' ({lib_directory})")
 
 
 setup(

@@ -1,0 +1,46 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+
+##############################################################
+# CMake modules and macro files
+##############################################################
+
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/configure_boost.cmake")
+
+
+##############################################################
+# Dependency Handling
+##############################################################
+
+# -----
+# Boost
+# -----
+
+# Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
+configure_boost()
+find_dependency(Boost ${BOOST_MIN_VERSION} REQUIRED PATHS ${PACKAGE_PREFIX_DIR} NO_DEFAULT_PATH)
+
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")
+endif()
+
+
+############
+# Components
+############
+
+set(_mimir_supported_components core)
+
+foreach(_comp ${mimir_FIND_COMPONENTS})
+  if (NOT _comp IN_LIST _mimir_supported_components)
+    set(mimir_FOUND False)
+    set(mimir_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+  endif()
+  include("${CMAKE_CURRENT_LIST_DIR}/mimir${_comp}Targets.cmake")
+endforeach()
+
+get_filename_component(MIMIR_CONFIG_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+message(STATUS "Found mimir: ${MIMIR_CONFIG_DIR} (found version ${mimir_VERSION})")

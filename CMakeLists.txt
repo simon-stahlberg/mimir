@@ -1,24 +1,22 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.21)
 project(mimir VERSION 0.1.1)
 
-# -------------
-# Build Targets
-# -------------
-option(BUILD_LIBMIMIR "Build" ON)
-option(BUILD_PYMIMIR "Build" OFF)
-option(BUILD_TESTS "Build" ON)
-option(BUILD_PROFILING "Build" ON)
 
-# ---------------
+##############################################################
+# Build Targets
+##############################################################
+
+option(BUILD_PYMIMIR "Build" OFF)
+option(BUILD_TESTS "Build" OFF)
+option(BUILD_PROFILING "Build" OFF)
+
+
+##############################################################
 # Common Settings
-# ---------------
-find_package(Boost REQUIRED)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+##############################################################
+
+# make cache variables for install destinations
+include(GNUInstallDirs)
 
 if(MSVC)
     if(NOT CMAKE_BUILD_TYPE)
@@ -37,118 +35,116 @@ endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(include)
 
-file(GLOB_RECURSE MIMIR_SRC_FILES "src/*.cpp" "src/**/*.cpp")
-file(GLOB_RECURSE MIMIR_TEST_FILES "test/*.cpp" "test/**/*.cpp")
+##############################################################
+# CMake modules and macro files
+##############################################################
+
+list(APPEND CMAKE_MODULE_PATH
+  "${PROJECT_SOURCE_DIR}/cmake"
+)
+include("configure_boost")
+include("configure_ccache")
+
+
+##############################################################
+# CCache
+##############################################################
+
+# CCache
+configure_ccache()
+
+
+##############################################################
+# Dependency Handling
+##############################################################
+
+# set(CMAKE_FIND_DEBUG_MODE TRUE)
+
+# Boost
+# Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
+configure_boost()
+find_package(Boost ${BOOST_MIN_VERSION} REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")
+endif()
+
+
+##############################################################
+# Add library and executable targets
+##############################################################
 
 # ------------
 # Target Mimir
 # ------------
-if(BUILD_LIBMIMIR)
-    add_library(mimir STATIC lib/mimir.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET mimir PROPERTY CXX_STANDARD 17)
-
-    target_include_directories(mimir PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    )
-
-    install(TARGETS mimir
-        EXPORT MimirTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
-    )
-
-    install(DIRECTORY include/ DESTINATION include)
-    export(TARGETS mimir NAMESPACE mimir:: FILE MimirConfig.cmake)
-    include(CMakePackageConfigHelpers)
-
-    write_basic_package_version_file(
-        "MimirConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
-    )
-
-    install(
-        EXPORT MimirTargets
-        FILE MimirTargets.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
-
-    install(
-        EXPORT MimirTargets
-        FILE MimirConfig.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
-
-    install(
-        EXPORT MimirTargets
-        FILE MimirConfigVersion.cmake
-        NAMESPACE mimir::
-        DESTINATION lib/cmake/mimir
-    )
-endif()
+add_subdirectory(src)
 
 # -------------------
 # Target Python Mimir
 # -------------------
 if(BUILD_PYMIMIR)
-    find_package(Python REQUIRED)
-    find_package(PythonLibs REQUIRED)
-    set(PYTHON_EXECUTABLE ${Python_EXECUTABLE})
-    include_directories(${PYTHON_INCLUDE_DIRS})
-    add_library(pymimir MODULE lib/pymimir.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET pymimir PROPERTY CXX_STANDARD 17)
-    set_target_properties(pymimir PROPERTIES PREFIX "")
-    target_link_libraries(pymimir ${PYTHON_LIBRARIES})
-
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_compile_definitions(pymimir PRIVATE NDEBUG)
-    endif()
-
-    if(MSVC)
-        # Add MSVC specific library linking here
-    else()
-        target_link_libraries(pymimir -lstdc++fs)
-        # These settings seem to cause issues with torch.
-        # target_link_libraries(pymimir -static-libstdc++ -static-libgcc)
-    endif()
-
-    # Add pybind11 include directory
-    set(PYBIND11_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/extern/pybind11/include)
-    target_include_directories(pymimir PRIVATE ${PYBIND11_INCLUDE_DIR})
-
-    # Generate pyi files, add generate_pyi_files dependent on pymimir
-    add_custom_target(generate_pyi_files ALL
-        COMMENT "Generating .pyi files"
-        COMMAND ${PYTHON_EXECUTABLE} -m pybind11_stubgen --output-dir ${CMAKE_CURRENT_BINARY_DIR} pymimir
-    )
-
-    add_dependencies(generate_pyi_files pymimir)
+    add_subdirectory(lib)
 endif()
 
 # ----------------
 # Target Profiling
 # ----------------
 if(BUILD_PROFILING)
-    add_executable(mimir-profile bin/profiling.cpp ${MIMIR_SRC_FILES})
-    set_property(TARGET mimir-profile PROPERTY CXX_STANDARD 17)
+    add_subdirectory(benchmark)
 endif()
 
 # -----------
 # Target Test
 # -----------
 if(BUILD_TESTS)
-    find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
-    include(GoogleTest)
-    add_executable(mimir-test ${MIMIR_TEST_FILES} ${MIMIR_SRC_FILES})
-    target_link_libraries(mimir-test ${GTEST_BOTH_LIBRARIES} pthread)
-    gtest_discover_tests(mimir-test)
+    add_subdirectory(tests)
 endif()
+
+
+###########
+# Install #
+###########
+
+# Install header files
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+# Install cmake scripts
+install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir/cmake"
+)
+
+
+###########
+# Exports #
+###########
+
+# https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
+
+include(CMakePackageConfigHelpers)
+
+# Generate the version file for the config file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
+    VERSION ${mimir_VERSION}
+    COMPATIBILITY ExactVersion
+)
+
+# Create config file
+# https://cmake.org/cmake/help/book/mastering-cmake/cmake/Help/guide/importing-exporting/index.html
+# https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html#generating-a-package-configuration-file
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+# Install config files
+install(
+    FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/mimirConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mimir"
+)

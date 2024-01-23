@@ -26,6 +26,7 @@ libtorch*
 
 # Build artefacts
 build
+dependencies/installs
 out
 *.sif
 
