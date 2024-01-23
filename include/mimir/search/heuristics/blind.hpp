@@ -35,8 +35,8 @@ public:
 */
 template<IsPlanningModeTag P>
 struct TypeTraits<Heuristic<HeuristicInstantiation<BlindTag,P>>> {
-    using Heuristic = BlindTag;
-    using PlanningMode = P;
+    using HeuristicTag = BlindTag;
+    using PlanningModeTag = P;
 };
 
 

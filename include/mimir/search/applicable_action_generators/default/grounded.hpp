@@ -11,14 +11,14 @@ namespace mimir
  * Fully specialized implementation class.
 */
 template<>
-class ApplicableActionGenerator<DefaultApplicableActionGeneratorTag<GroundedTag>> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<DefaultApplicableActionGeneratorTag<GroundedTag>>> {
+class ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<DefaultApplicableActionGeneratorTag, GroundedTag>> : public ApplicableActionGeneratorBase<ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<DefaultApplicableActionGeneratorTag, GroundedTag>>> {
     // Implement configuration specific functionality.
 private:
     void generate_applicable_actions_impl(View<State<GroundedTag>> state, GroundActionList& out_applicable_actions) {
     }
 
     // Give access to the private interface implementations.
-    friend class ApplicableActionGeneratorBase<ApplicableActionGenerator<DefaultApplicableActionGeneratorTag<GroundedTag>>>;
+    friend class ApplicableActionGeneratorBase<ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<DefaultApplicableActionGeneratorTag, GroundedTag>>>;
 };
 
 

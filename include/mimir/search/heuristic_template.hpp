@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
@@ -48,18 +48,20 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 
 
 /**
- * Make heuristics accept a PlanningModeTag
+ * Make heuristics accept a PlanningModeTag.
+ * This makes the template instiation less constraint
+ * and we can use the PlanningModeTag of the actual search algorithm.
 */
 template<IsHeuristicTag H, IsPlanningModeTag P>
 struct HeuristicInstantiation {
-    using PlanningMode = P;
     using HeuristicTag = H;
+    using PlanningModeTag = P;
 };
 
 template<typename T>
 concept IsHeuristicInstantiation = requires {
-    typename T::PlanningMode;
     typename T::HeuristicTag;
+    typename T::PlanningModeTag;
 };
 
 
