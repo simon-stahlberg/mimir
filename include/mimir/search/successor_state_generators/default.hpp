@@ -10,7 +10,6 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P>
 class DefaultSuccessorStateGeneratorTag : public SuccessorStateGeneratorBaseTag {};
 
 
@@ -18,7 +17,7 @@ class DefaultSuccessorStateGeneratorTag : public SuccessorStateGeneratorBaseTag 
  * Aliases
 */
 template<IsPlanningModeTag P>
-using DefaultSuccessorStateGenerator = SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<P>, P>;
+using DefaultSuccessorStateGenerator = SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, P>, P>;
 
 
 

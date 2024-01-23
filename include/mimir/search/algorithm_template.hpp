@@ -26,12 +26,12 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 /**
  * Interface class.
 */
-template<typename Derived, IsPlanningModeTag P, IsApplicableActionGeneratorTag AG>
-class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived, P, AG>> {
+template<typename Derived, IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived, P, AG, SG>> {
 private:
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(DefaultSuccessorStateGenerator<P>())
+        , m_state_repository(SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>, P>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_search_nodes(AutomaticVector(Builder<SearchNode<P>>(SearchNodeStatus::CLOSED, 0, View<State<P>>(nullptr), nullptr))) { }
 
@@ -42,7 +42,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    DefaultSuccessorStateGenerator<P>  m_state_repository;
+    SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>, P> m_state_repository;
     View<State<P>> m_initial_state;
     ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<AG, P>, P> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
@@ -74,8 +74,8 @@ concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
  *
  * Spezialize it with your derived tag to provide your own implementation of an algorithm.
 */
-template<IsAlgorithmTag A, IsPlanningModeTag P, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag>
-class Algorithm : public AlgorithmBase<Algorithm<A, P, AG>, P, AG> { };
+template<IsAlgorithmTag A, IsPlanningModeTag P, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag, IsSuccessorStateGeneratorTag SG = DefaultSuccessorStateGeneratorTag>
+class Algorithm : public AlgorithmBase<Algorithm<A, P, AG, SG>, P, AG, SG> { };
 
 
 

@@ -19,8 +19,8 @@ struct AStarTag : public AlgorithmBaseTag { };
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG>
-class Algorithm<AStarTag<H>, P, AG> : public AlgorithmBase<Algorithm<AStarTag<H>, P, AG>, P, AG> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+class Algorithm<AStarTag<H>, P, AG, SG> : public AlgorithmBase<Algorithm<AStarTag<H>, P, AG>, P, AG, SG> {
 private:
     Heuristic<HeuristicInstantiation<H, P>, P> m_heuristic;
 
@@ -30,11 +30,11 @@ private:
     }
 
     // Correct friend declaration
-    friend class AlgorithmBase<Algorithm<AStarTag<H>, P, AG>, P, AG>;
+    friend class AlgorithmBase<Algorithm<AStarTag<H>, P, AG, SG>, P, AG, SG>;
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AStarTag<H>, P, AG>, P, AG>(problem)
+        : AlgorithmBase<Algorithm<AStarTag<H>, P, AG, SG>, P, AG, SG>(problem)
         , m_heuristic(problem) { }
 };
 

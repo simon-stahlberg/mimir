@@ -51,12 +51,26 @@ public:
 */
 struct SuccessorStateGeneratorBaseTag {};
 
+template<typename DerivedTag>
+concept IsSuccessorStateGeneratorTag = std::derived_from<DerivedTag, SuccessorStateGeneratorBaseTag>;
+
 
 /**
- * Concepts
+ * Make SuccessorStateGenerator accept a PlanningModeTag.
+ * This makes the template instiation less constraint
+ * and we can use the PlanningModeTag of the actual search algorithm.
 */
-template<typename DerivedTag>
-concept IsSuccessorGeneratorTag = std::derived_from<DerivedTag, SuccessorStateGeneratorBaseTag>;
+template<IsSuccessorStateGeneratorTag SG, IsPlanningModeTag P>
+struct SuccessorStateGeneratorInstantiation {
+    using PlanningModeTag = P;
+    using SuccessorStateGeneratorTag = SG;
+};
+
+template<typename T>
+concept IsSuccessorStateGeneratorInstantiation = requires {
+    typename T::PlanningModeTag;
+    typename T::SuccessorStateGeneratorTag;
+};
 
 
 /**
@@ -64,7 +78,7 @@ concept IsSuccessorGeneratorTag = std::derived_from<DerivedTag, SuccessorStateGe
  *
  * Spezialize it with your derived tag to provide your own implementation of an successor state generator.
 */
-template<IsSuccessorGeneratorTag S, IsPlanningModeTag P>
+template<IsSuccessorStateGeneratorInstantiation S, IsPlanningModeTag P>
 class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<S, P>, P> { };
 
 

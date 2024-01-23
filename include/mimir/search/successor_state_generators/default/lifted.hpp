@@ -11,7 +11,8 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>, LiftedTag> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>, LiftedTag>, LiftedTag> {
+class SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, LiftedTag>, LiftedTag>
+    : public SuccessorStateGeneratorBase<SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, LiftedTag>, LiftedTag>, LiftedTag> {
 private:
     [[nodiscard]] View<State<LiftedTag>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
@@ -29,7 +30,7 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<LiftedTag>, LiftedTag>, LiftedTag>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, LiftedTag>, LiftedTag>, LiftedTag>;
 };
 
 }  // namespace mimir
