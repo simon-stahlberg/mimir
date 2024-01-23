@@ -36,7 +36,7 @@ public:
 
 
 /**
- * ID class. Derived from it to provide your own implementation of a heuristic.
+ * ID class. Derived from it to provide your own implementation of a applicable action generator.
 */
 struct ApplicableActionGeneratorBaseTag {};
 

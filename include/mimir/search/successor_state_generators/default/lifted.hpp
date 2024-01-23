@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_LIFTED_SUCCESSOR_STATE_GENERATOR_HPP_
-#define MIMIR_SEARCH_LIFTED_SUCCESSOR_STATE_GENERATOR_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_LIFTED_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_LIFTED_HPP_
 
-#include "../successor_state_generator.hpp"
+#include "../default.hpp"
 
 
 namespace mimir
@@ -16,7 +16,7 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SuccessorStateGenerator<Lifted> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<Lifted>> {
+class SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<Lifted>> : public SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<Lifted>>> {
 private:
     [[nodiscard]] View<State<Lifted>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
@@ -34,9 +34,9 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<Lifted>>;
+    friend class SuccessorStateGeneratorBase<SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<Lifted>>>;
 };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_LIFTED_SUCCESSOR_STATE_GENERATOR_HPP_
+#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_LIFTED_HPP_

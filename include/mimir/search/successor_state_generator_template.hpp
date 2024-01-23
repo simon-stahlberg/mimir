@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_TEMPLATE_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_TEMPLATE_HPP_
 
 #include "config.hpp"
 #include "grounded/state_view.hpp"
@@ -47,26 +47,26 @@ public:
     }
 };
 
-
 /**
- * Implementation class.
- *
- * We provide specialized implementations for
- * - Grounded in grounded/successor_state_generator.hpp
- * - Lifted in lifted/successor_state_generator.hpp
+ * ID class. Derived from it to provide your own implementation of a successor state generator.
 */
-template<IsPlanningMode P>
-class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<P>> { };
+struct SuccessorStateGeneratorBaseTag {};
 
 
 /**
- * Type traits
+ * Concepts
 */
-template<IsPlanningMode P>
-struct TypeTraits<SuccessorStateGenerator<P>> {
-    using PlanningMode = P;
-};
+template<class DerivedTag>
+concept IsSuccessorGenerator = std::derived_from<DerivedTag, SuccessorStateGeneratorBaseTag>;
+
+
+/**
+ * General implementation class.
+*/
+template<IsSuccessorGenerator S>
+class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<S>> { };
+
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
+#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_TEMPLATE_HPP_

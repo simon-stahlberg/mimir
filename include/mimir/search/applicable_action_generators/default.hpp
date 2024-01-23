@@ -38,4 +38,4 @@ struct TypeTraits<DefaultApplicableActionGenerator<P>> {
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_APPLICABLE_ACTION_GENERATOR_HPP_
+#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_HPP_

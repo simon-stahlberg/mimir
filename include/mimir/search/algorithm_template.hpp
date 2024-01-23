@@ -7,10 +7,9 @@
 #include "search_node_builder.hpp"
 #include "type_traits.hpp"
 #include "applicable_action_generators.hpp"
-#include "grounded/successor_state_generator.hpp"
+#include "successor_state_generators.hpp"
 #include "grounded/state_builder.hpp"
 #include "grounded/state_view.hpp"
-#include "lifted/successor_state_generator.hpp"
 #include "lifted/state_builder.hpp"
 #include "lifted/state_view.hpp"
 
@@ -35,7 +34,7 @@ private:
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SuccessorStateGenerator<P>())
+        , m_state_repository(DefaultSuccessorStateGenerator<P>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_search_nodes(AutomaticVector(Builder<SearchNode<P>>(SearchNodeStatus::CLOSED, 0, View<State<P>>(nullptr), nullptr))) { }
 
@@ -46,7 +45,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    SuccessorStateGenerator<P> m_state_repository;
+    DefaultSuccessorStateGenerator<P> m_state_repository;
     View<State<P>> m_initial_state;
     DefaultApplicableActionGenerator<P> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
