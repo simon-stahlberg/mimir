@@ -10,24 +10,23 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P>
-struct Blind : public HeuristicBaseTag { };
+struct BlindTag : public HeuristicBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P>
-class Heuristic<Blind<P>> : public HeuristicBase<Heuristic<Blind<P>>> {
+class Heuristic<HeuristicInstantiation<BlindTag,P>> : public HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>>> {
 private:
     double compute_heuristic_impl(const View<State<P>>& state) {
         return 0.;
     }
 
-    friend class HeuristicBase<Heuristic<Blind<P>>>;
+    friend class HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>>>;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<Blind<P>>>(problem) { }
+    Heuristic(Problem problem) : HeuristicBase<Heuristic<HeuristicInstantiation<BlindTag,P>>>(problem) { }
 };
 
 
@@ -35,16 +34,10 @@ public:
  * Type traits.
 */
 template<IsPlanningModeTag P>
-struct TypeTraits<Heuristic<Blind<P>>> {
-    using Tag = Blind<P>;
+struct TypeTraits<Heuristic<HeuristicInstantiation<BlindTag,P>>> {
+    using Heuristic = BlindTag;
     using PlanningMode = P;
 };
-
-template<IsPlanningModeTag P>
-struct TypeTraits<Blind<P>> {
-    using PlanningMode = P;
-};
-
 
 
 }  // namespace mimir

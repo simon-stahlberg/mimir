@@ -13,7 +13,6 @@ namespace mimir
  * ID class to dispatch a specialized implementation
 */
 template<IsPlanningModeTag P, IsHeuristicTag H>
-requires HaveEqualPlanningModeTags<P, H>
 struct AStar : public AlgorithmBaseTag { };
 
 
@@ -21,10 +20,9 @@ struct AStar : public AlgorithmBaseTag { };
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsHeuristicTag H>
-requires HaveEqualPlanningModeTags<P, H>
 class Algorithm<AStar<P, H>> : public AlgorithmBase<Algorithm<AStar<P, H>>> {
 private:
-    Heuristic<H> m_heuristic;
+    Heuristic<HeuristicInstantiation<H, P>> m_heuristic;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement

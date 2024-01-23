@@ -43,21 +43,35 @@ public:
 */
 struct HeuristicBaseTag {};
 
-
-/**
- * Concepts
-*/
 template<class DerivedTag>
 concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 
 
 /**
+ * Make heuristics accept a PlanningModeTag
+*/
+template<IsHeuristicTag H, IsPlanningModeTag P>
+struct HeuristicInstantiation {
+    using PlanningMode = P;
+    using HeuristicTag = H;
+};
+
+template<typename T>
+concept IsHeuristicInstantiation = requires {
+    typename T::PlanningMode;
+    typename T::HeuristicTag;
+};
+
+
+/**
  * General implementation class.
  *
- * Spezialize it with your derived tag to provide your own implementation of a heuristic.
+ * Spezialize it with your heuristic instantiation to provide your own implementation of a heuristic.
 */
-template<IsHeuristicTag T>
+template<IsHeuristicInstantiation T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };
+
+
 
 
 }  // namespace mimir
