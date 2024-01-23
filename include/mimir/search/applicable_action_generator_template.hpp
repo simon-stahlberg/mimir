@@ -36,22 +36,24 @@ public:
 
 
 /**
- * Implementation class.
+ * ID class. Derived from it to provide your own implementation of a heuristic.
 */
-template<IsPlanningMode P>
-class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<P>> {
-private:
-    // Implement Config independent functionality.
-};
+struct ApplicableActionGeneratorBaseTag {};
 
 
 /**
- * Type traits.
+ * Concepts
 */
-template<IsPlanningMode P>
-struct TypeTraits<ApplicableActionGenerator<P>> {
-    using PlanningMode = P;
-};
+template<class DerivedTag>
+concept IsApplicableActionGenerator = std::derived_from<DerivedTag, ApplicableActionGeneratorBaseTag>;
+
+
+/**
+ * General implementation class.
+*/
+template<IsApplicableActionGenerator A>
+class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<A>> { };
+
 
 
 }  // namespace mimir

@@ -6,11 +6,10 @@
 #include "search_node_view.hpp"
 #include "search_node_builder.hpp"
 #include "type_traits.hpp"
-#include "grounded/applicable_action_generator.hpp"
+#include "applicable_action_generators.hpp"
 #include "grounded/successor_state_generator.hpp"
 #include "grounded/state_builder.hpp"
 #include "grounded/state_view.hpp"
-#include "lifted/applicable_action_generator.hpp"
 #include "lifted/successor_state_generator.hpp"
 #include "lifted/state_builder.hpp"
 #include "lifted/state_view.hpp"
@@ -49,7 +48,7 @@ private:
     Problem m_problem;
     SuccessorStateGenerator<P> m_state_repository;
     View<State<P>> m_initial_state;
-    ApplicableActionGenerator<P> m_successor_generator;
+    DefaultApplicableActionGenerator<P> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
 
 public:
