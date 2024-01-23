@@ -13,6 +13,7 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
+template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag, IsSuccessorStateGeneratorTag SG = DefaultSuccessorStateGeneratorTag>
 struct BrFSTag : public AlgorithmBaseTag { };
 
 
@@ -20,7 +21,7 @@ struct BrFSTag : public AlgorithmBaseTag { };
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
-class Algorithm<BrFSTag, P, AG, SG> : public AlgorithmBase<Algorithm<BrFSTag, P, AG>, P, AG, SG> {
+class Algorithm<BrFSTag<P, AG, SG>> : public AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>> {
 private:
     // Implement configuration independent functionality.
     std::deque<View<State<P>>> m_queue;
@@ -49,11 +50,22 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<Algorithm<BrFSTag, P, AG, SG>, P, AG, SG>;
+    friend class AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>>;
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<BrFSTag, P, AG, SG>, P, AG, SG>(problem) { }
+        : AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>>(problem) { }
+};
+
+
+/**
+ * Type traits.
+*/
+template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+struct TypeTraits<Algorithm<BrFSTag<P, AG, SG>>> {
+    using PlanningMode = P;
+    using ApplicableActionGeneratorTag = AG;
+    using SuccessorStateGeneratorTag = SG;
 };
 
 

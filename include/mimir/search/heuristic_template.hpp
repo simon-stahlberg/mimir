@@ -15,9 +15,11 @@ namespace mimir
 /**
  * Interface class
 */
-template<typename Derived, IsPlanningModeTag P>
-class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived, P>> {
+template<typename Derived>
+class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
+    using P = typename TypeTraits<Derived>::PlanningMode;
+
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
 
@@ -68,8 +70,8 @@ concept IsHeuristicInstantiation = requires {
  *
  * Spezialize it with your heuristic instantiation to provide your own implementation of a heuristic.
 */
-template<IsHeuristicInstantiation T, IsPlanningModeTag P>
-class Heuristic : public HeuristicBase<Heuristic<T, P>, P> { };
+template<IsHeuristicInstantiation T>
+class Heuristic : public HeuristicBase<Heuristic<T>> { };
 
 
 

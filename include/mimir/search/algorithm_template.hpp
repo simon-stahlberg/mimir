@@ -26,9 +26,13 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 /**
  * Interface class.
 */
-template<typename Derived, IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
-class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived, P, AG, SG>> {
+template<typename Derived>
+class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
+    using P = typename TypeTraits<Derived>::PlanningMode;
+    using AG = typename TypeTraits<Derived>::ApplicableActionGeneratorTag;
+    using SG = typename TypeTraits<Derived>::SuccessorStateGeneratorTag;
+
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
         , m_state_repository(SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>, P>())
@@ -74,8 +78,8 @@ concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
  *
  * Spezialize it with your derived tag to provide your own implementation of an algorithm.
 */
-template<IsAlgorithmTag A, IsPlanningModeTag P, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag, IsSuccessorStateGeneratorTag SG = DefaultSuccessorStateGeneratorTag>
-class Algorithm : public AlgorithmBase<Algorithm<A, P, AG, SG>, P, AG, SG> { };
+template<IsAlgorithmTag A>
+class Algorithm : public AlgorithmBase<Algorithm<A>> { };
 
 
 
