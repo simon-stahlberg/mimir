@@ -19,9 +19,11 @@ namespace mimir
 /**
  * Interface class
 */
-template<typename Derived, IsPlanningModeTag P>
-class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived, P>> {
+template<typename Derived>
+class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
 private:
+    using P = typename TypeTraits<Derived>::PlanningMode;
+
     SuccessorStateGeneratorBase() = default;
     friend Derived;
 
@@ -78,8 +80,8 @@ concept IsSuccessorStateGeneratorInstantiation = requires {
  *
  * Spezialize it with your derived tag to provide your own implementation of an successor state generator.
 */
-template<IsSuccessorStateGeneratorInstantiation S, IsPlanningModeTag P>
-class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<S, P>, P> { };
+template<IsSuccessorStateGeneratorInstantiation S>
+class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<S>> { };
 
 
 }  // namespace mimir

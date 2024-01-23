@@ -35,7 +35,7 @@ private:
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>, P>())
+        , m_state_repository(SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_search_nodes(AutomaticVector(Builder<SearchNode<P>>(SearchNodeStatus::CLOSED, 0, View<State<P>>(nullptr), nullptr))) { }
 
@@ -46,9 +46,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>, P> m_state_repository;
+    SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<SG, P>> m_state_repository;
     View<State<P>> m_initial_state;
-    ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<AG, P>, P> m_successor_generator;
+    ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<AG, P>> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
 
 public:

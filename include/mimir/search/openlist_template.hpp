@@ -55,8 +55,7 @@ concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
 /**
  * Implementation class
  *
- * We provide specializations for
- * - PriorityQueue, a priority based open list in openlists/priority_queue.hpp
+ * Spezialize it with your derived tag to provide your own implementation of an open list.
 */
 template<IsOpenListTag T>
 class OpenList : public OpenListBase<OpenList<T>> { };

@@ -17,7 +17,16 @@ class DefaultSuccessorStateGeneratorTag : public SuccessorStateGeneratorBaseTag 
  * Aliases
 */
 template<IsPlanningModeTag P>
-using DefaultSuccessorStateGenerator = SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, P>, P>;
+using DefaultSuccessorStateGenerator = SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, P>>;
+
+
+/**
+ * Type traits.
+*/
+template<IsPlanningModeTag P>
+struct TypeTraits<DefaultSuccessorStateGenerator<P>> {
+    using PlanningMode = P;
+};
 
 
 

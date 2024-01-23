@@ -17,8 +17,16 @@ class DefaultApplicableActionGeneratorTag : public ApplicableActionGeneratorBase
  * Aliases
 */
 template<IsPlanningModeTag P>
-using DefaultApplicableActionGenerator = ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<DefaultApplicableActionGeneratorTag, P>, P>;
+using DefaultApplicableActionGenerator = ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<DefaultApplicableActionGeneratorTag, P>>;
 
+
+/**
+ * Type traits.
+*/
+template<IsPlanningModeTag P>
+struct TypeTraits<DefaultApplicableActionGenerator<P>> {
+    using PlanningMode = P;
+};
 
 
 }  // namespace mimir
