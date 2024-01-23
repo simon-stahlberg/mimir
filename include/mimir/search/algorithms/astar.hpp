@@ -19,8 +19,8 @@ struct AStar : public AlgorithmBaseTag { };
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H>
-class Algorithm<AStar<P, H>> : public AlgorithmBase<Algorithm<AStar<P, H>>> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG>
+class Algorithm<AStar<P, H>, AG> : public AlgorithmBase<Algorithm<AStar<P, H>, AG>, AG> {
 private:
     Heuristic<HeuristicInstantiation<H, P>> m_heuristic;
 
@@ -29,11 +29,12 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<Algorithm<AStar<P, H>>>;
+    // Correct friend declaration
+    friend class AlgorithmBase<Algorithm<AStar<P, H>, AG>, AG>;
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AStar<P, H>>>(problem)
+        : AlgorithmBase<Algorithm<AStar<P, H>, AG>, AG>(problem)
         , m_heuristic(problem) { }
 };
 
@@ -41,16 +42,10 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H>
-struct TypeTraits<AStar<P, H>> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG>
+struct TypeTraits<Algorithm<AStar<P, H>, AG>> {
     using PlanningMode = P;
 };
-
-template<IsPlanningModeTag P, IsHeuristicTag H>
-struct TypeTraits<Algorithm<AStar<P, H>>> {
-    using PlanningMode = P;
-};
-
 
 
 }  // namespace mimir

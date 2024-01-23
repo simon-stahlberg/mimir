@@ -26,9 +26,9 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
 /**
  * Interface class.
 */
-template<typename Derived>
+template<typename Derived, IsApplicableActionGeneratorTag AG>
 requires HasPlanningModeTag<Derived>
-class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
+class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived, AG>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
 
@@ -45,9 +45,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    DefaultSuccessorStateGenerator<P> m_state_repository;
+    DefaultSuccessorStateGenerator<P>  m_state_repository;
     View<State<P>> m_initial_state;
-    DefaultApplicableActionGenerator<P> m_successor_generator;
+    ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<AG, P>> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
 
 public:
@@ -77,8 +77,8 @@ concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
  *
  * Spezialize it with your derived tag to provide your own implementation of an algorithm.
 */
-template<IsAlgorithmTag A>
-class Algorithm : public AlgorithmBase<Algorithm<A>> { };
+template<IsAlgorithmTag A, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag>
+class Algorithm : public AlgorithmBase<Algorithm<A>, AG> { };
 
 
 
