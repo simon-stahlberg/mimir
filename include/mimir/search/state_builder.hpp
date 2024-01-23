@@ -20,7 +20,7 @@ using state_id_type = uint32_t;
  * Interface class
 */
 template<typename Derived>
-requires HasPlanningMode<Derived>
+requires HasPlanningModeTag<Derived>
 class StateBuilderBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -40,14 +40,14 @@ public:
 /**
  * General implementation class
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 class Builder<State<P>> : public BuilderBase<Builder<State<P>>>, public StateBuilderBase<Builder<State<P>>> { };
 
 
 /**
  * Type traits.
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<Builder<State<P>>> {
     using PlanningMode = P;
 };

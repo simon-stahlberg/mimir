@@ -10,14 +10,14 @@ namespace mimir::tests
 
 TEST(MimirTests, GroundedStateViewTest) {
     // Build a state.
-    auto builder = Builder<State<Grounded>>();
+    auto builder = Builder<State<GroundedTag>>();
     builder.set_id(5);
     builder.finish();
     EXPECT_NE(builder.get_buffer().get_data(), nullptr);
     EXPECT_EQ(builder.get_buffer().get_size(), 8);
 
     // View the data generated in the builder.
-    auto view = View<State<Grounded>>(builder.get_buffer().get_data());
+    auto view = View<State<GroundedTag>>(builder.get_buffer().get_data());
     EXPECT_EQ(view.get_id(), 5);
 }
 

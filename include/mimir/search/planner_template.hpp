@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_PLANNER_HPP_
-#define MIMIR_SEARCH_PLANNER_HPP_
+#ifndef MIMIR_SEARCH_PLANNER_TEMPLATE_HPP_
+#define MIMIR_SEARCH_PLANNER_TEMPLATE_HPP_
 
 #include "config.hpp"
 
@@ -47,10 +47,10 @@ class Planner : public PlannerBase<Planner<T>> {
 /**
  * Configuration classes to dispatch parallel or sequential planning
 */
-template<IsAlgorithm... As>
+template<IsAlgorithmTag... As>
 struct Parallel : public ParallelBaseTag {};
 
-template<IsAlgorithm... As>
+template<IsAlgorithmTag... As>
 struct Sequential : public SequentialBaseTag {};
 
 
@@ -60,13 +60,13 @@ struct Sequential : public SequentialBaseTag {};
 template<typename T>
 struct is_parallel : std::false_type {};
 
-template<IsAlgorithm... As>
+template<IsAlgorithmTag... As>
 struct is_parallel<Parallel<As...>> : std::true_type {};
 
 template<typename T>
 struct is_sequential : std::false_type {};
 
-template<IsAlgorithm... As>
+template<IsAlgorithmTag... As>
 struct is_sequential<Sequential<As...>> : std::true_type {};
 
 template<typename T>
@@ -76,12 +76,12 @@ concept IsConcurrencyMode = is_parallel<T>::value || is_sequential<T>::value;
 /**
  * Spezialized implementations accepting a variable number of algorithms
 */
-template<IsAlgorithm... As>
+template<IsAlgorithmTag... As>
 class Planner<Parallel<As...>> : public PlannerBase<Planner<Parallel<As...>>> {
 
 };
 
-template<IsAlgorithm... As>
+template<IsAlgorithmTag... As>
 class Planner<Sequential<As...>> : public PlannerBase<Planner<Sequential<As...>>> {
 
 };

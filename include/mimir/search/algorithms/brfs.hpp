@@ -13,14 +13,14 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct BrFS : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 class Algorithm<BrFS<P>> : public AlgorithmBase<Algorithm<BrFS<P>>> {
 private:
     // Implement configuration independent functionality.
@@ -61,12 +61,12 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<BrFS<P>> {
     using PlanningMode = P;
 };
 
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<Algorithm<BrFS<P>>> {
     using PlanningMode = P;
 };

@@ -12,35 +12,35 @@ namespace mimir
 /**
  * Configuration classes to dispatch the grounded or lifted implementation
 */
-struct Grounded {};
+struct GroundedTag {};
 
-struct Lifted {};
+struct LiftedTag {};
 
 
 /**
  * Concepts
 */
-template<typename T>
-concept IsPlanningMode = std::is_same_v<T, Grounded> || std::is_same_v<T, Lifted>;
+template<typename Tag>
+concept IsPlanningModeTag = std::is_same_v<Tag, GroundedTag> || std::is_same_v<Tag, LiftedTag>;
 
-template<typename T>
-concept HasPlanningMode = requires {
+template<typename Tag>
+concept HasPlanningModeTag = requires {
     // Test that the type trait was defined
-    typename TypeTraits<T>::PlanningMode;
+    typename TypeTraits<Tag>::PlanningMode;
     // Test that the type trait is a config
-    requires IsPlanningMode<typename TypeTraits<T>::PlanningMode>;
+    requires IsPlanningModeTag<typename TypeTraits<Tag>::PlanningMode>;
 };
 
-template<typename T1, typename T2>
-concept HaveEqualPlanningMode =
+template<typename Tag1, typename Tag2>
+concept HaveEqualPlanningModeTags =
     // Test all 4 cases where T1 or T2 can directly be a config or ae other types which must have a nested config.
-    (IsPlanningMode<T1> && IsPlanningMode<T2> && std::is_same_v<T1, T2>) ||
-    (IsPlanningMode<T1> && requires { typename TypeTraits<T2>::PlanningMode; requires std::is_same_v<T1, typename TypeTraits<T2>::PlanningMode>; }) ||
-    (IsPlanningMode<T2> && requires { typename TypeTraits<T1>::PlanningMode; requires std::is_same_v<typename TypeTraits<T1>::PlanningMode, T2>; }) ||
+    (IsPlanningModeTag<Tag1> && IsPlanningModeTag<Tag2> && std::is_same_v<Tag1, Tag2>) ||
+    (IsPlanningModeTag<Tag1> && requires { typename TypeTraits<Tag2>::PlanningMode; requires std::is_same_v<Tag1, typename TypeTraits<Tag2>::PlanningMode>; }) ||
+    (IsPlanningModeTag<Tag2> && requires { typename TypeTraits<Tag1>::PlanningMode; requires std::is_same_v<typename TypeTraits<Tag1>::PlanningMode, Tag2>; }) ||
     (requires {
-        requires HasPlanningMode<T1>;
-        requires HasPlanningMode<T2>;
-        requires std::is_same_v<typename TypeTraits<T1>::PlanningMode, typename TypeTraits<T2>::PlanningMode>;
+        requires HasPlanningModeTag<Tag1>;
+        requires HasPlanningModeTag<Tag2>;
+        requires std::is_same_v<typename TypeTraits<Tag1>::PlanningMode, typename TypeTraits<Tag2>::PlanningMode>;
     });
 
 

@@ -36,7 +36,9 @@ public:
 
 
 /**
- * ID class. Derived from it to provide your own implementation of a applicable action generator.
+ * ID class.
+ *
+ * Derive from it to provide your own implementation of a applicable action generator.
 */
 struct ApplicableActionGeneratorBaseTag {};
 
@@ -44,12 +46,14 @@ struct ApplicableActionGeneratorBaseTag {};
 /**
  * Concepts
 */
-template<class DerivedTag>
+template<typename DerivedTag>
 concept IsApplicableActionGenerator = std::derived_from<DerivedTag, ApplicableActionGeneratorBaseTag>;
 
 
 /**
  * General implementation class.
+ *
+ * Spezialize it with your derived tag to provide your own implementation of an applicable action generator.
 */
 template<IsApplicableActionGenerator A>
 class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<A>> { };

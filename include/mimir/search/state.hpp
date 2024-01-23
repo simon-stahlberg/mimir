@@ -17,7 +17,7 @@ struct StateBaseTag {};
 /**
  *
 */
-template<IsPlanningMode C>
+template<IsPlanningModeTag C>
 struct State : public StateBaseTag { };
 
 }  // namespace mimir

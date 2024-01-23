@@ -10,26 +10,26 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 class DefaultApplicableActionGeneratorTag : public ApplicableActionGeneratorBaseTag {};
 
 
 /**
  * Aliases
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 using DefaultApplicableActionGenerator = ApplicableActionGenerator<DefaultApplicableActionGeneratorTag<P>>;
 
 
 /**
  * Type traits.
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<DefaultApplicableActionGeneratorTag<P>> {
     using PlanningMode = P;
 };
 
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<DefaultApplicableActionGenerator<P>> {
     using PlanningMode = P;
 };

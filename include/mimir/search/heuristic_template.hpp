@@ -37,7 +37,9 @@ public:
 
 
 /**
- * ID class. Derived from it to provide your own implementation of a heuristic.
+ * ID class.
+ *
+ * Derive from it to provide your own implementation of a heuristic.
 */
 struct HeuristicBaseTag {};
 
@@ -46,13 +48,15 @@ struct HeuristicBaseTag {};
  * Concepts
 */
 template<class DerivedTag>
-concept IsHeuristic = std::derived_from<DerivedTag, HeuristicBaseTag>;
+concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 
 
 /**
  * General implementation class.
+ *
+ * Spezialize it with your derived tag to provide your own implementation of a heuristic.
 */
-template<IsHeuristic T>
+template<IsHeuristicTag T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };
 
 

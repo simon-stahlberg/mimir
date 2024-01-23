@@ -12,16 +12,16 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningMode P, IsHeuristic H>
-requires HaveEqualPlanningMode<P, H>
+template<IsPlanningModeTag P, IsHeuristicTag H>
+requires HaveEqualPlanningModeTags<P, H>
 struct AStar : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningMode P, IsHeuristic H>
-requires HaveEqualPlanningMode<P, H>
+template<IsPlanningModeTag P, IsHeuristicTag H>
+requires HaveEqualPlanningModeTags<P, H>
 class Algorithm<AStar<P, H>> : public AlgorithmBase<Algorithm<AStar<P, H>>> {
 private:
     Heuristic<H> m_heuristic;
@@ -43,12 +43,12 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningMode P, IsHeuristic H>
+template<IsPlanningModeTag P, IsHeuristicTag H>
 struct TypeTraits<AStar<P, H>> {
     using PlanningMode = P;
 };
 
-template<IsPlanningMode P, IsHeuristic H>
+template<IsPlanningModeTag P, IsHeuristicTag H>
 struct TypeTraits<Algorithm<AStar<P, H>>> {
     using PlanningMode = P;
 };

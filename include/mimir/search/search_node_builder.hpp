@@ -25,7 +25,7 @@ using g_value_type = int;
  * Interface class
 */
 template<typename Derived>
-requires HasPlanningMode<Derived>
+requires HasPlanningModeTag<Derived>
 class SearchNodeBuilderBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -54,7 +54,7 @@ public:
  * | data_size_type | status | g_value | parent_state | creating_action |
  * |________________|________|_________|______________|_________________|
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 class Builder<SearchNode<P>> : public BuilderBase<Builder<SearchNode<P>>>, public SearchNodeBuilderBase<Builder<SearchNode<P>>> {
 private:
     SearchNodeStatus m_status;
@@ -98,7 +98,7 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<Builder<SearchNode<P>>> {
     using PlanningMode = P;
 };

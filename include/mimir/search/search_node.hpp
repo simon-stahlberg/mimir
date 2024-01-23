@@ -9,7 +9,7 @@ namespace mimir {
 /**
  * ID class
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 class SearchNode { };
 
 

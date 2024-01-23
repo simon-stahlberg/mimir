@@ -10,26 +10,26 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 class DefaultSuccessorStateGeneratorTag : public SuccessorStateGeneratorBaseTag {};
 
 
 /**
  * Aliases
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 using DefaultSuccessorStateGenerator = SuccessorStateGenerator<DefaultSuccessorStateGeneratorTag<P>>;
 
 
 /**
  * Type traits.
 */
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<DefaultSuccessorStateGeneratorTag<P>> {
     using PlanningMode = P;
 };
 
-template<IsPlanningMode P>
+template<IsPlanningModeTag P>
 struct TypeTraits<DefaultSuccessorStateGenerator<P>> {
     using PlanningMode = P;
 };

@@ -49,7 +49,7 @@ struct OpenListBaseTag {};
  * Concepts
 */
 template<class DerivedTag>
-concept IsOpenList = std::derived_from<DerivedTag, OpenListBaseTag>;
+concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
 
 
 /**
@@ -58,7 +58,7 @@ concept IsOpenList = std::derived_from<DerivedTag, OpenListBaseTag>;
  * We provide specializations for
  * - PriorityQueue, a priority based open list in openlists/priority_queue.hpp
 */
-template<IsOpenList T>
+template<IsOpenListTag T>
 class OpenList : public OpenListBase<OpenList<T>> { };
 
 

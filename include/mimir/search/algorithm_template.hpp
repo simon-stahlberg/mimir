@@ -27,7 +27,7 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
  * Interface class.
 */
 template<typename Derived>
-requires HasPlanningMode<Derived>
+requires HasPlanningModeTag<Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -58,7 +58,9 @@ public:
 
 
 /**
- * ID class. Derived from it to provide your own implementation of an algorithm.
+ * ID class.
+ *
+ * Derive from it to provide your own implementation of an algorithm.
 */
 struct AlgorithmBaseTag {};
 
@@ -66,18 +68,17 @@ struct AlgorithmBaseTag {};
 /**
  * Concepts
 */
-template<class DerivedTag>
-concept IsAlgorithm = std::derived_from<DerivedTag, AlgorithmBaseTag>;
+template<typename DerivedTag>
+concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
 
 
 /**
  * General implementation class.
- * We provide specializations for
- * - BrFs, a breadth-first search algorithm in algorithms/brfs.hpp
- * - AStar, an astar search algorithm in algorithms/astar.hpp
+ *
+ * Spezialize it with your derived tag to provide your own implementation of an algorithm.
 */
-template<IsAlgorithm T>
-class Algorithm : public AlgorithmBase<Algorithm<T>> { };
+template<IsAlgorithmTag A>
+class Algorithm : public AlgorithmBase<Algorithm<A>> { };
 
 
 
