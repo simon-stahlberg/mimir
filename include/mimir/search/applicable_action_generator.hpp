@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::Config;
+    using P = typename TypeTraits<Derived>::PlanningMode;
 
     ApplicableActionGeneratorBase() = default;
     friend Derived;
@@ -29,7 +29,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(View<State<C>> state, GroundActionList& out_applicable_actions) {
+    void generate_applicable_actions(View<State<P>> state, GroundActionList& out_applicable_actions) {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 };
@@ -38,8 +38,8 @@ public:
 /**
  * Implementation class.
 */
-template<IsConfig C>
-class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<C>> {
+template<IsPlanningMode P>
+class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<P>> {
 private:
     // Implement Config independent functionality.
 };
@@ -48,9 +48,9 @@ private:
 /**
  * Type traits.
 */
-template<IsConfig C>
-struct TypeTraits<ApplicableActionGenerator<C>> {
-    using Config = C;
+template<IsPlanningMode P>
+struct TypeTraits<ApplicableActionGenerator<P>> {
+    using PlanningMode = P;
 };
 
 

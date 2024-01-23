@@ -10,31 +10,32 @@ namespace mimir
 {
 
 /**
- * ID class.
+ * ID class to dispatch a specialized implementation
 */
-template<typename C, typename H>
-requires IsConfig<C> && IsHeuristic<H> && HaveEqualConfig<C, H>
-struct AStar { };
+template<IsPlanningMode P, IsHeuristic H>
+requires HaveEqualPlanningMode<P, H>
+struct AStar : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<typename C, typename H>
-class Algorithm<AStar<C, H>> : public AlgorithmBase<Algorithm<AStar<C, H>>> {
+template<IsPlanningMode P, IsHeuristic H>
+requires HaveEqualPlanningMode<P, H>
+class Algorithm<AStar<P, H>> : public AlgorithmBase<Algorithm<AStar<P, H>>> {
 private:
-    H m_heuristic;
+    Heuristic<H> m_heuristic;
 
     SearchStatus find_solution_impl(GroundActionList& out_plan) {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<Algorithm<AStar<C, H>>>;
+    friend class AlgorithmBase<Algorithm<AStar<P, H>>>;
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AStar<C, H>>>(problem)
+        : AlgorithmBase<Algorithm<AStar<P, H>>>(problem)
         , m_heuristic(problem) { }
 };
 
@@ -42,10 +43,14 @@ public:
 /**
  * Type traits.
 */
-template<typename C, typename H>
-requires IsConfig<C>
-struct TypeTraits<Algorithm<AStar<C, H>>> {
-    using Config = C;
+template<IsPlanningMode P, IsHeuristic H>
+struct TypeTraits<AStar<P, H>> {
+    using PlanningMode = P;
+};
+
+template<IsPlanningMode P, IsHeuristic H>
+struct TypeTraits<Algorithm<AStar<P, H>>> {
+    using PlanningMode = P;
 };
 
 

@@ -25,10 +25,10 @@ using g_value_type = int;
  * Interface class
 */
 template<typename Derived>
-requires HasConfig<Derived>
+requires HasPlanningMode<Derived>
 class SearchNodeBuilderBase {
 private:
-    using C = typename TypeTraits<Derived>::Config;
+    using P = typename TypeTraits<Derived>::PlanningMode;
 
     SearchNodeBuilderBase() = default;
     friend Derived;
@@ -40,7 +40,7 @@ private:
 public:
     void set_status(SearchNodeStatus status) { self().set_status_impl(status); }
     void set_g_value(int g_value) { self().set_g_value_impl(g_value); }
-    void set_parent_state(View<State<C>> parent_state) { self().set_parent_state_impl(parent_state); }
+    void set_parent_state(View<State<P>> parent_state) { self().set_parent_state_impl(parent_state); }
     void set_ground_action(GroundAction creating_action) { self().set_ground_action_impl(creating_action); }
 };
 
@@ -54,13 +54,12 @@ public:
  * | data_size_type | status | g_value | parent_state | creating_action |
  * |________________|________|_________|______________|_________________|
 */
-template<typename C>
-requires IsConfig<C>
-class Builder<SearchNode<C>> : public BuilderBase<Builder<SearchNode<C>>>, public SearchNodeBuilderBase<Builder<SearchNode<C>>> {
+template<IsPlanningMode P>
+class Builder<SearchNode<P>> : public BuilderBase<Builder<SearchNode<P>>>, public SearchNodeBuilderBase<Builder<SearchNode<P>>> {
 private:
     SearchNodeStatus m_status;
     int m_g_value;
-    View<State<C>> m_parent_state;
+    View<State<P>> m_parent_state;
     GroundAction m_creating_action;
 
     /* Implement BuilderBase interface */
@@ -75,21 +74,21 @@ private:
         this->m_buffer.write(m_creating_action);
     }
 
-    friend class BuilderBase<Builder<SearchNode<C>>>;
+    friend class BuilderBase<Builder<SearchNode<P>>>;
 
     /* Implement SearchNodeBuilderBase interface */
     void set_status_impl(SearchNodeStatus status) { m_status = status; }
     void set_g_value_impl(int g_value) { m_g_value = g_value; }
-    void set_parent_state_impl(View<State<C>> parent_state) { m_parent_state = parent_state; }
+    void set_parent_state_impl(View<State<P>> parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
 
-    friend class SearchNodeBuilderBase<Builder<SearchNode<C>>>;
+    friend class SearchNodeBuilderBase<Builder<SearchNode<P>>>;
 
 public:
-    Builder() : m_parent_state(View<State<C>>(nullptr)) { }
+    Builder() : m_parent_state(View<State<P>>(nullptr)) { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, View<State<C>> parent_state, GroundAction creating_action)
+    Builder(SearchNodeStatus status, int g_value, View<State<P>> parent_state, GroundAction creating_action)
         : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
         this->finish();
     }
@@ -99,9 +98,9 @@ public:
 /**
  * Type traits.
 */
-template<IsConfig C>
-struct TypeTraits<Builder<SearchNode<C>>> {
-    using Config = C;
+template<IsPlanningMode P>
+struct TypeTraits<Builder<SearchNode<P>>> {
+    using PlanningMode = P;
 };
 
 

@@ -20,10 +20,10 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-requires HasConfig<Derived>
+requires HasPlanningMode<Derived>
 class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::Config;
+    using P = typename TypeTraits<Derived>::PlanningMode;
 
     SuccessorStateGeneratorBase() = default;
     friend Derived;
@@ -33,16 +33,16 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
-    UnorderedSet<State<C>> m_states;
+    UnorderedSet<State<P>> m_states;
 
-    Builder<State<C>> m_state_builder;
+    Builder<State<P>> m_state_builder;
 
 public:
-    [[nodiscard]] View<State<C>> get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] View<State<P>> get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] View<State<C>> get_or_create_successor_state(View<State<C>> state, GroundAction action) {
+    [[nodiscard]] View<State<P>> get_or_create_successor_state(View<State<P>> state, GroundAction action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };
@@ -55,18 +55,16 @@ public:
  * - Grounded in grounded/successor_state_generator.hpp
  * - Lifted in lifted/successor_state_generator.hpp
 */
-template<typename C>
-requires IsConfig<C>
-class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<C>> { };
+template<IsPlanningMode P>
+class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<P>> { };
 
 
 /**
  * Type traits
 */
-template<typename C>
-requires IsConfig<C>
-struct TypeTraits<SuccessorStateGenerator<C>> {
-    using Config = C;
+template<IsPlanningMode P>
+struct TypeTraits<SuccessorStateGenerator<P>> {
+    using PlanningMode = P;
 };
 
 }  // namespace mimir

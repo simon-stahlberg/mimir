@@ -12,7 +12,7 @@ namespace mimir
  * ID class
 */
 template<typename T>
-struct PriorityQueue { };
+struct PriorityQueue : public OpenListBaseTag { };
 
 
 /**
@@ -41,6 +41,14 @@ private:
     friend class OpenListBase<OpenList<PriorityQueue<T>>>;
 };
 
+
+/**
+ * Type traits
+*/
+template<typename T>
+struct TypeTraits<PriorityQueue<T>> {
+    using ValueType = T;
+};
 
 template<typename T>
 struct TypeTraits<OpenList<PriorityQueue<T>>> {

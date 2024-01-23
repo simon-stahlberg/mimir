@@ -9,8 +9,7 @@ namespace mimir {
 /**
  * ID class
 */
-template<typename C>
-requires IsConfig<C>
+template<IsPlanningMode P>
 class SearchNode { };
 
 

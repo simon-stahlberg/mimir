@@ -29,16 +29,16 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
  * Interface class.
 */
 template<typename Derived>
-requires HasConfig<Derived>
+requires HasPlanningMode<Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::Config;
+    using P = typename TypeTraits<Derived>::PlanningMode;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SuccessorStateGenerator<C>())
+        , m_state_repository(SuccessorStateGenerator<P>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_search_nodes(AutomaticVector(Builder<SearchNode<C>>(SearchNodeStatus::CLOSED, 0, View<State<C>>(nullptr), nullptr))) { }
+        , m_search_nodes(AutomaticVector(Builder<SearchNode<P>>(SearchNodeStatus::CLOSED, 0, View<State<P>>(nullptr), nullptr))) { }
 
     friend Derived;
 
@@ -47,10 +47,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    SuccessorStateGenerator<C> m_state_repository;
-    View<State<C>> m_initial_state;
-    ApplicableActionGenerator<C> m_successor_generator;
-    AutomaticVector<SearchNode<C>> m_search_nodes;
+    SuccessorStateGenerator<P> m_state_repository;
+    View<State<P>> m_initial_state;
+    ApplicableActionGenerator<P> m_successor_generator;
+    AutomaticVector<SearchNode<P>> m_search_nodes;
 
 public:
     SearchStatus find_solution(GroundActionList& out_plan) {
@@ -60,20 +60,27 @@ public:
 
 
 /**
- * General implementation class.
- * We provide specializations for
- * - BrFs, a breadth-first search algorithm in algorithms/brfs.hpp
- * - AStar, an astar search algorithm in algorithms/astar.hpp
+ * ID class. Derived from it to provide your own implementation of an algorithm.
 */
-template<typename T>
-class Algorithm : public AlgorithmBase<Algorithm<T>> { };
+struct AlgorithmBaseTag {};
 
 
 /**
  * Concepts
 */
-template<class Derived> 
-concept IsAlgorithm = std::derived_from<Derived, AlgorithmBase<Derived>>;
+template<class DerivedTag>
+concept IsAlgorithm = std::derived_from<DerivedTag, AlgorithmBaseTag>;
+
+
+/**
+ * General implementation class.
+ * We provide specializations for
+ * - BrFs, a breadth-first search algorithm in algorithms/brfs.hpp
+ * - AStar, an astar search algorithm in algorithms/astar.hpp
+*/
+template<IsAlgorithm T>
+class Algorithm : public AlgorithmBase<Algorithm<T>> { };
+
 
 
 }  // namespace mimir

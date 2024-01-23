@@ -18,7 +18,7 @@ namespace mimir
 template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
-    using C = typename TypeTraits<Derived>::Config;
+    using P = typename TypeTraits<Derived>::PlanningMode;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
@@ -30,24 +30,31 @@ private:
     Problem m_problem;
 
 public:
-    [[nodiscard]] double compute_heuristic(View<State<C>> state) {
+    [[nodiscard]] double compute_heuristic(View<State<P>> state) {
         return self().compute_heuristic_impl(state);
     }
 };
 
 
 /**
- * General implementation class.
+ * ID class. Derived from it to provide your own implementation of a heuristic.
 */
-template<typename T> 
-class Heuristic : public HeuristicBase<Heuristic<T>> { };
+struct HeuristicBaseTag {};
 
 
 /**
  * Concepts
 */
-template<class Derived> 
-concept IsHeuristic = std::derived_from<Derived, HeuristicBase<Derived>>;
+template<class DerivedTag>
+concept IsHeuristic = std::derived_from<DerivedTag, HeuristicBaseTag>;
+
+
+/**
+ * General implementation class.
+*/
+template<IsHeuristic T>
+class Heuristic : public HeuristicBase<Heuristic<T>> { };
+
 
 }  // namespace mimir
 

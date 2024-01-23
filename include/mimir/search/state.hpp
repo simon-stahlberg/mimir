@@ -10,11 +10,15 @@ namespace mimir
 {
 
 /**
- * ID class
+ * ID class derive from it to provide specialized implementation for a state.
 */
-template<typename C> 
-requires IsConfig<C>
-class State { };
+struct StateBaseTag {};
+
+/**
+ *
+*/
+template<IsPlanningMode C>
+struct State : public StateBaseTag { };
 
 }  // namespace mimir
 

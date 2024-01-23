@@ -17,10 +17,10 @@ namespace mimir {
  * Interface class
 */
 template<typename Derived>
-requires HasConfig<Derived>
+requires HasPlanningMode<Derived>
 class StateViewBase {
 private:
-    using C = typename TypeTraits<Derived>::Config;
+    using P = typename TypeTraits<Derived>::PlanningMode;
 
     StateViewBase() = default;
     friend Derived;
@@ -44,18 +44,16 @@ public:
  * - Grounded in grounded/state_view.hpp
  * - Lifted in lifted/state_view.hpp
 */
-template<typename C>
-requires IsConfig<C>
-class View<State<C>> : public ViewBase<View<State<C>>>, public StateViewBase<View<State<C>>> { };
+template<IsPlanningMode P>
+class View<State<P>> : public ViewBase<View<State<P>>>, public StateViewBase<View<State<P>>> { };
 
 
 /**
  * Type traits
 */
-template<typename C>
-requires IsConfig<C>
-struct TypeTraits<View<State<C>>> {
-    using Config = C;
+template<IsPlanningMode P>
+struct TypeTraits<View<State<P>>> {
+    using PlanningMode = P;
 };
 
 

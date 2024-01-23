@@ -40,13 +40,27 @@ public:
 
 
 /**
+ * ID class. Derived from it to provide your own implementation of an open list.
+*/
+struct OpenListBaseTag {};
+
+
+/**
+ * Concepts
+*/
+template<class DerivedTag>
+concept IsOpenList = std::derived_from<DerivedTag, OpenListBaseTag>;
+
+
+/**
  * Implementation class
  *
  * We provide specializations for
  * - PriorityQueue, a priority based open list in openlists/priority_queue.hpp
 */
-template<typename T>
+template<IsOpenList T>
 class OpenList : public OpenListBase<OpenList<T>> { };
+
 
 }  // namespace mimir
 
