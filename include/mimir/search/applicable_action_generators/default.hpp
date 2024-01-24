@@ -17,7 +17,7 @@ class DefaultApplicableActionGeneratorTag : public ApplicableActionGeneratorBase
  * Aliases
 */
 template<IsPlanningModeTag P>
-using DefaultApplicableActionGenerator = ApplicableActionGenerator<ApplicableActionGeneratorInstantiation<DefaultApplicableActionGeneratorTag, P>>;
+using DefaultApplicableActionGenerator = ApplicableActionGenerator<WrappedApplicableActionGeneratorTag<DefaultApplicableActionGeneratorTag, P>>;
 
 
 /**

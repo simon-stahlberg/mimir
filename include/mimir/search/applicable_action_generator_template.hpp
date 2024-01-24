@@ -47,18 +47,19 @@ concept IsApplicableActionGeneratorTag = std::derived_from<DerivedTag, Applicabl
 
 
 /**
- * Make ApplicableActionGenerator accept a PlanningModeTag.
- * This makes the template instiation less constraint
- * and we can use the PlanningModeTag of the actual search algorithm.
+ * Wrapper class.
+ *
+ * Wrap the tag and the planning mode to be able to pass
+ * the planning mode used in the algorithm.
 */
 template<IsApplicableActionGeneratorTag A, IsPlanningModeTag P>
-struct ApplicableActionGeneratorInstantiation {
+struct WrappedApplicableActionGeneratorTag {
     using PlanningModeTag = P;
     using ApplicableActionGeneratorTag = A;
 };
 
 template<typename T>
-concept IsApplicableActionGeneratorInstantiation = requires {
+concept IsWrappedApplicableActionGeneratorTag = requires {
     typename T::PlanningModeTag;
     typename T::ApplicableActionGeneratorTag;
 };
@@ -69,7 +70,7 @@ concept IsApplicableActionGeneratorInstantiation = requires {
  *
  * Spezialize it with your derived tag to provide your own implementation of an applicable action generator.
 */
-template<IsApplicableActionGeneratorInstantiation A>
+template<IsWrappedApplicableActionGeneratorTag A>
 class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<A>> { };
 
 

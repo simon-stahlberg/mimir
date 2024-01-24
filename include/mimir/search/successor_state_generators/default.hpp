@@ -17,7 +17,7 @@ class DefaultSuccessorStateGeneratorTag : public SuccessorStateGeneratorBaseTag 
  * Aliases
 */
 template<IsPlanningModeTag P>
-using DefaultSuccessorStateGenerator = SuccessorStateGenerator<SuccessorStateGeneratorInstantiation<DefaultSuccessorStateGeneratorTag, P>>;
+using DefaultSuccessorStateGenerator = SuccessorStateGenerator<WrappedSuccessorStateGeneratorTag<DefaultSuccessorStateGeneratorTag, P>>;
 
 
 /**

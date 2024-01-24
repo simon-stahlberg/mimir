@@ -48,18 +48,19 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 
 
 /**
- * Make heuristics accept a PlanningModeTag.
- * This makes the template instiation less constraint
- * and we can use the PlanningModeTag of the actual search algorithm.
+ * Wrapper class.
+ *
+ * Wrap the tag and the planning mode to be able to pass
+ * the planning mode used in the algorithm.
 */
 template<IsHeuristicTag H, IsPlanningModeTag P>
-struct HeuristicInstantiation {
+struct WrappedHeuristicTag {
     using HeuristicTag = H;
     using PlanningModeTag = P;
 };
 
 template<typename T>
-concept IsHeuristicInstantiation = requires {
+concept IsWrappedHeuristicTag = requires {
     typename T::HeuristicTag;
     typename T::PlanningModeTag;
 };
@@ -70,7 +71,7 @@ concept IsHeuristicInstantiation = requires {
  *
  * Spezialize it with your heuristic instantiation to provide your own implementation of a heuristic.
 */
-template<IsHeuristicInstantiation T>
+template<IsWrappedHeuristicTag T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };
 
 

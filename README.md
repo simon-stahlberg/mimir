@@ -54,19 +54,7 @@ After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you s
 
 ### Header includes
 
-- Include only the most specialized headers to obtain the correct instantiation.
-- Make use of inherited headers to keep the number of includes small.
-
 ### Tag Dispatching
-
-- Use empty structs for tag dispatching. For example in a `SuccessorStateGenerator` we need to instantiate other types, derived on the state
-
-```cpp
-UnorderedSet<State<C>> m_states;
-Builder<State<C>> m_state_builder;
-```
-
-This effectively instantiates corresponding types `View<State<C>>` and `Builder<State<C>>` depending on the configuration that is used.
 
 ### Concepts
 
