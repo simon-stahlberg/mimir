@@ -9,7 +9,7 @@ Mimir is a C++20 planning library for grounded and lifted planning. We created M
 ## Example API
 
 ```cpp
-planner = Planner<AStarTag<BlindTag>>("domain.pddl", "problem.pddl")
+planner = Planner<AStarTag<LiftedTag, BlindTag>>("domain.pddl", "problem.pddl")
 // auto plan = TODO: add simple way to get the type of a plan.
 const auto status = planner.find_solution(plan)
 ```
