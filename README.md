@@ -6,6 +6,14 @@ Mimir is a C++20 planning library for grounded and lifted planning. We created M
 
 **Zero heap-allocations:** Mimir implements a sub-library for serializing objects with fully customizable memory layouts and zero-cost de-serialization. Mimir reuses memory by moving buffers around in memory with zero heap allocations and deallocations.
 
+## Example API
+
+```cpp
+planner = Planner<AStarTag<BlindTag>>("domain.pddl", "problem.pddl")
+// auto plan = TODO: add simple way to get the type of a plan.
+const auto status = planner.find_solution(plan)
+```
+
 
 ## Getting Started
 
