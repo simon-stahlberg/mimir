@@ -16,16 +16,18 @@ class DefaultSSGTag : public SSGBaseTag {};
 /**
  * Aliases
 */
-template<IsPlanningModeTag P>
-using DefaultSSG = SSG<WrappedSSGTag<DefaultSSGTag, P>>;
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+using DefaultSSG = SSG<WrappedSSGTag<DefaultSSGTag, P, S, A>>;
 
 
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P>
-struct TypeTraits<DefaultSSG<P>> {
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct TypeTraits<DefaultSSG<P, S, A>> {
     using PlanningModeTag = P;
+    using StateTag = S;
+    using ActionTag = A;
 };
 
 

@@ -11,10 +11,13 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag>>
-    : public SSGBase<SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag>>> {
+class SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>
+    : public SSGBase<SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>> {
 private:
-    [[nodiscard]] View<State<GroundedTag>> get_or_create_initial_state_impl(Problem problem) {
+    using StateView = View<WrappedStateTag<BitsetStateTag, GroundedTag>>;
+    using ActionView = View<WrappedActionTag<DefaultActionTag, GroundedTag, BitsetStateTag>>;
+
+    [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
         // create the state
         int next_state_id = this->m_states.get_size();
@@ -23,10 +26,10 @@ private:
         return this->m_states.insert(this->m_state_builder);
     }
 
-    [[nodiscard]] View<State<GroundedTag>> get_or_create_successor_state_impl(View<State<GroundedTag>> state, GroundAction action) {
+    [[nodiscard]] StateView get_or_create_successor_state_impl(StateView state, ActionView action) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return View<State<GroundedTag>>(nullptr);
+        return StateView(nullptr);
     }
 
     // Give access to the private interface implementations.

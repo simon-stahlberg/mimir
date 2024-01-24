@@ -10,9 +10,9 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchSSGDefaultLiftedTest) {
     // Instantiate lifted version
-    auto lifted_state_repository = DefaultSSG<LiftedTag>();
+    auto lifted_ssg = SSG<WrappedSSGTag<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>();
     auto problem = static_cast<Problem>(nullptr);
-    const auto initial_state = lifted_state_repository.get_or_create_initial_state(problem);
+    const auto initial_state = lifted_ssg.get_or_create_initial_state(problem);
 }
 
 }

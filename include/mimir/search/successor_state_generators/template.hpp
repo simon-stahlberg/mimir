@@ -2,7 +2,8 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
 
 #include "../config.hpp"
-#include "../states.hpp
+#include "../states.hpp"
+#include "../actions.hpp"
 #include "../type_traits.hpp"
 
 #include "../../buffer/containers/unordered_set.hpp"
@@ -20,6 +21,10 @@ template<typename Derived>
 class SSGBase : public UncopyableMixin<SSGBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
+    using A = typename TypeTraits<Derived>::ActionTag;
+    using StateView = View<WrappedStateTag<S, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
     SSGBase() = default;
     friend Derived;
@@ -29,16 +34,16 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
-    UnorderedSet<State<P>> m_states;
+    UnorderedSet<WrappedStateTag<S, P>> m_states;
 
-    Builder<State<P>> m_state_builder;
+    Builder<WrappedStateTag<S, P>> m_state_builder;
 
 public:
-    [[nodiscard]] View<State<P>> get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] StateView get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] View<State<P>> get_or_create_successor_state(View<State<P>> state, GroundAction action) {
+    [[nodiscard]] StateView get_or_create_successor_state(StateView state, ActionView action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };
@@ -59,16 +64,20 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
  *
  * Wrap the tag and the planning mode to be able use a given planning mode.
 */
-template<IsSSGTag SG, IsPlanningModeTag P>
+template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct WrappedSSGTag {
-    using PlanningModeTag = P;
     using SSGTag = SG;
+    using PlanningModeTag = P;
+    using StateTag = S;
+    using ActionTag = A;
 };
 
 template<typename T>
 concept IsWrappedSSG = requires {
-    typename T::PlanningModeTag;
     typename T::SSGTag;
+    typename T::PlanningModeTag;
+    typename T::StateTag;
+    typename T::ActionTag;
 };
 
 
