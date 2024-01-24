@@ -3,8 +3,6 @@
 
 #include "template.hpp"
 
-#include "../state_view.hpp"
-
 #include <deque>
 
 
@@ -14,25 +12,35 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P, IsAAGTag AG = DefaultAAGTag, IsSSGTag SG = DefaultSSGTag>
+template<IsPlanningModeTag P
+       , IsStateTag S = BitsetStateTag
+       , IsActionTag A = DefaultActionTag
+       , IsAAGTag AG = DefaultAAGTag
+       , IsSSGTag SG = DefaultSSGTag>
 struct BrFSTag : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<BrFSTag<P, AG, SG>> : public AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
+class Algorithm<BrFSTag<P, S, A, AG, SG>> : public AlgorithmBase<Algorithm<BrFSTag<P, S, A, AG, SG>>> {
 private:
+    using StateView = View<WrappedStateTag<S, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using ActionViewList = std::vector<ActionView>;
+
     // Implement configuration independent functionality.
-    std::deque<View<State<P>>> m_queue;
+    std::deque<StateView> m_queue;
+
+    AutomaticVector<CostSearchNodeTag<P, S, A>> m_search_nodes;
 
 
-    SearchStatus find_solution_impl(GroundActionList& out_plan) {
+    SearchStatus find_solution_impl(ActionViewList& out_plan) {
         auto initial_search_node = this->m_search_nodes[this->m_initial_state.get_id()];
         // TODO (Dominik): update the data of the initial_search_node
 
-        auto applicable_actions = GroundActionList();
+        auto applicable_actions = ActionViewList();
 
         m_queue.push_back(this->m_initial_state);
         while (!m_queue.empty()) {
@@ -57,18 +65,29 @@ private:
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>>(problem) { }
+        : AlgorithmBase<Algorithm<BrFSTag<P, S, A, AG, SG>>>(problem)
+        , m_search_nodes(AutomaticVector(
+            Builder<CostSearchNodeTag<P, S, A>>(
+                SearchNodeStatus::CLOSED,
+                0, StateView(nullptr),
+                ActionView(nullptr)
+                ))) { }
 };
 
 
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsAAGTag AG, IsSSGTag SG>
-struct TypeTraits<Algorithm<BrFSTag<P, AG, SG>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
+struct TypeTraits<Algorithm<BrFSTag<P, S, A, AG, SG>>> {
     using PlanningModeTag = P;
+    using StateTag = S;
+    using ActionTag = A;
     using AAGTag = AG;
     using SSGTag = SG;
+
+    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using ActionViewList = std::vector<ActionView>;
 };
 
 

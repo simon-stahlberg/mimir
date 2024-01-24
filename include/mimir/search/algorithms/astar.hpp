@@ -12,19 +12,28 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsAAGTag AG = DefaultAAGTag, IsSSGTag SG = DefaultSSGTag>
+template<IsPlanningModeTag P
+       , IsHeuristicTag H
+       , IsStateTag S = BitsetStateTag
+       , IsActionTag A = DefaultActionTag
+       , IsAAGTag AG = DefaultAAGTag
+       , IsSSGTag SG = DefaultSSGTag>
 struct AStarTag : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<AStarTag<P, H, AG, SG>> : public AlgorithmBase<Algorithm<AStarTag<P, H, AG, SG>>> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
+class Algorithm<AStarTag<P, H, S, A, AG, SG>> : public AlgorithmBase<Algorithm<AStarTag<P, H, S, A, AG, SG>>> {
 private:
-    Heuristic<WrappedHeuristicTag<H, P>> m_heuristic;
+    using StateView = View<WrappedStateTag<S, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using ActionViewList = std::vector<ActionView>;
 
-    SearchStatus find_solution_impl(GroundActionList& out_plan) {
+    Heuristic<WrappedHeuristicTag<H, P, S>> m_heuristic;
+
+    SearchStatus find_solution_impl(ActionViewList& out_plan) {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;
     }
@@ -35,7 +44,7 @@ private:
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AStarTag<P, H, AG, SG>>>(problem)
+        : AlgorithmBase<Algorithm<AStarTag<P, H, S, A, AG, SG>>>(problem)
         , m_heuristic(problem) { }
 };
 
@@ -43,12 +52,17 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsAAGTag AG, IsSSGTag SG>
-struct TypeTraits<Algorithm<AStarTag<P, H, AG, SG>>> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
+struct TypeTraits<Algorithm<AStarTag<P, H, S, A, AG, SG>>> {
     using PlanningModeTag = P;
     using HeuristicTag = H;
+    using StateTag = S;
+    using ActionTag = A;
     using AAGTag = AG;
     using SSGTag = SG;
+
+    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using ActionViewList = std::vector<ActionView>;
 };
 
 
