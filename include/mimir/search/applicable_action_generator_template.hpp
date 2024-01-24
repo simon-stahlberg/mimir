@@ -54,8 +54,8 @@ concept IsApplicableActionGeneratorTag = std::derived_from<DerivedTag, Applicabl
 */
 template<IsApplicableActionGeneratorTag A, IsPlanningModeTag P>
 struct WrappedApplicableActionGeneratorTag {
-    using PlanningModeTag = P;
     using ApplicableActionGeneratorTag = A;
+    using PlanningModeTag = P;
 };
 
 template<typename T>

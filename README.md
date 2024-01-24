@@ -52,6 +52,13 @@ After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you s
 
 - Use prefix `ref_` for initialized output parameters and `out_` for non-initialized output parameters. Try to keep the number of output parameters as small as possible. Never use stack-allocated types as output parameters.
 
+### Directory Structure
+
+- Put base classes in a header file with the suffix `<name>_template.hpp`.
+- Put declarations of derived classes with some meaningful name `<description>` in the subdirectory `<name>s`.
+- Put specializations of derived classes in a header file with the suffix `<description>_specializations.hpp` in the subdirectory `<name>s`. At the top of this header file create an overview of all specializations that are provided.
+- Include all specializations in `<name>.hpp`.
+
 ### Header includes
 
 ### Tag Dispatching

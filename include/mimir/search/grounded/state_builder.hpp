@@ -36,12 +36,16 @@ class Builder<State<GroundedTag>> : public BuilderBase<Builder<State<GroundedTag
         this->m_buffer.write(m_id);
     }
 
-    friend class BuilderBase<Builder<State<GroundedTag>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class BuilderBase;
 
     /* Implement StateBuilderBase interface */
     void set_id_impl(state_id_type id) { m_id = id; }
 
-    friend class StateBuilderBase<Builder<State<GroundedTag>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class StateBuilderBase;
 };
 
 }  // namespace mimir

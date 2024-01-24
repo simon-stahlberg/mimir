@@ -19,7 +19,8 @@ private:
     }
 
     // Give access to the private interface implementations.
-    friend class ApplicableActionGeneratorBase<ApplicableActionGenerator<WrappedApplicableActionGeneratorTag<DefaultApplicableActionGeneratorTag, GroundedTag>>>;
+    template<typename>
+    friend class ApplicableActionGeneratorBase;
 };
 
 

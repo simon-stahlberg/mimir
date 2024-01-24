@@ -25,7 +25,9 @@ private:
         return 0.;
     }
 
-    friend class HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag,P>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class HeuristicBase;
 
 public:
     Heuristic(Problem problem) : HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag,P>>>(problem) { }

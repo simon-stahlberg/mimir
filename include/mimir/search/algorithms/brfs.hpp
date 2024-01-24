@@ -50,7 +50,9 @@ private:
         return SearchStatus::FAILED;
     }
 
-    friend class AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class AlgorithmBase;
 
 public:
     Algorithm(const Problem& problem)

@@ -20,7 +20,6 @@ using state_id_type = uint32_t;
  * Interface classes
 */
 template<typename Derived>
-requires HasPlanningModeTag<Derived>
 class StateBuilderBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -38,7 +37,6 @@ public:
 
 
 template<typename Derived>
-requires HasPlanningModeTag<Derived>
 class StateViewBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -65,12 +63,27 @@ public:
 */
 struct StateBaseTag {};
 
-
-/**
- * Concepts
-*/
 template<typename DerivedTag>
 concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
+
+
+/**
+ * Wrapper class.
+ *
+ * Wrap the tag and the planning mode to be able to pass
+ * the planning mode used in the algorithm.
+*/
+template<IsStateTag S, IsPlanningModeTag P>
+struct WrappedStateTag {
+    using StateTag = S;
+    using PlanningModeTag = P;
+};
+
+template<typename T>
+concept IsWrappedStateTag = requires {
+    typename T::PlanningModeTag;
+    typename T::StateTag;
+};
 
 
 /**
@@ -78,11 +91,11 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
  *
  * Spezialize them with your derived tag to provide your own implementation of a state view and state builder.
 */
-template<IsStateTag S>
-class Builder<S> : public BuilderBase<Builder<S>>, public StateBuilderBase<Builder<S>> { };
+template<IsWrappedStateTag T>
+class Builder<T> : public BuilderBase<Builder<T>>, public StateBuilderBase<Builder<T>> { };
 
-template<IsStateTag S>
-class View<S> : public ViewBase<View<S>>, public StateViewBase<View<S>> { };
+template<IsWrappedStateTag T>
+class View<T> : public ViewBase<View<T>>, public StateViewBase<View<T>> { };
 
 
 } // namespace mimir

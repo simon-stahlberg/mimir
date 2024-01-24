@@ -25,7 +25,6 @@ using g_value_type = int;
  * Interface class
 */
 template<typename Derived>
-requires HasPlanningModeTag<Derived>
 class SearchNodeBuilderBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -74,7 +73,9 @@ private:
         this->m_buffer.write(m_creating_action);
     }
 
-    friend class BuilderBase<Builder<SearchNode<P>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class BuilderBase;
 
     /* Implement SearchNodeBuilderBase interface */
     void set_status_impl(SearchNodeStatus status) { m_status = status; }
@@ -82,7 +83,9 @@ private:
     void set_parent_state_impl(View<State<P>> parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(GroundAction creating_action) { m_creating_action = creating_action; }
 
-    friend class SearchNodeBuilderBase<Builder<SearchNode<P>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class SearchNodeBuilderBase;
 
 public:
     Builder() : m_parent_state(View<State<P>>(nullptr)) { }

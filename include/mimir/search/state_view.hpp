@@ -17,7 +17,6 @@ namespace mimir {
  * Interface class
 */
 template<typename Derived>
-requires HasPlanningModeTag<Derived>
 class StateViewBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;

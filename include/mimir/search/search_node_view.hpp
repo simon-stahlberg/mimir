@@ -20,7 +20,6 @@ namespace mimir {
  * Interface class
 */
 template<typename Derived>
-requires HasPlanningModeTag<Derived>
 class SearchNodeViewBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningMode;
@@ -80,7 +79,9 @@ private:
         return read_pointer<const GroundActionImpl>(this->get_data() + s_ground_action);
     }
 
-    friend class SearchNodeViewBase<View<SearchNode<P>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class SearchNodeViewBase;
 
 public:
     /// @brief Create a view on a SearchNode.

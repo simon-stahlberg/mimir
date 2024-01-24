@@ -29,8 +29,9 @@ private:
         return SearchStatus::FAILED;
     }
 
-    // Correct friend declaration
-    friend class AlgorithmBase<Algorithm<AStarTag<P, H, AG, SG>>>;
+    // Give access to the private interface implementations.
+    template<typename>
+    friend class AlgorithmBase;
 
 public:
     Algorithm(const Problem& problem)
