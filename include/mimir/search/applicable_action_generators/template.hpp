@@ -1,12 +1,12 @@
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_TEMPLATE_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_TEMPLATE_HPP_
 
-#include "state.hpp"
-#include "grounded/state_view.hpp"
-#include "lifted/state_view.hpp"
-#include "type_traits.hpp"
+#include "../state.hpp"
+#include "../grounded/state_view.hpp"
+#include "../lifted/state_view.hpp"
+#include "../type_traits.hpp"
 
-#include "../formalism/problem/declarations.hpp"
+#include "../../formalism/problem/declarations.hpp"
 
 
 namespace mimir
@@ -77,4 +77,4 @@ class ApplicableActionGenerator : public ApplicableActionGeneratorBase<Applicabl
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATOR_HPP_
+#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_TEMPLATE_HPP_

@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_HPP_
 
-#include "../applicable_action_generator_template.hpp"
+#include "template.hpp"
 
 
 namespace mimir
@@ -31,4 +31,4 @@ struct TypeTraits<DefaultApplicableActionGenerator<P>> {
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_HPP_
+#endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_HPP_

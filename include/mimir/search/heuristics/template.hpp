@@ -1,12 +1,12 @@
-#ifndef MIMIR_SEARCH_HEURISTIC_TEMPLATE_HPP_
-#define MIMIR_SEARCH_HEURISTIC_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_HEURISTICS_TEMPLATE_HPP_
+#define MIMIR_SEARCH_HEURISTICS_TEMPLATE_HPP_
 
-#include "grounded/state_view.hpp"
-#include "lifted/state_view.hpp"
-#include "type_traits.hpp"
+#include "../grounded/state_view.hpp"
+#include "../lifted/state_view.hpp"
+#include "../type_traits.hpp"
 
-#include "../common/mixins.hpp"
-#include "../formalism/problem/declarations.hpp"
+#include "../../common/mixins.hpp"
+#include "../../formalism/problem/declarations.hpp"
 
 
 namespace mimir

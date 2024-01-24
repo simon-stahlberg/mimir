@@ -1,9 +1,9 @@
-#ifndef MIMIR_SEARCH_OPENLIST_TEMPLATE_HPP_
-#define MIMIR_SEARCH_OPENLIST_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_OPENLISTS_TEMPLATE_HPP_
+#define MIMIR_SEARCH_OPENLISTS_TEMPLATE_HPP_
 
-#include "type_traits.hpp"
+#include "../type_traits.hpp"
 
-#include "../common/mixins.hpp"
+#include "../../common/mixins.hpp"
 
 
 namespace mimir

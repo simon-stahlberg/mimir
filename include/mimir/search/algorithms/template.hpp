@@ -1,21 +1,21 @@
-#ifndef MIMIR_SEARCH_ALGORITHM_TEMPLATE_HPP_
-#define MIMIR_SEARCH_ALGORITHM_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_TEMPLATE_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_TEMPLATE_HPP_
 
-#include "config.hpp"
-#include "search_node.hpp"
-#include "search_node_view.hpp"
-#include "search_node_builder.hpp"
-#include "type_traits.hpp"
-#include "applicable_action_generators.hpp"
-#include "successor_state_generators.hpp"
-#include "grounded/state_builder.hpp"
-#include "grounded/state_view.hpp"
-#include "lifted/state_builder.hpp"
-#include "lifted/state_view.hpp"
+#include "../config.hpp"
+#include "../search_node.hpp"
+#include "../search_node_view.hpp"
+#include "../search_node_builder.hpp"
+#include "../type_traits.hpp"
+#include "../applicable_action_generators.hpp"
+#include "../successor_state_generators.hpp"
+#include "../grounded/state_builder.hpp"
+#include "../grounded/state_view.hpp"
+#include "../lifted/state_builder.hpp"
+#include "../lifted/state_view.hpp"
 
-#include "../buffer/containers/vector.hpp"
-#include "../common/mixins.hpp"
-#include "../formalism/problem/declarations.hpp"
+#include "../../buffer/containers/vector.hpp"
+#include "../../common/mixins.hpp"
+#include "../../formalism/problem/declarations.hpp"
 
 
 namespace mimir
@@ -85,4 +85,4 @@ class Algorithm : public AlgorithmBase<Algorithm<A>> { };
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_ALGORITHM_TEMPLATE_HPP_
+#endif  // MIMIR_SEARCH_ALGORITHMS_TEMPLATE_HPP_

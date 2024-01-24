@@ -1,9 +1,9 @@
-#ifndef MIMIR_SEARCH_PLANNER_TEMPLATE_HPP_
-#define MIMIR_SEARCH_PLANNER_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_PLANNERS_TEMPLATE_HPP_
+#define MIMIR_SEARCH_PLANNERS_TEMPLATE_HPP_
 
-#include "config.hpp"
+#include "../config.hpp"
 
-#include "algorithm_base.hpp"
+#include "../algorithms.hpp"
 
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
-#include "../algorithm_template.hpp"
+#include "template.hpp"
 
 #include "../heuristics.hpp"
 
