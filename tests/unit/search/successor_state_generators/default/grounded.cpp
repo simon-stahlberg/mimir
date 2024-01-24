@@ -8,9 +8,9 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchSuccessorStateGeneratorDefaultGroundedTest) {
+TEST(MimirTests, SearchSSGDefaultGroundedTest) {
     // Instantiate grounded version
-    auto grounded_state_repository = SuccessorStateGenerator<WrappedSuccessorStateGeneratorTag<DefaultSuccessorStateGeneratorTag, GroundedTag>>();
+    auto grounded_state_repository = SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag>>();
     auto problem = static_cast<Problem>(nullptr);
     const auto initial_state = grounded_state_repository.get_or_create_initial_state(problem);
 }

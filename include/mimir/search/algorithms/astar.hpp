@@ -12,14 +12,14 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag, IsSuccessorStateGeneratorTag SG = DefaultSuccessorStateGeneratorTag>
+template<IsPlanningModeTag P, IsHeuristicTag H, IsAAGTag AG = DefaultAAGTag, IsSSGTag SG = DefaultSSGTag>
 struct AStarTag : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+template<IsPlanningModeTag P, IsHeuristicTag H, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<AStarTag<P, H, AG, SG>> : public AlgorithmBase<Algorithm<AStarTag<P, H, AG, SG>>> {
 private:
     Heuristic<WrappedHeuristicTag<H, P>> m_heuristic;
@@ -43,12 +43,12 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+template<IsPlanningModeTag P, IsHeuristicTag H, IsAAGTag AG, IsSSGTag SG>
 struct TypeTraits<Algorithm<AStarTag<P, H, AG, SG>>> {
     using PlanningModeTag = P;
     using HeuristicTag = H;
-    using ApplicableActionGeneratorTag = AG;
-    using SuccessorStateGeneratorTag = SG;
+    using AAGTag = AG;
+    using SSGTag = SG;
 };
 
 

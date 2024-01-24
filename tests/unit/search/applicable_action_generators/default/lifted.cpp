@@ -6,9 +6,9 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchApplicableActionGeneratorsDefaultLiftedTest) {
+TEST(MimirTests, SearchAAGsDefaultLiftedTest) {
     // Instantiate lifted version
-    auto lifted_successor_generator = DefaultApplicableActionGenerator<LiftedTag>();
+    auto lifted_successor_generator = DefaultAAG<LiftedTag>();
 }
 
 }

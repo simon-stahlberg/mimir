@@ -30,12 +30,12 @@ template<typename Derived>
 class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
-    using AG = typename TypeTraits<Derived>::ApplicableActionGeneratorTag;
-    using SG = typename TypeTraits<Derived>::SuccessorStateGeneratorTag;
+    using AG = typename TypeTraits<Derived>::AAGTag;
+    using SG = typename TypeTraits<Derived>::SSGTag;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SuccessorStateGenerator<WrappedSuccessorStateGeneratorTag<SG, P>>())
+        , m_state_repository(SSG<WrappedSSGTag<SG, P>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_search_nodes(AutomaticVector(Builder<SearchNode<P>>(SearchNodeStatus::CLOSED, 0, View<State<P>>(nullptr), nullptr))) { }
 
@@ -46,9 +46,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    SuccessorStateGenerator<WrappedSuccessorStateGeneratorTag<SG, P>> m_state_repository;
+    SSG<WrappedSSGTag<SG, P>> m_state_repository;
     View<State<P>> m_initial_state;
-    ApplicableActionGenerator<WrappedApplicableActionGeneratorTag<AG, P>> m_successor_generator;
+    AAG<WrappedAAGTag<AG, P>> m_successor_generator;
     AutomaticVector<SearchNode<P>> m_search_nodes;
 
 public:

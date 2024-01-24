@@ -16,11 +16,11 @@ namespace mimir
  * Interface class.
 */
 template<typename Derived>
-class ApplicableActionGeneratorBase : public UncopyableMixin<ApplicableActionGeneratorBase<Derived>> {
+class AAGBase : public UncopyableMixin<AAGBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
 
-    ApplicableActionGeneratorBase() = default;
+    AAGBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -40,10 +40,10 @@ public:
  *
  * Derive from it to provide your own implementation of a applicable action generator.
 */
-struct ApplicableActionGeneratorBaseTag {};
+struct AAGBaseTag {};
 
 template<typename DerivedTag>
-concept IsApplicableActionGeneratorTag = std::derived_from<DerivedTag, ApplicableActionGeneratorBaseTag>;
+concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
 
 
 /**
@@ -52,16 +52,16 @@ concept IsApplicableActionGeneratorTag = std::derived_from<DerivedTag, Applicabl
  * Wrap the tag and the planning mode to be able to pass
  * the planning mode used in the algorithm.
 */
-template<IsApplicableActionGeneratorTag A, IsPlanningModeTag P>
-struct WrappedApplicableActionGeneratorTag {
-    using ApplicableActionGeneratorTag = A;
+template<IsAAGTag A, IsPlanningModeTag P>
+struct WrappedAAGTag {
+    using AAGTag = A;
     using PlanningModeTag = P;
 };
 
 template<typename T>
-concept IsWrappedApplicableActionGeneratorTag = requires {
+concept IsWrappedAAGTag = requires {
     typename T::PlanningModeTag;
-    typename T::ApplicableActionGeneratorTag;
+    typename T::AAGTag;
 };
 
 
@@ -70,8 +70,8 @@ concept IsWrappedApplicableActionGeneratorTag = requires {
  *
  * Spezialize it with your derived tag to provide your own implementation of an applicable action generator.
 */
-template<IsWrappedApplicableActionGeneratorTag A>
-class ApplicableActionGenerator : public ApplicableActionGeneratorBase<ApplicableActionGenerator<A>> { };
+template<IsWrappedAAGTag A>
+class AAG : public AAGBase<AAG<A>> { };
 
 
 

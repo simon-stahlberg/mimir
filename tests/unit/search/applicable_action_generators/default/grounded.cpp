@@ -6,9 +6,9 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchApplicableActionGeneratorsDefaultGroundedTest) {
+TEST(MimirTests, SearchAAGsDefaultGroundedTest) {
     // Instantiate grounded version
-    auto grounded_successor_generator = DefaultApplicableActionGenerator<GroundedTag>();
+    auto grounded_successor_generator = DefaultAAG<GroundedTag>();
 }
 
 }

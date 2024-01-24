@@ -20,11 +20,11 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class SuccessorStateGeneratorBase : public UncopyableMixin<SuccessorStateGeneratorBase<Derived>> {
+class SSGBase : public UncopyableMixin<SSGBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
 
-    SuccessorStateGeneratorBase() = default;
+    SSGBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -51,10 +51,10 @@ public:
  *
  * Derive from it to provide your own implementation of a successor state generator.
 */
-struct SuccessorStateGeneratorBaseTag {};
+struct SSGBaseTag {};
 
 template<typename DerivedTag>
-concept IsSuccessorStateGeneratorTag = std::derived_from<DerivedTag, SuccessorStateGeneratorBaseTag>;
+concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
 
 
 /**
@@ -63,16 +63,16 @@ concept IsSuccessorStateGeneratorTag = std::derived_from<DerivedTag, SuccessorSt
  * Wrap the tag and the planning mode to be able to pass
  * the planning mode used in the algorithm.
 */
-template<IsSuccessorStateGeneratorTag SG, IsPlanningModeTag P>
-struct WrappedSuccessorStateGeneratorTag {
+template<IsSSGTag SG, IsPlanningModeTag P>
+struct WrappedSSGTag {
     using PlanningModeTag = P;
-    using SuccessorStateGeneratorTag = SG;
+    using SSGTag = SG;
 };
 
 template<typename T>
-concept IsWrappedSuccessorStateGenerator = requires {
+concept IsWrappedSSG = requires {
     typename T::PlanningModeTag;
-    typename T::SuccessorStateGeneratorTag;
+    typename T::SSGTag;
 };
 
 
@@ -81,8 +81,8 @@ concept IsWrappedSuccessorStateGenerator = requires {
  *
  * Spezialize it with your derived tag to provide your own implementation of an successor state generator.
 */
-template<IsWrappedSuccessorStateGenerator S>
-class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStateGenerator<S>> { };
+template<IsWrappedSSG S>
+class SSG : public SSGBase<SSG<S>> { };
 
 
 }  // namespace mimir

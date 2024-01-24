@@ -12,7 +12,7 @@ namespace mimir::tests
 TEST(MimirTests, GroundedAstarTest) {
     // Instantiate grounded version
     auto problem = static_cast<Problem>(nullptr);
-    auto grounded_astar = Algorithm<AStarTag<GroundedTag, BlindTag, DefaultApplicableActionGeneratorTag>>(problem);
+    auto grounded_astar = Algorithm<AStarTag<GroundedTag, BlindTag, DefaultAAGTag>>(problem);
     GroundActionList plan;
     const auto search_status = grounded_astar.find_solution(plan);
 }

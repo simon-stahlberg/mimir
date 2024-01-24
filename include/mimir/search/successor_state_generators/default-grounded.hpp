@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_GROUNDED_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_GROUNDED_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_GROUNDED_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_GROUNDED_HPP_
 
-#include "bitset.hpp"
+#include "default.hpp"
 
 
 namespace mimir
@@ -11,8 +11,8 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SuccessorStateGenerator<WrappedSuccessorStateGeneratorTag<DefaultSuccessorStateGeneratorTag, GroundedTag>>
-    : public SuccessorStateGeneratorBase<SuccessorStateGenerator<WrappedSuccessorStateGeneratorTag<DefaultSuccessorStateGeneratorTag, GroundedTag>>> {
+class SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag>>
+    : public SSGBase<SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag>>> {
 private:
     [[nodiscard]] View<State<GroundedTag>> get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
@@ -31,10 +31,10 @@ private:
 
     // Give access to the private interface implementations.
     template<typename>
-    friend class SuccessorStateGeneratorBase;
+    friend class SSGBase;
 };
 
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_GROUNDED_HPP_
+#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_DEFAULT_GROUNDED_HPP_

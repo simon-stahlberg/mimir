@@ -14,14 +14,14 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
 */
-template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG = DefaultApplicableActionGeneratorTag, IsSuccessorStateGeneratorTag SG = DefaultSuccessorStateGeneratorTag>
+template<IsPlanningModeTag P, IsAAGTag AG = DefaultAAGTag, IsSSGTag SG = DefaultSSGTag>
 struct BrFSTag : public AlgorithmBaseTag { };
 
 
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+template<IsPlanningModeTag P, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<BrFSTag<P, AG, SG>> : public AlgorithmBase<Algorithm<BrFSTag<P, AG, SG>>> {
 private:
     // Implement configuration independent functionality.
@@ -64,11 +64,11 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsApplicableActionGeneratorTag AG, IsSuccessorStateGeneratorTag SG>
+template<IsPlanningModeTag P, IsAAGTag AG, IsSSGTag SG>
 struct TypeTraits<Algorithm<BrFSTag<P, AG, SG>>> {
     using PlanningModeTag = P;
-    using ApplicableActionGeneratorTag = AG;
-    using SuccessorStateGeneratorTag = SG;
+    using AAGTag = AG;
+    using SSGTag = SG;
 };
 
 
