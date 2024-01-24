@@ -36,7 +36,7 @@ public:
 
 
 /**
- * ID class.
+ * ID dispatch class.
  *
  * Derive from it to provide your own implementation of a applicable action generator.
 */
@@ -49,8 +49,7 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
 /**
  * Wrapper class.
  *
- * Wrap the tag and the planning mode to be able to pass
- * the planning mode used in the algorithm.
+ * Wrap the tag and the planning mode to be able use a given planning mode.
 */
 template<IsAAGTag A, IsPlanningModeTag P>
 struct WrappedAAGTag {
@@ -68,7 +67,7 @@ concept IsWrappedAAGTag = requires {
 /**
  * General implementation class.
  *
- * Spezialize it with your derived tag to provide your own implementation of an applicable action generator.
+ * Spezialize the wrapped tag to provide your own implementation of a applicable action generator.
 */
 template<IsWrappedAAGTag A>
 class AAG : public AAGBase<AAG<A>> { };

@@ -50,8 +50,7 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 /**
  * Wrapper class.
  *
- * Wrap the tag and the planning mode to be able to pass
- * the planning mode used in the algorithm.
+ * Wrap the tag and the planning mode to be able use a given planning mode.
 */
 template<IsHeuristicTag H, IsPlanningModeTag P>
 struct WrappedHeuristicTag {
@@ -69,7 +68,7 @@ concept IsWrappedHeuristicTag = requires {
 /**
  * General implementation class.
  *
- * Spezialize it with your heuristic instantiation to provide your own implementation of a heuristic.
+ * Spezialize the wrapped tag to provide your own implementation of a heuristic.
 */
 template<IsWrappedHeuristicTag T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };

@@ -8,9 +8,11 @@ namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation
+ * Derived ID dispatch class.
+ *
+ * Add template parameters if needed
 */
-class DefaultAAGTag : public AAGBaseTag {};
+struct DefaultAAGTag : public AAGBaseTag {};
 
 
 /**

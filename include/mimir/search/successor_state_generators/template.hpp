@@ -60,8 +60,7 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
 /**
  * Wrapper class.
  *
- * Wrap the tag and the planning mode to be able to pass
- * the planning mode used in the algorithm.
+ * Wrap the tag and the planning mode to be able use a given planning mode.
 */
 template<IsSSGTag SG, IsPlanningModeTag P>
 struct WrappedSSGTag {
@@ -79,7 +78,7 @@ concept IsWrappedSSG = requires {
 /**
  * General implementation class.
  *
- * Spezialize it with your derived tag to provide your own implementation of an successor state generator.
+ * Spezialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<IsWrappedSSG S>
 class SSG : public SSGBase<SSG<S>> { };
