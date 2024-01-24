@@ -16,6 +16,7 @@ set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 add_executable(${TEST_NAME}
     "search/heuristics/blind.cpp"
     "search/openlists/priority_queue.cpp"
+    "search/search_nodes/cost.cpp"
     "search/states/bitset-grounded.cpp"
     "search/states/bitset-lifted.cpp"
 )

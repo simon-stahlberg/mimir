@@ -21,7 +21,7 @@ class CostSearchNodeTag : public SearchNodeBaseTag {};
  * Aliases
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-using CostSearchNodeBuilder = View<CostSearchNodeTag<P, S, A>>;
+using CostSearchNodeBuilder = Builder<CostSearchNodeTag<P, S, A>>;
 
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 using CostSearchNodeView = View<CostSearchNodeTag<P, S, A>>;
@@ -51,11 +51,11 @@ struct TypeTraits<CostSearchNodeView<P, S, A>> {
 template<typename Derived>
 class CostSearchNodeBuilderBase {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
     using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
     CostSearchNodeBuilderBase() = default;
     friend Derived;
@@ -87,7 +87,7 @@ class Builder<CostSearchNodeTag<P, S, A>>
     , public CostSearchNodeBuilderBase<Builder<CostSearchNodeTag<P, S, A>>> {
 private:
     using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
     SearchNodeStatus m_status;
     int m_g_value;
@@ -96,7 +96,7 @@ private:
 
     /* Implement BuilderBase interface */
     data_size_type calculate_size_impl() const {
-        return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(char*) + sizeof(Action);
+        return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(StateView) + sizeof(ActionView);
     }
 
     void finish_impl() {
@@ -137,11 +137,11 @@ public:
 template<typename Derived>
 class CostSearchNodeViewBase {
 private:
-    using P = typename TypeTraits<Derived>::PlanningMode;
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
     using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
     CostSearchNodeViewBase() = default;
     friend Derived;
@@ -151,17 +151,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    /* Mutable getters. */
     [[nodiscard]] SearchNodeStatus& get_status() { return self().get_status_impl(); }
     [[nodiscard]] g_value_type& get_g_value() { return self().get_g_value_impl(); }
     [[nodiscard]] StateView get_parent_state() { return self().get_parent_state_impl(); }
     [[nodiscard]] ActionView get_ground_action() { return self().get_ground_action_impl(); }
-
-    /* Immutable getters. */
-    [[nodiscard]] const SearchNodeStatus& get_status() const { return self().get_status_impl(); }
-    [[nodiscard]] const g_value_type& get_g_value() const { return self().get_g_value_impl(); }
-    [[nodiscard]] const StateView get_parent_state() const { return self().get_parent_state_impl(); }
-    [[nodiscard]] const ActionView get_ground_action() const { return self().get_ground_action_impl(); }
 };
 
 
@@ -176,12 +169,12 @@ class View<CostSearchNodeTag<P, S, A>>
     , public CostSearchNodeViewBase<View<CostSearchNodeTag<P, S, A>>> {
 private:
     using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
     static constexpr size_t s_status_offset =       sizeof(data_size_type);
     static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);
     static constexpr size_t s_parent_state_offset = sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type);
-    static constexpr size_t s_ground_action =       sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type) + sizeof(View<State<P>>);
+    static constexpr size_t s_ground_action =       sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type) + sizeof(StateView);
     /* Implement ViewBase interface: */
     [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return 0; }
 
@@ -199,12 +192,12 @@ private:
     }
 
     [[nodiscard]] ActionView get_ground_action_impl() {
-        return read_pointer<ActionView>(this->get_data() + s_ground_action);
+        return read_value<ActionView>(this->get_data() + s_ground_action);
     }
 
     // Give access to the private interface implementations.
     template<typename>
-    friend class SearchNodeViewBase;
+    friend class CostSearchNodeViewBase;
 
 public:
     /// @brief Create a view on a SearchNode.

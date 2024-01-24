@@ -17,6 +17,7 @@ TEST(MimirTests, SearchStatesBitsetLiftedTest) {
     // View the data generated in the builder.
     auto view = View<WrappedStateTag<BitsetStateTag, LiftedTag>>(builder.get_buffer().get_data());
     EXPECT_EQ(view.get_id(), 5);
+    EXPECT_EQ(view.get_size(), 8);
 }
 
 }

@@ -36,8 +36,6 @@ protected:
     /// @brief Access the data to be interpreted by derived classes.
     [[nodiscard]] char* get_data() { return m_data; }
     [[nodiscard]] const char* get_data() const { return m_data; }
-    /// @brief The first 4 bytes are always reserved for the size, see builder
-    [[nodiscard]] data_size_type get_size() const { return read_value<data_size_type>(m_data); }
 
 public:
     /// @brief Compare the representative data.
@@ -56,6 +54,9 @@ public:
         MurmurHash3_x64_128(get_data() + offset, get_size() - offset, seed, hash);
         return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
     }
+
+    /// @brief The first 4 bytes are always reserved for the size, see builder
+    [[nodiscard]] data_size_type get_size() const { return read_value<data_size_type>(m_data); }
 };
 
 
