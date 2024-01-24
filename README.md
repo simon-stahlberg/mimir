@@ -68,5 +68,5 @@ We sometimes use reasonable shortcuts for `<tag>` to make it more readable.
 ### Concepts
 
 - Use prefixes `Is` or `Has` to obtain more meaningful names.
-- Apply concepts only in the requires part to make the distinction clearer
+- Always apply `Is` concepts in the template argument declaration to provide type hints for the IDE.
 
