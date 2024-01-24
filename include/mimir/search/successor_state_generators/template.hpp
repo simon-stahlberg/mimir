@@ -2,10 +2,7 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
 
 #include "../config.hpp"
-#include "../grounded/state_view.hpp"
-#include "../grounded/state_builder.hpp"
-#include "../lifted/state_view.hpp"
-#include "../lifted/state_builder.hpp"
+#include "../states.hpp
 #include "../type_traits.hpp"
 
 #include "../../buffer/containers/unordered_set.hpp"

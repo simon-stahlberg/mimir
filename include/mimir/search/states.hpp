@@ -4,7 +4,8 @@
 /**
  * Include all spezializations here
 */
-#include "states/default_specializations.hpp"
+#include "states/bitset-grounded.hpp"
+#include "states/bitset-lifted.hpp"
 
 
 #endif  // MIMIR_SEARCH_STATES_HPP_

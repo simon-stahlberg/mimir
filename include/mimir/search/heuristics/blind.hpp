@@ -16,12 +16,13 @@ struct BlindTag : public HeuristicBaseTag { };
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P>
-class Heuristic<WrappedHeuristicTag<BlindTag, P>> : public HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag,P>>> {
+template<IsPlanningModeTag P, IsStateTag S>
+class Heuristic<WrappedHeuristicTag<BlindTag, P, S>>
+    : public HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S>>> {
 private:
-    using PlanningModeTag = P;
+    using StateView = View<WrappedStateTag<S, P>>;
 
-    double compute_heuristic_impl(const View<State<P>>& state) {
+    double compute_heuristic_impl(const StateView& state) {
         return 0.;
     }
 
@@ -30,20 +31,21 @@ private:
     friend class HeuristicBase;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag,P>>>(problem) { }
+    Heuristic(Problem problem) : HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S>>>(problem) { }
 };
 
 
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P>
-struct TypeTraits<Heuristic<WrappedHeuristicTag<BlindTag,P>>> {
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<Heuristic<WrappedHeuristicTag<BlindTag, P, S>>> {
     using PlanningModeTag = P;
+    using StateTag = S;
 };
 
 
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_HEURISTICS_ZERO_HPP_
+#endif  // MIMIR_SEARCH_HEURISTICS_BLIND_HPP_

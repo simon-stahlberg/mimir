@@ -33,12 +33,14 @@ class Builder<WrappedStateTag<BitsetStateTag, LiftedTag>>
         this->m_buffer.write(m_id);
     }
 
-    friend class BuilderBase<Builder<WrappedStateTag<BitsetStateTag, LiftedTag>>>;
+    template<typename>
+    friend class BuilderBase;
 
     /* Implement StateBuilderBase interface */
     void set_id_impl(state_id_type id) { m_id = id; }
 
-    friend class StateBuilderBase<Builder<WrappedStateTag<BitsetStateTag, LiftedTag>>>;
+    template<typename>
+    friend class StateBuilderBase;
 };
 
 

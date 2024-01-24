@@ -15,7 +15,17 @@ namespace mimir {
 */
 enum SearchNodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
 
-using state_id_type = uint32_t;
+using g_value_type = int;
+
+
+/**
+ * ID class
+*/
+struct SearchNodeBaseTag {};
+
+template<typename DerivedTag>
+concept IsSearchNodeTag = std::derived_from<DerivedTag, SearchNodeBaseTag>;
+
 
 
 

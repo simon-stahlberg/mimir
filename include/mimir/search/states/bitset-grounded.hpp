@@ -33,12 +33,14 @@ class Builder<WrappedStateTag<BitsetStateTag, GroundedTag>>
         this->m_buffer.write(m_id);
     }
 
-    friend class BuilderBase<Builder<WrappedStateTag<BitsetStateTag, GroundedTag>>>;
+    template<typename>
+    friend class BuilderBase;
 
     /* Implement StateBuilderBase interface */
     void set_id_impl(state_id_type id) { m_id = id; }
 
-    friend class StateBuilderBase<Builder<WrappedStateTag<BitsetStateTag, GroundedTag>>>;
+    template<typename>
+    friend class StateBuilderBase;
 };
 
 
@@ -58,14 +60,16 @@ private:
     /* Implement ViewBase interface */
     [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return s_data_offset; }
 
-    friend class ViewBase<View<WrappedStateTag<BitsetStateTag, GroundedTag>>>;
+    template<typename>
+    friend class ViewBase;
 
     /* Implement SearchNodeViewBase interface */
     [[nodiscard]] state_id_type get_id_impl() const {
         return read_value<state_id_type>(this->get_data() + s_id_offset);
     }
 
-    friend class StateViewBase<View<WrappedStateTag<BitsetStateTag, GroundedTag>>>;
+    template<typename>
+    friend class StateViewBase;
 
 public:
     explicit View(char* data) : ViewBase<View<WrappedStateTag<BitsetStateTag, GroundedTag>>>(data) { }

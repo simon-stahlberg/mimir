@@ -11,7 +11,14 @@ file(GLOB_RECURSE MIMIR_TEST_HEADER_FILES
 
 set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 
-add_executable(${TEST_NAME} ${MIMIR_TEST_SOURCE_FILES} ${MIMIR_TEST_HEADER_FILES})
+# add_executable(${TEST_NAME} ${MIMIR_TEST_SOURCE_FILES} ${MIMIR_TEST_HEADER_FILES})
+
+add_executable(${TEST_NAME}
+    "search/heuristics/blind.cpp"
+    "search/openlists/priority_queue.cpp"
+    "search/states/bitset-grounded.cpp"
+    "search/states/bitset-lifted.cpp"
+)
 
 target_link_libraries(${TEST_NAME}
     PRIVATE

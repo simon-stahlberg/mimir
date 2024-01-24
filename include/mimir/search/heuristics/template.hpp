@@ -1,8 +1,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_TEMPLATE_HPP_
 #define MIMIR_SEARCH_HEURISTICS_TEMPLATE_HPP_
 
-#include "../grounded/state_view.hpp"
-#include "../lifted/state_view.hpp"
+#include "../states.hpp"
 #include "../type_traits.hpp"
 
 #include "../../common/mixins.hpp"
@@ -19,6 +18,8 @@ template<typename Derived>
 class HeuristicBase : public UncopyableMixin<HeuristicBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
+    using StateView = View<WrappedStateTag<S, P>>;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
@@ -30,7 +31,7 @@ private:
     Problem m_problem;
 
 public:
-    [[nodiscard]] double compute_heuristic(View<State<P>> state) {
+    [[nodiscard]] double compute_heuristic(StateView state) {
         return self().compute_heuristic_impl(state);
     }
 };
@@ -52,16 +53,18 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
  *
  * Wrap the tag and the planning mode to be able use a given planning mode.
 */
-template<IsHeuristicTag H, IsPlanningModeTag P>
+template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S>
 struct WrappedHeuristicTag {
     using HeuristicTag = H;
     using PlanningModeTag = P;
+    using StateTag = S;
 };
 
 template<typename T>
 concept IsWrappedHeuristicTag = requires {
     typename T::HeuristicTag;
     typename T::PlanningModeTag;
+    typename T::StateTag;
 };
 
 

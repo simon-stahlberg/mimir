@@ -1,9 +1,8 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_TEMPLATE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_TEMPLATE_HPP_
 
-#include "../state.hpp"
-#include "../grounded/state_view.hpp"
-#include "../lifted/state_view.hpp"
+#include "../actions.hpp"
+#include "../states.hpp"
 #include "../type_traits.hpp"
 
 #include "../../formalism/problem/declarations.hpp"
@@ -19,6 +18,11 @@ template<typename Derived>
 class AAGBase : public UncopyableMixin<AAGBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
+
+    using StateView = View<WrappedStateTag<S, P>>;
+    using ActionView = View<DefaultActionTag<P, S>>;
+
 
     AAGBase() = default;
     friend Derived;
@@ -29,7 +33,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(View<State<P>> state, GroundActionList& out_applicable_actions) {
+    void generate_applicable_actions(StateView state, std::vector<ActionView>& out_applicable_actions) {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 };
@@ -51,15 +55,17 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
  *
  * Wrap the tag and the planning mode to be able use a given planning mode.
 */
-template<IsAAGTag A, IsPlanningModeTag P>
+template<IsAAGTag A, IsPlanningModeTag P, IsStateTag S>
 struct WrappedAAGTag {
     using AAGTag = A;
+    using StateTag = S;
     using PlanningModeTag = P;
 };
 
 template<typename T>
 concept IsWrappedAAGTag = requires {
     typename T::PlanningModeTag;
+    typename T::StateTag;
     typename T::AAGTag;
 };
 

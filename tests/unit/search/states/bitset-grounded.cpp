@@ -1,6 +1,4 @@
-#include <mimir/search/config.hpp>
-#include <mimir/search/lifted/state_builder.hpp>
-#include <mimir/search/lifted/state_view.hpp>
+#include <mimir/search/states/bitset-grounded.hpp>
 
 #include <gtest/gtest.h>
 
@@ -8,16 +6,16 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, LiftedStateViewTest) {
+TEST(MimirTests, SearchStatesBitsetGroundedTest) {
     // Build a state.
-    auto builder = Builder<State<LiftedTag>>();
+    auto builder = Builder<WrappedStateTag<BitsetStateTag, GroundedTag>>();
     builder.set_id(5);
     builder.finish();
     EXPECT_NE(builder.get_buffer().get_data(), nullptr);
     EXPECT_EQ(builder.get_buffer().get_size(), 8);
 
     // View the data generated in the builder.
-    auto view = View<State<LiftedTag>>(builder.get_buffer().get_data());
+    auto view = View<WrappedStateTag<BitsetStateTag, GroundedTag>>(builder.get_buffer().get_data());
     EXPECT_EQ(view.get_id(), 5);
 }
 

@@ -28,12 +28,12 @@ using BitsetStateView = View<WrappedStateTag<BitsetStateTag, P>>;
 */
 template<IsPlanningModeTag P>
 struct TypeTraits<BitsetStateBuilder<P>> {
-    using PlanningMode = P;
+    using PlanningModeTag = P;
 };
 
 template<IsPlanningModeTag P>
 struct TypeTraits<BitsetStateView<P>> {
-    using PlanningMode = P;
+    using PlanningModeTag = P;
 };
 
 

@@ -51,6 +51,7 @@ public:
     state_id_type get_id() const { return self().get_id_impl(); }
 };
 
+
 /**
  * ID class
 */
@@ -63,8 +64,7 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
 /**
  * Wrapper class.
  *
- * Wrap the tag and the planning mode to be able to pass
- * the planning mode used in the algorithm.
+ * Wrap the tag and the planning mode to be able use a given planning mode.
 */
 template<IsStateTag S, IsPlanningModeTag P>
 struct WrappedStateTag {
@@ -82,7 +82,7 @@ concept IsWrappedStateTag = requires {
 /**
  * General implementation class.
  *
- * Spezialize it with your derived tag to provide your own implementation of an state representation.
+ * Spezialize the wrapped tag to provide your own implementation of a state representation.
 */
 template<IsWrappedStateTag S>
 class Builder<S> : public BuilderBase<Builder<S>>, public StateBuilderBase<Builder<S>> { };
