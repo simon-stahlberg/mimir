@@ -12,7 +12,9 @@
 namespace mimir {
 
 /**
- * ID class
+ * ID base class.
+ *
+ * Derive from it to provide your own implementation.
 */
 struct ActionBaseTag {};
 
@@ -21,23 +23,21 @@ concept IsActionTag = std::derived_from<DerivedTag, ActionBaseTag>;
 
 
 /**
- * Wrapper class.
+ * Wrapper class use for the actual dispatch.
  *
- * Wrap the tag and the planning mode to be able use a given planning mode.
+ * Use additional template arguments from the parent template.
 */
 template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
-struct WrappedActionTag {
-    using ActionTag = A;
-    using PlanningModeTag = P;
-    using StateTag = S;
-};
+struct WrappedActionTag {};
 
 template<typename T>
-concept IsWrappedActionTag = requires {
-    typename T::ActionTag;
-    typename T::PlanningModeTag;
-    typename T::StateTag;
-};
+struct is_wrapped_action_tag : std::false_type {};
+
+template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
+struct is_wrapped_action_tag<WrappedActionTag<A, P, S>> : std::true_type {};
+
+template<typename T>
+concept IsWrappedActionTag = is_wrapped_action_tag<T>::value;
 
 
 } // namespace mimir

@@ -16,9 +16,9 @@ struct BlindTag : public HeuristicBaseTag { };
 /**
  * Spezialized implementation class.
 */
-template<IsPlanningModeTag P, IsStateTag S>
-class Heuristic<WrappedHeuristicTag<BlindTag, P, S>>
-    : public HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+class Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>
+    : public HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>> {
 private:
     using StateView = View<WrappedStateTag<S, P>>;
 
@@ -31,17 +31,18 @@ private:
     friend class HeuristicBase;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S>>>(problem) { }
+    Heuristic(Problem problem) : HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>>(problem) { }
 };
 
 
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<Heuristic<WrappedHeuristicTag<BlindTag, P, S>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct TypeTraits<Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>> {
     using PlanningModeTag = P;
     using StateTag = S;
+    using ActionTag = A;
 };
 
 

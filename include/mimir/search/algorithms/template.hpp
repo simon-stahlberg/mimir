@@ -58,9 +58,7 @@ public:
 
 
 /**
- * ID class.
- *
- * Derive from it to provide your own implementation of an algorithm.
+ * ID dispatch base class.
 */
 struct AlgorithmBaseTag {};
 

@@ -9,7 +9,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, GroundedAstarTest) {
+TEST(MimirTests, SearchAlgorithmsAstarGroundedBlindTest) {
     // Instantiate grounded version
     auto problem = static_cast<Problem>(nullptr);
     auto grounded_astar = Algorithm<AStarTag<GroundedTag, BlindTag>>(problem);
@@ -19,7 +19,7 @@ TEST(MimirTests, GroundedAstarTest) {
 }
 
 
-TEST(MimirTests, LiftedAstarTest) {
+TEST(MimirTests, SearchAlgorithmsAstarLiftedBlindTest) {
     // Instantiate lifted version
     auto problem = static_cast<Problem>(nullptr);
     auto lifted_astar = Algorithm<AStarTag<LiftedTag, BlindTag>>(problem);

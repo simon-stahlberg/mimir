@@ -41,9 +41,7 @@ public:
 
 
 /**
- * ID dispatch class.
- *
- * Derive from it to provide your own implementation of a applicable action generator.
+ * ID dispatch base class.
 */
 struct AAGBaseTag {};
 
@@ -57,20 +55,16 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
  * Wrap the tag and the planning mode to be able use a given planning mode.
 */
 template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct WrappedAAGTag {
-    using AAGTag = AAG;
-    using PlanningModeTag = P;
-    using StateTag = S;
-    using ActionTag = A;
-};
+struct WrappedAAGTag {};
 
 template<typename T>
-concept IsWrappedAAGTag = requires {
-    typename T::AAGTag;
-    typename T::PlanningModeTag;
-    typename T::StateTag;
-    typename T::ActionTag;
-};
+struct is_wrapped_aag_tag : std::false_type {};
+
+template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_wrapped_aag_tag<WrappedAAGTag<AAG, P, S, A>> : std::true_type {};
+
+template<typename T>
+concept IsWrappedAAGTag = is_wrapped_aag_tag<T>::value;
 
 
 /**

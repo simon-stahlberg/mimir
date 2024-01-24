@@ -31,7 +31,7 @@ private:
     using ActionView = View<WrappedActionTag<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
-    Heuristic<WrappedHeuristicTag<H, P, S>> m_heuristic;
+    Heuristic<WrappedHeuristicTag<H, P, S, A>> m_heuristic;
 
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
         // TODO (Dominik): implement

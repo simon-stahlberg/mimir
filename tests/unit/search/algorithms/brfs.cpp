@@ -9,7 +9,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, GroundedBrFSTest) {
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedTest) {
     // Instantiate grounded version
     auto problem = static_cast<Problem>(nullptr);
     auto grounded_brfs = Algorithm<BrFSTag<GroundedTag>>(problem);
@@ -20,10 +20,10 @@ TEST(MimirTests, GroundedBrFSTest) {
 }
 
 
-TEST(MimirTests, LiftedBrFSTest) {
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest) {
     // Instantiate lifted version
     auto problem = static_cast<Problem>(nullptr);
-    auto lifted_brfs = Algorithm<BrFSTag<GroundedTag>>(problem);
+    auto lifted_brfs = Algorithm<BrFSTag<LiftedTag>>(problem);
     using ActionViewList = typename TypeTraits<decltype(lifted_brfs)>::ActionViewList;
     ActionViewList plan;
     const auto search_status = lifted_brfs.find_solution(plan);

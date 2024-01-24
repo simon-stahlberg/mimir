@@ -67,16 +67,16 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
  * Wrap the tag and the planning mode to be able use a given planning mode.
 */
 template<IsStateTag S, IsPlanningModeTag P>
-struct WrappedStateTag {
-    using StateTag = S;
-    using PlanningModeTag = P;
-};
+struct WrappedStateTag {};
 
 template<typename T>
-concept IsWrappedStateTag = requires {
-    typename T::PlanningModeTag;
-    typename T::StateTag;
-};
+struct is_wrapped_state_tag : std::false_type {};
+
+template<IsStateTag S, IsPlanningModeTag P>
+struct is_wrapped_state_tag<WrappedStateTag<S, P>> : std::true_type {};
+
+template<typename T>
+concept IsWrappedStateTag = is_wrapped_state_tag<T>::value;
 
 
 /**

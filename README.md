@@ -1,8 +1,8 @@
 # Mimir: Planner library
 
-Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) easy to integrate, use, and extend, and 3) used in multi-threaded machine learning applications. Mimir implements standard search algorithms such as breadth-first search and AStar search.
+Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) highly flexible, 3) easy to integrate, use, and extend, and 4) used in multi-threaded machine learning applications. Mimir implements standard search algorithms such as breadth-first search and AStar search.
 
-**Templated design:** The class interfaces are based on static polymorphism through the curiously recurring template pattern (CRTP) to enable heavy compiler optimizations.
+**Static dispatch:** Mimir is fully based on static dispatch. The planner configuration is given at compile time allowing the compiler to produce faster code. User's are also to make decisions at compile time using template meta-programming techniques based on their planner configuration to produce even faster code.
 
 **Zero heap-allocations:** Mimir implements a sub-library for serializing objects with fully customizable memory layouts and zero-cost de-serialization. Mimir reuses memory by moving buffers around in memory with zero heap allocations and deallocations.
 
@@ -54,14 +54,16 @@ After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you s
 
 ### Directory Structure
 
-- Put base classes in a header file with the suffix `<name>_template.hpp`.
-- Put declarations of derived classes with some meaningful name `<description>` in the subdirectory `<name>s`.
-- Put specializations of derived classes in a header file with the suffix `<description>_specializations.hpp` in the subdirectory `<name>s`. At the top of this header file create an overview of all specializations that are provided.
-- Include all specializations in `<name>.hpp`.
+- Put base classes in a header file with the suffix `template.hpp` in subdirectory `<name>s`.
+- Put declarations of a derived class with tag `<tag>` in the subdirectory `<name>s`.
+- Put a specialization of the derived class in a header file with the name `<tag>-<tags...>.hpp` in the subdirectory `<name>s` where `<tags...>` is a list of `_` separated tags that identify the specialization.
+- Include all specializations of the derived class with tag `<tag>` in `<tag>s.hpp`.
+
+We sometimes use reasonable shortcuts for `<tag>` to make it more readable.
 
 ### Header includes
 
-### Tag Dispatching
+- Include the header that contains all specializations of a derived class with tag `<tag>`.
 
 ### Concepts
 
