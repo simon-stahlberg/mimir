@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 
-#include "../successor_state_generator_template.hpp"
+#include "template.hpp"
 
 
 namespace mimir
@@ -32,4 +32,4 @@ struct TypeTraits<DefaultSuccessorStateGenerator<P>> {
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
+#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_

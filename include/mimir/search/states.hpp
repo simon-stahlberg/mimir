@@ -4,8 +4,7 @@
 /**
  * Include all spezializations here
 */
-#include "states/default/grounded.hpp"
-#include "states/default/lifted.hpp"
+#include "states/default_specializations.hpp"
 
 
 #endif  // MIMIR_SEARCH_STATES_HPP_

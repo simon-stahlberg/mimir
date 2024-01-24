@@ -1,16 +1,16 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_TEMPLATE_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
 
-#include "config.hpp"
-#include "grounded/state_view.hpp"
-#include "grounded/state_builder.hpp"
-#include "lifted/state_view.hpp"
-#include "lifted/state_builder.hpp"
-#include "type_traits.hpp"
+#include "../config.hpp"
+#include "../grounded/state_view.hpp"
+#include "../grounded/state_builder.hpp"
+#include "../lifted/state_view.hpp"
+#include "../lifted/state_builder.hpp"
+#include "../type_traits.hpp"
 
-#include "../buffer/containers/unordered_set.hpp"
-#include "../common/mixins.hpp"
-#include "../formalism/problem/declarations.hpp"
+#include "../../buffer/containers/unordered_set.hpp"
+#include "../../common/mixins.hpp"
+#include "../../formalism/problem/declarations.hpp"
 
 
 namespace mimir
@@ -87,4 +87,4 @@ class SuccessorStateGenerator : public SuccessorStateGeneratorBase<SuccessorStat
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_TEMPLATE_HPP_
+#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
