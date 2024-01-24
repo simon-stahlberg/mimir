@@ -18,17 +18,18 @@ struct DefaultAAGTag : public AAGBaseTag {};
 /**
  * Aliases
 */
-template<IsPlanningModeTag P, IsStateTag S>
-using DefaultAAG = AAG<WrappedAAGTag<DefaultAAGTag, P>>;
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+using DefaultAAG = AAG<WrappedAAGTag<DefaultAAGTag, P, S, A>>;
 
 
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<DefaultAAG<P, S>> {
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct TypeTraits<DefaultAAG<P, S, A>> {
     using PlanningModeTag = P;
     using StateTag = S;
+    using ActionTag = A;
 };
 
 

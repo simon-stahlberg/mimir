@@ -11,12 +11,12 @@ namespace mimir
  * Fully specialized implementation class.
 */
 template<>
-class AAG<WrappedAAGTag<DefaultAAGTag, GroundedTag, BitsetStateTag>>
-   : public AAGBase<AAG<WrappedAAGTag<DefaultAAGTag, GroundedTag, BitsetStateTag>>> {
+class AAG<WrappedAAGTag<DefaultAAGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>
+   : public AAGBase<AAG<WrappedAAGTag<DefaultAAGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>> {
     // Implement configuration specific functionality.
 private:
-    using StateView = View<WrappedStateTag<BitsetStateTag, LiftedTag>>;
-    using ActionView = View<DefaultActionTag<LiftedTag, BitsetStateTag>>;
+    using StateView = View<WrappedStateTag<S, P>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
     void generate_applicable_actions_impl(StateView state, std::vector<ActionView>& out_applicable_actions) {
     }

@@ -8,7 +8,7 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchAAGsDefaultLiftedTest) {
     // Instantiate lifted version
-    auto lifted_successor_generator = DefaultAAG<LiftedTag>();
+    auto lifted_aag = AAG<WrappedAAGTag<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>();
 }
 
 }

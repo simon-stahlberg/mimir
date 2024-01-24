@@ -19,9 +19,10 @@ class AAGBase : public UncopyableMixin<AAGBase<Derived>> {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
+    using A = typename TypeTraits<Derived>::ActionTag;
 
     using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<DefaultActionTag<P, S>>;
+    using ActionView = View<WrappedActionTag<A, P, S>>;
 
 
     AAGBase() = default;
@@ -55,18 +56,20 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
  *
  * Wrap the tag and the planning mode to be able use a given planning mode.
 */
-template<IsAAGTag A, IsPlanningModeTag P, IsStateTag S>
+template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct WrappedAAGTag {
-    using AAGTag = A;
-    using StateTag = S;
+    using AAGTag = AAG;
     using PlanningModeTag = P;
+    using StateTag = S;
+    using ActionTag = A;
 };
 
 template<typename T>
 concept IsWrappedAAGTag = requires {
+    typename T::AAGTag;
     typename T::PlanningModeTag;
     typename T::StateTag;
-    typename T::AAGTag;
+    typename T::ActionTag;
 };
 
 
