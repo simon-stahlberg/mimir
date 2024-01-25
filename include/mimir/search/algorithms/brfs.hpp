@@ -48,7 +48,7 @@ private:
 
 
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
-        //auto initial_search_node = this->m_search_nodes[this->m_initial_state.get_id()];
+        auto initial_search_node = this->m_search_nodes[this->m_initial_state.get_id()];
         // TODO (Dominik): update the data of the initial_search_node
 
         auto applicable_actions = ActionViewList();
@@ -58,7 +58,7 @@ private:
             const auto state = m_queue.front();
             m_queue.pop_front();
 
-            //const auto search_node = this->m_search_nodes[state.get_id()];
+            const auto search_node = this->m_search_nodes[state.get_id()];
 
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions) {
