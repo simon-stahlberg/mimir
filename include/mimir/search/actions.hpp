@@ -1,6 +1,7 @@
 #ifndef MIMIR_ACTIONS_HPP_
 #define MIMIR_ACTIONS_HPP_
 
+
 /**
  * Include all spezializations here
 */

@@ -20,6 +20,8 @@ add_executable(${TEST_NAME}
     "search/applicable_action_generators/default-lifted.cpp"
     "search/heuristics/blind.cpp"
     "search/openlists/priority_queue.cpp"
+    "search/planners/parallel.cpp"
+    "search/planners/sequential.cpp"
     "search/search_nodes/cost.cpp"
     "search/states/bitset-grounded.cpp"
     "search/states/bitset-lifted.cpp"
