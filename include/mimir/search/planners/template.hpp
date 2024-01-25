@@ -11,16 +11,6 @@
 namespace mimir
 {
 
-/**
- * Data types
-*/
-enum class PlannerStatus {
-    SOLVED,
-    UNSOLVABLE,
-    OUT_OF_MEMORY,
-    OUT_OF_TIME,
-};
-
 using Plan = std::vector<std::string>;
 
 
@@ -56,7 +46,7 @@ public:
     const std::string& get_problem_file() const { return m_problem_file; }
 
     /// @brief Find a plan.
-    std::tuple<PlannerStatus, Plan> find_solution() { return self().find_solution_impl(); }
+    std::tuple<SearchStatus, Plan> find_solution() { return self().find_solution_impl(); }
 };
 
 

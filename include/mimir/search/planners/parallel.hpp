@@ -30,9 +30,9 @@ public:
     Planner(const std::string& domain_file, const std::string& problem_file)
         : PlannerBase<Planner<ParallelTag<As...>>>(domain_file, problem_file) { }
 
-    std::tuple<PlannerStatus, Plan> find_solution_impl() {
+    std::tuple<SearchStatus, Plan> find_solution_impl() {
         // TODO (Dominik): run algorithms sequentially.
-        return std::make_tuple(PlannerStatus::SOLVED, Plan());
+        return std::make_tuple(SearchStatus::SOLVED, Plan());
     }
 };
 

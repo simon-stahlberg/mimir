@@ -17,7 +17,7 @@
 namespace mimir
 {
 
-enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
+enum SearchStatus {IN_PROGRESS, OUT_OF_TIME, OUT_OF_MEMORY, FAILED, SOLVED};
 
 /**
  * Interface class.

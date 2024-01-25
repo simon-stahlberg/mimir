@@ -45,7 +45,7 @@ public:
         : PlannerBase<Planner<SequentialTag<As...>>>(domain_file, problem_file)
         , m_algorithms(std::make_tuple(Algorithm<AlgorithmDispatcher<As>>(this->m_problem)...)) { }
 
-    std::tuple<PlannerStatus, Plan> find_solution_impl() {
+    std::tuple<SearchStatus, Plan> find_solution_impl() {
         auto plan = Plan();
         std::apply([&plan](auto&... algorithm) {
             (..., [&]{
@@ -59,7 +59,7 @@ public:
                 }
             }());
         }, m_algorithms);
-        return std::make_tuple(PlannerStatus::SOLVED, plan);
+        return std::make_tuple(SearchStatus::SOLVED, plan);
     }
 };
 
