@@ -15,7 +15,7 @@ namespace mimir {
 /// @brief Vector handle different sized objects but only allows push_back and access, no resize.
 /// @tparam T
 template<typename T>
-class Vector : public UncopyableMixin<Vector<T>> {
+class Vector {
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;
@@ -56,7 +56,7 @@ public:
 ///        AUtomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
 /// @tparam T
 template<typename T>
-class AutomaticVector : public UncopyableMixin<AutomaticVector<T>> {
+class AutomaticVector {
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;

@@ -45,23 +45,6 @@ public:
     }
 };
 
-
-/// @brief Express that a type T is moveable but not copieable
-template<typename Derived>
-class UncopyableMixin {
-private:
-    /// @brief Avoid wrong template parameter passing declaring private default constructor.
-    UncopyableMixin() = default;
-    friend Derived;
-
-public:
-    // moveable but not copyable
-    UncopyableMixin(const UncopyableMixin& other) = delete;
-    UncopyableMixin& operator=(const UncopyableMixin& other) = delete;
-    UncopyableMixin(UncopyableMixin&& other) = default;
-    UncopyableMixin& operator=(UncopyableMixin&& other) = default;
-};
-
 }  // namespace mimir
 
 #endif  // MIMIR_COMMON_MIXINS_HPP_

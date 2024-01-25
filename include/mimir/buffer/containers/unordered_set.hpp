@@ -12,7 +12,7 @@
 namespace mimir {
 
 template<typename T>
-class UnorderedSet : public UncopyableMixin<UnorderedSet<T>> {
+class UnorderedSet {
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;

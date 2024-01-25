@@ -23,7 +23,7 @@ enum SearchStatus {IN_PROGRESS, TIMEOUT, FAILED, SOLVED};
  * Interface class.
 */
 template<typename Derived>
-class AlgorithmBase : public UncopyableMixin<AlgorithmBase<Derived>> {
+class AlgorithmBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
@@ -59,9 +59,9 @@ public:
 
 /**
  * ID base class.
- * 
+ *
  * Derive from it to provide your own implementation.
- * 
+ *
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
@@ -75,7 +75,7 @@ concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
  * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
- * 
+ *
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */

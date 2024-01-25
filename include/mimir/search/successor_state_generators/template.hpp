@@ -18,7 +18,7 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class SSGBase : public UncopyableMixin<SSGBase<Derived>> {
+class SSGBase {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
@@ -32,6 +32,10 @@ private:
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+    // Prevent copying
+    SSGBase(const SSGBase& other) = default;
+    SSGBase& operator=(const SSGBase& other) = default;
 
 protected:
     UnorderedSet<StateDispatcher<S, P>> m_states;
@@ -51,9 +55,9 @@ public:
 
 /**
  * ID base class.
- * 
+ *
  * Derive from it to provide your own implementation.
- * 
+ *
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
@@ -67,7 +71,7 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
  * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
- * 
+ *
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */

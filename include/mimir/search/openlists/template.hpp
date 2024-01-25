@@ -13,7 +13,7 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class OpenListBase : public UncopyableMixin<OpenListBase<Derived>> {
+class OpenListBase {
 private:
     using T = typename TypeTraits<Derived>::ValueType;
 
@@ -41,9 +41,9 @@ public:
 
 /**
  * ID base class.
- * 
+ *
  * Derive from it to provide your own implementation.
- * 
+ *
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
@@ -57,7 +57,7 @@ concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
  * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
- * 
+ *
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */

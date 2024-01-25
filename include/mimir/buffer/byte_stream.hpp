@@ -22,7 +22,7 @@ template<typename T>
 concept TriviallyCopyable = std::is_trivially_copyable_v<T>;
 
 
-class ByteStream : public UncopyableMixin<ByteStream> {
+class ByteStream {
 private:
     std::vector<char> m_data;
 

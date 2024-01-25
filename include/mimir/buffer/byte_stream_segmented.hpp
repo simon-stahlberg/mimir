@@ -13,7 +13,7 @@ namespace mimir {
 /// @tparam N the amount of bytes per segments.
 ///         Reasonable numbers are 10000-100000.
 template<size_t N>
-class ByteStreamSegmented : public UncopyableMixin<ByteStreamSegmented<N>> {
+class ByteStreamSegmented {
 private:
     std::vector<std::vector<char>> m_segments;
 

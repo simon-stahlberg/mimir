@@ -43,7 +43,7 @@ private:
 public:
     Planner(const std::string& domain_file, const std::string& problem_file)
         : PlannerBase<Planner<SequentialTag<As...>>>(domain_file, problem_file)
-        , m_algorithms(std::tuple<Algorithm<AlgorithmDispatcher<As>>...>(this->m_problem)) { }
+        , m_algorithms(std::make_tuple(std::move(Algorithm<AlgorithmDispatcher<As>>(this->m_problem)...))) { }
 
     std::tuple<PlannerStatus, Plan> find_solution_impl() {
         auto plan = Plan();
