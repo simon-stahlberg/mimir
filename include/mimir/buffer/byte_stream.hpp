@@ -3,6 +3,7 @@
 
 #include "../common/mixins.hpp"
 
+#include <cstdint>
 #include <cstddef>
 #include <vector>
 #include <iostream>
