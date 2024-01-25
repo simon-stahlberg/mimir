@@ -23,8 +23,8 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
 
     SSGBase() = default;
     friend Derived;
@@ -34,9 +34,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
-    UnorderedSet<WrappedStateTag<S, P>> m_states;
+    UnorderedSet<StateDispatcher<S, P>> m_states;
 
-    Builder<WrappedStateTag<S, P>> m_state_builder;
+    Builder<StateDispatcher<S, P>> m_state_builder;
 
 public:
     [[nodiscard]] StateView get_or_create_initial_state(Problem problem) {
@@ -64,7 +64,7 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
  * 
@@ -72,13 +72,13 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
  * in the declaration file of your derived class.
 */
 template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct WrappedSSGTag {};
+struct SSGDispatcher {};
 
 template<typename T>
-struct is_wrapped_ssg_tag : std::false_type {};
+struct is_ssg_dispatcher : std::false_type {};
 
 template<typename T>
-concept IsWrappedSSG = is_wrapped_ssg_tag<T>::value;
+concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
 
 
 /**
@@ -86,7 +86,7 @@ concept IsWrappedSSG = is_wrapped_ssg_tag<T>::value;
  *
  * Spezialize the wrapped tag to provide your own implementation of a successor state generator.
 */
-template<IsWrappedSSG S>
+template<IsSSGDispatcher S>
 class SSG : public SSGBase<SSG<S>> { };
 
 

@@ -16,19 +16,19 @@ struct DefaultAAGTag : public AAGBaseTag {};
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  * 
  * Define the required template arguments of your implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_aag_tag<WrappedAAGTag<DefaultAAGTag, P, S, A>> : std::true_type {};
+struct is_aag_dispatcher<AAGDispatcher<DefaultAAGTag, P, S, A>> : std::true_type {};
 
 
 /**
  * Aliases
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-using DefaultAAG = AAG<WrappedAAGTag<DefaultAAGTag, P, S, A>>;
+using DefaultAAG = AAG<AAGDispatcher<DefaultAAGTag, P, S, A>>;
 
 
 /**

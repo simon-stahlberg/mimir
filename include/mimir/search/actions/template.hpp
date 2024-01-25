@@ -26,7 +26,7 @@ concept IsActionTag = std::derived_from<DerivedTag, ActionBaseTag>;
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
  * 
@@ -34,13 +34,13 @@ concept IsActionTag = std::derived_from<DerivedTag, ActionBaseTag>;
  * in the declaration file of your derived class.
 */
 template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
-struct WrappedActionTag {};
+struct ActionDispatcher {};
 
 template<typename T>
-struct is_wrapped_action_tag : std::false_type {};
+struct is_action_dispatcher : std::false_type {};
 
 template<typename T>
-concept IsWrappedActionTag = is_wrapped_action_tag<T>::value;
+concept IsActionDispatcher = is_action_dispatcher<T>::value;
 
 
 } // namespace mimir

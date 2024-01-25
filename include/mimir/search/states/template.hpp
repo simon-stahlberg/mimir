@@ -67,7 +67,7 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
  * 
@@ -75,13 +75,13 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
  * in the declaration file of your derived class.
 */
 template<IsStateTag S, IsPlanningModeTag P>
-struct WrappedStateTag {};
+struct StateDispatcher {};
 
 template<typename T>
-struct is_wrapped_state_tag : std::false_type {};
+struct is_state_dispatcher : std::false_type {};
 
 template<typename T>
-concept IsWrappedStateTag = is_wrapped_state_tag<T>::value;
+concept IsStateDispatcher = is_state_dispatcher<T>::value;
 
 
 /**
@@ -89,10 +89,10 @@ concept IsWrappedStateTag = is_wrapped_state_tag<T>::value;
  *
  * Spezialize the wrapped tag to provide your own implementation of a state representation.
 */
-template<IsWrappedStateTag S>
+template<IsStateDispatcher S>
 class Builder<S> : public BuilderBase<Builder<S>>, public StateBuilderBase<Builder<S>> { };
 
-template<IsWrappedStateTag S>
+template<IsStateDispatcher S>
 class View<S> : public ViewBase<View<S>>, public StateViewBase<View<S>> { };
 
 

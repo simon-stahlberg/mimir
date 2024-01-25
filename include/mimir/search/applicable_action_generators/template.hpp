@@ -21,8 +21,8 @@ private:
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
 
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
 
 
     AAGBase() = default;
@@ -55,7 +55,7 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
  * 
@@ -63,13 +63,13 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
  * in the declaration file of your derived class.
 */
 template<IsAAGTag AAG, typename... Ts>
-struct WrappedAAGTag {};
+struct AAGDispatcher {};
 
 template<typename T>
-struct is_wrapped_aag_tag : std::false_type {};
+struct is_aag_dispatcher : std::false_type {};
 
 template<typename T>
-concept IsWrappedAAGTag = is_wrapped_aag_tag<T>::value;
+concept IsAAGDispatcher = is_aag_dispatcher<T>::value;
 
 
 /**
@@ -78,7 +78,7 @@ concept IsWrappedAAGTag = is_wrapped_aag_tag<T>::value;
  * Spezialize it using our wrapper dispatch class.
  * in the spezialization file of your derived class.
 */
-template<IsWrappedAAGTag A>
+template<IsAAGDispatcher A>
 class AAG : public AAGBase<AAG<A>> { 
 
 };

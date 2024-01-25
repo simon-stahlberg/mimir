@@ -56,8 +56,8 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
 
     CostSearchNodeBuilderBase() = default;
     friend Derived;
@@ -88,8 +88,8 @@ class Builder<CostSearchNodeTag<P, S, A>>
     : public BuilderBase<Builder<CostSearchNodeTag<P, S, A>>>
     , public CostSearchNodeBuilderBase<Builder<CostSearchNodeTag<P, S, A>>> {
 private:
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
 
     SearchNodeStatus m_status;
     int m_g_value;
@@ -142,8 +142,8 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
 
     CostSearchNodeViewBase() = default;
     friend Derived;
@@ -170,8 +170,8 @@ class View<CostSearchNodeTag<P, S, A>>
     : public ViewBase<View<CostSearchNodeTag<P, S, A>>>
     , public CostSearchNodeViewBase<View<CostSearchNodeTag<P, S, A>>> {
 private:
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
 
     static constexpr size_t s_status_offset =       sizeof(data_size_type);
     static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);

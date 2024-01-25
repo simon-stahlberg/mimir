@@ -16,22 +16,22 @@ struct BlindTag : public HeuristicBaseTag { };
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  * 
  * Define the required template arguments of your implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_heuristic_tag<WrappedHeuristicTag<BlindTag, P, S, A>> : std::true_type {};
+struct is_heuristic_dispatcher<HeuristicDispatcher<BlindTag, P, S, A>> : std::true_type {};
 
 
 /**
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-class Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>
-    : public HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>> {
+class Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>
+    : public HeuristicBase<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>> {
 private:
-    using StateView = View<WrappedStateTag<S, P>>;
+    using StateView = View<StateDispatcher<S, P>>;
 
     double compute_heuristic_impl(const StateView& state) {
         return 0.;
@@ -42,7 +42,7 @@ private:
     friend class HeuristicBase;
 
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>>(problem) { }
+    Heuristic(Problem problem) : HeuristicBase<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>>(problem) { }
 };
 
 
@@ -50,7 +50,7 @@ public:
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<Heuristic<WrappedHeuristicTag<BlindTag, P, S, A>>> {
+struct TypeTraits<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;

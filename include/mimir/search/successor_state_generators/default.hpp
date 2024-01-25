@@ -16,19 +16,19 @@ class DefaultSSGTag : public SSGBaseTag {};
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  * 
  * Define the required template arguments of your implementation.
 */
 template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_ssg_tag<WrappedSSGTag<SSG, P, S, A>> : std::true_type {};
+struct is_ssg_dispatcher<SSGDispatcher<SSG, P, S, A>> : std::true_type {};
 
 
 /**
  * Aliases
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-using DefaultSSG = SSG<WrappedSSGTag<DefaultSSGTag, P, S, A>>;
+using DefaultSSG = SSG<SSGDispatcher<DefaultSSGTag, P, S, A>>;
 
 
 /**

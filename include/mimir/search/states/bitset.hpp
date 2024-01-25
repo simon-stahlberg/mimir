@@ -16,22 +16,22 @@ class BitsetStateTag : public StateBaseTag {};
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  * 
  * Define the required template arguments of your implementation.
 */
 template<IsStateTag S, IsPlanningModeTag P>
-struct is_wrapped_state_tag<WrappedStateTag<S, P>> : std::true_type {};
+struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type {};
 
 
 /**
  * Aliases
 */
 template<IsPlanningModeTag P>
-using BitsetStateBuilder = Builder<WrappedStateTag<BitsetStateTag, P>>;
+using BitsetStateBuilder = Builder<StateDispatcher<BitsetStateTag, P>>;
 
 template<IsPlanningModeTag P>
-using BitsetStateView = View<WrappedStateTag<BitsetStateTag, P>>;
+using BitsetStateView = View<StateDispatcher<BitsetStateTag, P>>;
 
 
 /**

@@ -11,11 +11,11 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>
-    : public SSGBase<SSG<WrappedSSGTag<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>> {
+class SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>
+    : public SSGBase<SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>> {
 private:
-    using StateView = View<WrappedStateTag<BitsetStateTag, GroundedTag>>;
-    using ActionView = View<WrappedActionTag<DefaultActionTag, GroundedTag, BitsetStateTag>>;
+    using StateView = View<StateDispatcher<BitsetStateTag, GroundedTag>>;
+    using ActionView = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>;
 
     [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();

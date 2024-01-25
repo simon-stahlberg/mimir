@@ -9,17 +9,17 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     // Build a state.
-    auto state_builder = Builder<WrappedStateTag<BitsetStateTag, GroundedTag>>();
+    auto state_builder = Builder<StateDispatcher<BitsetStateTag, GroundedTag>>();
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer().get_data(), nullptr);
     EXPECT_EQ(state_builder.get_buffer().get_size(), 8);
-    auto state_view = View<WrappedStateTag<BitsetStateTag, GroundedTag>>(state_builder.get_buffer().get_data());
+    auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer().get_data());
 
     // Build a ground action.
-    auto action_builder = Builder<WrappedActionTag<DefaultActionTag, GroundedTag, BitsetStateTag>>();
+    auto action_builder = Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>();
     action_builder.finish();
-    auto action_view = View<WrappedActionTag<DefaultActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer().get_data());
+    auto action_view = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer().get_data());
 
     // Build a search node.
     auto search_node_builder = Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>();
@@ -47,8 +47,8 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
         Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>(
             SearchNodeStatus::CLOSED,
             42,
-            View<WrappedStateTag<BitsetStateTag, GroundedTag>>(nullptr),
-            View<WrappedActionTag<DefaultActionTag, GroundedTag, BitsetStateTag>>(nullptr))
+            View<StateDispatcher<BitsetStateTag, GroundedTag>>(nullptr),
+            View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>(nullptr))
     );
 
     // Test default initialization a search node

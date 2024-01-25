@@ -26,8 +26,8 @@ struct BrFSTag : public AlgorithmBaseTag { };
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<BrFSTag<P, S, A, AG, SG>> : public AlgorithmBase<Algorithm<BrFSTag<P, S, A, AG, SG>>> {
 private:
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
     // Implement configuration independent functionality.
@@ -86,7 +86,7 @@ struct TypeTraits<Algorithm<BrFSTag<P, S, A, AG, SG>>> {
     using AAGTag = AG;
     using SSGTag = SG;
 
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 };
 

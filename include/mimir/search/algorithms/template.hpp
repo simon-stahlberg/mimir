@@ -30,13 +30,13 @@ private:
     using A = typename TypeTraits<Derived>::ActionTag;
     using AG = typename TypeTraits<Derived>::AAGTag;
     using SG = typename TypeTraits<Derived>::SSGTag;
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
     AlgorithmBase(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SSG<WrappedSSGTag<SG, P, S, A>>())
+        , m_state_repository(SSG<SSGDispatcher<SG, P, S, A>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem)) {}
 
     friend Derived;
@@ -46,9 +46,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     Problem m_problem;
-    SSG<WrappedSSGTag<SG, P, S, A>> m_state_repository;
+    SSG<SSGDispatcher<SG, P, S, A>> m_state_repository;
     StateView m_initial_state;
-    AAG<WrappedAAGTag<AG, P, S, A>> m_successor_generator;
+    AAG<AAGDispatcher<AG, P, S, A>> m_successor_generator;
 
 public:
     SearchStatus find_solution(ActionViewList& out_plan) {
@@ -67,10 +67,6 @@ public:
 */
 struct AlgorithmBaseTag {};
 
-
-/**
- * Concepts
-*/
 template<typename DerivedTag>
 concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
 

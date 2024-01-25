@@ -27,11 +27,11 @@ struct AStarTag : public AlgorithmBaseTag { };
 template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<AStarTag<P, H, S, A, AG, SG>> : public AlgorithmBase<Algorithm<AStarTag<P, H, S, A, AG, SG>>> {
 private:
-    using StateView = View<WrappedStateTag<S, P>>;
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using StateView = View<StateDispatcher<S, P>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
-    Heuristic<WrappedHeuristicTag<H, P, S, A>> m_heuristic;
+    Heuristic<HeuristicDispatcher<H, P, S, A>> m_heuristic;
 
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
         // TODO (Dominik): implement
@@ -61,7 +61,7 @@ struct TypeTraits<Algorithm<AStarTag<P, H, S, A, AG, SG>>> {
     using AAGTag = AG;
     using SSGTag = SG;
 
-    using ActionView = View<WrappedActionTag<A, P, S>>;
+    using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 };
 

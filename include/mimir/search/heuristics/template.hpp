@@ -21,7 +21,7 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
-    using StateView = View<WrappedStateTag<S, P>>;
+    using StateView = View<StateDispatcher<S, P>>;
 
     HeuristicBase(Problem problem) : m_problem(problem) { }
     friend Derived;
@@ -54,7 +54,7 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 
 
 /**
- * Wrapper dispatch class.
+ * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
  * 
@@ -62,13 +62,13 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
  * in the declaration file of your derived class.
 */
 template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct WrappedHeuristicTag {};
+struct HeuristicDispatcher {};
 
 template<typename T>
-struct is_wrapped_heuristic_tag : std::false_type {};
+struct is_heuristic_dispatcher : std::false_type {};
 
 template<typename T>
-concept IsWrappedHeuristicTag = is_wrapped_heuristic_tag<T>::value;
+concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;
 
 
 /**
@@ -77,7 +77,7 @@ concept IsWrappedHeuristicTag = is_wrapped_heuristic_tag<T>::value;
  * Spezialize it using our wrapper dispatch class.
  * in the spezialization file of your derived class.
 */
-template<IsWrappedHeuristicTag T>
+template<IsHeuristicDispatcher T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };
 
 
