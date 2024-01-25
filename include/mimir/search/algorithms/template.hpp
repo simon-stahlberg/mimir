@@ -72,11 +72,29 @@ concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
 
 
 /**
+ * Dispatcher class.
+ *
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
+*/
+template<IsAlgorithmTag A, typename... Ts>
+struct AlgorithmDispatcher {};
+
+template<typename T>
+struct is_algorithm_dispatcher : std::false_type {};
+
+template<typename T>
+concept IsAlgorithmDispatcher = is_algorithm_dispatcher<T>::value;
+
+
+/**
  * General implementation class.
  *
  * Spezialize it with your derived tag to provide your own implementation of an algorithm.
 */
-template<IsAlgorithmTag A>
+template<IsAlgorithmDispatcher A>
 class Algorithm : public AlgorithmBase<Algorithm<A>> { };
 
 

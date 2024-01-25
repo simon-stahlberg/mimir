@@ -21,10 +21,20 @@ struct BrFSTag : public AlgorithmBaseTag { };
 
 
 /**
+ * Dispatcher class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
+struct is_algorithm_dispatcher<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>> : std::true_type {};
+
+
+/**
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<BrFSTag<P, S, A, AG, SG>> : public AlgorithmBase<Algorithm<BrFSTag<P, S, A, AG, SG>>> {
+class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>> 
+    : public AlgorithmBase<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
@@ -65,7 +75,7 @@ private:
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<BrFSTag<P, S, A, AG, SG>>>(problem)
+        : AlgorithmBase<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>>(problem)
         , m_search_nodes(AutomaticVector(
             Builder<CostSearchNodeTag<P, S, A>>(
                 SearchNodeStatus::CLOSED,
@@ -79,7 +89,7 @@ public:
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-struct TypeTraits<Algorithm<BrFSTag<P, S, A, AG, SG>>> {
+struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;
