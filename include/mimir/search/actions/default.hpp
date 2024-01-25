@@ -8,9 +8,20 @@ namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation.
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 class DefaultActionTag : public ActionBaseTag {};
+
+
+/**
+ * Wrapper dispatch class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
+struct is_wrapped_action_tag<WrappedActionTag<A, P, S>> : std::true_type {};
 
 
 /**

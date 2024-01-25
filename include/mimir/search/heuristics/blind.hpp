@@ -20,8 +20,8 @@ struct BlindTag : public HeuristicBaseTag { };
  * 
  * Define the required template arguments of your implementation.
 */
-template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_heuristic_tag<WrappedHeuristicTag<H, P, S, A>> : std::true_type {};
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_wrapped_heuristic_tag<WrappedHeuristicTag<BlindTag, P, S, A>> : std::true_type {};
 
 
 /**

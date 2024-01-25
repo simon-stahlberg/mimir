@@ -13,8 +13,11 @@ namespace mimir {
 
 /**
  * ID base class.
- *
+ * 
  * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct ActionBaseTag {};
 
@@ -23,18 +26,18 @@ concept IsActionTag = std::derived_from<DerivedTag, ActionBaseTag>;
 
 
 /**
- * Wrapper class use for the actual dispatch.
+ * Wrapper dispatch class.
  *
- * Use additional template arguments from the parent template.
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
 */
 template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
 struct WrappedActionTag {};
 
 template<typename T>
 struct is_wrapped_action_tag : std::false_type {};
-
-template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
-struct is_wrapped_action_tag<WrappedActionTag<A, P, S>> : std::true_type {};
 
 template<typename T>
 concept IsWrappedActionTag = is_wrapped_action_tag<T>::value;
