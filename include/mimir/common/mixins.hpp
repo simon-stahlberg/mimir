@@ -5,11 +5,6 @@
 
 
 /// @brief In this header, we define common mixins.
-///        We distinguish two types of mixins with different naming conventions.
-///           1. Mixins that add functionality should use present participle to emphasize action,
-///              e.g., FormattingMixin
-///           2. Mixins that add constraints should be adjectives,
-///              e.g., UncopyableMixin
 namespace mimir {
 
 /// @brief Provide common functionality to enhance usability such as printing or hashing.
