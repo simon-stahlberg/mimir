@@ -21,6 +21,7 @@ add_executable(${TEST_NAME}
     "search/heuristics/blind.cpp"
     "search/openlists/priority_queue.cpp"
     "search/planners/parallel.cpp"
+    "search/planners/single.cpp"
     "search/planners/sequential.cpp"
     "search/search_nodes/cost.cpp"
     "search/states/bitset-grounded.cpp"
