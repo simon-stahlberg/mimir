@@ -74,8 +74,7 @@ concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize it using our wrapper dispatch class.
- * in the spezialization file of your derived class.
+ * Spezialize it with your dispatcher.
 */
 template<IsHeuristicDispatcher T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };

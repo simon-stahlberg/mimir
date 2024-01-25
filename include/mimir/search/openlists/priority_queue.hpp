@@ -14,14 +14,24 @@ namespace mimir
  * Define name and template parameters of your own implementation.
 */
 template<typename T>
-struct PriorityQueue : public OpenListBaseTag { };
+struct PriorityQueueTag : public OpenListBaseTag { };
+
+
+/**
+ * Dispatcher class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<typename T>
+struct is_openlist_dispatcher<OpenListDispatcher<PriorityQueueTag<T>>> : std::true_type {};
 
 
 /**
  * Implementation class
 */
 template<typename T>
-class OpenList<PriorityQueue<T>> : public OpenListBase<OpenList<PriorityQueue<T>>> {
+class OpenList<OpenListDispatcher<PriorityQueueTag<T>>> 
+    : public OpenListBase<OpenList<OpenListDispatcher<PriorityQueueTag<T>>> > {
     // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
@@ -40,7 +50,8 @@ private:
         return priority_queue_.size();
     }
 
-    friend class OpenListBase<OpenList<PriorityQueue<T>>>;
+    template<typename>
+    friend class OpenListBase;
 };
 
 
@@ -48,15 +59,9 @@ private:
  * Type traits
 */
 template<typename T>
-struct TypeTraits<PriorityQueue<T>> {
+struct TypeTraits<OpenList<OpenListDispatcher<PriorityQueueTag<T>>>> {
     using ValueType = T;
 };
-
-template<typename T>
-struct TypeTraits<OpenList<PriorityQueue<T>>> {
-    using ValueType = T;
-};
-
 
 
 }  // namespace mimir

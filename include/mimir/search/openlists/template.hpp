@@ -54,12 +54,30 @@ concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
 
 
 /**
+ * Dispatcher class.
+ *
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
+*/
+template<IsOpenListTag O>
+struct OpenListDispatcher {};
+
+template<typename T>
+struct is_openlist_dispatcher : std::false_type {};
+
+template<typename T>
+concept IsOpenListDispatcher = is_openlist_dispatcher<T>::value;
+
+
+
+/**
  * General implementation class.
  *
- * Spezialize it using our wrapper dispatch class.
- * in the spezialization file of your derived class.
+ * Spezialize it with your dispatcher.
 */
-template<IsOpenListTag T>
+template<IsOpenListDispatcher T>
 class OpenList : public OpenListBase<OpenList<T>> { };
 
 

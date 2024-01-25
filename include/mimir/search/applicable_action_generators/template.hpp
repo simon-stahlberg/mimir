@@ -75,8 +75,7 @@ concept IsAAGDispatcher = is_aag_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize it using our wrapper dispatch class.
- * in the spezialization file of your derived class.
+ * Spezialize it with your dispatcher.
 */
 template<IsAAGDispatcher A>
 class AAG : public AAGBase<AAG<A>> { 

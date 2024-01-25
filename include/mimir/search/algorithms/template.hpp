@@ -92,7 +92,7 @@ concept IsAlgorithmDispatcher = is_algorithm_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize it with your derived tag to provide your own implementation of an algorithm.
+ * Spezialize it with your dispatcher.
 */
 template<IsAlgorithmDispatcher A>
 class Algorithm : public AlgorithmBase<Algorithm<A>> { };
