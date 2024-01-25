@@ -11,9 +11,7 @@ namespace mimir::tests
 TEST(MimirTests, SearchPlannersSequentialTest) {
     const auto domain_file = std::string("domain.pddl");
     const auto problem_file = std::string("problem.pddl");
-    //auto planner = Planner<SequentialTag<AStarTag<GroundedTag, BlindTag>, BrFSTag<LiftedTag>>>(domain_file, problem_file);
-    auto planner = Planner<SequentialTag<BrFSTag<LiftedTag>>>(domain_file, problem_file);
-    //auto planner = Planner<SequentialTag<AStarTag<GroundedTag, BlindTag>, AStarTag<GroundedTag, BlindTag>>>(domain_file, problem_file);
+    auto planner = Planner<SequentialTag<AStarTag<GroundedTag, BlindTag>, BrFSTag<LiftedTag>>>(domain_file, problem_file);
     const auto [status, plan] = planner.find_solution();
 }
 
