@@ -58,7 +58,12 @@ public:
 
 
 /**
- * ID dispatch base class.
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct AlgorithmBaseTag {};
 

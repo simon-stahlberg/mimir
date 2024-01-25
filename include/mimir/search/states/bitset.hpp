@@ -8,9 +8,20 @@ namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 class BitsetStateTag : public StateBaseTag {};
+
+
+/**
+ * Wrapper dispatch class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<IsStateTag S, IsPlanningModeTag P>
+struct is_wrapped_state_tag<WrappedStateTag<S, P>> : std::true_type {};
 
 
 /**

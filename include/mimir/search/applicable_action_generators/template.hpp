@@ -41,7 +41,12 @@ public:
 
 
 /**
- * ID dispatch base class.
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct AAGBaseTag {};
 
@@ -50,18 +55,18 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
 
 
 /**
- * Wrapper class.
+ * Wrapper dispatch class.
  *
- * Wrap the tag and the planning mode to be able use a given planning mode.
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
 */
-template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+template<IsAAGTag AAG, typename... Ts>
 struct WrappedAAGTag {};
 
 template<typename T>
 struct is_wrapped_aag_tag : std::false_type {};
-
-template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_aag_tag<WrappedAAGTag<AAG, P, S, A>> : std::true_type {};
 
 template<typename T>
 concept IsWrappedAAGTag = is_wrapped_aag_tag<T>::value;
@@ -70,10 +75,13 @@ concept IsWrappedAAGTag = is_wrapped_aag_tag<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize the wrapped tag to provide your own implementation of a applicable action generator.
+ * Spezialize it using our wrapper dispatch class.
+ * in the spezialization file of your derived class.
 */
 template<IsWrappedAAGTag A>
-class AAG : public AAGBase<AAG<A>> { };
+class AAG : public AAGBase<AAG<A>> { 
+
+};
 
 
 

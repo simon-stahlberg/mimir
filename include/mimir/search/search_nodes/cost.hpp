@@ -11,7 +11,9 @@ namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation.
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class CostSearchNodeTag : public SearchNodeBaseTag {};

@@ -8,9 +8,20 @@ namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 struct BlindTag : public HeuristicBaseTag { };
+
+
+/**
+ * Wrapper dispatch class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_wrapped_heuristic_tag<WrappedHeuristicTag<H, P, S, A>> : std::true_type {};
 
 
 /**

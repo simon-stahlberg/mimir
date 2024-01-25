@@ -40,22 +40,24 @@ public:
 
 
 /**
- * ID class. Derived from it to provide your own implementation of an open list.
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct OpenListBaseTag {};
 
-
-/**
- * Concepts
-*/
 template<class DerivedTag>
 concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
 
 
 /**
- * Implementation class
+ * General implementation class.
  *
- * Spezialize it with your derived tag to provide your own implementation of an open list.
+ * Spezialize it using our wrapper dispatch class.
+ * in the spezialization file of your derived class.
 */
 template<IsOpenListTag T>
 class OpenList : public OpenListBase<OpenList<T>> { };

@@ -48,10 +48,14 @@ public:
     }
 };
 
+
 /**
- * ID class.
- *
- * Derive from it to provide your own implementation of a successor state generator.
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct SSGBaseTag {};
 
@@ -60,18 +64,18 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
 
 
 /**
- * Wrapper class.
+ * Wrapper dispatch class.
  *
- * Wrap the tag and the planning mode to be able use a given planning mode.
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
 */
 template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct WrappedSSGTag {};
 
 template<typename T>
 struct is_wrapped_ssg_tag : std::false_type {};
-
-template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_ssg_tag<WrappedSSGTag<SSG, P, S, A>> : std::true_type {};
 
 template<typename T>
 concept IsWrappedSSG = is_wrapped_ssg_tag<T>::value;

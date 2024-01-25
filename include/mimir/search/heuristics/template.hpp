@@ -40,9 +40,12 @@ public:
 
 
 /**
- * ID class.
- *
- * Derive from it to provide your own implementation of a heuristic.
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct HeuristicBaseTag {};
 
@@ -51,18 +54,18 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 
 
 /**
- * Wrapper class.
+ * Wrapper dispatch class.
  *
- * Wrap the tag and the planning mode to be able use a given planning mode.
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
 */
 template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct WrappedHeuristicTag {};
 
 template<typename T>
 struct is_wrapped_heuristic_tag : std::false_type {};
-
-template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_wrapped_heuristic_tag<WrappedHeuristicTag<H, P, S, A>> : std::true_type {};
 
 template<typename T>
 concept IsWrappedHeuristicTag = is_wrapped_heuristic_tag<T>::value;
@@ -71,7 +74,8 @@ concept IsWrappedHeuristicTag = is_wrapped_heuristic_tag<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize the wrapped tag to provide your own implementation of a heuristic.
+ * Spezialize it using our wrapper dispatch class.
+ * in the spezialization file of your derived class.
 */
 template<IsWrappedHeuristicTag T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };

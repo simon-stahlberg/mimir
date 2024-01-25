@@ -9,7 +9,9 @@ namespace mimir
 {
 
 /**
- * ID class
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 template<typename T>
 struct PriorityQueue : public OpenListBaseTag { };

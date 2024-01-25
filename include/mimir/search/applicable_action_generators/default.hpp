@@ -8,11 +8,20 @@ namespace mimir
 {
 
 /**
- * Derived ID dispatch class.
- *
- * Add template parameters if needed
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 struct DefaultAAGTag : public AAGBaseTag {};
+
+
+/**
+ * Wrapper dispatch class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_wrapped_aag_tag<WrappedAAGTag<DefaultAAGTag, P, S, A>> : std::true_type {};
 
 
 /**

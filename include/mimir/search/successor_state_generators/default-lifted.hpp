@@ -7,6 +7,9 @@
 namespace mimir
 {
 
+/**
+ * Implementation class
+*/
 template<>
 class SSG<WrappedSSGTag<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>
     : public SSGBase<SSG<WrappedSSGTag<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>> {

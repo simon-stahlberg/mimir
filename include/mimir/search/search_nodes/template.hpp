@@ -19,7 +19,12 @@ using g_value_type = int;
 
 
 /**
- * ID class
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
 struct SearchNodeBaseTag {};
 

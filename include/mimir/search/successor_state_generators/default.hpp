@@ -8,9 +8,20 @@ namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation
+ * Derived ID class.
+ * 
+ * Define name and template parameters of your own implementation.
 */
 class DefaultSSGTag : public SSGBaseTag {};
+
+
+/**
+ * Wrapper dispatch class.
+ * 
+ * Define the required template arguments of your implementation.
+*/
+template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_wrapped_ssg_tag<WrappedSSGTag<SSG, P, S, A>> : std::true_type {};
 
 
 /**
