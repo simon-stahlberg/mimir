@@ -9,9 +9,14 @@ Mimir is a C++20 planning library for grounded and lifted planning. We created M
 ## Example API
 
 ```cpp
-planner = Planner<AStarTag<LiftedTag, BlindTag>>("domain.pddl", "problem.pddl")
-// auto plan = TODO: add simple way to get the type of a plan.
-const auto status = planner.find_solution(plan)
+const auto domain_file = std::string("domain.pddl");
+const auto problem_file = std::string("problem.pddl");
+auto planner =
+    Planner<
+        SequentialTag<
+            AStarTag<GroundedTag, BlindTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>,
+            BrFSTag<LiftedTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>>>(domain_file, problem_file);
+const auto [status, plan] = planner.find_solution();
 ```
 
 
