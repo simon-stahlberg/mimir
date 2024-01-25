@@ -33,7 +33,7 @@ concept IsActionTag = std::derived_from<DerivedTag, ActionBaseTag>;
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */
-template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
+template<IsActionTag A, typename... Ts>
 struct ActionDispatcher {};
 
 template<typename T>

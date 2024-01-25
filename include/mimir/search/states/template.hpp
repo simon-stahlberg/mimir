@@ -74,7 +74,7 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */
-template<IsStateTag S, IsPlanningModeTag P>
+template<IsStateTag S, typename... Ts>
 struct StateDispatcher {};
 
 template<typename T>

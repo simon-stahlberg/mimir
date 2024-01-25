@@ -12,14 +12,6 @@ namespace mimir
 {
 
 /**
- * Configuration classes to dispatch parallel or sequential planning
-*/
-struct ParallelBaseTag {};
-
-struct SequentialBaseTag {};
-
-
-/**
  * Interface class
 */
 template<typename Derived>
@@ -37,54 +29,44 @@ public:
 
 
 /**
- * General implementation.
+ * ID base class.
+ * 
+ * Derive from it to provide your own implementation.
+ * 
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
-template<typename T>
-class Planner : public PlannerBase<Planner<T>> {
-};
+struct PlannerBaseTag {};
+
+template<class DerivedTag>
+concept IsPlannerTag = std::derived_from<DerivedTag, PlannerBaseTag>;
 
 
 /**
- * Configuration classes to dispatch parallel or sequential planning
+ * Dispatcher class.
+ *
+ * Wrap the tag and variable number of template arguments.
+ * 
+ * Define required input template parameters using SFINAE
+ * in the declaration file of your derived class.
 */
-template<IsAlgorithmTag... As>
-struct Parallel : public ParallelBaseTag {};
+template<IsPlannerTag H, typename... Ts>
+struct PlannerDispatcher {};
 
-template<IsAlgorithmTag... As>
-struct Sequential : public SequentialBaseTag {};
+template<typename T>
+struct is_planner_dispatcher : std::false_type {};
+
+template<typename T>
+concept IsPlannerDispatcher = is_planner_dispatcher<T>::value;
 
 
 /**
- * Concepts.
+ * General implementation class.
+ *
+ * Spezialize it with your dispatcher.
 */
-template<typename T>
-struct is_parallel : std::false_type {};
-
-template<IsAlgorithmTag... As>
-struct is_parallel<Parallel<As...>> : std::true_type {};
-
-template<typename T>
-struct is_sequential : std::false_type {};
-
-template<IsAlgorithmTag... As>
-struct is_sequential<Sequential<As...>> : std::true_type {};
-
-template<typename T>
-concept IsConcurrencyMode = is_parallel<T>::value || is_sequential<T>::value;
-
-
-/**
- * Spezialized implementations accepting a variable number of algorithms
-*/
-template<IsAlgorithmTag... As>
-class Planner<Parallel<As...>> : public PlannerBase<Planner<Parallel<As...>>> {
-
-};
-
-template<IsAlgorithmTag... As>
-class Planner<Sequential<As...>> : public PlannerBase<Planner<Sequential<As...>>> {
-
-};
+template<IsPlannerDispatcher T>
+class Planner : public PlannerBase<Planner<T>> { };
 
 
 

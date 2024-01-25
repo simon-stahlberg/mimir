@@ -71,7 +71,7 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */
-template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+template<IsSSGTag SG, typename... Ts>
 struct SSGDispatcher {};
 
 template<typename T>

@@ -61,7 +61,7 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */
-template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+template<IsHeuristicTag H, typename... Ts>
 struct HeuristicDispatcher {};
 
 template<typename T>

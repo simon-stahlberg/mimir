@@ -61,7 +61,7 @@ concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */
-template<IsOpenListTag O>
+template<IsOpenListTag O, typename... Ts>
 struct OpenListDispatcher {};
 
 template<typename T>
