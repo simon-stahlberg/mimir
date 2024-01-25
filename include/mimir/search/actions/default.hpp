@@ -9,7 +9,7 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 class DefaultActionTag : public ActionBaseTag {};
@@ -17,7 +17,7 @@ class DefaultActionTag : public ActionBaseTag {};
 
 /**
  * Dispatcher class.
- * 
+ *
  * Define the required template arguments of your implementation.
 */
 template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
@@ -127,6 +127,7 @@ public:
     /* Mutable getters. */
 
     /* Immutable getters. */
+    std::string str() const { return self().str_impl(); }
 };
 
 
@@ -154,6 +155,8 @@ private:
 public:
     /// @brief Create a view on a DefaultAction.
     explicit View(char* data) : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data) { }
+
+    std::string str_impl() const { return "some_action"; }
 };
 
 

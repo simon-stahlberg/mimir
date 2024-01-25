@@ -5,6 +5,8 @@
 
 #include "../heuristics.hpp"
 
+#include <vector>
+
 
 namespace mimir
 {
@@ -23,7 +25,7 @@ struct AStarTag : public AlgorithmBaseTag { };
 
 /**
  * Dispatcher class.
- * 
+ *
  * Define the required template arguments of your implementation.
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
@@ -34,7 +36,7 @@ struct is_algorithm_dispatcher<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>> 
+class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>
     : public AlgorithmBase<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;

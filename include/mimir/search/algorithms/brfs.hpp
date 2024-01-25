@@ -4,6 +4,7 @@
 #include "template.hpp"
 
 #include <deque>
+#include <vector>
 
 
 namespace mimir
@@ -22,7 +23,7 @@ struct BrFSTag : public AlgorithmBaseTag { };
 
 /**
  * Dispatcher class.
- * 
+ *
  * Define the required template arguments of your implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
@@ -33,7 +34,7 @@ struct is_algorithm_dispatcher<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>> : 
  * Spezialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>> 
+class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>
     : public AlgorithmBase<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;

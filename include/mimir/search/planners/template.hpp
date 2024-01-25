@@ -33,18 +33,23 @@ private:
     PlannerBase() = default;
     friend Derived;
 
-    std::string m_domain_file;
-    std::string m_problem_file;
-
-    // TODO: store preprocessed data that can be passed to all algorithms, e.g., causal graph etc
-
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 protected:
+    std::string m_domain_file;
+    std::string m_problem_file;
+
+    // TODO (Dominik): initialize it properly
+    Domain m_domain;
+    Problem m_problem;
+
+    // TODO: store preprocessed data that can be passed to all algorithms, e.g., causal graph etc
+
     PlannerBase(const std::string& domain_file, const std::string& problem_file)
-        : m_domain_file(domain_file), m_problem_file(problem_file) { }
+        : m_domain_file(domain_file), m_problem_file(problem_file)
+        , m_domain(nullptr), m_problem(nullptr) { }
 
 public:
     const std::string& get_domain_file() const { return m_domain_file; }
