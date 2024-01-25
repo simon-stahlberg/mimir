@@ -51,7 +51,7 @@ public:
     const std::string& get_problem_file() const { return m_problem_file; }
 
     /// @brief Find a plan.
-    std::tuple<PlannerStatus, Plan> find_solution() { return self().find_solution(); }
+    std::tuple<PlannerStatus, Plan> find_solution() { return self().find_solution_impl(); }
 };
 
 
