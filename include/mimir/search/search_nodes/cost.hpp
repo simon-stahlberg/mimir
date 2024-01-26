@@ -3,6 +3,8 @@
 
 #include "template.hpp"
 
+#include "cost/cost_search_node_generated.h"
+
 #include "../states.hpp"
 #include "../actions.hpp"
 
@@ -12,7 +14,7 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>

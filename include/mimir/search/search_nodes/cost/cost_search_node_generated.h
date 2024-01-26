@@ -15,29 +15,29 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
 
 namespace mimir {
 
-struct CostSearchNode;
-struct CostSearchNodeBuilder;
+struct CostSearchNodeFlat;
+struct CostSearchNodeFlatBuilder;
 
-enum SearchStatus : int8_t {
-  SearchStatus_NEW = 0,
-  SearchStatus_OPEN = 1,
-  SearchStatus_CLOSED = 2,
-  SearchStatus_DEAD_END = 3,
-  SearchStatus_MIN = SearchStatus_NEW,
-  SearchStatus_MAX = SearchStatus_DEAD_END
+enum SearchStatusFlat : int8_t {
+  SearchStatusFlat_NEW = 0,
+  SearchStatusFlat_OPEN = 1,
+  SearchStatusFlat_CLOSED = 2,
+  SearchStatusFlat_DEAD_END = 3,
+  SearchStatusFlat_MIN = SearchStatusFlat_NEW,
+  SearchStatusFlat_MAX = SearchStatusFlat_DEAD_END
 };
 
-inline const SearchStatus (&EnumValuesSearchStatus())[4] {
-  static const SearchStatus values[] = {
-    SearchStatus_NEW,
-    SearchStatus_OPEN,
-    SearchStatus_CLOSED,
-    SearchStatus_DEAD_END
+inline const SearchStatusFlat (&EnumValuesSearchStatusFlat())[4] {
+  static const SearchStatusFlat values[] = {
+    SearchStatusFlat_NEW,
+    SearchStatusFlat_OPEN,
+    SearchStatusFlat_CLOSED,
+    SearchStatusFlat_DEAD_END
   };
   return values;
 }
 
-inline const char * const *EnumNamesSearchStatus() {
+inline const char * const *EnumNamesSearchStatusFlat() {
   static const char * const names[5] = {
     "NEW",
     "OPEN",
@@ -48,22 +48,22 @@ inline const char * const *EnumNamesSearchStatus() {
   return names;
 }
 
-inline const char *EnumNameSearchStatus(SearchStatus e) {
-  if (::flatbuffers::IsOutRange(e, SearchStatus_NEW, SearchStatus_DEAD_END)) return "";
+inline const char *EnumNameSearchStatusFlat(SearchStatusFlat e) {
+  if (::flatbuffers::IsOutRange(e, SearchStatusFlat_NEW, SearchStatusFlat_DEAD_END)) return "";
   const size_t index = static_cast<size_t>(e);
-  return EnumNamesSearchStatus()[index];
+  return EnumNamesSearchStatusFlat()[index];
 }
 
-struct CostSearchNode FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef CostSearchNodeBuilder Builder;
+struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef CostSearchNodeFlatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_STATUS = 4,
     VT_G_VALUE = 6,
     VT_STATE = 8,
     VT_ACTION = 10
   };
-  mimir::SearchStatus status() const {
-    return static_cast<mimir::SearchStatus>(GetField<int8_t>(VT_STATUS, 0));
+  mimir::SearchStatusFlat status() const {
+    return static_cast<mimir::SearchStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
   }
   int32_t g_value() const {
     return GetField<int32_t>(VT_G_VALUE, 0);
@@ -84,40 +84,40 @@ struct CostSearchNode FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
 };
 
-struct CostSearchNodeBuilder {
-  typedef CostSearchNode Table;
+struct CostSearchNodeFlatBuilder {
+  typedef CostSearchNodeFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_status(mimir::SearchStatus status) {
-    fbb_.AddElement<int8_t>(CostSearchNode::VT_STATUS, static_cast<int8_t>(status), 0);
+  void add_status(mimir::SearchStatusFlat status) {
+    fbb_.AddElement<int8_t>(CostSearchNodeFlat::VT_STATUS, static_cast<int8_t>(status), 0);
   }
   void add_g_value(int32_t g_value) {
-    fbb_.AddElement<int32_t>(CostSearchNode::VT_G_VALUE, g_value, 0);
+    fbb_.AddElement<int32_t>(CostSearchNodeFlat::VT_G_VALUE, g_value, 0);
   }
   void add_state(uint64_t state) {
-    fbb_.AddElement<uint64_t>(CostSearchNode::VT_STATE, state, 0);
+    fbb_.AddElement<uint64_t>(CostSearchNodeFlat::VT_STATE, state, 0);
   }
   void add_action(uint64_t action) {
-    fbb_.AddElement<uint64_t>(CostSearchNode::VT_ACTION, action, 0);
+    fbb_.AddElement<uint64_t>(CostSearchNodeFlat::VT_ACTION, action, 0);
   }
-  explicit CostSearchNodeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit CostSearchNodeFlatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<CostSearchNode> Finish() {
+  ::flatbuffers::Offset<CostSearchNodeFlat> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<CostSearchNode>(end);
+    auto o = ::flatbuffers::Offset<CostSearchNodeFlat>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<CostSearchNode> CreateCostSearchNode(
+inline ::flatbuffers::Offset<CostSearchNodeFlat> CreateCostSearchNodeFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    mimir::SearchStatus status = mimir::SearchStatus_NEW,
+    mimir::SearchStatusFlat status = mimir::SearchStatusFlat_NEW,
     int32_t g_value = 0,
     uint64_t state = 0,
     uint64_t action = 0) {
-  CostSearchNodeBuilder builder_(_fbb);
+  CostSearchNodeFlatBuilder builder_(_fbb);
   builder_.add_action(action);
   builder_.add_state(state);
   builder_.add_g_value(g_value);
@@ -125,33 +125,33 @@ inline ::flatbuffers::Offset<CostSearchNode> CreateCostSearchNode(
   return builder_.Finish();
 }
 
-inline const mimir::CostSearchNode *GetCostSearchNode(const void *buf) {
-  return ::flatbuffers::GetRoot<mimir::CostSearchNode>(buf);
+inline const mimir::CostSearchNodeFlat *GetCostSearchNodeFlat(const void *buf) {
+  return ::flatbuffers::GetRoot<mimir::CostSearchNodeFlat>(buf);
 }
 
-inline const mimir::CostSearchNode *GetSizePrefixedCostSearchNode(const void *buf) {
-  return ::flatbuffers::GetSizePrefixedRoot<mimir::CostSearchNode>(buf);
+inline const mimir::CostSearchNodeFlat *GetSizePrefixedCostSearchNodeFlat(const void *buf) {
+  return ::flatbuffers::GetSizePrefixedRoot<mimir::CostSearchNodeFlat>(buf);
 }
 
-inline bool VerifyCostSearchNodeBuffer(
+inline bool VerifyCostSearchNodeFlatBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifyBuffer<mimir::CostSearchNode>(nullptr);
+  return verifier.VerifyBuffer<mimir::CostSearchNodeFlat>(nullptr);
 }
 
-inline bool VerifySizePrefixedCostSearchNodeBuffer(
+inline bool VerifySizePrefixedCostSearchNodeFlatBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifySizePrefixedBuffer<mimir::CostSearchNode>(nullptr);
+  return verifier.VerifySizePrefixedBuffer<mimir::CostSearchNodeFlat>(nullptr);
 }
 
-inline void FinishCostSearchNodeBuffer(
+inline void FinishCostSearchNodeFlatBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
-    ::flatbuffers::Offset<mimir::CostSearchNode> root) {
+    ::flatbuffers::Offset<mimir::CostSearchNodeFlat> root) {
   fbb.Finish(root);
 }
 
-inline void FinishSizePrefixedCostSearchNodeBuffer(
+inline void FinishSizePrefixedCostSearchNodeFlatBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
-    ::flatbuffers::Offset<mimir::CostSearchNode> root) {
+    ::flatbuffers::Offset<mimir::CostSearchNodeFlat> root) {
   fbb.FinishSizePrefixed(root);
 }
 

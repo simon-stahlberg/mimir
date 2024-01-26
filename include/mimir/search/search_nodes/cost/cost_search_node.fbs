@@ -1,15 +1,15 @@
-// Example IDL file for a CostSearchNode
+// Example IDL file for a CostSearchNodeFlat
 
 namespace mimir;
 
 
-enum SearchStatus:byte { NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3 }
+enum SearchStatusFlat:byte { NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3 }
 
-table CostSearchNode {
-  status:SearchStatus;
+table CostSearchNodeFlat {
+  status:SearchStatusFlat;
   g_value:int32;
   state:uint64;
   action:uint64;
 }
 
-root_type CostSearchNode;
+root_type CostSearchNodeFlat;
