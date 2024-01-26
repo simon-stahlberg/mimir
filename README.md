@@ -1,21 +1,17 @@
 # Mimir: Planner library
 
-Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) highly flexible, 3) easy to integrate, use, and extend, and 4) used in multi-threaded machine learning applications. Mimir implements standard search algorithms such as breadth-first search and AStar search.
+Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) easy to integrate, use, and extend. Mimir implements standard search algorithms such as breadth-first search and AStar search. Mimir also provides Python bindings for the most common template instantiations.
 
-**Static dispatch:** Mimir is fully based on static dispatch. The planner configuration is given at compile time allowing the compiler to produce faster code. User's are also to make decisions at compile time using template meta-programming techniques based on their planner configuration to produce even faster code.
+**Static dispatch:** Mimir is fully based on static dispatch. The planner configuration is given at compile time allowing the compiler to produce more optimized code.
 
-**Zero heap-allocations:** Mimir implements a sub-library for serializing objects with fully customizable memory layouts and zero-cost de-serialization. Mimir reuses memory by moving buffers around in memory with zero heap allocations and deallocations.
+**Zero heap-allocations:** Mimir implements a sub-library with functionality for serializing objects with zero-cost de-serialization. This allows you to more easily define your own memory layouts in performance critical situations. Mimir uses it for states, search nodes, and ground actions.
 
 ## Example API
 
 ```cpp
 const auto domain_file = std::string("domain.pddl");
 const auto problem_file = std::string("problem.pddl");
-auto planner =
-    Planner<
-        SequentialTag<
-            AStarTag<GroundedTag, BlindTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>,
-            BrFSTag<LiftedTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>>>(domain_file, problem_file);
+auto planner = Planner<AStarTag<GroundedTag, BlindTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>>(domain_file, problem_file);
 const auto [status, plan] = planner.find_solution();
 ```
 
