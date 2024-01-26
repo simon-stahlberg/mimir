@@ -3,7 +3,7 @@
 
 #include "template.hpp"
 
-#include "cost/cost_search_node_generated.h"
+#include "flatbuffers/cost_search_node_generated.h"
 
 #include "../states.hpp"
 #include "../actions.hpp"
@@ -19,7 +19,6 @@ namespace mimir
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class CostSearchNodeTag : public SearchNodeBaseTag {};
-
 
 /**
  * Aliases

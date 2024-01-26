@@ -13,46 +13,12 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
               FLATBUFFERS_VERSION_REVISION == 26,
              "Non-compatible flatbuffers version included");
 
+#include "search_status_generated.h"
+
 namespace mimir {
 
 struct CostSearchNodeFlat;
 struct CostSearchNodeFlatBuilder;
-
-enum SearchStatusFlat : int8_t {
-  SearchStatusFlat_NEW = 0,
-  SearchStatusFlat_OPEN = 1,
-  SearchStatusFlat_CLOSED = 2,
-  SearchStatusFlat_DEAD_END = 3,
-  SearchStatusFlat_MIN = SearchStatusFlat_NEW,
-  SearchStatusFlat_MAX = SearchStatusFlat_DEAD_END
-};
-
-inline const SearchStatusFlat (&EnumValuesSearchStatusFlat())[4] {
-  static const SearchStatusFlat values[] = {
-    SearchStatusFlat_NEW,
-    SearchStatusFlat_OPEN,
-    SearchStatusFlat_CLOSED,
-    SearchStatusFlat_DEAD_END
-  };
-  return values;
-}
-
-inline const char * const *EnumNamesSearchStatusFlat() {
-  static const char * const names[5] = {
-    "NEW",
-    "OPEN",
-    "CLOSED",
-    "DEAD_END",
-    nullptr
-  };
-  return names;
-}
-
-inline const char *EnumNameSearchStatusFlat(SearchStatusFlat e) {
-  if (::flatbuffers::IsOutRange(e, SearchStatusFlat_NEW, SearchStatusFlat_DEAD_END)) return "";
-  const size_t index = static_cast<size_t>(e);
-  return EnumNamesSearchStatusFlat()[index];
-}
 
 struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef CostSearchNodeFlatBuilder Builder;
@@ -62,8 +28,8 @@ struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_STATE = 8,
     VT_ACTION = 10
   };
-  mimir::SearchStatusFlat status() const {
-    return static_cast<mimir::SearchStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
+  SearchStatusFlat status() const {
+    return static_cast<SearchStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
   }
   int32_t g_value() const {
     return GetField<int32_t>(VT_G_VALUE, 0);
@@ -88,7 +54,7 @@ struct CostSearchNodeFlatBuilder {
   typedef CostSearchNodeFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_status(mimir::SearchStatusFlat status) {
+  void add_status(SearchStatusFlat status) {
     fbb_.AddElement<int8_t>(CostSearchNodeFlat::VT_STATUS, static_cast<int8_t>(status), 0);
   }
   void add_g_value(int32_t g_value) {
@@ -113,7 +79,7 @@ struct CostSearchNodeFlatBuilder {
 
 inline ::flatbuffers::Offset<CostSearchNodeFlat> CreateCostSearchNodeFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    mimir::SearchStatusFlat status = mimir::SearchStatusFlat_NEW,
+    SearchStatusFlat status = SearchStatusFlat_NEW,
     int32_t g_value = 0,
     uint64_t state = 0,
     uint64_t action = 0) {

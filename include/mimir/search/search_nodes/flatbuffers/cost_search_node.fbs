@@ -1,9 +1,9 @@
 // Example IDL file for a CostSearchNodeFlat
 
+include "search_status.fbs";
+
 namespace mimir;
 
-
-enum SearchStatusFlat:byte { NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3 }
 
 table CostSearchNodeFlat {
   status:SearchStatusFlat;
