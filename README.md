@@ -11,7 +11,7 @@ Mimir is a C++20 planning library for grounded and lifted planning. We created M
 ```cpp
 const auto domain_file = std::string("domain.pddl");
 const auto problem_file = std::string("problem.pddl");
-auto planner = Planner<AStarTag<GroundedTag, BlindTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>>(domain_file, problem_file);
+auto planner = Planner<SingleTag<AStarTag<GroundedTag, BlindTag, BitsetStateTag, DefaultActionTag, DefaultAAGTag, DefaultSSGTag>>>(domain_file, problem_file);
 const auto [status, plan] = planner.find_solution();
 ```
 
@@ -20,7 +20,7 @@ const auto [status, plan] = planner.find_solution();
 
 ### Installing the Dependencies
 
-Mimir depends on the PDDL parser [Loki](https://github.com/drexlerd/Loki), a fraction of [Boost's](boost.org) header-only libraries (Fusion, Spirit x3, Container), its performance benchmarking framework depends on [GoogleBenchmark](https://github.com/google/benchmark), and its testing framework depends on [GoogleTest](https://github.com/google/googletest).
+Mimir depends on the PDDL parser [Loki](https://github.com/drexlerd/Loki), a fraction of [Boost's](boost.org) header-only libraries (Fusion, Spirit x3, Container), memory layout flattening on [flatbuffers](https://github.com/google/flatbuffers), its performance benchmarking framework depends on [GoogleBenchmark](https://github.com/google/benchmark), and its testing framework depends on [GoogleTest](https://github.com/google/googletest).
 
 We provide a CMake Superbuild project that takes care of downloading, building, and installing all dependencies.
 

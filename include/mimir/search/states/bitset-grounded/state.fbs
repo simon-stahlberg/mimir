@@ -1,0 +1,10 @@
+// Example IDL file for a State
+
+namespace mimir;
+
+
+table State {
+  atoms:[uint64];
+}
+
+root_type State;
