@@ -33,10 +33,6 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    // Prevent copying
-    SSGBase(const SSGBase& other) = default;
-    SSGBase& operator=(const SSGBase& other) = default;
-
 protected:
     UnorderedSet<StateDispatcher<S, P>> m_states;
 

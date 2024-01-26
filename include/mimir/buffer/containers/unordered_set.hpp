@@ -21,6 +21,13 @@ private:
     std::unordered_set<View<T>> m_data;
 
 public:
+    UnorderedSet() = default;
+    // Move only
+    UnorderedSet(const UnorderedSet& other) = delete;
+    UnorderedSet& operator=(const UnorderedSet& other) = delete;
+    UnorderedSet(UnorderedSet&& other) = default;
+    UnorderedSet& operator=(UnorderedSet&& other) = default;
+
     [[nodiscard]] View<T> insert(const Builder<T>& builder) {
         // TODO (Dominik): implement
         const char* data = builder.get_buffer().get_data();

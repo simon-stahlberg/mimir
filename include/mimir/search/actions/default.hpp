@@ -84,6 +84,10 @@ class Builder<ActionDispatcher<DefaultActionTag, P, S>>
     : public BuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
     , public DefaultActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
 private:
+    //mimir::Bitset applicability_positive_precondition_bitset_;
+    //mimir::Bitset applicability_negative_precondition_bitset_;
+    //mimir::Bitset unconditional_positive_effect_bitset_;
+    //mimir::Bitset unconditional_negative_effect_bitset_;
 
     /* Implement BuilderBase interface */
     data_size_type calculate_size_impl() const {

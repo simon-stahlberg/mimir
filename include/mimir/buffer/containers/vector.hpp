@@ -24,6 +24,13 @@ private:
     std::vector<View<T>> m_data;
 
 public:
+    Vector() = default;
+    // Move only
+    Vector(const Vector& other) = delete;
+    Vector& operator=(const Vector& other) = delete;
+    Vector(Vector&& other) = default;
+    Vector& operator=(Vector&& other) = default;
+
     void push_back(const Builder<T>& builder) {
         m_data.push_back(View<T>(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
     }
@@ -68,6 +75,11 @@ private:
 
 public:
     AutomaticVector(Builder<T>&& default_builder) : m_default_builder(std::move(default_builder)) { }
+    // Move only
+    AutomaticVector(const AutomaticVector& other) = delete;
+    AutomaticVector& operator=(const AutomaticVector& other) = delete;
+    AutomaticVector(AutomaticVector&& other) = default;
+    AutomaticVector& operator=(AutomaticVector&& other) = default;
 
     void push_back(const Builder<T>& builder) {
         m_data.push_back(View<T>(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
