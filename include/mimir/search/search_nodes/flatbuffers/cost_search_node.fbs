@@ -1,12 +1,12 @@
 // Example IDL file for a CostSearchNodeFlat
 
-include "search_status.fbs";
+include "search_node_status.fbs";
 
 namespace mimir;
 
 
 table CostSearchNodeFlat {
-  status:SearchStatusFlat;
+  status:SearchNodeStatusFlat;
   g_value:int32;
   state:uint64;
   action:uint64;

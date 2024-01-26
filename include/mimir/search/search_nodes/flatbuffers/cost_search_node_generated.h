@@ -13,7 +13,7 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
               FLATBUFFERS_VERSION_REVISION == 26,
              "Non-compatible flatbuffers version included");
 
-#include "search_status_generated.h"
+#include "search_node_status_generated.h"
 
 namespace mimir {
 
@@ -28,8 +28,8 @@ struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_STATE = 8,
     VT_ACTION = 10
   };
-  SearchStatusFlat status() const {
-    return static_cast<SearchStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
+  SearchNodeStatusFlat status() const {
+    return static_cast<SearchNodeStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
   }
   int32_t g_value() const {
     return GetField<int32_t>(VT_G_VALUE, 0);
@@ -54,7 +54,7 @@ struct CostSearchNodeFlatBuilder {
   typedef CostSearchNodeFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_status(SearchStatusFlat status) {
+  void add_status(SearchNodeStatusFlat status) {
     fbb_.AddElement<int8_t>(CostSearchNodeFlat::VT_STATUS, static_cast<int8_t>(status), 0);
   }
   void add_g_value(int32_t g_value) {
@@ -79,7 +79,7 @@ struct CostSearchNodeFlatBuilder {
 
 inline ::flatbuffers::Offset<CostSearchNodeFlat> CreateCostSearchNodeFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    SearchStatusFlat status = SearchStatusFlat_NEW,
+    SearchNodeStatusFlat status = SearchNodeStatusFlat_NEW,
     int32_t g_value = 0,
     uint64_t state = 0,
     uint64_t action = 0) {

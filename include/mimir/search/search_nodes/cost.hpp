@@ -92,6 +92,9 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
+    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+    CostSearchNodeFlatBuilder m_search_node_builder;
+
     SearchNodeStatus m_status;
     int m_g_value;
     StateView m_parent_state;
@@ -114,8 +117,14 @@ private:
     friend class BuilderBase;
 
     /* Implement CostSearchNodeBuilderBase interface */
-    void set_status_impl(SearchNodeStatus status) { m_status = status; }
-    void set_g_value_impl(int g_value) { m_g_value = g_value; }
+    void set_status_impl(SearchNodeStatus status) {
+        m_status = status;
+        m_search_node_builder.add_status(static_cast<SearchNodeStatusFlat>(status));
+    }
+    void set_g_value_impl(int g_value) {
+        m_g_value = g_value;
+        m_search_node_builder.add_g_value(g_value);
+    }
     void set_parent_state_impl(StateView parent_state) { m_parent_state = parent_state; }
     void set_ground_action_impl(ActionView creating_action) { m_creating_action = creating_action; }
 
@@ -124,11 +133,17 @@ private:
     friend class CostSearchNodeBuilderBase;
 
 public:
-    Builder() : m_parent_state(StateView(nullptr)), m_creating_action(ActionView(nullptr)) { }
+    Builder()
+        : m_flatbuffers_builder(1024)
+        , m_search_node_builder(m_flatbuffers_builder)
+        , m_parent_state(StateView(nullptr))
+        , m_creating_action(ActionView(nullptr)) { }
 
     /// @brief Construct a builder with custom default values.
     Builder(SearchNodeStatus status, int g_value, StateView parent_state, ActionView creating_action)
-        : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
+        : m_flatbuffers_builder(1024)
+        , m_search_node_builder(m_flatbuffers_builder)
+        , m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
         this->finish();
     }
 };
