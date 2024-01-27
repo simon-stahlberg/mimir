@@ -7,6 +7,8 @@
 
 #include "../algorithms/murmurhash3.hpp"
 
+#include <flatbuffers/flatbuffers.h>
+
 #include <cstring> // For std::memcmp
 #include <functional>
 
@@ -26,37 +28,30 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
     // Basic meta data that every view must contain to be equality comparable and hashable
-    char* m_data;
-
-    [[nodiscard]] size_t get_offset_to_representative_data() const { return self().get_offset_to_representative_data_impl(); }
+    uint8_t* m_data;
 
 protected:
-    explicit ViewBase(char* data) : m_data(data) { }
-
-    /// @brief Access the data to be interpreted by derived classes.
-    [[nodiscard]] char* get_data() { return m_data; }
-    [[nodiscard]] const char* get_data() const { return m_data; }
+    explicit ViewBase(uint8_t* data) : m_data(data) { }
 
 public:
     /// @brief Compare the representative data.
     [[nodiscard]] bool operator==(const Derived& other) const {
-        if (get_size() != other.get_size()) return false;
-        // Compare representative data.
-        size_t offset = get_offset_to_representative_data();
-        return (std::memcmp(get_data() + offset, other.get_data() + offset, get_size() - offset) == 0);
+        // TODO
+        return false;
     }
 
     /// @brief Hash the representative data.
     [[nodiscard]] size_t hash() const {
-        size_t seed = get_size();
-        int64_t hash[2];
-        size_t offset = get_offset_to_representative_data();
-        MurmurHash3_x64_128(get_data() + offset, get_size() - offset, seed, hash);
-        return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
+        // TODO
+        return 0;
     }
 
     /// @brief The first 4 bytes are always reserved for the size, see builder
-    [[nodiscard]] data_size_type get_size() const { return read_value<data_size_type>(m_data); }
+    [[nodiscard]] uint8_t* get_buffer_pointer() { return m_data; }
+
+    [[nodiscard]] const uint8_t* get_buffer_pointer() const { return m_data; }
+
+    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(m_data); }
 };
 
 

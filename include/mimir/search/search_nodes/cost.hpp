@@ -101,22 +101,39 @@ private:
     ActionView m_creating_action;
 
     /* Implement BuilderBase interface */
-    data_size_type calculate_size_impl() const {
-        return sizeof(SearchNodeStatus) + sizeof(int) + sizeof(StateView) + sizeof(ActionView);
-    }
-
-    void finish_impl() {
-        this->m_buffer.write(m_status);
-        this->m_buffer.write(m_g_value);
-        this->m_buffer.write(m_parent_state);
-        this->m_buffer.write(m_creating_action);
-    }
-
-    // Give access to the private interface implementations.
     template<typename>
     friend class BuilderBase;
 
+    void finish_impl() {
+        auto offset = m_search_node_builder.Finish();
+        m_flatbuffers_builder.FinishSizePrefixed(offset);
+
+        // Get a pointer to the serialized data
+        uint8_t* buf = m_flatbuffers_builder.GetBufferPointer();
+
+        // Get the size of the serialized data, including the size prefix
+        auto size = m_flatbuffers_builder.GetSize();
+
+        // Reinterpret the buffer, it can possible be moved to a different place before
+        auto reinterpreted = GetMutableSizePrefixedCostSearchNodeFlat(buf);
+
+        // TODO: how to get the size of the buffer?
+        auto sizePrefix = *reinterpret_cast<const flatbuffers::uoffset_t*>(buf);
+    }
+
+    uint8_t* get_buffer_pointer_impl() {
+        return m_flatbuffers_builder.GetBufferPointer();
+    }
+
+    const uint8_t* get_buffer_pointer_impl() const {
+        return m_flatbuffers_builder.GetBufferPointer();
+    }
+
+
     /* Implement CostSearchNodeBuilderBase interface */
+    template<typename>
+    friend class CostSearchNodeBuilderBase;
+
     void set_status_impl(SearchNodeStatus status) {
         m_status = status;
         m_search_node_builder.add_status(static_cast<SearchNodeStatusFlat>(status));
@@ -125,12 +142,14 @@ private:
         m_g_value = g_value;
         m_search_node_builder.add_g_value(g_value);
     }
-    void set_parent_state_impl(StateView parent_state) { m_parent_state = parent_state; }
-    void set_ground_action_impl(ActionView creating_action) { m_creating_action = creating_action; }
-
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class CostSearchNodeBuilderBase;
+    void set_parent_state_impl(StateView parent_state) {
+        m_parent_state = parent_state;
+        m_search_node_builder.add_state(pointer_to_uint64_t(parent_state.get_buffer_pointer()));
+    }
+    void set_ground_action_impl(ActionView creating_action) {
+        m_creating_action = creating_action;
+        m_search_node_builder.add_state(pointer_to_uint64_t(creating_action.get_buffer_pointer()));
+    }
 
 public:
     Builder()
@@ -144,6 +163,10 @@ public:
         : m_flatbuffers_builder(1024)
         , m_search_node_builder(m_flatbuffers_builder)
         , m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
+        this->set_status(status);
+        this->set_g_value(g_value);
+        this->set_parent_state(parent_state);
+        this->set_ground_action(creating_action);
         this->finish();
     }
 };
@@ -169,8 +192,11 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] SearchNodeStatus& get_status() { return self().get_status_impl(); }
-    [[nodiscard]] g_value_type& get_g_value() { return self().get_g_value_impl(); }
+    void set_status(SearchNodeStatus status) { self().set_status_impl(status); }
+    void set_g_value(int g_value) { self().set_g_value_impl(g_value); }
+
+    [[nodiscard]] SearchNodeStatus get_status() { return self().get_status_impl(); }
+    [[nodiscard]] g_value_type get_g_value() { return self().get_g_value_impl(); }
     [[nodiscard]] StateView get_parent_state() { return self().get_parent_state_impl(); }
     [[nodiscard]] ActionView get_ground_action() { return self().get_ground_action_impl(); }
 };
@@ -189,41 +215,44 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
-    const CostSearchNodeFlat* m_flatbuffers_view;
+    CostSearchNodeFlat* m_flatbuffers_view;
 
-    static constexpr size_t s_status_offset =       sizeof(data_size_type);
-    static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);
-    static constexpr size_t s_parent_state_offset = sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type);
-    static constexpr size_t s_ground_action =       sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type) + sizeof(StateView);
     /* Implement ViewBase interface: */
-    [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return 0; }
+    template<typename>
+    friend class ViewBase;
 
-    /* Implement SearchNodeViewBase interface */
-    [[nodiscard]] SearchNodeStatus& get_status_impl() {
-        return read_value<SearchNodeStatus>(this->get_data() + s_status_offset);
-    }
-
-    [[nodiscard]] g_value_type& get_g_value_impl() {
-        return read_value<g_value_type>(this->get_data() + s_g_value_offset);
-    }
-
-    [[nodiscard]] StateView get_parent_state_impl() {
-        return read_value<StateView>(this->get_data() + s_parent_state_offset);
-    }
-
-    [[nodiscard]] ActionView get_ground_action_impl() {
-        return read_value<ActionView>(this->get_data() + s_ground_action);
-    }
-
-    // Give access to the private interface implementations.
+    /* Implement CostSearchNodeViewBase interface */
     template<typename>
     friend class CostSearchNodeViewBase;
 
+    void set_status_impl(SearchNodeStatus status) {
+        m_flatbuffers_view->mutate_status(static_cast<SearchNodeStatusFlat>(status));
+    }
+    void set_g_value_impl(int g_value) {
+        m_flatbuffers_view->mutate_g_value(g_value);
+    }
+
+    [[nodiscard]] SearchNodeStatus get_status_impl() {
+        return static_cast<SearchNodeStatus>(m_flatbuffers_view->status());
+    }
+
+    [[nodiscard]] g_value_type get_g_value_impl() {
+        return m_flatbuffers_view->g_value();
+    }
+
+    [[nodiscard]] StateView get_parent_state_impl() {
+        return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->state()));
+    }
+
+    [[nodiscard]] ActionView get_ground_action_impl() {
+        return ActionView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->action()));
+    }
+
 public:
     /// @brief Create a view on a SearchNode.
-    explicit View(char* data)
+    explicit View(uint8_t* data)
         : ViewBase<View<CostSearchNodeTag<P, S, A>>>(data)
-        , m_flatbuffers_view(GetSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data))) { }
+        , m_flatbuffers_view(GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data))) { }
 };
 
 

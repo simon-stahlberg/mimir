@@ -15,7 +15,7 @@ namespace mimir {
 template<size_t N>
 class ByteStreamSegmented {
 private:
-    std::vector<std::vector<char>> m_segments;
+    std::vector<std::vector<uint8_t>> m_segments;
 
     size_t cur_segment_id;
     size_t cur_segment_pos;
@@ -50,12 +50,12 @@ public:
     /// @param data
     /// @param size
     /// @return
-    char* write(const char* data, size_t amount) {
+    uint8_t* write(const uint8_t* data, size_t amount) {
         if (amount > (N - m_segments.back().size())) {
             increase_capacity();
         }
         auto& cur_segment = m_segments.back();
-        char* result_data = cur_segment.end().base();
+        uint8_t* result_data = cur_segment.end().base();
         cur_segment.insert(cur_segment.end(), data, data + amount);
         size += amount;
         last_written += amount;
@@ -77,7 +77,7 @@ public:
         last_written = 0;
     }
 
-    [[nodiscard]] const char* get_data(size_t segment_id) const {
+    [[nodiscard]] const uint8_t* get_data(size_t segment_id) const {
         assert(segment_id <= m_segments.size());
         m_segments[segment_id].data();
     }

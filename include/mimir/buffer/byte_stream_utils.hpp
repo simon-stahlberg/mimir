@@ -30,6 +30,18 @@ const T* read_pointer(const char* data) {
     return reinterpret_cast<const T*>(*reinterpret_cast<const uintptr_t*>(data));
 }
 
+template<typename T>
+uint64_t pointer_to_uint64_t(const T* ptr) {
+    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    return static_cast<uint64_t>(address);
+}
+
+template<typename T>
+T* uint64_t_to_pointer(uint64_t address) {
+    uintptr_t ptrAddress = static_cast<uintptr_t>(address);
+    return reinterpret_cast<T*>(ptrAddress);
+}
+
 }  // namespace mimir
 
 #endif // MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_

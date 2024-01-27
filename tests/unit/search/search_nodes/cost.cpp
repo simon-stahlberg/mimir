@@ -12,14 +12,14 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     auto state_builder = Builder<StateDispatcher<BitsetStateTag, GroundedTag>>();
     state_builder.set_id(5);
     state_builder.finish();
-    EXPECT_NE(state_builder.get_buffer().get_data(), nullptr);
-    EXPECT_EQ(state_builder.get_buffer().get_size(), 8);
-    auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer().get_data());
+    EXPECT_NE(state_builder.get_buffer_pointer(), nullptr);
+    EXPECT_EQ(state_builder.get_size(), 8);
+    auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
 
     // Build a ground action.
     auto action_builder = Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>();
     action_builder.finish();
-    auto action_view = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer().get_data());
+    auto action_view = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
 
     // Build a search node.
     auto search_node_builder = Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>();
@@ -28,11 +28,11 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     search_node_builder.set_parent_state(state_view);
     search_node_builder.set_ground_action(action_view);
     search_node_builder.finish();
-    EXPECT_NE(search_node_builder.get_buffer().get_data(), nullptr);
-    EXPECT_EQ(search_node_builder.get_buffer().get_size(), 28);
+    EXPECT_NE(search_node_builder.get_buffer_pointer(), nullptr);
+    EXPECT_EQ(search_node_builder.get_size(), 28);
 
     // View the data generated in the builder.
-    auto search_node_view = View<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>(search_node_builder.get_buffer().get_data());
+    auto search_node_view = View<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>(search_node_builder.get_buffer_pointer());
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
     EXPECT_EQ(search_node_view.get_parent_state().get_id(), 5);
@@ -59,9 +59,9 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
     auto action = search_node_0.get_ground_action();
 
     // Test mutation of a search node
-    search_node_0.get_status() = SearchNodeStatus::OPEN;
+    search_node_0.set_status(SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::OPEN);
-    search_node_0.get_g_value() = 41;
+    search_node_0.set_g_value(41);
     EXPECT_EQ(search_node_0.get_g_value(), 41);
 
     // Test default initialization of a second search node

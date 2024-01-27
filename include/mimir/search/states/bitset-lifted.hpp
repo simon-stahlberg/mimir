@@ -25,12 +25,22 @@ class Builder<StateDispatcher<BitsetStateTag, LiftedTag>>
     state_id_type m_id;
 
     /* Implement BuilderBase interface */
-    data_size_type calculate_size_impl() const {
-        return sizeof(state_id_type);
+    void finish_impl() {
+        // TODO:
     }
 
-    void finish_impl() {
-        this->m_buffer.write(m_id);
+    uint8_t* get_buffer_pointer_impl() {
+        // TODO: implement
+        return nullptr;
+    }
+
+    const uint8_t* get_buffer_pointer_impl() const {
+        // TODO: implement
+        return nullptr;
+    }
+
+    void clear_impl() {
+        // TODO: implement
     }
 
     template<typename>
@@ -54,11 +64,7 @@ class View<StateDispatcher<BitsetStateTag, LiftedTag>>
     : public ViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>>
     , public StateViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>> {
 private:
-    static constexpr size_t s_id_offset =  sizeof(data_size_type);
-    static constexpr size_t s_data_offset = sizeof(data_size_type) + sizeof(state_id_type);
-
     /* Implement ViewBase interface */
-    [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return s_data_offset; }
 
     // Give access to the private interface implementations.
     template<typename>
@@ -66,7 +72,7 @@ private:
 
     /* Implement SearchNodeViewBase interface */
     [[nodiscard]] state_id_type get_id_impl() const {
-        return read_value<state_id_type>(this->get_data() + s_id_offset);
+        return 0;
     }
 
     // Give access to the private interface implementations.
@@ -74,7 +80,7 @@ private:
     friend class StateViewBase;
 
 public:
-    explicit View(char* data) : ViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>>(data) { }
+    explicit View(uint8_t* data) : ViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>>(data) { }
 };
 
 

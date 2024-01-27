@@ -31,14 +31,26 @@ struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   SearchNodeStatusFlat status() const {
     return static_cast<SearchNodeStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
   }
+  bool mutate_status(SearchNodeStatusFlat _status = static_cast<SearchNodeStatusFlat>(0)) {
+    return SetField<int8_t>(VT_STATUS, static_cast<int8_t>(_status), 0);
+  }
   int32_t g_value() const {
     return GetField<int32_t>(VT_G_VALUE, 0);
+  }
+  bool mutate_g_value(int32_t _g_value = 0) {
+    return SetField<int32_t>(VT_G_VALUE, _g_value, 0);
   }
   uint64_t state() const {
     return GetField<uint64_t>(VT_STATE, 0);
   }
+  bool mutate_state(uint64_t _state = 0) {
+    return SetField<uint64_t>(VT_STATE, _state, 0);
+  }
   uint64_t action() const {
     return GetField<uint64_t>(VT_ACTION, 0);
+  }
+  bool mutate_action(uint64_t _action = 0) {
+    return SetField<uint64_t>(VT_ACTION, _action, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -97,6 +109,14 @@ inline const mimir::CostSearchNodeFlat *GetCostSearchNodeFlat(const void *buf) {
 
 inline const mimir::CostSearchNodeFlat *GetSizePrefixedCostSearchNodeFlat(const void *buf) {
   return ::flatbuffers::GetSizePrefixedRoot<mimir::CostSearchNodeFlat>(buf);
+}
+
+inline CostSearchNodeFlat *GetMutableCostSearchNodeFlat(void *buf) {
+  return ::flatbuffers::GetMutableRoot<CostSearchNodeFlat>(buf);
+}
+
+inline mimir::CostSearchNodeFlat *GetMutableSizePrefixedCostSearchNodeFlat(void *buf) {
+  return ::flatbuffers::GetMutableSizePrefixedRoot<mimir::CostSearchNodeFlat>(buf);
 }
 
 inline bool VerifyCostSearchNodeFlatBuffer(

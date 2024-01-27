@@ -90,11 +90,22 @@ private:
     //mimir::Bitset unconditional_negative_effect_bitset_;
 
     /* Implement BuilderBase interface */
-    data_size_type calculate_size_impl() const {
-        return 0;
+    void finish_impl() {
+        // TODO:
     }
 
-    void finish_impl() {
+    uint8_t* get_buffer_pointer_impl() {
+        // TODO: implement
+        return nullptr;
+    }
+
+    const uint8_t* get_buffer_pointer_impl() const {
+        // TODO: implement
+        return nullptr;
+    }
+
+    void clear_impl() {
+        // TODO: implement
     }
 
     // Give access to the private interface implementations.
@@ -145,20 +156,17 @@ class View<ActionDispatcher<DefaultActionTag, P, S>>
     : public ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>
     , public DefaultActionViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>> {
 private:
-
-    static constexpr size_t s_status_offset =       sizeof(data_size_type);
     /* Implement ViewBase interface: */
-    [[nodiscard]] size_t get_offset_to_representative_data_impl() const { return 0; }
+    template<typename>
+    friend class ViewBase;
 
     /* Implement DefaultActionViewBase interface */
-
-    // Give access to the private interface implementations.
     template<typename>
     friend class DefaultActionViewBase;
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit View(char* data) : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data) { }
+    explicit View(uint8_t* data) : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data) { }
 
     std::string str_impl() const { return "some_action"; }
 };
