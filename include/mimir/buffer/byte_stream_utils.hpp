@@ -27,7 +27,7 @@ T* read_pointer(char* data) {
 
 template<typename T>
 const T* read_pointer(const char* data) {
-    return reinterpret_cast<const T*>(*reinterpret_cast<uintptr_t*>(data));
+    return reinterpret_cast<const T*>(*reinterpret_cast<const uintptr_t*>(data));
 }
 
 }  // namespace mimir
