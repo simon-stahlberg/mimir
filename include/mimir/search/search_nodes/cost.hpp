@@ -3,7 +3,7 @@
 
 #include "template.hpp"
 
-#include "flatbuffers/cost_search_node_generated.h"
+#include "../../buffer/flatbuffers/cost_search_node_generated.h"
 
 #include "../states.hpp"
 #include "../actions.hpp"
@@ -189,6 +189,8 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
+    const CostSearchNodeFlat* m_flatbuffers_view;
+
     static constexpr size_t s_status_offset =       sizeof(data_size_type);
     static constexpr size_t s_g_value_offset =      sizeof(data_size_type) + sizeof(SearchNodeStatus);
     static constexpr size_t s_parent_state_offset = sizeof(data_size_type) + sizeof(SearchNodeStatus) + sizeof(g_value_type);
@@ -219,7 +221,9 @@ private:
 
 public:
     /// @brief Create a view on a SearchNode.
-    explicit View(char* data) : ViewBase<View<CostSearchNodeTag<P, S, A>>>(data) { }
+    explicit View(char* data)
+        : ViewBase<View<CostSearchNodeTag<P, S, A>>>(data)
+        , m_flatbuffers_view(GetSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data))) { }
 };
 
 
