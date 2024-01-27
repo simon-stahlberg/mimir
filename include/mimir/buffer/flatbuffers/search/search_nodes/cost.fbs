@@ -1,6 +1,6 @@
 // Example IDL file for a CostSearchNodeFlat
 
-include "search_node_status.fbs";
+include "status.fbs";
 
 namespace mimir;
 

@@ -1,14 +1,13 @@
-// Example IDL file for a Action
+// Example IDL file for a DefaultActionFlat
 
 namespace mimir;
 
 
-table Action {
-  applicability_positive_precondition_bitset:[uint16];
+table DefaultActionFlat {
   applicability_positive_precondition_bitset:[uint64];
   applicability_negative_precondition_bitset:[uint64];
   unconditional_positive_effect_bitset:[uint64];
   unconditional_negative_effect_bitset:[uint64];
 }
 
-root_type Action;
+root_type DefaultActionFlat;

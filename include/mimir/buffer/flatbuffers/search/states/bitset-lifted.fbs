@@ -1,0 +1,10 @@
+// Example IDL file for a StateBitsetGroundedFlat
+
+namespace mimir;
+
+
+table StateBitsetGroundedFlat {
+  atoms:[uint64];
+}
+
+root_type StateBitsetGroundedFlat;

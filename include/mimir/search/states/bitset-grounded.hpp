@@ -3,6 +3,8 @@
 
 #include "bitset.hpp"
 
+#include "../../buffer/flatbuffers/search/states/bitset-grounded_generated.h"
+
 
 namespace mimir
 {
@@ -22,6 +24,7 @@ template<>
 class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>> {
+
     state_id_type m_id;
 
     /* Implement BuilderBase interface */
