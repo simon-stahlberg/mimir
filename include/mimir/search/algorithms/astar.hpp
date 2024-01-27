@@ -33,7 +33,7 @@ struct is_algorithm_dispatcher<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>
 
 
 /**
- * Spezialized implementation class.
+ * Specialized implementation class.
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>

@@ -3,7 +3,7 @@
 
 
 /**
- * Include all spezializations here
+ * Include all specializations here
 */
 #include "search/actions.hpp"
 #include "search/algorithms.hpp"

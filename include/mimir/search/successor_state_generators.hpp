@@ -3,7 +3,7 @@
 
 
 /**
- * Include all spezializations here
+ * Include all specializations here
 */
 #include "successor_state_generators/default-grounded.hpp"
 #include "successor_state_generators/default-lifted.hpp"

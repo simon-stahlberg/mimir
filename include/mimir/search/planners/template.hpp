@@ -67,7 +67,7 @@ concept IsPlannerTag = std::derived_from<DerivedTag, PlannerBaseTag>;
 /**
  * General implementation class.
  *
- * Spezialize it with your tag.
+ * Specialize it with your tag.
  * No dispatcher because this is the topmost template.
 */
 template<IsPlannerTag T>

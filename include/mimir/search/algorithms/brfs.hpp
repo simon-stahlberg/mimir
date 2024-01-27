@@ -31,7 +31,7 @@ struct is_algorithm_dispatcher<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>> : 
 
 
 /**
- * Spezialized implementation class.
+ * Specialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>

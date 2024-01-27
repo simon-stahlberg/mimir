@@ -3,7 +3,7 @@
 
 
 /**
- * Include all spezializations here
+ * Include all specializations here
 */
 #include "algorithms/astar.hpp"
 #include "algorithms/brfs.hpp"

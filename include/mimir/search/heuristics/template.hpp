@@ -74,7 +74,7 @@ concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize it with your dispatcher.
+ * Specialize it with your dispatcher.
 */
 template<IsHeuristicDispatcher T>
 class Heuristic : public HeuristicBase<Heuristic<T>> { };

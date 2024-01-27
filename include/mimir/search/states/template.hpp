@@ -87,7 +87,7 @@ concept IsStateDispatcher = is_state_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize the wrapped tag to provide your own implementation of a state representation.
+ * Specialize the wrapped tag to provide your own implementation of a state representation.
 */
 template<IsStateDispatcher S>
 class Builder<S> : public BuilderBase<Builder<S>>, public StateBuilderBase<Builder<S>> { };

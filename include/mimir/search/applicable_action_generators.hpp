@@ -3,7 +3,7 @@
 
 
 /**
- * Include all spezializations here
+ * Include all specializations here
 */
 #include "applicable_action_generators/default-grounded.hpp"
 #include "applicable_action_generators/default-lifted.hpp"

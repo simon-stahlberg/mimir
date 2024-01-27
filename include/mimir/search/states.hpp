@@ -3,7 +3,7 @@
 
 
 /**
- * Include all spezializations here
+ * Include all specializations here
 */
 #include "states/bitset-grounded.hpp"
 #include "states/bitset-lifted.hpp"

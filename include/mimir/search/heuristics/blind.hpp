@@ -25,7 +25,7 @@ struct is_heuristic_dispatcher<HeuristicDispatcher<BlindTag, P, S, A>> : std::tr
 
 
 /**
- * Spezialized implementation class.
+ * Specialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>

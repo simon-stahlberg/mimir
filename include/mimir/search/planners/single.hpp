@@ -21,7 +21,7 @@ template<IsAlgorithmTag... As>
 struct SingleTag : public PlannerBaseTag {};
 
 /**
- * Spezialized implementation class.
+ * Specialized implementation class.
 */
 template<IsAlgorithmTag A>
 class Planner<SingleTag<A>>

@@ -3,7 +3,7 @@
 
 
 /**
- * Include all spezializations here
+ * Include all specializations here
 */
 #include "planners/parallel.hpp"
 #include "planners/sequential.hpp"

@@ -84,7 +84,7 @@ concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize the wrapped tag to provide your own implementation of a successor state generator.
+ * Specialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<IsSSGDispatcher S>
 class SSG : public SSGBase<SSG<S>> { };

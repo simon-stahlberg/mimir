@@ -75,7 +75,7 @@ concept IsOpenListDispatcher = is_openlist_dispatcher<T>::value;
 /**
  * General implementation class.
  *
- * Spezialize it with your dispatcher.
+ * Specialize it with your dispatcher.
 */
 template<IsOpenListDispatcher T>
 class OpenList : public OpenListBase<OpenList<T>> { };
