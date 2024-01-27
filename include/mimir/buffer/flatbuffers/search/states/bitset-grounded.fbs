@@ -1,10 +1,11 @@
-// Example IDL file for a StateBitsetLiftedFlat
+// Example IDL file for a StateBitsetGroundedFlat
 
 namespace mimir;
 
 
-table StateBitsetLiftedFlat {
+table StateBitsetGroundedFlat {
+  id:uint32;
   atoms:[uint64];
 }
 
-root_type StateBitsetLiftedFlat;
+root_type StateBitsetGroundedFlat;

@@ -27,7 +27,7 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    // Basic meta data that every view must contain to be equality comparable and hashable
+    // the underlying flatbuffer
     uint8_t* m_data;
 
 protected:

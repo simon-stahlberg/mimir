@@ -105,8 +105,7 @@ private:
     friend class BuilderBase;
 
     void finish_impl() {
-        auto offset = m_search_node_builder.Finish();
-        m_flatbuffers_builder.FinishSizePrefixed(offset);
+        m_flatbuffers_builder.FinishSizePrefixed(m_search_node_builder.Finish());
 
         // Get a pointer to the serialized data
         uint8_t* buf = m_flatbuffers_builder.GetBufferPointer();
@@ -127,6 +126,10 @@ private:
 
     const uint8_t* get_buffer_pointer_impl() const {
         return m_flatbuffers_builder.GetBufferPointer();
+    }
+
+    void clear_impl() {
+        m_flatbuffers_builder.Clear();
     }
 
 

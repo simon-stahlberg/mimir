@@ -21,13 +21,18 @@ struct StateBitsetGroundedFlatBuilder;
 struct StateBitsetGroundedFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef StateBitsetGroundedFlatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ATOMS = 4
+    VT_ID = 4,
+    VT_ATOMS = 6
   };
+  uint32_t id() const {
+    return GetField<uint32_t>(VT_ID, 0);
+  }
   const ::flatbuffers::Vector<uint64_t> *atoms() const {
     return GetPointer<const ::flatbuffers::Vector<uint64_t> *>(VT_ATOMS);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_ID, 4) &&
            VerifyOffset(verifier, VT_ATOMS) &&
            verifier.VerifyVector(atoms()) &&
            verifier.EndTable();
@@ -38,6 +43,9 @@ struct StateBitsetGroundedFlatBuilder {
   typedef StateBitsetGroundedFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_id(uint32_t id) {
+    fbb_.AddElement<uint32_t>(StateBitsetGroundedFlat::VT_ID, id, 0);
+  }
   void add_atoms(::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> atoms) {
     fbb_.AddOffset(StateBitsetGroundedFlat::VT_ATOMS, atoms);
   }
@@ -54,18 +62,22 @@ struct StateBitsetGroundedFlatBuilder {
 
 inline ::flatbuffers::Offset<StateBitsetGroundedFlat> CreateStateBitsetGroundedFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t id = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> atoms = 0) {
   StateBitsetGroundedFlatBuilder builder_(_fbb);
   builder_.add_atoms(atoms);
+  builder_.add_id(id);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<StateBitsetGroundedFlat> CreateStateBitsetGroundedFlatDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t id = 0,
     const std::vector<uint64_t> *atoms = nullptr) {
   auto atoms__ = atoms ? _fbb.CreateVector<uint64_t>(*atoms) : 0;
   return mimir::CreateStateBitsetGroundedFlat(
       _fbb,
+      id,
       atoms__);
 }
 

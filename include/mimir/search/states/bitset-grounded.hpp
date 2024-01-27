@@ -25,35 +25,42 @@ class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>> {
 
-    state_id_type m_id;
+private:
+    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+    StateBitsetGroundedFlatBuilder m_state_builder;
+
+    uint32_t m_id;
 
     /* Implement BuilderBase interface */
     void finish_impl() {
-        // TODO:
+        m_flatbuffers_builder.FinishSizePrefixed(m_state_builder.Finish());
     }
 
     uint8_t* get_buffer_pointer_impl() {
-        // TODO: implement
-        return nullptr;
+        return m_flatbuffers_builder.GetBufferPointer();
     }
 
     const uint8_t* get_buffer_pointer_impl() const {
-        // TODO: implement
-        return nullptr;
+        return m_flatbuffers_builder.GetBufferPointer();
     }
 
     void clear_impl() {
-        // TODO: implement
+        m_flatbuffers_builder.Clear();
     }
 
     template<typename>
     friend class BuilderBase;
 
     /* Implement StateBuilderBase interface */
-    void set_id_impl(state_id_type id) { m_id = id; }
+    void set_id_impl(uint32_t id) { m_state_builder.add_id(id); }
 
     template<typename>
     friend class StateBuilderBase;
+
+public:
+    Builder()
+        : m_flatbuffers_builder(1024)
+        , m_state_builder(m_flatbuffers_builder) { }
 };
 
 
@@ -67,6 +74,8 @@ class View<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public StateViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>> {
 private:
+    const StateBitsetGroundedFlat* m_flatbuffers_view;
+
     /* Implement ViewBase interface */
 
     // Give access to the private interface implementations.
@@ -74,8 +83,8 @@ private:
     friend class ViewBase;
 
     /* Implement SearchNodeViewBase interface */
-    [[nodiscard]] state_id_type get_id_impl() const {
-        return 0;
+    [[nodiscard]] uint32_t get_id_impl() const {
+        return m_flatbuffers_view->id();
     }
 
     // Give access to the private interface implementations.
@@ -83,7 +92,9 @@ private:
     friend class StateViewBase;
 
 public:
-    explicit View(uint8_t* data) : ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>(data) { }
+    explicit View(uint8_t* data)
+        : ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>(data)
+        , m_flatbuffers_view(GetSizePrefixedStateBitsetGroundedFlat(reinterpret_cast<void*>(data))) { }
 };
 
 

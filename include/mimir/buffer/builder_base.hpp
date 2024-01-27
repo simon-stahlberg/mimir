@@ -33,16 +33,13 @@ private:
 
 public:
     /// @brief Write the data to the buffer.
-    void finish() {
-        self().finish_impl();
-    }
+    void finish() { self().finish_impl(); }
 
     [[nodiscard]] uint8_t* get_buffer_pointer() { return self().get_buffer_pointer_impl(); }
 
     [[nodiscard]] const uint8_t* get_buffer_pointer() const { return self().get_buffer_pointer_impl(); }
 
-    [[nodiscard]] uint32_t get_size() const {
-        return *reinterpret_cast<const flatbuffers::uoffset_t*>(get_buffer_pointer()); }
+    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(get_buffer_pointer()); }
 
     /// @brief Clear the builder for reuse.
     void clear() { self().clear_impl(); }
@@ -54,8 +51,8 @@ public:
  *
  * Provide an implementation for T by providing fully specified template.
 */
-template<typename Tag>
-class Builder : public BuilderBase<Builder<Tag>> {};
+template<typename T>
+class Builder : public BuilderBase<Builder<T>> {};
 
 }
 
