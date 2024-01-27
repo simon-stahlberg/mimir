@@ -36,14 +36,12 @@ protected:
 public:
     /// @brief Compare the representative data.
     [[nodiscard]] bool operator==(const Derived& other) const {
-        // TODO
-        return false;
+        return self().are_equal_impl();
     }
 
     /// @brief Hash the representative data.
     [[nodiscard]] size_t hash() const {
-        // TODO
-        return 0;
+        return self().hash_impl();
     }
 
     /// @brief The first 4 bytes are always reserved for the size, see builder

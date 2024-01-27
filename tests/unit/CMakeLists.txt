@@ -25,7 +25,7 @@ add_executable(${TEST_NAME}
     # "search/planners/sequential.cpp"  // does not compile because of problems with copy/move semantics after adding flatbuffers
     #"search/search_nodes/cost.cpp"
     "search/states/bitset-grounded.cpp"
-    #"search/states/bitset-lifted.cpp"
+    "search/states/bitset-lifted.cpp"
     #"search/successor_state_generators/default-grounded.cpp"
     #"search/successor_state_generators/default-lifted.cpp"
 )

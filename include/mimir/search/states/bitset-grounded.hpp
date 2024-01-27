@@ -11,14 +11,6 @@ namespace mimir
 
 /**
  * Implementation class
- *
- * The lifted state builder extends the builder base memory layout as follows:
- *  __________________________________
- * |                |          |      |
- * | data_size_type | state_id | TODO |
- * |________________|__________|______|
- *
- *
 */
 template<>
 class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
@@ -32,6 +24,9 @@ private:
     uint32_t m_id;
 
     /* Implement BuilderBase interface */
+    template<typename>
+    friend class BuilderBase;
+
     void finish_impl() {
         m_flatbuffers_builder.FinishSizePrefixed(m_state_builder.Finish());
     }
@@ -48,14 +43,11 @@ private:
         m_flatbuffers_builder.Clear();
     }
 
-    template<typename>
-    friend class BuilderBase;
-
     /* Implement StateBuilderBase interface */
-    void set_id_impl(uint32_t id) { m_state_builder.add_id(id); }
-
     template<typename>
     friend class StateBuilderBase;
+
+    void set_id_impl(uint32_t id) { m_state_builder.add_id(id); }
 
 public:
     Builder()
@@ -77,19 +69,28 @@ private:
     const StateBitsetGroundedFlat* m_flatbuffers_view;
 
     /* Implement ViewBase interface */
-
-    // Give access to the private interface implementations.
     template<typename>
     friend class ViewBase;
 
+    [[nodiscard]] bool are_equal_impl(const View& other) const {
+        // TODO: implement when we have data members.
+        return true;
+    }
+
+    /// @brief Hash the representative data.
+    [[nodiscard]] size_t hash() const {
+        // TODO: implement when we have data members.
+        return 0;
+    }
+
+
     /* Implement SearchNodeViewBase interface */
+    template<typename>
+    friend class StateViewBase;
+
     [[nodiscard]] uint32_t get_id_impl() const {
         return m_flatbuffers_view->id();
     }
-
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class StateViewBase;
 
 public:
     explicit View(uint8_t* data)
