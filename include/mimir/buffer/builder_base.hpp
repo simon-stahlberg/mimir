@@ -15,16 +15,21 @@ namespace mimir {
 /**
  * Interface class
  *
- * The builder base creates the following base memory layout:
- *  ____________________________________________
- * |                |                           |
- * | data_size_type | <Data of derived builder> |
- * |________________|___________________________|
+ * Our concrete builders use flatbuffers with a uint32_t prefix that encodes the size of the buffer
+ *  __________________________________
+ * |                 |               |
+ * | size (uint32_t) | <actual data> |
+ * |_________________|_______________|
 */
 template<typename Derived>
 class BuilderBase {
 private:
-    BuilderBase() { }
+    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+    typename TypeTraits<Derived>::TypeFlatBuilder m_type_builder;
+
+    BuilderBase()
+        : m_flatbuffers_builder(1024)
+        , m_type_builder(m_flatbuffers_builder) { }
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -33,16 +38,16 @@ private:
 
 public:
     /// @brief Write the data to the buffer.
-    void finish() { self().finish_impl(); }
+    void finish() { m_flatbuffers_builder.FinishSizePrefixed(m_type_builder.Finish()); }
 
-    [[nodiscard]] uint8_t* get_buffer_pointer() { return self().get_buffer_pointer_impl(); }
+    [[nodiscard]] uint8_t* get_buffer_pointer() { return m_flatbuffers_builder.GetBufferPointer(); }
 
-    [[nodiscard]] const uint8_t* get_buffer_pointer() const { return self().get_buffer_pointer_impl(); }
+    [[nodiscard]] const uint8_t* get_buffer_pointer() const { return m_flatbuffers_builder.GetBufferPointer(); }
 
     [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(get_buffer_pointer()); }
 
     /// @brief Clear the builder for reuse.
-    void clear() { self().clear_impl(); }
+    void clear() { m_flatbuffers_builder.Clear(); }
 };
 
 

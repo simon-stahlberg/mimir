@@ -3,6 +3,8 @@
 
 #include "template.hpp"
 
+#include "../../buffer/flatbuffers/search/actions/default_generated.h"
+
 
 namespace mimir
 {
@@ -169,6 +171,15 @@ public:
     explicit View(uint8_t* data) : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data) { }
 
     std::string str_impl() const { return "some_action"; }
+};
+
+
+/**
+ * Type traits
+*/
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
+    using TypeFlatBuilder = DefaultActionFlatBuilder;
 };
 
 

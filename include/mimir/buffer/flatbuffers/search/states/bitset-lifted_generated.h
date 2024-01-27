@@ -15,11 +15,11 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
 
 namespace mimir {
 
-struct StateBitsetGroundedFlat;
-struct StateBitsetGroundedFlatBuilder;
+struct StateBitsetLiftedFlat;
+struct StateBitsetLiftedFlatBuilder;
 
-struct StateBitsetGroundedFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef StateBitsetGroundedFlatBuilder Builder;
+struct StateBitsetLiftedFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef StateBitsetLiftedFlatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ID = 4,
     VT_ATOMS = 6
@@ -39,75 +39,75 @@ struct StateBitsetGroundedFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::
   }
 };
 
-struct StateBitsetGroundedFlatBuilder {
-  typedef StateBitsetGroundedFlat Table;
+struct StateBitsetLiftedFlatBuilder {
+  typedef StateBitsetLiftedFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
   void add_id(uint32_t id) {
-    fbb_.AddElement<uint32_t>(StateBitsetGroundedFlat::VT_ID, id, 0);
+    fbb_.AddElement<uint32_t>(StateBitsetLiftedFlat::VT_ID, id, 0);
   }
   void add_atoms(::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> atoms) {
-    fbb_.AddOffset(StateBitsetGroundedFlat::VT_ATOMS, atoms);
+    fbb_.AddOffset(StateBitsetLiftedFlat::VT_ATOMS, atoms);
   }
-  explicit StateBitsetGroundedFlatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit StateBitsetLiftedFlatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<StateBitsetGroundedFlat> Finish() {
+  ::flatbuffers::Offset<StateBitsetLiftedFlat> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<StateBitsetGroundedFlat>(end);
+    auto o = ::flatbuffers::Offset<StateBitsetLiftedFlat>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<StateBitsetGroundedFlat> CreateStateBitsetGroundedFlat(
+inline ::flatbuffers::Offset<StateBitsetLiftedFlat> CreateStateBitsetLiftedFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t id = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> atoms = 0) {
-  StateBitsetGroundedFlatBuilder builder_(_fbb);
+  StateBitsetLiftedFlatBuilder builder_(_fbb);
   builder_.add_atoms(atoms);
   builder_.add_id(id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<StateBitsetGroundedFlat> CreateStateBitsetGroundedFlatDirect(
+inline ::flatbuffers::Offset<StateBitsetLiftedFlat> CreateStateBitsetLiftedFlatDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t id = 0,
     const std::vector<uint64_t> *atoms = nullptr) {
   auto atoms__ = atoms ? _fbb.CreateVector<uint64_t>(*atoms) : 0;
-  return mimir::CreateStateBitsetGroundedFlat(
+  return mimir::CreateStateBitsetLiftedFlat(
       _fbb,
       id,
       atoms__);
 }
 
-inline const mimir::StateBitsetGroundedFlat *GetStateBitsetGroundedFlat(const void *buf) {
-  return ::flatbuffers::GetRoot<mimir::StateBitsetGroundedFlat>(buf);
+inline const mimir::StateBitsetLiftedFlat *GetStateBitsetLiftedFlat(const void *buf) {
+  return ::flatbuffers::GetRoot<mimir::StateBitsetLiftedFlat>(buf);
 }
 
-inline const mimir::StateBitsetGroundedFlat *GetSizePrefixedStateBitsetGroundedFlat(const void *buf) {
-  return ::flatbuffers::GetSizePrefixedRoot<mimir::StateBitsetGroundedFlat>(buf);
+inline const mimir::StateBitsetLiftedFlat *GetSizePrefixedStateBitsetLiftedFlat(const void *buf) {
+  return ::flatbuffers::GetSizePrefixedRoot<mimir::StateBitsetLiftedFlat>(buf);
 }
 
-inline bool VerifyStateBitsetGroundedFlatBuffer(
+inline bool VerifyStateBitsetLiftedFlatBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifyBuffer<mimir::StateBitsetGroundedFlat>(nullptr);
+  return verifier.VerifyBuffer<mimir::StateBitsetLiftedFlat>(nullptr);
 }
 
-inline bool VerifySizePrefixedStateBitsetGroundedFlatBuffer(
+inline bool VerifySizePrefixedStateBitsetLiftedFlatBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifySizePrefixedBuffer<mimir::StateBitsetGroundedFlat>(nullptr);
+  return verifier.VerifySizePrefixedBuffer<mimir::StateBitsetLiftedFlat>(nullptr);
 }
 
-inline void FinishStateBitsetGroundedFlatBuffer(
+inline void FinishStateBitsetLiftedFlatBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
-    ::flatbuffers::Offset<mimir::StateBitsetGroundedFlat> root) {
+    ::flatbuffers::Offset<mimir::StateBitsetLiftedFlat> root) {
   fbb.Finish(root);
 }
 
-inline void FinishSizePrefixedStateBitsetGroundedFlatBuffer(
+inline void FinishSizePrefixedStateBitsetLiftedFlatBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
-    ::flatbuffers::Offset<mimir::StateBitsetGroundedFlat> root) {
+    ::flatbuffers::Offset<mimir::StateBitsetLiftedFlat> root) {
   fbb.FinishSizePrefixed(root);
 }
 

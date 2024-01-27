@@ -260,6 +260,13 @@ public:
 
 
 
+/**
+ * Type traits
+*/
+template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct TypeTraits<Builder<CostSearchNodeTag<P, S, A>>> {
+    using TypeFlatBuilder = CostSearchNodeFlatBuilder;
+};
 
 
 }  // namespace mimir

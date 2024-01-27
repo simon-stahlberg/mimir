@@ -10,6 +10,15 @@ namespace mimir
 {
 
 /**
+ * Type traits
+*/
+template<>
+struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>> {
+    using PlanningModeTag = GroundedTag;
+    using TypeFlatBuilder = StateBitsetGroundedFlatBuilder;
+};
+
+/**
  * Implementation class
 */
 template<>
@@ -18,41 +27,17 @@ class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
     , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>> {
 
 private:
-    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
-    StateBitsetGroundedFlatBuilder m_state_builder;
-
     uint32_t m_id;
 
     /* Implement BuilderBase interface */
     template<typename>
     friend class BuilderBase;
 
-    void finish_impl() {
-        m_flatbuffers_builder.FinishSizePrefixed(m_state_builder.Finish());
-    }
-
-    uint8_t* get_buffer_pointer_impl() {
-        return m_flatbuffers_builder.GetBufferPointer();
-    }
-
-    const uint8_t* get_buffer_pointer_impl() const {
-        return m_flatbuffers_builder.GetBufferPointer();
-    }
-
-    void clear_impl() {
-        m_flatbuffers_builder.Clear();
-    }
-
     /* Implement StateBuilderBase interface */
     template<typename>
     friend class StateBuilderBase;
 
-    void set_id_impl(uint32_t id) { m_state_builder.add_id(id); }
-
-public:
-    Builder()
-        : m_flatbuffers_builder(1024)
-        , m_state_builder(m_flatbuffers_builder) { }
+    void set_id_impl(uint32_t id) { this->m_type_builder.add_id(id); }
 };
 
 
