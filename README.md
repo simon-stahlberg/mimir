@@ -57,6 +57,14 @@ We developed Mimir in Visual Studio Code. We recommend installing the `C/C++` an
 
 After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you should see all include paths being correctly resolved.
 
+Alternatively, you can create the file `.vscode/settings.json` with the content:
+
+```json
+{
+    "cmake.configureArgs": [ "-DCMAKE_PREFIX_PATH=${workspaceFolder}/dependencies/installs" ]
+}
+```
+
 ### Argument passing
 
 - Use prefix `ref_` for initialized output parameters and `out_` for non-initialized output parameters. Try to keep the number of output parameters as small as possible. Never use stack-allocated types as output parameters.
@@ -78,4 +86,3 @@ We sometimes use reasonable shortcuts for `<tag>` to make it more readable.
 
 - Use prefixes `Is` or `Has` to obtain more meaningful names.
 - Always apply `Is` concepts in the template argument declaration to provide type hints for the IDE.
-

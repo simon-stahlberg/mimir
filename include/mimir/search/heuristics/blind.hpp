@@ -9,7 +9,7 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 struct BlindTag : public HeuristicBaseTag { };
@@ -17,7 +17,7 @@ struct BlindTag : public HeuristicBaseTag { };
 
 /**
  * Dispatcher class.
- * 
+ *
  * Define the required template arguments of your implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
