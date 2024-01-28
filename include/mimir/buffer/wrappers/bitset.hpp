@@ -4,7 +4,8 @@
 #include "../flatbuffers/bitset_generated.h"
 
 
-namespace mimir {
+namespace mimir
+{
 
 /**
  * A builder for a flatbuffer BitsetFlat with the following table structure

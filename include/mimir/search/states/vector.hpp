@@ -12,7 +12,7 @@ namespace mimir
  *
  * Define name and template parameters of your own implementation.
 */
-class VectorStateTag : public StateBaseTag {};
+class VectorStateTag : public StateTag {};
 
 
 /**

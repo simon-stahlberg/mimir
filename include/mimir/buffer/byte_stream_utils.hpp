@@ -1,14 +1,11 @@
 #ifndef MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
 #define MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
 
-#include "../common/mixins.hpp"
-
 #include <cstddef>
-#include <vector>
-#include <iostream>
 
 
-namespace mimir {
+namespace mimir
+{
 
 template<typename T>
 T& read_value(char* data) {
@@ -42,6 +39,6 @@ T* uint64_t_to_pointer(uint64_t address) {
     return reinterpret_cast<T*>(ptrAddress);
 }
 
-}  // namespace mimir
+}
 
-#endif // MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
+#endif

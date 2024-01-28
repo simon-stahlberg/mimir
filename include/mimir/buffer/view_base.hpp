@@ -9,17 +9,19 @@
 
 #include <flatbuffers/flatbuffers.h>
 
-#include <cstring> // For std::memcmp
-#include <functional>
-
 
 namespace mimir {
 
 /**
  * Interface class
+ * __________________________________
+ * |                 |               |
+ * | size (uint32_t) | <actual data> |
+ * |_________________|_______________|
 */
 template<typename Derived>
-class ViewBase {
+class ViewBase
+{
 private:
     friend Derived;
 
@@ -50,8 +52,9 @@ public:
 
 
 /**
- * Implementation class.
- * Provide an implementation for T by providing fully specified template.
+ * General implementation class.
+ *
+ * Specialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<typename T>
 class View : public ViewBase<View<T>> {};
@@ -67,7 +70,6 @@ namespace std {
             return view.hash();
         }
     };
-}  // namespace std
-
+}
 
 #endif

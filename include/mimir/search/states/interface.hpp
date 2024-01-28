@@ -65,10 +65,10 @@ public:
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
-struct StateBaseTag {};
+struct StateTag {};
 
 template<typename DerivedTag>
-concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
+concept IsStateTag = std::derived_from<DerivedTag, StateTag>;
 
 
 /**

@@ -12,7 +12,7 @@ namespace mimir
  *
  * Define name and template parameters of your own implementation.
 */
-class BitsetStateTag : public StateBaseTag {};
+class BitsetStateTag : public StateTag {};
 
 
 /**

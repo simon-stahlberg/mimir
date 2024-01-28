@@ -1,22 +1,21 @@
 #ifndef MIMIR_BUFFER_BYTE_STREAM_SEGMENTED_HPP_
 #define MIMIR_BUFFER_BYTE_STREAM_SEGMENTED_HPP_
 
-#include "../common/mixins.hpp"
-
 #include <cassert>
 #include <cstddef>
 #include <vector>
 
 
-namespace mimir {
+namespace mimir
+{
 
 /// @tparam N the amount of bytes per segments.
 ///         Reasonable numbers are 10000-100000.
 template<size_t N>
-class ByteStreamSegmented {
+class ByteStreamSegmented
+{
 private:
-    // TODO use std::vector<uint8_t*>>
-    std::vector<std::vector<uint8_t>> m_segments;
+    std::vector<uint8_t*> m_segments;
 
     size_t cur_segment_id;
     size_t cur_segment_pos;
@@ -26,9 +25,9 @@ private:
 
     size_t last_written;
 
+    /// @brief Allocate a block of size N and update tracking variables.
     void increase_capacity() {
-        m_segments.resize(m_segments.size() + 1);
-        m_segments.back().reserve(N);
+        m_segments.push_back(new uint8_t[N]);
         ++cur_segment_id;
         cur_segment_pos = 0;
         capacity += N;
@@ -36,37 +35,45 @@ private:
 
 public:
     ByteStreamSegmented()
-        : cur_segment_id(0)
+        : cur_segment_id(-1)
         , cur_segment_pos(0)
         , size(0)
         , capacity(0)
         , last_written(0) {
         // allocate first block of memory
         increase_capacity();
+        assert(cur_segment_pos == 0);
+        assert(cur_segment_id == 0);
     }
+    ~ByteStreamSegmented() {
+        for (uint8_t* ptr : m_segments) {
+            delete[] ptr;
+        }
+    }
+    ByteStreamSegmented(const ByteStreamSegmented& other) = delete;
+    ByteStreamSegmented& operator=(const ByteStreamSegmented& other) = delete;
+    ByteStreamSegmented(ByteStreamSegmented&& other) = default;
+    ByteStreamSegmented& operator=(ByteStreamSegmented&& other) = default;
 
     /// @brief Write the data starting from the cur_segment_pos
     ///        in the segment with cur_segment_id, if it fits,
     ///        and otherwise, push_back a new segment first.
-    /// @param data
-    /// @param size
-    /// @return
     uint8_t* write(const uint8_t* data, size_t amount) {
-        if (amount > (N - m_segments.back().size())) {
+        assert(amount <= N);
+        if (amount > (N - cur_segment_pos)) {
             increase_capacity();
         }
-        auto& cur_segment = m_segments.back();
-        uint8_t* result_data = cur_segment.end().base();
-        cur_segment.insert(cur_segment.end(), data, data + amount);
+        uint8_t* result_data = &m_segments[cur_segment_id][cur_segment_pos];
+        memcpy(result_data, data, amount);
+        cur_segment_pos += amount;
         size += amount;
         last_written += amount;
         return result_data;
     }
 
     /// @brief Undo the last write operation.
-    /// @param amount
     void undo_last_write() {
-        m_segments.back().resize(m_segments.back().size() - last_written);
+        cur_segment_pos -= last_written;
         last_written = 0;
     }
 
@@ -78,19 +85,10 @@ public:
         last_written = 0;
     }
 
-    [[nodiscard]] const uint8_t* get_data(size_t segment_id) const {
-        assert(segment_id <= m_segments.size());
-        m_segments[segment_id].data();
-    }
-    [[nodiscard]] size_t get_size(size_t segment_id) const {
-        assert(segment_id <= m_segments.size());
-        return m_segments[segment_id].size();
-    }
-
     [[nodiscard]] size_t get_size() const { return size; }
     [[nodiscard]] size_t get_capacity() const { return capacity; }
 };
 
-}  // namespace mimir
+}
 
-#endif // MIMIR_BUFFER_BYTE_STREAM_SEGMENTED_HPP_
+#endif

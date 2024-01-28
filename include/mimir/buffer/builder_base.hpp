@@ -7,11 +7,10 @@
 #include <flatbuffers/flatbuffers.h>
 
 #include <cstdint>
-#include <iostream>
-#include <iomanip>
 
-namespace mimir {
 
+namespace mimir
+{
 
 /**
  * Interface class
@@ -47,9 +46,9 @@ public:
 
 
 /**
- * Implementation class.
+ * General implementation class.
  *
- * Provide an implementation for T by providing fully specified template.
+ * Specialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<typename T>
 class Builder : public BuilderBase<Builder<T>> {};
