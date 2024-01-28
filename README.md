@@ -4,7 +4,7 @@ Mimir is a C++20 planning library for grounded and lifted planning. We created M
 
 **Static dispatch:** Mimir is fully based on static dispatch. The planner configuration is given at compile time allowing the compiler to produce more optimized code.
 
-**Zero heap-allocations:** Mimir implements a sub-library with functionality for serializing objects with zero-cost de-serialization. This allows you to more easily define your own memory layouts in performance critical situations. Mimir uses it for states, search nodes, and ground actions.
+**Buffering:** Mimir serializes data types to cache-efficient flat memory layouts with zero-cost de-serialization. Mimir copies the buffers and reuses preallocated buffers. Mimir uses it for states, search nodes, and ground actions. Mimir provides additional general implementations on top of flatbuffers for pointers and bitsets which can be used to make algorithms more efficient.
 
 ## Example API
 
