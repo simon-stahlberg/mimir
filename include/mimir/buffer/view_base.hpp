@@ -35,14 +35,10 @@ protected:
 
 public:
     /// @brief Compare the representative data.
-    [[nodiscard]] bool operator==(const Derived& other) const {
-        return self().are_equal_impl();
-    }
+    [[nodiscard]] bool operator==(const Derived& other) const { return self().are_equal_impl(); }
 
     /// @brief Hash the representative data.
-    [[nodiscard]] size_t hash() const {
-        return self().hash_impl();
-    }
+    [[nodiscard]] size_t hash() const { return self().hash_impl(); }
 
     /// @brief The first 4 bytes are always reserved for the size, see builder
     [[nodiscard]] uint8_t* get_buffer_pointer() { return m_data; }

@@ -13,8 +13,6 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
               FLATBUFFERS_VERSION_REVISION == 26,
              "Non-compatible flatbuffers version included");
 
-#include "status_generated.h"
-
 namespace mimir {
 
 struct CostSearchNodeFlat;
@@ -28,11 +26,11 @@ struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_STATE = 8,
     VT_ACTION = 10
   };
-  SearchNodeStatusFlat status() const {
-    return static_cast<SearchNodeStatusFlat>(GetField<int8_t>(VT_STATUS, 0));
+  uint8_t status() const {
+    return GetField<uint8_t>(VT_STATUS, 0);
   }
-  bool mutate_status(SearchNodeStatusFlat _status = static_cast<SearchNodeStatusFlat>(0)) {
-    return SetField<int8_t>(VT_STATUS, static_cast<int8_t>(_status), 0);
+  bool mutate_status(uint8_t _status = 0) {
+    return SetField<uint8_t>(VT_STATUS, _status, 0);
   }
   int32_t g_value() const {
     return GetField<int32_t>(VT_G_VALUE, 0);
@@ -54,7 +52,7 @@ struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<int8_t>(verifier, VT_STATUS, 1) &&
+           VerifyField<uint8_t>(verifier, VT_STATUS, 1) &&
            VerifyField<int32_t>(verifier, VT_G_VALUE, 4) &&
            VerifyField<uint64_t>(verifier, VT_STATE, 8) &&
            VerifyField<uint64_t>(verifier, VT_ACTION, 8) &&
@@ -66,8 +64,8 @@ struct CostSearchNodeFlatBuilder {
   typedef CostSearchNodeFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_status(SearchNodeStatusFlat status) {
-    fbb_.AddElement<int8_t>(CostSearchNodeFlat::VT_STATUS, static_cast<int8_t>(status), 0);
+  void add_status(uint8_t status) {
+    fbb_.AddElement<uint8_t>(CostSearchNodeFlat::VT_STATUS, status, 0);
   }
   void add_g_value(int32_t g_value) {
     fbb_.AddElement<int32_t>(CostSearchNodeFlat::VT_G_VALUE, g_value, 0);
@@ -91,7 +89,7 @@ struct CostSearchNodeFlatBuilder {
 
 inline ::flatbuffers::Offset<CostSearchNodeFlat> CreateCostSearchNodeFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    SearchNodeStatusFlat status = SearchNodeStatusFlat_NEW,
+    uint8_t status = 0,
     int32_t g_value = 0,
     uint64_t state = 0,
     uint64_t action = 0) {

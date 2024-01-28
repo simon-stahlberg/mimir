@@ -8,6 +8,9 @@
 #include "../states.hpp"
 #include "../actions.hpp"
 
+#include <iostream>
+#include <iomanip>
+
 
 namespace mimir
 {
@@ -38,6 +41,7 @@ struct TypeTraits<CostSearchNodeBuilder<P, S, A>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;
+    using TypeFlatBuilder = CostSearchNodeFlatBuilder;
 };
 
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
@@ -46,6 +50,8 @@ struct TypeTraits<CostSearchNodeView<P, S, A>> {
     using StateTag = S;
     using ActionTag = A;
 };
+
+
 
 
 /**
@@ -92,80 +98,32 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
-    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
-    CostSearchNodeFlatBuilder m_search_node_builder;
-
-    SearchNodeStatus m_status;
-    int m_g_value;
-    StateView m_parent_state;
-    ActionView m_creating_action;
-
     /* Implement BuilderBase interface */
     template<typename>
     friend class BuilderBase;
-
-    void finish_impl() {
-        m_flatbuffers_builder.FinishSizePrefixed(m_search_node_builder.Finish());
-
-        // Get a pointer to the serialized data
-        uint8_t* buf = m_flatbuffers_builder.GetBufferPointer();
-
-        // Get the size of the serialized data, including the size prefix
-        auto size = m_flatbuffers_builder.GetSize();
-
-        // Reinterpret the buffer, it can possible be moved to a different place before
-        auto reinterpreted = GetMutableSizePrefixedCostSearchNodeFlat(buf);
-
-        // TODO: how to get the size of the buffer?
-        auto sizePrefix = *reinterpret_cast<const flatbuffers::uoffset_t*>(buf);
-    }
-
-    uint8_t* get_buffer_pointer_impl() {
-        return m_flatbuffers_builder.GetBufferPointer();
-    }
-
-    const uint8_t* get_buffer_pointer_impl() const {
-        return m_flatbuffers_builder.GetBufferPointer();
-    }
-
-    void clear_impl() {
-        m_flatbuffers_builder.Clear();
-    }
-
 
     /* Implement CostSearchNodeBuilderBase interface */
     template<typename>
     friend class CostSearchNodeBuilderBase;
 
     void set_status_impl(SearchNodeStatus status) {
-        m_status = status;
-        m_search_node_builder.add_status(static_cast<SearchNodeStatusFlat>(status));
+        this->m_type_builder.add_status(status);
     }
     void set_g_value_impl(int g_value) {
-        m_g_value = g_value;
-        m_search_node_builder.add_g_value(g_value);
+        this->m_type_builder.add_g_value(g_value);
     }
     void set_parent_state_impl(StateView parent_state) {
-        m_parent_state = parent_state;
-        m_search_node_builder.add_state(pointer_to_uint64_t(parent_state.get_buffer_pointer()));
+        this->m_type_builder.add_state(pointer_to_uint64_t(parent_state.get_buffer_pointer()));
     }
     void set_ground_action_impl(ActionView creating_action) {
-        m_creating_action = creating_action;
-        m_search_node_builder.add_state(pointer_to_uint64_t(creating_action.get_buffer_pointer()));
+        this->m_type_builder.add_action(pointer_to_uint64_t(creating_action.get_buffer_pointer()));
     }
 
 public:
-    Builder()
-        : m_flatbuffers_builder(1024)
-        , m_search_node_builder(m_flatbuffers_builder)
-        , m_parent_state(StateView(nullptr))
-        , m_creating_action(ActionView(nullptr)) { }
+    Builder() { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, StateView parent_state, ActionView creating_action)
-        : m_flatbuffers_builder(1024)
-        , m_search_node_builder(m_flatbuffers_builder)
-        , m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
+    Builder(SearchNodeStatus status, int g_value, StateView parent_state, ActionView creating_action) {
         this->set_status(status);
         this->set_g_value(g_value);
         this->set_parent_state(parent_state);
@@ -229,7 +187,7 @@ private:
     friend class CostSearchNodeViewBase;
 
     void set_status_impl(SearchNodeStatus status) {
-        m_flatbuffers_view->mutate_status(static_cast<SearchNodeStatusFlat>(status));
+        m_flatbuffers_view->mutate_status(static_cast<uint8_t>(status));
     }
     void set_g_value_impl(int g_value) {
         m_flatbuffers_view->mutate_g_value(g_value);
@@ -256,16 +214,6 @@ public:
     explicit View(uint8_t* data)
         : ViewBase<View<CostSearchNodeTag<P, S, A>>>(data)
         , m_flatbuffers_view(GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data))) { }
-};
-
-
-
-/**
- * Type traits
-*/
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<Builder<CostSearchNodeTag<P, S, A>>> {
-    using TypeFlatBuilder = CostSearchNodeFlatBuilder;
 };
 
 

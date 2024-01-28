@@ -13,7 +13,7 @@ TEST(MimirTests, SearchStatesBitsetLiftedTest) {
     builder.set_id(5);
     builder.finish();
     EXPECT_NE(builder.get_buffer_pointer(), nullptr);
-    EXPECT_EQ(builder.get_size(), 20);
+    EXPECT_EQ(builder.get_size(), 24);
 
     // View the data generated in the builder.
     auto view = View<StateDispatcher<BitsetStateTag, LiftedTag>>(builder.get_buffer_pointer());

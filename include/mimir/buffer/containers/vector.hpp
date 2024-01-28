@@ -58,7 +58,6 @@ public:
     }
 };
 
-
 /// @brief AutomaticVector handle handles only equally sized objects but allows for resize.
 ///        AUtomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
 /// @tparam T
@@ -82,7 +81,7 @@ public:
     AutomaticVector& operator=(AutomaticVector&& other) = default;
 
     void push_back(const Builder<T>& builder) {
-        m_data.push_back(View<T>(m_storage.write(builder.get_data(), builder.get_size()), builder.get_size()));
+        m_data.push_back(View<T>(m_storage.write(builder.get_buffer_pointer(), builder.get_size()), builder.get_size()));
     }
 
     [[nodiscard]] View<T> back() {

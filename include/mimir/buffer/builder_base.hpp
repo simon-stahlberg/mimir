@@ -7,7 +7,8 @@
 #include <flatbuffers/flatbuffers.h>
 
 #include <cstdint>
-
+#include <iostream>
+#include <iomanip>
 
 namespace mimir {
 
@@ -44,7 +45,7 @@ public:
 
     [[nodiscard]] const uint8_t* get_buffer_pointer() const { return m_flatbuffers_builder.GetBufferPointer(); }
 
-    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(get_buffer_pointer()); }
+    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
     /// @brief Clear the builder for reuse.
     void clear() { m_flatbuffers_builder.Clear(); }
