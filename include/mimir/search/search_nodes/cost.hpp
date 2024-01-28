@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 #define MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 #include "../../buffer/flatbuffers/search_node-cost_generated.h"
 
@@ -21,21 +21,23 @@ namespace mimir
  * Define name and template parameters of your own implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-class CostSearchNodeTag : public SearchNodeBaseTag {};
+class CostSearchNodeTag : public SearchNodeTag {};
 
 
 /**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<Builder<CostSearchNodeTag<P, S, A>>> {
+struct TypeTraits<Builder<CostSearchNodeTag<P, S, A>>>
+{
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;
 };
 
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<View<CostSearchNodeTag<P, S, A>>> {
+struct TypeTraits<View<CostSearchNodeTag<P, S, A>>>
+{
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;
@@ -47,7 +49,8 @@ struct TypeTraits<View<CostSearchNodeTag<P, S, A>>> {
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class Builder<CostSearchNodeTag<P, S, A>>
-    : public BuilderBase<Builder<CostSearchNodeTag<P, S, A>>> {
+    : public BuilderBase<Builder<CostSearchNodeTag<P, S, A>>>
+{
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
@@ -104,7 +107,8 @@ public:
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class View<CostSearchNodeTag<P, S, A>>
-    : public ViewBase<View<CostSearchNodeTag<P, S, A>>> {
+    : public ViewBase<View<CostSearchNodeTag<P, S, A>>>
+{
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
@@ -127,7 +131,7 @@ public:
 
     [[nodiscard]] SearchNodeStatus get_status() { return static_cast<SearchNodeStatus>(m_flatbuffers_view->status()); }
 
-    [[nodiscard]] g_value_type get_g_value() { return m_flatbuffers_view->g_value(); }
+    [[nodiscard]] int get_g_value() { return m_flatbuffers_view->g_value(); }
 
     [[nodiscard]] StateView get_parent_state() { return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->state())); }
 
@@ -135,6 +139,6 @@ public:
 };
 
 
-}  // namespace mimir
+}
 
-#endif  // MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
+#endif

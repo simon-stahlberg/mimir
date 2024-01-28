@@ -15,7 +15,7 @@ namespace mimir
 template<>
 class Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>
     : public BuilderBase<Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>>
-    , public ActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>>
+    , public IActionBuilder<Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>>
 {
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
@@ -43,9 +43,9 @@ private:
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
-    /* Implement ActionBuilderBase interface */
+    /* Implement IActionBuilder interface */
     template<typename>
-    friend class ActionBuilderBase;
+    friend class IActionBuilder;
 
 public:
     // TODO set the bitsets
@@ -61,7 +61,7 @@ public:
 template<>
 class View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>
     : public ViewBase<View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>>
-    , public ActionViewBase<View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>>
+    , public IActionView<View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>>
 {
 private:
     const DefaultActionFlat* m_flatbuffers_view;
@@ -71,9 +71,9 @@ private:
     template<typename>
     friend class ViewBase;
 
-    /* Implement ActionViewBase interface */
+    /* Implement IActionView interface */
     template<typename>
-    friend class ActionViewBase;
+    friend class IActionView;
 
     std::string str_impl() const { return "some_action"; }
 

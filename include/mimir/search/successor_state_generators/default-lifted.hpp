@@ -12,7 +12,8 @@ namespace mimir
 */
 template<>
 class SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>
-    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>> {
+    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>>
+{
 private:
     using StateView = View<StateDispatcher<BitsetStateTag, LiftedTag>>;
     using ActionView = View<ActionDispatcher<DefaultActionTag, LiftedTag, BitsetStateTag>>;
@@ -41,6 +42,6 @@ private:
 };
 
 
-}  // namespace mimir
+}
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_LIFTED_HPP_
+#endif

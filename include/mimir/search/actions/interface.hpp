@@ -1,32 +1,28 @@
-#ifndef MIMIR_SEARCH_STATES_TEMPLATE_HPP_
-#define MIMIR_SEARCH_STATES_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
+#define MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
 
 #include "../config.hpp"
+#include "../states.hpp"
 #include "../type_traits.hpp"
 
-#include "../../buffer/builder_base.hpp"
 #include "../../buffer/view_base.hpp"
-#include "../../buffer/wrappers/bitset.hpp"
+#include "../../buffer/byte_stream_utils.hpp"
 
 
 namespace mimir {
-
-/**
- * Data types
-*/
-using state_id_type = uint32_t;
 
 
 /**
  * Interface class
 */
 template<typename Derived>
-class IStateBuilder
+class IActionBuilder
 {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
 
-    IStateBuilder() = default;
+    IActionBuilder() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -34,17 +30,20 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void set_id(state_id_type id) { self().set_id_impl(id); }
 };
 
 
+/**
+ * Interface class
+*/
 template<typename Derived>
-class IStateView
+class IActionView
 {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
 
-    IStateView() = default;
+    IActionView() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -52,7 +51,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] state_id_type get_id() const { return self().get_id_impl(); }
+    /* Mutable getters. */
+
+    /* Immutable getters. */
+    std::string str() const { return self().str_impl(); }
 };
 
 
@@ -64,10 +66,10 @@ public:
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
-struct StateBaseTag {};
+struct ActionTag {};
 
 template<typename DerivedTag>
-concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
+concept IsActionTag = std::derived_from<DerivedTag, ActionTag>;
 
 
 /**
@@ -77,33 +79,20 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsStateTag S, IsPlanningModeTag P>
-struct StateDispatcher {};
+template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
+struct ActionDispatcher {};
 
 template<typename T>
-struct is_state_dispatcher : std::false_type {};
+struct is_action_dispatcher : std::false_type {};
 
-template<IsStateTag S, IsPlanningModeTag P>
-struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type {};
+template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
+struct is_action_dispatcher<ActionDispatcher<A, P, S>> : std::true_type {};
 
 template<typename T>
-concept IsStateDispatcher = is_state_dispatcher<T>::value;
+concept IsActionDispatcher = is_action_dispatcher<T>::value;
 
 
-/**
- * General implementation class.
- *
- * Specialize the wrapped tag to provide your own implementation of a state representation.
-*/
-template<IsStateDispatcher S>
-class Builder<S> : public BuilderBase<Builder<S>>, public IStateBuilder<Builder<S>> { };
-
-template<IsStateDispatcher S>
-class View<S> : public ViewBase<View<S>>, public IStateView<View<S>> { };
+}
 
 
-} // namespace mimir
-
-
-
-#endif  // MIMIR_SEARCH_STATES_TEMPLATE_HPP_
+#endif

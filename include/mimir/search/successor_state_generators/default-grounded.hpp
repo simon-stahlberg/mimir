@@ -12,7 +12,8 @@ namespace mimir
 */
 template<>
 class SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>
-    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>> {
+    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>>
+{
 private:
     using StateView = View<StateDispatcher<BitsetStateTag, GroundedTag>>;
     using ActionView = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>;
@@ -42,6 +43,5 @@ private:
 };
 
 
-}  // namespace mimir
-
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_DEFAULT_GROUNDED_HPP_
+}
+#endif

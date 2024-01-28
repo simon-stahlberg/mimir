@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_STATES_VECTOR_HPP_
 #define MIMIR_SEARCH_STATES_VECTOR_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 
 namespace mimir
@@ -19,12 +19,14 @@ class VectorStateTag : public StateBaseTag {};
  * Type traits.
 */
 template<IsPlanningModeTag P>
-struct TypeTraits<Builder<StateDispatcher<VectorStateTag, P>>> {
+struct TypeTraits<Builder<StateDispatcher<VectorStateTag, P>>>
+{
     using PlanningModeTag = P;
 };
 
 template<IsPlanningModeTag P>
-struct TypeTraits<View<StateDispatcher<VectorStateTag, P>>> {
+struct TypeTraits<View<StateDispatcher<VectorStateTag, P>>>
+{
     using PlanningModeTag = P;
 };
 

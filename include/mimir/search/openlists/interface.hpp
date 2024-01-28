@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_OPENLISTS_TEMPLATE_HPP_
-#define MIMIR_SEARCH_OPENLISTS_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
+#define MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
 
 #include "../type_traits.hpp"
 
@@ -41,10 +41,10 @@ public:
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
-struct OpenListBaseTag {};
+struct OpenListTag {};
 
 template<class DerivedTag>
-concept IsOpenListTag = std::derived_from<DerivedTag, OpenListBaseTag>;
+concept IsOpenListTag = std::derived_from<DerivedTag, OpenListTag>;
 
 
 /**
@@ -77,6 +77,6 @@ template<IsOpenListDispatcher T>
 class OpenList : public IOpenList<OpenList<T>> { };
 
 
-}  // namespace mimir
+}
 
-#endif  // MIMIR_SEARCH_OPENLIST_TEMPLATE_HPP_
+#endif

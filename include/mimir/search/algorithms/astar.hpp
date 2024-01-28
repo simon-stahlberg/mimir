@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 #include "../heuristics.hpp"
 
@@ -20,7 +20,7 @@ template<IsPlanningModeTag P
        , IsActionTag A = DefaultActionTag
        , IsAAGTag AG = DefaultAAGTag
        , IsSSGTag SG = DefaultSSGTag>
-struct AStarTag : public AlgorithmBaseTag { };
+struct AStarTag : public AlgorithmTag { };
 
 
 /**
@@ -28,7 +28,7 @@ struct AStarTag : public AlgorithmBaseTag { };
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>
-    : public AlgorithmBase<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>> {
+    : public IAlgorithm<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
@@ -47,7 +47,7 @@ private:
 
     // Give access to the private interface implementations.
     template<typename>
-    friend class AlgorithmBase;
+    friend class IAlgorithm;
 
 public:
     Algorithm(const Problem& problem)

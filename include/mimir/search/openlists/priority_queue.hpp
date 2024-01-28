@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 #define MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 #include <queue>
 
@@ -14,7 +14,7 @@ namespace mimir
  * Define name and template parameters of your own implementation.
 */
 template<typename T>
-struct PriorityQueueTag : public OpenListBaseTag { };
+struct PriorityQueueTag : public OpenListTag { };
 
 
 /**

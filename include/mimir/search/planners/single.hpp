@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
 #define MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 #include "../algorithms.hpp"
 
@@ -10,7 +10,8 @@
 
 
 
-namespace mimir {
+namespace mimir
+{
 
 /**
  * Derived ID class.
@@ -18,14 +19,15 @@ namespace mimir {
  * Define name and template parameters of your own implementation.
 */
 template<IsAlgorithmTag... As>
-struct SingleTag : public PlannerBaseTag {};
+struct SingleTag : public PlannerTag {};
 
 /**
  * Specialized implementation class.
 */
 template<IsAlgorithmTag A>
 class Planner<SingleTag<A>>
-    : public IPlanner<Planner<SingleTag<A>>> {
+    : public IPlanner<Planner<SingleTag<A>>>
+{
 private:
 
     // Give access to the private interface implementations.
@@ -61,7 +63,6 @@ private:
 public:
     Planner(const std::string& domain_file, const std::string& problem_file)
         : m_algorithm(Algorithm<AlgorithmDispatcher<A>>(this->m_problem)) { }
-
 };
 
 
@@ -69,12 +70,11 @@ public:
  * Type traits.
 */
 template<IsAlgorithmTag A>
-struct TypeTraits<Planner<SingleTag<A>>> {
+struct TypeTraits<Planner<SingleTag<A>>>
+{
     using Algorithm = A;
 };
 
+}
 
-
-}  // namespace mimir
-
-#endif  // MIMIR_SEARCH_PLANNERS_SEQUENTIAL_HPP_
+#endif

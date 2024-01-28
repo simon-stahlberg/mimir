@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_STATES_BITSET_HPP_
 #define MIMIR_SEARCH_STATES_BITSET_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 
 namespace mimir
@@ -22,12 +22,14 @@ concept IsBitsetStateTag = std::is_same_v<Tag, BitsetStateTag>;
  * Type traits.
 */
 template<IsPlanningModeTag P>
-struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, P>>> {
+struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, P>>>
+{
     using PlanningModeTag = P;
 };
 
 template<IsPlanningModeTag P>
-struct TypeTraits<View<StateDispatcher<BitsetStateTag, P>>> {
+struct TypeTraits<View<StateDispatcher<BitsetStateTag, P>>>
+{
     using PlanningModeTag = P;
 };
 

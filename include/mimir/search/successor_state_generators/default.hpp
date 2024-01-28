@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 
 namespace mimir
@@ -12,14 +12,15 @@ namespace mimir
  *
  * Define name and template parameters of your own implementation.
 */
-class DefaultSSGTag : public SSGBaseTag {};
+class DefaultSSGTag : public SSGTag {};
 
 
 /**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<SSG<SSGDispatcher<DefaultSSGTag, P, S, A>>> {
+struct TypeTraits<SSG<SSGDispatcher<DefaultSSGTag, P, S, A>>>
+{
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;

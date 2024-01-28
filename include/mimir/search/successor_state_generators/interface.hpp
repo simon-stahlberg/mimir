@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
 #include "../config.hpp"
 #include "../states.hpp"
@@ -18,7 +18,8 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class ISSG {
+class ISSG
+{
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
@@ -52,10 +53,10 @@ public:
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
-struct SSGBaseTag {};
+struct SSGTag {};
 
 template<typename DerivedTag>
-concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
+concept IsSSGTag = std::derived_from<DerivedTag, SSGTag>;
 
 
 /**
@@ -84,9 +85,9 @@ concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
  * Specialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<IsSSGDispatcher S>
-class SSG : public ISSG<SSG<S>> { };
+class SSG : public ISSG<SSG<S>> {};
 
 
-}  // namespace mimir
+}
 
-#endif  // MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_TEMPLATE_HPP_
+#endif

@@ -12,8 +12,8 @@ namespace mimir
 */
 template<>
 class AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>
-   : public IAAG<AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>> {
-    // Implement configuration specific functionality.
+   : public IAAG<AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>>
+{
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;

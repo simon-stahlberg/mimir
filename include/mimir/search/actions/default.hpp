@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_ACTIONS_DEFAULT_HPP_
 #define MIMIR_SEARCH_ACTIONS_DEFAULT_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 
 namespace mimir
@@ -12,7 +12,7 @@ namespace mimir
  *
  * Define name and template parameters of your own implementation.
 */
-class DefaultActionTag : public ActionBaseTag {};
+class DefaultActionTag : public ActionTag {};
 
 
 /**

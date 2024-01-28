@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_HEURISTICS_TEMPLATE_HPP_
-#define MIMIR_SEARCH_HEURISTICS_TEMPLATE_HPP_
+#ifndef MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
+#define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
 #include "../actions.hpp"
 #include "../states.hpp"
@@ -45,10 +45,10 @@ public:
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
-struct HeuristicBaseTag {};
+struct HeuristicTag {};
 
 template<class DerivedTag>
-concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
+concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicTag>;
 
 
 /**
@@ -79,9 +79,6 @@ concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;
 template<IsHeuristicDispatcher T>
 class Heuristic : public IHeuristic<Heuristic<T>> { };
 
+}
 
-
-
-}  // namespace mimir
-
-#endif  // MIMIR_SEARCH_HEURISTIC_TEMPLATE_HPP_
+#endif

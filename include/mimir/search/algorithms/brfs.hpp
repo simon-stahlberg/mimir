@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
-#include "template.hpp"
+#include "interface.hpp"
 
 #include <deque>
 #include <vector>
@@ -18,7 +18,7 @@ template<IsPlanningModeTag P
        , IsActionTag A = DefaultActionTag
        , IsAAGTag AG = DefaultAAGTag
        , IsSSGTag SG = DefaultSSGTag>
-struct BrFSTag : public AlgorithmBaseTag { };
+struct BrFSTag : public AlgorithmTag { };
 
 
 /**
@@ -26,7 +26,7 @@ struct BrFSTag : public AlgorithmBaseTag { };
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
 class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>
-    : public AlgorithmBase<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
+    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
@@ -68,7 +68,7 @@ private:
 
     // Give access to the private interface implementations.
     template<typename>
-    friend class AlgorithmBase;
+    friend class IAlgorithm;
 
 public:
     Algorithm(const Problem& problem)
