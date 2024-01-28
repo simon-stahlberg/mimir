@@ -13,7 +13,7 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer_pointer(), nullptr);
-    EXPECT_EQ(state_builder.get_size(), 24);
+    EXPECT_EQ(state_builder.get_size(), 32);
     auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
 
     // Build a ground action.
@@ -55,7 +55,7 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer_pointer(), nullptr);
-    EXPECT_EQ(state_builder.get_size(), 24);
+    EXPECT_EQ(state_builder.get_size(), 32);
     auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
 
     // Build a ground action.

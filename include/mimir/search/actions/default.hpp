@@ -27,27 +27,16 @@ struct is_action_dispatcher<ActionDispatcher<A, P, S>> : std::true_type {};
 
 
 /**
- * Aliases
-*/
-template<IsPlanningModeTag P, IsStateTag S>
-using DefaultActionBuilder = Builder<ActionDispatcher<DefaultActionTag, P, S>>;
-
-template<IsPlanningModeTag P, IsStateTag S>
-using DefaultActionView = View<ActionDispatcher<DefaultActionTag, P, S>>;
-
-
-/**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<DefaultActionBuilder<P, S>> {
+struct TypeTraits<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
     using PlanningModeTag = P;
     using StateTag = S;
-    using TypeFlatBuilder = DefaultActionFlatBuilder;
 };
 
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<DefaultActionView<P, S>> {
+struct TypeTraits<View<ActionDispatcher<DefaultActionTag, P, S>>> {
     using PlanningModeTag = P;
     using StateTag = S;
 };
@@ -87,41 +76,33 @@ class Builder<ActionDispatcher<DefaultActionTag, P, S>>
     : public BuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
     , public DefaultActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
 private:
+    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+
     //mimir::Bitset applicability_positive_precondition_bitset_;
     //mimir::Bitset applicability_negative_precondition_bitset_;
     //mimir::Bitset unconditional_positive_effect_bitset_;
     //mimir::Bitset unconditional_negative_effect_bitset_;
 
     /* Implement BuilderBase interface */
-    void finish_impl() {
-        // TODO:
-    }
-
-    uint8_t* get_buffer_pointer_impl() {
-        // TODO: implement
-        return nullptr;
-    }
-
-    const uint8_t* get_buffer_pointer_impl() const {
-        // TODO: implement
-        return nullptr;
-    }
-
-    void clear_impl() {
-        // TODO: implement
-    }
-
-    // Give access to the private interface implementations.
     template<typename>
     friend class BuilderBase;
 
-    /* Implement DefaultActionBuilderBase interface */
+    void finish_impl() {
+        auto builder = DefaultActionFlatBuilder(this->m_flatbuffers_builder);
+        this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
+    }
 
-    // Give access to the private interface implementations.
+    void clear_impl() {
+        m_flatbuffers_builder.Clear();
+    }
+
+    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
+    [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+
+    /* Implement DefaultActionBuilderBase interface */
     template<typename>
     friend class DefaultActionBuilderBase;
-
-public:
 };
 
 
@@ -159,6 +140,9 @@ class View<ActionDispatcher<DefaultActionTag, P, S>>
     : public ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>
     , public DefaultActionViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>> {
 private:
+    const DefaultActionFlat* m_flatbuffers_view;
+
+
     /* Implement ViewBase interface: */
     template<typename>
     friend class ViewBase;
@@ -169,7 +153,9 @@ private:
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit View(uint8_t* data) : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data) { }
+    explicit View(uint8_t* data)
+        : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data)
+        , m_flatbuffers_view(data ? GetSizePrefixedDefaultActionFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
     std::string str_impl() const { return "some_action"; }
 };

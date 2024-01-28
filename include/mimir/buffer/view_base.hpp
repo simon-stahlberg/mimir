@@ -45,7 +45,7 @@ public:
 
     [[nodiscard]] const uint8_t* get_buffer_pointer() const { return m_data; }
 
-    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(m_data); }
+    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(m_data) + sizeof(flatbuffers::uoffset_t); }
 };
 
 

@@ -10,16 +10,6 @@ namespace mimir
 {
 
 /**
- * Type traits
-*/
-template<>
-struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, LiftedTag>>> {
-    using PlanningModeTag = LiftedTag;
-    using TypeFlatBuilder = StateBitsetLiftedFlatBuilder;
-};
-
-
-/**
  * Implementation class
 */
 template<>
@@ -28,6 +18,9 @@ class Builder<StateDispatcher<BitsetStateTag, LiftedTag>>
     , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, LiftedTag>>> {
 
 private:
+    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+
+    uint32_t m_id;
     // TODO: wrap this into a bitset.
     std::vector<uint64_t> m_atoms;
 
@@ -35,12 +28,29 @@ private:
     template<typename>
     friend class BuilderBase;
 
+    void finish_impl() {
+        auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms);
+        auto builder = StateBitsetLiftedFlatBuilder(this->m_flatbuffers_builder);
+        builder.add_id(m_id);
+        builder.add_atoms(created_atoms_vec);
+        this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
+    }
+
+    void clear_impl() {
+        m_flatbuffers_builder.Clear();
+        m_atoms.clear();
+    }
+
+    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
+    [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+
     /* Implement StateBuilderBase interface */
     template<typename>
     friend class StateBuilderBase;
 
-    void set_id_impl(uint32_t id) { this->m_type_builder.add_id(id); }
-    void set_atoms_impl() { this->m_type_builder.add_atoms(this->m_flatbuffers_builder.CreateVector(m_atoms)); }
+    void set_id_impl(uint32_t id) { m_id = id; }
+    void set_num_atoms_impl(size_t num_atoms) { m_atoms.resize(num_atoms / sizeof(uint64_t) + 1); }
 };
 
 
@@ -83,7 +93,7 @@ private:
 public:
     explicit View(uint8_t* data)
         : ViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>>(data)
-        , m_flatbuffers_view(GetSizePrefixedStateBitsetLiftedFlat(reinterpret_cast<void*>(data))) { }
+        , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetLiftedFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 };
 
 

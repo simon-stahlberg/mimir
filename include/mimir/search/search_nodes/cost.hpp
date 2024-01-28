@@ -41,7 +41,6 @@ struct TypeTraits<CostSearchNodeBuilder<P, S, A>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;
-    using TypeFlatBuilder = CostSearchNodeFlatBuilder;
 };
 
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
@@ -98,36 +97,50 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
+    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+
+    SearchNodeStatus m_status;
+    int m_g_value;
+    StateView m_parent_state;
+    ActionView m_creating_action;
+
     /* Implement BuilderBase interface */
     template<typename>
     friend class BuilderBase;
+
+    void finish_impl() {
+        auto builder = CostSearchNodeFlatBuilder(this->m_flatbuffers_builder);
+        builder.add_status(m_status);
+        builder.add_g_value(m_g_value);
+        builder.add_state(pointer_to_uint64_t(m_parent_state.get_buffer_pointer()));
+        builder.add_action(pointer_to_uint64_t(m_creating_action.get_buffer_pointer()));
+        this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
+    }
+
+    void clear_impl() {
+        m_flatbuffers_builder.Clear();
+    }
+
+    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
+    [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
     /* Implement CostSearchNodeBuilderBase interface */
     template<typename>
     friend class CostSearchNodeBuilderBase;
 
-    void set_status_impl(SearchNodeStatus status) {
-        this->m_type_builder.add_status(status);
-    }
-    void set_g_value_impl(int g_value) {
-        this->m_type_builder.add_g_value(g_value);
-    }
-    void set_parent_state_impl(StateView parent_state) {
-        this->m_type_builder.add_state(pointer_to_uint64_t(parent_state.get_buffer_pointer()));
-    }
-    void set_ground_action_impl(ActionView creating_action) {
-        this->m_type_builder.add_action(pointer_to_uint64_t(creating_action.get_buffer_pointer()));
-    }
+    void set_status_impl(SearchNodeStatus status) { m_status = status; }
+    void set_g_value_impl(int g_value) { m_g_value = g_value; }
+    void set_parent_state_impl(StateView parent_state) { m_parent_state = parent_state; }
+    void set_ground_action_impl(ActionView creating_action) { m_creating_action = creating_action; }
 
 public:
-    Builder() { }
+    // TODO: get some better default constructed state and action
+    Builder() : m_parent_state(nullptr), m_creating_action(nullptr) { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, StateView parent_state, ActionView creating_action) {
-        this->set_status(status);
-        this->set_g_value(g_value);
-        this->set_parent_state(parent_state);
-        this->set_ground_action(creating_action);
+    Builder(SearchNodeStatus status, int g_value, StateView parent_state, ActionView creating_action)
+        : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
         this->finish();
     }
 };
@@ -213,7 +226,7 @@ public:
     /// @brief Create a view on a SearchNode.
     explicit View(uint8_t* data)
         : ViewBase<View<CostSearchNodeTag<P, S, A>>>(data)
-        , m_flatbuffers_view(GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data))) { }
+        , m_flatbuffers_view(data ? GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 };
 
 

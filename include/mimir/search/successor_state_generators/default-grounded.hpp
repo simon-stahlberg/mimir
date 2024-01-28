@@ -21,10 +21,9 @@ private:
         this->m_state_builder.clear();
         // create the state
         int next_state_id = this->m_states.get_size();
-        this->m_state_builder.set_id(next_state_id);
-        // TODO: set bitset size and modify the bits accordingly.
         this->m_state_builder.set_atoms();
-        this->m_state_builder.finish();
+        this->m_state_builder.set_id(next_state_id);
+        this->m_state_builder.finish();  // @ChatGPT: fails here
         //return this->m_states.insert(this->m_state_builder);
     }
 

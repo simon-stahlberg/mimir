@@ -33,7 +33,8 @@ private:
 
 public:
     void set_id(state_id_type id) { self().set_id_impl(id); }
-    void set_atoms_() { self().set_atoms(); }
+    void set_atoms() { self().set_atoms_impl(); }
+    void set_num_atoms(size_t num_atoms) { self().set_num_atoms_impl(num_atoms); }
 };
 
 template<typename Derived>
