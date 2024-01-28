@@ -9,33 +9,17 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 class DefaultSSGTag : public SSGBaseTag {};
 
 
 /**
- * Dispatcher class.
- * 
- * Define the required template arguments of your implementation.
-*/
-template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_ssg_dispatcher<SSGDispatcher<SSG, P, S, A>> : std::true_type {};
-
-
-/**
- * Aliases
-*/
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-using DefaultSSG = SSG<SSGDispatcher<DefaultSSGTag, P, S, A>>;
-
-
-/**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<DefaultSSG<P, S, A>> {
+struct TypeTraits<SSG<SSGDispatcher<DefaultSSGTag, P, S, A>>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;

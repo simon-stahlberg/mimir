@@ -9,33 +9,17 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 struct DefaultAAGTag : public AAGBaseTag {};
 
 
 /**
- * Dispatcher class.
- * 
- * Define the required template arguments of your implementation.
-*/
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_aag_dispatcher<AAGDispatcher<DefaultAAGTag, P, S, A>> : std::true_type {};
-
-
-/**
- * Aliases
-*/
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-using DefaultAAG = AAG<AAGDispatcher<DefaultAAGTag, P, S, A>>;
-
-
-/**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<DefaultAAG<P, S, A>> {
+struct TypeTraits<AAG<AAGDispatcher<DefaultAAGTag, P, S, A>>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using ActionTag = A;

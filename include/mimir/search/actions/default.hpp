@@ -18,25 +18,18 @@ class DefaultActionTag : public ActionBaseTag {};
 
 
 /**
- * Dispatcher class.
- *
- * Define the required template arguments of your implementation.
-*/
-template<IsActionTag A, IsPlanningModeTag P, IsStateTag S>
-struct is_action_dispatcher<ActionDispatcher<A, P, S>> : std::true_type {};
-
-
-/**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
+struct TypeTraits<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
+{
     using PlanningModeTag = P;
     using StateTag = S;
 };
 
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<View<ActionDispatcher<DefaultActionTag, P, S>>> {
+struct TypeTraits<View<ActionDispatcher<DefaultActionTag, P, S>>>
+{
     using PlanningModeTag = P;
     using StateTag = S;
 };
@@ -48,7 +41,8 @@ struct TypeTraits<View<ActionDispatcher<DefaultActionTag, P, S>>> {
 template<IsPlanningModeTag P, IsStateTag S>
 class Builder<ActionDispatcher<DefaultActionTag, P, S>>
     : public BuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
-    , public ActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
+    , public ActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
+{
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
 

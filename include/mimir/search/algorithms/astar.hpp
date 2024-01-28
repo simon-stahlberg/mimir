@@ -24,15 +24,6 @@ struct AStarTag : public AlgorithmBaseTag { };
 
 
 /**
- * Dispatcher class.
- *
- * Define the required template arguments of your implementation.
-*/
-template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-struct is_algorithm_dispatcher<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>> : std::true_type {};
-
-
-/**
  * Specialized implementation class.
 */
 template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>

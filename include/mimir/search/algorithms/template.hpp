@@ -74,16 +74,18 @@ concept IsAlgorithmTag = std::derived_from<DerivedTag, AlgorithmBaseTag>;
 /**
  * Dispatcher class.
  *
- * Wrap the tag and variable number of template arguments.
- *
- * Define required input template parameters using SFINAE
- * in the declaration file of your derived class.
+ * Wrap the tag to dispatch the correct overload.
+ * The template parameters are arguments that all specializations have in common.
+ * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsAlgorithmTag A, typename... Ts>
+template<IsAlgorithmTag A>
 struct AlgorithmDispatcher {};
 
 template<typename T>
 struct is_algorithm_dispatcher : std::false_type {};
+
+template<IsAlgorithmTag A>
+struct is_algorithm_dispatcher<AlgorithmDispatcher<A>> : std::true_type {};
 
 template<typename T>
 concept IsAlgorithmDispatcher = is_algorithm_dispatcher<T>::value;

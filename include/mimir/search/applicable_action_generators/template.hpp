@@ -57,16 +57,18 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGBaseTag>;
 /**
  * Dispatcher class.
  *
- * Wrap the tag and variable number of template arguments.
- *
- * Define required input template parameters using SFINAE
- * in the declaration file of your derived class.
+ * Wrap the tag to dispatch the correct overload.
+ * The template parameters are arguments that all specializations have in common.
+ * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsAAGTag AAG, typename... Ts>
+template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct AAGDispatcher {};
 
 template<typename T>
 struct is_aag_dispatcher : std::false_type {};
+
+template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_aag_dispatcher<AAGDispatcher<AAG, P, S, A>> : std::true_type {};
 
 template<typename T>
 concept IsAAGDispatcher = is_aag_dispatcher<T>::value;

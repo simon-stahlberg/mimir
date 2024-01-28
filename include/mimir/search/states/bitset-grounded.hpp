@@ -50,7 +50,9 @@ private:
     friend class StateBuilderBase;
 
     void set_id_impl(uint32_t id) { m_id = id; }
-    void set_num_atoms_impl(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
+
+public:
+    void set_num_atoms(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
 };
 
 
@@ -89,12 +91,12 @@ private:
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_flatbuffers_view->id(); }
 
-    [[nodiscard]] BitsetView get_atoms_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
-
 public:
     explicit View(uint8_t* data)
         : ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>(data)
         , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetGroundedFlat(reinterpret_cast<void*>(data)) : nullptr) { }
+
+    [[nodiscard]] BitsetView get_atoms() const { return BitsetView(m_flatbuffers_view->atoms()); }
 };
 
 

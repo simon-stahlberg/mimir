@@ -35,10 +35,6 @@ private:
 
 public:
     void set_id(state_id_type id) { self().set_id_impl(id); }
-
-    void set_num_atoms(size_t num_atoms) { self().set_num_atoms_impl(num_atoms); }
-    void add_atom(size_t atom_id) { self().set_atom(atom_id); }
-    void set_atoms() { self().set_atoms_impl(); }
 };
 
 template<typename Derived>
@@ -56,8 +52,6 @@ private:
 
 public:
     [[nodiscard]] state_id_type get_id() const { return self().get_id_impl(); }
-
-    [[nodiscard]] BitsetView get_atoms() const { return self().get_atoms_impl(); }
 };
 
 
@@ -78,16 +72,18 @@ concept IsStateTag = std::derived_from<DerivedTag, StateBaseTag>;
 /**
  * Dispatcher class.
  *
- * Wrap the tag and variable number of template arguments.
- *
- * Define required input template parameters using SFINAE
- * in the declaration file of your derived class.
+ * Wrap the tag to dispatch the correct overload.
+ * The template parameters are arguments that all specializations have in common.
+ * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsStateTag S, typename... Ts>
+template<IsStateTag S, IsPlanningModeTag P>
 struct StateDispatcher {};
 
 template<typename T>
 struct is_state_dispatcher : std::false_type {};
+
+template<IsStateTag S, IsPlanningModeTag P>
+struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type {};
 
 template<typename T>
 concept IsStateDispatcher = is_state_dispatcher<T>::value;

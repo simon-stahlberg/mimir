@@ -16,15 +16,6 @@ struct BlindTag : public HeuristicBaseTag { };
 
 
 /**
- * Dispatcher class.
- *
- * Define the required template arguments of your implementation.
-*/
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_heuristic_dispatcher<HeuristicDispatcher<BlindTag, P, S, A>> : std::true_type {};
-
-
-/**
  * Specialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>

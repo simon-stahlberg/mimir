@@ -22,15 +22,6 @@ struct BrFSTag : public AlgorithmBaseTag { };
 
 
 /**
- * Dispatcher class.
- *
- * Define the required template arguments of your implementation.
-*/
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-struct is_algorithm_dispatcher<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>> : std::true_type {};
-
-
-/**
  * Specialized implementation class.
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>

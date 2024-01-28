@@ -10,7 +10,7 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 template<typename T>
@@ -18,19 +18,10 @@ struct PriorityQueueTag : public OpenListBaseTag { };
 
 
 /**
- * Dispatcher class.
- * 
- * Define the required template arguments of your implementation.
-*/
-template<typename T>
-struct is_openlist_dispatcher<OpenListDispatcher<PriorityQueueTag<T>>> : std::true_type {};
-
-
-/**
  * Implementation class
 */
 template<typename T>
-class OpenList<OpenListDispatcher<PriorityQueueTag<T>>> 
+class OpenList<OpenListDispatcher<PriorityQueueTag<T>>>
     : public OpenListBase<OpenList<OpenListDispatcher<PriorityQueueTag<T>>> > {
     // Implement configuration specific functionality.
 private:

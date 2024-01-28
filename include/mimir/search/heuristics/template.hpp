@@ -56,16 +56,18 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicBaseTag>;
 /**
  * Dispatcher class.
  *
- * Wrap the tag and variable number of template arguments.
- *
- * Define required input template parameters using SFINAE
- * in the declaration file of your derived class.
+ * Wrap the tag to dispatch the correct overload.
+ * The template parameters are arguments that all specializations have in common.
+ * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsHeuristicTag H, typename... Ts>
+template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct HeuristicDispatcher {};
 
 template<typename T>
 struct is_heuristic_dispatcher : std::false_type {};
+
+template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_heuristic_dispatcher<HeuristicDispatcher<H, P, S, A>> : std::true_type {};
 
 template<typename T>
 concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;

@@ -66,16 +66,18 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGBaseTag>;
 /**
  * Dispatcher class.
  *
- * Wrap the tag and variable number of template arguments.
- *
- * Define required input template parameters using SFINAE
- * in the declaration file of your derived class.
+ * Wrap the tag to dispatch the correct overload.
+ * The template parameters are arguments that all specializations have in common.
+ * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsSSGTag SG, typename... Ts>
+template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 struct SSGDispatcher {};
 
 template<typename T>
 struct is_ssg_dispatcher : std::false_type {};
+
+template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+struct is_ssg_dispatcher<SSGDispatcher<SSG, P, S, A>> : std::true_type {};
 
 template<typename T>
 concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;

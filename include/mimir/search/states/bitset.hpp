@@ -16,15 +16,6 @@ class BitsetStateTag : public StateBaseTag {};
 
 
 /**
- * Dispatcher class.
- *
- * Define the required template arguments of your implementation.
-*/
-template<IsStateTag S, IsPlanningModeTag P>
-struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type {};
-
-
-/**
  * Aliases
 */
 template<IsPlanningModeTag P>
