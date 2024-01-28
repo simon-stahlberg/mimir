@@ -1,3 +1,0 @@
-- Derived classes of crtp base are erased types that define common interface
-- Derived class of common interface define an actual implementations
-- We use derived tags to instantiate derived classes as type erased class
