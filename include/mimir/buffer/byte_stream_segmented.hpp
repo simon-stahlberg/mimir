@@ -15,6 +15,7 @@ namespace mimir {
 template<size_t N>
 class ByteStreamSegmented {
 private:
+    // TODO use std::vector<uint8_t*>>
     std::vector<std::vector<uint8_t>> m_segments;
 
     size_t cur_segment_id;

@@ -12,7 +12,8 @@
 namespace mimir {
 
 template<typename T>
-class UnorderedSet {
+class UnorderedSet
+{
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;

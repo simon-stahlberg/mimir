@@ -23,7 +23,8 @@ namespace mimir {
  * |_________________|_______________|
 */
 template<typename Derived>
-class BuilderBase {
+class BuilderBase
+{
 private:
     BuilderBase() = default;
     friend Derived;

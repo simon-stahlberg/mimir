@@ -15,7 +15,8 @@ namespace mimir {
 /// @brief Vector handle different sized objects but only allows push_back and access, no resize.
 /// @tparam T
 template<typename T>
-class Vector {
+class Vector
+{
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;
@@ -62,7 +63,8 @@ public:
 ///        AUtomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
 /// @tparam T
 template<typename T>
-class AutomaticVector {
+class AutomaticVector
+{
 private:
     // Persistent storage
     ByteStreamSegmented<100000> m_storage;

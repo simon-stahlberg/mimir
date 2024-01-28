@@ -15,7 +15,8 @@ namespace mimir {
  *  }
 */
 template<typename Block>
-class BitsetBuilder {
+class BitsetBuilder
+{
 private:
     uint32_t m_num_bits;
     std::vector<Block> m_data;
@@ -57,7 +58,8 @@ const Block BitsetBuilder<Block>::default_value = 0;
  *    segments:[uint64];
  *  }
 */
-class BitsetView {
+class BitsetView
+{
 private:
     const BitsetFlat* m_flat;
 public:

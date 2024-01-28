@@ -14,6 +14,7 @@ set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 # add_executable(${TEST_NAME} ${MIMIR_TEST_SOURCE_FILES} ${MIMIR_TEST_HEADER_FILES})
 
 add_executable(${TEST_NAME}
+    "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"
     "search/applicable_action_generators/default-grounded.cpp"
