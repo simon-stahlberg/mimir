@@ -20,20 +20,22 @@ struct BlindTag : public HeuristicBaseTag { };
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>
-    : public HeuristicBase<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>> {
+    : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
+
+    Problem m_problem;
+
+    /* Implement IHeuristic interface. */
+    template<typename>
+    friend class IHeuristic;
 
     double compute_heuristic_impl(const StateView& state) {
         return 0.;
     }
 
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class HeuristicBase;
-
 public:
-    Heuristic(Problem problem) : HeuristicBase<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>>(problem) { }
+    Heuristic(Problem problem) : m_problem(problem) { }
 };
 
 

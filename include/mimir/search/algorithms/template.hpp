@@ -28,32 +28,19 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
-    using AG = typename TypeTraits<Derived>::AAGTag;
-    using SG = typename TypeTraits<Derived>::SSGTag;
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
-    AlgorithmBase(const Problem& problem)
-        : m_problem(problem)
-        , m_state_repository(SSG<SSGDispatcher<SG, P, S, A>>())
-        , m_initial_state(m_state_repository.get_or_create_initial_state(problem)) {}
-
+    AlgorithmBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    Problem m_problem;
-    SSG<SSGDispatcher<SG, P, S, A>> m_state_repository;
-    StateView m_initial_state;
-    AAG<AAGDispatcher<AG, P, S, A>> m_successor_generator;
-
 public:
-    SearchStatus find_solution(ActionViewList& out_plan) {
-        return self().find_solution_impl(out_plan);
-    }
+    SearchStatus find_solution(ActionViewList& out_plan) { return self().find_solution_impl(out_plan); }
 };
 
 

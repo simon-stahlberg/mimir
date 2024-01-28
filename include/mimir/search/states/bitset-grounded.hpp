@@ -15,7 +15,7 @@ namespace mimir
 template<>
 class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
-    , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
+    , public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
 {
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
@@ -45,9 +45,9 @@ private:
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
-    /* Implement StateBuilderBase interface */
+    /* Implement IStateBuilder interface */
     template<typename>
-    friend class StateBuilderBase;
+    friend class IStateBuilder;
 
     void set_id_impl(uint32_t id) { m_id = id; }
 
@@ -64,7 +64,7 @@ public:
 template<>
 class View<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
-    , public StateViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
+    , public IStateView<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
 {
 private:
     const StateBitsetGroundedFlat* m_flatbuffers_view;
@@ -87,7 +87,7 @@ private:
 
     /* Implement SearchNodeViewBase interface */
     template<typename>
-    friend class StateViewBase;
+    friend class IStateView;
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_flatbuffers_view->id(); }
 

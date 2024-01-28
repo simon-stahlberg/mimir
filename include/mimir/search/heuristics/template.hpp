@@ -16,21 +16,19 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class HeuristicBase {
+class IHeuristic {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
     using A = typename TypeTraits<Derived>::ActionTag;
     using StateView = View<StateDispatcher<S, P>>;
 
-    HeuristicBase(Problem problem) : m_problem(problem) { }
+    IHeuristic() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
-
-    Problem m_problem;
 
 public:
     [[nodiscard]] double compute_heuristic(StateView state) {
@@ -79,7 +77,7 @@ concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;
  * Specialize it with your dispatcher.
 */
 template<IsHeuristicDispatcher T>
-class Heuristic : public HeuristicBase<Heuristic<T>> { };
+class Heuristic : public IHeuristic<Heuristic<T>> { };
 
 
 

@@ -15,7 +15,7 @@ namespace mimir
  * Interface class.
 */
 template<typename Derived>
-class AAGBase {
+class IAAG {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
@@ -25,7 +25,7 @@ private:
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
 
-    AAGBase() = default;
+    IAAG() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -80,9 +80,7 @@ concept IsAAGDispatcher = is_aag_dispatcher<T>::value;
  * Specialize it with your dispatcher.
 */
 template<IsAAGDispatcher A>
-class AAG : public AAGBase<AAG<A>> {
-
-};
+class AAG : public IAAG<AAG<A>> {};
 
 
 

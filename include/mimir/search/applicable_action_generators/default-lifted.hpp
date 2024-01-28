@@ -12,7 +12,7 @@ namespace mimir
 */
 template<>
 class AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>
-   : public AAGBase<AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>> {
+   : public IAAG<AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>> {
     // Implement configuration specific functionality.
 private:
     using StateView = View<StateDispatcher<S, P>>;
@@ -23,7 +23,7 @@ private:
 
     // Give access to the private interface implementations.
     template<typename>
-    friend class AAGBase;
+    friend class IAAG;
 };
 
 

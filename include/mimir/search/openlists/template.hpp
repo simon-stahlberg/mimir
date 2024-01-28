@@ -13,11 +13,11 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class OpenListBase {
+class IOpenList {
 private:
     using T = typename TypeTraits<Derived>::ValueType;
 
-    OpenListBase() = default;
+    IOpenList() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -25,17 +25,11 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void insert(const T& item, double priority) {
-        return self().insert_impl(item, priority);
-    }
+    void insert(const T& item, double priority) { return self().insert_impl(item, priority); }
 
-    [[nodiscard]] T pop() {
-        return self().pop_impl();
-    }
+    [[nodiscard]] T pop() { return self().pop_impl(); }
 
-    [[nodiscard]] std::size_t size() const {
-        return self().size_impl();
-    }
+    [[nodiscard]] std::size_t size() const { return self().size_impl(); }
 };
 
 
@@ -80,7 +74,7 @@ concept IsOpenListDispatcher = is_openlist_dispatcher<T>::value;
  * Specialize it with your dispatcher.
 */
 template<IsOpenListDispatcher T>
-class OpenList : public OpenListBase<OpenList<T>> { };
+class OpenList : public IOpenList<OpenList<T>> { };
 
 
 }  // namespace mimir

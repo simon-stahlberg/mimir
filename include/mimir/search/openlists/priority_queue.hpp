@@ -22,7 +22,7 @@ struct PriorityQueueTag : public OpenListBaseTag { };
 */
 template<typename T>
 class OpenList<OpenListDispatcher<PriorityQueueTag<T>>>
-    : public OpenListBase<OpenList<OpenListDispatcher<PriorityQueueTag<T>>> > {
+    : public IOpenList<OpenList<OpenListDispatcher<PriorityQueueTag<T>>> > {
     // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
@@ -42,7 +42,7 @@ private:
     }
 
     template<typename>
-    friend class OpenListBase;
+    friend class IOpenList;
 };
 
 

@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ACTIONS_DEFAULT_HPP_
-#define MIMIR_SEARCH_ACTIONS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_ACTIONS_DEFAULT_BITSET_HPP_
+#define MIMIR_SEARCH_ACTIONS_DEFAULT_BITSET_HPP_
 
 #include "template.hpp"
 
@@ -72,6 +72,9 @@ private:
     /* Implement ActionBuilderBase interface */
     template<typename>
     friend class ActionBuilderBase;
+
+public:
+    // TODO set the bitsets
 };
 
 
@@ -97,18 +100,18 @@ private:
     template<typename>
     friend class ActionViewBase;
 
+    std::string str_impl() const { return "some_action"; }
+
 public:
     /// @brief Create a view on a DefaultAction.
     explicit View(uint8_t* data)
         : ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>(data)
         , m_flatbuffers_view(data ? GetSizePrefixedDefaultActionFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
-    std::string str_impl() const { return "some_action"; }
-
-    BitsetView get_applicability_positive_precondition_bitset_impl() { return BitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
-    BitsetView get_applicability_negative_precondition_bitset_impl() { return BitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
-    BitsetView get_unconditional_positive_effect_bitset_impl() { return BitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
-    BitsetView get_unconditional_negative_effect_bitset_impl() { return BitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
+    BitsetView get_applicability_positive_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
+    BitsetView get_applicability_negative_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
+    BitsetView get_unconditional_positive_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
+    BitsetView get_unconditional_negative_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
 };
 
 

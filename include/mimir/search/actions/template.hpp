@@ -53,11 +53,6 @@ public:
 
     /* Immutable getters. */
     std::string str() const { return self().str_impl(); }
-
-    BitsetView get_applicability_positive_precondition_bitset() { return self().get_applicability_positive_precondition_bitset_impl(); }
-    BitsetView get_applicability_negative_precondition_bitset() { return self().get_applicability_negative_precondition_bitset_impl(); }
-    BitsetView get_unconditional_positive_effect_bitset() { return self().get_unconditional_positive_effect_bitset_impl(); };
-    BitsetView get_unconditional_negative_effect_bitset() { return self().get_unconditional_negative_effect_bitset_impl(); };
 };
 
 

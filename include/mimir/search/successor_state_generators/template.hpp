@@ -18,7 +18,7 @@ namespace mimir
  * Interface class
 */
 template<typename Derived>
-class SSGBase {
+class ISSG {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
@@ -26,17 +26,12 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
-    SSGBase() = default;
+    ISSG() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
-
-protected:
-    UnorderedSet<StateDispatcher<S, P>> m_states;
-
-    Builder<StateDispatcher<S, P>> m_state_builder;
 
 public:
     [[nodiscard]] StateView get_or_create_initial_state(Problem problem) {
@@ -89,7 +84,7 @@ concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
  * Specialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<IsSSGDispatcher S>
-class SSG : public SSGBase<SSG<S>> { };
+class SSG : public ISSG<SSG<S>> { };
 
 
 }  // namespace mimir

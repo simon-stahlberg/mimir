@@ -34,6 +34,10 @@ private:
     using ActionView = View<ActionDispatcher<A, P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
+    Problem m_problem;
+    SSG<SSGDispatcher<SG, P, S, A>> m_state_repository;
+    StateView m_initial_state;
+    AAG<AAGDispatcher<AG, P, S, A>> m_successor_generator;
     Heuristic<HeuristicDispatcher<H, P, S, A>> m_heuristic;
 
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
@@ -47,7 +51,10 @@ private:
 
 public:
     Algorithm(const Problem& problem)
-        : AlgorithmBase<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, A, AG, SG>>>>(problem)
+        : m_problem(problem)
+        , m_state_repository(SSG<SSGDispatcher<SG, P, S, A>>())
+        , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
+        , m_successor_generator(AAG<AAGDispatcher<AG, P, S, A>>())
         , m_heuristic(problem) { }
 };
 

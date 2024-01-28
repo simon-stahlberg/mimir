@@ -5,7 +5,7 @@
 /**
  * Include all specializations here
 */
-#include "actions/default.hpp"
+#include "actions/default-bitset.hpp"
 
 
 #endif  // MIMIR_ACTIONS_HPP_

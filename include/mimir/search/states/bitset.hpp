@@ -14,27 +14,20 @@ namespace mimir
 */
 class BitsetStateTag : public StateBaseTag {};
 
-
-/**
- * Aliases
-*/
-template<IsPlanningModeTag P>
-using BitsetStateBuilder = Builder<StateDispatcher<BitsetStateTag, P>>;
-
-template<IsPlanningModeTag P>
-using BitsetStateView = View<StateDispatcher<BitsetStateTag, P>>;
+template<typename Tag>
+concept IsBitsetStateTag = std::is_same_v<Tag, BitsetStateTag>;
 
 
 /**
  * Type traits.
 */
 template<IsPlanningModeTag P>
-struct TypeTraits<BitsetStateBuilder<P>> {
+struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, P>>> {
     using PlanningModeTag = P;
 };
 
 template<IsPlanningModeTag P>
-struct TypeTraits<BitsetStateView<P>> {
+struct TypeTraits<View<StateDispatcher<BitsetStateTag, P>>> {
     using PlanningModeTag = P;
 };
 

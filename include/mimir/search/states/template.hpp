@@ -21,12 +21,12 @@ using state_id_type = uint32_t;
  * Interface class
 */
 template<typename Derived>
-class StateBuilderBase
+class IStateBuilder
 {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
 
-    StateBuilderBase() = default;
+    IStateBuilder() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -37,13 +37,14 @@ public:
     void set_id(state_id_type id) { self().set_id_impl(id); }
 };
 
+
 template<typename Derived>
-class StateViewBase
+class IStateView
 {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
 
-    StateViewBase() = default;
+    IStateView() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -95,10 +96,10 @@ concept IsStateDispatcher = is_state_dispatcher<T>::value;
  * Specialize the wrapped tag to provide your own implementation of a state representation.
 */
 template<IsStateDispatcher S>
-class Builder<S> : public BuilderBase<Builder<S>>, public StateBuilderBase<Builder<S>> { };
+class Builder<S> : public BuilderBase<Builder<S>>, public IStateBuilder<Builder<S>> { };
 
 template<IsStateDispatcher S>
-class View<S> : public ViewBase<View<S>>, public StateViewBase<View<S>> { };
+class View<S> : public ViewBase<View<S>>, public IStateView<View<S>> { };
 
 
 } // namespace mimir
