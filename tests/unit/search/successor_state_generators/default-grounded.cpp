@@ -10,7 +10,7 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchSSGDefaultGroundedTest) {
     // Instantiate grounded version
-    auto grounded_ssg = SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, DefaultActionTag>>();
+    auto grounded_ssg = SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, BitsetActionTag>>();
     auto problem = static_cast<Problem>(nullptr);
     const auto initial_state = grounded_ssg.get_or_create_initial_state(problem);
 }

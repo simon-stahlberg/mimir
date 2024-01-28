@@ -17,12 +17,12 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
 
     // Build a ground action.
-    auto action_builder = Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>();
+    auto action_builder = Builder<ActionDispatcher<BitsetActionTag, GroundedTag, BitsetStateTag>>();
     action_builder.finish();
-    auto action_view = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
+    auto action_view = View<ActionDispatcher<BitsetActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
 
     // Build a search node.
-    auto search_node_builder = Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>();
+    auto search_node_builder = Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, BitsetActionTag>>();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
     search_node_builder.set_parent_state(state_view);
@@ -32,7 +32,7 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     EXPECT_EQ(search_node_builder.get_size(), 48);
 
     // View the data generated in the builder.
-    auto search_node_view = View<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>(search_node_builder.get_buffer_pointer());
+    auto search_node_view = View<CostSearchNodeTag<GroundedTag, BitsetStateTag, BitsetActionTag>>(search_node_builder.get_buffer_pointer());
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
     EXPECT_EQ(search_node_view.get_parent_state().get_id(), 5);
@@ -59,12 +59,12 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
     auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
 
     // Build a ground action.
-    auto action_builder = Builder<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>();
+    auto action_builder = Builder<ActionDispatcher<BitsetActionTag, GroundedTag, BitsetStateTag>>();
     action_builder.finish();
-    auto action_view = View<ActionDispatcher<DefaultActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
+    auto action_view = View<ActionDispatcher<BitsetActionTag, GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
 
-    auto vector = AutomaticVector<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>(
-        Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, DefaultActionTag>>(
+    auto vector = AutomaticVector<CostSearchNodeTag<GroundedTag, BitsetStateTag, BitsetActionTag>>(
+        Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag, BitsetActionTag>>(
             SearchNodeStatus::CLOSED,
             42,
             state_view,

@@ -17,7 +17,7 @@ namespace mimir
 template<IsPlanningModeTag P
        , IsHeuristicTag H
        , IsStateTag S = BitsetStateTag
-       , IsActionTag A = DefaultActionTag
+       , IsActionTag A = BitsetActionTag
        , IsAAGTag AG = DefaultAAGTag
        , IsSSGTag SG = DefaultSSGTag>
 struct AStarTag : public AlgorithmTag { };

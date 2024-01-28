@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ACTIONS_DEFAULT_HPP_
-#define MIMIR_SEARCH_ACTIONS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_ACTIONS_BITSET_HPP_
+#define MIMIR_SEARCH_ACTIONS_BITSET_HPP_
 
 #include "interface.hpp"
 
@@ -12,21 +12,21 @@ namespace mimir
  *
  * Define name and template parameters of your own implementation.
 */
-class DefaultActionTag : public ActionTag {};
+class BitsetActionTag : public ActionTag {};
 
 
 /**
  * Type traits.
 */
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
+struct TypeTraits<Builder<ActionDispatcher<BitsetActionTag, P, S>>>
 {
     using PlanningModeTag = P;
     using StateTag = S;
 };
 
-template<IsPlanningModeTag P, IsBitsetStateTag S>
-struct TypeTraits<View<ActionDispatcher<DefaultActionTag, P, S>>>
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<View<ActionDispatcher<BitsetActionTag, P, S>>>
 {
     using PlanningModeTag = P;
     using StateTag = S;

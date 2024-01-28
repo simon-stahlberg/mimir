@@ -14,9 +14,6 @@ namespace mimir
 */
 class BitsetStateTag : public StateBaseTag {};
 
-template<typename Tag>
-concept IsBitsetStateTag = std::is_same_v<Tag, BitsetStateTag>;
-
 
 /**
  * Type traits.

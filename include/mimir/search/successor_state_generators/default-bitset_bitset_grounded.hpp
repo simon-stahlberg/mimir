@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_LIFTED_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_LIFTED_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_BITSET_GROUNDED_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_BITSET_GROUNDED_HPP_
 
 #include "default.hpp"
 
@@ -11,20 +11,21 @@ namespace mimir
  * Implementation class
 */
 template<>
-class SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>
-    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, DefaultActionTag>>>
+class SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, BitsetActionTag>>
+    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, GroundedTag, BitsetStateTag, BitsetActionTag>>>
 {
 private:
-    using StateView = View<StateDispatcher<BitsetStateTag, LiftedTag>>;
-    using ActionView = View<ActionDispatcher<DefaultActionTag, LiftedTag, BitsetStateTag>>;
+    using StateView = View<StateDispatcher<BitsetStateTag, GroundedTag>>;
+    using ActionView = View<ActionDispatcher<BitsetActionTag, GroundedTag, BitsetStateTag>>;
 
     UnorderedSet<StateDispatcher<S, P>> m_states;
     Builder<StateDispatcher<S, P>> m_state_builder;
 
     [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
         m_state_builder.clear();
-        // create the state
         int next_state_id = m_states.get_size();
+        // TODO: add more functions to state interface to set the bits, etc.
+        m_state_builder.set_num_atoms(5);
         m_state_builder.set_id(next_state_id);
         m_state_builder.finish();
         return m_states.insert(m_state_builder);
@@ -43,5 +44,4 @@ private:
 
 
 }
-
 #endif
