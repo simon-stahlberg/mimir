@@ -15,23 +15,21 @@ namespace mimir
 template<>
 class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
-    , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>> {
-
+    , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
+{
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
 
     uint32_t m_id;
-    // The bitset data
-    uint32_t m_num_atoms;
-    std::vector<uint64_t> m_atoms;
+    BitsetBuilder<uint64_t> m_atoms_bitset;
 
     /* Implement BuilderBase interface */
     template<typename>
     friend class BuilderBase;
 
     void finish_impl() {
-        auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms);
-        auto bitset = CreateBitsetFlat(m_flatbuffers_builder, m_atoms.size(), created_atoms_vec);
+        auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms_bitset.get_data());
+        auto bitset = CreateBitsetFlat(m_flatbuffers_builder, m_atoms_bitset.get_data().size(), created_atoms_vec);
         auto builder = StateBitsetGroundedFlatBuilder(this->m_flatbuffers_builder);
         builder.add_id(m_id);
         builder.add_atoms(bitset);
@@ -40,7 +38,7 @@ private:
 
     void clear_impl() {
         m_flatbuffers_builder.Clear();
-        m_atoms.clear();
+        m_atoms_bitset.clear();
     }
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
@@ -52,10 +50,7 @@ private:
     friend class StateBuilderBase;
 
     void set_id_impl(uint32_t id) { m_id = id; }
-    void set_num_atoms_impl(size_t num_atoms) {
-        m_num_atoms = num_atoms;
-        m_atoms.resize(num_atoms / (sizeof(uint64_t) * 8) + 1, 1);
-    }
+    void set_num_atoms_impl(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
 };
 
 
@@ -67,7 +62,8 @@ private:
 template<>
 class View<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
-    , public StateViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>> {
+    , public StateViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
+{
 private:
     const StateBitsetGroundedFlat* m_flatbuffers_view;
 
@@ -91,9 +87,9 @@ private:
     template<typename>
     friend class StateViewBase;
 
-    [[nodiscard]] uint32_t get_id_impl() const {
-        return m_flatbuffers_view->id();
-    }
+    [[nodiscard]] uint32_t get_id_impl() const { return m_flatbuffers_view->id(); }
+
+    [[nodiscard]] BitsetView get_atoms_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
 
 public:
     explicit View(uint8_t* data)
@@ -102,6 +98,6 @@ public:
 };
 
 
-}  // namespace mimir
+}
 
-#endif  // MIMIR_SEARCH_STATES_BITSET_GROUNDED_HPP_
+#endif

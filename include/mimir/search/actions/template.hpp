@@ -11,11 +11,61 @@
 
 namespace mimir {
 
+
+/**
+ * Interface class
+*/
+template<typename Derived>
+class ActionBuilderBase {
+private:
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
+
+    ActionBuilderBase() = default;
+    friend Derived;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+public:
+};
+
+
+/**
+ * Interface class
+*/
+template<typename Derived>
+class ActionViewBase {
+private:
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
+    using S = typename TypeTraits<Derived>::StateTag;
+
+    ActionViewBase() = default;
+    friend Derived;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+public:
+    /* Mutable getters. */
+
+    /* Immutable getters. */
+    std::string str() const { return self().str_impl(); }
+
+    BitsetView get_applicability_positive_precondition_bitset() { return self().get_applicability_positive_precondition_bitset_impl(); }
+    BitsetView get_applicability_negative_precondition_bitset() { return self().get_applicability_negative_precondition_bitset_impl(); }
+    BitsetView get_unconditional_positive_effect_bitset() { return self().get_unconditional_positive_effect_bitset_impl(); };
+    BitsetView get_unconditional_negative_effect_bitset() { return self().get_unconditional_negative_effect_bitset_impl(); };
+};
+
+
 /**
  * ID base class.
- * 
+ *
  * Derive from it to provide your own implementation.
- * 
+ *
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
 */
@@ -29,7 +79,7 @@ concept IsActionTag = std::derived_from<DerivedTag, ActionBaseTag>;
  * Dispatcher class.
  *
  * Wrap the tag and variable number of template arguments.
- * 
+ *
  * Define required input template parameters using SFINAE
  * in the declaration file of your derived class.
 */

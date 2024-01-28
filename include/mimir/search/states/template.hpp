@@ -6,6 +6,7 @@
 
 #include "../../buffer/builder_base.hpp"
 #include "../../buffer/view_base.hpp"
+#include "../../buffer/wrappers/bitset.hpp"
 
 
 namespace mimir {
@@ -20,7 +21,8 @@ using state_id_type = uint32_t;
  * Interface class
 */
 template<typename Derived>
-class StateBuilderBase {
+class StateBuilderBase
+{
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
 
@@ -40,7 +42,8 @@ public:
 };
 
 template<typename Derived>
-class StateViewBase {
+class StateViewBase
+{
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
 
@@ -52,7 +55,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    state_id_type get_id() const { return self().get_id_impl(); }
+    [[nodiscard]] state_id_type get_id() const { return self().get_id_impl(); }
+
+    [[nodiscard]] BitsetView get_atoms() const { return self().get_atoms_impl(); }
 };
 
 

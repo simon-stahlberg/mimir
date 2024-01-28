@@ -43,45 +43,20 @@ struct TypeTraits<View<ActionDispatcher<DefaultActionTag, P, S>>> {
 
 
 /**
- * Interface class
-*/
-template<typename Derived>
-class DefaultActionBuilderBase {
-private:
-    using P = typename TypeTraits<Derived>::PlanningModeTag;
-    using S = typename TypeTraits<Derived>::StateTag;
-
-    DefaultActionBuilderBase() = default;
-    friend Derived;
-
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
-
-public:
-};
-
-
-/**
  * Implementation class
- *
- * The search node builder extends the builder base memory layout as follows:
- *  ____________________________________________________________________
- * |                |        |         |              |                 |
- * | data_size_type | status | g_value | parent_state | creating_action |
- * |________________|________|_________|______________|_________________|
 */
 template<IsPlanningModeTag P, IsStateTag S>
 class Builder<ActionDispatcher<DefaultActionTag, P, S>>
     : public BuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>>
-    , public DefaultActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
+    , public ActionBuilderBase<Builder<ActionDispatcher<DefaultActionTag, P, S>>> {
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
 
-    //mimir::Bitset applicability_positive_precondition_bitset_;
-    //mimir::Bitset applicability_negative_precondition_bitset_;
-    //mimir::Bitset unconditional_positive_effect_bitset_;
-    //mimir::Bitset unconditional_negative_effect_bitset_;
+    // The bitset data
+    BitsetBuilder<uint64_t> m_applicability_positive_precondition_bitset;
+    BitsetBuilder<uint64_t> m_applicability_negative_precondition_bitset;
+    BitsetBuilder<uint64_t> m_unconditional_positive_effect_bitset;
+    BitsetBuilder<uint64_t> m_unconditional_negative_effect_bitset;
 
     /* Implement BuilderBase interface */
     template<typename>
@@ -100,34 +75,11 @@ private:
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
-    /* Implement DefaultActionBuilderBase interface */
+    /* Implement ActionBuilderBase interface */
     template<typename>
-    friend class DefaultActionBuilderBase;
+    friend class ActionBuilderBase;
 };
 
-
-/**
- * Interface class
-*/
-template<typename Derived>
-class DefaultActionViewBase {
-private:
-    using P = typename TypeTraits<Derived>::PlanningModeTag;
-    using S = typename TypeTraits<Derived>::StateTag;
-
-    DefaultActionViewBase() = default;
-    friend Derived;
-
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
-
-public:
-    /* Mutable getters. */
-
-    /* Immutable getters. */
-    std::string str() const { return self().str_impl(); }
-};
 
 
 /**
@@ -138,7 +90,7 @@ public:
 template<IsPlanningModeTag P, IsStateTag S>
 class View<ActionDispatcher<DefaultActionTag, P, S>>
     : public ViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>>
-    , public DefaultActionViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>> {
+    , public ActionViewBase<View<ActionDispatcher<DefaultActionTag, P, S>>> {
 private:
     const DefaultActionFlat* m_flatbuffers_view;
 
@@ -147,9 +99,9 @@ private:
     template<typename>
     friend class ViewBase;
 
-    /* Implement DefaultActionViewBase interface */
+    /* Implement ActionViewBase interface */
     template<typename>
-    friend class DefaultActionViewBase;
+    friend class ActionViewBase;
 
 public:
     /// @brief Create a view on a DefaultAction.
@@ -158,6 +110,11 @@ public:
         , m_flatbuffers_view(data ? GetSizePrefixedDefaultActionFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
     std::string str_impl() const { return "some_action"; }
+
+    BitsetView get_applicability_positive_precondition_bitset_impl() { return BitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
+    BitsetView get_applicability_negative_precondition_bitset_impl() { return BitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
+    BitsetView get_unconditional_positive_effect_bitset_impl() { return BitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
+    BitsetView get_unconditional_negative_effect_bitset_impl() { return BitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
 };
 
 
