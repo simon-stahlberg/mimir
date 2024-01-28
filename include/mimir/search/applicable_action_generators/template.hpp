@@ -24,7 +24,6 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<A, P, S>>;
 
-
     IAAG() = default;
     friend Derived;
 

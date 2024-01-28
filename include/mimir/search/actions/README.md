@@ -1,0 +1,1 @@
+- default-bitset is specialized for bitset state representation.
