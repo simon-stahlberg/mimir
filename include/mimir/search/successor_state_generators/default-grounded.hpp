@@ -19,12 +19,12 @@ private:
 
     [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
         this->m_state_builder.clear();
-        // create the state
         int next_state_id = this->m_states.get_size();
-        this->m_state_builder.set_atoms();
+        // TODO: add more functions to state interface to set the bits, etc.
+        this->m_state_builder.set_num_atoms(5);
         this->m_state_builder.set_id(next_state_id);
-        this->m_state_builder.finish();  // @ChatGPT: fails here
-        //return this->m_states.insert(this->m_state_builder);
+        this->m_state_builder.finish();
+        return this->m_states.insert(this->m_state_builder);
     }
 
     [[nodiscard]] StateView get_or_create_successor_state_impl(StateView state, ActionView action) {
