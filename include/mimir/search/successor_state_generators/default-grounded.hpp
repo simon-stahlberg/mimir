@@ -22,8 +22,10 @@ private:
         // create the state
         int next_state_id = this->m_states.get_size();
         this->m_state_builder.set_id(next_state_id);
+        // TODO: set bitset size and modify the bits accordingly.
+        this->m_state_builder.set_atoms();
         this->m_state_builder.finish();
-        return this->m_states.insert(this->m_state_builder);
+        //return this->m_states.insert(this->m_state_builder);
     }
 
     [[nodiscard]] StateView get_or_create_successor_state_impl(StateView state, ActionView action) {

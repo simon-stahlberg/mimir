@@ -28,7 +28,8 @@ class Builder<StateDispatcher<BitsetStateTag, LiftedTag>>
     , public StateBuilderBase<Builder<StateDispatcher<BitsetStateTag, LiftedTag>>> {
 
 private:
-    uint32_t m_id;
+    // TODO: wrap this into a bitset.
+    std::vector<uint64_t> m_atoms;
 
     /* Implement BuilderBase interface */
     template<typename>
@@ -39,6 +40,7 @@ private:
     friend class StateBuilderBase;
 
     void set_id_impl(uint32_t id) { this->m_type_builder.add_id(id); }
+    void set_atoms_impl() { this->m_type_builder.add_atoms(this->m_flatbuffers_builder.CreateVector(m_atoms)); }
 };
 
 
@@ -64,7 +66,7 @@ private:
     }
 
     /// @brief Hash the representative data.
-    [[nodiscard]] size_t hash() const {
+    [[nodiscard]] size_t hash_impl() const {
         // TODO: implement when we have data members.
         return 0;
     }

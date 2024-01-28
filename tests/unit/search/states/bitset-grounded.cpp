@@ -1,4 +1,4 @@
-#include <mimir/search/states/bitset-grounded.hpp>
+#include <mimir/search/states.hpp>
 
 #include <gtest/gtest.h>
 

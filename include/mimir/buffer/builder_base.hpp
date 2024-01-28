@@ -45,6 +45,7 @@ public:
 
     [[nodiscard]] const uint8_t* get_buffer_pointer() const { return m_flatbuffers_builder.GetBufferPointer(); }
 
+    // According to flatbuffers api: "Finish a buffer with a 32 bit size field pre-fixed (size of the buffer following the size field)." Hence we must add the size of the prefix.
     [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
     /// @brief Clear the builder for reuse.

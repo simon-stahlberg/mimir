@@ -9,7 +9,7 @@ namespace mimir
 
 /**
  * Derived ID class.
- * 
+ *
  * Define name and template parameters of your own implementation.
 */
 class BitsetStateTag : public StateBaseTag {};
@@ -17,7 +17,7 @@ class BitsetStateTag : public StateBaseTag {};
 
 /**
  * Dispatcher class.
- * 
+ *
  * Define the required template arguments of your implementation.
 */
 template<IsStateTag S, IsPlanningModeTag P>

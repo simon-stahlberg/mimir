@@ -1,5 +1,4 @@
-#include <mimir/search/states/bitset-lifted.hpp>
-#include <mimir/buffer/byte_stream_utils.hpp>
+#include <mimir/search/states.hpp>
 
 #include <gtest/gtest.h>
 

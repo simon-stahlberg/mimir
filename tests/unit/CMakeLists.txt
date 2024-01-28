@@ -27,7 +27,7 @@ add_executable(${TEST_NAME}
     "search/states/bitset-grounded.cpp"
     "search/states/bitset-lifted.cpp"
     #"search/successor_state_generators/default-grounded.cpp"
-    #"search/successor_state_generators/default-lifted.cpp"
+    # "search/successor_state_generators/default-lifted.cpp"
 )
 
 target_link_libraries(${TEST_NAME}

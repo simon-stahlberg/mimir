@@ -35,7 +35,7 @@ protected:
 
 public:
     /// @brief Compare the representative data.
-    [[nodiscard]] bool operator==(const Derived& other) const { return self().are_equal_impl(); }
+    [[nodiscard]] bool operator==(const Derived& other) const { return self().are_equal_impl(other); }
 
     /// @brief Hash the representative data.
     [[nodiscard]] size_t hash() const { return self().hash_impl(); }
