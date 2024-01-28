@@ -1,0 +1,11 @@
+// Example IDL file for a BitsetFlat
+
+namespace mimir;
+
+
+table BitsetFlat {
+  num_bits:uint32;
+  segments:[uint64];
+}
+
+root_type BitsetFlat;

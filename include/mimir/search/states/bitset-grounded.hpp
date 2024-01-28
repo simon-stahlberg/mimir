@@ -3,7 +3,7 @@
 
 #include "bitset.hpp"
 
-#include "../../buffer/flatbuffers/search/states/bitset-grounded_generated.h"
+#include "../../buffer/flatbuffers/state-bitset-grounded_generated.h"
 
 
 namespace mimir
@@ -20,8 +20,9 @@ class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
 
-    // TODO: wrap this into a bitset.
     uint32_t m_id;
+    // The bitset data
+    uint32_t m_num_atoms;
     std::vector<uint64_t> m_atoms;
 
     /* Implement BuilderBase interface */
@@ -30,9 +31,10 @@ private:
 
     void finish_impl() {
         auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms);
+        auto bitset = CreateBitsetFlat(m_flatbuffers_builder, m_atoms.size(), created_atoms_vec);
         auto builder = StateBitsetGroundedFlatBuilder(this->m_flatbuffers_builder);
         builder.add_id(m_id);
-        builder.add_atoms(created_atoms_vec);
+        builder.add_atoms(bitset);
         this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
     }
 
@@ -50,7 +52,10 @@ private:
     friend class StateBuilderBase;
 
     void set_id_impl(uint32_t id) { m_id = id; }
-    void set_num_atoms_impl(size_t num_atoms) { m_atoms.resize(num_atoms / sizeof(uint64_t) + 1); }
+    void set_num_atoms_impl(size_t num_atoms) {
+        m_num_atoms = num_atoms;
+        m_atoms.resize(num_atoms / (sizeof(uint64_t) * 8) + 1, 1);
+    }
 };
 
 

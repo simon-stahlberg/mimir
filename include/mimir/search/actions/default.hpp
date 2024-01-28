@@ -3,7 +3,7 @@
 
 #include "template.hpp"
 
-#include "../../buffer/flatbuffers/search/actions/default_generated.h"
+#include "../../buffer/flatbuffers/action-default_generated.h"
 
 
 namespace mimir

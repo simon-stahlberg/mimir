@@ -3,7 +3,7 @@
 
 #include "template.hpp"
 
-#include "../../buffer/flatbuffers/search/search_nodes/cost_generated.h"
+#include "../../buffer/flatbuffers/search_node-cost_generated.h"
 
 #include "../states.hpp"
 #include "../actions.hpp"

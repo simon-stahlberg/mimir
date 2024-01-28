@@ -1,11 +1,13 @@
 // Example IDL file for a StateBitsetGroundedFlat
 
+include "bitset.fbs";
+
 namespace mimir;
 
 
 table StateBitsetGroundedFlat {
   id:uint32;
-  atoms:[uint64];
+  atoms:BitsetFlat;
 }
 
 root_type StateBitsetGroundedFlat;

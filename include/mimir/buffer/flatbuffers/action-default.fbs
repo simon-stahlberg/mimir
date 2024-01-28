@@ -1,0 +1,15 @@
+// Example IDL file for a DefaultActionFlat
+
+include "bitset.fbs";
+
+namespace mimir;
+
+
+table DefaultActionFlat {
+  applicability_positive_precondition_bitset:BitsetFlat;
+  applicability_negative_precondition_bitset:BitsetFlat;
+  unconditional_positive_effect_bitset:BitsetFlat;
+  unconditional_negative_effect_bitset:BitsetFlat;
+}
+
+root_type DefaultActionFlat;
