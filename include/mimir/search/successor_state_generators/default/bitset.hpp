@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_BITSET_LIFTED_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_BITSET_LIFTED_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_HPP_
 
 #include "interface.hpp"
 
@@ -10,16 +10,16 @@ namespace mimir
 /**
  * Implementation class
 */
-template<>
-class SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, BitsetActionTag>>
-    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, LiftedTag, BitsetStateTag, BitsetActionTag>>>
+template<IsPlanningModeTag P>
+class SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag, BitsetActionTag>>
+    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag, BitsetActionTag>>>
 {
 private:
-    using StateView = View<StateDispatcher<BitsetStateTag, LiftedTag>>;
-    using ActionView = View<ActionDispatcher<BitsetActionTag, LiftedTag, BitsetStateTag>>;
+    using StateView = View<StateDispatcher<BitsetStateTag, P>>;
+    using ActionView = View<ActionDispatcher<BitsetActionTag, P, BitsetStateTag>>;
 
-    UnorderedSet<StateDispatcher<S, P>> m_states;
-    Builder<StateDispatcher<S, P>> m_state_builder;
+    UnorderedSet<StateDispatcher<BitsetStateTag, P>> m_states;
+    Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
 
     [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
         m_state_builder.clear();
