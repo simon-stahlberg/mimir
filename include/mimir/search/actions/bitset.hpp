@@ -21,10 +21,10 @@ private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
 
     // The bitset data
-    BitsetBuilder<uint64_t> m_applicability_positive_precondition_bitset;
-    BitsetBuilder<uint64_t> m_applicability_negative_precondition_bitset;
-    BitsetBuilder<uint64_t> m_unconditional_positive_effect_bitset;
-    BitsetBuilder<uint64_t> m_unconditional_negative_effect_bitset;
+    Bitset<uint64_t> m_applicability_positive_precondition_bitset;
+    Bitset<uint64_t> m_applicability_negative_precondition_bitset;
+    Bitset<uint64_t> m_unconditional_positive_effect_bitset;
+    Bitset<uint64_t> m_unconditional_negative_effect_bitset;
 
     /* Implement IBuilderBase interface */
     template<typename>
@@ -48,10 +48,10 @@ private:
     friend class IActionBuilder;
 
 public:
-    [[nodiscard]] BitsetBuilder<uint64_t>& get_applicability_positive_precondition_bitset() { return m_applicability_positive_precondition_bitset; }
-    [[nodiscard]] BitsetBuilder<uint64_t>& get_applicability_negative_precondition_bitset() { return m_applicability_negative_precondition_bitset; }
-    [[nodiscard]] BitsetBuilder<uint64_t>& get_unconditional_positive_effect_bitset() { return m_unconditional_positive_effect_bitset; }
-    [[nodiscard]] BitsetBuilder<uint64_t>& get_unconditional_negative_effect_bitset() { return m_unconditional_negative_effect_bitset; }
+    [[nodiscard]] Bitset<uint64_t>& get_applicability_positive_precondition_bitset() { return m_applicability_positive_precondition_bitset; }
+    [[nodiscard]] Bitset<uint64_t>& get_applicability_negative_precondition_bitset() { return m_applicability_negative_precondition_bitset; }
+    [[nodiscard]] Bitset<uint64_t>& get_unconditional_positive_effect_bitset() { return m_unconditional_positive_effect_bitset; }
+    [[nodiscard]] Bitset<uint64_t>& get_unconditional_negative_effect_bitset() { return m_unconditional_negative_effect_bitset; }
 };
 
 
@@ -78,6 +78,7 @@ private:
     template<typename>
     friend class IActionView;
 
+    // We probably want to do that differently...
     std::string str_impl() const { return "some_action"; }
 
 public:

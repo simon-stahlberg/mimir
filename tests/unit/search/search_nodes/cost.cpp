@@ -7,22 +7,31 @@
 namespace mimir::tests
 {
 
+using StateBuilder = Builder<StateDispatcher<BitsetStateTag, GroundedTag>>;
+using StateView = View<StateDispatcher<BitsetStateTag, GroundedTag>>;
+using ActionBuilder = Builder<ActionDispatcher<GroundedTag, BitsetStateTag>>;
+using ActionView = View<ActionDispatcher<GroundedTag, BitsetStateTag>>;
+using SearchNodeBuilder = Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag>>;
+using SearchNodeView = View<CostSearchNodeTag<GroundedTag, BitsetStateTag>>;
+using SearchNodeVector = AutomaticVector<CostSearchNodeTag<GroundedTag, BitsetStateTag>>;
+
+
 TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     // Build a state.
-    auto state_builder = Builder<StateDispatcher<BitsetStateTag, GroundedTag>>();
+    auto state_builder = StateBuilder();
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer_pointer(), nullptr);
     EXPECT_EQ(state_builder.get_size(), 48);
-    auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
+    auto state_view = StateView(state_builder.get_buffer_pointer());
 
     // Build a ground action.
-    auto action_builder = Builder<ActionDispatcher<GroundedTag, BitsetStateTag>>();
+    auto action_builder = ActionBuilder();
     action_builder.finish();
-    auto action_view = View<ActionDispatcher<GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
+    auto action_view = ActionView(action_builder.get_buffer_pointer());
 
     // Build a search node.
-    auto search_node_builder = Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag>>();
+    auto search_node_builder = SearchNodeBuilder();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
     search_node_builder.set_parent_state(state_view);
@@ -32,7 +41,7 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     EXPECT_EQ(search_node_builder.get_size(), 48);
 
     // View the data generated in the builder.
-    auto search_node_view = View<CostSearchNodeTag<GroundedTag, BitsetStateTag>>(search_node_builder.get_buffer_pointer());
+    auto search_node_view = SearchNodeView(search_node_builder.get_buffer_pointer());
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
     EXPECT_EQ(search_node_view.get_parent_state().get_id(), 5);
@@ -51,32 +60,28 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
        There is only 1 heap allocation every few thousand nodes that are being created. */
 
     // Build a state.
-    auto state_builder = Builder<StateDispatcher<BitsetStateTag, GroundedTag>>();
+    auto state_builder = StateBuilder();
     state_builder.set_id(5);
     state_builder.finish();
     EXPECT_NE(state_builder.get_buffer_pointer(), nullptr);
     EXPECT_EQ(state_builder.get_size(), 48);
-    auto state_view = View<StateDispatcher<BitsetStateTag, GroundedTag>>(state_builder.get_buffer_pointer());
+    auto state_view = StateView(state_builder.get_buffer_pointer());
 
     // Build a ground action.
-    auto action_builder = Builder<ActionDispatcher<GroundedTag, BitsetStateTag>>();
+    auto action_builder = ActionBuilder();
     action_builder.finish();
-    auto action_view = View<ActionDispatcher<GroundedTag, BitsetStateTag>>(action_builder.get_buffer_pointer());
+    auto action_view = ActionView(action_builder.get_buffer_pointer());
 
-    auto vector = AutomaticVector<CostSearchNodeTag<GroundedTag, BitsetStateTag>>(
-        Builder<CostSearchNodeTag<GroundedTag, BitsetStateTag>>(
-            SearchNodeStatus::CLOSED,
-            42,
-            state_view,
-            action_view)
+    auto vector = SearchNodeVector(
+        SearchNodeBuilder(SearchNodeStatus::CLOSED, 42, state_view, action_view)
     );
 
     // Test default initialization a search node
     auto search_node_0 = vector[0];
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
-    auto state = search_node_0.get_parent_state();
-    auto action = search_node_0.get_ground_action();
+    EXPECT_NE(search_node_0.get_parent_state().get_buffer_pointer(), nullptr);
+    EXPECT_NE(search_node_0.get_ground_action().get_buffer_pointer(), nullptr);
 
     // Test mutation of a search node
     search_node_0.set_status(SearchNodeStatus::OPEN);

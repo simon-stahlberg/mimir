@@ -62,6 +62,7 @@ public:
     ///        in the segment with cur_segment_id, if it fits,
     ///        and otherwise, push_back a new segment first.
     uint8_t* write(const uint8_t* data, size_t amount) {
+        assert(data);
         assert(amount <= N);
         if (amount > (N - cur_segment_pos)) {
             increase_capacity();

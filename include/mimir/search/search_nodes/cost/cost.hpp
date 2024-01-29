@@ -1,7 +1,6 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 #define MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 
-#include "../interface.hpp"
 
 #include "../../../buffer/flatbuffers/search_node-cost_generated.h"
 
@@ -12,13 +11,20 @@
 namespace mimir
 {
 
+
 /**
- * Derived ID class.
+ * Data types
+*/
+enum SearchNodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
+
+
+/**
+ * ID class.
  *
  * Define name and template parameters of your own implementation.
 */
 template<IsPlanningModeTag P, IsStateTag S>
-class CostSearchNodeTag : public SearchNodeTag {};
+class CostSearchNodeTag {};
 
 
 /**
@@ -62,6 +68,7 @@ private:
     friend class IBuilderBase;
 
     void finish_impl() {
+        // Generate search node data.
         auto builder = CostSearchNodeFlatBuilder(this->m_flatbuffers_builder);
         builder.add_status(m_status);
         builder.add_g_value(m_g_value);
@@ -79,7 +86,6 @@ private:
     [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
 public:
-    // TODO: get some better default constructed state and action
     Builder() : m_parent_state(nullptr), m_creating_action(nullptr) { }
 
     /// @brief Construct a builder with custom default values.
@@ -120,17 +126,35 @@ public:
         : ViewBase<View<CostSearchNodeTag<P, S>>>(data)
         , m_flatbuffers_view(data ? GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
-    void set_status(SearchNodeStatus status) { m_flatbuffers_view->mutate_status(static_cast<uint8_t>(status)); }
+    void set_status(SearchNodeStatus status) {
+        assert(m_flatbuffers_view);
+        m_flatbuffers_view->mutate_status(static_cast<uint8_t>(status));
+    }
 
-    void set_g_value(int g_value) { m_flatbuffers_view->mutate_g_value(g_value); }
+    void set_g_value(int g_value) {
+        assert(m_flatbuffers_view);
+        m_flatbuffers_view->mutate_g_value(g_value);
+    }
 
-    [[nodiscard]] SearchNodeStatus get_status() { return static_cast<SearchNodeStatus>(m_flatbuffers_view->status()); }
+    [[nodiscard]] SearchNodeStatus get_status() {
+        assert(m_flatbuffers_view);
+        return static_cast<SearchNodeStatus>(m_flatbuffers_view->status());
+    }
 
-    [[nodiscard]] int get_g_value() { return m_flatbuffers_view->g_value(); }
+    [[nodiscard]] int get_g_value() {
+        assert(m_flatbuffers_view);
+        return m_flatbuffers_view->g_value();
+    }
 
-    [[nodiscard]] StateView get_parent_state() { return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->state())); }
+    [[nodiscard]] StateView get_parent_state() {
+        assert(m_flatbuffers_view);
+        return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->state()));
+    }
 
-    [[nodiscard]] ActionView get_ground_action() { return ActionView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->action())); }
+    [[nodiscard]] ActionView get_ground_action() {
+        assert(m_flatbuffers_view);
+        return ActionView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->action()));
+    }
 };
 
 

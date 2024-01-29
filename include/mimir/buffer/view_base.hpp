@@ -40,14 +40,19 @@ public:
     [[nodiscard]] bool operator==(const Derived& other) const { return self().are_equal_impl(other); }
 
     /// @brief Hash the representative data.
-    [[nodiscard]] size_t hash() const { return self().hash_impl(); }
+    [[nodiscard]] size_t hash() const {
+        assert(m_data);
+        return self().hash_impl();
+    }
 
-    /// @brief The first 4 bytes are always reserved for the size, see builder
     [[nodiscard]] uint8_t* get_buffer_pointer() { return m_data; }
 
     [[nodiscard]] const uint8_t* get_buffer_pointer() const { return m_data; }
 
-    [[nodiscard]] uint32_t get_size() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(m_data) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] uint32_t get_size() const {
+        assert(m_data);
+        return *reinterpret_cast<const flatbuffers::uoffset_t*>(m_data) + sizeof(flatbuffers::uoffset_t);
+    }
 };
 
 

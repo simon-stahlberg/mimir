@@ -22,15 +22,17 @@ private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
 
     uint32_t m_id;
-    BitsetBuilder<uint64_t> m_atoms_bitset;
+    Bitset<uint64_t> m_atoms_bitset;
 
     /* Implement IBuilderBase interface */
     template<typename>
     friend class IBuilderBase;
 
     void finish_impl() {
+        // Genenerate nested data first.
         auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms_bitset.get_data());
         auto bitset = CreateBitsetFlat(m_flatbuffers_builder, m_atoms_bitset.get_data().size(), created_atoms_vec);
+        // Generate state data.
         auto builder = StateBitsetGroundedFlatBuilder(this->m_flatbuffers_builder);
         builder.add_id(m_id);
         builder.add_atoms(bitset);
@@ -58,7 +60,7 @@ private:
     template<typename>
     friend class IBitsetStateBuilder;
 
-    [[nodiscard]] BitsetBuilder<uint64_t>& get_atoms_bitset_impl() { return m_atoms_bitset; }
+    [[nodiscard]] Bitset<uint64_t>& get_atoms_bitset_impl() { return m_atoms_bitset; }
 };
 
 
@@ -81,14 +83,17 @@ private:
     friend class ViewBase;
 
     [[nodiscard]] bool are_equal_impl(const View& other) const {
-        // TODO: implement when we have data members.
+        assert(m_flatbuffers_view);
+        if (this != &other) {
+            return this->get_atoms_bitset() == other.get_atoms_bitset();
+        }
         return true;
     }
 
     /// @brief Hash the representative data.
     [[nodiscard]] size_t hash_impl() const {
-        // TODO: implement when we have data members.
-        return 0;
+        assert(m_flatbuffers_view);
+        return this->get_atoms_bitset().hash();
     }
 
 
@@ -96,14 +101,20 @@ private:
     template<typename>
     friend class IStateView;
 
-    [[nodiscard]] uint32_t get_id_impl() const { return m_flatbuffers_view->id(); }
+    [[nodiscard]] uint32_t get_id_impl() const {
+        assert(m_flatbuffers_view);
+        return m_flatbuffers_view->id();
+    }
 
 
     /* Implement IBitsetStateView interface*/
     template<typename>
     friend class IBitsetStateView;
 
-    [[nodiscard]] BitsetView get_atoms_bitset_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
+    [[nodiscard]] BitsetView get_atoms_bitset_impl() const {
+        assert(m_flatbuffers_view);
+        return BitsetView(m_flatbuffers_view->atoms());
+    }
 
 public:
     explicit View(uint8_t* data)

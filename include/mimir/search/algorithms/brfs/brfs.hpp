@@ -43,6 +43,7 @@ private:
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
         auto initial_search_node = this->m_search_nodes[this->m_initial_state.get_id()];
         // TODO (Dominik): update the data of the initial_search_node
+        initial_search_node.set_g_value(0);
 
         auto applicable_actions = ActionViewList();
 
