@@ -27,10 +27,13 @@ private:
 
     /// @brief Allocate a block of size N and update tracking variables.
     void increase_capacity() {
-        m_segments.push_back(new uint8_t[N]);
+        if (cur_segment_id == (m_segments.size() - 1)) {
+            m_segments.push_back(new uint8_t[N]);
+            cur_segment_pos = 0;
+            capacity += N;
+        }
         ++cur_segment_id;
-        cur_segment_pos = 0;
-        capacity += N;
+        assert(cur_segment_id < m_segments.size());
     }
 
 public:
