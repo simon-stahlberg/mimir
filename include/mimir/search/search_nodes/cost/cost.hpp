@@ -68,12 +68,15 @@ private:
     friend class IBuilderBase;
 
     void finish_impl() {
+        // Genenerate nested data first.
+        auto data = CostSearchNodeDataFlat{
+                m_status,
+                m_g_value,
+                pointer_to_uint64_t(m_parent_state.get_buffer_pointer()),
+                pointer_to_uint64_t(m_creating_action.get_buffer_pointer())};
         // Generate search node data.
         auto builder = CostSearchNodeFlatBuilder(this->m_flatbuffers_builder);
-        builder.add_status(m_status);
-        builder.add_g_value(m_g_value);
-        builder.add_state(pointer_to_uint64_t(m_parent_state.get_buffer_pointer()));
-        builder.add_action(pointer_to_uint64_t(m_creating_action.get_buffer_pointer()));
+        builder.add_data(&data);
         this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
     }
 
@@ -128,32 +131,32 @@ public:
 
     void set_status(SearchNodeStatus status) {
         assert(m_flatbuffers_view);
-        m_flatbuffers_view->mutate_status(static_cast<uint8_t>(status));
+        m_flatbuffers_view->mutable_data()->mutate_status(static_cast<uint8_t>(status));
     }
 
     void set_g_value(int g_value) {
         assert(m_flatbuffers_view);
-        m_flatbuffers_view->mutate_g_value(g_value);
+        m_flatbuffers_view->mutable_data()->mutate_g_value(g_value);
     }
 
     [[nodiscard]] SearchNodeStatus get_status() {
         assert(m_flatbuffers_view);
-        return static_cast<SearchNodeStatus>(m_flatbuffers_view->status());
+        return static_cast<SearchNodeStatus>(m_flatbuffers_view->data()->status());
     }
 
     [[nodiscard]] int get_g_value() {
         assert(m_flatbuffers_view);
-        return m_flatbuffers_view->g_value();
+        return m_flatbuffers_view->data()->g_value();
     }
 
     [[nodiscard]] StateView get_parent_state() {
         assert(m_flatbuffers_view);
-        return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->state()));
+        return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->data()->state()));
     }
 
     [[nodiscard]] ActionView get_ground_action() {
         assert(m_flatbuffers_view);
-        return ActionView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->action()));
+        return ActionView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->data()->action()));
     }
 };
 

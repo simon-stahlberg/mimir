@@ -15,47 +15,81 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
 
 namespace mimir {
 
+struct CostSearchNodeDataFlat;
+
 struct CostSearchNodeFlat;
 struct CostSearchNodeFlatBuilder;
+
+FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) CostSearchNodeDataFlat FLATBUFFERS_FINAL_CLASS {
+ private:
+  uint8_t status_;
+  int8_t padding0__;  int16_t padding1__;
+  int32_t g_value_;
+  uint64_t state_;
+  uint64_t action_;
+
+ public:
+  CostSearchNodeDataFlat()
+      : status_(0),
+        padding0__(0),
+        padding1__(0),
+        g_value_(0),
+        state_(0),
+        action_(0) {
+    (void)padding0__;
+    (void)padding1__;
+  }
+  CostSearchNodeDataFlat(uint8_t _status, int32_t _g_value, uint64_t _state, uint64_t _action)
+      : status_(::flatbuffers::EndianScalar(_status)),
+        padding0__(0),
+        padding1__(0),
+        g_value_(::flatbuffers::EndianScalar(_g_value)),
+        state_(::flatbuffers::EndianScalar(_state)),
+        action_(::flatbuffers::EndianScalar(_action)) {
+    (void)padding0__;
+    (void)padding1__;
+  }
+  uint8_t status() const {
+    return ::flatbuffers::EndianScalar(status_);
+  }
+  void mutate_status(uint8_t _status) {
+    ::flatbuffers::WriteScalar(&status_, _status);
+  }
+  int32_t g_value() const {
+    return ::flatbuffers::EndianScalar(g_value_);
+  }
+  void mutate_g_value(int32_t _g_value) {
+    ::flatbuffers::WriteScalar(&g_value_, _g_value);
+  }
+  uint64_t state() const {
+    return ::flatbuffers::EndianScalar(state_);
+  }
+  void mutate_state(uint64_t _state) {
+    ::flatbuffers::WriteScalar(&state_, _state);
+  }
+  uint64_t action() const {
+    return ::flatbuffers::EndianScalar(action_);
+  }
+  void mutate_action(uint64_t _action) {
+    ::flatbuffers::WriteScalar(&action_, _action);
+  }
+};
+FLATBUFFERS_STRUCT_END(CostSearchNodeDataFlat, 24);
 
 struct CostSearchNodeFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef CostSearchNodeFlatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_STATUS = 4,
-    VT_G_VALUE = 6,
-    VT_STATE = 8,
-    VT_ACTION = 10
+    VT_DATA = 4
   };
-  uint8_t status() const {
-    return GetField<uint8_t>(VT_STATUS, 0);
+  const mimir::CostSearchNodeDataFlat *data() const {
+    return GetStruct<const mimir::CostSearchNodeDataFlat *>(VT_DATA);
   }
-  bool mutate_status(uint8_t _status = 0) {
-    return SetField<uint8_t>(VT_STATUS, _status, 0);
-  }
-  int32_t g_value() const {
-    return GetField<int32_t>(VT_G_VALUE, 0);
-  }
-  bool mutate_g_value(int32_t _g_value = 0) {
-    return SetField<int32_t>(VT_G_VALUE, _g_value, 0);
-  }
-  uint64_t state() const {
-    return GetField<uint64_t>(VT_STATE, 0);
-  }
-  bool mutate_state(uint64_t _state = 0) {
-    return SetField<uint64_t>(VT_STATE, _state, 0);
-  }
-  uint64_t action() const {
-    return GetField<uint64_t>(VT_ACTION, 0);
-  }
-  bool mutate_action(uint64_t _action = 0) {
-    return SetField<uint64_t>(VT_ACTION, _action, 0);
+  mimir::CostSearchNodeDataFlat *mutable_data() {
+    return GetStruct<mimir::CostSearchNodeDataFlat *>(VT_DATA);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_STATUS, 1) &&
-           VerifyField<int32_t>(verifier, VT_G_VALUE, 4) &&
-           VerifyField<uint64_t>(verifier, VT_STATE, 8) &&
-           VerifyField<uint64_t>(verifier, VT_ACTION, 8) &&
+           VerifyField<mimir::CostSearchNodeDataFlat>(verifier, VT_DATA, 8) &&
            verifier.EndTable();
   }
 };
@@ -64,17 +98,8 @@ struct CostSearchNodeFlatBuilder {
   typedef CostSearchNodeFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_status(uint8_t status) {
-    fbb_.AddElement<uint8_t>(CostSearchNodeFlat::VT_STATUS, status, 0);
-  }
-  void add_g_value(int32_t g_value) {
-    fbb_.AddElement<int32_t>(CostSearchNodeFlat::VT_G_VALUE, g_value, 0);
-  }
-  void add_state(uint64_t state) {
-    fbb_.AddElement<uint64_t>(CostSearchNodeFlat::VT_STATE, state, 0);
-  }
-  void add_action(uint64_t action) {
-    fbb_.AddElement<uint64_t>(CostSearchNodeFlat::VT_ACTION, action, 0);
+  void add_data(const mimir::CostSearchNodeDataFlat *data) {
+    fbb_.AddStruct(CostSearchNodeFlat::VT_DATA, data);
   }
   explicit CostSearchNodeFlatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -89,15 +114,9 @@ struct CostSearchNodeFlatBuilder {
 
 inline ::flatbuffers::Offset<CostSearchNodeFlat> CreateCostSearchNodeFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint8_t status = 0,
-    int32_t g_value = 0,
-    uint64_t state = 0,
-    uint64_t action = 0) {
+    const mimir::CostSearchNodeDataFlat *data = nullptr) {
   CostSearchNodeFlatBuilder builder_(_fbb);
-  builder_.add_action(action);
-  builder_.add_state(state);
-  builder_.add_g_value(g_value);
-  builder_.add_status(status);
+  builder_.add_data(data);
   return builder_.Finish();
 }
 

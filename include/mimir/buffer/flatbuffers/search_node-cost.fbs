@@ -2,12 +2,16 @@
 
 namespace mimir;
 
-
-table CostSearchNodeFlat {
+// We want to keep this data close together
+struct CostSearchNodeDataFlat {
   status:uint8;
   g_value:int32;
   state:uint64;
   action:uint64;
+}
+
+table CostSearchNodeFlat {
+  data:CostSearchNodeDataFlat;
 }
 
 root_type CostSearchNodeFlat;

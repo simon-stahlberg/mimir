@@ -78,6 +78,7 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
 
     // Test default initialization a search node
     auto search_node_0 = vector[0];
+    EXPECT_EQ(search_node_0.get_size(), 48);
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
     EXPECT_NE(search_node_0.get_parent_state().get_buffer_pointer(), nullptr);
