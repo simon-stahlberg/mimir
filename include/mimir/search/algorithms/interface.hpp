@@ -27,9 +27,8 @@ class IAlgorithm {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using A = typename TypeTraits<Derived>::ActionTag;
     using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<A, P, S>>;
+    using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
     IAlgorithm() = default;

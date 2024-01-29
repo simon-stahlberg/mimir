@@ -23,12 +23,11 @@ class DefaultSSGTag : public SSGTag {};
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<SSG<SSGDispatcher<DefaultSSGTag, P, S, A>>>
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<SSG<SSGDispatcher<DefaultSSGTag, P, S>>>
 {
     using PlanningModeTag = P;
     using StateTag = S;
-    using ActionTag = A;
 };
 
 

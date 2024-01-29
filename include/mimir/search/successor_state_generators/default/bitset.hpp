@@ -11,12 +11,12 @@ namespace mimir
  * Implementation class
 */
 template<IsPlanningModeTag P>
-class SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag, BitsetActionTag>>
-    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag, BitsetActionTag>>>
+class SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag>>
+    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag>>>
 {
 private:
     using StateView = View<StateDispatcher<BitsetStateTag, P>>;
-    using ActionView = View<ActionDispatcher<BitsetActionTag, P, BitsetStateTag>>;
+    using ActionView = View<ActionDispatcher<P, BitsetStateTag>>;
 
     UnorderedSet<StateDispatcher<BitsetStateTag, P>> m_states;
     Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;

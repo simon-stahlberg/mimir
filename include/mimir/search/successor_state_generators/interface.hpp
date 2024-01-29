@@ -23,9 +23,8 @@ class ISSG
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using A = typename TypeTraits<Derived>::ActionTag;
     using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<A, P, S>>;
+    using ActionView = View<ActionDispatcher<P, S>>;
 
     ISSG() = default;
     friend Derived;
@@ -66,14 +65,14 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGTag>;
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S>
 struct SSGDispatcher {};
 
 template<typename T>
 struct is_ssg_dispatcher : std::false_type {};
 
-template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_ssg_dispatcher<SSGDispatcher<SSG, P, S, A>> : std::true_type {};
+template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S>
+struct is_ssg_dispatcher<SSGDispatcher<SSG, P, S>> : std::true_type {};
 
 template<typename T>
 concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;

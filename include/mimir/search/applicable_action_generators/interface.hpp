@@ -20,10 +20,9 @@ class IAAG
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using A = typename TypeTraits<Derived>::ActionTag;
 
     using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<A, P, S>>;
+    using ActionView = View<ActionDispatcher<P, S>>;
 
     IAAG() = default;
     friend Derived;
@@ -61,14 +60,14 @@ concept IsAAGTag = std::derived_from<DerivedTag, AAGTag>;
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S>
 struct AAGDispatcher {};
 
 template<typename T>
 struct is_aag_dispatcher : std::false_type {};
 
-template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_aag_dispatcher<AAGDispatcher<AAG, P, S, A>> : std::true_type {};
+template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S>
+struct is_aag_dispatcher<AAGDispatcher<AAG, P, S>> : std::true_type {};
 
 template<typename T>
 concept IsAAGDispatcher = is_aag_dispatcher<T>::value;

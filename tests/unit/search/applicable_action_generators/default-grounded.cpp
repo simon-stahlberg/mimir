@@ -8,7 +8,7 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchAAGsDefaultGroundedTest) {
     // Instantiate grounded version
-    auto grounded_aag = AAG<AAGDispatcher<DefaultAAGTag, GroundedTag, BitsetStateTag, BitsetActionTag>>();
+    auto grounded_aag = AAG<AAGDispatcher<DefaultAAGTag, GroundedTag, BitsetStateTag>>();
 }
 
 }

@@ -15,7 +15,6 @@ namespace mimir
 */
 template<IsPlanningModeTag P
        , IsStateTag S = BitsetStateTag
-       , IsActionTag A = BitsetActionTag
        , IsAAGTag AG = DefaultAAGTag
        , IsSSGTag SG = DefaultSSGTag>
 struct BrFSTag : public AlgorithmTag { };
@@ -24,23 +23,23 @@ struct BrFSTag : public AlgorithmTag { };
 /**
  * Specialized implementation class.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>
-    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG, IsSSGTag SG>
+class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG, SG>>>
+    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG, SG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<A, P, S>>;
+    using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
     Problem m_problem;
-    SSG<SSGDispatcher<SG, P, S, A>> m_state_repository;
+    SSG<SSGDispatcher<SG, P, S>> m_state_repository;
     StateView m_initial_state;
-    AAG<AAGDispatcher<AG, P, S, A>> m_successor_generator;
+    AAG<AAGDispatcher<AG, P, S>> m_successor_generator;
 
     // Implement configuration independent functionality.
     std::deque<StateView> m_queue;
 
-    AutomaticVector<CostSearchNodeTag<P, S, A>> m_search_nodes;
+    AutomaticVector<CostSearchNodeTag<P, S>> m_search_nodes;
 
 
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
@@ -73,11 +72,11 @@ private:
 public:
     Algorithm(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SSG<SSGDispatcher<SG, P, S, A>>())
+        , m_state_repository(SSG<SSGDispatcher<SG, P, S>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_successor_generator(AAG<AAGDispatcher<AG, P, S, A>>())
+        , m_successor_generator(AAG<AAGDispatcher<AG, P, S>>())
         , m_search_nodes(AutomaticVector(
-            Builder<CostSearchNodeTag<P, S, A>>(
+            Builder<CostSearchNodeTag<P, S>>(
                 SearchNodeStatus::CLOSED,
                 0, StateView(nullptr),
                 ActionView(nullptr)
@@ -89,15 +88,14 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A, IsAAGTag AG, IsSSGTag SG>
-struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, A, AG, SG>>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG, IsSSGTag SG>
+struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG, SG>>>> {
     using PlanningModeTag = P;
     using StateTag = S;
-    using ActionTag = A;
     using AAGTag = AG;
     using SSGTag = SG;
 
-    using ActionView = View<ActionDispatcher<A, P, S>>;
+    using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;
 };
 

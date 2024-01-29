@@ -23,12 +23,11 @@ struct DefaultAAGTag : public AAGTag {};
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<AAG<AAGDispatcher<DefaultAAGTag, P, S, A>>>
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<AAG<AAGDispatcher<DefaultAAGTag, P, S>>>
 {
     using PlanningModeTag = P;
     using StateTag = S;
-    using ActionTag = A;
 };
 
 

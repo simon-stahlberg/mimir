@@ -20,7 +20,6 @@ class IHeuristic {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using A = typename TypeTraits<Derived>::ActionTag;
     using StateView = View<StateDispatcher<S, P>>;
 
     IHeuristic() = default;
@@ -58,14 +57,14 @@ concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicTag>;
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
+template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S>
 struct HeuristicDispatcher {};
 
 template<typename T>
 struct is_heuristic_dispatcher : std::false_type {};
 
-template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct is_heuristic_dispatcher<HeuristicDispatcher<H, P, S, A>> : std::true_type {};
+template<IsHeuristicTag H, IsPlanningModeTag P, IsStateTag S>
+struct is_heuristic_dispatcher<HeuristicDispatcher<H, P, S>> : std::true_type {};
 
 template<typename T>
 concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;

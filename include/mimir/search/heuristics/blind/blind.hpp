@@ -18,9 +18,9 @@ struct BlindTag : public HeuristicTag { };
 /**
  * Specialized implementation class.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-class Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>
-    : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>> {
+template<IsPlanningModeTag P, IsStateTag S>
+class Heuristic<HeuristicDispatcher<BlindTag, P, S>>
+    : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
 
@@ -42,11 +42,10 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
-struct TypeTraits<Heuristic<HeuristicDispatcher<BlindTag, P, S, A>>> {
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<Heuristic<HeuristicDispatcher<BlindTag, P, S>>> {
     using PlanningModeTag = P;
     using StateTag = S;
-    using ActionTag = A;
 };
 
 
