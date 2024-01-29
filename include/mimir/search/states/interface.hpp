@@ -12,10 +12,19 @@
 namespace mimir
 {
 
+
 /**
- * Data types
+ * ID base class.
+ *
+ * Derive from it to provide your own implementation.
+ *
+ * Define new template parameters to your derived tag
+ * in the declaration file of your derived class.
 */
-using state_id_type = uint32_t;
+struct StateTag {};
+
+template<typename DerivedTag>
+concept IsStateTag = std::derived_from<DerivedTag, StateTag>;
 
 
 /**
@@ -35,7 +44,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void set_id(state_id_type id) { self().set_id_impl(id); }
+    void set_id(uint32_t id) { self().set_id_impl(id); }
 };
 
 
@@ -53,22 +62,8 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] state_id_type get_id() const { return self().get_id_impl(); }
+    [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }
 };
-
-
-/**
- * ID base class.
- *
- * Derive from it to provide your own implementation.
- *
- * Define new template parameters to your derived tag
- * in the declaration file of your derived class.
-*/
-struct StateTag {};
-
-template<typename DerivedTag>
-concept IsStateTag = std::derived_from<DerivedTag, StateTag>;
 
 
 /**

@@ -16,6 +16,7 @@ template<>
 class Builder<StateDispatcher<BitsetStateTag, LiftedTag>>
     : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, LiftedTag>>>
     , public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, LiftedTag>>>
+    , public IBitsetStateBuilder<Builder<StateDispatcher<BitsetStateTag, LiftedTag>>>
 {
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
@@ -53,8 +54,12 @@ private:
 
     void set_id_impl(uint32_t id) { m_id = id; }
 
-public:
-    void set_num_atoms(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
+
+    /* Implement IBitsetStateBuilder interface */
+    template<typename>
+    friend class IBitsetStateBuilder;
+
+    void set_num_atoms_impl(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
 };
 
 
@@ -67,6 +72,7 @@ template<>
 class View<StateDispatcher<BitsetStateTag, LiftedTag>>
     : public ViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>>
     , public IStateView<View<StateDispatcher<BitsetStateTag, LiftedTag>>>
+    , public IBitsetStateView<View<StateDispatcher<BitsetStateTag, LiftedTag>>>
 {
 private:
     const StateBitsetLiftedFlat* m_flatbuffers_view;
@@ -87,18 +93,23 @@ private:
     }
 
 
-    /* Implement SearchNodeViewBase interface */
+    /* Implement IStateView interface */
     template<typename>
     friend class IStateView;
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_flatbuffers_view->id(); }
 
+
+    /* Implement IBitsetStateView interface*/
+    template<typename>
+    friend class IBitsetStateView;
+
+    [[nodiscard]] BitsetView get_atoms_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
+
 public:
     explicit View(uint8_t* data)
         : ViewBase<View<StateDispatcher<BitsetStateTag, LiftedTag>>>(data)
         , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetLiftedFlat(reinterpret_cast<void*>(data)) : nullptr) { }
-
-    [[nodiscard]] BitsetView get_atoms() const { return BitsetView(m_flatbuffers_view->atoms()); }
 };
 
 

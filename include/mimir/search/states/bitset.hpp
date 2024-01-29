@@ -16,6 +16,46 @@ class BitsetStateTag : public StateTag {};
 
 
 /**
+ * Interface class
+*/
+template<typename Derived>
+class IBitsetStateBuilder
+{
+private:
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
+
+    IBitsetStateBuilder() = default;
+    friend Derived;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+public:
+    void set_num_atoms(size_t num_atoms) { self().set_num_atoms_impl(num_atoms); }
+};
+
+
+template<typename Derived>
+class IBitsetStateView
+{
+private:
+    using P = typename TypeTraits<Derived>::PlanningModeTag;
+
+    IBitsetStateView() = default;
+    friend Derived;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+public:
+    [[nodiscard]] BitsetView get_atoms() const { return self().get_atoms_impl(); }
+};
+
+
+
+/**
  * Type traits.
 */
 template<IsPlanningModeTag P>

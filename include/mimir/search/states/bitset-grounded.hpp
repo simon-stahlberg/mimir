@@ -16,6 +16,7 @@ template<>
 class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
+    , public IBitsetStateBuilder<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
 {
 private:
     flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
@@ -45,14 +46,19 @@ private:
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
+
     /* Implement IStateBuilder interface */
     template<typename>
     friend class IStateBuilder;
 
     void set_id_impl(uint32_t id) { m_id = id; }
 
-public:
-    void set_num_atoms(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
+
+    /* Implement IBitsetStateBuilder interface */
+    template<typename>
+    friend class IBitsetStateBuilder;
+
+    void set_num_atoms_impl(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
 };
 
 
@@ -65,6 +71,7 @@ template<>
 class View<StateDispatcher<BitsetStateTag, GroundedTag>>
     : public ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public IStateView<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
+    , public IBitsetStateView<View<StateDispatcher<BitsetStateTag, GroundedTag>>>
 {
 private:
     const StateBitsetGroundedFlat* m_flatbuffers_view;
@@ -85,18 +92,23 @@ private:
     }
 
 
-    /* Implement SearchNodeViewBase interface */
+    /* Implement IStateView interface */
     template<typename>
     friend class IStateView;
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_flatbuffers_view->id(); }
 
+
+    /* Implement IBitsetStateView interface*/
+    template<typename>
+    friend class IBitsetStateView;
+
+    [[nodiscard]] BitsetView get_atoms_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
+
 public:
     explicit View(uint8_t* data)
         : ViewBase<View<StateDispatcher<BitsetStateTag, GroundedTag>>>(data)
         , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetGroundedFlat(reinterpret_cast<void*>(data)) : nullptr) { }
-
-    [[nodiscard]] BitsetView get_atoms() const { return BitsetView(m_flatbuffers_view->atoms()); }
 };
 
 
