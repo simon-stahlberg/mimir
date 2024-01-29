@@ -58,7 +58,7 @@ private:
     template<typename>
     friend class IBitsetStateBuilder;
 
-    void set_num_atoms_impl(size_t num_atoms) { m_atoms_bitset.set_num_bits(num_atoms); }
+    [[nodiscard]] BitsetBuilder<uint64_t>& get_atoms_bitset_impl() { return m_atoms_bitset; }
 };
 
 
@@ -103,7 +103,7 @@ private:
     template<typename>
     friend class IBitsetStateView;
 
-    [[nodiscard]] BitsetView get_atoms_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
+    [[nodiscard]] BitsetView get_atoms_bitset_impl() const { return BitsetView(m_flatbuffers_view->atoms()); }
 
 public:
     explicit View(uint8_t* data)

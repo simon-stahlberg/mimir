@@ -48,7 +48,10 @@ private:
     friend class IActionBuilder;
 
 public:
-    // TODO set the bitsets
+    [[nodiscard]] BitsetBuilder<uint64_t>& get_applicability_positive_precondition_bitset() { return m_applicability_positive_precondition_bitset; }
+    [[nodiscard]] BitsetBuilder<uint64_t>& get_applicability_negative_precondition_bitset() { return m_applicability_negative_precondition_bitset; }
+    [[nodiscard]] BitsetBuilder<uint64_t>& get_unconditional_positive_effect_bitset() { return m_unconditional_positive_effect_bitset; }
+    [[nodiscard]] BitsetBuilder<uint64_t>& get_unconditional_negative_effect_bitset() { return m_unconditional_negative_effect_bitset; }
 };
 
 
@@ -83,10 +86,10 @@ public:
         : ViewBase<View<ActionDispatcher<P, BitsetStateTag>>>(data)
         , m_flatbuffers_view(data ? GetSizePrefixedDefaultActionFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
-    BitsetView get_applicability_positive_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
-    BitsetView get_applicability_negative_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
-    BitsetView get_unconditional_positive_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
-    BitsetView get_unconditional_negative_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
+    [[nodiscard]] BitsetView get_applicability_positive_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
+    [[nodiscard]] BitsetView get_applicability_negative_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
+    [[nodiscard]] BitsetView get_unconditional_positive_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
+    [[nodiscard]] BitsetView get_unconditional_negative_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
 };
 
 

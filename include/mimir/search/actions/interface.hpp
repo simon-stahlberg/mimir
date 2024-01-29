@@ -54,7 +54,7 @@ public:
     /* Mutable getters. */
 
     /* Immutable getters. */
-    std::string str() const { return self().str_impl(); }
+    [[nodiscard]] std::string str() const { return self().str_impl(); }
 };
 
 

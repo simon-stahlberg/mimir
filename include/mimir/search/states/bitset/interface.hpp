@@ -32,7 +32,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void set_num_atoms(size_t num_atoms) { self().set_num_atoms_impl(num_atoms); }
+    [[nodiscard]] BitsetBuilder<uint64_t>& get_atoms_bitset() { return self().get_atoms_bitset_impl(); }
 };
 
 
@@ -50,7 +50,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] BitsetView get_atoms() const { return self().get_atoms_impl(); }
+    [[nodiscard]] BitsetView get_atoms_bitset() const { return self().get_atoms_bitset_impl(); }
 };
 
 
