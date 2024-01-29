@@ -5,8 +5,8 @@
 /**
  * Include all specializations here
 */
-#include "states/bitset-grounded.hpp"
-#include "states/bitset-lifted.hpp"
+#include "states/bitset/grounded.hpp"
+#include "states/bitset/lifted.hpp"
 
 
 #endif  // MIMIR_SEARCH_STATES_HPP_
