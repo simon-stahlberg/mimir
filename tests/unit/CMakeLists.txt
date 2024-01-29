@@ -23,8 +23,7 @@ add_executable(${TEST_NAME}
     "search/openlists/priority_queue.cpp"
     "search/planners/single.cpp"
     "search/search_nodes/cost.cpp"
-    "search/states/bitset-grounded.cpp"
-    "search/states/bitset-lifted.cpp"
+    "search/states/bitset/bitset.cpp"
     "search/successor_state_generators/default-grounded.cpp"
     "search/successor_state_generators/default-lifted.cpp"
 )

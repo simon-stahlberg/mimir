@@ -14,9 +14,6 @@ namespace mimir
 */
 class BitsetStateTag : public StateTag {};
 
-template<typename DerivedTag>
-concept IsBitsetStateTag = std::derived_from<DerivedTag, BitsetStateTag>;
-
 
 /**
  * Interface class
