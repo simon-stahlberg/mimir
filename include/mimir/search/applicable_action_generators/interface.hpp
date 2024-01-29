@@ -40,34 +40,20 @@ public:
 
 
 /**
- * ID base class.
- *
- * Derive from it to provide your own implementation.
- *
- * Define new template parameters to your derived tag
- * in the declaration file of your derived class.
-*/
-struct AAGTag {};
-
-template<typename DerivedTag>
-concept IsAAGTag = std::derived_from<DerivedTag, AAGTag>;
-
-
-/**
  * Dispatcher class.
  *
  * Wrap the tag to dispatch the correct overload.
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S>
+template<IsPlanningModeTag P, IsStateTag S>
 struct AAGDispatcher {};
 
 template<typename T>
 struct is_aag_dispatcher : std::false_type {};
 
-template<IsAAGTag AAG, IsPlanningModeTag P, IsStateTag S>
-struct is_aag_dispatcher<AAGDispatcher<AAG, P, S>> : std::true_type {};
+template<IsPlanningModeTag P, IsStateTag S>
+struct is_aag_dispatcher<AAGDispatcher<P, S>> : std::true_type {};
 
 template<typename T>
 concept IsAAGDispatcher = is_aag_dispatcher<T>::value;
@@ -80,6 +66,17 @@ concept IsAAGDispatcher = is_aag_dispatcher<T>::value;
 */
 template<IsAAGDispatcher A>
 class AAG : public IAAG<AAG<A>> {};
+
+
+/**
+ * Type traits.
+*/
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<AAG<AAGDispatcher<P, S>>>
+{
+    using PlanningModeTag = P;
+    using StateTag = S;
+};
 
 
 }

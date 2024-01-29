@@ -45,20 +45,6 @@ public:
 
 
 /**
- * ID base class.
- *
- * Derive from it to provide your own implementation.
- *
- * Define new template parameters to your derived tag
- * in the declaration file of your derived class.
-*/
-struct SSGTag {};
-
-template<typename DerivedTag>
-concept IsSSGTag = std::derived_from<DerivedTag, SSGTag>;
-
-
-/**
  * Dispatcher class.
  *
  * Wrap the tag to dispatch the correct overload.

@@ -14,17 +14,16 @@ namespace mimir
  * ID class to dispatch a specialized implementation
 */
 template<IsPlanningModeTag P
-       , IsStateTag S = BitsetStateTag
-       , IsAAGTag AG = DefaultAAGTag>
+       , IsStateTag S = BitsetStateTag>
 struct BrFSTag : public AlgorithmTag { };
 
 
 /**
  * Specialized implementation class.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG>
-class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG>>>
-    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG>>>> {
+template<IsPlanningModeTag P, IsStateTag S>
+class Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>
+    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<P, S>>;
@@ -33,7 +32,7 @@ private:
     Problem m_problem;
     SSG<SSGDispatcher<P, S>> m_state_repository;
     StateView m_initial_state;
-    AAG<AAGDispatcher<AG, P, S>> m_successor_generator;
+    AAG<AAGDispatcher<P, S>> m_successor_generator;
 
     // Implement configuration independent functionality.
     std::deque<StateView> m_queue;
@@ -73,7 +72,7 @@ public:
         : m_problem(problem)
         , m_state_repository(SSG<SSGDispatcher<P, S>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_successor_generator(AAG<AAGDispatcher<AG, P, S>>())
+        , m_successor_generator(AAG<AAGDispatcher<P, S>>())
         , m_search_nodes(AutomaticVector(
             Builder<CostSearchNodeTag<P, S>>(
                 SearchNodeStatus::CLOSED,
@@ -87,11 +86,10 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG>
-struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG>>>> {
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>> {
     using PlanningModeTag = P;
     using StateTag = S;
-    using AAGTag = AG;
 
     using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;
