@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_BITSET_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 
 #include "interface.hpp"
 
@@ -11,8 +11,8 @@ namespace mimir
  * Implementation class
 */
 template<IsPlanningModeTag P>
-class SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag>>
-    : public ISSG<SSG<SSGDispatcher<DefaultSSGTag, P, BitsetStateTag>>>
+class SSG<SSGDispatcher<P, BitsetStateTag>>
+    : public ISSG<SSG<SSGDispatcher<P, BitsetStateTag>>>
 {
 private:
     using StateView = View<StateDispatcher<BitsetStateTag, P>>;

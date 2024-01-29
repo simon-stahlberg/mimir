@@ -15,24 +15,23 @@ namespace mimir
 */
 template<IsPlanningModeTag P
        , IsStateTag S = BitsetStateTag
-       , IsAAGTag AG = DefaultAAGTag
-       , IsSSGTag SG = DefaultSSGTag>
+       , IsAAGTag AG = DefaultAAGTag>
 struct BrFSTag : public AlgorithmTag { };
 
 
 /**
  * Specialized implementation class.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG, SG>>>
-    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG, SG>>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG>
+class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG>>>
+    : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
     Problem m_problem;
-    SSG<SSGDispatcher<SG, P, S>> m_state_repository;
+    SSG<SSGDispatcher<P, S>> m_state_repository;
     StateView m_initial_state;
     AAG<AAGDispatcher<AG, P, S>> m_successor_generator;
 
@@ -72,7 +71,7 @@ private:
 public:
     Algorithm(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SSG<SSGDispatcher<SG, P, S>>())
+        , m_state_repository(SSG<SSGDispatcher<P, S>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_successor_generator(AAG<AAGDispatcher<AG, P, S>>())
         , m_search_nodes(AutomaticVector(
@@ -88,12 +87,11 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG, IsSSGTag SG>
-struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG, SG>>>> {
+template<IsPlanningModeTag P, IsStateTag S, IsAAGTag AG>
+struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, AG>>>> {
     using PlanningModeTag = P;
     using StateTag = S;
     using AAGTag = AG;
-    using SSGTag = SG;
 
     using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;

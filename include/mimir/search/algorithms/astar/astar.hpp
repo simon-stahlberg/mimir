@@ -17,24 +17,23 @@ namespace mimir
 template<IsPlanningModeTag P
        , IsHeuristicTag H
        , IsStateTag S = BitsetStateTag
-       , IsAAGTag AG = DefaultAAGTag
-       , IsSSGTag SG = DefaultSSGTag>
+       , IsAAGTag AG = DefaultAAGTag>
 struct AStarTag : public AlgorithmTag { };
 
 
 /**
  * Specialized implementation class.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsAAGTag AG, IsSSGTag SG>
-class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, AG, SG>>>
-    : public IAlgorithm<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, AG, SG>>>> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsAAGTag AG>
+class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, AG>>>
+    : public IAlgorithm<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, AG>>>> {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;
 
     Problem m_problem;
-    SSG<SSGDispatcher<SG, P, S>> m_state_repository;
+    SSG<SSGDispatcher<P, S>> m_state_repository;
     StateView m_initial_state;
     AAG<AAGDispatcher<AG, P, S>> m_successor_generator;
     Heuristic<HeuristicDispatcher<H, P, S>> m_heuristic;
@@ -51,7 +50,7 @@ private:
 public:
     Algorithm(const Problem& problem)
         : m_problem(problem)
-        , m_state_repository(SSG<SSGDispatcher<SG, P, S>>())
+        , m_state_repository(SSG<SSGDispatcher<P, S>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_successor_generator(AAG<AAGDispatcher<AG, P, S>>())
         , m_heuristic(problem) { }
@@ -61,13 +60,12 @@ public:
 /**
  * Type traits.
 */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsAAGTag AG, IsSSGTag SG>
-struct TypeTraits<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, AG, SG>>>> {
+template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S, IsAAGTag AG>
+struct TypeTraits<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S, AG>>>> {
     using PlanningModeTag = P;
     using HeuristicTag = H;
     using StateTag = S;
     using AAGTag = AG;
-    using SSGTag = SG;
 
     using ActionView = View<ActionDispatcher<P, S>>;
     using ActionViewList = std::vector<ActionView>;

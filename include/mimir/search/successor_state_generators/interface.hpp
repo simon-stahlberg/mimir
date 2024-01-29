@@ -65,14 +65,14 @@ concept IsSSGTag = std::derived_from<DerivedTag, SSGTag>;
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
 */
-template<IsSSGTag SG, IsPlanningModeTag P, IsStateTag S>
+template<IsPlanningModeTag P, IsStateTag S>
 struct SSGDispatcher {};
 
 template<typename T>
 struct is_ssg_dispatcher : std::false_type {};
 
-template<IsSSGTag SSG, IsPlanningModeTag P, IsStateTag S>
-struct is_ssg_dispatcher<SSGDispatcher<SSG, P, S>> : std::true_type {};
+template<IsPlanningModeTag P, IsStateTag S>
+struct is_ssg_dispatcher<SSGDispatcher<P, S>> : std::true_type {};
 
 template<typename T>
 concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
@@ -85,6 +85,17 @@ concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
 */
 template<IsSSGDispatcher S>
 class SSG : public ISSG<SSG<S>> {};
+
+
+/**
+ * Type traits.
+*/
+template<IsPlanningModeTag P, IsStateTag S>
+struct TypeTraits<SSG<SSGDispatcher<P, S>>>
+{
+    using PlanningModeTag = P;
+    using StateTag = S;
+};
 
 
 }
