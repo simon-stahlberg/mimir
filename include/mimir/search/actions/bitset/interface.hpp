@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_ACTIONS_BITSET_HPP_
-#define MIMIR_SEARCH_ACTIONS_BITSET_HPP_
+#ifndef MIMIR_SEARCH_ACTIONS_BITSET_INTERFACE_HPP_
+#define MIMIR_SEARCH_ACTIONS_BITSET_INTERFACE_HPP_
 
-#include "interface.hpp"
+#include "../interface.hpp"
 
 
 namespace mimir

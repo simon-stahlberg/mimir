@@ -14,7 +14,7 @@ namespace mimir
 */
 template<>
 class Builder<StateDispatcher<BitsetStateTag, GroundedTag>>
-    : public BuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
+    : public IBuilderBase<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
     , public IBitsetStateBuilder<Builder<StateDispatcher<BitsetStateTag, GroundedTag>>>
 {
@@ -24,9 +24,9 @@ private:
     uint32_t m_id;
     BitsetBuilder<uint64_t> m_atoms_bitset;
 
-    /* Implement BuilderBase interface */
+    /* Implement IBuilderBase interface */
     template<typename>
-    friend class BuilderBase;
+    friend class IBuilderBase;
 
     void finish_impl() {
         auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms_bitset.get_data());

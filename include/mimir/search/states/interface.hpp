@@ -92,7 +92,7 @@ concept IsStateDispatcher = is_state_dispatcher<T>::value;
  * Specialize the wrapped tag to provide your own implementation of a state representation.
 */
 template<IsStateDispatcher S>
-class Builder<S> : public BuilderBase<Builder<S>>, public IStateBuilder<Builder<S>> {};
+class Builder<S> : public IBuilderBase<Builder<S>>, public IStateBuilder<Builder<S>> {};
 
 template<IsStateDispatcher S>
 class View<S> : public ViewBase<View<S>>, public IStateView<View<S>> {};

@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_INTERFACE_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DEFAULT_INTERFACE_HPP_
 
-#include "interface.hpp"
+#include "../interface.hpp"
 
 
 namespace mimir
@@ -13,6 +13,11 @@ namespace mimir
  * Define name and template parameters of your own implementation.
 */
 class DefaultSSGTag : public SSGTag {};
+
+
+/**
+ * No additional interface required.
+*/
 
 
 /**

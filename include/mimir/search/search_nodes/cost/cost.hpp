@@ -1,15 +1,12 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 #define MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 
-#include "interface.hpp"
+#include "../interface.hpp"
 
-#include "../../buffer/flatbuffers/search_node-cost_generated.h"
+#include "../../../buffer/flatbuffers/search_node-cost_generated.h"
 
-#include "../states.hpp"
-#include "../actions.hpp"
-
-#include <iostream>
-#include <iomanip>
+#include "../../states.hpp"
+#include "../../actions.hpp"
 
 
 namespace mimir
@@ -49,7 +46,7 @@ struct TypeTraits<View<CostSearchNodeTag<P, S, A>>>
 */
 template<IsPlanningModeTag P, IsStateTag S, IsActionTag A>
 class Builder<CostSearchNodeTag<P, S, A>>
-    : public BuilderBase<Builder<CostSearchNodeTag<P, S, A>>>
+    : public IBuilderBase<Builder<CostSearchNodeTag<P, S, A>>>
 {
 private:
     using StateView = View<StateDispatcher<S, P>>;
@@ -62,9 +59,9 @@ private:
     StateView m_parent_state;
     ActionView m_creating_action;
 
-    /* Implement BuilderBase interface */
+    /* Implement IBuilderBase interface */
     template<typename>
-    friend class BuilderBase;
+    friend class IBuilderBase;
 
     void finish_impl() {
         auto builder = CostSearchNodeFlatBuilder(this->m_flatbuffers_builder);

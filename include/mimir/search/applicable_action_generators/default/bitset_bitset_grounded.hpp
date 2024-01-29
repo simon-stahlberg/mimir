@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_BITSET_BITSET_LIFTED_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_BITSET_BITSET_LIFTED_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_BITSET_BITSET_GROUNDED_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_BITSET_BITSET_GROUNDED_HPP_
 
-#include "default.hpp"
+#include "interface.hpp"
 
 
 namespace mimir
@@ -11,8 +11,8 @@ namespace mimir
  * Fully specialized implementation class.
 */
 template<>
-class AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, BitsetActionTag>>
-   : public IAAG<AAG<AAGDispatcher<DefaultAAGTag, LiftedTag, BitsetStateTag, BitsetActionTag>>>
+class AAG<AAGDispatcher<DefaultAAGTag, GroundedTag, BitsetStateTag, BitsetActionTag>>
+   : public IAAG<AAG<AAGDispatcher<DefaultAAGTag, GroundedTag, BitsetStateTag, BitsetActionTag>>>
 {
 private:
     using StateView = View<StateDispatcher<S, P>>;

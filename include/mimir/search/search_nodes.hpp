@@ -5,7 +5,7 @@
 /**
  * Include all specializations here
 */
-#include "search_nodes/cost.hpp"
+#include "search_nodes/cost/cost.hpp"
 
 
 #endif  // MIMIR_SEARCH_SEARCH_NODES_HPP_

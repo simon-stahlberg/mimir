@@ -5,6 +5,6 @@
 /**
  * Include all specializations here
 */
-#include "planners/single.hpp"
+#include "planners/single/single.hpp"
 
 #endif  // MIMIR_SEARCH_PLANNERS_HPP_

@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_INTERFACE_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DEFAULT_INTERFACE_HPP_
 
-#include "interface.hpp"
+#include "../interface.hpp"
 
 
 namespace mimir
@@ -13,6 +13,11 @@ namespace mimir
  * Define name and template parameters of your own implementation.
 */
 struct DefaultAAGTag : public AAGTag {};
+
+
+/**
+ * No additional interface required.
+*/
 
 
 /**

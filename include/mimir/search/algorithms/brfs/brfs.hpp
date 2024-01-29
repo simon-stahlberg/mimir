@@ -1,7 +1,7 @@
-#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
 
-#include "interface.hpp"
+#include "../interface.hpp"
 
 #include <deque>
 #include <vector>

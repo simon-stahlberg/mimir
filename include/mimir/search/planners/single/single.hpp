@@ -1,9 +1,9 @@
-#ifndef MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
-#define MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
+#ifndef MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
+#define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 
-#include "interface.hpp"
+#include "../interface.hpp"
 
-#include "../algorithms.hpp"
+#include "../../algorithms.hpp"
 
 #include <tuple>
 #include <utility>

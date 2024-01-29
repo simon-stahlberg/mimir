@@ -22,10 +22,10 @@ namespace mimir
  * |_________________|_______________|
 */
 template<typename Derived>
-class BuilderBase
+class IBuilderBase
 {
 private:
-    BuilderBase() = default;
+    IBuilderBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -51,7 +51,7 @@ public:
  * Specialize the wrapped tag to provide your own implementation of a successor state generator.
 */
 template<typename T>
-class Builder : public BuilderBase<Builder<T>> {};
+class Builder : public IBuilderBase<Builder<T>> {};
 
 }
 

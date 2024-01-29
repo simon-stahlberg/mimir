@@ -1,9 +1,9 @@
 #ifndef MIMIR_SEARCH_ACTIONS_BITSET_BITSET_LIFTED_HPP_
 #define MIMIR_SEARCH_ACTIONS_BITSET_BITSET_LIFTED_HPP_
 
-#include "bitset.hpp"
+#include "interface.hpp"
 
-#include "../../buffer/flatbuffers/action-default_generated.h"
+#include "../../../buffer/flatbuffers/action-default_generated.h"
 
 
 namespace mimir
@@ -14,7 +14,7 @@ namespace mimir
 */
 template<>
 class Builder<ActionDispatcher<BitsetActionTag, LiftedTag, BitsetStateTag>>
-    : public BuilderBase<Builder<ActionDispatcher<BitsetActionTag, LiftedTag, BitsetStateTag>>>
+    : public IBuilderBase<Builder<ActionDispatcher<BitsetActionTag, LiftedTag, BitsetStateTag>>>
     , public IActionBuilder<Builder<ActionDispatcher<BitsetActionTag, LiftedTag, BitsetStateTag>>>
 {
 private:
@@ -26,9 +26,9 @@ private:
     BitsetBuilder<uint64_t> m_unconditional_positive_effect_bitset;
     BitsetBuilder<uint64_t> m_unconditional_negative_effect_bitset;
 
-    /* Implement BuilderBase interface */
+    /* Implement IBuilderBase interface */
     template<typename>
-    friend class BuilderBase;
+    friend class IBuilderBase;
 
     void finish_impl() {
         auto builder = DefaultActionFlatBuilder(this->m_flatbuffers_builder);
