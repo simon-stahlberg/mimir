@@ -22,44 +22,32 @@ struct CostSearchNodeFlatBuilder;
 
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) CostSearchNodeDataFlat FLATBUFFERS_FINAL_CLASS {
  private:
-  uint8_t status_;
-  int8_t padding0__;  int16_t padding1__;
-  int32_t g_value_;
   uint64_t state_;
   uint64_t action_;
+  int32_t g_value_;
+  uint8_t status_;
+  int8_t padding0__;  int16_t padding1__;
 
  public:
   CostSearchNodeDataFlat()
-      : status_(0),
-        padding0__(0),
-        padding1__(0),
+      : state_(0),
+        action_(0),
         g_value_(0),
-        state_(0),
-        action_(0) {
-    (void)padding0__;
-    (void)padding1__;
-  }
-  CostSearchNodeDataFlat(uint8_t _status, int32_t _g_value, uint64_t _state, uint64_t _action)
-      : status_(::flatbuffers::EndianScalar(_status)),
+        status_(0),
         padding0__(0),
-        padding1__(0),
-        g_value_(::flatbuffers::EndianScalar(_g_value)),
-        state_(::flatbuffers::EndianScalar(_state)),
-        action_(::flatbuffers::EndianScalar(_action)) {
+        padding1__(0) {
     (void)padding0__;
     (void)padding1__;
   }
-  uint8_t status() const {
-    return ::flatbuffers::EndianScalar(status_);
-  }
-  void mutate_status(uint8_t _status) {
-    ::flatbuffers::WriteScalar(&status_, _status);
-  }
-  int32_t g_value() const {
-    return ::flatbuffers::EndianScalar(g_value_);
-  }
-  void mutate_g_value(int32_t _g_value) {
-    ::flatbuffers::WriteScalar(&g_value_, _g_value);
+  CostSearchNodeDataFlat(uint64_t _state, uint64_t _action, int32_t _g_value, uint8_t _status)
+      : state_(::flatbuffers::EndianScalar(_state)),
+        action_(::flatbuffers::EndianScalar(_action)),
+        g_value_(::flatbuffers::EndianScalar(_g_value)),
+        status_(::flatbuffers::EndianScalar(_status)),
+        padding0__(0),
+        padding1__(0) {
+    (void)padding0__;
+    (void)padding1__;
   }
   uint64_t state() const {
     return ::flatbuffers::EndianScalar(state_);
@@ -72,6 +60,18 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) CostSearchNodeDataFlat FLATBUFFERS_FINAL_
   }
   void mutate_action(uint64_t _action) {
     ::flatbuffers::WriteScalar(&action_, _action);
+  }
+  int32_t g_value() const {
+    return ::flatbuffers::EndianScalar(g_value_);
+  }
+  void mutate_g_value(int32_t _g_value) {
+    ::flatbuffers::WriteScalar(&g_value_, _g_value);
+  }
+  uint8_t status() const {
+    return ::flatbuffers::EndianScalar(status_);
+  }
+  void mutate_status(uint8_t _status) {
+    ::flatbuffers::WriteScalar(&status_, _status);
   }
 };
 FLATBUFFERS_STRUCT_END(CostSearchNodeDataFlat, 24);

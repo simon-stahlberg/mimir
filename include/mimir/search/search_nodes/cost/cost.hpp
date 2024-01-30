@@ -70,14 +70,13 @@ private:
     void finish_impl() {
         // Genenerate nested data first.
         auto data = CostSearchNodeDataFlat{
-                m_status,
-                m_g_value,
                 pointer_to_uint64_t(m_parent_state.get_buffer_pointer()),
-                pointer_to_uint64_t(m_creating_action.get_buffer_pointer())};
+                pointer_to_uint64_t(m_creating_action.get_buffer_pointer()),
+                m_g_value,
+                m_status};
         // Generate search node data.
-        auto builder = CostSearchNodeFlatBuilder(this->m_flatbuffers_builder);
-        builder.add_data(&data);
-        this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
+        auto offset = CreateCostSearchNodeFlat(this->m_flatbuffers_builder, &data);
+        this->m_flatbuffers_builder.FinishSizePrefixed(offset);
     }
 
     void clear_impl() {

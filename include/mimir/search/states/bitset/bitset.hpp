@@ -3,7 +3,7 @@
 
 #include "interface.hpp"
 
-#include "../../../buffer/flatbuffers/state-bitset-grounded_generated.h"
+#include "../../../buffer/flatbuffers/state-bitset_generated.h"
 
 
 namespace mimir
@@ -31,17 +31,15 @@ private:
     void finish_impl() {
         // Genenerate nested data first.
         auto created_atoms_vec = this->m_flatbuffers_builder.CreateVector(m_atoms_bitset.get_data());
-        auto bitset = CreateBitsetFlat(m_flatbuffers_builder, m_atoms_bitset.get_data().size(), created_atoms_vec);
+        auto bitset = CreateBitsetFlat(m_flatbuffers_builder, m_atoms_bitset.get_default_bit_value(), created_atoms_vec);
         // Generate state data.
-        auto builder = StateBitsetGroundedFlatBuilder(this->m_flatbuffers_builder);
-        builder.add_id(m_id);
-        builder.add_atoms(bitset);
-        this->m_flatbuffers_builder.FinishSizePrefixed(builder.Finish());
+        auto offset = CreateStateBitsetFlat(this->m_flatbuffers_builder, m_id, bitset);
+        this->m_flatbuffers_builder.FinishSizePrefixed(offset);
     }
 
     void clear_impl() {
         m_flatbuffers_builder.Clear();
-        m_atoms_bitset.clear();
+        m_atoms_bitset.unset_all(false);
     }
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
@@ -76,7 +74,7 @@ class View<StateDispatcher<BitsetStateTag, P>>
     , public IBitsetStateView<View<StateDispatcher<BitsetStateTag, P>>>
 {
 private:
-    const StateBitsetGroundedFlat* m_flatbuffers_view;
+    const StateBitsetFlat* m_flatbuffers_view;
 
     /* Implement ViewBase interface */
     template<typename>
@@ -119,7 +117,7 @@ private:
 public:
     explicit View(uint8_t* data)
         : ViewBase<View<StateDispatcher<BitsetStateTag, P>>>(data)
-        , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetGroundedFlat(reinterpret_cast<void*>(data)) : nullptr) { }
+        , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 };
 
 

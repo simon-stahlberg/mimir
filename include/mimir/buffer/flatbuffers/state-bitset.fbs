@@ -1,0 +1,13 @@
+// Example IDL file for a StateBitsetFlat
+
+include "bitset.fbs";
+
+namespace mimir;
+
+
+table StateBitsetFlat {
+  id:uint32;
+  atoms:BitsetFlat;
+}
+
+root_type StateBitsetFlat;
