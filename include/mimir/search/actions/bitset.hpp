@@ -4,7 +4,6 @@
 #include "interface.hpp"
 
 #include "../../buffer/flatbuffers/action-bitset_generated.h"
-#include "../../buffer/flatbuffers_utils.hpp"
 
 
 namespace mimir
@@ -57,7 +56,7 @@ private:
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] uint32_t get_size_impl() const { return read_value<const flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
     /* Implement IActionBuilder interface */
     template<typename>

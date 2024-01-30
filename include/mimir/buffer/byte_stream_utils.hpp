@@ -1,6 +1,7 @@
 #ifndef MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
 #define MIMIR_BUFFER_BYTE_STREAM_UTILS_HPP_
 
+#include <cstdint>
 #include <cstddef>
 
 

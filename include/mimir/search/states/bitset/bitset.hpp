@@ -4,6 +4,7 @@
 #include "interface.hpp"
 
 #include "../../../buffer/flatbuffers/state-bitset_generated.h"
+#include "../../../buffer/flatbuffers_utils.hpp"
 
 
 namespace mimir
