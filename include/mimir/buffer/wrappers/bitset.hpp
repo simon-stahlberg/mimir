@@ -22,7 +22,12 @@ private:
     std::vector<Block> data;
     bool default_bit_value = false;
 
-    void resize_to_fit(const Bitset& other);
+    void resize_to_fit(const Bitset& other) {
+        if (data.size() < other.data.size())
+        {
+            data.resize(other.data.size(), default_bit_value ? block_ones : block_zeroes);
+        }
+    }
 
     static constexpr std::size_t block_size = sizeof(Block) * 8;
     static constexpr std::size_t block_zeroes = 0;
@@ -31,29 +36,32 @@ private:
 public:
     Bitset() = default;
     // Initialize the bitset with a certain size
-    Bitset(std::size_t size);
+    Bitset(std::size_t size) : data(size / (sizeof(std::size_t) * 8) + 1, block_zeroes) {}
 
-    Bitset(std::size_t size, bool default_bit_value);
+    Bitset(std::size_t size, bool default_bit_value):
+        data(size / (sizeof(std::size_t) * 8) + 1, default_bit_value ? block_ones : block_zeroes),
+        default_bit_value(default_bit_value) { }
 
-    Bitset(const Bitset& other);
-
-    Bitset(Bitset&& other) noexcept;
-
-    Bitset& operator=(const Bitset& other);
-
-    Bitset& operator=(Bitset&& other) noexcept;
+    Bitset(const Bitset& other) = default;
+    Bitset& operator=(const Bitset& other) = default;
+    Bitset(Bitset&& other) noexcept = default;
+    Bitset& operator=(Bitset&& other) noexcept = default;
 
     // Set a bit at a specific position
-    void set(std::size_t position);
+    void set(std::size_t position) {
+        const std::size_t index = position / block_size;   // Find the index in the vector
+        const std::size_t offset = position % block_size;  // Find the offset within the std::size_t
 
-    // Set all bits
-    void set();
+        if (index >= data.size())
+        {
+            data.resize(index + 1, default_bit_value ? block_ones : block_zeroes);
+        }
+
+        data[index] |= (static_cast<std::size_t>(1) << offset);  // Set the bit at the offset
+    }
 
     // Unset a bit at a specific position
     void unset(std::size_t position);
-
-    // Unset all bits
-    void unset();
 
     // Get the value of a bit at a specific position
     bool get(std::size_t position) const;

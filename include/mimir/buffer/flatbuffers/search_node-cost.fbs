@@ -4,10 +4,10 @@ namespace mimir;
 
 // We want to keep this data close together
 struct CostSearchNodeDataFlat {
-  status:uint8;
-  g_value:int32;
   state:uint64;
   action:uint64;
+  g_value:int32;
+  status:uint8;
 }
 
 table CostSearchNodeFlat {
