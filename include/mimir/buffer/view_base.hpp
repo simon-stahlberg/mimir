@@ -40,10 +40,7 @@ public:
     [[nodiscard]] bool operator==(const Derived& other) const { return self().are_equal_impl(other); }
 
     /// @brief Hash the representative data.
-    [[nodiscard]] size_t hash() const {
-        assert(m_data);
-        return self().hash_impl();
-    }
+    [[nodiscard]] size_t hash() const { return self().hash_impl(); }
 
     [[nodiscard]] uint8_t* get_buffer_pointer() { return m_data; }
 

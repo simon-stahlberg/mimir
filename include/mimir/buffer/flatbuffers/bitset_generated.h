@@ -21,20 +21,20 @@ struct BitsetFlatBuilder;
 struct BitsetFlat FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef BitsetFlatBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_DEFAULT_VALUE = 4,
-    VT_SEGMENTS = 6
+    VT_DEFAULT_BIT_VALUE = 4,
+    VT_BLOCKS = 6
   };
-  bool default_value() const {
-    return GetField<uint8_t>(VT_DEFAULT_VALUE, 0) != 0;
+  bool default_bit_value() const {
+    return GetField<uint8_t>(VT_DEFAULT_BIT_VALUE, 0) != 0;
   }
-  const ::flatbuffers::Vector<uint64_t> *segments() const {
-    return GetPointer<const ::flatbuffers::Vector<uint64_t> *>(VT_SEGMENTS);
+  const ::flatbuffers::Vector<uint64_t> *blocks() const {
+    return GetPointer<const ::flatbuffers::Vector<uint64_t> *>(VT_BLOCKS);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint8_t>(verifier, VT_DEFAULT_VALUE, 1) &&
-           VerifyOffset(verifier, VT_SEGMENTS) &&
-           verifier.VerifyVector(segments()) &&
+           VerifyField<uint8_t>(verifier, VT_DEFAULT_BIT_VALUE, 1) &&
+           VerifyOffset(verifier, VT_BLOCKS) &&
+           verifier.VerifyVector(blocks()) &&
            verifier.EndTable();
   }
 };
@@ -43,11 +43,11 @@ struct BitsetFlatBuilder {
   typedef BitsetFlat Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_default_value(bool default_value) {
-    fbb_.AddElement<uint8_t>(BitsetFlat::VT_DEFAULT_VALUE, static_cast<uint8_t>(default_value), 0);
+  void add_default_bit_value(bool default_bit_value) {
+    fbb_.AddElement<uint8_t>(BitsetFlat::VT_DEFAULT_BIT_VALUE, static_cast<uint8_t>(default_bit_value), 0);
   }
-  void add_segments(::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> segments) {
-    fbb_.AddOffset(BitsetFlat::VT_SEGMENTS, segments);
+  void add_blocks(::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> blocks) {
+    fbb_.AddOffset(BitsetFlat::VT_BLOCKS, blocks);
   }
   explicit BitsetFlatBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -62,23 +62,23 @@ struct BitsetFlatBuilder {
 
 inline ::flatbuffers::Offset<BitsetFlat> CreateBitsetFlat(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    bool default_value = false,
-    ::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> segments = 0) {
+    bool default_bit_value = false,
+    ::flatbuffers::Offset<::flatbuffers::Vector<uint64_t>> blocks = 0) {
   BitsetFlatBuilder builder_(_fbb);
-  builder_.add_segments(segments);
-  builder_.add_default_value(default_value);
+  builder_.add_blocks(blocks);
+  builder_.add_default_bit_value(default_bit_value);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<BitsetFlat> CreateBitsetFlatDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    bool default_value = false,
-    const std::vector<uint64_t> *segments = nullptr) {
-  auto segments__ = segments ? _fbb.CreateVector<uint64_t>(*segments) : 0;
+    bool default_bit_value = false,
+    const std::vector<uint64_t> *blocks = nullptr) {
+  auto blocks__ = blocks ? _fbb.CreateVector<uint64_t>(*blocks) : 0;
   return mimir::CreateBitsetFlat(
       _fbb,
-      default_value,
-      segments__);
+      default_bit_value,
+      blocks__);
 }
 
 inline const mimir::BitsetFlat *GetBitsetFlat(const void *buf) {

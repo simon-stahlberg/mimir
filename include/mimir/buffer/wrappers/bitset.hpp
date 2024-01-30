@@ -8,11 +8,13 @@ namespace mimir
 {
 
 /**
- * A builder for a flatbuffer BitsetFlat with the following table structure
+ * A DynamicBitset
+ *
+ * The DynamicBitset compatible with the following table structure
  *
  *  table BitsetFlat {
- *    num_bits:uint32;
- *    segments:[uint64];
+ *    default_bit_value:uint32;
+ *    blocks:[uint64];
  *  }
 */
 template<typename Block = uint64_t>
@@ -75,14 +77,19 @@ public:
         m_data[index] &= ~(static_cast<Block>(1) << offset);  // Set the bit at the offset
     }
 
+    // Unset all bits
     void unset_all()
     {
-
+        for (auto& value : m_data) {
+            value = (m_default_bit_value) ? block_ones : block_zeroes;
+        }
     }
 
+    // Unset all bits for a given default_bit_value
     void unset_all(bool default_bit_value)
     {
-
+        m_default_bit_value = default_bit_value;
+        unset_all();
     }
 
     // Get the value of a bit at a specific position
@@ -266,17 +273,17 @@ public:
  *    segments:[uint64];
  *  }
 */
-class BitsetView
+class ConstBitsetView
 {
 private:
     const BitsetFlat* m_flat;
 public:
-    explicit BitsetView(const BitsetFlat* flat)
+    explicit ConstBitsetView(const BitsetFlat* flat)
         : m_flat(flat) { }
 
     // TODO: implement some bitset interface
 
-    bool operator==(const BitsetView& other) const {
+    bool operator==(const ConstBitsetView& other) const {
         // TODO: implement
         return false;
     }
@@ -287,18 +294,7 @@ public:
     }
 };
 
-class ConstBitsetView {
 
-};
-
-
-// Bitset1 is always a builder, Bitset2 is either Builder or View or ConstView
-template<typename Bitset1, typename Bitset2>
-class BitsetOperator {
-public:
-    static Bitset1& OrEquals(Bitset1& left, const Bitset2& right);
-    static Bitset1 Or(const Bitset1& left, const Bitset2& right);
-};
 
 }
 

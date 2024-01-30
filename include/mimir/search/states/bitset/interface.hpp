@@ -50,7 +50,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] BitsetView get_atoms_bitset() const { return self().get_atoms_bitset_impl(); }
+    [[nodiscard]] ConstBitsetView get_atoms_bitset() const { return self().get_atoms_bitset_impl(); }
 };
 
 

@@ -64,6 +64,7 @@ private:
     friend class IActionBuilder;
 
 public:
+    /// @brief Modify the bitsets, call finish, then copy the buffer to a container and use its returned view.
     [[nodiscard]] Bitset<uint64_t>& get_applicability_positive_precondition_bitset() { return m_pos_pre_bitset; }
     [[nodiscard]] Bitset<uint64_t>& get_applicability_negative_precondition_bitset() { return m_neg_pre_bitset; }
     [[nodiscard]] Bitset<uint64_t>& get_unconditional_positive_effect_bitset() { return m_pos_eff_bitset; }
@@ -85,7 +86,6 @@ class View<ActionDispatcher<P, BitsetStateTag>>
 private:
     const ActionBitsetFlat* m_flatbuffers_view;
 
-
     /* Implement ViewBase interface: */
     template<typename>
     friend class ViewBase;
@@ -103,10 +103,10 @@ public:
         : ViewBase<View<ActionDispatcher<P, BitsetStateTag>>>(data)
         , m_flatbuffers_view(data ? GetSizePrefixedActionBitsetFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
-    [[nodiscard]] BitsetView get_applicability_positive_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
-    [[nodiscard]] BitsetView get_applicability_negative_precondition_bitset() { return BitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
-    [[nodiscard]] BitsetView get_unconditional_positive_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
-    [[nodiscard]] BitsetView get_unconditional_negative_effect_bitset() { return BitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() { return ConstBitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() { return ConstBitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() { return ConstBitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() { return ConstBitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
 };
 
 
