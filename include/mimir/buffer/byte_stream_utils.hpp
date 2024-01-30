@@ -9,22 +9,22 @@ namespace mimir
 {
 
 template<typename T>
-T& read_value(char* data) {
+T& read_value(uint8_t* data) {
     return *reinterpret_cast<T*>(data);
 }
 
 template<typename T>
-const T& read_value(const char* data) {
+const T& read_value(const uint8_t* data) {
     return *reinterpret_cast<const T*>(data);
 }
 
 template<typename T>
-T* read_pointer(char* data) {
+T* read_pointer(uint8_t* data) {
     return reinterpret_cast<T*>(*reinterpret_cast<uintptr_t*>(data));
 }
 
 template<typename T>
-const T* read_pointer(const char* data) {
+const T* read_pointer(const uint8_t* data) {
     return reinterpret_cast<const T*>(*reinterpret_cast<const uintptr_t*>(data));
 }
 

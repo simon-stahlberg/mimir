@@ -3,8 +3,8 @@
 #define MIMIR_BUFFER_CONTAINERS_UNORDERED_SET_HPP_
 
 #include "../byte_stream_segmented.hpp"
-#include "../builder_base.hpp"
-#include "../view_base.hpp"
+#include "../builder_interface.hpp"
+#include "../view_interface.hpp"
 
 #include <unordered_set>
 

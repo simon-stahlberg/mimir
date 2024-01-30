@@ -45,7 +45,7 @@ private:
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] uint32_t get_size_impl() const { return read_value<flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
 
     /* Implement IStateBuilder interface */
@@ -70,29 +70,36 @@ private:
 */
 template<IsPlanningModeTag P>
 class View<StateDispatcher<BitsetStateTag, P>>
-    : public ViewBase<View<StateDispatcher<BitsetStateTag, P>>>
+    : public IView<View<StateDispatcher<BitsetStateTag, P>>>
     , public IStateView<View<StateDispatcher<BitsetStateTag, P>>>
     , public IBitsetStateView<View<StateDispatcher<BitsetStateTag, P>>>
 {
 private:
+    const uint8_t* m_data;
     const StateBitsetFlat* m_flatbuffers_view;
 
-    /* Implement ViewBase interface */
+    /* Implement IView interface */
     template<typename>
-    friend class ViewBase;
+    friend class IView;
 
     [[nodiscard]] bool are_equal_impl(const View& other) const {
-        assert(m_flatbuffers_view);
+        assert(m_data && m_flatbuffers_view);
         if (this != &other) {
             return this->get_atoms_bitset() == other.get_atoms_bitset();
         }
         return true;
     }
 
-    /// @brief Hash the representative data.
     [[nodiscard]] size_t hash_impl() const {
-        assert(m_flatbuffers_view);
+        assert(m_data && m_flatbuffers_view);
         return this->get_atoms_bitset().hash();
+    }
+
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_data; }
+
+    [[nodiscard]] uint32_t get_size_impl() const {
+        assert(m_data && m_flatbuffers_view);
+        return read_value<flatbuffers::uoffset_t>(m_data) + sizeof(flatbuffers::uoffset_t);
     }
 
 
@@ -101,7 +108,7 @@ private:
     friend class IStateView;
 
     [[nodiscard]] uint32_t get_id_impl() const {
-        assert(m_flatbuffers_view);
+        assert(m_data && m_flatbuffers_view);
         return m_flatbuffers_view->id();
     }
 
@@ -111,13 +118,13 @@ private:
     friend class IBitsetStateView;
 
     [[nodiscard]] ConstBitsetView get_atoms_bitset_impl() const {
-        assert(m_flatbuffers_view);
+        assert(m_data && m_flatbuffers_view);
         return ConstBitsetView(m_flatbuffers_view->atoms());
     }
 
 public:
     explicit View(uint8_t* data)
-        : ViewBase<View<StateDispatcher<BitsetStateTag, P>>>(data)
+        : m_data(data)
         , m_flatbuffers_view(data ? GetSizePrefixedStateBitsetFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 };
 

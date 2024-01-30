@@ -85,7 +85,7 @@ private:
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return *reinterpret_cast<const flatbuffers::uoffset_t*>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] uint32_t get_size_impl() const { return read_value<flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
 public:
     Builder() : m_parent_state(nullptr), m_creating_action(nullptr) { }
@@ -110,22 +110,30 @@ public:
 */
 template<IsPlanningModeTag P, IsStateTag S>
 class View<CostSearchNodeTag<P, S>>
-    : public ViewBase<View<CostSearchNodeTag<P, S>>>
+    : public IView<View<CostSearchNodeTag<P, S>>>
 {
 private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<P, S>>;
 
+    uint8_t* m_data;
     CostSearchNodeFlat* m_flatbuffers_view;
 
-    /* Implement ViewBase interface: */
+    /* Implement IView interface: */
     template<typename>
-    friend class ViewBase;
+    friend class IView;
+
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_data; }
+
+    [[nodiscard]] uint32_t get_size_impl() const {
+        assert(m_data && m_flatbuffers_view);
+        return read_value<flatbuffers::uoffset_t>(m_data) + sizeof(flatbuffers::uoffset_t);
+    }
 
 public:
     /// @brief Create a view on a SearchNode.
     explicit View(uint8_t* data)
-        : ViewBase<View<CostSearchNodeTag<P, S>>>(data)
+        : m_data(data)
         , m_flatbuffers_view(data ? GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
     void set_status(SearchNodeStatus status) {

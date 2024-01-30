@@ -2,9 +2,9 @@
 #ifndef MIMIR_BUFFER_CONTAINERS_VECTOR_HPP_
 #define MIMIR_BUFFER_CONTAINERS_VECTOR_HPP_
 
-#include "../builder_base.hpp"
+#include "../builder_interface.hpp"
 #include "../byte_stream_segmented.hpp"
-#include "../view_base.hpp"
+#include "../view_interface.hpp"
 
 #include <cassert>
 #include <vector>

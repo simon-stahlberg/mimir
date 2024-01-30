@@ -56,7 +56,7 @@ private:
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return read_value<const flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] uint32_t get_size_impl() const { return read_value<flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
 
     /* Implement IActionBuilder interface */
     template<typename>
@@ -79,15 +79,23 @@ public:
 */
 template<IsPlanningModeTag P>
 class View<ActionDispatcher<P, BitsetStateTag>>
-    : public ViewBase<View<ActionDispatcher<P, BitsetStateTag>>>
+    : public IView<View<ActionDispatcher<P, BitsetStateTag>>>
     , public IActionView<View<ActionDispatcher<P, BitsetStateTag>>>
 {
 private:
+    const uint8_t* m_data;
     const ActionBitsetFlat* m_flatbuffers_view;
 
-    /* Implement ViewBase interface: */
+    /* Implement IView interface: */
     template<typename>
-    friend class ViewBase;
+    friend class IView;
+
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_data; }
+
+    [[nodiscard]] uint32_t get_size_impl() const {
+        assert(m_data && m_flatbuffers_view);
+        return read_value<flatbuffers::uoffset_t>(m_data) + sizeof(flatbuffers::uoffset_t);
+    }
 
     /* Implement IActionView interface */
     template<typename>
@@ -99,7 +107,7 @@ private:
 public:
     /// @brief Create a view on a DefaultAction.
     explicit View(uint8_t* data)
-        : ViewBase<View<ActionDispatcher<P, BitsetStateTag>>>(data)
+        : m_data(data)
         , m_flatbuffers_view(data ? GetSizePrefixedActionBitsetFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
     [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() { return ConstBitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }

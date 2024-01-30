@@ -4,8 +4,8 @@
 #include "../config.hpp"
 #include "../type_traits.hpp"
 
-#include "../../buffer/builder_base.hpp"
-#include "../../buffer/view_base.hpp"
+#include "../../buffer/builder_interface.hpp"
+#include "../../buffer/view_interface.hpp"
 #include "../../buffer/wrappers/bitset.hpp"
 
 
@@ -95,7 +95,7 @@ template<IsStateDispatcher S>
 class Builder<S> : public IBuilderBase<Builder<S>>, public IStateBuilder<Builder<S>> {};
 
 template<IsStateDispatcher S>
-class View<S> : public ViewBase<View<S>>, public IStateView<View<S>> {};
+class View<S> : public IView<View<S>>, public IStateView<View<S>> {};
 
 
 }
