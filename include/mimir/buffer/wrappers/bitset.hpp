@@ -263,6 +263,21 @@ public:
         return true;
     }
 
+    size_t hash() const {
+        const auto default_block = m_default_bit_value ? block_ones : block_zeroes;
+        const auto seed = static_cast<uint32_t>(default_block);
+
+        // Find the last block that differs from the default block
+        auto last_relevant_index = static_cast<int64_t>(m_data.size()) - 1;
+        for (; (last_relevant_index >= 0) && (m_data[last_relevant_index] == default_block); --last_relevant_index) {}
+        const auto length = static_cast<std::size_t>(last_relevant_index + 1) * sizeof(std::size_t);
+
+        // Compute a hash value up to and including this block
+        int64_t hash[2];
+        MurmurHash3_x64_128(&m_data[0], length, seed, hash);
+        return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
+    }
+
     static constexpr std::size_t no_position = std::size_t(-1);
 
     template<typename T>
@@ -354,8 +369,27 @@ public:
     }
 };
 
+}
 
 
+namespace std
+{
+    // Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
+    template<typename Block>
+    struct hash<mimir::Bitset<Block>> {
+        std::size_t operator()(const mimir::Bitset<Block>& bitset) const
+        {
+            return bitset.hash();
+        }
+    };
+
+    template<typename Block>
+    struct hash<mimir::ConstBitsetView<Block>> {
+        std::size_t operator()(const mimir::ConstBitsetView<Block>& bitset) const
+        {
+            return bitset.hash();
+        }
+    };
 }
 
 #endif
