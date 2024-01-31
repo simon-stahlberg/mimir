@@ -110,10 +110,10 @@ public:
         : m_data(data)
         , m_flatbuffers_view(data ? GetSizePrefixedActionBitsetFlat(reinterpret_cast<void*>(data)) : nullptr) { }
 
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() { return ConstBitsetView(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() { return ConstBitsetView(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() { return ConstBitsetView(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() { return ConstBitsetView(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
+    [[nodiscard]] ConstBitsetView<uint64_t> get_applicability_positive_precondition_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
+    [[nodiscard]] ConstBitsetView<uint64_t> get_applicability_negative_precondition_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
+    [[nodiscard]] ConstBitsetView<uint64_t> get_unconditional_positive_effect_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
+    [[nodiscard]] ConstBitsetView<uint64_t> get_unconditional_negative_effect_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
 };
 
 

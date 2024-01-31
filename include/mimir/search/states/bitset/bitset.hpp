@@ -117,9 +117,9 @@ private:
     template<typename>
     friend class IBitsetStateView;
 
-    [[nodiscard]] ConstBitsetView get_atoms_bitset_impl() const {
+    [[nodiscard]] ConstBitsetView<uint64_t> get_atoms_bitset_impl() const {
         assert(m_data && m_flatbuffers_view);
-        return ConstBitsetView(m_flatbuffers_view->atoms());
+        return ConstBitsetView<uint64_t>(m_flatbuffers_view->atoms());
     }
 
 public:
