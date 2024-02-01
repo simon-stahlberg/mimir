@@ -34,8 +34,8 @@ template<typename Block = uint64_t>
 class Bitset
 {
 private:
+    bool m_default_bit_value;
     std::vector<Block> m_data;
-    bool m_default_bit_value = false;
 
     void resize_to_fit(const Bitset& other) {
         if (m_data.size() < other.m_data.size())
@@ -49,13 +49,15 @@ private:
     static constexpr Block block_ones = Block(-1);
 
 public:
-    Bitset() = default;
+    Bitset() : m_default_bit_value(false) {}
     // Initialize the bitset with a certain size
-    Bitset(std::size_t size) : m_data((size / (sizeof(Block) * 8)) + 1, block_zeroes) {}
+    Bitset(std::size_t size) 
+        : m_default_bit_value(false)
+        , m_data((size / (sizeof(Block) * 8)) + 1, block_zeroes) {}
 
-    Bitset(std::size_t size, bool default_bit_value):
-        m_data((size / (sizeof(Block) * 8)) + 1, m_default_bit_value ? block_ones : block_zeroes),
-        m_default_bit_value(default_bit_value) { }
+    Bitset(std::size_t size, bool default_bit_value)
+        : m_default_bit_value(default_bit_value)
+        , m_data((size / (sizeof(Block) * 8)) + 1, default_bit_value ? block_ones : block_zeroes) { }
 
     Bitset(const Bitset& other) = default;
     Bitset& operator=(const Bitset& other) = default;
@@ -231,8 +233,8 @@ public:
 
         for (std::size_t index = common_size; index < max_size; ++index)
         {
-            std::size_t this_value = index < m_data.size() ? m_data[index] : (m_default_bit_value ? block_ones : block_zeroes);
-            std::size_t other_value = index < other.m_data.size() ? other.m_data[index] : (other.m_default_bit_value ? block_ones : block_zeroes);
+            Block this_value = index < m_data.size() ? m_data[index] : (m_default_bit_value ? block_ones : block_zeroes);
+            Block other_value = index < other.m_data.size() ? other.m_data[index] : (other.m_default_bit_value ? block_ones : block_zeroes);
 
             if (this_value < other_value)
             {
@@ -259,8 +261,8 @@ public:
 
         for (std::size_t index = common_size; index < max_size; ++index)
         {
-            std::size_t this_value = index < m_data.size() ? m_data[index] : (m_default_bit_value ? block_ones : block_zeroes);
-            std::size_t other_value = index < other.m_data.size() ? other.m_data[index] : (other.m_default_bit_value ? block_ones : block_zeroes);
+            Block this_value = index < m_data.size() ? m_data[index] : (m_default_bit_value ? block_ones : block_zeroes);
+            Block other_value = index < other.m_data.size() ? other.m_data[index] : (other.m_default_bit_value ? block_ones : block_zeroes);
 
             if (this_value != other_value)
             {
@@ -338,8 +340,8 @@ public:
 
         for (std::size_t index = common_size; index < max_size; ++index)
         {
-            std::size_t this_value = index < data.size() ? data[index] : (default_bit_value ? block_ones : block_zeroes);
-            std::size_t other_value = index < other_data.size() ? other_data[index] : (other_default_bit_value ? block_ones : block_zeroes);
+            Block this_value = index < data.size() ? data[index] : (default_bit_value ? block_ones : block_zeroes);
+            Block other_value = index < other_data.size() ? other_data[index] : (other_default_bit_value ? block_ones : block_zeroes);
 
             if (this_value != other_value)
             {
