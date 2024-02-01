@@ -43,6 +43,23 @@ public:
     explicit ConstBitsetView(const BitsetFlat* flat)
         : m_flat(flat) { }
 
+    // Get the value of a bit at a specific position
+    bool get(std::size_t position) const {
+        const auto& data = get_data();
+        const std::size_t index = position / block_size;
+
+        if (index < data.size())
+        {
+            const std::size_t offset = position % block_size;
+            return (data[index] & (static_cast<Block>(1) << offset)) != 0;
+        }
+        else
+        {
+            return get_default_bit_value();
+        }
+
+    }
+
     bool operator==(const ConstBitsetView& other) const {
         const bool default_bit_value = get_default_bit_value();
         const auto& data = get_data();
@@ -192,18 +209,18 @@ public:
     // Get the value of a bit at a specific position
     bool get(std::size_t position) const {
         {
-        const std::size_t index = position / block_size;
+            const std::size_t index = position / block_size;
 
-        if (index < m_data.size())
-        {
-            const std::size_t offset = position % block_size;
-            return (m_data[index] & (static_cast<Block>(1) << offset)) != 0;
+            if (index < m_data.size())
+            {
+                const std::size_t offset = position % block_size;
+                return (m_data[index] & (static_cast<Block>(1) << offset)) != 0;
+            }
+            else
+            {
+                return m_default_bit_value;
+            }
         }
-        else
-        {
-            return m_default_bit_value;
-        }
-    }
     }
 
     // Find the next set bit, inclusive the given position
