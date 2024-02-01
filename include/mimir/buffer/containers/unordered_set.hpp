@@ -30,7 +30,6 @@ public:
     UnorderedSet& operator=(UnorderedSet&& other) = default;
 
     [[nodiscard]] View<T> insert(const Builder<T>& builder) {
-        // TODO (Dominik): implement
         const uint8_t* data = builder.get_buffer_pointer();
         size_t amount = builder.get_size();
         uint8_t* new_data = m_storage.write(data, amount);

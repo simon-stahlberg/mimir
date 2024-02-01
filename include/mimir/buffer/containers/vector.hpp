@@ -59,8 +59,8 @@ public:
     }
 };
 
-/// @brief AutomaticVector handle handles only equally sized objects but allows for resize.
-///        AUtomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
+/// @brief AutomaticVector handles only equally sized objects but allows for resize.
+///        AutomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
 /// @tparam T
 template<typename T>
 class AutomaticVector
