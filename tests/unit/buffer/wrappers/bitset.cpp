@@ -88,4 +88,28 @@ TEST(MimirTests, BufferWrapperBitsetOrTest) {
 }
 
 
+TEST(MimirTests, BufferWrapperBitsetAndTest) {
+    // Test operator|
+    // 1. Test with same default_bit_value=false
+    size_t num_bits_1 = 4;
+    auto bitset_1 = Bitset<uint64_t>(num_bits_1, false);
+    bitset_1.set(1);
+    bitset_1.set(3);
+
+    size_t num_bits_2 = 4;
+    auto bitset_2 = Bitset<uint64_t>(num_bits_2, false);
+    bitset_2.set(2);
+    bitset_2.set(3);
+
+    const auto bitset_r = bitset_1 & bitset_2;
+    EXPECT_EQ(bitset_r.get_data().size(), 1);
+    EXPECT_FALSE(bitset_r.get_default_bit_value());
+    EXPECT_FALSE(bitset_r.get(0));
+    EXPECT_FALSE(bitset_r.get(1));
+    EXPECT_FALSE(bitset_r.get(2));
+    EXPECT_TRUE(bitset_r.get(3));
+    EXPECT_FALSE(bitset_r.get(4));
+}
+
+
 }

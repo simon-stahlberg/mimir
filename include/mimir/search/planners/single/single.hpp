@@ -65,16 +65,6 @@ public:
         : m_algorithm(Algorithm<AlgorithmDispatcher<A>>(this->m_problem)) { }
 };
 
-
-/**
- * Type traits.
-*/
-template<IsAlgorithmTag A>
-struct TypeTraits<Planner<SingleTag<A>>>
-{
-    using Algorithm = A;
-};
-
 }
 
 #endif
