@@ -23,6 +23,11 @@ TEST(MimirTests, AlgorithmsMemoryPoolTest) {
     // pool size remains 2
     EXPECT_EQ(pool.get_size(), 2);
     EXPECT_EQ(pool.get_num_free(), 1);
+
+    // reuse element
+    auto object_1 = pool.get_or_allocate();
+    EXPECT_EQ(pool.get_size(), 2);
+    EXPECT_EQ(pool.get_num_free(), 0);
 }
 
 
