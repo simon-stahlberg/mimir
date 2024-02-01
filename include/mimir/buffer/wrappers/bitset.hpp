@@ -5,15 +5,18 @@
 
 #include "../../algorithms/murmurhash3.hpp"
 
+#include <cmath>
+
 
 namespace mimir
 {
 
-template<typename T, typename Block>
-concept HasBitsetMembers = requires(T t) {
-    { t.m_data } -> std::same_as<std::vector<Block>&>;
-    { t.m_default_bit_value } -> std::same_as<bool&>;
-};
+static std::size_t get_lsb_position(std::size_t n)
+{
+    assert(n != 0);
+    const std::size_t v = n & (-n);
+    return static_cast<std::size_t>(log2(v));
+}
 
 
 /**
@@ -51,7 +54,7 @@ public:
 
     Bitset(std::size_t size, bool default_bit_value):
         m_data(size / (sizeof(Block) * 8) + 1, m_default_bit_value ? block_ones : block_zeroes),
-        m_default_bit_value(m_default_bit_value) { }
+        m_default_bit_value(default_bit_value) { }
 
     Bitset(const Bitset& other) = default;
     Bitset& operator=(const Bitset& other) = default;
