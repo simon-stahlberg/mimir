@@ -51,10 +51,10 @@ private:
 public:
     Bitset() = default;
     // Initialize the bitset with a certain size
-    Bitset(std::size_t size) : m_data(size / (sizeof(Block) * 8) + 1, block_zeroes) {}
+    Bitset(std::size_t size) : m_data((size / (sizeof(Block) * 8)) + 1, block_zeroes) {}
 
     Bitset(std::size_t size, bool default_bit_value):
-        m_data(size / (sizeof(Block) * 8) + 1, m_default_bit_value ? block_ones : block_zeroes),
+        m_data((size / (sizeof(Block) * 8)) + 1, m_default_bit_value ? block_ones : block_zeroes),
         m_default_bit_value(default_bit_value) { }
 
     Bitset(const Bitset& other) = default;
@@ -152,6 +152,7 @@ public:
     {
         Bitset result = *this;
         result.resize_to_fit(other);
+        result.m_default_bit_value |= other.m_default_bit_value;
 
         for (std::size_t i = 0; i < other.m_data.size(); ++i)
         {
@@ -165,6 +166,7 @@ public:
     {
         Bitset result = *this;
         result.resize_to_fit(other);
+        result.m_default_bit_value &= other.m_default_bit_value;
 
         for (std::size_t i = 0; i < other.m_data.size(); ++i)
         {
@@ -190,6 +192,7 @@ public:
     Bitset& operator|=(const Bitset& other)
     {
         this->resize_to_fit(other);
+        m_default_bit_value |= other.m_default_bit_value;
 
         for (std::size_t i = 0; i < other.m_data.size(); ++i)
         {
@@ -202,6 +205,7 @@ public:
     Bitset& operator&=(const Bitset& other)
     {
         this->resize_to_fit(other);
+        m_default_bit_value &= other.m_default_bit_value;
 
         for (std::size_t i = 0; i < other.m_data.size(); ++i)
         {
