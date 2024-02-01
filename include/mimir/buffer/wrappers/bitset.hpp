@@ -20,6 +20,88 @@ static std::size_t get_lsb_position(Block n)
 }
 
 
+
+/**
+ * A view on a flatbuffer BitsetFlat with the following table structure
+ *
+ *  table BitsetFlat {
+ *    num_bits:uint32;
+ *    segments:[uint64];
+ *  }
+*/
+template<typename Block = uint64_t>
+class ConstBitsetView
+{
+private:
+    const BitsetFlat* m_flat;
+
+    static constexpr std::size_t block_size = sizeof(Block) * 8;
+    static constexpr Block block_zeroes = 0;
+    static constexpr Block block_ones = Block(-1);
+
+public:
+    explicit ConstBitsetView(const BitsetFlat* flat)
+        : m_flat(flat) { }
+
+    bool operator==(const ConstBitsetView& other) const {
+        const bool default_bit_value = get_default_bit_value();
+        const auto& data = get_data();
+        const bool other_default_bit_value = other.get_default_bit_value();
+        const auto& other_data = other.get_data();
+        std::size_t common_size = std::min(data.size(), other_data.size());
+
+        for (std::size_t index = 0; index < common_size; ++index)
+        {
+            if (data[index] != other_data[index])
+            {
+                return false;
+            }
+        }
+
+        std::size_t max_size = std::max(data.size(), other_data.size());
+
+        for (std::size_t index = common_size; index < max_size; ++index)
+        {
+            Block this_value = index < data.size() ? data[index] : (default_bit_value ? block_ones : block_zeroes);
+            Block other_value = index < other_data.size() ? other_data[index] : (other_default_bit_value ? block_ones : block_zeroes);
+
+            if (this_value != other_value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    size_t hash() const {
+        const bool default_bit_value = get_default_bit_value();
+        const auto& data = get_data();
+
+        const auto default_block = default_bit_value ? block_ones : block_zeroes;
+        const auto seed = static_cast<uint32_t>(default_block);
+
+        // Find the last block that differs from the default block
+        auto last_relevant_index = static_cast<int64_t>(data.size()) - 1;
+        for (; (last_relevant_index >= 0) && (data[last_relevant_index] == default_block); --last_relevant_index) {}
+        const auto length = static_cast<std::size_t>(last_relevant_index + 1) * sizeof(std::size_t);
+
+        // Compute a hash value up to and including this block
+        int64_t hash[2];
+        MurmurHash3_x64_128(data.data(), length, seed, hash);
+        return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
+    }
+
+    bool get_default_bit_value() const {
+        return m_flat->default_bit_value();
+    }
+
+    const flatbuffers::Vector<Block>& get_data() const {
+        return *m_flat->blocks();
+    }
+};
+
+
 /**
  * A DynamicBitset with automatic resize.
  *
@@ -164,6 +246,21 @@ public:
         return result;
     }
 
+    Bitset operator|(ConstBitsetView<Block> other) const
+    {
+        Bitset result = *this;
+        result.resize_to_fit(other);
+        result.m_default_bit_value |= other.get_default_bit_value();
+
+        const auto& other_data = other.get_data();
+        for (std::size_t i = 0; i < other_data.size(); ++i)
+        {
+            result.m_data[i] |= other_data[i];
+        }
+
+        return result;
+    }
+
     Bitset operator&(const Bitset& other) const
     {
         Bitset result = *this;
@@ -173,6 +270,21 @@ public:
         for (std::size_t i = 0; i < other.m_data.size(); ++i)
         {
             result.m_data[i] &= other.m_data[i];
+        }
+
+        return result;
+    }
+
+    Bitset operator&(ConstBitsetView<Block> other) const
+    {
+        Bitset result = *this;
+        result.resize_to_fit(other);
+        result.m_default_bit_value &= other.get_default_bit_value();
+
+        const auto& other_data = other.get_data();
+        for (std::size_t i = 0; i < other_data.size(); ++i)
+        {
+            result.m_data[i] &= other_data[i];
         }
 
         return result;
@@ -204,6 +316,20 @@ public:
         return *this;
     }
 
+    Bitset& operator|=(ConstBitsetView<Block> other)
+    {
+        this->resize_to_fit(other);
+        m_default_bit_value |= other.get_default_bit_value();
+
+        const auto& other_data = other.get_data();
+        for (std::size_t i = 0; i < other_data; ++i)
+        {
+            this->m_data[i] |= other_data[i];
+        }
+
+        return *this;
+    }
+
     Bitset& operator&=(const Bitset& other)
     {
         this->resize_to_fit(other);
@@ -212,6 +338,20 @@ public:
         for (std::size_t i = 0; i < other.m_data.size(); ++i)
         {
             this->m_data[i] &= other.m_data[i];
+        }
+
+        return *this;
+    }
+
+    Bitset& operator&=(ConstBitsetView<Block> other)
+    {
+        this->resize_to_fit(other);
+        m_default_bit_value &= other.get_default_bit_value();
+        
+        const auto& other_data = other.get_data();
+        for (std::size_t i = 0; i < other_data.size(); ++i)
+        {
+            this->m_data[i] &= other_data[i];
         }
 
         return *this;
@@ -298,86 +438,6 @@ public:
     const std::vector<Block>& get_data() const { return m_data; }
 };
 
-
-/**
- * A view on a flatbuffer BitsetFlat with the following table structure
- *
- *  table BitsetFlat {
- *    num_bits:uint32;
- *    segments:[uint64];
- *  }
-*/
-template<typename Block = uint64_t>
-class ConstBitsetView
-{
-private:
-    const BitsetFlat* m_flat;
-
-    static constexpr std::size_t block_size = sizeof(Block) * 8;
-    static constexpr Block block_zeroes = 0;
-    static constexpr Block block_ones = Block(-1);
-
-public:
-    explicit ConstBitsetView(const BitsetFlat* flat)
-        : m_flat(flat) { }
-
-    bool operator==(const ConstBitsetView& other) const {
-        const bool default_bit_value = get_default_bit_value();
-        const auto& data = get_data();
-        const bool other_default_bit_value = other.get_default_bit_value();
-        const auto& other_data = other.get_data();
-        std::size_t common_size = std::min(data.size(), other_data.size());
-
-        for (std::size_t index = 0; index < common_size; ++index)
-        {
-            if (data[index] != other_data[index])
-            {
-                return false;
-            }
-        }
-
-        std::size_t max_size = std::max(data.size(), other_data.size());
-
-        for (std::size_t index = common_size; index < max_size; ++index)
-        {
-            Block this_value = index < data.size() ? data[index] : (default_bit_value ? block_ones : block_zeroes);
-            Block other_value = index < other_data.size() ? other_data[index] : (other_default_bit_value ? block_ones : block_zeroes);
-
-            if (this_value != other_value)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    size_t hash() const {
-        const bool default_bit_value = get_default_bit_value();
-        const auto& data = get_data();
-
-        const auto default_block = default_bit_value ? block_ones : block_zeroes;
-        const auto seed = static_cast<uint32_t>(default_block);
-
-        // Find the last block that differs from the default block
-        auto last_relevant_index = static_cast<int64_t>(data.size()) - 1;
-        for (; (last_relevant_index >= 0) && (data[last_relevant_index] == default_block); --last_relevant_index) {}
-        const auto length = static_cast<std::size_t>(last_relevant_index + 1) * sizeof(std::size_t);
-
-        // Compute a hash value up to and including this block
-        int64_t hash[2];
-        MurmurHash3_x64_128(data.data(), length, seed, hash);
-        return static_cast<std::size_t>(hash[0] + 0x9e3779b9 + (hash[1] << 6) + (hash[1] >> 2));
-    }
-
-    bool get_default_bit_value() const {
-        return m_flat->default_bit_value();
-    }
-
-    const flatbuffers::Vector<Block>& get_data() const {
-        return *m_flat->blocks();
-    }
-};
 
 }
 
