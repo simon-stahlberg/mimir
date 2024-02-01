@@ -11,10 +11,11 @@
 namespace mimir
 {
 
-static std::size_t get_lsb_position(std::size_t n)
+template<typename Block>
+static std::size_t get_lsb_position(Block n)
 {
     assert(n != 0);
-    const std::size_t v = n & (-n);
+    const Block v = n & (-n);
     return static_cast<std::size_t>(log2(v));
 }
 
