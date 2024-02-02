@@ -132,13 +132,13 @@ namespace mimir::planners
 
             const auto applicable_actions = successor_generator_->get_applicable_actions(frame.state);
 
+            mimir::formalism::StateList batched_states;
+            std::vector<int32_t> batched_indices;
+
             for (const auto& action : applicable_actions)
             {
                 const auto succ_state = mimir::formalism::apply(action, frame.state);
                 auto& succ_index = state_indices[succ_state];  // Reference is used to update state_indices
-
-                mimir::formalism::StateList batched_states;
-                std::vector<int32_t> batched_indices;
 
                 if (succ_index == 0)
                 {
@@ -176,26 +176,27 @@ namespace mimir::planners
                         }
                     }
                 }
+            }
 
-                const auto heuristic_values = heuristic_->evaluate(batched_states);
+            const auto heuristic_values = heuristic_->evaluate(batched_states);
 
-                for (std::size_t batch_index = 0; batch_index < batched_states.size(); ++batch_index)
+            for (std::size_t batch_index = 0; batch_index < batched_states.size(); ++batch_index)
+            {
+                auto succ_index = batched_indices[batch_index];
+                auto& succ_frame = frame_list[succ_index];
+
+                const auto succ_h_value = heuristic_values[batch_index];
+                const auto succ_f_value = succ_frame.g_value + succ_h_value;
+                const auto succ_dead_end = HeuristicBase::is_dead_end(succ_h_value);
+
+                succ_frame.h_value = succ_h_value;
+                succ_frame.closed = succ_dead_end;
+                ++evaluated_;
+
+                if (!succ_dead_end)
                 {
-                    auto& succ_frame = frame_list[succ_index];
-                    const auto succ_index = batched_indices[batch_index];
-                    const auto succ_h_value = heuristic_values[batch_index];
-                    const auto succ_f_value = succ_frame.g_value + succ_h_value;
-                    const auto succ_dead_end = HeuristicBase::is_dead_end(succ_h_value);
-
-                    succ_frame.h_value = succ_h_value;
-                    succ_frame.closed = succ_dead_end;
-                    ++evaluated_;
-
-                    if (!succ_dead_end)
-                    {
-                        open_list_->insert(succ_index, succ_f_value);
-                        ++generated_;
-                    }
+                    open_list_->insert(succ_index, succ_f_value);
+                    ++generated_;
                 }
             }
         }
