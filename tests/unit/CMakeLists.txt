@@ -37,3 +37,4 @@ target_link_libraries(${TEST_NAME}
         GTest::Main)
 
 add_test(domain_gtests ${TEST_NAME})
+
