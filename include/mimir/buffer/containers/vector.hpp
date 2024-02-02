@@ -12,8 +12,13 @@
 
 namespace mimir {
 
-/// @brief Vector handle different sized objects but only allows push_back and access, no resize.
-/// @tparam T
+/**
+ * Vector can handle different sized objects
+ * but does not support resize since the exact 
+ * amount of bytes needed is not known in advance.
+ * 
+ * We use it to store ground actions
+ */
 template<typename T>
 class Vector
 {
@@ -59,9 +64,12 @@ public:
     }
 };
 
-/// @brief AutomaticVector handles only equally sized objects but allows for resize.
-///        AutomaticVector is sometimes more convenient than Vector, e.g., SearchNodes.
-/// @tparam T
+/**
+ * AutomaticVector can handle only equally sized objects
+ * because it is meant to be resizeable.
+ * 
+ * We use it to store SearchNodes.
+ */
 template<typename T>
 class AutomaticVector
 {

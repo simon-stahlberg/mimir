@@ -85,6 +85,7 @@ find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_
 
 find_package(flatbuffers COMPONENTS flatbuffers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
+
 ##############################################################
 # Add library and executable targets
 ##############################################################

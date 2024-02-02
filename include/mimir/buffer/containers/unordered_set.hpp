@@ -11,6 +11,11 @@
 
 namespace mimir {
 
+/**
+ * UnorderedSet behaves like std::unordered_set
+ * 
+ * We use it for states.
+*/
 template<typename T>
 class UnorderedSet
 {
