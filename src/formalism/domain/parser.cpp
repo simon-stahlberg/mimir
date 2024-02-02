@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_COMMON_PRINTER_HPP_
-#define MIMIR_FORMALISM_COMMON_PRINTER_HPP_
+#include <mimir/formalism/domain/parser.hpp>
 
 
-namespace mimir {
-
-struct FormattingOptions {
-    // The indentation in the current level.
-    int indent = 0;
-    // The amount of indentation added per nesting
-    int add_indent = 0;
-};
-
+namespace mimir 
+{
+    Domain parse(loki::pddl::Domain domain, PDDLFactories& factories) {
+        // TODO: implement
+        return nullptr;
+    }
 }
-
-#endif

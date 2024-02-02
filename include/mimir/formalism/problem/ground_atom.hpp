@@ -38,12 +38,12 @@ namespace mimir
     class GroundAtomImpl : public loki::Base<GroundAtomImpl> 
     {
     private:
-        loki::pddl::GroundAtom external_;
-
         Predicate m_predicate;
         ObjectList m_objects;
 
-        GroundAtomImpl(int identifier, loki::pddl::GroundAtom external, Predicate predicate, ObjectList objects);
+        // Below: add additional members if needed and initialize them in the constructor
+
+        GroundAtomImpl(int identifier, Predicate predicate, ObjectList objects);
 
         // Give access to the constructor.
         template<typename HolderType, ElementsPerSegment N>

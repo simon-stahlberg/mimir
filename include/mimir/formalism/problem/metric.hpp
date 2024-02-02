@@ -37,12 +37,12 @@ namespace mimir
     class OptimizationMetricImpl : public loki::Base<OptimizationMetricImpl> 
     {
     private:
-        loki::pddl::OptimizationMetric external_;
-
         loki::pddl::OptimizationMetricEnum m_optimization_metric;
         FunctionExpression m_function_expression;
 
-        OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetric external, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
+        // Below: add additional members if needed and initialize them in the constructor
+
+        OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
 
         // Give access to the constructor.
         template<typename HolderType, ElementsPerSegment N>

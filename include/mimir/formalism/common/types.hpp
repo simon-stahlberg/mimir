@@ -20,100 +20,90 @@
 
 #include <loki/common/pddl/persistent_factory.hpp>
 
+#include "../domain/action.hpp"
+#include "../domain/atom.hpp"
+#include "../domain/conditions.hpp"
 #include "../domain/domain.hpp"
+#include "../domain/effects.hpp"
+#include "../domain/function_expressions.hpp"
+#include "../domain/function_skeleton.hpp"
+#include "../domain/function.hpp"
+#include "../domain/literal.hpp"
+#include "../domain/object.hpp"
+#include "../domain/parameter.hpp"
+#include "../domain/predicate.hpp"
+#include "../domain/requirements.hpp"
+#include "../domain/term.hpp"
+#include "../domain/type.hpp"
+#include "../domain/variable.hpp"
+#include "../problem/ground_atom.hpp"
+#include "../problem/ground_literal.hpp"
 #include "../problem/problem.hpp"
+#include "../problem/metric.hpp"
+#include "../problem/numeric_fluent.hpp"
 
 
-namespace loki {
-// The segmented sizes are chosen sufficiently large to avoid
-// to avoid allocations and for continuous storage.
-// The values are just educated guesses based on the knowledge
-// that cache line size is 64 Bytes.
-// using RequirementFactory = PersistentFactory<pddl::RequirementsImpl, 100>;
-// using TypeFactory = PersistentFactory<pddl::TypeImpl, 1000>;
-// using VariableFactory = PersistentFactory<pddl::VariableImpl, 1000>;
-// using TermFactory = PersistentFactory<pddl::TermImpl, 1000>;
-// using ObjectFactory = PersistentFactory<pddl::ObjectImpl, 1000>;
-// using AtomFactory = PersistentFactory<pddl::AtomImpl, 1000>;
-// using LiteralFactory = PersistentFactory<pddl::LiteralImpl, 1000>;
-// using ParameterFactory = PersistentFactory<pddl::ParameterImpl, 1000>;
-// using PredicateFactory = PersistentFactory<pddl::PredicateImpl, 1000>;
-// using FunctionExpressionFactory = PersistentFactory<pddl::FunctionExpressionImpl, 1000>;
-// using FunctionFactory = PersistentFactory<pddl::FunctionImpl, 1000>;
-// using FunctionSkeletonFactory = PersistentFactory<pddl::FunctionSkeletonImpl, 1000>;
-// using ConditionFactory = PersistentFactory<pddl::ConditionImpl, 1000>;
-// using EffectFactory = PersistentFactory<pddl::EffectImpl, 1000>;
-// using ActionFactory = PersistentFactory<pddl::ActionImpl, 100>;
-// using DerivedPredicateFactory = PersistentFactory<pddl::DerivedPredicateImpl, 100>;
-// using OptimizationMetricFactory = PersistentFactory<pddl::OptimizationMetricImpl, 100>;
-// using NumericFluentFactory = PersistentFactory<pddl::NumericFluentImpl, 1000>;
-// using DomainFactory = PersistentFactory<pddl::DomainImpl, 1>;
-// using ProblemFactory = PersistentFactory<pddl::ProblemImpl, 100>;
+namespace mimir 
+{
+    // The segmented sizes are chosen sufficiently large to avoid
+    // to avoid allocations and for continuous storage.
+    // The values are just educated guesses based on the knowledge
+    // that cache line size is 64 Bytes.
+    using RequirementFactory =        loki::PersistentFactory<RequirementsImpl, 100>;
+    using TypeFactory =               loki::PersistentFactory<TypeImpl, 1000>;
+    using VariableFactory =           loki::PersistentFactory<VariableImpl, 1000>;
+    using TermFactory =               loki::PersistentFactory<TermImpl, 1000>;
+    using ObjectFactory =             loki::PersistentFactory<ObjectImpl, 1000>;
+    using AtomFactory =               loki::PersistentFactory<AtomImpl, 1000>;
+    using GroundAtomFactory =         loki::PersistentFactory<GroundAtomImpl, 1000>;
+    using LiteralFactory =            loki::PersistentFactory<LiteralImpl, 1000>;
+    using GroundLiteralFactory =      loki::PersistentFactory<GroundLiteralImpl, 1000>;
+    using ParameterFactory =          loki::PersistentFactory<ParameterImpl, 1000>;
+    using PredicateFactory =          loki::PersistentFactory<PredicateImpl, 1000>;
+    using FunctionExpressionFactory = loki::PersistentFactory<FunctionExpressionImpl, 1000>;
+    using FunctionFactory =           loki::PersistentFactory<FunctionImpl, 1000>;
+    using FunctionSkeletonFactory =   loki::PersistentFactory<FunctionSkeletonImpl, 1000>;
+    using ConditionFactory =          loki::PersistentFactory<ConditionImpl, 1000>;
+    using EffectFactory =             loki::PersistentFactory<EffectImpl, 1000>;
+    using ActionFactory =             loki::PersistentFactory<ActionImpl, 100>;
+    using OptimizationMetricFactory = loki::PersistentFactory<OptimizationMetricImpl, 100>;
+    using NumericFluentFactory =      loki::PersistentFactory<NumericFluentImpl, 1000>;
+    using DomainFactory =             loki::PersistentFactory<DomainImpl, 1>;
+    using ProblemFactory =            loki::PersistentFactory<ProblemImpl, 100>;
 
 
-/*
-/// @brief Collection of factories for the unique creation of PDDL objects.
-struct CollectionOfPDDLFactories {
-    RequirementFactory requirements;
-    TypeFactory types;
-    VariableFactory variables;
-    TermFactory terms;
-    ObjectFactory objects;
-    AtomFactory domain_atoms;
-    AtomFactory problem_atoms;  // ground atoms
-    LiteralFactory domain_literals;
-    LiteralFactory problem_literals;  // ground literals
-    ParameterFactory parameters;
-    PredicateFactory predicates;
-    FunctionExpressionFactory function_expressions;
-    FunctionFactory functions;
-    FunctionSkeletonFactory function_skeletons;
-    ConditionFactory conditions;
-    EffectFactory effects;
-    ActionFactory actions;
-    DerivedPredicateFactory derived_predicates;
-    OptimizationMetricFactory optimization_metrics;
-    NumericFluentFactory numeric_fluents;
-    DomainFactory domains;
-    ProblemFactory problems;
+    /// @brief Collection of factories for the unique creation of PDDL objects.
+    struct PDDLFactories {
+        RequirementFactory requirements;
+        TypeFactory types;
+        VariableFactory variables;
+        TermFactory terms;
+        ObjectFactory objects;
+        AtomFactory atoms;
+        GroundAtomFactory ground_atoms;
+        LiteralFactory literals;
+        GroundLiteralFactory ground_literals;
+        ParameterFactory parameters;
+        PredicateFactory predicates;
+        FunctionExpressionFactory function_expressions;
+        FunctionFactory functions;
+        FunctionSkeletonFactory function_skeletons;
+        ConditionFactory conditions;
+        EffectFactory effects;
+        ActionFactory actions;
+        OptimizationMetricFactory optimization_metrics;
+        NumericFluentFactory numeric_fluents;
+        DomainFactory domains;
+        ProblemFactory problems;
 
-    CollectionOfPDDLFactories() = default;
+        PDDLFactories() = default;
 
-    // delete copy and move to avoid dangling references.
-    CollectionOfPDDLFactories(const CollectionOfPDDLFactories& other) = delete;
-    CollectionOfPDDLFactories& operator=(const CollectionOfPDDLFactories& other) = delete;
-    CollectionOfPDDLFactories(CollectionOfPDDLFactories&& other) = delete;
-    CollectionOfPDDLFactories& operator=(CollectionOfPDDLFactories&& other) = delete;
-};
+        // delete copy and move to avoid dangling references.
+        PDDLFactories(const PDDLFactories& other) = delete;
+        PDDLFactories& operator=(const PDDLFactories& other) = delete;
+        PDDLFactories(PDDLFactories&& other) = delete;
+        PDDLFactories& operator=(PDDLFactories&& other) = delete;
+    };
+} 
 
-/// @brief Composition of factories used for parsing the domain.
-///        Allows to obtain problem specific indexing schemes
-///        by using problem specific factories.
-///        We currently use problem specific factories for atoms and literals
-struct CompositeOfPDDLFactories {
-    RequirementFactory& requirements;
-    TypeFactory& types;
-    VariableFactory& variables;
-    TermFactory& terms;
-    ObjectFactory& objects;
-    AtomFactory& atoms;
-    LiteralFactory& literals;
-    ParameterFactory& parameters;
-    PredicateFactory& predicates;
-    FunctionExpressionFactory& function_expressions;
-    FunctionFactory& functions;
-    FunctionSkeletonFactory& function_skeletons;
-    ConditionFactory& conditions;
-    EffectFactory& effects;
-    ActionFactory& actions;
-    DerivedPredicateFactory& derived_predicates;
-    OptimizationMetricFactory& optimization_metrics;
-    NumericFluentFactory& numeric_fluents;
-    DomainFactory& domains;
-    ProblemFactory& problems;
-};
-*/
-
-}  // namespace mimir
-
-#endif  // MIMIR_COMMON_TYPES_HPP_
+#endif 

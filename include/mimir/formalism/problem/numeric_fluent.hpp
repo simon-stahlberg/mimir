@@ -37,16 +37,16 @@ namespace mimir
     class NumericFluentImpl : public loki::Base<NumericFluentImpl> 
     {
     private:
-        loki::pddl::NumericFluent external_;
-
         Function m_function;
         double m_number;
+
+        // Below: add additional members if needed and initialize them in the constructor
+
+        NumericFluentImpl(int identifier, Function function, double number);
 
         // Give access to the constructor.
         template<typename HolderType, ElementsPerSegment N>
         friend class loki::PersistentFactory;
-
-        NumericFluentImpl(int identifier, loki::pddl::NumericFluent external, Function function, double number);
 
         /// @brief Test for semantic equivalence
         bool is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const;

@@ -37,8 +37,6 @@ namespace mimir
 {
     class ProblemImpl : public loki::Base<ProblemImpl> {
     private:
-        loki::pddl::Problem external_;
-
         Domain m_domain;
         std::string m_name;
         Requirements m_requirements;
@@ -48,7 +46,9 @@ namespace mimir
         Condition m_goal_condition;
         std::optional<OptimizationMetric> m_optimization_metric;
 
-        ProblemImpl(int identifier, loki::pddl::Problem external, Domain domain, std::string name, Requirements requirements, ObjectList objects, GroundLiteralList initial_literals, NumericFluentList numeric_fluents, Condition goal_condition, std::optional<OptimizationMetric> optimization_metric);
+        // Below: add additional members if needed and initialize them in the constructor
+
+        ProblemImpl(int identifier, Domain domain, std::string name, Requirements requirements, ObjectList objects, GroundLiteralList initial_literals, NumericFluentList numeric_fluents, Condition goal_condition, std::optional<OptimizationMetric> optimization_metric);
 
         // Give access to the constructor.
         template<typename HolderType, ElementsPerSegment N>

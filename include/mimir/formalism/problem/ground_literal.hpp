@@ -37,12 +37,12 @@ namespace mimir
     class GroundLiteralImpl : public loki::Base<GroundLiteralImpl> 
     {
     private:
-        loki::pddl::GroundAtom external_;
-
         bool m_is_negated;
         GroundAtom m_atom;
 
-        GroundLiteralImpl(int identifier, loki::pddl::GroundAtom external, bool is_negated, GroundAtom atom);
+        // Below: add additional members if needed and initialize them in the constructor
+
+        GroundLiteralImpl(int identifier, bool is_negated, GroundAtom atom);
 
         // Give access to the constructor.
         template<typename HolderType, ElementsPerSegment N>
