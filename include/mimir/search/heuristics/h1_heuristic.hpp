@@ -23,7 +23,7 @@ namespace mimir::planners
         std::vector<int32_t> goal_;
         mutable std::vector<double> table_;
 
-        double evaluate(const std::vector<int32_t>& ranks) const;
+        double eval(const std::vector<int32_t>& ranks) const;
         void update(int32_t rank, double value, bool& changed) const;
         void fill_tables(const mimir::formalism::State& state) const;
 

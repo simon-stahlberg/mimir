@@ -115,7 +115,7 @@ namespace mimir::planners
         }
     }
 
-    double H1Heuristic::evaluate(const std::vector<int32_t>& ranks) const
+    double H1Heuristic::eval(const std::vector<int32_t>& ranks) const
     {
         double value = 0;
 
@@ -169,7 +169,7 @@ namespace mimir::planners
 
             for (const auto& [precondition, add_effect, delete_effect_complement, cost] : actions_)
             {
-                const auto c1 = evaluate(precondition);
+                const auto c1 = eval(precondition);
 
                 if (is_dead_end(c1))
                 {
@@ -192,7 +192,7 @@ namespace mimir::planners
         }
 
         fill_tables(state);
-        return evaluate(goal_);
+        return eval(goal_);
     }
 
     std::shared_ptr<H1Heuristic> create_h1_heuristic(const mimir::formalism::ProblemDescription& problem,

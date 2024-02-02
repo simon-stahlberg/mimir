@@ -122,7 +122,7 @@ namespace mimir::planners
         }
     }
 
-    double H2Heuristic::evaluate(const std::vector<int32_t>& ranks) const
+    double H2Heuristic::eval(const std::vector<int32_t>& ranks) const
     {
         double v = 0;
 
@@ -149,7 +149,7 @@ namespace mimir::planners
         return v;
     }
 
-    double H2Heuristic::evaluate(const std::vector<int32_t>& ranks, int32_t rank) const
+    double H2Heuristic::eval(const std::vector<int32_t>& ranks, int32_t rank) const
     {
         double v = 0;
 
@@ -238,7 +238,7 @@ namespace mimir::planners
             for (std::size_t action_index = 0; action_index < actions_.size(); ++action_index)
             {
                 const auto& [precondition, add_effect, delete_effect_complement, cost] = actions_[action_index];
-                const auto cost1 = evaluate(precondition);
+                const auto cost1 = eval(precondition);
 
                 if (is_dead_end(cost1))
                 {
@@ -262,7 +262,7 @@ namespace mimir::planners
 
                     for (const auto rank2 : delete_effect_complement)
                     {
-                        const auto cost2 = std::max(cost1, evaluate(precondition, rank2));
+                        const auto cost2 = std::max(cost1, eval(precondition, rank2));
 
                         if (!is_dead_end(cost2))
                         {
@@ -282,7 +282,7 @@ namespace mimir::planners
         }
 
         fill_tables(state);
-        return evaluate(goal_);
+        return eval(goal_);
     }
 
     std::shared_ptr<H2Heuristic> create_h2_heuristic(const mimir::formalism::ProblemDescription& problem,
