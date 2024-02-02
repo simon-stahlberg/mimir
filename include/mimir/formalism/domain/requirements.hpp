@@ -20,8 +20,6 @@
 
 #include "declarations.hpp"
 
-#include "../../common/mixins.hpp"
-
 #include <loki/domain/pddl/requirements.hpp>
 
 #include <string>
@@ -29,61 +27,57 @@
 #include <unordered_map>
 
 
-namespace loki {
-template<typename HolderType, ElementsPerSegment N>
-class PersistentFactory;
-}
-
-
-namespace mimir {
-
-class RequirementsImpl : public loki::Base<RequirementsImpl> {
-private:
-    loki::pddl::Requirements external_;
-
-    loki::pddl::RequirementEnumSet m_requirements;
-
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
-
-    RequirementsImpl(int identifier, loki::pddl::Requirements external, loki::pddl::RequirementEnumSet requirements);
-
-    // Give access to the constructor.
+namespace loki 
+{
     template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<RequirementsImpl>;
-
-public:
-    bool test(loki::pddl::RequirementEnum requirement) const;
-
-    const loki::pddl::RequirementEnumSet& get_requirements() const;
-};
-
+    class PersistentFactory;
 }
 
 
-namespace std {
+namespace mimir 
+{
+    class RequirementsImpl : public loki::Base<RequirementsImpl> 
+    {
+    private:
+        loki::pddl::RequirementEnumSet m_requirements;
+
+        // Below: add additional members if needed and initialize them in the constructor
+
+        RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements);
+
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
+
+        /// @brief Test for semantic equivalence
+        bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+        // Give access to the private interface implementations.
+        friend class loki::Base<RequirementsImpl>;
+
+    public:
+        bool test(loki::pddl::RequirementEnum requirement) const;
+
+        const loki::pddl::RequirementEnumSet& get_requirements() const;
+    };
+}
+
+
+namespace std 
+{
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<loki::pddl::Requirements>
+    struct less<mimir::Requirements>
     {
-        bool operator()(const loki::pddl::Requirements& left_requirements, const loki::pddl::Requirements& right_requirements) const;
+        bool operator()(const mimir::Requirements& left_requirements, const mimir::Requirements& right_requirements) const;
     };
 
     template<>
-    struct hash<loki::pddl::RequirementsImpl>
+    struct hash<mimir::RequirementsImpl>
     {
-        std::size_t operator()(const loki::pddl::RequirementsImpl& requirements) const;
+        std::size_t operator()(const mimir::RequirementsImpl& requirements) const;
     };
 }
 

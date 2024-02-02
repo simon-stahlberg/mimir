@@ -20,67 +20,62 @@
 
 #include "declarations.hpp"
 
-#include "../../common/mixins.hpp"
-
 #include <loki/domain/pddl/variable.hpp>
 
 #include <string>
 
 
-namespace loki {
-template<typename HolderType, ElementsPerSegment N>
-class PersistentFactory;
+namespace loki 
+{
+    template<typename HolderType, ElementsPerSegment N>
+    class PersistentFactory;
 }
 
 
-namespace mimir {
-class VariableImpl : public loki::Base<VariableImpl> {
-private:
-    loki::pddl::Variable external_;
+namespace mimir 
+{
+    class VariableImpl : public loki::Base<VariableImpl> 
+    {
+    private:
+        std::string m_name;
 
-    std::string m_name;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        VariableImpl(int identifier, std::string name);
 
-    VariableImpl(int identifier, loki::pddl::Variable external, std::string name);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        /// @brief Test for semantic equivalence
+        bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<VariableImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<VariableImpl>;
-
-public:
-    const std::string& get_name() const;
-};
-
-}  // namespace mimir
+    public:
+        const std::string& get_name() const;
+    };
+} 
 
 
-namespace std {
+namespace std 
+{
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<loki::pddl::Variable>
+    struct less<mimir::Variable>
     {
-        bool operator()(const loki::pddl::Variable& left_variable, const loki::pddl::Variable& right_variable) const;
+        bool operator()(const mimir::Variable& left_variable, const mimir::Variable& right_variable) const;
     };
 
     template<>
-    struct hash<loki::pddl::VariableImpl>
+    struct hash<mimir::VariableImpl>
     {
-        std::size_t operator()(const loki::pddl::VariableImpl& variable) const;
+        std::size_t operator()(const mimir::VariableImpl& variable) const;
     };
-}  // namespace std
+} 
 
 
-#endif  // MIMIR_FORMALISM_DOMAIN_VARIABLE_HPP_
+#endif 

@@ -21,294 +21,258 @@
 
 #include "declarations.hpp"
 
-#include "../../common/mixins.hpp"
-
 #include <loki/domain/pddl/conditions.hpp>
 
 #include <string>
 
 
-namespace loki {
-template<typename HolderType, ElementsPerSegment N>
-class PersistentFactory;
+namespace loki 
+{
+    template<typename HolderType, ElementsPerSegment N>
+    class PersistentFactory;
 }
 
 
-namespace mimir {
+namespace mimir 
+{
+    /* Literal */
+    class ConditionLiteralImpl : public loki::Base<ConditionLiteralImpl> 
+    {
+    private:
+        Literal m_literal;
 
-/* Literal */
-class ConditionLiteralImpl : public loki::Base<ConditionLiteralImpl> {
-private:
-    loki::pddl::Condition external_;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    Literal m_literal;
+        ConditionLiteralImpl(int identifier, Literal literal);
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    ConditionLiteralImpl(int identifier, loki::pddl::Condition external, Literal literal);
+        bool is_structurally_equivalent_to_impl(const ConditionLiteralImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        // Give access to the private interface implementations.
+        friend class Base<ConditionLiteralImpl>;
 
-    bool is_structurally_equivalent_to_impl(const ConditionLiteralImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class Base<ConditionLiteralImpl>;
-
-public:
-    const Literal& get_literal() const;
-};
+    public:
+        const Literal& get_literal() const;
+    };
 
 
-/* And */
-class ConditionAndImpl : public loki::Base<ConditionAndImpl> {
-private:
-    loki::pddl::Condition external_;
+    /* And */
+    class ConditionAndImpl : public loki::Base<ConditionAndImpl> 
+    {
+    private:
+        ConditionList m_conditions;
 
-    ConditionList m_conditions;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        ConditionAndImpl(int identifier, ConditionList conditions);
 
-    ConditionAndImpl(int identifier, loki::pddl::Condition external, ConditionList conditions);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const ConditionAndImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const ConditionAndImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<ConditionAndImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<ConditionAndImpl>;
-
-public:
-    const ConditionList& get_conditions() const;
-};
+    public:
+        const ConditionList& get_conditions() const;
+    };
 
 
-/* Or */
-class ConditionOrImpl : public loki::Base<ConditionOrImpl> {
-private:
-    loki::pddl::Condition external_;
+    /* Or */
+    class ConditionOrImpl : public loki::Base<ConditionOrImpl> 
+    {
+    private:
+        ConditionList m_conditions;
 
-    ConditionList m_conditions;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        ConditionOrImpl(int identifier, ConditionList conditions);
 
-    ConditionOrImpl(int identifier, loki::pddl::Condition external, ConditionList conditions);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const ConditionOrImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const ConditionOrImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<ConditionOrImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<ConditionOrImpl>;
-
-public:
-    const ConditionList& get_conditions() const;
-};
+    public:
+        const ConditionList& get_conditions() const;
+    };
 
 
-/* Not */
-class ConditionNotImpl : public loki::Base<ConditionNotImpl> {
-private:
-    loki::pddl::Condition external_;
+    /* Not */
+    class ConditionNotImpl : public loki::Base<ConditionNotImpl> 
+    {
+    private:
+        Condition m_condition;
 
-    Condition m_condition;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        ConditionNotImpl(int identifier, Condition condition);
 
-    ConditionNotImpl(int identifier, loki::pddl::Condition external, Condition condition);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const ConditionNotImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const ConditionNotImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<ConditionNotImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<ConditionNotImpl>;
-
-public:
-    const Condition& get_condition() const;
-};
+    public:
+        const Condition& get_condition() const;
+    };
 
 
-/* Imply */
-class ConditionImplyImpl : public loki::Base<ConditionNotImpl> {
-private:
-    loki::pddl::Condition external_;
+    /* Imply */
+    class ConditionImplyImpl : public loki::Base<ConditionNotImpl> 
+    {
+    private:
+        Condition m_condition_left;
+        Condition m_condition_right;
 
-    Condition m_condition_left;
-    Condition m_condition_right;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        ConditionImplyImpl(int identifier, Condition condition_left, Condition condition_right);
 
-    ConditionImplyImpl(int identifier, loki::pddl::Condition external, Condition condition_left, Condition condition_right);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const ConditionImplyImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const ConditionImplyImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<ConditionImplyImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<ConditionImplyImpl>;
-
-public:
-    const Condition& get_condition_left() const;
-    const Condition& get_condition_right() const;
-};
+    public:
+        const Condition& get_condition_left() const;
+        const Condition& get_condition_right() const;
+    };
 
 
-/* Exists */
-class ConditionExistsImpl : public loki::Base<ConditionExistsImpl> {
-private:
-    loki::pddl::Condition external_;
+    /* Exists */
+    class ConditionExistsImpl : public loki::Base<ConditionExistsImpl> 
+    {
+    private:
+        ParameterList m_parameters;
+        Condition m_condition;
 
-    ParameterList m_parameters;
-    Condition m_condition;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        ConditionExistsImpl(int identifier, ParameterList parameters, Condition condition);
 
-    ConditionExistsImpl(int identifier, loki::pddl::Condition external, ParameterList parameters, Condition condition);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const ConditionExistsImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const ConditionExistsImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<ConditionExistsImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<ConditionExistsImpl>;
-
-public:
-    const ParameterList& get_parameters() const;
-    const Condition& get_condition() const;
-};
+    public:
+        const ParameterList& get_parameters() const;
+        const Condition& get_condition() const;
+    };
 
 
-/* Forall */
-class ConditionForallImpl : public loki::Base<ConditionForallImpl> {
-private:
-    loki::pddl::Condition external_;
+    /* Forall */
+    class ConditionForallImpl : public loki::Base<ConditionForallImpl> 
+    {
+    private:
+        ParameterList m_parameters;
+        Condition m_condition;
 
-    ParameterList m_parameters;
-    Condition m_condition;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        ConditionForallImpl(int identifier, ParameterList parameters, Condition condition);
 
-    ConditionForallImpl(int identifier, loki::pddl::Condition external, ParameterList parameters, Condition condition);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const ConditionForallImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const ConditionForallImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<ConditionForallImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<ConditionForallImpl>;
-
-public:
-    const ParameterList& get_parameters() const;
-    const Condition& get_condition() const;
-};
-
+    public:
+        const ParameterList& get_parameters() const;
+        const Condition& get_condition() const;
+    };
 }
 
 
-namespace std {
+namespace std 
+{
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<loki::pddl::Condition>
+    struct less<mimir::Condition>
     {
-        bool operator()(const loki::pddl::Condition& left_condition, const loki::pddl::Condition& right_condition) const;
+        bool operator()(const mimir::Condition& left_condition, const mimir::Condition& right_condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionLiteralImpl>
+    struct hash<mimir::ConditionLiteralImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionLiteralImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionLiteralImpl& condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionAndImpl>
+    struct hash<mimir::ConditionAndImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionAndImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionAndImpl& condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionOrImpl>
+    struct hash<mimir::ConditionOrImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionOrImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionOrImpl& condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionNotImpl>
+    struct hash<mimir::ConditionNotImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionNotImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionNotImpl& condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionImplyImpl>
+    struct hash<mimir::ConditionImplyImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionImplyImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionImplyImpl& condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionExistsImpl>
+    struct hash<mimir::ConditionExistsImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionExistsImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionExistsImpl& condition) const;
     };
 
     template<>
-    struct hash<loki::pddl::ConditionForallImpl>
+    struct hash<mimir::ConditionForallImpl>
     {
-        std::size_t operator()(const loki::pddl::ConditionForallImpl& condition) const;
+        std::size_t operator()(const mimir::ConditionForallImpl& condition) const;
     };
 }
 

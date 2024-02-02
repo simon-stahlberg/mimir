@@ -24,27 +24,26 @@
 #include <vector>
 
 
-namespace mimir {
+namespace mimir 
+{
+    class GroundAtomImpl;
+    using GroundAtom = const GroundAtomImpl*;
+    using GroundAtomList = std::vector<GroundAtom>;
 
-class NumericFluentImpl;
-using NumericFluent = const NumericFluentImpl*;
-using NumericFluentList = std::vector<NumericFluent>;
+    class GroundLiteralImpl;
+    using GroundLiteral = const GroundLiteralImpl*;
+    using GroundLiteralList = std::vector<GroundLiteral>;
 
-class GroundAtomImpl;
-using GroundAtom = const GroundAtomImpl*;
-using GroundAtomList = std::vector<GroundAtom>;
+    class NumericFluentImpl;
+    using NumericFluent = const NumericFluentImpl*;
+    using NumericFluentList = std::vector<NumericFluent>;
 
-class GroundActionImpl;
-using GroundAction = const GroundActionImpl*;
-using GroundActionList = std::vector<GroundAction>;
+    class OptimizationMetricImpl;
+    using OptimizationMetric = const OptimizationMetricImpl*;
 
-class OptimizationMetricImpl;
-using OptimizationMetric = const OptimizationMetricImpl*;
+    class ProblemImpl;
+    using Problem = const ProblemImpl*;
+    using ProblemList = std::vector<Problem>;
+} 
 
-class ProblemImpl;
-using Problem = const ProblemImpl*;
-using ProblemList = std::vector<Problem>;
-
-}  // namespace mimir
-
-#endif  // MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
+#endif

@@ -23,9 +23,6 @@
 
 namespace mimir {
 
-template<typename T>
-using PDDLElement = const T*;
-
 using ElementsPerSegment = size_t;
 
 }  // namespace mimir

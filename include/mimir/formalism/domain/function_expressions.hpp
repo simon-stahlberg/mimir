@@ -20,227 +20,199 @@
 
 #include "declarations.hpp"
 
-#include "../../common/mixins.hpp"
-
 #include <loki/domain/pddl/function_expressions.hpp>
 
 #include <string>
 
 
-namespace loki {
-template<typename HolderType, ElementsPerSegment N>
-class PersistentFactory;
+namespace loki 
+{
+    template<typename HolderType, ElementsPerSegment N>
+    class PersistentFactory;
 }
 
 
-namespace mimir {
+namespace mimir 
+{
+    /* FunctionExpressionNumber */
+    class FunctionExpressionNumberImpl : public loki::Base<FunctionExpressionNumberImpl> 
+    {
+    private:
+        double m_number;
 
-/* FunctionExpressionNumber */
-class FunctionExpressionNumberImpl : public loki::Base<FunctionExpressionNumberImpl> {
-private:
-    loki::pddl::FunctionExpression external_;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    double m_number;
+        FunctionExpressionNumberImpl(int identifier, double number);
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    FunctionExpressionNumberImpl(int identifier, loki::pddl::FunctionExpression external, double number);
+        bool is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        // Give access to the private interface implementations.
+        friend class loki::Base<FunctionExpressionNumberImpl>;
 
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionNumberImpl>;
-
-public:
-    double get_number() const;
-};
+    public:
+        double get_number() const;
+    };
 
 
-/* FunctionExpressionBinaryOperator */
-class FunctionExpressionBinaryOperatorImpl : public loki::Base<FunctionExpressionBinaryOperatorImpl> {
-private:
-    loki::pddl::FunctionExpression external_;
+    /* FunctionExpressionBinaryOperator */
+    class FunctionExpressionBinaryOperatorImpl : public loki::Base<FunctionExpressionBinaryOperatorImpl> 
+    {
+    private:
+        loki::pddl::BinaryOperatorEnum m_binary_operator;
+        FunctionExpression m_left_function_expression;
+        FunctionExpression m_right_function_expression;
 
-    loki::pddl::BinaryOperatorEnum m_binary_operator;
-    FunctionExpression m_left_function_expression;
-    FunctionExpression m_right_function_expression;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        FunctionExpressionBinaryOperatorImpl(int identifier,
+            loki::pddl::BinaryOperatorEnum binary_operator,
+            FunctionExpression left_function_expression,
+            FunctionExpression right_function_expression);
 
-    FunctionExpressionBinaryOperatorImpl(int identifier,
-        loki::pddl::FunctionExpression external,
-        loki::pddl::BinaryOperatorEnum binary_operator,
-        FunctionExpression left_function_expression,
-        FunctionExpression right_function_expression);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<FunctionExpressionBinaryOperatorImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionBinaryOperatorImpl>;
-
-public:
-    loki::pddl::BinaryOperatorEnum get_binary_operator() const;
-    const FunctionExpression& get_left_function_expression() const;
-    const FunctionExpression& get_right_function_expression() const;
-};
+    public:
+        loki::pddl::BinaryOperatorEnum get_binary_operator() const;
+        const FunctionExpression& get_left_function_expression() const;
+        const FunctionExpression& get_right_function_expression() const;
+    };
 
 
-/* FunctionExpressionMultiOperator */
-class FunctionExpressionMultiOperatorImpl : public loki::Base<FunctionExpressionMultiOperatorImpl> {
-private:
-    loki::pddl::FunctionExpression external_;
+    /* FunctionExpressionMultiOperator */
+    class FunctionExpressionMultiOperatorImpl : public loki::Base<FunctionExpressionMultiOperatorImpl> 
+    {
+    private:
+        loki::pddl::MultiOperatorEnum m_multi_operator;
+        FunctionExpressionList m_function_expressions;
 
-    loki::pddl::MultiOperatorEnum m_multi_operator;
-    FunctionExpressionList m_function_expressions;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        FunctionExpressionMultiOperatorImpl(int identifier,
+            loki::pddl::MultiOperatorEnum multi_operator,
+            FunctionExpressionList function_expressions);
 
-    FunctionExpressionMultiOperatorImpl(int identifier,
-        loki::pddl::FunctionExpression external,
-        loki::pddl::MultiOperatorEnum multi_operator,
-        FunctionExpressionList function_expressions);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<FunctionExpressionMultiOperatorImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionMultiOperatorImpl>;
-
-public:
-    loki::pddl::MultiOperatorEnum get_multi_operator() const;
-    const FunctionExpressionList& get_function_expressions() const;
-};
+    public:
+        loki::pddl::MultiOperatorEnum get_multi_operator() const;
+        const FunctionExpressionList& get_function_expressions() const;
+    };
 
 
-/* FunctionExpressionMinus */
-class FunctionExpressionMinusImpl : public loki::Base<FunctionExpressionMinusImpl> {
-private:
-    loki::pddl::FunctionExpression external_;
+    /* FunctionExpressionMinus */
+    class FunctionExpressionMinusImpl : public loki::Base<FunctionExpressionMinusImpl> 
+    {
+    private:
+        FunctionExpression m_function_expression;
 
-    FunctionExpression m_function_expression;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        FunctionExpressionMinusImpl(int identifier, FunctionExpression function_expression);
 
-    FunctionExpressionMinusImpl(int identifier, loki::pddl::FunctionExpression external, FunctionExpression function_expression);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<FunctionExpressionMinusImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionMinusImpl>;
-
-public:
-    const FunctionExpression& get_function_expression() const;
-};
+    public:
+        const FunctionExpression& get_function_expression() const;
+    };
 
 
-/* FunctionExpressionFunction */
-class FunctionExpressionFunctionImpl : public loki::Base<FunctionExpressionFunctionImpl> {
-private:
-    loki::pddl::FunctionExpression external_;
+    /* FunctionExpressionFunction */
+    class FunctionExpressionFunctionImpl : public loki::Base<FunctionExpressionFunctionImpl> 
+    {
+    private:
+        Function m_function;
 
-    Function m_function;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        FunctionExpressionFunctionImpl(int identifier, Function function);
 
-    FunctionExpressionFunctionImpl(int identifier, loki::pddl::FunctionExpression external, Function function);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<FunctionExpressionFunctionImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionFunctionImpl>;
-
-public:
-    const Function& get_function() const;
-};
-
+    public:
+        const Function& get_function() const;
+    };
 }
 
 
-namespace std {
+namespace std 
+{
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<loki::pddl::FunctionExpression>
+    struct less<mimir::FunctionExpression>
     {
-        bool operator()(const loki::pddl::FunctionExpression& left_function_expression, const loki::pddl::FunctionExpression& right_function_expression) const;
+        bool operator()(const mimir::FunctionExpression& left_function_expression, const mimir::FunctionExpression& right_function_expression) const;
     };
 
     template<>
-    struct hash<loki::pddl::FunctionExpressionNumberImpl>
+    struct hash<mimir::FunctionExpressionNumberImpl>
     {
-        std::size_t operator()(const loki::pddl::FunctionExpressionNumberImpl& function_expressions) const;
+        std::size_t operator()(const mimir::FunctionExpressionNumberImpl& function_expressions) const;
     };
 
     template<>
-    struct hash<loki::pddl::FunctionExpressionBinaryOperatorImpl>
+    struct hash<mimir::FunctionExpressionBinaryOperatorImpl>
     {
-        std::size_t operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& function_expressions) const;
+        std::size_t operator()(const mimir::FunctionExpressionBinaryOperatorImpl& function_expressions) const;
     };
 
     template<>
-    struct hash<loki::pddl::FunctionExpressionMultiOperatorImpl>
+    struct hash<mimir::FunctionExpressionMultiOperatorImpl>
     {
-        std::size_t operator()(const loki::pddl::FunctionExpressionMultiOperatorImpl& function_expressions) const;
+        std::size_t operator()(const mimir::FunctionExpressionMultiOperatorImpl& function_expressions) const;
     };
 
     template<>
-    struct hash<loki::pddl::FunctionExpressionMinusImpl>
+    struct hash<mimir::FunctionExpressionMinusImpl>
     {
-        std::size_t operator()(const loki::pddl::FunctionExpressionMinusImpl& function_expressions) const;
+        std::size_t operator()(const mimir::FunctionExpressionMinusImpl& function_expressions) const;
     };
 
     template<>
-    struct hash<loki::pddl::FunctionExpressionFunctionImpl>
+    struct hash<mimir::FunctionExpressionFunctionImpl>
     {
-        std::size_t operator()(const loki::pddl::FunctionExpressionFunctionImpl& function_expressions) const;
+        std::size_t operator()(const mimir::FunctionExpressionFunctionImpl& function_expressions) const;
     };
 }
 

@@ -15,13 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-#ifndef MIMIR_FORMALISM_DOMAIN_ATOM_HPP_
-#define MIMIR_FORMALISM_DOMAIN_ATOM_HPP_
+#ifndef MIMIR_FORMALISM_PROBLEM_GROUND_LITERAL_HPP_
+#define MIMIR_FORMALISM_PROBLEM_GROUND_LITERAL_HPP_
 
 #include "declarations.hpp"
 
-#include <loki/domain/pddl/atom.hpp>
+#include <loki/problem/pddl/ground_literal.hpp>
 
 #include <string>
 
@@ -35,31 +34,31 @@ namespace loki
 
 namespace mimir 
 {
-    class AtomImpl : public loki::Base<AtomImpl> 
+    class GroundLiteralImpl : public loki::Base<GroundLiteralImpl> 
     {
     private:
-        Predicate m_predicate;
-        TermList m_terms;
+        loki::pddl::GroundAtom external_;
 
-        // Below: add additional members if needed and initialize them in the constructor
+        bool m_is_negated;
+        GroundAtom m_atom;
 
-        AtomImpl(int identifier, Predicate predicate, TermList terms);
+        GroundLiteralImpl(int identifier, loki::pddl::GroundAtom external, bool is_negated, GroundAtom atom);
 
         // Give access to the constructor.
         template<typename HolderType, ElementsPerSegment N>
         friend class loki::PersistentFactory;
 
         /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const AtomImpl& other) const;
+        bool is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const;
         size_t hash_impl() const;
         void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
         // Give access to the private interface implementations.
-        friend class loki::Base<AtomImpl>;
+        friend class loki::Base<GroundLiteralImpl>;
 
     public:
-        const Predicate& get_predicate() const;
-        const TermList& get_terms() const;
+        bool is_negated() const;
+        const GroundAtom& get_atom() const;
     };
 }
 
@@ -68,16 +67,17 @@ namespace std
 {
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<mimir::Atom>
+    struct less<mimir::GroundLiteral>
     {
-        bool operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const;
+        bool operator()(const mimir::GroundLiteral& left_literal, const mimir::GroundLiteral& right_literal) const;
     };
 
     template<>
-    struct hash<mimir::AtomImpl>
+    struct hash<mimir::GroundLiteralImpl>
     {
-        std::size_t operator()(const mimir::AtomImpl& atom) const;
+        std::size_t operator()(const mimir::GroundLiteralImpl& literal) const;
     };
 }
+
 
 #endif

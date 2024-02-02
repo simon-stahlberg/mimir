@@ -20,223 +20,196 @@
 
 #include "declarations.hpp"
 
-#include "../../common/mixins.hpp"
-
 #include <loki/domain/pddl/effects.hpp>
 
 #include <string>
 
 
-namespace loki {
-template<typename HolderType, ElementsPerSegment N>
-class PersistentFactory;
+namespace loki 
+{
+    template<typename HolderType, ElementsPerSegment N>
+    class PersistentFactory;
 }
 
 
-namespace mimir {
+namespace mimir 
+{
+    /* Literal */
+    class EffectLiteralImpl : public loki::Base<EffectLiteralImpl> 
+    {
+    private:
+        Literal m_literal;
 
-/* Literal */
-class EffectLiteralImpl : public loki::Base<EffectLiteralImpl> {
-private:
-    loki::pddl::Effect external_;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    Literal m_literal;
+        EffectLiteralImpl(int identifier, Literal literal);
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    EffectLiteralImpl(int identifier, loki::pddl::Effect external, Literal literal);
+        // Give access to the private interface implementations.
+        friend class loki::Base<EffectLiteralImpl>;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+    public:
+        bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectLiteralImpl>;
-
-public:
-    bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    const Literal& get_literal() const;
-};
+        const Literal& get_literal() const;
+    };
 
 
-/* And */
-class EffectAndImpl : public loki::Base<EffectAndImpl> {
-private:
-    loki::pddl::Effect external_;
+    /* And */
+    class EffectAndImpl : public loki::Base<EffectAndImpl> 
+    {
+    private:
+        EffectList m_effects;
 
-    EffectList m_effects;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        EffectAndImpl(int identifier, EffectList effects);
 
-    EffectAndImpl(int identifier, EffectList effects);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        // Give access to the private interface implementations.
+        friend class loki::Base<EffectAndImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectAndImpl>;
+    public:
+        bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-public:
-    bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    const EffectList& get_effects() const;
-};
+        const EffectList& get_effects() const;
+    };
 
 
-/* EffectNumeric */
-class EffectNumericImpl : public loki::Base<EffectNumericImpl> {
-private:
-    loki::pddl::Effect external_;
+    /* EffectNumeric */
+    class EffectNumericImpl : public loki::Base<EffectNumericImpl> 
+    {
+    private:
+        loki::pddl::AssignOperatorEnum m_assign_operator;
+        Function m_function;
+        FunctionExpression m_function_expression;
 
-    loki::pddl::AssignOperatorEnum m_assign_operator;
-    Function m_function;
-    FunctionExpression m_function_expression;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        EffectNumericImpl(int identifier, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
 
-    EffectNumericImpl(int identifier, loki::pddl::Effect external, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        // Give access to the private interface implementations.
+        friend class Base<EffectNumericImpl>;
 
-    // Give access to the private interface implementations.
-    friend class Base<EffectNumericImpl>;
+    public:
+        bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-public:
-    bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    loki::pddl::AssignOperatorEnum get_assign_operator() const;
-    const Function& get_function() const;
-    const FunctionExpression& get_function_expression() const;
-};
+        loki::pddl::AssignOperatorEnum get_assign_operator() const;
+        const Function& get_function() const;
+        const FunctionExpression& get_function_expression() const;
+    };
 
 
-/* ConditionalForall */
-class EffectConditionalForallImpl : public loki::Base<EffectConditionalForallImpl> {
-private:
-    loki::pddl::Effect external_;
+    /* ConditionalForall */
+    class EffectConditionalForallImpl : public loki::Base<EffectConditionalForallImpl> 
+    {
+    private:
+        ParameterList m_parameters;
+        Effect m_effect;
 
-    ParameterList m_parameters;
-    Effect m_effect;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect);
 
-    EffectConditionalForallImpl(int identifier, loki::pddl::Effect external, ParameterList parameters, Effect effect);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        // Give access to the private interface implementations.
+        friend class loki::Base<EffectConditionalForallImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectConditionalForallImpl>;
+    public:
+        bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-public:
-    bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-    const ParameterList& get_parameters() const;
-    const Effect& get_effect() const;
-};
+        const ParameterList& get_parameters() const;
+        const Effect& get_effect() const;
+    };
 
 
-/* ConditionalWhen */
-class EffectConditionalWhenImpl : public loki::Base<EffectConditionalWhenImpl> {
-private:
-    loki::pddl::Effect external_;
+    /* ConditionalWhen */
+    class EffectConditionalWhenImpl : public loki::Base<EffectConditionalWhenImpl> 
+    {
+    private:
+        Condition m_condition;
+        Effect m_effect;
 
-    Condition m_condition;
-    Effect m_effect;
+        // Below: add additional members if needed and initialize them in the constructor
 
-    // Add additional members if needed.
-    // Use the constructor to initialize them since they will not be needed to uniquely identify the object.
-    // In this design, the compiler will automatically generate the memory layout.
-    // We can optimize it by flattening it into a byte array and using this class as as a view
-    // that reads offsets from the bytes and reinterprets bytes.
+        EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect);
 
-    EffectConditionalWhenImpl(int identifier, loki::pddl::Effect external, Condition condition, Effect effect);
+        // Give access to the constructor.
+        template<typename HolderType, ElementsPerSegment N>
+        friend class loki::PersistentFactory;
 
-    // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
-    friend class loki::PersistentFactory;
+        bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
+        size_t hash_impl() const;
+        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-    bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+        // Give access to the private interface implementations.
+        friend class loki::Base<EffectConditionalWhenImpl>;
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectConditionalWhenImpl>;
-
-public:
-    const Condition& get_condition() const;
-    const Effect& get_effect() const;
-};
-
-
+    public:
+        const Condition& get_condition() const;
+        const Effect& get_effect() const;
+    };
 }
 
 
-namespace std {
+namespace std 
+{
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>
-    struct less<loki::pddl::Effect>
+    struct less<mimir::Effect>
     {
-        bool operator()(const loki::pddl::Effect& left_effect, const loki::pddl::Effect& right_effect) const;
+        bool operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const;
     };
 
     template<>
-    struct hash<loki::pddl::EffectLiteralImpl>
+    struct hash<mimir::EffectLiteralImpl>
     {
-        std::size_t operator()(const loki::pddl::EffectLiteralImpl& effect) const;
+        std::size_t operator()(const mimir::EffectLiteralImpl& effect) const;
     };
 
     template<>
-    struct hash<loki::pddl::EffectAndImpl>
+    struct hash<mimir::EffectAndImpl>
     {
-        std::size_t operator()(const loki::pddl::EffectAndImpl& effect) const;
+        std::size_t operator()(const mimir::EffectAndImpl& effect) const;
     };
 
     template<>
-    struct hash<loki::pddl::EffectNumericImpl>
+    struct hash<mimir::EffectNumericImpl>
     {
-        std::size_t operator()(const loki::pddl::EffectNumericImpl& effect) const;
+        std::size_t operator()(const mimir::EffectNumericImpl& effect) const;
     };
 
     template<>
-    struct hash<loki::pddl::EffectConditionalForallImpl>
+    struct hash<mimir::EffectConditionalForallImpl>
     {
-        std::size_t operator()(const loki::pddl::EffectConditionalForallImpl& effect) const;
+        std::size_t operator()(const mimir::EffectConditionalForallImpl& effect) const;
     };
 
     template<>
-    struct hash<loki::pddl::EffectConditionalWhenImpl>
+    struct hash<mimir::EffectConditionalWhenImpl>
     {
-        std::size_t operator()(const loki::pddl::EffectConditionalWhenImpl& effect) const;
+        std::size_t operator()(const mimir::EffectConditionalWhenImpl& effect) const;
     };
 }
 
