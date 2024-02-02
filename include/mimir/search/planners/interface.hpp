@@ -5,6 +5,8 @@
 
 #include "../algorithms.hpp"
 
+#include <loki/common/filesystem.hpp>
+
 #include <string>
 
 
@@ -29,8 +31,8 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    const std::string& get_domain_file() const { return self().get_domain_file_impl(); }
-    const std::string& get_problem_file() const { return self().get_problem_file_impl(); }
+    const fs::path& get_domain_file_path() const { return self().get_domain_file_path_impl(); }
+    const fs::path& get_problem_file_path() const { return self().get_problem_file_path_impl(); }
 
     std::tuple<SearchStatus, Plan> find_solution() { return self().find_solution_impl(); }
 };

@@ -5,6 +5,8 @@
 
 #include "../../algorithms.hpp"
 
+#include "../../../formalism/parser.hpp"
+
 #include <tuple>
 #include <utility>
 #include <iostream>
@@ -35,12 +37,10 @@ private:
     template<typename>
     friend class IPlanner;
 
-    std::string m_domain_file;
-    std::string m_problem_file;
+    fs::path m_domain_file;
+    fs::path m_problem_file;
 
-    // TODO (Dominik): initialize it properly
-    Domain m_domain;
-    Problem m_problem;
+    PDDLParser m_parser;
 
     Algorithm<AlgorithmDispatcher<A>> m_algorithm;
 
@@ -58,12 +58,15 @@ private:
         return std::make_tuple(status, plan);
     }
 
-    const std::string& get_domain_file_impl() const { return m_domain_file; }
-    const std::string& get_problem_file_impl() const { return m_problem_file; }
+    const fs::path& get_domain_file_path_impl() const { return m_domain_file; }
+    const fs::path& get_problem_file_path_impl() const { return m_problem_file; }
 
 public:
-    Planner(const std::string& domain_file, const std::string& problem_file)
-        : m_algorithm(Algorithm<AlgorithmDispatcher<A>>(this->m_problem)) { }
+    Planner(const fs::path& domain_file_path, const fs::path& problem_file_path)
+        : m_parser(PDDLParser(domain_file_path, problem_file_path))
+        , m_algorithm(Algorithm<AlgorithmDispatcher<A>>(m_parser.get_problem())) 
+    { 
+    }
 };
 
 }

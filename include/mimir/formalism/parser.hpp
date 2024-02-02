@@ -30,8 +30,6 @@ namespace mimir {
 
 class PDDLParser {
 private:
-    fs::path m_file_path;
-
     PDDLFactories m_factories;
 
     // Parsed result
