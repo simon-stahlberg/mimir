@@ -103,6 +103,11 @@ if(BUILD_PYMIMIR)
     add_subdirectory(lib)
 endif()
 
+# ----------
+# Target Exe
+# ----------
+add_subdirectory(exe)
+
 # ----------------
 # Target Profiling
 # ----------------
@@ -116,6 +121,7 @@ endif()
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
+
 
 
 ###########
