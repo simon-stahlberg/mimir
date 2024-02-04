@@ -39,6 +39,7 @@ public:
     /// @brief Clear the builder for reuse.
     void clear() { self().clear_impl(); }
 
+    // TODO: get rid of the non const version.
     [[nodiscard]] uint8_t* get_buffer_pointer() { return self().get_buffer_pointer_impl(); }
     [[nodiscard]] const uint8_t* get_buffer_pointer() const { return self().get_buffer_pointer_impl(); }
     [[nodiscard]] uint32_t get_size() const { return self().get_size_impl(); }

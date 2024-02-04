@@ -21,6 +21,10 @@ private:
     UnorderedSet<StateDispatcher<BitsetStateTag, P>> m_states;
     Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
 
+    /* Implemenent ISSG interface */
+    template<typename>
+    friend class ISSG;
+
     [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
         m_state_builder.clear();
         // create the state
@@ -35,10 +39,6 @@ private:
         // TODO (Dominik): implement
         return StateView(nullptr);
     }
-
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class ISSG;
 };
 
 

@@ -4,8 +4,12 @@
 
 #include "../../../buffer/flatbuffers/search_node-cost_generated.h"
 
+#include "../../../buffer/byte_stream.hpp"
+
 #include "../../states.hpp"
 #include "../../actions.hpp"
+
+#include <cassert>
 
 
 namespace mimir
@@ -56,50 +60,55 @@ private:
     using StateView = View<StateDispatcher<S, P>>;
     using ActionView = View<ActionDispatcher<P, S>>;
 
-    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
+    /* Define buffer */
+    ByteStream m_buffer;
 
-    SearchNodeStatus m_status;
-    int m_g_value;
-    StateView m_parent_state;
-    ActionView m_creating_action;
+    /* Define data members */
+    SearchNodeStatus m_status;  // 1 byte
+    int32_t m_g_value;          // 4 byte
+    StateView m_parent_state;   // 16 byte should we just store state id here?
+
+    /* Define memory layout */
+    constexpr static size_t s_status_offset = 0;
+    constexpr static size_t s_g_value_offset = 4;
+    constexpr static size_t s_parent_state_offset = 8;
+    constexpr static size_t s_size = 24;
 
     /* Implement IBuilderBase interface */
     template<typename>
     friend class IBuilderBase;
 
     void finish_impl() {
-        // Genenerate nested data first.
-        auto data = CostSearchNodeDataFlat{
-                pointer_to_uint64_t(m_parent_state.get_buffer_pointer()),
-                pointer_to_uint64_t(m_creating_action.get_buffer_pointer()),
-                m_g_value,
-                m_status};
-        // Generate search node data.
-        auto offset = CreateCostSearchNodeFlat(this->m_flatbuffers_builder, &data);
-        this->m_flatbuffers_builder.FinishSizePrefixed(offset);
+        int pos = 0;
+        pos += m_buffer.write<SearchNodeStatus>(m_status);
+        assert(pos <= 4);
+        pos += m_buffer.write_padding(s_g_value_offset - pos);
+        assert(pos == 4);
+        pos += m_buffer.write<int32_t>(m_g_value);
+        assert(pos == 8);
+        pos += m_buffer.write<StateView>(m_parent_state);
+        assert(pos == 24);
+        assert(is_correctly_aligned(pos));
     }
 
-    void clear_impl() {
-        m_flatbuffers_builder.Clear();
-    }
+    void clear_impl() { m_buffer.clear(); }
 
-    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return read_value<flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_buffer.get_data(); }
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_buffer.get_data(); }
+    [[nodiscard]] uint32_t get_size_impl() const { return m_buffer.get_size(); }
 
 public:
-    Builder() : m_parent_state(nullptr), m_creating_action(nullptr) { }
+    Builder() : m_parent_state(nullptr) { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, StateView parent_state, ActionView creating_action)
-        : m_status(status), m_g_value(g_value), m_parent_state(parent_state), m_creating_action(creating_action) {
+    Builder(SearchNodeStatus status, int g_value, StateView parent_state)
+        : m_status(status), m_g_value(g_value), m_parent_state(parent_state) {
         this->finish();
     }
 
     void set_status(SearchNodeStatus status) { m_status = status; }
     void set_g_value(int g_value) { m_g_value = g_value; }
     void set_parent_state(StateView parent_state) { m_parent_state = parent_state; }
-    void set_ground_action(ActionView creating_action) { m_creating_action = creating_action; }
 };
 
 
@@ -117,7 +126,11 @@ private:
     using ActionView = View<ActionDispatcher<P, S>>;
 
     uint8_t* m_data;
-    CostSearchNodeFlat* m_flatbuffers_view;
+
+    constexpr static size_t s_status_offset = 0;
+    constexpr static size_t s_g_value_offset = 4;
+    constexpr static size_t s_parent_state_offset = 8;
+    constexpr static size_t s_size = 24;
 
     /* Implement IView interface: */
     template<typename>
@@ -125,45 +138,35 @@ private:
 
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_data; }
 
-    [[nodiscard]] uint32_t get_size_impl() const {
-        assert(m_data && m_flatbuffers_view);
-        return read_value<flatbuffers::uoffset_t>(m_data) + sizeof(flatbuffers::uoffset_t);
-    }
+    [[nodiscard]] uint32_t get_size_impl() const { return s_size; }
 
 public:
     /// @brief Create a view on a SearchNode.
-    explicit View(uint8_t* data)
-        : m_data(data)
-        , m_flatbuffers_view(data ? GetMutableSizePrefixedCostSearchNodeFlat(reinterpret_cast<void*>(data)) : nullptr) { }
+    explicit View(uint8_t* data) : m_data(data) { }
 
     void set_status(SearchNodeStatus status) {
-        assert(m_flatbuffers_view);
-        m_flatbuffers_view->mutable_data()->mutate_status(static_cast<uint8_t>(status));
+        assert(m_data);
+        read_value<SearchNodeStatus>(m_data + s_status_offset) = status;
     }
 
-    void set_g_value(int g_value) {
-        assert(m_flatbuffers_view);
-        m_flatbuffers_view->mutable_data()->mutate_g_value(g_value);
+    void set_g_value(int32_t g_value) {
+        assert(m_data);
+        read_value<int32_t>(m_data + s_g_value_offset) = g_value;
     }
 
     [[nodiscard]] SearchNodeStatus get_status() {
-        assert(m_flatbuffers_view);
-        return static_cast<SearchNodeStatus>(m_flatbuffers_view->data()->status());
+        assert(m_data);
+        return read_value<SearchNodeStatus>(m_data + s_status_offset);
     }
 
-    [[nodiscard]] int get_g_value() {
-        assert(m_flatbuffers_view);
-        return m_flatbuffers_view->data()->g_value();
+    [[nodiscard]] int32_t get_g_value() {
+        assert(m_data);
+        return read_value<int32_t>(m_data + s_g_value_offset);
     }
 
     [[nodiscard]] StateView get_parent_state() {
-        assert(m_flatbuffers_view);
-        return StateView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->data()->state()));
-    }
-
-    [[nodiscard]] ActionView get_ground_action() {
-        assert(m_flatbuffers_view);
-        return ActionView(uint64_t_to_pointer<uint8_t>(m_flatbuffers_view->data()->action()));
+        assert(m_data);
+        return read_value<StateView>(m_data + s_parent_state_offset);
     }
 };
 

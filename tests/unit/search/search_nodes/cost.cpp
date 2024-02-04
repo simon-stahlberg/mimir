@@ -25,20 +25,14 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     EXPECT_EQ(state_builder.get_size(), 48);
     auto state_view = StateView(state_builder.get_buffer_pointer());
 
-    // Build a ground action.
-    auto action_builder = ActionBuilder();
-    action_builder.finish();
-    auto action_view = ActionView(action_builder.get_buffer_pointer());
-
     // Build a search node.
     auto search_node_builder = SearchNodeBuilder();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
     search_node_builder.set_parent_state(state_view);
-    search_node_builder.set_ground_action(action_view);
     search_node_builder.finish();
     EXPECT_NE(search_node_builder.get_buffer_pointer(), nullptr);
-    EXPECT_EQ(search_node_builder.get_size(), 48);
+    EXPECT_EQ(search_node_builder.get_size(), 24);
 
     // View the data generated in the builder.
     auto search_node_view = SearchNodeView(search_node_builder.get_buffer_pointer());
@@ -67,22 +61,16 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
     EXPECT_EQ(state_builder.get_size(), 48);
     auto state_view = StateView(state_builder.get_buffer_pointer());
 
-    // Build a ground action.
-    auto action_builder = ActionBuilder();
-    action_builder.finish();
-    auto action_view = ActionView(action_builder.get_buffer_pointer());
-
     auto vector = SearchNodeVector(
-        SearchNodeBuilder(SearchNodeStatus::CLOSED, 42, state_view, action_view)
+        SearchNodeBuilder(SearchNodeStatus::CLOSED, 42, state_view)
     );
 
     // Test default initialization a search node
     auto search_node_0 = vector[0];
-    EXPECT_EQ(search_node_0.get_size(), 48);
+    EXPECT_EQ(search_node_0.get_size(), 24);
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
     EXPECT_NE(search_node_0.get_parent_state().get_buffer_pointer(), nullptr);
-    EXPECT_NE(search_node_0.get_ground_action().get_buffer_pointer(), nullptr);
 
     // Test mutation of a search node
     search_node_0.set_status(SearchNodeStatus::OPEN);

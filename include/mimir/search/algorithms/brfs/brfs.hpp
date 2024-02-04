@@ -77,8 +77,7 @@ public:
         , m_search_nodes(AutomaticVector(
             Builder<CostSearchNodeTag<P, S>>(
                 SearchNodeStatus::CLOSED,
-                0, StateView(nullptr),
-                ActionView(nullptr)
+                0, StateView(nullptr)
                 )))
         { }
 };
