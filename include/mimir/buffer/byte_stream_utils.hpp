@@ -64,9 +64,13 @@ T* uint64_t_to_pointer(uint64_t address) {
 /**
  * Ensure correct memory alignment for efficient processing
 */
-template<typename T>
-bool is_correctly_aligned(T num_bytes) {
-    return (num_bytes % 8 == 0);
+
+constexpr inline size_t compute_amount_padding(size_t pos, size_t align_factor) {
+    return (align_factor - (pos % align_factor)) % align_factor;
+}
+
+constexpr inline bool is_correctly_aligned(size_t num_bytes, int max_alignment_factor) {
+    return (num_bytes % max_alignment_factor == 0);
 }
 
 }

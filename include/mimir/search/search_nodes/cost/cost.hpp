@@ -50,6 +50,23 @@ struct TypeTraits<View<CostSearchNodeTag<P, S>>>
 
 
 /**
+ * Define memory layout.
+*/
+struct CostSearchNodeLayout {
+    constexpr static size_t max_align = std::max({alignof(SearchNodeStatus), alignof(int32_t), alignof(int32_t)});
+
+    constexpr static size_t status_offset = 0;
+    constexpr static size_t status_padding = compute_amount_padding(sizeof(SearchNodeStatus), alignof(int32_t));
+    constexpr static size_t g_value_offset = status_offset + sizeof(SearchNodeStatus) + status_padding;
+    constexpr static size_t g_value_padding = compute_amount_padding(g_value_offset + sizeof(int32_t), alignof(int32_t));
+    constexpr static size_t parent_state_id_offset = g_value_offset + sizeof(int32_t) + g_value_padding;
+    constexpr static size_t parent_state_id_padding = compute_amount_padding(parent_state_id_offset + sizeof(int32_t), max_align);
+    
+    constexpr static size_t size = parent_state_id_offset + sizeof(int32_t) + parent_state_id_padding;
+};
+
+
+/**
  * Implementation class
 */
 template<IsPlanningModeTag P, IsStateTag S>
@@ -64,51 +81,43 @@ private:
     ByteStream m_buffer;
 
     /* Define data members */
-    SearchNodeStatus m_status;  // 1 byte
-    int32_t m_g_value;          // 4 byte
-    StateView m_parent_state;   // 16 byte should we just store state id here?
-
-    /* Define memory layout */
-    constexpr static size_t s_status_offset = 0;
-    constexpr static size_t s_g_value_offset = 4;
-    constexpr static size_t s_parent_state_offset = 8;
-    constexpr static size_t s_size = 24;
+    SearchNodeStatus m_status;
+    int32_t m_g_value; 
+    int32_t m_parent_state_id;
 
     /* Implement IBuilderBase interface */
     template<typename>
     friend class IBuilderBase;
 
     void finish_impl() {
-        int pos = 0;
+        size_t pos = 0;
         pos += m_buffer.write<SearchNodeStatus>(m_status);
-        assert(pos <= 4);
-        pos += m_buffer.write_padding(s_g_value_offset - pos);
-        assert(pos == 4);
+        pos += m_buffer.write_padding(CostSearchNodeLayout::status_padding);
         pos += m_buffer.write<int32_t>(m_g_value);
-        assert(pos == 8);
-        pos += m_buffer.write<StateView>(m_parent_state);
-        assert(pos == 24);
-        assert(is_correctly_aligned(pos));
+        pos += m_buffer.write_padding(CostSearchNodeLayout::g_value_padding);
+        pos += m_buffer.write<int32_t>(m_parent_state_id);
+        pos += m_buffer.write_padding(CostSearchNodeLayout::parent_state_id_padding);
+        assert(is_correctly_aligned(pos, CostSearchNodeLayout::max_align));
     }
 
     void clear_impl() { m_buffer.clear(); }
 
     [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_buffer.get_data(); }
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_buffer.get_data(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return m_buffer.get_size(); }
+    [[nodiscard]] uint32_t get_size_impl() const { return CostSearchNodeLayout::size; }
 
 public:
-    Builder() : m_parent_state(nullptr) { }
+    Builder() { }
 
     /// @brief Construct a builder with custom default values.
-    Builder(SearchNodeStatus status, int g_value, StateView parent_state)
-        : m_status(status), m_g_value(g_value), m_parent_state(parent_state) {
+    Builder(SearchNodeStatus status, int g_value, uint32_t parent_state_id)
+        : m_status(status), m_g_value(g_value), m_parent_state_id(parent_state_id) {
         this->finish();
     }
 
     void set_status(SearchNodeStatus status) { m_status = status; }
     void set_g_value(int g_value) { m_g_value = g_value; }
-    void set_parent_state(StateView parent_state) { m_parent_state = parent_state; }
+    void set_parent_state_id(uint32_t parent_state_id) { m_parent_state_id = parent_state_id; }
 };
 
 
@@ -127,18 +136,13 @@ private:
 
     uint8_t* m_data;
 
-    constexpr static size_t s_status_offset = 0;
-    constexpr static size_t s_g_value_offset = 4;
-    constexpr static size_t s_parent_state_offset = 8;
-    constexpr static size_t s_size = 24;
-
     /* Implement IView interface: */
     template<typename>
     friend class IView;
 
     [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_data; }
 
-    [[nodiscard]] uint32_t get_size_impl() const { return s_size; }
+    [[nodiscard]] uint32_t get_size_impl() const { return CostSearchNodeLayout::size; }
 
 public:
     /// @brief Create a view on a SearchNode.
@@ -146,27 +150,27 @@ public:
 
     void set_status(SearchNodeStatus status) {
         assert(m_data);
-        read_value<SearchNodeStatus>(m_data + s_status_offset) = status;
+        read_value<SearchNodeStatus>(m_data + CostSearchNodeLayout::status_offset) = status;
     }
 
     void set_g_value(int32_t g_value) {
         assert(m_data);
-        read_value<int32_t>(m_data + s_g_value_offset) = g_value;
+        read_value<int32_t>(m_data + CostSearchNodeLayout::g_value_offset) = g_value;
     }
 
     [[nodiscard]] SearchNodeStatus get_status() {
         assert(m_data);
-        return read_value<SearchNodeStatus>(m_data + s_status_offset);
+        return read_value<SearchNodeStatus>(m_data + CostSearchNodeLayout::status_offset);
     }
 
     [[nodiscard]] int32_t get_g_value() {
         assert(m_data);
-        return read_value<int32_t>(m_data + s_g_value_offset);
+        return read_value<int32_t>(m_data + CostSearchNodeLayout::g_value_offset);
     }
 
-    [[nodiscard]] StateView get_parent_state() {
+    [[nodiscard]] int32_t get_parent_state_id() {
         assert(m_data);
-        return read_value<StateView>(m_data + s_parent_state_offset);
+        return read_value<int32_t>(m_data + CostSearchNodeLayout::parent_state_id_offset);
     }
 };
 

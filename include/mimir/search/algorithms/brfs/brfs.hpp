@@ -75,10 +75,7 @@ public:
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_successor_generator(AAG<AAGDispatcher<P, S>>())
         , m_search_nodes(AutomaticVector(
-            Builder<CostSearchNodeTag<P, S>>(
-                SearchNodeStatus::CLOSED,
-                0, StateView(nullptr)
-                )))
+            Builder<CostSearchNodeTag<P, S>>(SearchNodeStatus::CLOSED, 0, -1)))
         { }
 };
 
