@@ -18,6 +18,7 @@ add_executable(${TEST_NAME}
     "buffer/wrappers/bitset.cpp"
     "buffer/flatter/types/tuple.cpp"
     "buffer/flatter/types/uint16.cpp"
+    "buffer/flatter/types/vector.cpp"
     "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"

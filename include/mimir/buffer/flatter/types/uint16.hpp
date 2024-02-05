@@ -8,9 +8,10 @@
 #include "../builder.hpp"
 #include "../view.hpp"
 #include "../type_traits.hpp"
+#include "../types.hpp"
 
-#include <cstdint>
-#include <tuple>
+#include <algorithm>
+#include <cassert>
 
 
 namespace mimir
@@ -27,7 +28,7 @@ namespace mimir
     template<>
     class Layout<Uint16Tag> {
         public:
-            static constexpr size_t header_size = sizeof(uint16_t); 
+            static constexpr offset_type size = sizeof(uint16_t); 
             static constexpr size_t alignment = alignof(uint16_t);
     };
 
@@ -45,25 +46,25 @@ namespace mimir
     template<>
     class Builder<Uint16Tag> : public IBuilder<Builder<Uint16Tag>> {
         private:
-            uint16_t m_data;
-            ByteStream m_header_buffer;
+            uint16_t m_value;
+            ByteStream m_buffer;
 
             /* Implement IBuilder interface. */
             template<typename>
             friend class IBuilder;
 
             void finish_impl() {
-                m_header_buffer.write<uint16_t>(m_data);
+                m_buffer.write<uint16_t>(m_value);
             }
 
             void clear_impl() {}
 
-            uint8_t* get_data_impl() { return m_header_buffer.get_data(); }
-            size_t get_size_impl() const { return m_header_buffer.get_size(); }
+            uint8_t* get_data_impl() { return m_buffer.get_data(); }
+            size_t get_size_impl() const { return m_buffer.get_size(); }
 
         public:
-            void set_uint16(uint16_t value) {
-                m_data = value;
+            uint16_t& get_value() {
+                return m_value;
             }
     };
 
@@ -79,7 +80,7 @@ namespace mimir
     public:
         View(uint8_t* data) : m_data(data) {}
 
-        uint16_t& get() const {
+        uint16_t& get_value() const {
             return read_value<uint16_t>(m_data);
         }
     };

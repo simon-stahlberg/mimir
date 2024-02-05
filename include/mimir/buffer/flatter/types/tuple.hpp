@@ -9,9 +9,10 @@
 #include "../builder.hpp"
 #include "../view.hpp"
 #include "../type_traits.hpp"
+#include "../types.hpp"
 
 #include <algorithm>
-#include <cstdint>
+#include <cassert>
 #include <tuple>
 
 
@@ -31,13 +32,13 @@ namespace mimir
     class Layout<TupleTag<Ts...>> {
         private:
             /**
-             * For static data types, the data at the offset will be the actual data.
-             * For dynamic data types,the data at the offset will be an offset to the data.
+             * For static data types, the offset will point to the actual data.
+             * For dynamic data types, the offset will point to an offset to the actual data.
             */
-            static constexpr std::array<size_t, sizeof...(Ts) + 1> calculate_layout() {
-                std::array<size_t, sizeof...(Ts) + 1> layout{};
+            static constexpr std::array<offset_type, sizeof...(Ts) + 1> calculate_layout() {
+                std::array<offset_type, sizeof...(Ts) + 1> layout{};
                 size_t index = 0;
-                size_t cur_pos = 0;
+                offset_type cur_pos = 0;
 
                 // First element must work with alignment.
                 layout[0] = cur_pos;
@@ -45,13 +46,11 @@ namespace mimir
                 ([&] {
                     bool is_dynamic = is_dynamic_type<Ts>::value;
                     if (is_dynamic) {
-                        cur_pos += compute_amount_padding(cur_pos, alignof(uint16_t));
-                        cur_pos += sizeof(uint16_t);
+                        cur_pos += compute_amount_padding(cur_pos, alignof(offset_type));
+                        cur_pos += sizeof(offset_type);
                     } else {
-                        if (index > 0) {
-                            cur_pos += compute_amount_padding(cur_pos, Layout<Ts>::alignment);
-                        }
-                        cur_pos += Layout<Ts>::header_size;  // static size of the type
+                        cur_pos += compute_amount_padding(cur_pos, Layout<Ts>::alignment);
+                        cur_pos += Layout<Ts>::size;
                     }
                     layout[++index] = cur_pos;
                 }(), ...);
@@ -60,9 +59,8 @@ namespace mimir
             }
 
         public:
-            static constexpr std::array<size_t, sizeof...(Ts) + 1> offsets = calculate_layout();
+            static constexpr std::array<offset_type, sizeof...(Ts) + 1> offsets = calculate_layout();
 
-            static constexpr size_t header_size = offsets.back();
             static constexpr size_t alignment = std::max({Layout<Ts>::alignment...});
     };
 
@@ -83,10 +81,8 @@ namespace mimir
     class Builder<TupleTag<Ts...>> : public IBuilder<Builder<TupleTag<Ts...>>> {
         private:
             std::tuple<Builder<Ts>...> m_data;
-            ByteStream m_header_buffer;
+            ByteStream m_buffer;
             ByteStream m_dynamic_buffer;
-
-            uint16_t offset = Layout<TupleTag<Ts...>>::header_size;
 
             /* Implement IBuilder interface. */
             template<typename>
@@ -94,21 +90,25 @@ namespace mimir
 
             template<std::size_t I = 0>
             void finish_rec_impl() {
+                assert(m_buffer.get_size() == Layout<TupleTag<Ts...>>::offsets[I]);
+
+                // offset is the first position to write the dynamic data
+                offset_type offset = Layout<TupleTag<Ts...>>::offsets.back();
                 if constexpr (I < sizeof...(Ts)) {
                     // Recursively call finish
-                    auto& builder = std::get<I>(m_data);
-                    builder.finish();
+                    auto& nested_builder = std::get<I>(m_data);
+                    nested_builder.finish();
                     
                     // Write padding to satisfy alignment requirements
-                    m_header_buffer.write_padding(Layout<TupleTag<Ts...>>::offsets[I] - m_header_buffer.get_size());
+                    m_buffer.write_padding(Layout<TupleTag<Ts...>>::offsets[I] - m_buffer.get_size());
 
                     bool is_dynamic = is_dynamic_type<std::tuple_element_t<I, std::tuple<Ts...>>>::value;
                     if (is_dynamic) {
-                        m_header_buffer.write(offset);
-                        m_dynamic_buffer.write(builder.get_data(), builder.get_size());     
-                        offset += builder.get_size();
+                        m_buffer.write(offset);
+                        m_dynamic_buffer.write(nested_builder.get_data(), nested_builder.get_size());     
+                        offset += nested_builder.get_size();
                     } else {
-                        m_header_buffer.write(builder.get_data(), builder.get_size());
+                        m_buffer.write(nested_builder.get_data(), nested_builder.get_size());
                     }
 
                     // Call finish of next data
@@ -121,9 +121,9 @@ namespace mimir
                 // Build header and dynamic buffer
                 finish_rec_impl<0>();
                 // Concatenate all buffers
-                m_header_buffer.write(m_dynamic_buffer.get_data(), m_dynamic_buffer.get_size());  
+                m_buffer.write(m_dynamic_buffer.get_data(), m_dynamic_buffer.get_size());  
                 // Write alignment padding
-                m_header_buffer.write_padding(compute_amount_padding(m_header_buffer.get_size(), Layout<TupleTag<Ts...>>::alignment));
+                m_buffer.write_padding(compute_amount_padding(m_buffer.get_size(), Layout<TupleTag<Ts...>>::alignment));
             }
 
 
@@ -140,19 +140,19 @@ namespace mimir
 
 
             void clear_impl() {
-                // Clear all nested builder.
+                // Clear all nested builders.
                 clear_rec_impl<0>();
                 // Clear this builder.
-                m_header_buffer.clear(),
+                m_buffer.clear(),
                 m_dynamic_buffer.clear();
             }
 
-            uint8_t* get_data_impl() { return m_header_buffer.get_data(); }
-            size_t get_size_impl() const { return m_header_buffer.get_size(); }
+            uint8_t* get_data_impl() { return m_buffer.get_data(); }
+            size_t get_size_impl() const { return m_buffer.get_size(); }
 
         public:
             template<std::size_t I>
-            auto& get() {
+            auto& get_builder() {
                 return std::get<I>(m_data);
             }
     };
@@ -169,11 +169,17 @@ namespace mimir
     public:
         View(uint8_t* data) : m_data(data) {}
 
+        /**
+         * Returns a View to the I-th element.
+         * 
+         * If the I-th type is dynamic we must add the offset to the actual data first.
+        */
         template<std::size_t I>
         auto get() {
-            // Compute the offset for the I-th element.
-            // This requires a more complex implementation that calculates offsets based on TupleLayout.
-            size_t offset = Layout<TupleTag<Ts...>>::offsets[I];
+            offset_type offset = Layout<TupleTag<Ts...>>::offsets[I];
+            if constexpr (is_dynamic_type<std::tuple_element_t<I, std::tuple<Ts...>>>::value) {
+                offset = read_value<offset_type>(m_data + offset);
+            }
             return View<std::tuple_element_t<I, std::tuple<Ts...>>>(m_data + offset);
         }
     };
