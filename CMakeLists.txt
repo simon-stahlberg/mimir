@@ -86,6 +86,11 @@ find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_
 
 find_package(flatbuffers COMPONENTS flatbuffers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
+find_package(flatmemory REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(flatmemory_FOUND)
+  include_directories(${flatmemory_INCLUDE_DIRS})
+  message(STATUS "Found flatmemory: ${flatmemory_DIR} (found version ${flatmemory_VERSION})")
+endif()
 
 ##############################################################
 # Add library and executable targets
