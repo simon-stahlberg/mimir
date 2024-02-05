@@ -84,72 +84,78 @@ namespace mimir
     */
     template<typename... Ts> 
     class Builder<TupleTag<Ts...>> : public IBuilder<Builder<TupleTag<Ts...>>> {
-    private:
-        std::tuple<Builder<Ts>...> m_data;
-        ByteStream m_header_buffer;
-        ByteStream m_dynamic_buffer;
+        private:
+            std::tuple<Builder<Ts>...> m_data;
+            ByteStream m_header_buffer;
+            ByteStream m_dynamic_buffer;
 
-        uint16_t offset = Layout<TupleTag<Ts...>>::header_size;
+            uint16_t offset = Layout<TupleTag<Ts...>>::header_size;
 
-        /* Implement IBuilder interface. */
-        template<typename>
-        friend class IBuilder;
+            /* Implement IBuilder interface. */
+            template<typename>
+            friend class IBuilder;
 
-        template<std::size_t I = 0>
-        void finish_rec_impl() {
-            if constexpr (I < sizeof...(Ts)) {
-                // Recursively call finish
-                auto& builder = std::get<I>(m_data);
-                builder.finish();
-                
-                // Write padding to satisfy alignment requirements
-                m_header_buffer.write_padding(Layout<TupleTag<Ts...>>::offsets[I] - m_header_buffer.get_size());
+            template<std::size_t I = 0>
+            void finish_rec_impl() {
+                if constexpr (I < sizeof...(Ts)) {
+                    // Recursively call finish
+                    auto& builder = std::get<I>(m_data);
+                    builder.finish();
+                    
+                    // Write padding to satisfy alignment requirements
+                    m_header_buffer.write_padding(Layout<TupleTag<Ts...>>::offsets[I] - m_header_buffer.get_size());
 
-                bool is_dynamic = is_dynamic_type<std::tuple_element_t<I, std::tuple<Ts...>>>::value;
-                if (is_dynamic) {
-                    m_header_buffer.write(offset);
-                    m_dynamic_buffer.write(builder.get_data(), builder.get_size());     
-                    offset += builder.get_size();
-                } else {
-                    m_header_buffer.write(builder.get_data(), builder.get_size());
+                    bool is_dynamic = is_dynamic_type<std::tuple_element_t<I, std::tuple<Ts...>>>::value;
+                    if (is_dynamic) {
+                        m_header_buffer.write(offset);
+                        m_dynamic_buffer.write(builder.get_data(), builder.get_size());     
+                        offset += builder.get_size();
+                    } else {
+                        m_header_buffer.write(builder.get_data(), builder.get_size());
+                    }
+
+                    // Call finish of next data
+                    finish_rec_impl<I + 1>();
                 }
-
-                // Call finish of next data
-                finish_rec_impl<I + 1>();
             }
-        }
 
 
-        void finish_impl() {
-            // Build header and dynamic buffer
-            finish_rec_impl<0>();
-            // Concatenate all buffers
-            m_header_buffer.write(m_dynamic_buffer.get_data(), m_dynamic_buffer.get_size());  
-        }
-
-
-        template<std::size_t I = 0>
-        void clear_rec_impl() {
-            if constexpr (I < sizeof...(Ts)) {
-                auto& builder = std::get<I>(m_data);
-                builder.clear();
-
-                // Call clear of next data
-                clear_rec_impl<I + 1>();
+            void finish_impl() {
+                // Build header and dynamic buffer
+                finish_rec_impl<0>();
+                // Concatenate all buffers
+                m_header_buffer.write(m_dynamic_buffer.get_data(), m_dynamic_buffer.get_size());  
             }
-        }
 
 
-        void clear_impl() {
-            // Clear all nested builder.
-            clear_rec_impl<0>();
-            // Clear this builder.
-            m_header_buffer.clear(),
-            m_dynamic_buffer.clear();
-        }
+            template<std::size_t I = 0>
+            void clear_rec_impl() {
+                if constexpr (I < sizeof...(Ts)) {
+                    auto& builder = std::get<I>(m_data);
+                    builder.clear();
 
-        const uint8_t* get_data_impl() const { return m_header_buffer.get_data(); }
-        size_t get_size_impl() const { return m_header_buffer.get_size(); }
+                    // Call clear of next data
+                    clear_rec_impl<I + 1>();
+                }
+            }
+
+
+            void clear_impl() {
+                // Clear all nested builder.
+                clear_rec_impl<0>();
+                // Clear this builder.
+                m_header_buffer.clear(),
+                m_dynamic_buffer.clear();
+            }
+
+            uint8_t* get_data_impl() { return m_header_buffer.get_data(); }
+            size_t get_size_impl() const { return m_header_buffer.get_size(); }
+
+        public:
+            template<std::size_t I>
+            auto& get() {
+                return std::get<I>(m_data);
+            }
     };
 
 
@@ -159,17 +165,17 @@ namespace mimir
     template<typename... Ts>
     class View<TupleTag<Ts...>> {
     private:
-        const uint8_t* m_data;
+        uint8_t* m_data;
 
     public:
-        View(const uint8_t* data) : m_data(data) {}
+        View(uint8_t* data) : m_data(data) {}
 
         template<std::size_t I>
-        auto get() const {
+        auto get() {
             // Compute the offset for the I-th element.
             // This requires a more complex implementation that calculates offsets based on TupleLayout.
             size_t offset = Layout<TupleTag<Ts...>>::offsets[I];
-            return read_value<View<std::tuple_element_t<I, std::tuple<Ts...>>>>(m_data + offset);
+            return View<std::tuple_element_t<I, std::tuple<Ts...>>>(m_data + offset);
         }
     };
 }

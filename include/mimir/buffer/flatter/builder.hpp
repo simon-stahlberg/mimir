@@ -25,7 +25,7 @@ namespace mimir
             void clear() { self().clear_impl(); }
 
             /// @brief Access the serialized buffer
-            const uint8_t* get_data() const { return self().get_data_impl(); }
+            uint8_t* get_data() { return self().get_data_impl(); }
             size_t get_size() const { return self().get_size_impl(); }
     };
 

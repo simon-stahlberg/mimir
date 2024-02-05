@@ -44,22 +44,27 @@ namespace mimir
     */
     template<>
     class Builder<Uint16Tag> : public IBuilder<Builder<Uint16Tag>> {
-    private:
-        uint16_t m_data;
-        ByteStream m_header_buffer;
+        private:
+            uint16_t m_data;
+            ByteStream m_header_buffer;
 
-        /* Implement IBuilder interface. */
-        template<typename>
-        friend class IBuilder;
+            /* Implement IBuilder interface. */
+            template<typename>
+            friend class IBuilder;
 
-        void finish_impl() {
-            m_header_buffer.write<uint16_t>(m_data);
-        }
+            void finish_impl() {
+                m_header_buffer.write<uint16_t>(m_data);
+            }
 
-        void clear_impl() {}
+            void clear_impl() {}
 
-        const uint8_t* get_data_impl() const { return m_header_buffer.get_data(); }
-        size_t get_size_impl() const { return m_header_buffer.get_size(); }
+            uint8_t* get_data_impl() { return m_header_buffer.get_data(); }
+            size_t get_size_impl() const { return m_header_buffer.get_size(); }
+
+        public:
+            void set_uint16(uint16_t value) {
+                m_data = value;
+            }
     };
 
 
@@ -74,12 +79,8 @@ namespace mimir
     public:
         View(uint8_t* data) : m_data(data) {}
 
-        uint16_t get() const {
+        uint16_t& get() const {
             return read_value<uint16_t>(m_data);
-        }
-
-        void set(uint16_t value) {
-            read_value<uint16_t>(m_data) = value;
         }
     };
 }
