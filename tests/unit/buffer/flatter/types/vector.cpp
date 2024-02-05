@@ -27,6 +27,17 @@ TEST(MimirTests, BufferFlatterTypesVectorTest) {
 }
 
 
+TEST(MimirTests, BufferFlatterTypesVector2Test) {
+    EXPECT_EQ((Layout<VectorTag<Uint16Tag>>::alignment), 4);
+
+    auto builder = Builder<VectorTag<Uint16Tag>>();
+    builder.get_builders().resize(3);
+    builder.finish();
+
+    // 2 additional padding are added from 10 to 12
+    EXPECT_EQ(builder.get_size(), 12);
+}
+
 
 
 }
