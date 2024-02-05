@@ -18,6 +18,7 @@ TEST(MimirTests, BufferFlatterTypesTupleTest) {
     builder.get<1>().set_uint16(6);
     builder.get<2>().set_uint16(7);
     builder.finish();
+    EXPECT_NE(builder.get_data(), nullptr);
     EXPECT_EQ(builder.get_size(), 6);
 
     auto view = View<TupleTag<Uint16Tag, Uint16Tag, Uint16Tag>>(builder.get_data());

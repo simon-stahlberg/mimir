@@ -3,6 +3,7 @@
 #define MIMIR_BUFFER_FLATTER_TYPES_TUPLE_HPP_
  
 #include "../../byte_stream.hpp"
+#include "../../byte_stream_utils.hpp"
 
 #include "../layout.hpp"
 #include "../builder.hpp"
@@ -41,18 +42,14 @@ namespace mimir
                 // First element must work with alignment.
                 layout[0] = cur_pos;
 
-                auto add_padding = [](size_t offset, size_t align) -> size_t {
-                    return (align - (offset % align)) % align;
-                };
-
                 ([&] {
                     bool is_dynamic = is_dynamic_type<Ts>::value;
                     if (is_dynamic) {
-                        cur_pos += add_padding(cur_pos, alignof(uint16_t));
+                        cur_pos += compute_amount_padding(cur_pos, alignof(uint16_t));
                         cur_pos += sizeof(uint16_t);
                     } else {
                         if (index > 0) {
-                            cur_pos += add_padding(cur_pos, Layout<Ts>::alignment);
+                            cur_pos += compute_amount_padding(cur_pos, Layout<Ts>::alignment);
                         }
                         cur_pos += Layout<Ts>::header_size;  // static size of the type
                     }
@@ -125,6 +122,8 @@ namespace mimir
                 finish_rec_impl<0>();
                 // Concatenate all buffers
                 m_header_buffer.write(m_dynamic_buffer.get_data(), m_dynamic_buffer.get_size());  
+                // Write alignment padding
+                m_header_buffer.write_padding(compute_amount_padding(m_header_buffer.get_size(), Layout<TupleTag<Ts...>>::alignment));
             }
 
 
