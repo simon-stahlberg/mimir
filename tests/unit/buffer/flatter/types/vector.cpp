@@ -10,7 +10,7 @@ namespace mimir::tests
 {
 
 TEST(MimirTests, BufferFlatterTypesVectorTest) {
-    EXPECT_EQ((Layout<VectorTag<Uint16Tag>>::alignment), 2);
+    EXPECT_EQ((Layout<VectorTag<Uint16Tag>>::alignment), 4);
 
     auto builder = Builder<VectorTag<Uint16Tag>>();
     builder.get_builders().resize(2);

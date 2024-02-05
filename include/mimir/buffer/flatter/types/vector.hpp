@@ -39,9 +39,9 @@ namespace mimir
             size_t cur_pos = 0;
             cur_pos += sizeof(vector_size_type);
             if constexpr (is_dynamic_type<T>::value) {
-                cur_pos += compute_amount_padding(cur_pos, sizeof(offset_type));
-            } else {
                 cur_pos += compute_amount_padding(cur_pos, Layout<T>::alignment);
+            } else {
+                cur_pos += compute_amount_padding(cur_pos, sizeof(offset_type));
             }
             return cur_pos;
         }
@@ -50,7 +50,7 @@ namespace mimir
             static constexpr offset_type size_offset = 0;
             static constexpr offset_type data_offset = calculate_data_offset();
 
-            static constexpr size_t alignment = std::max({alignof(offset_type), Layout<T>::alignment});
+            static constexpr size_t alignment = std::max({alignof(offset_type), alignof(vector_size_type), Layout<T>::alignment});
     };
 
     
@@ -80,6 +80,8 @@ namespace mimir
 
                 m_buffer.write<vector_size_type>(m_data.size());
                 m_buffer.write_padding(Layout<VectorTag<T>>::data_offset - m_buffer.get_size());
+
+                std::cout << Layout<VectorTag<T>>::data_offset << std::endl;
 
                 if constexpr (is_dynamic_type<T>::value) {
                     /* For dynamic type T, we store the offsets first */
