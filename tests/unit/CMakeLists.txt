@@ -16,6 +16,8 @@ set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 add_executable(${TEST_NAME}
     "algorithms/memory_pool.cpp"
     "buffer/wrappers/bitset.cpp"
+    "buffer/flatter/types/tuple.cpp"
+    "buffer/flatter/types/uint16.cpp"
     "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"

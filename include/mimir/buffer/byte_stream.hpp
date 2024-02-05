@@ -16,11 +16,11 @@ class ByteStream {
 private:
     std::vector<uint8_t> m_data;
 
+public:
     void write(const uint8_t* data, size_t amount) {
         m_data.insert(m_data.end(), data, data + amount);
     }
-
-public:
+    
     /// @brief Writes a value to the stream.
     template<TriviallyCopyable T>
     size_t write(const T& value) {

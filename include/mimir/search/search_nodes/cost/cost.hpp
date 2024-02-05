@@ -78,7 +78,7 @@ private:
     using ActionView = View<ActionDispatcher<P, S>>;
 
     /* Define buffer */
-    ByteStream m_buffer;
+    ByteStream m_header_buffer;
 
     /* Define data members */
     SearchNodeStatus m_status;
@@ -91,19 +91,19 @@ private:
 
     void finish_impl() {
         size_t pos = 0;
-        pos += m_buffer.write<SearchNodeStatus>(m_status);
-        pos += m_buffer.write_padding(CostSearchNodeLayout::status_padding);
-        pos += m_buffer.write<int32_t>(m_g_value);
-        pos += m_buffer.write_padding(CostSearchNodeLayout::g_value_padding);
-        pos += m_buffer.write<int32_t>(m_parent_state_id);
-        pos += m_buffer.write_padding(CostSearchNodeLayout::parent_state_id_padding);
+        pos += m_header_buffer.write<SearchNodeStatus>(m_status);
+        pos += m_header_buffer.write_padding(CostSearchNodeLayout::status_padding);
+        pos += m_header_buffer.write<int32_t>(m_g_value);
+        pos += m_header_buffer.write_padding(CostSearchNodeLayout::g_value_padding);
+        pos += m_header_buffer.write<int32_t>(m_parent_state_id);
+        pos += m_header_buffer.write_padding(CostSearchNodeLayout::parent_state_id_padding);
         assert(is_correctly_aligned(pos, CostSearchNodeLayout::max_align));
     }
 
-    void clear_impl() { m_buffer.clear(); }
+    void clear_impl() { m_header_buffer.clear(); }
 
-    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_buffer.get_data(); }
-    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_buffer.get_data(); }
+    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_header_buffer.get_data(); }
+    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_header_buffer.get_data(); }
     [[nodiscard]] uint32_t get_size_impl() const { return CostSearchNodeLayout::size; }
 
 public:
