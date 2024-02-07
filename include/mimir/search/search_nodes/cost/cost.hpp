@@ -28,7 +28,7 @@ enum SearchNodeStatus {NEW = 0, OPEN = 1, CLOSED = 2, DEAD_END = 3};
 */
 using CostSearchNodeBuilder = flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>;
 using CostSearchNodeView = flatmemory::View<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>;
-
+using CostSearchNodeVector = flatmemory::FixedSizedTypeVector<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>;
 
 /**
  * Wrappers for more meaningful access

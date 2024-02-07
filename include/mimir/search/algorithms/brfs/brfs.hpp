@@ -40,7 +40,7 @@ private:
     // Implement configuration independent functionality.
     std::deque<StateView> m_queue;
 
-    flatmemory::FixedSizedTypeVector<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>> m_search_nodes;
+    CostSearchNodeVector m_search_nodes;
 
 
     /* Implement IAlgorithm interface. */
@@ -72,7 +72,7 @@ private:
     }
 
     static auto create_default_search_node_builder() {
-        auto builder = CostSearchNodeBuilderWrapper(flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>());
+        auto builder = CostSearchNodeBuilderWrapper(CostSearchNodeBuilder());
         builder.set_status(SearchNodeStatus::CLOSED);
         builder.set_g_value(-1);
         builder.set_parent_state_id(-1);
