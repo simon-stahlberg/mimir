@@ -44,6 +44,7 @@ public:
     void clear() { m_builder.clear(); }
     uint8_t* get_data() { return m_builder.get_data(); }
     size_t get_size() { return m_builder.get_size(); }
+    const CostSearchNodeBuilder& get_flatmemory_builder() { return m_builder; }
 
     void set_status(SearchNodeStatus status) { m_builder.get_builder<0>() = status; }
     void set_g_value(int32_t g_value) { m_builder.get_builder<1>() = g_value; }

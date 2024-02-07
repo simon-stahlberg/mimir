@@ -72,12 +72,12 @@ private:
     }
 
     static auto create_default_search_node_builder() {
-        flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>> builder;
-        builder.get_builder<0>() = SearchNodeStatus::CLOSED;
-        builder.get_builder<1>() = -1;
-        builder.get_builder<2>() = -1;
+        auto builder = CostSearchNodeBuilderWrapper(flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>());
+        builder.set_status(SearchNodeStatus::CLOSED);
+        builder.set_g_value(-1);
+        builder.set_parent_state_id(-1);
         builder.finish();
-        return builder;  
+        return builder.get_flatmemory_builder();  
     }
 
 public:
