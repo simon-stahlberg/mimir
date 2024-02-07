@@ -42,6 +42,17 @@ find_dependency(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMA
 find_dependency(flatbuffers COMPONENTS flatbuffers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
 
+# -----------
+# flatmemory
+# -----------
+
+find_dependency(flatmemory REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(flatmemory_FOUND)
+  include_directories(${flatmemory_INCLUDE_DIRS})
+  message(STATUS "Found flatmemory: ${flatmemory_DIR} (found version ${flatmemory_VERSION})")
+endif()
+
+
 ############
 # Components
 ############

@@ -3,6 +3,8 @@
 
 #include "../interface.hpp"
 
+#include <flatmemory/flatmemory.hpp>
+
 #include <deque>
 #include <vector>
 
@@ -21,6 +23,7 @@ struct BrFSTag : public AlgorithmTag { };
 /**
  * Specialized implementation class.
 */
+
 template<IsPlanningModeTag P, IsStateTag S>
 class Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>
     : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>> {
@@ -37,13 +40,17 @@ private:
     // Implement configuration independent functionality.
     std::deque<StateView> m_queue;
 
-    AutomaticVector<CostSearchNodeTag<P, S>> m_search_nodes;
+    flatmemory::FixedSizedTypeVector<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>> m_search_nodes;
 
+
+    /* Implement IAlgorithm interface. */
+    template<typename>
+    friend class IAlgorithm;
 
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
-        auto initial_search_node = this->m_search_nodes[this->m_initial_state.get_id()];
+        auto initial_search_node = CostSearchNodeViewWrapper(this->m_search_nodes[this->m_initial_state.get_id()]);
         // TODO (Dominik): update the data of the initial_search_node
-        initial_search_node.set_g_value(0);
+        initial_search_node.get_g_value() = 0;
 
         auto applicable_actions = ActionViewList();
 
@@ -64,9 +71,14 @@ private:
         return SearchStatus::FAILED;
     }
 
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class IAlgorithm;
+    static auto create_default_search_node_builder() {
+        flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>> builder;
+        builder.get_builder<0>() = SearchNodeStatus::CLOSED;
+        builder.get_builder<1>() = -1;
+        builder.get_builder<2>() = -1;
+        builder.finish();
+        return builder;  
+    }
 
 public:
     Algorithm(const Problem& problem)
@@ -74,9 +86,7 @@ public:
         , m_state_repository(SSG<SSGDispatcher<P, S>>())
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
         , m_successor_generator(AAG<AAGDispatcher<P, S>>())
-        , m_search_nodes(AutomaticVector(
-            Builder<CostSearchNodeTag<P, S>>(SearchNodeStatus::CLOSED, 0, -1)))
-        { }
+        , m_search_nodes(flatmemory::FixedSizedTypeVector(create_default_search_node_builder())) { }
 };
 
 
@@ -93,6 +103,6 @@ struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>> {
 };
 
 
-}  // namespace mimir
+} 
 
-#endif  // MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
+#endif 

@@ -37,14 +37,15 @@ private:
     AAG<AAGDispatcher<P, S>> m_successor_generator;
     Heuristic<HeuristicDispatcher<H, P, S>> m_heuristic;
 
+    /* Implement IAlgorithm interface. */
+    template<typename>
+    friend class IAlgorithm;
+
     SearchStatus find_solution_impl(ActionViewList& out_plan) {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;
     }
 
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class IAlgorithm;
 
 public:
     Algorithm(const Problem& problem)
@@ -70,6 +71,6 @@ struct TypeTraits<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>>> {
 };
 
 
-}  // namespace mimir
+} 
 
-#endif  // MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
+#endif  
