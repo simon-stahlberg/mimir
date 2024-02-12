@@ -28,6 +28,7 @@ libtorch*
 build
 out
 *.sif
+dependencies/installs
 
 #CMake
 CMakeLists.txt.user

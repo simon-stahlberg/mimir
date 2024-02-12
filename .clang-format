@@ -1,4 +1,5 @@
 ---
+AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignEscapedNewlines: Left
 AlignOperands: 'true'
@@ -26,6 +27,8 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
 Cpp11BracedListStyle: 'false'
 FixNamespaceComments: 'true'
 IncludeBlocks: Regroup
+IndentAccessModifiers: 'false'
+IndentCaseLabels: 'false'
 IndentCaseLabels: 'true'
 IndentPPDirectives: None
 IndentWidth: '4'
@@ -33,7 +36,7 @@ IndentWrappedFunctionNames: 'false'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 Language: Cpp
 MaxEmptyLinesToKeep: '1'
-NamespaceIndentation: All
+NamespaceIndentation: None
 PointerAlignment: Left
 SortIncludes: 'true'
 SortUsingDeclarations: 'true'
