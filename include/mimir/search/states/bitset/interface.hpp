@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_STATES_BITSET_INTERFACE_HPP_
 
 #include "../interface.hpp"
+#include "../../types.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 
@@ -16,15 +17,6 @@ namespace mimir
 */
 class BitsetStateTag : public StateTag {};
 
-
-/**
- * Usings
-*/
-using Bitset = flatmemory::Builder<flatmemory::Bitset<uint64_t>>;
-using ConstBitsetView = flatmemory::ConstView<flatmemory::Bitset<uint64_t>>;
-using BitsetStateBuilder = flatmemory::Builder<flatmemory::Tuple<uint32_t, flatmemory::Bitset<uint64_t>>>;
-using BitsetStateView = flatmemory::ConstView<flatmemory::Tuple<uint32_t, flatmemory::Bitset<uint64_t>>>;
-using BitsetStateSet = flatmemory::UnorderedSet<flatmemory::Tuple<uint32_t, flatmemory::Bitset<uint64_t>>>;
 
 /**
  * Interface class

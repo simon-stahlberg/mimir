@@ -3,9 +3,20 @@
 
 #include "interface.hpp"
 
+#include "../types.hpp"
+#include "../../common/hash.hpp"
+
 
 namespace mimir
 {
+    /**
+     * Types
+    */
+    using BitsetActionLayout = flatmemory::Tuple<BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+
+    using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
+    using BitsetActionView = flatmemory::ConstView<BitsetActionLayout>;
+    using BitsetActionVector = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
 
 /**
  * Implementation class
@@ -16,45 +27,14 @@ class Builder<ActionDispatcher<P, BitsetStateTag>>
     , public IActionBuilder<Builder<ActionDispatcher<P, BitsetStateTag>>>
 {
 private:
-    flatbuffers::FlatBufferBuilder m_flatbuffers_builder;
-
-    // The bitset data
-    Bitset<uint64_t> m_pos_pre_bitset;
-    Bitset<uint64_t> m_neg_pre_bitset;
-    Bitset<uint64_t> m_pos_eff_bitset;
-    Bitset<uint64_t> m_neg_eff_bitset;
+    BitsetActionBuilder m_builder;
 
     /* Implement IBuilderBase interface */
     template<typename>
     friend class IBuilderBase;
 
-    void finish_impl() {
-        // Genenerate nested data first.
-        auto flat_pos_pre_bitset = serialize(m_pos_pre_bitset, this->m_flatbuffers_builder);
-        auto flat_neg_pre_bitset = serialize(m_neg_pre_bitset, this->m_flatbuffers_builder);
-        auto flat_pos_eff_bitset = serialize(m_pos_eff_bitset, this->m_flatbuffers_builder);
-        auto flat_neg_eff_bitset = serialize(m_neg_eff_bitset, this->m_flatbuffers_builder);
-        // Generate action data.
-        auto offset = CreateActionBitsetFlat(
-            this->m_flatbuffers_builder,
-            flat_pos_pre_bitset,
-            flat_neg_pre_bitset,
-            flat_pos_eff_bitset,
-            flat_neg_eff_bitset);
-        this->m_flatbuffers_builder.FinishSizePrefixed(offset);
-    }
-
-    void clear_impl() {
-        m_flatbuffers_builder.Clear();
-        m_pos_pre_bitset.unset_all(false);
-        m_neg_pre_bitset.unset_all(false);
-        m_pos_eff_bitset.unset_all(false);
-        m_neg_eff_bitset.unset_all(false);
-    }
-
-    [[nodiscard]] uint8_t* get_buffer_pointer_impl() { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_flatbuffers_builder.GetBufferPointer(); }
-    [[nodiscard]] uint32_t get_size_impl() const { return read_value<flatbuffers::uoffset_t>(this->get_buffer_pointer()) + sizeof(flatbuffers::uoffset_t); }
+    [[nodiscard]] BitsetActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const BitsetActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IActionBuilder interface */
     template<typename>
@@ -62,10 +42,10 @@ private:
 
 public:
     /// @brief Modify the bitsets, call finish, then copy the buffer to a container and use its returned view.
-    [[nodiscard]] Bitset<uint64_t>& get_applicability_positive_precondition_bitset() { return m_pos_pre_bitset; }
-    [[nodiscard]] Bitset<uint64_t>& get_applicability_negative_precondition_bitset() { return m_neg_pre_bitset; }
-    [[nodiscard]] Bitset<uint64_t>& get_unconditional_positive_effect_bitset() { return m_pos_eff_bitset; }
-    [[nodiscard]] Bitset<uint64_t>& get_unconditional_negative_effect_bitset() { return m_neg_eff_bitset; }
+    [[nodiscard]] Bitset& get_applicability_positive_precondition_bitset() { return m_builder.get<0>(); }
+    [[nodiscard]] Bitset& get_applicability_negative_precondition_bitset() { return m_builder.get<1>(); }
+    [[nodiscard]] Bitset& get_unconditional_positive_effect_bitset() { return m_builder.get<2>(); }
+    [[nodiscard]] Bitset& get_unconditional_negative_effect_bitset() { return m_builder.get<3>(); }
 };
 
 
@@ -81,18 +61,25 @@ class View<ActionDispatcher<P, BitsetStateTag>>
     , public IActionView<View<ActionDispatcher<P, BitsetStateTag>>>
 {
 private:
-    const uint8_t* m_data;
-    const ActionBitsetFlat* m_flatbuffers_view;
+    BitsetActionView m_view;
 
     /* Implement IView interface: */
     template<typename>
     friend class IView;
 
-    [[nodiscard]] const uint8_t* get_buffer_pointer_impl() const { return m_data; }
+   [[nodiscard]] bool are_equal_impl(const View& other) const {
+        return get_applicability_positive_precondition_bitset() == other.get_applicability_positive_precondition_bitset()
+            && get_applicability_negative_precondition_bitset() == other.get_applicability_negative_precondition_bitset()
+            && get_unconditional_positive_effect_bitset() == other.get_unconditional_positive_effect_bitset()
+            && get_unconditional_negative_effect_bitset() == other.get_unconditional_negative_effect_bitset();
+    }
 
-    [[nodiscard]] uint32_t get_size_impl() const {
-        assert(m_data && m_flatbuffers_view);
-        return read_value<flatbuffers::uoffset_t>(m_data) + sizeof(flatbuffers::uoffset_t);
+    [[nodiscard]] size_t hash_impl() const {
+        return hash_combine(
+            get_applicability_positive_precondition_bitset().hash(),
+            get_applicability_negative_precondition_bitset().hash(),
+            get_unconditional_positive_effect_bitset().hash(),
+            get_unconditional_negative_effect_bitset().hash());
     }
 
     /* Implement IActionView interface */
@@ -104,14 +91,12 @@ private:
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit View(uint8_t* data)
-        : m_data(data)
-        , m_flatbuffers_view(data ? GetSizePrefixedActionBitsetFlat(reinterpret_cast<void*>(data)) : nullptr) { }
+    explicit View(BitsetActionView view) : m_view(view) { }
 
-    [[nodiscard]] ConstBitsetView<uint64_t> get_applicability_positive_precondition_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->applicability_positive_precondition_bitset()); }
-    [[nodiscard]] ConstBitsetView<uint64_t> get_applicability_negative_precondition_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->applicability_negative_precondition_bitset()); }
-    [[nodiscard]] ConstBitsetView<uint64_t> get_unconditional_positive_effect_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->unconditional_positive_effect_bitset()); };
-    [[nodiscard]] ConstBitsetView<uint64_t> get_unconditional_negative_effect_bitset() { return ConstBitsetView<uint64_t>(m_flatbuffers_view->unconditional_negative_effect_bitset()); };
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() { return m_view.get<0>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() { return m_view.get<1>(); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() { return m_view.get<2>(); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() { return m_view.get<3>(); };
 };
 
 
