@@ -31,7 +31,7 @@ namespace std
     struct equal_to<mimir::BitsetStateView>
     {
         bool operator()(const mimir::BitsetStateView& view_left, const mimir::BitsetStateView& view_right) const {
-            return true;
+            return view_left == view_right;
         }
     };
 }
