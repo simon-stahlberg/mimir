@@ -84,8 +84,6 @@ endif()
 configure_loki()
 find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
-find_package(flatbuffers COMPONENTS flatbuffers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
-
 find_package(flatmemory REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 if(flatmemory_FOUND)
   include_directories(${flatmemory_INCLUDE_DIRS})

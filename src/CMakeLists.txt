@@ -12,7 +12,7 @@ set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 add_library(mimir::core ALIAS core)
 
 target_link_libraries(core loki::parsers)
-target_link_libraries(core flatbuffers::flatbuffers)
+target_link_libraries(core flatmemory::flatmemory)
 
 # Use include depending on building or using from installed location
 target_include_directories(core

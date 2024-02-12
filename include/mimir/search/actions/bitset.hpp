@@ -3,8 +3,6 @@
 
 #include "interface.hpp"
 
-#include "../../buffer/flatbuffers/action-bitset_generated.h"
-
 
 namespace mimir
 {

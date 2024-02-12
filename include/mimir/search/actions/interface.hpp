@@ -5,9 +5,6 @@
 #include "../states.hpp"
 #include "../type_traits.hpp"
 
-#include "../../buffer/view_interface.hpp"
-#include "../../buffer/byte_stream_utils.hpp"
-
 
 namespace mimir {
 

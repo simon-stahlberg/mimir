@@ -4,10 +4,6 @@
 #include "../config.hpp"
 #include "../type_traits.hpp"
 
-#include "../../buffer/builder_interface.hpp"
-#include "../../buffer/view_interface.hpp"
-#include "../../buffer/wrappers/bitset.hpp"
-
 
 namespace mimir
 {

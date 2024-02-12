@@ -2,10 +2,6 @@
 #define MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 
 
-#include "../../../buffer/flatbuffers/search_node-cost_generated.h"
-
-#include "../../../buffer/byte_stream.hpp"
-
 #include "../../states.hpp"
 #include "../../actions.hpp"
 

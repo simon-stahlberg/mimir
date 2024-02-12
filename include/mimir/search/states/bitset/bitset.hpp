@@ -3,9 +3,6 @@
 
 #include "interface.hpp"
 
-#include "../../../buffer/flatbuffers/state-bitset_generated.h"
-#include "../../../buffer/flatbuffers_utils.hpp"
-
 
 namespace mimir
 {
@@ -15,8 +12,7 @@ namespace mimir
 */
 template<IsPlanningModeTag P>
 class Builder<StateDispatcher<BitsetStateTag, P>>
-    : public IBuilderBase<Builder<StateDispatcher<BitsetStateTag, P>>>
-    , public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>
+    : public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>
     , public IBitsetStateBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>
 {
 private:
