@@ -3,6 +3,8 @@
 
 #include "../interface.hpp"
 
+#include <flatmemory/flatmemory.hpp>
+
 
 namespace mimir
 {
@@ -14,6 +16,15 @@ namespace mimir
 */
 class BitsetStateTag : public StateTag {};
 
+
+/**
+ * Usings
+*/
+using Bitset = flatmemory::Builder<flatmemory::Bitset<uint64_t>>;
+using ConstBitsetView = flatmemory::ConstView<flatmemory::Bitset<uint64_t>>;
+using BitsetStateBuilder = flatmemory::Builder<flatmemory::Tuple<uint32_t, flatmemory::Bitset<uint64_t>>>;
+using BitsetStateView = flatmemory::ConstView<flatmemory::Tuple<uint32_t, flatmemory::Bitset<uint64_t>>>;
+using BitsetStateSet = flatmemory::UnorderedSet<flatmemory::Tuple<uint32_t, flatmemory::Bitset<uint64_t>>>;
 
 /**
  * Interface class
@@ -32,7 +43,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] Bitset<uint64_t>& get_atoms_bitset() { return self().get_atoms_bitset_impl(); }
+    [[nodiscard]] Bitset& get_atoms_bitset() { return self().get_atoms_bitset_impl(); }
 };
 
 
@@ -50,7 +61,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] ConstBitsetView<uint64_t> get_atoms_bitset() const { return self().get_atoms_bitset_impl(); }
+    [[nodiscard]] ConstBitsetView get_atoms_bitset() const { return self().get_atoms_bitset_impl(); }
 };
 
 
@@ -71,6 +82,6 @@ struct TypeTraits<View<StateDispatcher<BitsetStateTag, P>>>
 };
 
 
-}  // namespace mimir
+} 
 
-#endif  // MIMIR_SEARCH_STATES_BITSET_HPP_
+#endif 

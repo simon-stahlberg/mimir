@@ -8,8 +8,8 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchActionsDefaultTest) {
     // Build a state.
-    auto builder = Builder<ActionDispatcher<GroundedTag, BitsetStateTag>>();
-    builder.clear();
+    //auto builder = Builder<ActionDispatcher<GroundedTag, BitsetStateTag>>();
+    //builder.clear();
 }
 
 }

@@ -9,7 +9,6 @@
 #include "../successor_state_generators.hpp"
 #include "../type_traits.hpp"
 
-#include "../../buffer/containers/vector.hpp"
 #include "../../common/mixins.hpp"
 #include "../../formalism/problem/declarations.hpp"
 

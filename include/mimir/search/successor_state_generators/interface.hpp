@@ -6,7 +6,6 @@
 #include "../actions.hpp"
 #include "../type_traits.hpp"
 
-#include "../../buffer/containers/unordered_set.hpp"
 #include "../../common/mixins.hpp"
 #include "../../formalism/problem/declarations.hpp"
 

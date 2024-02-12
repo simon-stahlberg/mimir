@@ -1,8 +1,12 @@
 #ifndef MIMIR_SEARCH_STATES_INTERFACE_HPP_
 #define MIMIR_SEARCH_STATES_INTERFACE_HPP_
 
+#include "../builder.hpp"
 #include "../config.hpp"
 #include "../type_traits.hpp"
+#include "../view.hpp"
+
+#include <cstdint>
 
 
 namespace mimir
@@ -40,7 +44,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void set_id(uint32_t id) { self().set_id_impl(id); }
+    [[nodiscard]] uint32_t& get_id() { return self().get_id_impl(); }
 };
 
 
@@ -88,7 +92,7 @@ concept IsStateDispatcher = is_state_dispatcher<T>::value;
  * Specialize the wrapped tag to provide your own implementation of a state representation.
 */
 template<IsStateDispatcher S>
-class Builder<S> : public IBuilderBase<Builder<S>>, public IStateBuilder<Builder<S>> {};
+class Builder<S> : public IBuilder<Builder<S>>, public IStateBuilder<Builder<S>> {};
 
 template<IsStateDispatcher S>
 class View<S> : public IView<View<S>>, public IStateView<View<S>> {};

@@ -1,5 +1,4 @@
 #include <mimir/search/search_nodes.hpp>
-#include <mimir/buffer/containers/vector.hpp>
 
 #include <flatmemory/flatmemory.hpp>
 
@@ -44,9 +43,9 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
        There is only 1 heap allocation every few thousand nodes that are being created. */
 
     flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>> builder;
-    builder.get_builder<0>() = SearchNodeStatus::CLOSED;
-    builder.get_builder<1>() = 42;
-    builder.get_builder<2>() = -1;
+    builder.get<0>() = SearchNodeStatus::CLOSED;
+    builder.get<1>() = 42;
+    builder.get<2>() = -1;
     builder.finish();
 
     auto vector = SearchNodeVector(std::move(builder));

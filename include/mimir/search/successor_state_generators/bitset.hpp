@@ -3,6 +3,8 @@
 
 #include "interface.hpp"
 
+#include <flatmemory/flatmemory.hpp>
+
 
 namespace mimir
 {
@@ -18,7 +20,7 @@ private:
     using StateView = View<StateDispatcher<BitsetStateTag, P>>;
     using ActionView = View<ActionDispatcher<P, BitsetStateTag>>;
 
-    UnorderedSet<StateDispatcher<BitsetStateTag, P>> m_states;
+    BitsetStateSet m_states;
     Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
 
     /* Implemenent ISSG interface */
@@ -26,12 +28,12 @@ private:
     friend class ISSG;
 
     [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
-        m_state_builder.clear();
         // create the state
-        int next_state_id = m_states.get_size();
-        m_state_builder.set_id(next_state_id);
-        m_state_builder.finish();
-        return m_states.insert(m_state_builder);
+        int next_state_id = m_states.size();
+        m_state_builder.get_id() = next_state_id;
+        auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
+        flatmemory_builder.finish();
+        return StateView(m_states.insert(flatmemory_builder));
     }
 
     [[nodiscard]] StateView get_or_create_successor_state_impl(StateView state, ActionView action) {

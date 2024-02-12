@@ -37,14 +37,13 @@ public:
     CostSearchNodeBuilderWrapper(CostSearchNodeBuilder builder) : m_builder(std::move(builder)) { }
 
     void finish() { m_builder.finish(); }
-    void clear() { m_builder.clear(); }
-    uint8_t* get_data() { return m_builder.get_data(); }
-    size_t get_size() { return m_builder.get_size(); }
+    uint8_t* get_data() { return m_builder.buffer().data(); }
+    size_t get_size() { return m_builder.buffer().size(); }
     const CostSearchNodeBuilder& get_flatmemory_builder() { return m_builder; }
 
-    void set_status(SearchNodeStatus status) { m_builder.get_builder<0>() = status; }
-    void set_g_value(int32_t g_value) { m_builder.get_builder<1>() = g_value; }
-    void set_parent_state_id(int32_t parent_state_id) { m_builder.get_builder<2>() = parent_state_id; }
+    void set_status(SearchNodeStatus status) { m_builder.get<0>() = status; }
+    void set_g_value(int32_t g_value) { m_builder.get<1>() = g_value; }
+    void set_parent_state_id(int32_t parent_state_id) { m_builder.get<2>() = parent_state_id; }
 };
 
 

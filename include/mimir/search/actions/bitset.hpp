@@ -12,7 +12,7 @@ namespace mimir
 */
 template<IsPlanningModeTag P>
 class Builder<ActionDispatcher<P, BitsetStateTag>>
-    : public IBuilderBase<Builder<ActionDispatcher<P, BitsetStateTag>>>
+    : public IBuilder<Builder<ActionDispatcher<P, BitsetStateTag>>>
     , public IActionBuilder<Builder<ActionDispatcher<P, BitsetStateTag>>>
 {
 private:

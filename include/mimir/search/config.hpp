@@ -24,6 +24,6 @@ template<typename Tag>
 concept IsPlanningModeTag = std::is_same_v<Tag, GroundedTag> || std::is_same_v<Tag, LiftedTag>;
 
 
-}  // namespace mimir
+} 
 
-#endif  // MIMIR_SEARCH_CONFIG_HPP_
+#endif  
