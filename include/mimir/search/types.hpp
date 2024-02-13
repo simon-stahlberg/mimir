@@ -6,9 +6,9 @@
 
 namespace mimir
 {
-    using BitsetLayout = flatmemory::Bitset<uint64_t>;
+    using BitsetLayout    = flatmemory::Bitset<uint64_t>;
 
-    using Bitset = flatmemory::Builder<BitsetLayout>;
+    using Bitset          = flatmemory::Builder<BitsetLayout>;
     using ConstBitsetView = flatmemory::ConstView<BitsetLayout>;
 }
 

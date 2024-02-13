@@ -9,11 +9,11 @@ namespace mimir
     /**
      * Types
     */
-    using BitsetStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
+    using BitsetStateLayout  = flatmemory::Tuple<uint32_t, BitsetLayout>;
 
     using BitsetStateBuilder = flatmemory::Builder<BitsetStateLayout>;
-    using BitsetStateView = flatmemory::ConstView<BitsetStateLayout>;
-    using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout>;
+    using BitsetStateView    = flatmemory::ConstView<BitsetStateLayout>;
+    using BitsetStateSet     = flatmemory::UnorderedSet<BitsetStateLayout>;
 }
 
 
@@ -23,7 +23,8 @@ namespace std
     struct hash<mimir::BitsetStateView>
     {
         std::size_t operator()(const mimir::BitsetStateView& view) const {
-            return view.hash();
+            const auto bitset_view = view.get<1>();
+            return bitset_view.hash();
         }
     };
 
@@ -31,7 +32,9 @@ namespace std
     struct equal_to<mimir::BitsetStateView>
     {
         bool operator()(const mimir::BitsetStateView& view_left, const mimir::BitsetStateView& view_right) const {
-            return view_left == view_right;
+            const auto bitset_view_left = view_left.get<1>();
+            const auto bitset_view_right = view_left.get<1>();
+            return bitset_view_left == bitset_view_right;
         }
     };
 }

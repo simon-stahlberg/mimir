@@ -21,7 +21,7 @@ namespace mimir
  *
  * Define name and template parameters of your own implementation.
 */
-template<IsAlgorithmTag... As>
+template<IsAlgorithmTag A>
 struct SingleTag : public PlannerTag {};
 
 /**

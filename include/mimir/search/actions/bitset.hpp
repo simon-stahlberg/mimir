@@ -12,11 +12,11 @@ namespace mimir
     /**
      * Types
     */
-    using BitsetActionLayout = flatmemory::Tuple<BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+    using BitsetActionLayout  = flatmemory::Tuple<BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 
     using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
-    using BitsetActionView = flatmemory::ConstView<BitsetActionLayout>;
-    using BitsetActionVector = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
+    using BitsetActionView    = flatmemory::ConstView<BitsetActionLayout>;
+    using BitsetActionVector  = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
 
 /**
  * Implementation class
