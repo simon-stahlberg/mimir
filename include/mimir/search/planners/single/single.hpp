@@ -50,7 +50,7 @@ private:
 
     std::tuple<SearchStatus, Plan> find_solution_impl() {
         auto plan = Plan();
-        auto action_view_list = typename TypeTraits<std::remove_reference_t<decltype(m_algorithm)>>::ActionViewList();
+        auto action_view_list = typename TypeTraits<std::remove_reference_t<decltype(m_algorithm)>>::ConstActionViewList();
         const auto status = m_algorithm.find_solution(action_view_list);
         for (const auto& action_view : action_view_list) {
             plan.push_back(action_view.str());

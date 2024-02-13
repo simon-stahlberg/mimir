@@ -21,8 +21,8 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
 
-    using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<P, S>>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
 
     IAAG() = default;
     friend Derived;
@@ -33,7 +33,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(StateView state, std::vector<ActionView>& out_applicable_actions) {
+    void generate_applicable_actions(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 };

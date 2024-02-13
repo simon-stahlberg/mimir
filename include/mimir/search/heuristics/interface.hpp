@@ -20,7 +20,7 @@ class IHeuristic {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using StateView = View<StateDispatcher<S, P>>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
 
     IHeuristic() = default;
     friend Derived;
@@ -30,7 +30,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] double compute_heuristic(StateView state) {
+    [[nodiscard]] double compute_heuristic(ConstStateView state) {
         return self().compute_heuristic_impl(state);
     }
 };

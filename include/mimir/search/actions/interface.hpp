@@ -5,7 +5,7 @@
 #include "../config.hpp"
 #include "../states.hpp"
 #include "../type_traits.hpp"
-#include "../view.hpp"
+#include "../view_const.hpp"
 
 
 namespace mimir {
@@ -87,7 +87,7 @@ struct TypeTraits<Builder<ActionDispatcher<P, S>>>
 };
 
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<View<ActionDispatcher<P, S>>>
+struct TypeTraits<ConstView<ActionDispatcher<P, S>>>
 {
     using PlanningModeTag = P;
     using StateTag = S;

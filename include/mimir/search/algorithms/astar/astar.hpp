@@ -27,13 +27,13 @@ template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S>
 class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>>
     : public IAlgorithm<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>>> {
 private:
-    using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<P, S>>;
-    using ActionViewList = std::vector<ActionView>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionViewList = std::vector<ConstActionView>;
 
     Problem m_problem;
     SSG<SSGDispatcher<P, S>> m_state_repository;
-    StateView m_initial_state;
+    ConstStateView m_initial_state;
     AAG<AAGDispatcher<P, S>> m_successor_generator;
     Heuristic<HeuristicDispatcher<H, P, S>> m_heuristic;
 
@@ -41,7 +41,7 @@ private:
     template<typename>
     friend class IAlgorithm;
 
-    SearchStatus find_solution_impl(ActionViewList& out_plan) {
+    SearchStatus find_solution_impl(ConstActionViewList& out_plan) {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;
     }
@@ -66,8 +66,8 @@ struct TypeTraits<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>>> {
     using HeuristicTag = H;
     using StateTag = S;
 
-    using ActionView = View<ActionDispatcher<P, S>>;
-    using ActionViewList = std::vector<ActionView>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionViewList = std::vector<ConstActionView>;
 };
 
 

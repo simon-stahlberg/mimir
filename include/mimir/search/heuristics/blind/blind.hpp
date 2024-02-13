@@ -22,7 +22,7 @@ template<IsPlanningModeTag P, IsStateTag S>
 class Heuristic<HeuristicDispatcher<BlindTag, P, S>>
     : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S>>> {
 private:
-    using StateView = View<StateDispatcher<S, P>>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
 
     Problem m_problem;
 
@@ -30,7 +30,7 @@ private:
     template<typename>
     friend class IHeuristic;
 
-    double compute_heuristic_impl(const StateView& state) {
+    double compute_heuristic_impl(const ConstStateView& state) {
         return 0.;
     }
 

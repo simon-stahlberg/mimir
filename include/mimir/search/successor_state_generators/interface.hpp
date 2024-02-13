@@ -22,8 +22,8 @@ class ISSG
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<P, S>>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
 
     ISSG() = default;
     friend Derived;
@@ -33,11 +33,11 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] StateView get_or_create_initial_state(Problem problem) {
+    [[nodiscard]] ConstStateView get_or_create_initial_state(Problem problem) {
         return self().get_or_create_initial_state_impl(problem);
     }
 
-    [[nodiscard]] StateView get_or_create_successor_state(StateView state, ActionView action) {
+    [[nodiscard]] ConstStateView get_or_create_successor_state(ConstStateView state, ConstActionView action) {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };

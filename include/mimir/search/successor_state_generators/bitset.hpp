@@ -17,8 +17,8 @@ class SSG<SSGDispatcher<P, BitsetStateTag>>
     : public ISSG<SSG<SSGDispatcher<P, BitsetStateTag>>>
 {
 private:
-    using StateView = View<StateDispatcher<BitsetStateTag, P>>;
-    using ActionView = View<ActionDispatcher<P, BitsetStateTag>>;
+    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;
+    using ConstActionView = ConstView<ActionDispatcher<P, BitsetStateTag>>;
 
     BitsetStateSet m_states;
     Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
@@ -27,19 +27,19 @@ private:
     template<typename>
     friend class ISSG;
 
-    [[nodiscard]] StateView get_or_create_initial_state_impl(Problem problem) {
+    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem) {
         // create the state
         int next_state_id = m_states.size();
         m_state_builder.get_id() = next_state_id;
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
-        return StateView(m_states.insert(flatmemory_builder));
+        return ConstStateView(m_states.insert(flatmemory_builder));
     }
 
-    [[nodiscard]] StateView get_or_create_successor_state_impl(StateView state, ActionView action) {
+    [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action) {
         // create a grounded state.
         // TODO (Dominik): implement
-        return StateView(nullptr);
+        return ConstStateView(nullptr);
     }
 };
 

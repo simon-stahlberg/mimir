@@ -68,7 +68,7 @@ struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, P>>>
 };
 
 template<IsPlanningModeTag P>
-struct TypeTraits<View<StateDispatcher<BitsetStateTag, P>>>
+struct TypeTraits<ConstView<StateDispatcher<BitsetStateTag, P>>>
 {
     using PlanningModeTag = P;
 };

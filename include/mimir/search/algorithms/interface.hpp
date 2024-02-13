@@ -26,9 +26,9 @@ class IAlgorithm {
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<P, S>>;
-    using ActionViewList = std::vector<ActionView>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionViewList = std::vector<ConstActionView>;
 
     IAlgorithm() = default;
     friend Derived;
@@ -38,7 +38,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    SearchStatus find_solution(ActionViewList& out_plan) { return self().find_solution_impl(out_plan); }
+    SearchStatus find_solution(ConstActionViewList& out_plan) { return self().find_solution_impl(out_plan); }
 };
 
 

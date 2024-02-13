@@ -15,10 +15,10 @@ class AAG<AAGDispatcher<GroundedTag, BitsetStateTag>>
    : public IAAG<AAG<AAGDispatcher<GroundedTag, BitsetStateTag>>>
 {
 private:
-    using StateView = View<StateDispatcher<BitsetStateTag, GroundedTag>>;
-    using ActionView = View<ActionDispatcher<GroundedTag, BitsetStateTag>>;
+    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, GroundedTag>>;
+    using ConstActionView = ConstView<ActionDispatcher<GroundedTag, BitsetStateTag>>;
 
-    void generate_applicable_actions_impl(StateView state, std::vector<ActionView>& out_applicable_actions) {
+    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) {
     }
 
     // Give access to the private interface implementations.

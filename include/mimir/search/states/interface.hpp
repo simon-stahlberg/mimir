@@ -4,7 +4,7 @@
 #include "../builder.hpp"
 #include "../config.hpp"
 #include "../type_traits.hpp"
-#include "../view.hpp"
+#include "../view_const.hpp"
 
 #include <cstdint>
 
@@ -95,7 +95,7 @@ template<IsStateDispatcher S>
 class Builder<S> : public IBuilder<Builder<S>>, public IStateBuilder<Builder<S>> {};
 
 template<IsStateDispatcher S>
-class View<S> : public IView<View<S>>, public IStateView<View<S>> {};
+class ConstView<S> : public IConstView<ConstView<S>>, public IStateView<ConstView<S>> {};
 
 
 }

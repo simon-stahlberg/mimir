@@ -28,17 +28,17 @@ template<IsPlanningModeTag P, IsStateTag S>
 class Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>
     : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>> {
 private:
-    using StateView = View<StateDispatcher<S, P>>;
-    using ActionView = View<ActionDispatcher<P, S>>;
-    using ActionViewList = std::vector<ActionView>;
+    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionViewList = std::vector<ConstActionView>;
 
     Problem m_problem;
     SSG<SSGDispatcher<P, S>> m_state_repository;
-    StateView m_initial_state;
+    ConstStateView m_initial_state;
     AAG<AAGDispatcher<P, S>> m_successor_generator;
 
     // Implement configuration independent functionality.
-    std::deque<StateView> m_queue;
+    std::deque<ConstStateView> m_queue;
 
     CostSearchNodeVector m_search_nodes;
 
@@ -47,12 +47,12 @@ private:
     template<typename>
     friend class IAlgorithm;
 
-    SearchStatus find_solution_impl(ActionViewList& out_plan) {
+    SearchStatus find_solution_impl(ConstActionViewList& out_plan) {
         auto initial_search_node = CostSearchNodeViewWrapper(this->m_search_nodes[this->m_initial_state.get_id()]);
         // TODO (Dominik): update the data of the initial_search_node
         initial_search_node.get_g_value() = 0;
 
-        auto applicable_actions = ActionViewList();
+        auto applicable_actions = ConstActionViewList();
 
         m_queue.push_back(this->m_initial_state);
         while (!m_queue.empty()) {
@@ -98,8 +98,8 @@ struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>> {
     using PlanningModeTag = P;
     using StateTag = S;
 
-    using ActionView = View<ActionDispatcher<P, S>>;
-    using ActionViewList = std::vector<ActionView>;
+    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionViewList = std::vector<ConstActionView>;
 };
 
 
