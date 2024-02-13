@@ -19,6 +19,7 @@
 
 namespace mimir
 {
+    // TODO: Try to replace data-structures with flatmemory implementations.
     bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolution_clock::time_point end_time,
                                                       const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                       const std::vector<std::vector<size_t>>& partitions,
