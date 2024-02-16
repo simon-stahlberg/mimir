@@ -21,14 +21,13 @@
 namespace mimir 
 {
     Type parse(loki::pddl::Type type, PDDLFactories& factories) {
+        std::cout << "Type parse" << std::endl;
         return factories.types.get_or_create<TypeImpl>(type->get_name(), parse(type->get_bases(), factories));
     }
 
     TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories) {
+        std::cout << "Types parse" << std::endl;
         auto result_type_list = TypeList();
-        // base case
-        if (type_list.empty()) return result_type_list;
-        // inductive case
         for (const auto& type : type_list) {
             result_type_list.push_back(parse(type, factories));
         }

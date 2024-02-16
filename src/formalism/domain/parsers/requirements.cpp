@@ -21,6 +21,7 @@
 namespace mimir 
 {
     Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories) {
+        std::cout << "Requirements parse" << std::endl;
         return factories.requirements.get_or_create<RequirementsImpl>(
             requirements->get_requirements());
     }

@@ -25,6 +25,7 @@
 namespace mimir 
 {
     Action parse(loki::pddl::Action action, PDDLFactories& factories) {
+        std::cout << "Action parse" << std::endl;
         return factories.actions.get_or_create<ActionImpl>(
             action->get_name(),
             parse(action->get_parameters(), factories), 
@@ -33,6 +34,7 @@ namespace mimir
     }
 
     ActionList parse(loki::pddl::ActionList action_list, PDDLFactories& factories) {
+        std::cout << "Actions parse" << std::endl;
         auto result_action_list = ActionList();
         for (const auto& action : action_list) {
             result_action_list.push_back(parse(action, factories));

@@ -21,6 +21,7 @@
 namespace mimir 
 {
     Variable parse(loki::pddl::Variable variable, PDDLFactories& factories) {
+        std::cout << "Variable parse" << std::endl;
         return factories.variables.get_or_create<VariableImpl>(variable->get_name());
     }
 }

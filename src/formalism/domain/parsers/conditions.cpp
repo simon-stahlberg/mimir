@@ -28,26 +28,31 @@ namespace mimir
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionLiteralImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionLiteralImpl>(parse(node.get_literal(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionAndImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionAndImpl>(parse(node.get_conditions(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionOrImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionOrImpl>(parse(node.get_conditions(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionNotImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionNotImpl>(parse(node.get_condition(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionImplyImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionImplyImpl>(
             parse(node.get_condition_left(), factories),
             parse(node.get_condition_right(), factories));
@@ -55,6 +60,7 @@ namespace mimir
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionExistsImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionExistsImpl>(
             parse(node.get_parameters(), factories),
             parse(node.get_condition(), factories));
@@ -62,6 +68,7 @@ namespace mimir
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionForallImpl& node)
     {
+        std::cout << "Condition parse" << std::endl;
         return factories.conditions.get_or_create<ConditionForallImpl>(
             parse(node.get_parameters(), factories),
             parse(node.get_condition(), factories));
@@ -70,11 +77,13 @@ namespace mimir
 
     Condition parse(loki::pddl::Condition condition, PDDLFactories& factories)
     {
+        std::cout << "Condition parse" << std::endl;
         return std::visit(ConditionVisitor(factories), *condition);
     }
 
     ConditionList parse(loki::pddl::ConditionList condition_list, PDDLFactories& factories)
     {
+        std::cout << "Conditions parse" << std::endl;
         auto result_condition_list = ConditionList();
         for (const auto& condition : condition_list) {
             result_condition_list.push_back(parse(condition, factories));

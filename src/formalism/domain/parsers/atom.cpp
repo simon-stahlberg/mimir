@@ -24,10 +24,12 @@
 namespace mimir 
 {
     Atom parse(loki::pddl::Atom atom, PDDLFactories& factories) {
+        std::cout << "Atom parse" << std::endl;
         return factories.atoms.get_or_create<AtomImpl>(parse(atom->get_predicate(), factories), parse(atom->get_terms(), factories));
     }
 
     AtomList parse(loki::pddl::AtomList atom_list, PDDLFactories& factories) {
+        std::cout << "Atom parse" << std::endl;
         auto result_atom_list = AtomList();
         for (const auto& atom : atom_list) {
             result_atom_list.push_back(parse(atom, factories));

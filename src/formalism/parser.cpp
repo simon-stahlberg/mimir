@@ -24,7 +24,7 @@ namespace mimir
         /* Parse the problem */
         std::cout << "Loki parsing problem:" << std::endl;
         auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
-         std::cout << "Problem:" << std::endl;
+        std::cout << "Problem:" << std::endl;
         std::cout << *problem_parser.get_problem() << std::endl;
         std::cout << "Mimir parsing problem:" << std::endl;
         m_problem = parse(problem_parser.get_problem(), m_factories);

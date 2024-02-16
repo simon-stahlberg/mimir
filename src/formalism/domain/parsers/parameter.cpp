@@ -24,10 +24,12 @@
 namespace mimir 
 {
     Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories) {
+        std::cout << "Parameter parse" << std::endl;
         return factories.parameters.get_or_create<ParameterImpl>(parse(parameter->get_variable(), factories), parse(parameter->get_bases(), factories));
     }
 
     ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories) {
+        std::cout << "Parameters parse" << std::endl;
         auto result_parameter_list = ParameterList();
         for (const auto& parameter : parameter_list) {
             result_parameter_list.push_back(parse(parameter, factories));
