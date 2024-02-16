@@ -24,4 +24,4 @@ jobs:
 
     - name: Test
       working-directory: build/tests/unit
-      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V --output-on-failure
