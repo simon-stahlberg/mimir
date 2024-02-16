@@ -23,6 +23,7 @@
 #include <mimir/formalism/domain/parsers/function.hpp>
 #include <mimir/formalism/domain/parsers/function_expressions.hpp>
 
+
 namespace mimir 
 {
     EffectVisitor::EffectVisitor(PDDLFactories& factories_) : factories(factories_) {}
