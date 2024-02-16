@@ -154,11 +154,10 @@ void DomainImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions
         ss << string(nested_options.indent, ' ') << parse_text(node.structures[i], nested_options) << "\n";
     }
     */
-
+    
     for (const auto& action : m_actions) {
         action->str(out, nested_options);
-    }
-
+    } 
     out << std::string(options.indent, ' ') << ")";
 }
 

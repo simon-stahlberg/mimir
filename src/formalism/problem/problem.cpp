@@ -144,7 +144,7 @@ const GroundLiteralList& ProblemImpl::get_initial_literals() const {
     return m_initial_literals;
 }
 
-const NumericFluentList& ProblemImpl::numeric_fluents() const {
+const NumericFluentList& ProblemImpl::get_numeric_fluents() const {
     return m_numeric_fluents;
 }
 

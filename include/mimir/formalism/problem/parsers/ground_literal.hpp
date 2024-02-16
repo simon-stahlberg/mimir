@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ * Copyright (C) 2023 Dominik Drexler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,13 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/formalism/problem/parser.hpp>
+#ifndef MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_LITERAL_HPP_
+#define MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_LITERAL_HPP_
+
+#include "../ground_literal.hpp"
+#include "../declarations.hpp"
+#include "../../common/types.hpp"
+
+#include <variant>
 
 
 namespace mimir 
 {
-    Problem parse(loki::pddl::Problem problem, PDDLFactories& factories) {
-        // TODO: implement
-        return nullptr;
-    } 
-}
+    extern GroundLiteral parse(loki::pddl::GroundLiteral ground_literal, PDDLFactories& factories);
+    extern GroundLiteralList parse(loki::pddl::GroundLiteralList ground_literal_list, PDDLFactories& factories);
+} 
+
+
+#endif 

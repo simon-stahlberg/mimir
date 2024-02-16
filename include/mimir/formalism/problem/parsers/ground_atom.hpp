@@ -15,26 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_ATOM_HPP_
+#define MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_ATOM_HPP_
 
-#ifndef MIMIR_FORMALISM_DOMAIN_PARSER_HPP_
-#define MIMIR_FORMALISM_DOMAIN_PARSER_HPP_
+#include "../ground_atom.hpp"
+#include "../declarations.hpp"
+#include "../../common/types.hpp"
 
-#include "declarations.hpp"
-
-#include "../common/types.hpp"
-
-#include <loki/domain/pddl/atom.hpp>
-
-#include <string>
-
+#include <variant>
 
 
 namespace mimir 
 {
-    /**
-     * Parse a loki domain into a mimir domain.
-    */
-    extern Domain parse(loki::pddl::Domain domain, PDDLFactories& factories);   
-}
+    extern GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories);
+    extern GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories);
+} 
 
-#endif
+
+#endif 

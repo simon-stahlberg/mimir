@@ -15,26 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MIMIR_FORMALISM_PROBLEM_PARSER_METRIC_HPP_
+#define MIMIR_FORMALISM_PROBLEM_PARSER_METRIC_HPP_
 
-#ifndef MIMIR_FORMALISM_PROBLEM_PARSER_HPP_
-#define MIMIR_FORMALISM_PROBLEM_PARSER_HPP_
+#include "../metric.hpp"
+#include "../declarations.hpp"
+#include "../../common/types.hpp"
 
-#include "declarations.hpp"
-
-#include "../common/types.hpp"
-
-#include <loki/domain/pddl/atom.hpp>
-
-#include <string>
-
+#include <variant>
 
 
 namespace mimir 
 {
-    /**
-     * Parse a loki domain into a mimir domain.
-    */
-    extern Problem parse(loki::pddl::Problem problem, PDDLFactories& factories);   
-}
+    extern OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories);
+} 
 
-#endif
+
+#endif 

@@ -68,7 +68,7 @@ namespace mimir
         const Requirements& get_requirements() const;
         const ObjectList& get_objects() const;
         const GroundLiteralList& get_initial_literals() const;
-        const NumericFluentList& numeric_fluents() const;
+        const NumericFluentList& get_numeric_fluents() const;
         const Condition& get_goal_condition() const;
         const std::optional<OptimizationMetric>& get_optimization_metric() const;
     };
