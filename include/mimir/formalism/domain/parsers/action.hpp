@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DOMAIN_PARSER_ATOM_HPP_
-#define MIMIR_FORMALISM_DOMAIN_PARSER_ATOM_HPP_
+#ifndef MIMIR_FORMALISM_DOMAIN_PARSER_ACTION_HPP_
+#define MIMIR_FORMALISM_DOMAIN_PARSER_ACTION_HPP_
 
 #include "../action.hpp"
 #include "../declarations.hpp"

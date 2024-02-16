@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DOMAIN_PARSER_OBJECT_HPP_
-#define MIMIR_FORMALISM_DOMAIN_PARSER_OBJECT_HPP_
-
-#include "../object.hpp"
-#include "../declarations.hpp"
-#include "../../common/types.hpp"
-
+#include <mimir/formalism/domain/parsers/requirements.hpp>
 
 
 namespace mimir 
 {
-    extern Object parse(loki::pddl::Object object, PDDLFactories& factories);
-    extern ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories);
-} 
-
-
-#endif 
+    Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories) {
+        return factories.requirements.get_or_create<RequirementsImpl>(
+            requirements->get_requirements());
+    }
+}

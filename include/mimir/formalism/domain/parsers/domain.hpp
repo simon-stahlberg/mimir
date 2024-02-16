@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_DOMAIN_PARSER_OBJECT_HPP_
-#define MIMIR_FORMALISM_DOMAIN_PARSER_OBJECT_HPP_
+#ifndef MIMIR_FORMALISM_DOMAIN_PARSER_DOMAIN_HPP_
+#define MIMIR_FORMALISM_DOMAIN_PARSER_DOMAIN_HPP_
 
-#include "../object.hpp"
+#include "../domain.hpp"
 #include "../declarations.hpp"
 #include "../../common/types.hpp"
 
@@ -26,8 +26,7 @@
 
 namespace mimir 
 {
-    extern Object parse(loki::pddl::Object object, PDDLFactories& factories);
-    extern ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories);
+    extern Domain parse(loki::pddl::Domain domain, PDDLFactories& factories);
 } 
 
 
