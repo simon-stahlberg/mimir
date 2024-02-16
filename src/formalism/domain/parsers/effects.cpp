@@ -31,13 +31,15 @@ namespace mimir
     Effect EffectVisitor::operator()(const loki::pddl::EffectLiteralImpl& node)
     {
         std::cout << "Effect parse" << std::endl;
-        return factories.effects.get_or_create<EffectLiteralImpl>(parse(node.get_literal(), factories));
+        return factories.effects.get_or_create<EffectLiteralImpl>(
+            parse(node.get_literal(), factories));
     }
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectAndImpl& node)
     {
         std::cout << "Effect parse" << std::endl;
-        return factories.effects.get_or_create<EffectAndImpl>(parse(node.get_effects(), factories));
+        return factories.effects.get_or_create<EffectAndImpl>(
+            parse(node.get_effects(), factories));
     }
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectNumericImpl& node)

@@ -24,7 +24,10 @@ namespace mimir
 {
     Object parse(loki::pddl::Object object, PDDLFactories& factories) {
         std::cout << "Object parse" << std::endl;
-        return factories.objects.get_or_create<ObjectImpl>(object->get_name(), parse(object->get_bases(), factories));
+        std::cout << object->get_name() << std::endl;
+        return factories.objects.get_or_create<ObjectImpl>(
+            object->get_name(), 
+            parse(object->get_bases(), factories));
     }
 
     ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories) {

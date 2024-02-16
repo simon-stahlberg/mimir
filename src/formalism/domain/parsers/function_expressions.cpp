@@ -26,7 +26,8 @@ namespace mimir
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionNumberImpl& node) 
     {
         std::cout << "FunctionExpression parse" << std::endl;
-        return factories.function_expressions.get_or_create<FunctionExpressionNumberImpl>(node.get_number());
+        return factories.function_expressions.get_or_create<FunctionExpressionNumberImpl>(
+            node.get_number());
     }
 
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& node)

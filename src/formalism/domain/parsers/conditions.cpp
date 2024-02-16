@@ -29,25 +29,29 @@ namespace mimir
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionLiteralImpl& node)
     {
         std::cout << "Condition parse" << std::endl;
-        return factories.conditions.get_or_create<ConditionLiteralImpl>(parse(node.get_literal(), factories));
+        return factories.conditions.get_or_create<ConditionLiteralImpl>(
+            parse(node.get_literal(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionAndImpl& node)
     {
         std::cout << "Condition parse" << std::endl;
-        return factories.conditions.get_or_create<ConditionAndImpl>(parse(node.get_conditions(), factories));
+        return factories.conditions.get_or_create<ConditionAndImpl>(
+            parse(node.get_conditions(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionOrImpl& node)
     {
         std::cout << "Condition parse" << std::endl;
-        return factories.conditions.get_or_create<ConditionOrImpl>(parse(node.get_conditions(), factories));
+        return factories.conditions.get_or_create<ConditionOrImpl>(
+            parse(node.get_conditions(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionNotImpl& node)
     {
         std::cout << "Condition parse" << std::endl;
-        return factories.conditions.get_or_create<ConditionNotImpl>(parse(node.get_condition(), factories));
+        return factories.conditions.get_or_create<ConditionNotImpl>(
+            parse(node.get_condition(), factories));
     }
 
     Condition ConditionVisitor::operator()(const loki::pddl::ConditionImplyImpl& node)

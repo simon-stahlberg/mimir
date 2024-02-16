@@ -24,7 +24,9 @@ namespace mimir
 {
     Literal parse(loki::pddl::Literal literal, PDDLFactories& factories) {
         std::cout << "Literal parse" << std::endl;
-        return factories.literals.get_or_create<LiteralImpl>(literal->is_negated(), parse(literal->get_atom(), factories));
+        return factories.literals.get_or_create<LiteralImpl>(
+            literal->is_negated(), 
+            parse(literal->get_atom(), factories));
     }
 
     LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories) {
