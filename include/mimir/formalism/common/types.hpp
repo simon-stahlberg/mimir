@@ -103,6 +103,21 @@ namespace mimir
         PDDLFactories& operator=(const PDDLFactories& other) = delete;
         PDDLFactories(PDDLFactories&& other) = delete;
         PDDLFactories& operator=(PDDLFactories&& other) = delete;
+
+
+        /// @brief Get or create a ground atom for the given parameters.
+        ///
+        ///        This function allows us to can change the underlying representation and storage.
+        GroundAtom get_or_create_ground_atom(Predicate predicate, ObjectList objects) {
+            return ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
+        }
+
+        /// @brief Get or create a ground literal for the given parameters.
+        ///
+        ///        This function allows us to can change the underlying representation and storage.
+        GroundLiteral get_or_create_ground_literal(bool is_negated, GroundAtom atom) {
+            return ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
+        }
     };
 } 
 

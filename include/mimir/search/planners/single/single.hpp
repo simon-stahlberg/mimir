@@ -64,7 +64,7 @@ private:
 public:
     Planner(const fs::path& domain_file_path, const fs::path& problem_file_path)
         : m_parser(PDDLParser(domain_file_path, problem_file_path))
-        , m_algorithm(Algorithm<AlgorithmDispatcher<A>>(m_parser.get_problem())) 
+        , m_algorithm(Algorithm<AlgorithmDispatcher<A>>(m_parser.get_problem(), m_parser.get_factories())) 
     { 
     }
 };

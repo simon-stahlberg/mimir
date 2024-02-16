@@ -11,6 +11,7 @@
 
 #include "../../common/mixins.hpp"
 #include "../../formalism/problem/declarations.hpp"
+#include "../../formalism/common/types.hpp"
 
 
 namespace mimir

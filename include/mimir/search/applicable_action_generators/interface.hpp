@@ -6,6 +6,7 @@
 #include "../type_traits.hpp"
 
 #include "../../formalism/problem/declarations.hpp"
+#include "../../formalism/common/types.hpp"
 
 
 namespace mimir

@@ -20,6 +20,8 @@ private:
     using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;
     using ConstActionView = ConstView<ActionDispatcher<P, BitsetStateTag>>;
 
+    Problem m_problem;
+
     BitsetStateSet m_states;
     Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
 
@@ -41,6 +43,10 @@ private:
         // TODO (Dominik): implement
         return ConstStateView(nullptr);
     }
+
+public:
+    explicit SSG(Problem problem) 
+        : m_problem(problem) {}
 };
 
 

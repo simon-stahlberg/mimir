@@ -18,15 +18,14 @@ add_executable(${TEST_NAME}
     "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"
-    "search/applicable_action_generators/default-grounded.cpp"
-    "search/applicable_action_generators/default-lifted.cpp"
+    "search/applicable_action_generators/bitset-grounded.cpp"
+    "search/applicable_action_generators/bitset-lifted.cpp"
     "search/heuristics/blind.cpp"
     "search/openlists/priority_queue.cpp"
     "search/planners/single.cpp"
     "search/search_nodes/cost.cpp"
     "search/states/bitset/bitset.cpp"
-    "search/successor_state_generators/default-grounded.cpp"
-    "search/successor_state_generators/default-lifted.cpp"
+    "search/successor_state_generators/bitset.cpp"
 )
 
 target_link_libraries(${TEST_NAME}

@@ -48,11 +48,11 @@ private:
 
 
 public:
-    Algorithm(const Problem& problem)
+    Algorithm(const Problem& problem, PDDLFactories& pddl_factories)
         : m_problem(problem)
-        , m_state_repository(SSG<SSGDispatcher<P, S>>())
+        , m_state_repository(SSG<SSGDispatcher<P, S>>(problem))
         , m_initial_state(m_state_repository.get_or_create_initial_state(problem))
-        , m_successor_generator(AAG<AAGDispatcher<P, S>>())
+        , m_successor_generator(AAG<AAGDispatcher<P, S>>(problem, pddl_factories))
         , m_heuristic(problem) { }
 };
 
