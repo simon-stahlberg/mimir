@@ -44,7 +44,9 @@ endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 
+set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 add_definitions(-DDATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
+message("DATA_DIR: ${DATA_DIR}")
 
 ##############################################################
 # CMake modules and macro files
