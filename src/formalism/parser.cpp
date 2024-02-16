@@ -12,13 +12,17 @@ namespace mimir
     PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem_file_path)
     { 
         /* Parse the domain */
+        std::cout << "Loki parsing domain:" << std::endl;
         auto domain_parser = loki::DomainParser(domain_file_path);
+        std::cout << "Mimir parsing domain:" << std::endl;
         m_domain = parse(domain_parser.get_domain(), m_factories);
         std::cout << "Domain:" << std::endl;
         std::cout << *m_domain << std::endl;
 
         /* Parse the problem */
+        std::cout << "Loki parsing problem:" << std::endl;
         auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
+        std::cout << "Mimir parsing problem:" << std::endl;
         m_problem = parse(problem_parser.get_problem(), m_factories);
         std::cout << "Problem:" << std::endl;
         std::cout << *m_problem << std::endl;
