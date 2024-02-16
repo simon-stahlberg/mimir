@@ -14,11 +14,13 @@ namespace mimir
         /* Parse the domain */
         auto domain_parser = loki::DomainParser(domain_file_path);
         m_domain = parse(domain_parser.get_domain(), m_factories);
+        std::cout << "Domain:" << std::endl;
         std::cout << *m_domain << std::endl;
 
         /* Parse the problem */
         auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
         m_problem = parse(problem_parser.get_problem(), m_factories);
+        std::cout << "Problem:" << std::endl;
         std::cout << *m_problem << std::endl;
     }
 
