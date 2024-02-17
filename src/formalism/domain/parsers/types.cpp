@@ -21,9 +21,6 @@
 namespace mimir 
 {
     Type parse(loki::pddl::Type type, PDDLFactories& factories) {
-        std::cout << "type: " << type << std::endl;
-        std::cout << "name: " << type->get_name() << std::endl;
-        std::cout << "bases: " << type->get_bases().size() << std::endl;
         return factories.types.get_or_create<TypeImpl>(
             type->get_name(), 
             parse(type->get_bases(), factories));
@@ -32,7 +29,7 @@ namespace mimir
     TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories) {
         auto result_type_list = TypeList();
         for (const auto& type : type_list) {
-            //result_type_list.push_back(parse(type, factories));
+            result_type_list.push_back(parse(type, factories));
         }
         return result_type_list;
     }

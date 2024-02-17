@@ -20,15 +20,30 @@ jobs:
         cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build -j$(nproc)
 
-    - name: Configure, and Build Mimir
+    # Debug
+    - name: Debug, Configure, and Build Mimir
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -S . -B build -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
-        cmake --build build -j$(nproc)
+        cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -S . -B build_debug -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
+        cmake --build build_debug -j$(nproc)
 
-    - name: Test
-      working-directory: build/tests/unit
+    - name: Debug Valgrind Test
+      working-directory: build_debug/tests/unit
       run: valgrind --leak-check=full --track-origins=yes ./mimir_tests
 
-    - name: Test
-      working-directory: build/tests/unit
-      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V --output-on-failure
+    - name: Debug Test
+      working-directory: build_debug/tests/unit
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
+
+    # Release
+    - name: Release, Configure, and Build Mimir
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=ON -S . -B build_release -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
+        cmake --build build_release -j$(nproc)
+
+    - name: Release Valgrind Test
+      working-directory: build_release/tests/unit
+      run: valgrind --leak-check=full --track-origins=yes ./mimir_tests
+
+    - name: Release Test
+      working-directory: build_release/tests/unit
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
