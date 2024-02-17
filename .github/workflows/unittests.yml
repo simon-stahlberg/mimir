@@ -27,7 +27,7 @@ jobs:
 
     - name: Test
       working-directory: build/tests/unit
-      run: valgrind --leak-check=full ./mimir_tests
+      run: valgrind --leak-check=full --track-origins=yes ./mimir_tests
 
     - name: Test
       working-directory: build/tests/unit
