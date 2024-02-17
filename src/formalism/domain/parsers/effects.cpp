@@ -30,21 +30,18 @@ namespace mimir
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectLiteralImpl& node)
     {
-        std::cout << "Effect parse" << std::endl;
         return factories.effects.get_or_create<EffectLiteralImpl>(
             parse(node.get_literal(), factories));
     }
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectAndImpl& node)
     {
-        std::cout << "Effect parse" << std::endl;
         return factories.effects.get_or_create<EffectAndImpl>(
             parse(node.get_effects(), factories));
     }
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectNumericImpl& node)
     {
-        std::cout << "Effect parse" << std::endl;
         return factories.effects.get_or_create<EffectNumericImpl>(
             node.get_assign_operator(),
             parse(node.get_function(), factories),
@@ -53,7 +50,6 @@ namespace mimir
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectConditionalForallImpl& node)
     {
-        std::cout << "Effect parse" << std::endl;
         return factories.effects.get_or_create<EffectConditionalForallImpl>(
             parse(node.get_parameters(), factories),
             parse(node.get_effect(), factories));
@@ -61,7 +57,6 @@ namespace mimir
 
     Effect EffectVisitor::operator()(const loki::pddl::EffectConditionalWhenImpl& node)
     {
-        std::cout << "Effect parse" << std::endl;
         return factories.effects.get_or_create<EffectConditionalWhenImpl>(
             parse(node.get_condition(), factories),
             parse(node.get_effect(), factories));
@@ -70,13 +65,11 @@ namespace mimir
 
     Effect parse(loki::pddl::Effect effect, PDDLFactories& factories) 
     {
-        std::cout << "Effect parse" << std::endl;
         return std::visit(EffectVisitor(factories), *effect);
     }
 
     EffectList parse(loki::pddl::EffectList effect_list, PDDLFactories& factories)
     {
-        std::cout << "Effects parse" << std::endl;
         auto result_effect_list = EffectList();
         for (const auto& effect : effect_list) {
             result_effect_list.push_back(parse(effect, factories));

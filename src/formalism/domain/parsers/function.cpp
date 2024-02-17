@@ -25,7 +25,6 @@ namespace mimir
 {
     Function parse(loki::pddl::Function function, PDDLFactories& factories) 
     {
-        std::cout << "Function parse" << std::endl;
         return factories.functions.get_or_create<FunctionImpl>(
             parse(function->get_function_skeleton(), factories), 
             parse(function->get_terms(), factories));
@@ -33,7 +32,6 @@ namespace mimir
 
     FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories) 
     {
-        std::cout << "Functions parse" << std::endl;
         auto result_function_list = FunctionList();
         for (const auto& function : function_list) {
             result_function_list.push_back(parse(function, factories));

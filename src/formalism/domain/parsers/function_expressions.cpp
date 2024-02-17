@@ -25,14 +25,12 @@ namespace mimir
 
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionNumberImpl& node) 
     {
-        std::cout << "FunctionExpression parse" << std::endl;
         return factories.function_expressions.get_or_create<FunctionExpressionNumberImpl>(
             node.get_number());
     }
 
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& node)
     {
-        std::cout << "FunctionExpression parse" << std::endl;
         return factories.function_expressions.get_or_create<FunctionExpressionBinaryOperatorImpl>(
             node.get_binary_operator(), 
             parse(node.get_left_function_expression(), factories),
@@ -41,7 +39,6 @@ namespace mimir
 
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionMultiOperatorImpl& node)
     {
-        std::cout << "FunctionExpression parse" << std::endl;
         return factories.function_expressions.get_or_create<FunctionExpressionMultiOperatorImpl>(
             node.get_multi_operator(), 
             parse(node.get_function_expressions(), factories));
@@ -49,14 +46,12 @@ namespace mimir
 
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionMinusImpl& node)
     {
-        std::cout << "FunctionExpression parse" << std::endl;
         return factories.function_expressions.get_or_create<FunctionExpressionMinusImpl>(
             parse(node.get_function_expression(), factories));
     }
 
     FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionFunctionImpl& node)
     {
-        std::cout << "FunctionExpression parse" << std::endl;
         return factories.function_expressions.get_or_create<FunctionExpressionFunctionImpl>(
             parse(node.get_function(), factories));
     }
@@ -64,13 +59,11 @@ namespace mimir
 
     FunctionExpression parse(loki::pddl::FunctionExpression function_expression, PDDLFactories& factories)
     {
-        std::cout << "FunctionExpression parse" << std::endl;
         return std::visit(FunctionExpressionVisitor(factories), *function_expression);
     }
 
     FunctionExpressionList parse(loki::pddl::FunctionExpressionList function_expression_list, PDDLFactories& factories)
     {
-        std::cout << "FunctionExpressions parse" << std::endl;
         auto result_function_expression_list = FunctionExpressionList();
         for (const auto& function_expression : function_expression_list) {
             result_function_expression_list.push_back(parse(function_expression, factories));

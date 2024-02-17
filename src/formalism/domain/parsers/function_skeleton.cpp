@@ -25,7 +25,6 @@ namespace mimir
 {
     FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories)
     {
-        std::cout << "FunctionSkeleton parse" << std::endl;
         return factories.function_skeletons.get_or_create<FunctionSkeletonImpl>(
             function_skeleton->get_name(), 
             parse(function_skeleton->get_parameters(), factories), 
@@ -34,7 +33,6 @@ namespace mimir
 
     FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories) 
     {
-        std::cout << "FunctionSkeletons parse" << std::endl;
         auto result_function_skeleton_list = FunctionSkeletonList();
         for (const auto& function_skeleton : function_skeleton_list) {
             result_function_skeleton_list.push_back(parse(function_skeleton, factories));

@@ -27,7 +27,6 @@
 namespace mimir 
 {
     Domain parse(loki::pddl::Domain domain, PDDLFactories& factories) {
-        std::cout << "Domain parse" << std::endl;
         return factories.domains.get_or_create<DomainImpl>(
             domain->get_name(),
             parse(domain->get_requirements(), factories),
