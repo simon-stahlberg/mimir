@@ -36,7 +36,7 @@ namespace mimir
         auto result_type_list = TypeList();
         for (const auto& type : type_list) {
             std::cout << type << std::endl;
-            //result_type_list.push_back(parse(type, factories));
+            result_type_list.push_back(parse(type, factories));
         }
         return result_type_list;
     }

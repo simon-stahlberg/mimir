@@ -10,6 +10,9 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: templated-design
+      
+    - name: Install Valgrind
+      run: sudo apt-get install -y valgrind
 
     - name: Configure, Build, and Install Dependencies
       run: |
@@ -21,6 +24,10 @@ jobs:
       run: |
         cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -S . -B build -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build -j$(nproc)
+
+    - name: Test
+      working-directory: build/tests/unit
+      run: valgrind --leak-check=full ./mimir_tests
 
     - name: Test
       working-directory: build/tests/unit
