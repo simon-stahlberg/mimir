@@ -25,6 +25,7 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -S . -B build -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build -j$(nproc)
 
+
     - name: Test
       working-directory: build/tests/unit
       run: valgrind --leak-check=full --track-origins=yes ./mimir_tests
