@@ -21,6 +21,7 @@
 namespace mimir 
 {
     Type parse(loki::pddl::Type type, PDDLFactories& factories) {
+        std::cout << "type: " << type << std::endl;
         return factories.types.get_or_create<TypeImpl>(
             type->get_name(), 
             parse(type->get_bases(), factories));
