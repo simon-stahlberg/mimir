@@ -24,7 +24,7 @@ namespace mimir
         std::cout << "Type parse" << std::endl;
         std::cout << type->get_name() << std::endl;
         std::cout << type->get_bases().size() << std::endl;
-        
+
         auto result = factories.types.get_or_create<TypeImpl>(
             type->get_name(), 
             parse(type->get_bases(), factories));
@@ -35,6 +35,7 @@ namespace mimir
         std::cout << "Types parse" << std::endl;
         auto result_type_list = TypeList();
         for (const auto& type : type_list) {
+            std::cout << type << std::endl;
             result_type_list.push_back(parse(type, factories));
         }
         return result_type_list;
