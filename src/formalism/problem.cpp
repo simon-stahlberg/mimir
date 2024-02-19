@@ -76,6 +76,10 @@ namespace mimir::formalism
 
     const mimir::formalism::AtomSet& ProblemImpl::get_static_atoms() const { return static_atoms_; }
 
+    void ProblemImpl::set_path(const fs::path& path) { path_ = path; }
+
+    fs::path ProblemImpl::get_path() const { return path_; }
+
     uint32_t ProblemImpl::get_rank(const mimir::formalism::Atom& atom) const
     {
         auto& rank_with_offset = atom_ranks_[atom];

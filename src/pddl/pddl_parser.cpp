@@ -390,7 +390,9 @@ namespace mimir::parsers
             throw std::invalid_argument("could not open problem file");
         }
 
-        return parse(domain, problem_path.filename().string(), stream);
+        auto problem = parse(domain, problem_path.filename().string(), stream);
+        problem->set_path(problem_path);
+        return problem;
     }
 
     mimir::formalism::ProblemDescription ProblemParser::parse(const mimir::formalism::DomainDescription& domain, const std::string& name, std::istream& stream)

@@ -14,6 +14,15 @@
 #include <string>
 #include <vector>
 
+// Older versions of LibC++ does not have filesystem (e.g., ubuntu 18.04), use the experimental version
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
+
 namespace mimir::formalism
 {
     class ProblemImpl
@@ -21,6 +30,7 @@ namespace mimir::formalism
       private:
         mimir::formalism::AtomSet static_atoms_;
         std::vector<bool> predicate_id_to_static_;
+        fs::path path_;
         mutable mimir::tsl::robin_map<mimir::formalism::Atom, uint32_t> atom_ranks_;
         mutable mimir::formalism::AtomList rank_to_atom_;
         mutable std::vector<uint32_t> rank_to_predicate_id_;
@@ -45,6 +55,10 @@ namespace mimir::formalism
         mimir::formalism::ProblemDescription replace_initial(const mimir::formalism::AtomList& initial) const;
 
         const mimir::formalism::AtomSet& get_static_atoms() const;
+
+        void set_path(const fs::path& path);
+
+        fs::path get_path() const;
 
         uint32_t get_rank(const mimir::formalism::Atom& atom) const;
 
