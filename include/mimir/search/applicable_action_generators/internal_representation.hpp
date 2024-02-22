@@ -30,13 +30,14 @@ public:
     size_t arity;
     bool negated;
 
-    FlatLiteral(Literal literal, const std::map<Object, size_t>& parameter_indices);
+    FlatLiteral(Literal literal, const std::map<Parameter, size_t>& to_index, const std::map<Variable, Parameter>& to_parameter);
 };
 
 class FlatActionSchema
 {
 private:
-    std::map<Parameter, size_t> parameter_indices_;
+    std::map<Parameter, size_t> to_index_;
+    std::map<Variable, Parameter> to_parameter_;
     std::vector<Parameter> index_parameters_;
 
 public:

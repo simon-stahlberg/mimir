@@ -11,7 +11,7 @@
 #include <vector>
 
 
-namespace loki 
+namespace loki
 {
     template<typename HolderType, ElementsPerSegment N>
     class PersistentFactory;
@@ -20,7 +20,7 @@ namespace loki
 
 namespace mimir
 {
-    class DomainImpl : public loki::Base<DomainImpl> 
+    class DomainImpl : public loki::Base<DomainImpl>
     {
     private:
         std::string m_name;
@@ -28,6 +28,8 @@ namespace mimir
         TypeList m_types;
         ObjectList m_constants;
         PredicateList m_predicates;
+        PredicateList m_static_predicates;
+        PredicateList m_fluent_predicates;
         FunctionSkeletonList m_functions;
         ActionList m_actions;
 
@@ -60,10 +62,12 @@ namespace mimir
         const TypeList& get_types() const;
         const ObjectList& get_constants() const;
         const PredicateList& get_predicates() const;
+        const PredicateList& get_static_predicates() const;
+        const PredicateList& get_fluent_predicates() const;
         const FunctionSkeletonList& get_functions() const;
         const ActionList& get_actions() const;
     };
-} 
+}
 
 namespace std
 {
@@ -73,12 +77,12 @@ namespace std
     {
         bool operator()(const mimir::Domain& domain_left, const mimir::Domain& domain_right) const;
     };
-    
+
     template<>
     struct hash<mimir::DomainImpl>
     {
         std::size_t operator()(const mimir::DomainImpl& domain) const;
     };
-}  
+}
 
-#endif  
+#endif

@@ -48,9 +48,19 @@ DomainImpl::DomainImpl(int identifier,
     , m_types(std::move(types))
     , m_constants(std::move(constants))
     , m_predicates(std::move(predicates))
+    , m_static_predicates()
+    , m_fluent_predicates()
     , m_functions(std::move(functions))
     , m_actions(std::move(actions))
 {
+    for (const auto& predicate : m_predicates) {
+        if (any_affects(m_actions, predicate)) {
+            m_fluent_predicates.emplace_back(predicate);
+        }
+        else {
+            m_static_predicates.emplace_back(predicate);
+        }
+    }
 }
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const {
@@ -154,10 +164,10 @@ void DomainImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions
         ss << string(nested_options.indent, ' ') << parse_text(node.structures[i], nested_options) << "\n";
     }
     */
-    
+
     for (const auto& action : m_actions) {
         action->str(out, nested_options);
-    } 
+    }
     out << std::string(options.indent, ' ') << ")";
 }
 
@@ -179,6 +189,14 @@ const ObjectList& DomainImpl::get_constants() const {
 
 const PredicateList& DomainImpl::get_predicates() const {
     return m_predicates;
+}
+
+const PredicateList& DomainImpl::get_static_predicates() const {
+    return m_static_predicates;
+}
+
+const PredicateList& DomainImpl::get_fluent_predicates() const {
+    return m_fluent_predicates;
 }
 
 const ActionList& DomainImpl::get_actions() const {

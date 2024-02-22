@@ -17,9 +17,12 @@
 
 #include <mimir/formalism/domain/action.hpp>
 
-#include <mimir/formalism/domain/parameter.hpp>
+#include <mimir/formalism/domain/atom.hpp>
 #include <mimir/formalism/domain/conditions.hpp>
 #include <mimir/formalism/domain/effects.hpp>
+#include <mimir/formalism/domain/literal.hpp>
+#include <mimir/formalism/domain/parameter.hpp>
+#include <mimir/formalism/domain/predicate.hpp>
 
 #include <loki/common/hash.hpp>
 #include <loki/common/collections.hpp>
@@ -92,6 +95,53 @@ namespace mimir
 
     size_t ActionImpl::get_arity() const {
         return m_parameters.size();
+    }
+
+    static bool effect_contains(Effect effect, Predicate predicate) {
+        if (const auto* effect_literal = std::get_if<EffectLiteralImpl>(effect)) {
+            const auto& literal_predicate = effect_literal->get_literal()->get_atom()->get_predicate();
+            return predicate == literal_predicate;
+        }
+        else if (const auto* effect_and = std::get_if<EffectAndImpl>(effect)) {
+            for (const auto& inner_effect : effect_and->get_effects()) {
+                if (effect_contains(inner_effect, predicate)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        else if (const auto* effect_numeric = std::get_if<EffectNumericImpl>(effect)) {
+            throw std::runtime_error("not implemented");
+        }
+        else if (const auto* effect_forall = std::get_if<EffectConditionalForallImpl>(effect)) {
+            return effect_contains(effect_forall->get_effect(), predicate);
+        }
+        else if (const auto* effect_when = std::get_if<EffectConditionalWhenImpl>(effect)) {
+            return effect_contains(effect_when->get_effect(), predicate);
+        }
+
+        throw std::runtime_error("internal error");
+    }
+
+    /// @brief Returns true if the predicate is present in the effect, otherwise false.
+    bool ActionImpl::affects(Predicate predicate) const {
+        if (m_effect.has_value()) {
+            return effect_contains(m_effect.value(), predicate);
+        }
+
+        return false;
+    }
+
+    /// @brief Returns true if the predicate is present in the effect of any action, otherwise false.
+    bool any_affects(const ActionList& actions, Predicate predicate) {
+        for (const auto& action : actions) {
+            if (action->affects(predicate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

@@ -66,7 +66,11 @@ namespace mimir
         const std::optional<Condition>& get_condition() const;
         const std::optional<Effect>& get_effect() const;
         size_t get_arity() const;
+
+        bool affects(Predicate predicate) const;
     };
+
+    bool any_affects(const ActionList& actions, Predicate predicate);
 }
 
 
