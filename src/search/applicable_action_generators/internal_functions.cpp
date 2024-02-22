@@ -1,17 +1,18 @@
+#include <mimir/formalism/common/types.hpp>
 #include <mimir/search/applicable_action_generators/internal_functions.hpp>
 
 namespace mimir
 {
 
-    Assignment::Assignment(size_t parameter_index, size_t object_id) : parameter_index(parameter_index), object_id(object_id) {}
+Assignment::Assignment(size_t parameter_index, size_t object_id) : parameter_index(parameter_index), object_id(object_id) {}
 
-    AssignmentPair::AssignmentPair(size_t first_position, const Assignment& first_assignment, size_t second_position, const Assignment& second_assignment) :
-        first_position(first_position),
-        second_position(second_position),
-        first_assignment(first_assignment),
-        second_assignment(second_assignment)
-    {
-    }
+AssignmentPair::AssignmentPair(size_t first_position, const Assignment& first_assignment, size_t second_position, const Assignment& second_assignment) :
+    first_position(first_position),
+    second_position(second_position),
+    first_assignment(first_assignment),
+    second_assignment(second_assignment)
+{
+}
 
 size_t get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects)
 {

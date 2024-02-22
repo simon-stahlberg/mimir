@@ -1,3 +1,9 @@
+#include <mimir/formalism/domain/action.hpp>
+#include <mimir/formalism/domain/atom.hpp>
+#include <mimir/formalism/domain/literal.hpp>
+#include <mimir/formalism/domain/parameter.hpp>
+#include <mimir/formalism/domain/predicate.hpp>
+#include <mimir/formalism/domain/term.hpp>
 #include <mimir/search/applicable_action_generators/internal_representation.hpp>
 
 namespace mimir
