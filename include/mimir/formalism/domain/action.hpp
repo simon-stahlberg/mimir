@@ -27,16 +27,16 @@
 #include <optional>
 
 
-namespace loki 
+namespace loki
 {
     template<typename HolderType, ElementsPerSegment N>
     class PersistentFactory;
 }
 
 
-namespace mimir 
+namespace mimir
 {
-    class ActionImpl : public loki::Base<ActionImpl> 
+    class ActionImpl : public loki::Base<ActionImpl>
     {
     private:
         std::string m_name;
@@ -65,11 +65,12 @@ namespace mimir
         const ParameterList& get_parameters() const;
         const std::optional<Condition>& get_condition() const;
         const std::optional<Effect>& get_effect() const;
+        size_t get_arity() const;
     };
 }
 
 
-namespace std 
+namespace std
 {
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>

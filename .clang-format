@@ -25,7 +25,7 @@ ColumnLimit: '160'
 CompactNamespaces: 'false'
 ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
 Cpp11BracedListStyle: 'false'
-FixNamespaceComments: 'true'
+FixNamespaceComments: 'false'
 IncludeBlocks: Regroup
 IndentAccessModifiers: 'false'
 IndentCaseLabels: 'false'

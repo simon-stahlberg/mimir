@@ -59,6 +59,10 @@ const ObjectList& GroundAtomImpl::get_objects() const {
     return m_objects;
 }
 
+size_t GroundAtomImpl::get_arity() const {
+    return m_objects.size();
+}
+
 }
 
 

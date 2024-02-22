@@ -26,16 +26,16 @@
 #include <string>
 
 
-namespace loki 
+namespace loki
 {
     template<typename HolderType, ElementsPerSegment N>
     class PersistentFactory;
 }
 
 
-namespace mimir 
+namespace mimir
 {
-    class GroundAtomImpl : public loki::Base<GroundAtomImpl> 
+    class GroundAtomImpl : public loki::Base<GroundAtomImpl>
     {
     private:
         Predicate m_predicate;
@@ -60,11 +60,12 @@ namespace mimir
     public:
         const Predicate& get_predicate() const;
         const ObjectList& get_objects() const;
+        size_t get_arity() const;
     };
 }
 
 
-namespace std 
+namespace std
 {
     // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
     template<>

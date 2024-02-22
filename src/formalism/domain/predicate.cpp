@@ -25,7 +25,7 @@
 
 #include <memory>
 
-namespace mimir 
+namespace mimir
 {
     PredicateImpl::PredicateImpl(int identifier, std::string name, ParameterList parameters)
         : Base(identifier)
@@ -62,10 +62,14 @@ namespace mimir
     const ParameterList& PredicateImpl::get_parameters() const {
         return m_parameters;
     }
+
+    size_t PredicateImpl::get_arity() const {
+        return m_parameters.size();
+    }
 }
 
 
-namespace std 
+namespace std
 {
     bool less<mimir::Predicate>::operator()(
         const mimir::Predicate& left_predicate,

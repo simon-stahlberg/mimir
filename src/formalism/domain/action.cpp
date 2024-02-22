@@ -26,7 +26,7 @@
 #include <loki/common/pddl/visitors.hpp>
 
 
-namespace mimir 
+namespace mimir
 {
     ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect)
         : Base(identifier)
@@ -88,6 +88,10 @@ namespace mimir
 
     const std::optional<Effect>& ActionImpl::get_effect() const {
         return m_effect;
+    }
+
+    size_t ActionImpl::get_arity() const {
+        return m_parameters.size();
     }
 }
 
