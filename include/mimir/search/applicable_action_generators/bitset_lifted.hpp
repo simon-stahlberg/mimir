@@ -20,12 +20,13 @@ private:
 
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
+    std::vector<FlatActionSchema> m_flat_action_schemas;
 
-    bool nullary_preconditions_hold(ConstStateView state)
+    bool nullary_preconditions_hold(FlatActionSchema action_schema, ConstStateView state)
     {
         throw std::runtime_error("not implemented");
 
-        // for (const auto& literal : flat_action_schema_.fluent_precondition)
+        // for (const auto& literal : action_schema.fluent_precondition)
         // {
         //     if ((literal.arity == 0) && !mimir::formalism::literal_holds(literal.source, state))
         //     {
@@ -36,7 +37,7 @@ private:
         // return true;
     }
 
-    bool nullary_case(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) const
+    bool nullary_case(FlatActionSchema action_schema, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) const
     {
         throw std::runtime_error("not implemented");
 
@@ -50,7 +51,7 @@ private:
         // return true;
     }
 
-    void unary_case(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) const
+    void unary_case(FlatActionSchema action_schema, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) const
     {
         throw std::runtime_error("not implemented");
 
@@ -72,7 +73,10 @@ private:
         // return true;
     }
 
-    void general_case(ConstStateView state, const std::vector<std::vector<bool>>& assignment_sets, std::vector<ConstActionView>& out_applicable_actions) const
+    void general_case(const std::vector<std::vector<bool>>& assignment_sets,
+                      FlatActionSchema action_schema,
+                      ConstStateView state,
+                      std::vector<ConstActionView>& out_applicable_actions) const
     {
         throw std::runtime_error("not implemented");
 
