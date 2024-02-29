@@ -1,9 +1,6 @@
-#include <mimir/search/search_nodes.hpp>
-
 #include <flatmemory/flatmemory.hpp>
-
 #include <gtest/gtest.h>
-
+#include <mimir/search/search_nodes.hpp>
 
 namespace mimir::tests
 {
@@ -12,8 +9,8 @@ using SearchNodeBuilder = flatmemory::Builder<flatmemory::Tuple<SearchNodeStatus
 using SearchNodeView = flatmemory::View<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>;
 using SearchNodeVector = flatmemory::FixedSizedTypeVector<flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>>;
 
-
-TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
+TEST(MimirTests, SearchSearchNodesCostBuilderTest)
+{
     // Build a search node.
     auto search_node_builder = CostSearchNodeBuilderWrapper(SearchNodeBuilder());
     search_node_builder.set_status(SearchNodeStatus::OPEN);
@@ -36,8 +33,8 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest) {
     EXPECT_EQ(search_node_view.get_g_value(), 40);
 }
 
-
-TEST(MimirTests, SearchSearchNodesCostVectorTest) {
+TEST(MimirTests, SearchSearchNodesCostVectorTest)
+{
     /* A vector that automatically resizes when accessing elements at index i
        and creating default constructed objects.
        There is only 1 heap allocation every few thousand nodes that are being created. */
@@ -66,7 +63,6 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest) {
     auto search_node_1 = CostSearchNodeViewWrapper(vector[1]);
     EXPECT_EQ(search_node_1.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_1.get_g_value(), 42);
-
 }
 
 }

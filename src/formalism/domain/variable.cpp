@@ -15,48 +15,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+#include <loki/common/collections.hpp>
+#include <loki/common/hash.hpp>
 #include <mimir/formalism/domain/variable.hpp>
 
-#include <loki/common/hash.hpp>
-#include <loki/common/collections.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    VariableImpl::VariableImpl(int identifier, std::string name)
-        : Base(identifier)
-        , m_name(std::move(name))
-    {
-    }
+VariableImpl::VariableImpl(int identifier, std::string name) : Base(identifier), m_name(std::move(name)) {}
 
-    bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const {
-        return (m_name == other.m_name);
-    }
+bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const { return (m_name == other.m_name); }
 
-    size_t VariableImpl::hash_impl() const {
-        return loki::hash_combine(m_name);
-    }
+size_t VariableImpl::hash_impl() const { return loki::hash_combine(m_name); }
 
-    void VariableImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const {
-        out << m_name;
-    }
+void VariableImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
 
-    const std::string& VariableImpl::get_name() const {
-        return m_name;
-    }
+const std::string& VariableImpl::get_name() const { return m_name; }
 }
 
-
-namespace std 
+namespace std
 {
-    bool less<mimir::Variable>::operator()(
-        const mimir::Variable& left_variable,
-        const mimir::Variable& right_variable) const {
-        return *left_variable < *right_variable;
-    }
+bool less<mimir::Variable>::operator()(const mimir::Variable& left_variable, const mimir::Variable& right_variable) const
+{
+    return *left_variable < *right_variable;
+}
 
-    std::size_t hash<mimir::VariableImpl>::operator()(const mimir::VariableImpl& variable) const {
-        return variable.hash();
-    }
+std::size_t hash<mimir::VariableImpl>::operator()(const mimir::VariableImpl& variable) const { return variable.hash(); }
 }

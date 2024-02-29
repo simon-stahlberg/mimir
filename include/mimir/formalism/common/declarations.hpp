@@ -20,12 +20,11 @@
 
 #include <cstddef>
 
-
-namespace mimir {
+namespace mimir
+{
 
 using ElementsPerSegment = size_t;
 
 }  // namespace mimir
 
 #endif  // MIMIR_FORMALISM_COMMON_DECLARATIONS_HPP_
-

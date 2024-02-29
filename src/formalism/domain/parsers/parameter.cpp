@@ -16,24 +16,23 @@
  */
 
 #include <mimir/formalism/domain/parsers/parameter.hpp>
-
 #include <mimir/formalism/domain/parsers/type.hpp>
 #include <mimir/formalism/domain/parsers/variable.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories) {
-        return factories.parameters.get_or_create<ParameterImpl>(
-            parse(parameter->get_variable(), factories), 
-            parse(parameter->get_bases(), factories));
-    }
+Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories)
+{
+    return factories.parameters.get_or_create<ParameterImpl>(parse(parameter->get_variable(), factories), parse(parameter->get_bases(), factories));
+}
 
-    ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories) {
-        auto result_parameter_list = ParameterList();
-        for (const auto& parameter : parameter_list) {
-            result_parameter_list.push_back(parse(parameter, factories));
-        }
-        return result_parameter_list;
+ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories)
+{
+    auto result_parameter_list = ParameterList();
+    for (const auto& parameter : parameter_list)
+    {
+        result_parameter_list.push_back(parse(parameter, factories));
     }
+    return result_parameter_list;
+}
 }

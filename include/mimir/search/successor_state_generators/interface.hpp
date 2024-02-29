@@ -1,21 +1,19 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
-#include "../config.hpp"
-#include "../states.hpp"
-#include "../actions.hpp"
-#include "../type_traits.hpp"
-
 #include "../../common/mixins.hpp"
 #include "../../formalism/problem/declarations.hpp"
-
+#include "../actions.hpp"
+#include "../config.hpp"
+#include "../states.hpp"
+#include "../type_traits.hpp"
 
 namespace mimir
 {
 
 /**
  * Interface class
-*/
+ */
 template<typename Derived>
 class ISSG
 {
@@ -33,15 +31,13 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] ConstStateView get_or_create_initial_state(Problem problem) {
-        return self().get_or_create_initial_state_impl(problem);
-    }
+    [[nodiscard]] ConstStateView get_or_create_initial_state(Problem problem) { return self().get_or_create_initial_state_impl(problem); }
 
-    [[nodiscard]] ConstStateView get_or_create_successor_state(ConstStateView state, ConstActionView action) {
+    [[nodiscard]] ConstStateView get_or_create_successor_state(ConstStateView state, ConstActionView action)
+    {
         return self().get_or_create_successor_state_impl(state, action);
     }
 };
-
 
 /**
  * Dispatcher class.
@@ -49,39 +45,44 @@ public:
  * Wrap the tag to dispatch the correct overload.
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
-*/
+ */
 template<IsPlanningModeTag P, IsStateTag S>
-struct SSGDispatcher {};
+struct SSGDispatcher
+{
+};
 
 template<typename T>
-struct is_ssg_dispatcher : std::false_type {};
+struct is_ssg_dispatcher : std::false_type
+{
+};
 
 template<IsPlanningModeTag P, IsStateTag S>
-struct is_ssg_dispatcher<SSGDispatcher<P, S>> : std::true_type {};
+struct is_ssg_dispatcher<SSGDispatcher<P, S>> : std::true_type
+{
+};
 
 template<typename T>
 concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
-
 
 /**
  * General implementation class.
  *
  * Specialize the wrapped tag to provide your own implementation of a successor state generator.
-*/
+ */
 template<IsSSGDispatcher S>
-class SSG : public ISSG<SSG<S>> {};
-
+class SSG : public ISSG<SSG<S>>
+{
+};
 
 /**
  * Type traits.
-*/
+ */
 template<IsPlanningModeTag P, IsStateTag S>
 struct TypeTraits<SSG<SSGDispatcher<P, S>>>
 {
     using PlanningModeTag = P;
     using StateTag = S;
 };
-
 
 }
 

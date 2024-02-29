@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_ATOM_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_ATOM_HPP_
 
+#include "../../common/types.hpp"
 #include "../atom.hpp"
 #include "../declarations.hpp"
-#include "../../common/types.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Atom parse(loki::pddl::Atom atom, PDDLFactories& factories);
-    extern AtomList parse(loki::pddl::AtomList atom_list, PDDLFactories& factories);
-} 
+extern Atom parse(loki::pddl::Atom atom, PDDLFactories& factories);
+extern AtomList parse(loki::pddl::AtomList atom_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

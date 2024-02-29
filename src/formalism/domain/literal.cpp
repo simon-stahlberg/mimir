@@ -15,58 +15,42 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <loki/common/collections.hpp>
+#include <loki/common/hash.hpp>
+#include <mimir/formalism/domain/atom.hpp>
 #include <mimir/formalism/domain/literal.hpp>
 
-#include <mimir/formalism/domain/atom.hpp>
-
-#include <loki/common/hash.hpp>
-#include <loki/common/collections.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    LiteralImpl::LiteralImpl(int identifier, bool is_negated, Atom atom)
-        : Base(identifier)
-        , m_is_negated(is_negated)
-        , m_atom(std::move(atom))
+LiteralImpl::LiteralImpl(int identifier, bool is_negated, Atom atom) : Base(identifier), m_is_negated(is_negated), m_atom(std::move(atom)) {}
+
+bool LiteralImpl::is_structurally_equivalent_to_impl(const LiteralImpl& other) const
+{
+    return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
+}
+
+size_t LiteralImpl::hash_impl() const { return loki::hash_combine(m_is_negated, m_atom); }
+
+void LiteralImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const
+{
+    if (m_is_negated)
     {
+        out << "(not " << *m_atom << ")";
     }
-
-    bool LiteralImpl::is_structurally_equivalent_to_impl(const LiteralImpl& other) const {
-        return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
-    }
-
-    size_t LiteralImpl::hash_impl() const {
-        return loki::hash_combine(m_is_negated, m_atom);
-    }
-
-    void LiteralImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const {
-        if (m_is_negated) {
-            out << "(not " << *m_atom << ")";
-        } else {
-            out << *m_atom;
-        }
-    }
-
-    bool LiteralImpl::is_negated() const {
-        return m_is_negated;
-    }
-
-    const Atom& LiteralImpl::get_atom() const {
-        return m_atom;
+    else
+    {
+        out << *m_atom;
     }
 }
 
+bool LiteralImpl::is_negated() const { return m_is_negated; }
 
-namespace std 
+const Atom& LiteralImpl::get_atom() const { return m_atom; }
+}
+
+namespace std
 {
-    bool less<mimir::Literal>::operator()(
-        const mimir::Literal& left_literal,
-        const mimir::Literal& right_literal) const {
-        return *left_literal < *right_literal;
-    }
+bool less<mimir::Literal>::operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const { return *left_literal < *right_literal; }
 
-    std::size_t hash<mimir::LiteralImpl>::operator()(const mimir::LiteralImpl& literal) const {
-        return literal.hash();
-    }
+std::size_t hash<mimir::LiteralImpl>::operator()(const mimir::LiteralImpl& literal) const { return literal.hash(); }
 }

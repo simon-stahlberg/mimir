@@ -18,16 +18,13 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_VARIABLE_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_VARIABLE_HPP_
 
-#include "../variable.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../variable.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Variable parse(loki::pddl::Variable variable, PDDLFactories& factories);
-} 
+extern Variable parse(loki::pddl::Variable variable, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

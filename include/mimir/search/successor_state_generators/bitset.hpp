@@ -5,16 +5,14 @@
 
 #include <flatmemory/flatmemory.hpp>
 
-
 namespace mimir
 {
 
 /**
  * Implementation class
-*/
+ */
 template<IsPlanningModeTag P>
-class SSG<SSGDispatcher<P, BitsetStateTag>>
-    : public ISSG<SSG<SSGDispatcher<P, BitsetStateTag>>>
+class SSG<SSGDispatcher<P, BitsetStateTag>> : public ISSG<SSG<SSGDispatcher<P, BitsetStateTag>>>
 {
 private:
     using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;
@@ -29,7 +27,8 @@ private:
     template<typename>
     friend class ISSG;
 
-    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem) {
+    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem)
+    {
         // create the state
         int next_state_id = m_states.size();
         m_state_builder.get_id() = next_state_id;
@@ -38,17 +37,16 @@ private:
         return ConstStateView(m_states.insert(flatmemory_builder));
     }
 
-    [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action) {
+    [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action)
+    {
         // create a grounded state.
         // TODO (Dominik): implement
         return ConstStateView(nullptr);
     }
 
 public:
-    explicit SSG(Problem problem) 
-        : m_problem(problem) {}
+    explicit SSG(Problem problem) : m_problem(problem) {}
 };
-
 
 }
 

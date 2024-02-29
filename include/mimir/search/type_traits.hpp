@@ -1,7 +1,6 @@
 #ifndef MIMIR_SEARCH_TYPE_TRAITS_HPP_
 #define MIMIR_SEARCH_TYPE_TRAITS_HPP_
 
-
 namespace mimir
 {
 
@@ -10,9 +9,11 @@ namespace mimir
  *
  * Define type traits to access nested types.
  * This is useful to constrain interfaces more explicitly.
-*/
+ */
 template<typename T>
-struct TypeTraits { };
+struct TypeTraits
+{
+};
 
 }  // namespace mimir
 

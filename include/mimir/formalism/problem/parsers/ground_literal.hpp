@@ -18,18 +18,16 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_LITERAL_HPP_
 #define MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_LITERAL_HPP_
 
-#include "../ground_literal.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../ground_literal.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    extern GroundLiteral parse(loki::pddl::GroundLiteral ground_literal, PDDLFactories& factories);
-    extern GroundLiteralList parse(loki::pddl::GroundLiteralList ground_literal_list, PDDLFactories& factories);
-} 
+extern GroundLiteral parse(loki::pddl::GroundLiteral ground_literal, PDDLFactories& factories);
+extern GroundLiteralList parse(loki::pddl::GroundLiteralList ground_literal_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

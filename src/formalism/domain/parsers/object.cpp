@@ -16,23 +16,22 @@
  */
 
 #include <mimir/formalism/domain/parsers/object.hpp>
-
 #include <mimir/formalism/domain/parsers/type.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Object parse(loki::pddl::Object object, PDDLFactories& factories) {
-        return factories.objects.get_or_create<ObjectImpl>(
-            object->get_name(), 
-            parse(object->get_bases(), factories));
-    }
+Object parse(loki::pddl::Object object, PDDLFactories& factories)
+{
+    return factories.objects.get_or_create<ObjectImpl>(object->get_name(), parse(object->get_bases(), factories));
+}
 
-    ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories) {
-        auto result_object_list = ObjectList();
-        for (const auto& object : object_list) {
-            result_object_list.push_back(parse(object, factories));
-        }
-        return result_object_list;
+ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories)
+{
+    auto result_object_list = ObjectList();
+    for (const auto& object : object_list)
+    {
+        result_object_list.push_back(parse(object, factories));
     }
+    return result_object_list;
+}
 }

@@ -21,62 +21,58 @@
 #include "declarations.hpp"
 
 #include <loki/problem/pddl/metric.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class OptimizationMetricImpl : public loki::Base<OptimizationMetricImpl>
+{
+private:
+    loki::pddl::OptimizationMetricEnum m_optimization_metric;
+    FunctionExpression m_function_expression;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const OptimizationMetricImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<OptimizationMetricImpl>;
+
+public:
+    loki::pddl::OptimizationMetricEnum get_optimization_metric() const;
+    const FunctionExpression& get_function_expression() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class OptimizationMetricImpl : public loki::Base<OptimizationMetricImpl> 
-    {
-    private:
-        loki::pddl::OptimizationMetricEnum m_optimization_metric;
-        FunctionExpression m_function_expression;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const OptimizationMetricImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<OptimizationMetricImpl>;
-
-    public:
-        loki::pddl::OptimizationMetricEnum get_optimization_metric() const;
-        const FunctionExpression& get_function_expression() const;
-    };
-}
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::OptimizationMetric>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::OptimizationMetric>
-    {
-        bool operator()(const mimir::OptimizationMetric& left_metric, const mimir::OptimizationMetric& right_metric) const;
-    };
+    bool operator()(const mimir::OptimizationMetric& left_metric, const mimir::OptimizationMetric& right_metric) const;
+};
 
-    template<>
-    struct hash<mimir::OptimizationMetricImpl>
-    {
-        std::size_t operator()(const mimir::OptimizationMetricImpl& metric) const;
-    };
+template<>
+struct hash<mimir::OptimizationMetricImpl>
+{
+    std::size_t operator()(const mimir::OptimizationMetricImpl& metric) const;
+};
 }
 
 #endif

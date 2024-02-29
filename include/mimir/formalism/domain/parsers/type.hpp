@@ -18,16 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_TYPE_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_TYPE_HPP_
 
-#include "../type.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../type.hpp"
 
-
-namespace mimir 
+namespace mimir
 {
-    extern Type parse(loki::pddl::Type type, PDDLFactories& factories);
-    extern TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories);
-} 
+extern Type parse(loki::pddl::Type type, PDDLFactories& factories);
+extern TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

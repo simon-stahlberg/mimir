@@ -18,18 +18,16 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_PARSER_NUMERIC_FLUENT_HPP_
 #define MIMIR_FORMALISM_PROBLEM_PARSER_NUMERIC_FLUENT_HPP_
 
-#include "../numeric_fluent.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../numeric_fluent.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    extern NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories);
-    extern NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories);
-} 
+extern NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories);
+extern NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

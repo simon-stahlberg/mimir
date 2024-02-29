@@ -15,24 +15,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <mimir/formalism/domain/parsers/atom.hpp>
 #include <mimir/formalism/domain/parsers/literal.hpp>
 
-#include <mimir/formalism/domain/parsers/atom.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    Literal parse(loki::pddl::Literal literal, PDDLFactories& factories) {
-        return factories.literals.get_or_create<LiteralImpl>(
-            literal->is_negated(), 
-            parse(literal->get_atom(), factories));
-    }
+Literal parse(loki::pddl::Literal literal, PDDLFactories& factories)
+{
+    return factories.literals.get_or_create<LiteralImpl>(literal->is_negated(), parse(literal->get_atom(), factories));
+}
 
-    LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories) {
-        auto result_literal_list = LiteralList();
-        for (const auto& literal : literal_list) {
-            result_literal_list.push_back(parse(literal, factories));
-        }
-        return result_literal_list;
+LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories)
+{
+    auto result_literal_list = LiteralList();
+    for (const auto& literal : literal_list)
+    {
+        result_literal_list.push_back(parse(literal, factories));
     }
+    return result_literal_list;
+}
 }

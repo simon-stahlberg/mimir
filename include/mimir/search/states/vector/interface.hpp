@@ -3,7 +3,6 @@
 
 #include "../interface.hpp"
 
-
 namespace mimir
 {
 
@@ -11,13 +10,14 @@ namespace mimir
  * Derived ID class.
  *
  * Define name and template parameters of your own implementation.
-*/
-class VectorStateTag : public StateTag {};
-
+ */
+class VectorStateTag : public StateTag
+{
+};
 
 /**
  * Type traits.
-*/
+ */
 template<IsPlanningModeTag P>
 struct TypeTraits<Builder<StateDispatcher<VectorStateTag, P>>>
 {
@@ -29,7 +29,6 @@ struct TypeTraits<View<StateDispatcher<VectorStateTag, P>>>
 {
     using PlanningModeTag = P;
 };
-
 
 }
 

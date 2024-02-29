@@ -18,13 +18,13 @@
 #ifndef MIMIR_COMMON_HASH_HPP_
 #define MIMIR_COMMON_HASH_HPP_
 
-#include <functional>
 #include <cstddef>
+#include <functional>
 #include <set>
 #include <vector>
 
-
-namespace mimir {
+namespace mimir
+{
 
 // --------------
 // Hash functions
@@ -65,10 +65,9 @@ inline std::size_t hash_container(const Container& container)
 }
 
 template<typename Container>
-struct hash_container_type {
-    size_t operator()(const Container& container) const {
-        return hash_container(container);
-    }
+struct hash_container_type
+{
+    size_t operator()(const Container& container) const { return hash_container(container); }
 };
 
 }  // namespace mimir

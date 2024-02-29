@@ -18,17 +18,15 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_PARSER_METRIC_HPP_
 #define MIMIR_FORMALISM_PROBLEM_PARSER_METRIC_HPP_
 
-#include "../metric.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../metric.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    extern OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories);
-} 
+extern OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

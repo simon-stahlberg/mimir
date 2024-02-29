@@ -15,20 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/search/planners.hpp>
-
 #include <iostream>
+#include <mimir/search/planners.hpp>
 
 using namespace mimir;
 
-
-int main(int argc, char** argv) {
-    if (argc < 3) {
+int main(int argc, char** argv)
+{
+    if (argc < 3)
+    {
         std::cout << "Usage: planner <domain:str> <problem:str>" << std::endl;
         return 1;
     }
-    const auto domain_file_path = fs::path{argv[1]};
-    const auto problem_file_path = fs::path{argv[2]};
+    const auto domain_file_path = fs::path { argv[1] };
+    const auto problem_file_path = fs::path { argv[2] };
 
     auto planner = Planner<SingleTag<BrFSTag<GroundedTag, BitsetStateTag>>>(domain_file_path, problem_file_path);
 

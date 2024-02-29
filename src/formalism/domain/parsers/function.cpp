@@ -16,26 +16,23 @@
  */
 
 #include <mimir/formalism/domain/parsers/function.hpp>
-
 #include <mimir/formalism/domain/parsers/function_skeleton.hpp>
 #include <mimir/formalism/domain/parsers/term.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Function parse(loki::pddl::Function function, PDDLFactories& factories) 
-    {
-        return factories.functions.get_or_create<FunctionImpl>(
-            parse(function->get_function_skeleton(), factories), 
-            parse(function->get_terms(), factories));
-    }
+Function parse(loki::pddl::Function function, PDDLFactories& factories)
+{
+    return factories.functions.get_or_create<FunctionImpl>(parse(function->get_function_skeleton(), factories), parse(function->get_terms(), factories));
+}
 
-    FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories) 
+FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories)
+{
+    auto result_function_list = FunctionList();
+    for (const auto& function : function_list)
     {
-        auto result_function_list = FunctionList();
-        for (const auto& function : function_list) {
-            result_function_list.push_back(parse(function, factories));
-        }
-        return result_function_list;
+        result_function_list.push_back(parse(function, factories));
     }
+    return result_function_list;
+}
 }

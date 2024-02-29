@@ -18,17 +18,17 @@
 #ifndef MIMIR_FORMALISM_PARSER_HPP_
 #define MIMIR_FORMALISM_PARSER_HPP_
 
+#include "common/types.hpp"
 #include "domain/declarations.hpp"
 #include "problem/declarations.hpp"
 
-#include "common/types.hpp"
-
 #include <loki/common/filesystem.hpp>
 
+namespace mimir
+{
 
-namespace mimir {
-
-class PDDLParser {
+class PDDLParser
+{
 private:
     PDDLFactories m_factories;
 

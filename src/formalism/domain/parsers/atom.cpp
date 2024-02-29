@@ -16,24 +16,23 @@
  */
 
 #include <mimir/formalism/domain/parsers/atom.hpp>
-
 #include <mimir/formalism/domain/parsers/predicate.hpp>
 #include <mimir/formalism/domain/parsers/term.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Atom parse(loki::pddl::Atom atom, PDDLFactories& factories) {
-        return factories.atoms.get_or_create<AtomImpl>(
-            parse(atom->get_predicate(), factories), 
-            parse(atom->get_terms(), factories));
-    }
+Atom parse(loki::pddl::Atom atom, PDDLFactories& factories)
+{
+    return factories.atoms.get_or_create<AtomImpl>(parse(atom->get_predicate(), factories), parse(atom->get_terms(), factories));
+}
 
-    AtomList parse(loki::pddl::AtomList atom_list, PDDLFactories& factories) {
-        auto result_atom_list = AtomList();
-        for (const auto& atom : atom_list) {
-            result_atom_list.push_back(parse(atom, factories));
-        }
-        return result_atom_list;
+AtomList parse(loki::pddl::AtomList atom_list, PDDLFactories& factories)
+{
+    auto result_atom_list = AtomList();
+    for (const auto& atom : atom_list)
+    {
+        result_atom_list.push_back(parse(atom, factories));
     }
+    return result_atom_list;
+}
 }

@@ -15,69 +15,55 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/formalism/domain/predicate.hpp>
-
-#include <mimir/formalism/domain/parameter.hpp>
-#include <mimir/formalism/domain/variable.hpp>
-#include <mimir/formalism/domain/type.hpp>
-
 #include <loki/common/hash.hpp>
-
 #include <memory>
+#include <mimir/formalism/domain/parameter.hpp>
+#include <mimir/formalism/domain/predicate.hpp>
+#include <mimir/formalism/domain/type.hpp>
+#include <mimir/formalism/domain/variable.hpp>
 
 namespace mimir
 {
-    PredicateImpl::PredicateImpl(int identifier, std::string name, ParameterList parameters)
-        : Base(identifier)
-        , m_name(std::move(name))
-        , m_parameters(std::move(parameters))
-    {
-    }
-
-    bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& other) const {
-        return (m_name == other.m_name) && (m_parameters == other.m_parameters);
-    }
-
-    size_t PredicateImpl::hash_impl() const {
-        return loki::hash_combine(m_name, loki::hash_container(m_parameters));
-    }
-
-    void PredicateImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const {
-        str(out, options, true);
-    }
-
-    void PredicateImpl::str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const {
-        out << "(" << m_name;
-        for (size_t i = 0; i < m_parameters.size(); ++i) {
-            out << " ";
-            m_parameters[i]->str(out, options, typing_enabled);
-        }
-        out << ")";
-    }
-
-    const std::string& PredicateImpl::get_name() const {
-        return m_name;
-    }
-
-    const ParameterList& PredicateImpl::get_parameters() const {
-        return m_parameters;
-    }
-
-    size_t PredicateImpl::get_arity() const {
-        return m_parameters.size();
-    }
+PredicateImpl::PredicateImpl(int identifier, std::string name, ParameterList parameters) :
+    Base(identifier),
+    m_name(std::move(name)),
+    m_parameters(std::move(parameters))
+{
 }
 
+bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& other) const
+{
+    return (m_name == other.m_name) && (m_parameters == other.m_parameters);
+}
+
+size_t PredicateImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
+
+void PredicateImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const { str(out, options, true); }
+
+void PredicateImpl::str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+{
+    out << "(" << m_name;
+    for (size_t i = 0; i < m_parameters.size(); ++i)
+    {
+        out << " ";
+        m_parameters[i]->str(out, options, typing_enabled);
+    }
+    out << ")";
+}
+
+const std::string& PredicateImpl::get_name() const { return m_name; }
+
+const ParameterList& PredicateImpl::get_parameters() const { return m_parameters; }
+
+size_t PredicateImpl::get_arity() const { return m_parameters.size(); }
+}
 
 namespace std
 {
-    bool less<mimir::Predicate>::operator()(
-        const mimir::Predicate& left_predicate,
-        const mimir::Predicate& right_predicate) const {
-        return *left_predicate < *right_predicate;
-    }
+bool less<mimir::Predicate>::operator()(const mimir::Predicate& left_predicate, const mimir::Predicate& right_predicate) const
+{
+    return *left_predicate < *right_predicate;
+}
 
-    std::size_t hash<mimir::PredicateImpl>::operator()(const mimir::PredicateImpl& predicate) const {
-        return predicate.hash();
-    }
+std::size_t hash<mimir::PredicateImpl>::operator()(const mimir::PredicateImpl& predicate) const { return predicate.hash(); }
 }

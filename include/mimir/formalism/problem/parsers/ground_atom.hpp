@@ -18,18 +18,16 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_ATOM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_PARSER_GROUND_ATOM_HPP_
 
-#include "../ground_atom.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../ground_atom.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    extern GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories);
-    extern GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories);
-} 
+extern GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories);
+extern GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

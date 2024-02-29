@@ -21,62 +21,58 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/function.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class FunctionImpl : public loki::Base<FunctionImpl>
+{
+private:
+    FunctionSkeleton m_function_skeleton;
+    TermList m_terms;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    FunctionImpl(int identifier, FunctionSkeleton function_skeleton, TermList terms);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const FunctionImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<FunctionImpl>;
+
+public:
+    const FunctionSkeleton& get_function_skeleton() const;
+    const TermList& get_terms() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class FunctionImpl : public loki::Base<FunctionImpl> 
-    {
-    private:
-        FunctionSkeleton m_function_skeleton;
-        TermList m_terms;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        FunctionImpl(int identifier, FunctionSkeleton function_skeleton, TermList terms);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const FunctionImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<FunctionImpl>;
-
-    public:
-        const FunctionSkeleton& get_function_skeleton() const;
-        const TermList& get_terms() const;
-    };
-}
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Function>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Function>
-    {
-        bool operator()(const mimir::Function& left_function, const mimir::Function& right_function) const;
-    };
+    bool operator()(const mimir::Function& left_function, const mimir::Function& right_function) const;
+};
 
-    template<>
-    struct hash<mimir::FunctionImpl>
-    {
-        std::size_t operator()(const mimir::FunctionImpl& function) const;
-    };
+template<>
+struct hash<mimir::FunctionImpl>
+{
+    std::size_t operator()(const mimir::FunctionImpl& function) const;
+};
 }
 
 #endif

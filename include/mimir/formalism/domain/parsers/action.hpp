@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_ACTION_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_ACTION_HPP_
 
+#include "../../common/types.hpp"
 #include "../action.hpp"
 #include "../declarations.hpp"
-#include "../../common/types.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Action parse(loki::pddl::Action action, PDDLFactories& factories);
-    extern ActionList parse(loki::pddl::ActionList action_list, PDDLFactories& factories);
-} 
+extern Action parse(loki::pddl::Action action, PDDLFactories& factories);
+extern ActionList parse(loki::pddl::ActionList action_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

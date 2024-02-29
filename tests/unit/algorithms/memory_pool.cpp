@@ -1,14 +1,12 @@
-#include <mimir/algorithms/memory_pool.hpp>
-
 #include <gtest/gtest.h>
-
+#include <mimir/algorithms/memory_pool.hpp>
 #include <string>
-
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, AlgorithmsMemoryPoolTest) {
+TEST(MimirTests, AlgorithmsMemoryPoolTest)
+{
     MemoryPool<std::vector<int>> pool;
     EXPECT_EQ(pool.get_size(), 0);
     auto object_0 = pool.get_or_allocate();
@@ -34,7 +32,5 @@ TEST(MimirTests, AlgorithmsMemoryPoolTest) {
     EXPECT_EQ(object_1->size(), 1);
     EXPECT_EQ(object_1->back(), 42);
 }
-
-
 
 }

@@ -15,17 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <mimir/formalism/domain/parsers/function_expressions.hpp>
 #include <mimir/formalism/problem/parsers/metric.hpp>
 
-#include <mimir/formalism/domain/parsers/function_expressions.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories)
-    {
-        return factories.optimization_metrics.get_or_create<OptimizationMetricImpl>(
-            optimization_metric->get_optimization_metric(),
-            parse(optimization_metric->get_function_expression(), factories));
-    }
+OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories)
+{
+    return factories.optimization_metrics.get_or_create<OptimizationMetricImpl>(optimization_metric->get_optimization_metric(),
+                                                                                parse(optimization_metric->get_function_expression(), factories));
+}
 }

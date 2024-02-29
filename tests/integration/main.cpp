@@ -24,8 +24,4 @@
 // Test mimir include
 #include <mimir/algorithms/kpkc.hpp>
 
-
-int main() {
-    return 0;
-}
-
+int main() { return 0; }

@@ -15,63 +15,40 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <loki/common/collections.hpp>
+#include <loki/common/hash.hpp>
+#include <loki/common/pddl/visitors.hpp>
 #include <mimir/formalism/domain/atom.hpp>
-
 #include <mimir/formalism/domain/predicate.hpp>
 #include <mimir/formalism/domain/term.hpp>
 
-#include <loki/common/hash.hpp>
-#include <loki/common/collections.hpp>
-#include <loki/common/pddl/visitors.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    AtomImpl::AtomImpl(int identifier, Predicate predicate, TermList terms)
-        : Base(identifier)
-        , m_predicate(std::move(predicate))
-        , m_terms(std::move(terms))
+AtomImpl::AtomImpl(int identifier, Predicate predicate, TermList terms) : Base(identifier), m_predicate(std::move(predicate)), m_terms(std::move(terms)) {}
+
+bool AtomImpl::is_structurally_equivalent_to_impl(const AtomImpl& other) const { return (m_predicate == other.m_predicate) && (m_terms == other.m_terms); }
+
+size_t AtomImpl::hash_impl() const { return loki::hash_combine(m_predicate, loki::hash_container(m_terms)); }
+
+void AtomImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const
+{
+    out << "(" << m_predicate->get_name();
+    for (size_t i = 0; i < m_terms.size(); ++i)
     {
+        out << " ";
+        std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
     }
-
-    bool AtomImpl::is_structurally_equivalent_to_impl(const AtomImpl& other) const {
-        return (m_predicate == other.m_predicate)
-            && (m_terms == other.m_terms);
-    }
-
-    size_t AtomImpl::hash_impl() const {
-        return loki::hash_combine(m_predicate, loki::hash_container(m_terms));
-    }
-
-
-    void AtomImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const {
-        out << "(" << m_predicate->get_name();
-        for (size_t i = 0; i < m_terms.size(); ++i) {
-            out << " ";
-            std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
-        }
-        out << ")";
-    }
-
-    const Predicate& AtomImpl::get_predicate() const {
-        return m_predicate;
-    }
-
-    const TermList& AtomImpl::get_terms() const {
-        return m_terms;
-    }
+    out << ")";
 }
 
+const Predicate& AtomImpl::get_predicate() const { return m_predicate; }
 
-namespace std 
+const TermList& AtomImpl::get_terms() const { return m_terms; }
+}
+
+namespace std
 {
-    bool less<mimir::Atom>::operator()(
-        const mimir::Atom& left_atom,
-        const mimir::Atom& right_atom) const {
-        return *left_atom < *right_atom;
-    }
+bool less<mimir::Atom>::operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const { return *left_atom < *right_atom; }
 
-    std::size_t hash<mimir::AtomImpl>::operator()(const mimir::AtomImpl& atom) const {
-        return atom.hash();
-    }
+std::size_t hash<mimir::AtomImpl>::operator()(const mimir::AtomImpl& atom) const { return atom.hash(); }
 }

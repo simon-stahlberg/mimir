@@ -1,16 +1,14 @@
-#include <mimir/search/algorithms.hpp>
-
-#include <mimir/formalism/problem/declarations.hpp>
-#include <mimir/formalism/parser.hpp>
-#include <mimir/search/heuristics.hpp>
-
 #include <gtest/gtest.h>
-
+#include <mimir/formalism/parser.hpp>
+#include <mimir/formalism/problem/declarations.hpp>
+#include <mimir/search/algorithms.hpp>
+#include <mimir/search/heuristics.hpp>
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchAlgorithmsAstarGroundedBlindTest) {
+TEST(MimirTests, SearchAlgorithmsAstarGroundedBlindTest)
+{
     // Instantiate grounded version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
@@ -21,8 +19,8 @@ TEST(MimirTests, SearchAlgorithmsAstarGroundedBlindTest) {
     const auto search_status = grounded_astar.find_solution(plan);
 }
 
-
-TEST(MimirTests, SearchAlgorithmsAstarLiftedBlindTest) {
+TEST(MimirTests, SearchAlgorithmsAstarLiftedBlindTest)
+{
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");

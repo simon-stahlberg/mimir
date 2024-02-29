@@ -1,24 +1,20 @@
 #ifndef MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
 
+#include "../algorithms.hpp"
 #include "../config.hpp"
 
-#include "../algorithms.hpp"
-
 #include <loki/common/filesystem.hpp>
-
 #include <string>
-
 
 namespace mimir
 {
 
 using Plan = std::vector<std::string>;
 
-
 /**
  * Interface class
-*/
+ */
 template<typename Derived>
 class IPlanner
 {
@@ -37,7 +33,6 @@ public:
     std::tuple<SearchStatus, Plan> find_solution() { return self().find_solution_impl(); }
 };
 
-
 /**
  * ID base class.
  *
@@ -45,21 +40,24 @@ public:
  *
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
-*/
-struct PlannerTag {};
+ */
+struct PlannerTag
+{
+};
 
 template<class DerivedTag>
 concept IsPlannerTag = std::derived_from<DerivedTag, PlannerTag>;
-
 
 /**
  * General implementation class.
  *
  * Specialize it with your tag.
  * No dispatcher because this is the topmost template.
-*/
+ */
 template<IsPlannerTag T>
-class Planner : public IPlanner<Planner<T>> {};
+class Planner : public IPlanner<Planner<T>>
+{
+};
 
 }
 

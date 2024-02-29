@@ -15,51 +15,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <loki/common/collections.hpp>
+#include <loki/common/hash.hpp>
 #include <mimir/formalism/domain/object.hpp>
 
-#include <loki/common/hash.hpp>
-#include <loki/common/collections.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    ObjectImpl::ObjectImpl(int identifier, std::string name, TypeList types)
-        : Base(identifier)
-        , m_name(std::move(name))
-        , m_types(std::move(types))
-    {
-    }
+ObjectImpl::ObjectImpl(int identifier, std::string name, TypeList types) : Base(identifier), m_name(std::move(name)), m_types(std::move(types)) {}
 
-    bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const {
-        return (m_name == other.m_name) && (loki::get_sorted_vector(m_types) == loki::get_sorted_vector(other.m_types));
-    }
-
-    size_t ObjectImpl::hash_impl() const {
-        return loki::hash_combine(m_name, loki::hash_container(loki::get_sorted_vector(m_types)));
-    }
-
-    void ObjectImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const {
-        out << m_name;
-    }
-
-    const std::string& ObjectImpl::get_name() const {
-        return m_name;
-    }
-
-    const TypeList& ObjectImpl::get_bases() const {
-        return m_types;
-    }
+bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const
+{
+    return (m_name == other.m_name) && (loki::get_sorted_vector(m_types) == loki::get_sorted_vector(other.m_types));
 }
 
-namespace std 
-{
-    bool less<mimir::Object>::operator()(
-        const mimir::Object& left_object,
-        const mimir::Object& right_object) const {
-        return *left_object < *right_object;
-    }
+size_t ObjectImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(loki::get_sorted_vector(m_types))); }
 
-    std::size_t hash<mimir::ObjectImpl>::operator()(const mimir::ObjectImpl& object) const {
-        return object.hash();
-    }
+void ObjectImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
+
+const std::string& ObjectImpl::get_name() const { return m_name; }
+
+const TypeList& ObjectImpl::get_bases() const { return m_types; }
+}
+
+namespace std
+{
+bool less<mimir::Object>::operator()(const mimir::Object& left_object, const mimir::Object& right_object) const { return *left_object < *right_object; }
+
+std::size_t hash<mimir::ObjectImpl>::operator()(const mimir::ObjectImpl& object) const { return object.hash(); }
 }

@@ -3,7 +3,6 @@
 
 #include "../interface.hpp"
 
-
 namespace mimir
 {
 
@@ -11,16 +10,17 @@ namespace mimir
  * Derived ID class.
  *
  * Define name and template parameters of your own implementation.
-*/
-struct BlindTag : public HeuristicTag { };
-
+ */
+struct BlindTag : public HeuristicTag
+{
+};
 
 /**
  * Specialized implementation class.
-*/
+ */
 template<IsPlanningModeTag P, IsStateTag S>
-class Heuristic<HeuristicDispatcher<BlindTag, P, S>>
-    : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S>>> {
+class Heuristic<HeuristicDispatcher<BlindTag, P, S>> : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S>>>
+{
 private:
     using ConstStateView = ConstView<StateDispatcher<S, P>>;
 
@@ -30,25 +30,21 @@ private:
     template<typename>
     friend class IHeuristic;
 
-    double compute_heuristic_impl(const ConstStateView& state) {
-        return 0.;
-    }
+    double compute_heuristic_impl(const ConstStateView& state) { return 0.; }
 
 public:
-    Heuristic(Problem problem) : m_problem(problem) { }
+    Heuristic(Problem problem) : m_problem(problem) {}
 };
-
 
 /**
  * Type traits.
-*/
+ */
 template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<Heuristic<HeuristicDispatcher<BlindTag, P, S>>> {
+struct TypeTraits<Heuristic<HeuristicDispatcher<BlindTag, P, S>>>
+{
     using PlanningModeTag = P;
     using StateTag = S;
 };
-
-
 
 }  // namespace mimir
 

@@ -15,70 +15,65 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #ifndef MIMIR_FORMALISM_PROBLEM_GROUND_ATOM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_GROUND_ATOM_HPP_
 
 #include "declarations.hpp"
 
 #include <loki/problem/pddl/ground_atom.hpp>
-
 #include <string>
-
 
 namespace loki
 {
-    template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
 }
-
 
 namespace mimir
 {
-    class GroundAtomImpl : public loki::Base<GroundAtomImpl>
-    {
-    private:
-        Predicate m_predicate;
-        ObjectList m_objects;
+class GroundAtomImpl : public loki::Base<GroundAtomImpl>
+{
+private:
+    Predicate m_predicate;
+    ObjectList m_objects;
 
-        // Below: add additional members if needed and initialize them in the constructor
+    // Below: add additional members if needed and initialize them in the constructor
 
-        GroundAtomImpl(int identifier, Predicate predicate, ObjectList objects);
+    GroundAtomImpl(int identifier, Predicate predicate, ObjectList objects);
 
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
 
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-        // Give access to the private interface implementations.
-        friend class loki::Base<GroundAtomImpl>;
+    // Give access to the private interface implementations.
+    friend class loki::Base<GroundAtomImpl>;
 
-    public:
-        const Predicate& get_predicate() const;
-        const ObjectList& get_objects() const;
-        size_t get_arity() const;
-    };
+public:
+    const Predicate& get_predicate() const;
+    const ObjectList& get_objects() const;
+    size_t get_arity() const;
+};
 }
-
 
 namespace std
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::GroundAtom>
-    {
-        bool operator()(const mimir::GroundAtom& left_atom, const mimir::GroundAtom& right_atom) const;
-    };
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::GroundAtom>
+{
+    bool operator()(const mimir::GroundAtom& left_atom, const mimir::GroundAtom& right_atom) const;
+};
 
-    template<>
-    struct hash<mimir::GroundAtomImpl>
-    {
-        std::size_t operator()(const mimir::GroundAtomImpl& atom) const;
-    };
+template<>
+struct hash<mimir::GroundAtomImpl>
+{
+    std::size_t operator()(const mimir::GroundAtomImpl& atom) const;
+};
 }
 
 #endif

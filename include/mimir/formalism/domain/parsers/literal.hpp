@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_LITERAL_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_LITERAL_HPP_
 
-#include "../literal.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../literal.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Literal parse(loki::pddl::Literal literal, PDDLFactories& factories);
-    extern LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories);
-} 
+extern Literal parse(loki::pddl::Literal literal, PDDLFactories& factories);
+extern LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

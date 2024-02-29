@@ -17,11 +17,7 @@
 
 #include <mimir/formalism/domain/parsers/variable.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Variable parse(loki::pddl::Variable variable, PDDLFactories& factories) {
-        return factories.variables.get_or_create<VariableImpl>(
-            variable->get_name());
-    }
+Variable parse(loki::pddl::Variable variable, PDDLFactories& factories) { return factories.variables.get_or_create<VariableImpl>(variable->get_name()); }
 }

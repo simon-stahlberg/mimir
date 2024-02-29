@@ -15,29 +15,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <mimir/formalism/domain/parsers/conditions.hpp>
+#include <mimir/formalism/domain/parsers/domain.hpp>
+#include <mimir/formalism/domain/parsers/object.hpp>
+#include <mimir/formalism/domain/parsers/requirements.hpp>
+#include <mimir/formalism/problem/parsers/ground_literal.hpp>
+#include <mimir/formalism/problem/parsers/metric.hpp>
+#include <mimir/formalism/problem/parsers/numeric_fluent.hpp>
 #include <mimir/formalism/problem/parsers/problem.hpp>
 
-#include <mimir/formalism/domain/parsers/domain.hpp>
-#include <mimir/formalism/domain/parsers/requirements.hpp>
-#include <mimir/formalism/domain/parsers/object.hpp>
-#include <mimir/formalism/domain/parsers/conditions.hpp>
-
-#include <mimir/formalism/problem/parsers/ground_literal.hpp>
-#include <mimir/formalism/problem/parsers/numeric_fluent.hpp>
-#include <mimir/formalism/problem/parsers/metric.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    Problem parse(loki::pddl::Problem problem, PDDLFactories& factories) {
-        return factories.problems.get_or_create<ProblemImpl>(
-            parse(problem->get_domain(), factories),
-            problem->get_name(),
-            parse(problem->get_requirements(), factories),
-            parse(problem->get_objects(), factories),
-            parse(problem->get_initial_literals(), factories),
-            parse(problem->get_numeric_fluents(), factories),
-            parse(problem->get_goal_condition(), factories),
-            (problem->get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) : std::nullopt));
-    }
+Problem parse(loki::pddl::Problem problem, PDDLFactories& factories)
+{
+    return factories.problems.get_or_create<ProblemImpl>(parse(problem->get_domain(), factories),
+                                                         problem->get_name(),
+                                                         parse(problem->get_requirements(), factories),
+                                                         parse(problem->get_objects(), factories),
+                                                         parse(problem->get_initial_literals(), factories),
+                                                         parse(problem->get_numeric_fluents(), factories),
+                                                         parse(problem->get_goal_condition(), factories),
+                                                         (problem->get_optimization_metric().has_value() ?
+                                                              std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
+                                                              std::nullopt));
+}
 }

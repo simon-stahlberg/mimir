@@ -15,57 +15,43 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+#include <loki/common/hash.hpp>
 #include <mimir/formalism/domain/requirements.hpp>
 
-#include <loki/common/hash.hpp>
-
-#include <cassert>
-
-
-namespace mimir 
+namespace mimir
 {
-    RequirementsImpl::RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements)
-        : Base(identifier)
-        , m_requirements(std::move(requirements))
+RequirementsImpl::RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements) : Base(identifier), m_requirements(std::move(requirements)) {}
+
+bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl& other) const { return (m_requirements == other.m_requirements); }
+
+size_t RequirementsImpl::hash_impl() const { return loki::hash_container(m_requirements); }
+
+void RequirementsImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const
+{
+    out << "(:requirements ";
+    int i = 0;
+    for (const auto& requirement : m_requirements)
     {
+        if (i != 0)
+            out << " ";
+        out << to_string(requirement);
+        ++i;
     }
-
-    bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl& other) const {
-        return (m_requirements == other.m_requirements);
-    }
-
-    size_t RequirementsImpl::hash_impl() const {
-        return loki::hash_container(m_requirements);
-    }
-
-    void RequirementsImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const {
-        out << "(:requirements ";
-        int i = 0;
-        for (const auto& requirement : m_requirements) {
-            if (i != 0) out << " ";
-            out << to_string(requirement);
-            ++i;
-        }
-        out << ")";
-    }
-
-    bool RequirementsImpl::test(loki::pddl::RequirementEnum requirement) const {
-        return m_requirements.count(requirement);
-    }
-
-    const loki::pddl::RequirementEnumSet& RequirementsImpl::get_requirements() const {
-        return m_requirements;
-    }
+    out << ")";
 }
 
-namespace std {
-    bool less<mimir::Requirements>::operator()(
-        const mimir::Requirements& left_requirements,
-        const mimir::Requirements& right_requirements) const {
-        return *left_requirements < *right_requirements;
-    }
+bool RequirementsImpl::test(loki::pddl::RequirementEnum requirement) const { return m_requirements.count(requirement); }
 
-    std::size_t hash<mimir::RequirementsImpl>::operator()(const mimir::RequirementsImpl& requirements) const {
-        return requirements.hash();
-    }
+const loki::pddl::RequirementEnumSet& RequirementsImpl::get_requirements() const { return m_requirements; }
+}
+
+namespace std
+{
+bool less<mimir::Requirements>::operator()(const mimir::Requirements& left_requirements, const mimir::Requirements& right_requirements) const
+{
+    return *left_requirements < *right_requirements;
+}
+
+std::size_t hash<mimir::RequirementsImpl>::operator()(const mimir::RequirementsImpl& requirements) const { return requirements.hash(); }
 }

@@ -18,31 +18,29 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_FUNCTION_EXPRESSIONS_HPP_
 
-#include "../function_expressions.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../function_expressions.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    class FunctionExpressionVisitor {
-        private:
-            PDDLFactories& factories;
+class FunctionExpressionVisitor
+{
+private:
+    PDDLFactories& factories;
 
-        public:
-            FunctionExpressionVisitor(PDDLFactories& factories_);
+public:
+    FunctionExpressionVisitor(PDDLFactories& factories_);
 
-            FunctionExpression operator()(const loki::pddl::FunctionExpressionNumberImpl& node);
-            FunctionExpression operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& node);
-            FunctionExpression operator()(const loki::pddl::FunctionExpressionMultiOperatorImpl& node);
-            FunctionExpression operator()(const loki::pddl::FunctionExpressionMinusImpl& node);
-            FunctionExpression operator()(const loki::pddl::FunctionExpressionFunctionImpl& node);
-    };
+    FunctionExpression operator()(const loki::pddl::FunctionExpressionNumberImpl& node);
+    FunctionExpression operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& node);
+    FunctionExpression operator()(const loki::pddl::FunctionExpressionMultiOperatorImpl& node);
+    FunctionExpression operator()(const loki::pddl::FunctionExpressionMinusImpl& node);
+    FunctionExpression operator()(const loki::pddl::FunctionExpressionFunctionImpl& node);
+};
 
-    extern FunctionExpression parse(loki::pddl::FunctionExpression function_expression, PDDLFactories& factories);
-    extern FunctionExpressionList parse(loki::pddl::FunctionExpressionList function_expression_list, PDDLFactories& factories);
-} 
+extern FunctionExpression parse(loki::pddl::FunctionExpression function_expression, PDDLFactories& factories);
+extern FunctionExpressionList parse(loki::pddl::FunctionExpressionList function_expression_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

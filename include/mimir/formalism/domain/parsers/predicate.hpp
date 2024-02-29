@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_PREDICATE_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_PREDICATE_HPP_
 
-#include "../predicate.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../predicate.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories);
-    extern PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories);
-} 
+extern Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories);
+extern PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

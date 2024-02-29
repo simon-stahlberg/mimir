@@ -1,16 +1,13 @@
-#include <mimir/formalism/problem/declarations.hpp>
-
-#include <mimir/formalism/parser.hpp>
-
-#include <mimir/search/successor_state_generators.hpp>
-
 #include <gtest/gtest.h>
-
+#include <mimir/formalism/parser.hpp>
+#include <mimir/formalism/problem/declarations.hpp>
+#include <mimir/search/successor_state_generators.hpp>
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchSSGBitsetTest) {
+TEST(MimirTests, SearchSSGBitsetTest)
+{
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");

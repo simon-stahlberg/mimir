@@ -15,74 +15,64 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+#include <loki/common/collections.hpp>
+#include <loki/common/hash.hpp>
 #include <mimir/formalism/domain/parameter.hpp>
 #include <mimir/formalism/domain/type.hpp>
 #include <mimir/formalism/domain/variable.hpp>
 
-#include <loki/common/hash.hpp>
-#include <loki/common/collections.hpp>
-
-#include <cassert>
-
-
 namespace mimir
 {
-    ParameterImpl::ParameterImpl(int identifier, Variable variable, TypeList types)
-        : Base(identifier)
-        , m_variable(std::move(variable))
-        , m_types(std::move(types))
+ParameterImpl::ParameterImpl(int identifier, Variable variable, TypeList types) : Base(identifier), m_variable(std::move(variable)), m_types(std::move(types))
+{
+}
+
+bool ParameterImpl::is_structurally_equivalent_to_impl(const ParameterImpl& other) const
+{
+    return (m_variable == other.m_variable) && (get_sorted_vector(m_types) == get_sorted_vector(other.m_types));
+}
+
+size_t ParameterImpl::hash_impl() const { return loki::hash_combine(m_variable, loki::hash_container(loki::get_sorted_vector(m_types))); }
+
+void ParameterImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const { str(out, options, true); }
+
+void ParameterImpl::str(std::ostringstream& out, const loki::FormattingOptions& /*options*/, bool typing_enabled) const
+{
+    out << *m_variable;
+    if (typing_enabled)
     {
-    }
-
-    bool ParameterImpl::is_structurally_equivalent_to_impl(const ParameterImpl& other) const {
-        return (m_variable == other.m_variable) && (get_sorted_vector(m_types) == get_sorted_vector(other.m_types));
-    }
-
-    size_t ParameterImpl::hash_impl() const {
-        return loki::hash_combine(m_variable, loki::hash_container(loki::get_sorted_vector(m_types)));
-    }
-
-    void ParameterImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const {
-        str(out, options, true);
-    }
-
-    void ParameterImpl::str(std::ostringstream& out, const loki::FormattingOptions& /*options*/, bool typing_enabled) const {
-        out << *m_variable;
-        if (typing_enabled) {
-            assert(!m_types.empty());
-            out << " - ";
-            if (m_types.size() > 1) {
-                out << "(either ";
-                for (size_t i = 0; i < m_types.size(); ++i) {
-                    if (i != 0) out << " ";
-                    out << *m_types[i];
-                }
-                out << ")";
-            } else if (m_types.size() == 1) {
-                out << *m_types.front();
+        assert(!m_types.empty());
+        out << " - ";
+        if (m_types.size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < m_types.size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                out << *m_types[i];
             }
+            out << ")";
         }
-    }
-
-    const Variable& ParameterImpl::get_variable() const {
-        return m_variable;
-    }
-
-    const TypeList& ParameterImpl::get_bases() const {
-        return m_types;
+        else if (m_types.size() == 1)
+        {
+            out << *m_types.front();
+        }
     }
 }
 
+const Variable& ParameterImpl::get_variable() const { return m_variable; }
 
-namespace std 
+const TypeList& ParameterImpl::get_bases() const { return m_types; }
+}
+
+namespace std
 {
-    bool less<mimir::Parameter>::operator()(
-        const mimir::Parameter& left_parameter,
-        const mimir::Parameter& right_parameter) const {
-        return *left_parameter < *right_parameter;
-    }
+bool less<mimir::Parameter>::operator()(const mimir::Parameter& left_parameter, const mimir::Parameter& right_parameter) const
+{
+    return *left_parameter < *right_parameter;
+}
 
-    std::size_t hash<mimir::ParameterImpl>::operator()(const mimir::ParameterImpl& parameter) const {
-        return parameter.hash();
-    }
+std::size_t hash<mimir::ParameterImpl>::operator()(const mimir::ParameterImpl& parameter) const { return parameter.hash(); }
 }

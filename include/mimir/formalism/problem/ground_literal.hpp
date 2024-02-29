@@ -21,63 +21,58 @@
 #include "declarations.hpp"
 
 #include <loki/problem/pddl/ground_literal.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class GroundLiteralImpl : public loki::Base<GroundLiteralImpl>
+{
+private:
+    bool m_is_negated;
+    GroundAtom m_atom;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    GroundLiteralImpl(int identifier, bool is_negated, GroundAtom atom);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<GroundLiteralImpl>;
+
+public:
+    bool is_negated() const;
+    const GroundAtom& get_atom() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class GroundLiteralImpl : public loki::Base<GroundLiteralImpl> 
-    {
-    private:
-        bool m_is_negated;
-        GroundAtom m_atom;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        GroundLiteralImpl(int identifier, bool is_negated, GroundAtom atom);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<GroundLiteralImpl>;
-
-    public:
-        bool is_negated() const;
-        const GroundAtom& get_atom() const;
-    };
-}
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::GroundLiteral>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::GroundLiteral>
-    {
-        bool operator()(const mimir::GroundLiteral& left_literal, const mimir::GroundLiteral& right_literal) const;
-    };
+    bool operator()(const mimir::GroundLiteral& left_literal, const mimir::GroundLiteral& right_literal) const;
+};
 
-    template<>
-    struct hash<mimir::GroundLiteralImpl>
-    {
-        std::size_t operator()(const mimir::GroundLiteralImpl& literal) const;
-    };
+template<>
+struct hash<mimir::GroundLiteralImpl>
+{
+    std::size_t operator()(const mimir::GroundLiteralImpl& literal) const;
+};
 }
-
 
 #endif

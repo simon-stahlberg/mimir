@@ -8,10 +8,8 @@
 
 #include <cstdint>
 
-
 namespace mimir
 {
-
 
 /**
  * ID base class.
@@ -20,16 +18,17 @@ namespace mimir
  *
  * Define new template parameters to your derived tag
  * in the declaration file of your derived class.
-*/
-struct StateTag {};
+ */
+struct StateTag
+{
+};
 
 template<typename DerivedTag>
 concept IsStateTag = std::derived_from<DerivedTag, StateTag>;
 
-
 /**
  * Interface class
-*/
+ */
 template<typename Derived>
 class IStateBuilder
 {
@@ -46,7 +45,6 @@ private:
 public:
     [[nodiscard]] uint32_t& get_id() { return self().get_id_impl(); }
 };
-
 
 template<typename Derived>
 class IStateView
@@ -65,38 +63,45 @@ public:
     [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }
 };
 
-
 /**
  * Dispatcher class.
  *
  * Wrap the tag to dispatch the correct overload.
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
-*/
+ */
 template<IsStateTag S, IsPlanningModeTag P>
-struct StateDispatcher {};
+struct StateDispatcher
+{
+};
 
 template<typename T>
-struct is_state_dispatcher : std::false_type {};
+struct is_state_dispatcher : std::false_type
+{
+};
 
 template<IsStateTag S, IsPlanningModeTag P>
-struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type {};
+struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type
+{
+};
 
 template<typename T>
 concept IsStateDispatcher = is_state_dispatcher<T>::value;
-
 
 /**
  * General implementation class.
  *
  * Specialize the wrapped tag to provide your own implementation of a state representation.
-*/
+ */
 template<IsStateDispatcher S>
-class Builder<S> : public IBuilder<Builder<S>>, public IStateBuilder<Builder<S>> {};
+class Builder<S> : public IBuilder<Builder<S>>, public IStateBuilder<Builder<S>>
+{
+};
 
 template<IsStateDispatcher S>
-class ConstView<S> : public IConstView<ConstView<S>>, public IStateView<ConstView<S>> {};
-
+class ConstView<S> : public IConstView<ConstView<S>>, public IStateView<ConstView<S>>
+{
+};
 
 }
 

@@ -18,17 +18,15 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_PARSER_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_PARSER_PROBLEM_HPP_
 
-#include "../problem.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../problem.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    extern Problem parse(loki::pddl::Problem problem, PDDLFactories& factories);
-} 
+extern Problem parse(loki::pddl::Problem problem, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

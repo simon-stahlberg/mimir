@@ -15,69 +15,64 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #ifndef MIMIR_FORMALISM_DOMAIN_ATOM_HPP_
 #define MIMIR_FORMALISM_DOMAIN_ATOM_HPP_
 
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/atom.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class AtomImpl : public loki::Base<AtomImpl>
+{
+private:
+    Predicate m_predicate;
+    TermList m_terms;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    AtomImpl(int identifier, Predicate predicate, TermList terms);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const AtomImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<AtomImpl>;
+
+public:
+    const Predicate& get_predicate() const;
+    const TermList& get_terms() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class AtomImpl : public loki::Base<AtomImpl> 
-    {
-    private:
-        Predicate m_predicate;
-        TermList m_terms;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        AtomImpl(int identifier, Predicate predicate, TermList terms);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const AtomImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<AtomImpl>;
-
-    public:
-        const Predicate& get_predicate() const;
-        const TermList& get_terms() const;
-    };
-}
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Atom>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Atom>
-    {
-        bool operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const;
-    };
+    bool operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const;
+};
 
-    template<>
-    struct hash<mimir::AtomImpl>
-    {
-        std::size_t operator()(const mimir::AtomImpl& atom) const;
-    };
+template<>
+struct hash<mimir::AtomImpl>
+{
+    std::size_t operator()(const mimir::AtomImpl& atom) const;
+};
 }
 
 #endif

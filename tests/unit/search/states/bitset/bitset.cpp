@@ -1,18 +1,17 @@
-#include <mimir/search/states.hpp>
-
 #include <gtest/gtest.h>
-
+#include <mimir/search/states.hpp>
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchStatesBitsetTest) {
+TEST(MimirTests, SearchStatesBitsetTest)
+{
     // Build a state.
     /*
     auto builder = Builder<StateDispatcher<BitsetStateTag, GroundedTag>>();
     builder.set_id(5);  // 4 bytes
     auto& bitset = builder.get_atoms_bitset();
-    bitset.set(20); 
+    bitset.set(20);
     bitset.set(100);  // 16 bytes
     builder.finish();
     EXPECT_NE(builder.get_buffer_pointer(), nullptr);

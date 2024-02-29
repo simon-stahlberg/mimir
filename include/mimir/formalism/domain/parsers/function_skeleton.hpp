@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_FUNCTION_SKELETON_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_FUNCTION_SKELETON_HPP_
 
-#include "../function_skeleton.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../function_skeleton.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories);
-    extern FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories);
-} 
+extern FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories);
+extern FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

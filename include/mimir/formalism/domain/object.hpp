@@ -21,63 +21,58 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/object.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
-    template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
 }
 
-
-namespace mimir 
+namespace mimir
 {
-    class ObjectImpl : public loki::Base<ObjectImpl> 
-    {
-    private:
-        std::string m_name;
-        TypeList m_types;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        ObjectImpl(int identifier, std::string name, TypeList types={});
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<ObjectImpl>;
-
-    public:
-        const std::string& get_name() const;
-        const TypeList& get_bases() const;
-    };
-} 
-
-
-namespace std 
+class ObjectImpl : public loki::Base<ObjectImpl>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Object>
-    {
-        bool operator()(const mimir::Object& left_object, const mimir::Object& right_object) const;
-    };
+private:
+    std::string m_name;
+    TypeList m_types;
 
-    template<>
-    struct hash<mimir::ObjectImpl>
-    {
-        std::size_t operator()(const mimir::ObjectImpl& object) const;
-    };
-} 
+    // Below: add additional members if needed and initialize them in the constructor
 
+    ObjectImpl(int identifier, std::string name, TypeList types = {});
 
-#endif 
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<ObjectImpl>;
+
+public:
+    const std::string& get_name() const;
+    const TypeList& get_bases() const;
+};
+}
+
+namespace std
+{
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Object>
+{
+    bool operator()(const mimir::Object& left_object, const mimir::Object& right_object) const;
+};
+
+template<>
+struct hash<mimir::ObjectImpl>
+{
+    std::size_t operator()(const mimir::ObjectImpl& object) const;
+};
+}
+
+#endif

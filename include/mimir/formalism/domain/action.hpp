@@ -20,75 +20,70 @@
 
 #include "declarations.hpp"
 
-#include <loki/domain/pddl/action.hpp>
-
-#include <string>
 #include <functional>
+#include <loki/domain/pddl/action.hpp>
 #include <optional>
-
+#include <string>
 
 namespace loki
 {
-    template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
 }
-
 
 namespace mimir
 {
-    class ActionImpl : public loki::Base<ActionImpl>
-    {
-    private:
-        std::string m_name;
-        ParameterList m_parameters;
-        std::optional<Condition> m_condition;
-        std::optional<Effect> m_effect;
+class ActionImpl : public loki::Base<ActionImpl>
+{
+private:
+    std::string m_name;
+    ParameterList m_parameters;
+    std::optional<Condition> m_condition;
+    std::optional<Effect> m_effect;
 
-        // Below: add additional members if needed and initialize them in the constructor
+    // Below: add additional members if needed and initialize them in the constructor
 
-        ActionImpl(int identifier, std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect);
+    ActionImpl(int identifier, std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect);
 
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
 
-        /// @brief Test for structural equivalence
-        bool is_structurally_equivalent_to_impl(const ActionImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+    /// @brief Test for structural equivalence
+    bool is_structurally_equivalent_to_impl(const ActionImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-        // Give access to the private interface implementations.
-        friend class loki::Base<ActionImpl>;
+    // Give access to the private interface implementations.
+    friend class loki::Base<ActionImpl>;
 
-    public:
-        const std::string& get_name() const;
-        const ParameterList& get_parameters() const;
-        const std::optional<Condition>& get_condition() const;
-        const std::optional<Effect>& get_effect() const;
-        size_t get_arity() const;
+public:
+    const std::string& get_name() const;
+    const ParameterList& get_parameters() const;
+    const std::optional<Condition>& get_condition() const;
+    const std::optional<Effect>& get_effect() const;
+    size_t get_arity() const;
 
-        bool affects(Predicate predicate) const;
-    };
+    bool affects(Predicate predicate) const;
+};
 
-    bool any_affects(const ActionList& actions, Predicate predicate);
+bool any_affects(const ActionList& actions, Predicate predicate);
 }
-
 
 namespace std
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Action>
-    {
-        bool operator()(const mimir::Action& left_action, const mimir::Action& right_action) const;
-    };
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Action>
+{
+    bool operator()(const mimir::Action& left_action, const mimir::Action& right_action) const;
+};
 
-    template<>
-    struct hash<mimir::ActionImpl>
-    {
-        std::size_t operator()(const mimir::ActionImpl& action) const;
-    };
+template<>
+struct hash<mimir::ActionImpl>
+{
+    std::size_t operator()(const mimir::ActionImpl& action) const;
+};
 }
-
 
 #endif

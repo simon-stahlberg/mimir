@@ -24,7 +24,7 @@ private:
 
     bool nullary_preconditions_hold(FlatActionSchema action_schema, ConstStateView state)
     {
-        throw std::runtime_error("not implemented");
+        // throw std::runtime_error("not implemented");
 
         // for (const auto& literal : action_schema.fluent_precondition)
         // {

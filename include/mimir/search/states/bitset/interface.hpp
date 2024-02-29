@@ -1,11 +1,10 @@
 #ifndef MIMIR_SEARCH_STATES_BITSET_INTERFACE_HPP_
 #define MIMIR_SEARCH_STATES_BITSET_INTERFACE_HPP_
 
-#include "../interface.hpp"
 #include "../../types.hpp"
+#include "../interface.hpp"
 
 #include <flatmemory/flatmemory.hpp>
-
 
 namespace mimir
 {
@@ -14,13 +13,14 @@ namespace mimir
  * Derived ID class.
  *
  * Define name and template parameters of your own implementation.
-*/
-class BitsetStateTag : public StateTag {};
-
+ */
+class BitsetStateTag : public StateTag
+{
+};
 
 /**
  * Interface class
-*/
+ */
 template<typename Derived>
 class IBitsetStateBuilder
 {
@@ -37,7 +37,6 @@ private:
 public:
     [[nodiscard]] Bitset& get_atoms_bitset() { return self().get_atoms_bitset_impl(); }
 };
-
 
 template<typename Derived>
 class IBitsetStateView
@@ -56,11 +55,9 @@ public:
     [[nodiscard]] ConstBitsetView get_atoms_bitset() const { return self().get_atoms_bitset_impl(); }
 };
 
-
-
 /**
  * Type traits.
-*/
+ */
 template<IsPlanningModeTag P>
 struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, P>>>
 {
@@ -73,7 +70,6 @@ struct TypeTraits<ConstView<StateDispatcher<BitsetStateTag, P>>>
     using PlanningModeTag = P;
 };
 
+}
 
-} 
-
-#endif 
+#endif

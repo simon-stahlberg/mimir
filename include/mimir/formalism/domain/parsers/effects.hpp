@@ -18,32 +18,31 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_EFFECTS_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_EFFECTS_HPP_
 
+#include "../../common/types.hpp"
 #include "../conditions.hpp"
 #include "../declarations.hpp"
-#include "../../common/types.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    class EffectVisitor {
-        private:
-            PDDLFactories& factories;
+class EffectVisitor
+{
+private:
+    PDDLFactories& factories;
 
-        public:
-            EffectVisitor(PDDLFactories& factories_);
+public:
+    EffectVisitor(PDDLFactories& factories_);
 
-            Effect operator()(const loki::pddl::EffectLiteralImpl& node);
-            Effect operator()(const loki::pddl::EffectAndImpl& node);
-            Effect operator()(const loki::pddl::EffectNumericImpl& node);
-            Effect operator()(const loki::pddl::EffectConditionalForallImpl& node);
-            Effect operator()(const loki::pddl::EffectConditionalWhenImpl& node);
-    };
+    Effect operator()(const loki::pddl::EffectLiteralImpl& node);
+    Effect operator()(const loki::pddl::EffectAndImpl& node);
+    Effect operator()(const loki::pddl::EffectNumericImpl& node);
+    Effect operator()(const loki::pddl::EffectConditionalForallImpl& node);
+    Effect operator()(const loki::pddl::EffectConditionalWhenImpl& node);
+};
 
-    extern Effect parse(loki::pddl::Effect effect, PDDLFactories& factories);
-    extern EffectList parse(loki::pddl::EffectList effect_list, PDDLFactories& factories);
-} 
+extern Effect parse(loki::pddl::Effect effect, PDDLFactories& factories);
+extern EffectList parse(loki::pddl::EffectList effect_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

@@ -15,35 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/formalism/domain/parsers/term.hpp>
-
 #include <mimir/formalism/domain/parsers/object.hpp>
+#include <mimir/formalism/domain/parsers/term.hpp>
 #include <mimir/formalism/domain/parsers/variable.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    TermVisitor::TermVisitor(PDDLFactories& factories_) : factories(factories_) { }
+TermVisitor::TermVisitor(PDDLFactories& factories_) : factories(factories_) {}
 
-    Term TermVisitor::operator()(const loki::pddl::TermObjectImpl& node) {
-        return factories.terms.get_or_create<TermObjectImpl>(
-            parse(node.get_object(), factories));
-    }
+Term TermVisitor::operator()(const loki::pddl::TermObjectImpl& node)
+{
+    return factories.terms.get_or_create<TermObjectImpl>(parse(node.get_object(), factories));
+}
 
-    Term TermVisitor::operator()(const loki::pddl::TermVariableImpl& node) {
-        return factories.terms.get_or_create<TermVariableImpl>(
-            parse(node.get_variable(), factories));
-    }
+Term TermVisitor::operator()(const loki::pddl::TermVariableImpl& node)
+{
+    return factories.terms.get_or_create<TermVariableImpl>(parse(node.get_variable(), factories));
+}
 
-    Term parse(loki::pddl::Term term, PDDLFactories& factories) {
-        return std::visit(TermVisitor(factories), *term);
-    }
+Term parse(loki::pddl::Term term, PDDLFactories& factories) { return std::visit(TermVisitor(factories), *term); }
 
-    TermList parse(loki::pddl::TermList term_list, PDDLFactories& factories) {
-        auto result_term_list = TermList();
-        for (const auto& term : term_list) {
-            result_term_list.push_back(parse(term, factories));
-        }
-        return result_term_list;
+TermList parse(loki::pddl::TermList term_list, PDDLFactories& factories)
+{
+    auto result_term_list = TermList();
+    for (const auto& term : term_list)
+    {
+        result_term_list.push_back(parse(term, factories));
     }
+    return result_term_list;
+}
 }

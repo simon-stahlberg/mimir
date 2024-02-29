@@ -18,34 +18,33 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_CONDITIONS_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_CONDITIONS_HPP_
 
+#include "../../common/types.hpp"
 #include "../conditions.hpp"
 #include "../declarations.hpp"
-#include "../../common/types.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    class ConditionVisitor {
-        private:
-            PDDLFactories& factories;
+class ConditionVisitor
+{
+private:
+    PDDLFactories& factories;
 
-        public:
-            ConditionVisitor(PDDLFactories& factories_);
+public:
+    ConditionVisitor(PDDLFactories& factories_);
 
-            Condition operator()(const loki::pddl::ConditionLiteralImpl& node);
-            Condition operator()(const loki::pddl::ConditionAndImpl& node);
-            Condition operator()(const loki::pddl::ConditionOrImpl& node);
-            Condition operator()(const loki::pddl::ConditionNotImpl& node);
-            Condition operator()(const loki::pddl::ConditionImplyImpl& node);
-            Condition operator()(const loki::pddl::ConditionExistsImpl& node);
-            Condition operator()(const loki::pddl::ConditionForallImpl& node);
-    };
+    Condition operator()(const loki::pddl::ConditionLiteralImpl& node);
+    Condition operator()(const loki::pddl::ConditionAndImpl& node);
+    Condition operator()(const loki::pddl::ConditionOrImpl& node);
+    Condition operator()(const loki::pddl::ConditionNotImpl& node);
+    Condition operator()(const loki::pddl::ConditionImplyImpl& node);
+    Condition operator()(const loki::pddl::ConditionExistsImpl& node);
+    Condition operator()(const loki::pddl::ConditionForallImpl& node);
+};
 
-    extern Condition parse(loki::pddl::Condition condition, PDDLFactories& factories);
-    extern ConditionList parse(loki::pddl::ConditionList condition_list, PDDLFactories& factories);
-} 
+extern Condition parse(loki::pddl::Condition condition, PDDLFactories& factories);
+extern ConditionList parse(loki::pddl::ConditionList condition_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

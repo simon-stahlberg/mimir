@@ -21,61 +21,56 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/variable.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
-    template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
 }
 
-
-namespace mimir 
+namespace mimir
 {
-    class VariableImpl : public loki::Base<VariableImpl> 
-    {
-    private:
-        std::string m_name;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        VariableImpl(int identifier, std::string name);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<VariableImpl>;
-
-    public:
-        const std::string& get_name() const;
-    };
-} 
-
-
-namespace std 
+class VariableImpl : public loki::Base<VariableImpl>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Variable>
-    {
-        bool operator()(const mimir::Variable& left_variable, const mimir::Variable& right_variable) const;
-    };
+private:
+    std::string m_name;
 
-    template<>
-    struct hash<mimir::VariableImpl>
-    {
-        std::size_t operator()(const mimir::VariableImpl& variable) const;
-    };
-} 
+    // Below: add additional members if needed and initialize them in the constructor
 
+    VariableImpl(int identifier, std::string name);
 
-#endif 
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<VariableImpl>;
+
+public:
+    const std::string& get_name() const;
+};
+}
+
+namespace std
+{
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Variable>
+{
+    bool operator()(const mimir::Variable& left_variable, const mimir::Variable& right_variable) const;
+};
+
+template<>
+struct hash<mimir::VariableImpl>
+{
+    std::size_t operator()(const mimir::VariableImpl& variable) const;
+};
+}
+
+#endif

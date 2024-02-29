@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_OBJECT_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_OBJECT_HPP_
 
-#include "../object.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../object.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Object parse(loki::pddl::Object object, PDDLFactories& factories);
-    extern ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories);
-} 
+extern Object parse(loki::pddl::Object object, PDDLFactories& factories);
+extern ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

@@ -18,30 +18,29 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_TERM_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_TERM_HPP_
 
-#include "../term.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../term.hpp"
 
 #include <variant>
 
-
-namespace mimir 
+namespace mimir
 {
-    class TermVisitor {
-        private:
-            PDDLFactories& factories;
+class TermVisitor
+{
+private:
+    PDDLFactories& factories;
 
-        public:
-            TermVisitor(PDDLFactories& factories_);
+public:
+    TermVisitor(PDDLFactories& factories_);
 
-            Term operator()(const loki::pddl::TermObjectImpl& node);
+    Term operator()(const loki::pddl::TermObjectImpl& node);
 
-            Term operator()(const loki::pddl::TermVariableImpl& node);
-    };
+    Term operator()(const loki::pddl::TermVariableImpl& node);
+};
 
-    extern Term parse(loki::pddl::Term term, PDDLFactories& factories);
-    extern TermList parse(loki::pddl::TermList term_list, PDDLFactories& factories);
-} 
+extern Term parse(loki::pddl::Term term, PDDLFactories& factories);
+extern TermList parse(loki::pddl::TermList term_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

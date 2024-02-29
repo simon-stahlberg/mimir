@@ -15,24 +15,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <mimir/formalism/domain/parsers/parameter.hpp>
 #include <mimir/formalism/domain/parsers/predicate.hpp>
 
-#include <mimir/formalism/domain/parsers/parameter.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories) {
-        return factories.predicates.get_or_create<PredicateImpl>(
-            predicate->get_name(), 
-            parse(predicate->get_parameters(), factories));
-    }
+Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories)
+{
+    return factories.predicates.get_or_create<PredicateImpl>(predicate->get_name(), parse(predicate->get_parameters(), factories));
+}
 
-    PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories) {
-        auto result_predicate_list = PredicateList();
-        for (const auto& predicate : predicate_list) {
-            result_predicate_list.push_back(parse(predicate, factories));
-        }
-        return result_predicate_list;
+PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories)
+{
+    auto result_predicate_list = PredicateList();
+    for (const auto& predicate : predicate_list)
+    {
+        result_predicate_list.push_back(parse(predicate, factories));
     }
+    return result_predicate_list;
+}
 }

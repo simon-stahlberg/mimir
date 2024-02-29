@@ -16,27 +16,25 @@
  */
 
 #include <mimir/formalism/domain/parsers/function_skeleton.hpp>
-
 #include <mimir/formalism/domain/parsers/parameter.hpp>
 #include <mimir/formalism/domain/parsers/type.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories)
-    {
-        return factories.function_skeletons.get_or_create<FunctionSkeletonImpl>(
-            function_skeleton->get_name(), 
-            parse(function_skeleton->get_parameters(), factories), 
-            parse(function_skeleton->get_type(), factories));
-    }
+FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories)
+{
+    return factories.function_skeletons.get_or_create<FunctionSkeletonImpl>(function_skeleton->get_name(),
+                                                                            parse(function_skeleton->get_parameters(), factories),
+                                                                            parse(function_skeleton->get_type(), factories));
+}
 
-    FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories) 
+FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories)
+{
+    auto result_function_skeleton_list = FunctionSkeletonList();
+    for (const auto& function_skeleton : function_skeleton_list)
     {
-        auto result_function_skeleton_list = FunctionSkeletonList();
-        for (const auto& function_skeleton : function_skeleton_list) {
-            result_function_skeleton_list.push_back(parse(function_skeleton, factories));
-        }
-        return result_function_skeleton_list;
+        result_function_skeleton_list.push_back(parse(function_skeleton, factories));
     }
+    return result_function_skeleton_list;
+}
 }

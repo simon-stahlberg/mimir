@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_FUNCTION_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_FUNCTION_HPP_
 
-#include "../function.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../function.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Function parse(loki::pddl::Function function, PDDLFactories& factories);
-    extern FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories);
-} 
+extern Function parse(loki::pddl::Function function, PDDLFactories& factories);
+extern FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

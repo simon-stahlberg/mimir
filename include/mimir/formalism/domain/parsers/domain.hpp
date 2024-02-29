@@ -18,16 +18,13 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_DOMAIN_HPP_
 
-#include "../domain.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../domain.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Domain parse(loki::pddl::Domain domain, PDDLFactories& factories);
-} 
+extern Domain parse(loki::pddl::Domain domain, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

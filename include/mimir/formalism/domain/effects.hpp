@@ -21,197 +21,188 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/effects.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+/* Literal */
+class EffectLiteralImpl : public loki::Base<EffectLiteralImpl>
+{
+private:
+    Literal m_literal;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    EffectLiteralImpl(int identifier, Literal literal);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
-}
+    friend class loki::PersistentFactory;
 
+    // Give access to the private interface implementations.
+    friend class loki::Base<EffectLiteralImpl>;
 
-namespace mimir 
+public:
+    bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    const Literal& get_literal() const;
+};
+
+/* And */
+class EffectAndImpl : public loki::Base<EffectAndImpl>
 {
-    /* Literal */
-    class EffectLiteralImpl : public loki::Base<EffectLiteralImpl> 
-    {
-    private:
-        Literal m_literal;
+private:
+    EffectList m_effects;
 
-        // Below: add additional members if needed and initialize them in the constructor
+    // Below: add additional members if needed and initialize them in the constructor
 
-        EffectLiteralImpl(int identifier, Literal literal);
+    EffectAndImpl(int identifier, EffectList effects);
 
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
 
-        // Give access to the private interface implementations.
-        friend class loki::Base<EffectLiteralImpl>;
+    // Give access to the private interface implementations.
+    friend class loki::Base<EffectAndImpl>;
 
-    public:
-        bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+public:
+    bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
-        const Literal& get_literal() const;
-    };
+    const EffectList& get_effects() const;
+};
 
-
-    /* And */
-    class EffectAndImpl : public loki::Base<EffectAndImpl> 
-    {
-    private:
-        EffectList m_effects;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        EffectAndImpl(int identifier, EffectList effects);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<EffectAndImpl>;
-
-    public:
-        bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        const EffectList& get_effects() const;
-    };
-
-
-    /* EffectNumeric */
-    class EffectNumericImpl : public loki::Base<EffectNumericImpl> 
-    {
-    private:
-        loki::pddl::AssignOperatorEnum m_assign_operator;
-        Function m_function;
-        FunctionExpression m_function_expression;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        EffectNumericImpl(int identifier, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        // Give access to the private interface implementations.
-        friend class Base<EffectNumericImpl>;
-
-    public:
-        bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        loki::pddl::AssignOperatorEnum get_assign_operator() const;
-        const Function& get_function() const;
-        const FunctionExpression& get_function_expression() const;
-    };
-
-
-    /* ConditionalForall */
-    class EffectConditionalForallImpl : public loki::Base<EffectConditionalForallImpl> 
-    {
-    private:
-        ParameterList m_parameters;
-        Effect m_effect;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<EffectConditionalForallImpl>;
-
-    public:
-        bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        const ParameterList& get_parameters() const;
-        const Effect& get_effect() const;
-    };
-
-
-    /* ConditionalWhen */
-    class EffectConditionalWhenImpl : public loki::Base<EffectConditionalWhenImpl> 
-    {
-    private:
-        Condition m_condition;
-        Effect m_effect;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<EffectConditionalWhenImpl>;
-
-    public:
-        const Condition& get_condition() const;
-        const Effect& get_effect() const;
-    };
-}
-
-
-namespace std 
+/* EffectNumeric */
+class EffectNumericImpl : public loki::Base<EffectNumericImpl>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Effect>
-    {
-        bool operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const;
-    };
+private:
+    loki::pddl::AssignOperatorEnum m_assign_operator;
+    Function m_function;
+    FunctionExpression m_function_expression;
 
-    template<>
-    struct hash<mimir::EffectLiteralImpl>
-    {
-        std::size_t operator()(const mimir::EffectLiteralImpl& effect) const;
-    };
+    // Below: add additional members if needed and initialize them in the constructor
 
-    template<>
-    struct hash<mimir::EffectAndImpl>
-    {
-        std::size_t operator()(const mimir::EffectAndImpl& effect) const;
-    };
+    EffectNumericImpl(int identifier, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
 
-    template<>
-    struct hash<mimir::EffectNumericImpl>
-    {
-        std::size_t operator()(const mimir::EffectNumericImpl& effect) const;
-    };
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
 
-    template<>
-    struct hash<mimir::EffectConditionalForallImpl>
-    {
-        std::size_t operator()(const mimir::EffectConditionalForallImpl& effect) const;
-    };
+    // Give access to the private interface implementations.
+    friend class Base<EffectNumericImpl>;
 
-    template<>
-    struct hash<mimir::EffectConditionalWhenImpl>
-    {
-        std::size_t operator()(const mimir::EffectConditionalWhenImpl& effect) const;
-    };
+public:
+    bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    loki::pddl::AssignOperatorEnum get_assign_operator() const;
+    const Function& get_function() const;
+    const FunctionExpression& get_function_expression() const;
+};
+
+/* ConditionalForall */
+class EffectConditionalForallImpl : public loki::Base<EffectConditionalForallImpl>
+{
+private:
+    ParameterList m_parameters;
+    Effect m_effect;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect);
+
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<EffectConditionalForallImpl>;
+
+public:
+    bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    const ParameterList& get_parameters() const;
+    const Effect& get_effect() const;
+};
+
+/* ConditionalWhen */
+class EffectConditionalWhenImpl : public loki::Base<EffectConditionalWhenImpl>
+{
+private:
+    Condition m_condition;
+    Effect m_effect;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect);
+
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
+
+    bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<EffectConditionalWhenImpl>;
+
+public:
+    const Condition& get_condition() const;
+    const Effect& get_effect() const;
+};
 }
 
+namespace std
+{
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Effect>
+{
+    bool operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const;
+};
+
+template<>
+struct hash<mimir::EffectLiteralImpl>
+{
+    std::size_t operator()(const mimir::EffectLiteralImpl& effect) const;
+};
+
+template<>
+struct hash<mimir::EffectAndImpl>
+{
+    std::size_t operator()(const mimir::EffectAndImpl& effect) const;
+};
+
+template<>
+struct hash<mimir::EffectNumericImpl>
+{
+    std::size_t operator()(const mimir::EffectNumericImpl& effect) const;
+};
+
+template<>
+struct hash<mimir::EffectConditionalForallImpl>
+{
+    std::size_t operator()(const mimir::EffectConditionalForallImpl& effect) const;
+};
+
+template<>
+struct hash<mimir::EffectConditionalWhenImpl>
+{
+    std::size_t operator()(const mimir::EffectConditionalWhenImpl& effect) const;
+};
+}
 
 #endif

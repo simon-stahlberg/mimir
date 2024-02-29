@@ -15,27 +15,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <mimir/formalism/domain/parsers/object.hpp>
+#include <mimir/formalism/domain/parsers/predicate.hpp>
 #include <mimir/formalism/problem/parsers/ground_atom.hpp>
 
-#include <mimir/formalism/domain/parsers/predicate.hpp>
-#include <mimir/formalism/domain/parsers/object.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories) 
-    {
-        return factories.ground_atoms.get_or_create<GroundAtomImpl>(
-            parse(ground_atom->get_predicate(), factories), 
-            parse(ground_atom->get_objects(), factories));
-    }
+GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories)
+{
+    return factories.ground_atoms.get_or_create<GroundAtomImpl>(parse(ground_atom->get_predicate(), factories), parse(ground_atom->get_objects(), factories));
+}
 
-    GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories) 
+GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories)
+{
+    auto result_ground_atom_list = GroundAtomList();
+    for (const auto& ground_atom : ground_atom_list)
     {
-        auto result_ground_atom_list = GroundAtomList();
-        for (const auto& ground_atom : ground_atom_list) {
-            result_ground_atom_list.push_back(parse(ground_atom, factories));
-        }
-        return result_ground_atom_list;
+        result_ground_atom_list.push_back(parse(ground_atom, factories));
     }
+    return result_ground_atom_list;
+}
 }

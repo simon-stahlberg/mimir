@@ -15,63 +15,58 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <loki/common/hash.hpp>
+#include <loki/common/pddl/visitors.hpp>
 #include <mimir/formalism/domain/function.hpp>
-
 #include <mimir/formalism/domain/function_skeleton.hpp>
 #include <mimir/formalism/domain/term.hpp>
 
-#include <loki/common/hash.hpp>
-#include <loki/common/pddl/visitors.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    FunctionImpl::FunctionImpl(int identifier, FunctionSkeleton function_skeleton, TermList terms)
-        : Base(identifier)
-        , m_function_skeleton(std::move(function_skeleton))
-        , m_terms(std::move(terms))
+FunctionImpl::FunctionImpl(int identifier, FunctionSkeleton function_skeleton, TermList terms) :
+    Base(identifier),
+    m_function_skeleton(std::move(function_skeleton)),
+    m_terms(std::move(terms))
+{
+}
+
+bool FunctionImpl::is_structurally_equivalent_to_impl(const FunctionImpl& other) const
+{
+    return (m_function_skeleton == other.m_function_skeleton) && (m_terms == other.m_terms);
+}
+
+size_t FunctionImpl::hash_impl() const { return loki::hash_combine(m_function_skeleton, loki::hash_container(m_terms)); }
+
+void FunctionImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const
+{
+    if (m_terms.empty())
     {
+        out << "(" << m_function_skeleton->get_name() << ")";
     }
-
-    bool FunctionImpl::is_structurally_equivalent_to_impl(const FunctionImpl& other) const {
-        return (m_function_skeleton == other.m_function_skeleton) && (m_terms == other.m_terms);
-    }
-
-    size_t FunctionImpl::hash_impl() const {
-        return loki::hash_combine(m_function_skeleton, loki::hash_container(m_terms));
-    }
-
-    void FunctionImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const {
-        if (m_terms.empty()) {
-            out << "(" << m_function_skeleton->get_name() << ")";
-        } else {
-            out << "(" << m_function_skeleton->get_name() << "(";
-            for (size_t i = 0; i < m_terms.size(); ++i) {
-                if (i != 0) out << " ";
-                std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
-            }
-            out << "))";
+    else
+    {
+        out << "(" << m_function_skeleton->get_name() << "(";
+        for (size_t i = 0; i < m_terms.size(); ++i)
+        {
+            if (i != 0)
+                out << " ";
+            std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
         }
-    }
-
-    const FunctionSkeleton& FunctionImpl::get_function_skeleton() const {
-        return m_function_skeleton;
-    }
-
-    const TermList& FunctionImpl::get_terms() const {
-        return m_terms;
+        out << "))";
     }
 }
 
-namespace std 
-{
-    bool less<mimir::Function>::operator()(
-        const mimir::Function& left_function,
-        const mimir::Function& right_function) const {
-        return *left_function < *right_function;
-    }
+const FunctionSkeleton& FunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
 
-    std::size_t hash<mimir::FunctionImpl>::operator()(const mimir::FunctionImpl& function) const {
-        return function.hash();
-    }
+const TermList& FunctionImpl::get_terms() const { return m_terms; }
+}
+
+namespace std
+{
+bool less<mimir::Function>::operator()(const mimir::Function& left_function, const mimir::Function& right_function) const
+{
+    return *left_function < *right_function;
+}
+
+std::size_t hash<mimir::FunctionImpl>::operator()(const mimir::FunctionImpl& function) const { return function.hash(); }
 }

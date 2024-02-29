@@ -3,16 +3,14 @@
 
 #include "interface.hpp"
 
-
 namespace mimir
 {
 
 /**
  * Fully specialized implementation class.
-*/
+ */
 template<>
-class AAG<AAGDispatcher<GroundedTag, BitsetStateTag>>
-   : public IAAG<AAG<AAGDispatcher<GroundedTag, BitsetStateTag>>>
+class AAG<AAGDispatcher<GroundedTag, BitsetStateTag>> : public IAAG<AAG<AAGDispatcher<GroundedTag, BitsetStateTag>>>
 {
 private:
     using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, GroundedTag>>;
@@ -21,19 +19,15 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
-    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) {
-    }
+    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) {}
 
     // Give access to the private interface implementations.
     template<typename>
     friend class IAAG;
 
 public:
-    AAG(Problem problem, PDDLFactories& pddl_factories) 
-        : m_problem(problem)
-        , m_pddl_factories(pddl_factories) {}
+    AAG(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories) {}
 };
-
 
 }
 

@@ -17,20 +17,20 @@
 
 #include <mimir/formalism/domain/parsers/type.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Type parse(loki::pddl::Type type, PDDLFactories& factories) {
-        return factories.types.get_or_create<TypeImpl>(
-            type->get_name(), 
-            parse(type->get_bases(), factories));
-    }
+Type parse(loki::pddl::Type type, PDDLFactories& factories)
+{
+    return factories.types.get_or_create<TypeImpl>(type->get_name(), parse(type->get_bases(), factories));
+}
 
-    TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories) {
-        auto result_type_list = TypeList();
-        for (const auto& type : type_list) {
-            result_type_list.push_back(parse(type, factories));
-        }
-        return result_type_list;
+TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories)
+{
+    auto result_type_list = TypeList();
+    for (const auto& type : type_list)
+    {
+        result_type_list.push_back(parse(type, factories));
     }
+    return result_type_list;
+}
 }

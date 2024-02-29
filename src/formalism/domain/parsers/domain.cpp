@@ -15,25 +15,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/formalism/domain/parsers/domain.hpp>
-
-#include <mimir/formalism/domain/parsers/requirements.hpp>
-#include <mimir/formalism/domain/parsers/object.hpp>
-#include <mimir/formalism/domain/parsers/type.hpp>
-#include <mimir/formalism/domain/parsers/predicate.hpp>
-#include <mimir/formalism/domain/parsers/function_skeleton.hpp>
 #include <mimir/formalism/domain/parsers/action.hpp>
+#include <mimir/formalism/domain/parsers/domain.hpp>
+#include <mimir/formalism/domain/parsers/function_skeleton.hpp>
+#include <mimir/formalism/domain/parsers/object.hpp>
+#include <mimir/formalism/domain/parsers/predicate.hpp>
+#include <mimir/formalism/domain/parsers/requirements.hpp>
+#include <mimir/formalism/domain/parsers/type.hpp>
 
-namespace mimir 
+namespace mimir
 {
-    Domain parse(loki::pddl::Domain domain, PDDLFactories& factories) {
-        return factories.domains.get_or_create<DomainImpl>(
-            domain->get_name(),
-            parse(domain->get_requirements(), factories),
-            parse(domain->get_types(), factories),
-            parse(domain->get_constants(), factories),
-            parse(domain->get_predicates(), factories),
-            parse(domain->get_functions(), factories),
-            parse(domain->get_actions(), factories));
-    }
+Domain parse(loki::pddl::Domain domain, PDDLFactories& factories)
+{
+    return factories.domains.get_or_create<DomainImpl>(domain->get_name(),
+                                                       parse(domain->get_requirements(), factories),
+                                                       parse(domain->get_types(), factories),
+                                                       parse(domain->get_constants(), factories),
+                                                       parse(domain->get_predicates(), factories),
+                                                       parse(domain->get_functions(), factories),
+                                                       parse(domain->get_actions(), factories));
+}
 }

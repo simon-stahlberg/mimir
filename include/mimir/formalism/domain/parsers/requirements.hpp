@@ -18,16 +18,13 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_REQUIREMENTS_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_REQUIREMENTS_HPP_
 
-#include "../requirements.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../requirements.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories);
-} 
+extern Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

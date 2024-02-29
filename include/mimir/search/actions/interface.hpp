@@ -7,13 +7,12 @@
 #include "../type_traits.hpp"
 #include "../view_const.hpp"
 
-
-namespace mimir {
-
+namespace mimir
+{
 
 /**
  * Interface class
-*/
+ */
 template<typename Derived>
 class IActionBuilder
 {
@@ -31,10 +30,9 @@ private:
 public:
 };
 
-
 /**
  * Interface class
-*/
+ */
 template<typename Derived>
 class IActionView
 {
@@ -56,29 +54,33 @@ public:
     [[nodiscard]] std::string str() const { return self().str_impl(); }
 };
 
-
 /**
  * Dispatcher class.
  *
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
-*/
+ */
 template<IsPlanningModeTag P, IsStateTag S>
-struct ActionDispatcher {};
+struct ActionDispatcher
+{
+};
 
 template<typename T>
-struct is_action_dispatcher : std::false_type {};
+struct is_action_dispatcher : std::false_type
+{
+};
 
 template<IsPlanningModeTag P, IsStateTag S>
-struct is_action_dispatcher<ActionDispatcher<P, S>> : std::true_type {};
+struct is_action_dispatcher<ActionDispatcher<P, S>> : std::true_type
+{
+};
 
 template<typename T>
 concept IsActionDispatcher = is_action_dispatcher<T>::value;
 
-
 /**
  * Type traits.
-*/
+ */
 template<IsPlanningModeTag P, IsStateTag S>
 struct TypeTraits<Builder<ActionDispatcher<P, S>>>
 {
@@ -93,8 +95,6 @@ struct TypeTraits<ConstView<ActionDispatcher<P, S>>>
     using StateTag = S;
 };
 
-
 }
-
 
 #endif

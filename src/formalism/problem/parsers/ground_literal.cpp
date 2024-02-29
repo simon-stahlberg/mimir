@@ -15,26 +15,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <mimir/formalism/problem/parsers/ground_atom.hpp>
 #include <mimir/formalism/problem/parsers/ground_literal.hpp>
 
-#include <mimir/formalism/problem/parsers/ground_atom.hpp>
-
-
-namespace mimir 
+namespace mimir
 {
-    GroundLiteral parse(loki::pddl::GroundLiteral ground_literal, PDDLFactories& factories) 
-    {
-        return factories.ground_literals.get_or_create<GroundLiteralImpl>(
-            ground_literal->is_negated(),
-            parse(ground_literal->get_atom(), factories));
-    }
+GroundLiteral parse(loki::pddl::GroundLiteral ground_literal, PDDLFactories& factories)
+{
+    return factories.ground_literals.get_or_create<GroundLiteralImpl>(ground_literal->is_negated(), parse(ground_literal->get_atom(), factories));
+}
 
-    GroundLiteralList parse(loki::pddl::GroundLiteralList ground_literal_list, PDDLFactories& factories) 
+GroundLiteralList parse(loki::pddl::GroundLiteralList ground_literal_list, PDDLFactories& factories)
+{
+    auto result_ground_literal_list = GroundLiteralList();
+    for (const auto& ground_literal : ground_literal_list)
     {
-        auto result_ground_literal_list = GroundLiteralList();
-        for (const auto& ground_literal : ground_literal_list) {
-            result_ground_literal_list.push_back(parse(ground_literal, factories));
-        }
-        return result_ground_literal_list;
+        result_ground_literal_list.push_back(parse(ground_literal, factories));
     }
+    return result_ground_literal_list;
+}
 }

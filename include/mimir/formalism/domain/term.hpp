@@ -21,88 +21,83 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/term.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class TermObjectImpl : public loki::Base<TermObjectImpl>
+{
+private:
+    Object m_object;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    TermObjectImpl(int identifier, Object object);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<TermObjectImpl>;
+
+public:
+    const Object& get_object() const;
+};
+
+class TermVariableImpl : public loki::Base<TermVariableImpl>
+{
+private:
+    Variable m_variable;
+
+    TermVariableImpl(int identifier, Variable variable);
+
+    // Give access to the constructor.
+    template<typename HolderType, ElementsPerSegment N>
+    friend class loki::PersistentFactory;
+
+    bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<TermVariableImpl>;
+
+public:
+    const Variable& get_variable() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class TermObjectImpl : public loki::Base<TermObjectImpl> 
-    {
-    private:
-        Object m_object;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        TermObjectImpl(int identifier, Object object);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<TermObjectImpl>;
-
-    public:
-        const Object& get_object() const;
-    };
-
-
-    class TermVariableImpl : public loki::Base<TermVariableImpl> {
-    private:
-        Variable m_variable;
-
-        TermVariableImpl(int identifier, Variable variable);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<TermVariableImpl>;
-
-    public:
-        const Variable& get_variable() const;
-    };
-}
-
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Term>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Term>
-    {
-        bool operator()(const mimir::Term& left_term, const mimir::Term& right_term) const;
-    };
+    bool operator()(const mimir::Term& left_term, const mimir::Term& right_term) const;
+};
 
-    template<>
-    struct hash<mimir::TermObjectImpl>
-    {
-        std::size_t operator()(const mimir::TermObjectImpl& term) const;
-    };
+template<>
+struct hash<mimir::TermObjectImpl>
+{
+    std::size_t operator()(const mimir::TermObjectImpl& term) const;
+};
 
-    template<>
-    struct hash<mimir::TermVariableImpl>
-    {
-        std::size_t operator()(const mimir::TermVariableImpl& term) const;
-    };
+template<>
+struct hash<mimir::TermVariableImpl>
+{
+    std::size_t operator()(const mimir::TermVariableImpl& term) const;
+};
 }
 
 #endif

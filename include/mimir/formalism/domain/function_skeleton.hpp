@@ -21,67 +21,63 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/function_skeleton.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class FunctionSkeletonImpl : public loki::Base<FunctionSkeletonImpl>
+{
+private:
+    std::string m_name;
+    ParameterList m_parameters;
+    Type m_type;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    FunctionSkeletonImpl(int identifier, std::string name, ParameterList parameters, Type type);
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<FunctionSkeletonImpl>;
+
+public:
+    /// @brief Returns a parseable string representation in the context of a domain.
+    void str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
+
+    const std::string& get_name() const;
+    const ParameterList& get_parameters() const;
+    const Type& get_type() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class FunctionSkeletonImpl : public loki::Base<FunctionSkeletonImpl> 
-    {
-    private:
-        std::string m_name;
-        ParameterList m_parameters;
-        Type m_type;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        FunctionSkeletonImpl(int identifier, std::string name, ParameterList parameters, Type type);
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<FunctionSkeletonImpl>;
-
-    public:
-        /// @brief Returns a parseable string representation in the context of a domain.
-        void str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
-        const std::string& get_name() const;
-        const ParameterList& get_parameters() const;
-        const Type& get_type() const;
-    };
-}
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::FunctionSkeleton>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::FunctionSkeleton>
-    {
-        bool operator()(const mimir::FunctionSkeleton& left_function, const mimir::FunctionSkeleton& right_function) const;
-    };
+    bool operator()(const mimir::FunctionSkeleton& left_function, const mimir::FunctionSkeleton& right_function) const;
+};
 
-    template<>
-    struct hash<mimir::FunctionSkeletonImpl>
-    {
-        std::size_t operator()(const mimir::FunctionSkeletonImpl& function) const;
-    };
+template<>
+struct hash<mimir::FunctionSkeletonImpl>
+{
+    std::size_t operator()(const mimir::FunctionSkeletonImpl& function) const;
+};
 }
 
 #endif

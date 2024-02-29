@@ -17,11 +17,10 @@
 
 #include <mimir/formalism/domain/parsers/requirements.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories) {
-        return factories.requirements.get_or_create<RequirementsImpl>(
-            requirements->get_requirements());
-    }
+Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories)
+{
+    return factories.requirements.get_or_create<RequirementsImpl>(requirements->get_requirements());
+}
 }

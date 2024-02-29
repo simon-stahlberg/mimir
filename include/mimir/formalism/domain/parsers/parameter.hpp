@@ -18,17 +18,14 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_PARSER_PARAMETER_HPP_
 #define MIMIR_FORMALISM_DOMAIN_PARSER_PARAMETER_HPP_
 
-#include "../parameter.hpp"
-#include "../declarations.hpp"
 #include "../../common/types.hpp"
+#include "../declarations.hpp"
+#include "../parameter.hpp"
 
-
-
-namespace mimir 
+namespace mimir
 {
-    extern Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories);
-    extern ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories);
-} 
+extern Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories);
+extern ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories);
+}
 
-
-#endif 
+#endif

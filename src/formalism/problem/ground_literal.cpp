@@ -15,56 +15,46 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <loki/common/collections.hpp>
+#include <loki/common/hash.hpp>
+#include <mimir/formalism/problem/ground_atom.hpp>
 #include <mimir/formalism/problem/ground_literal.hpp>
 
-#include <mimir/formalism/problem/ground_atom.hpp>
-
-#include <loki/common/hash.hpp>
-#include <loki/common/collections.hpp>
-
-
-namespace mimir {
-GroundLiteralImpl::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom atom)
-    : Base(identifier)
-    , m_is_negated(is_negated)
-    , m_atom(std::move(atom))
+namespace mimir
 {
-}
+GroundLiteralImpl::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom atom) : Base(identifier), m_is_negated(is_negated), m_atom(std::move(atom)) {}
 
-bool GroundLiteralImpl::is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const {
+bool GroundLiteralImpl::is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const
+{
     return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
 }
 
-size_t GroundLiteralImpl::hash_impl() const {
-    return loki::hash_combine(m_is_negated, m_atom);
-}
+size_t GroundLiteralImpl::hash_impl() const { return loki::hash_combine(m_is_negated, m_atom); }
 
-void GroundLiteralImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const {
-    if (m_is_negated) {
+void GroundLiteralImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const
+{
+    if (m_is_negated)
+    {
         out << "(not " << *m_atom << ")";
-    } else {
+    }
+    else
+    {
         out << *m_atom;
     }
 }
 
-bool GroundLiteralImpl::is_negated() const {
-    return m_is_negated;
-}
+bool GroundLiteralImpl::is_negated() const { return m_is_negated; }
 
-const GroundAtom& GroundLiteralImpl::get_atom() const {
-    return m_atom;
-}
+const GroundAtom& GroundLiteralImpl::get_atom() const { return m_atom; }
 
 }
 
-namespace std {
-    bool less<mimir::GroundLiteral>::operator()(
-        const mimir::GroundLiteral& left_literal,
-        const mimir::GroundLiteral& right_literal) const {
-        return *left_literal < *right_literal;
-    }
+namespace std
+{
+bool less<mimir::GroundLiteral>::operator()(const mimir::GroundLiteral& left_literal, const mimir::GroundLiteral& right_literal) const
+{
+    return *left_literal < *right_literal;
+}
 
-    std::size_t hash<mimir::GroundLiteralImpl>::operator()(const mimir::GroundLiteralImpl& literal) const {
-        return literal.hash();
-    }
+std::size_t hash<mimir::GroundLiteralImpl>::operator()(const mimir::GroundLiteralImpl& literal) const { return literal.hash(); }
 }

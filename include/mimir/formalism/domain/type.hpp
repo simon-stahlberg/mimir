@@ -21,62 +21,58 @@
 #include "declarations.hpp"
 
 #include <loki/domain/pddl/type.hpp>
-
 #include <string>
 
-
-namespace loki 
+namespace loki
 {
+template<typename HolderType, ElementsPerSegment N>
+class PersistentFactory;
+}
+
+namespace mimir
+{
+class TypeImpl : public loki::Base<TypeImpl>
+{
+private:
+    std::string m_name;
+    TypeList m_bases;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    TypeImpl(int identifier, std::string name, TypeList bases = {});
+
+    // Give access to the constructor.
     template<typename HolderType, ElementsPerSegment N>
-    class PersistentFactory;
+    friend class loki::PersistentFactory;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const TypeImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<TypeImpl>;
+
+public:
+    const std::string& get_name() const;
+    const TypeList& get_bases() const;
+};
 }
 
-
-namespace mimir 
+namespace std
 {
-    class TypeImpl : public loki::Base<TypeImpl> 
-    {
-    private:
-        std::string m_name;
-        TypeList m_bases;
-
-        // Below: add additional members if needed and initialize them in the constructor
-
-        TypeImpl(int identifier, std::string name, TypeList bases = {});
-
-        // Give access to the constructor.
-        template<typename HolderType, ElementsPerSegment N>
-        friend class loki::PersistentFactory;
-
-        /// @brief Test for semantic equivalence
-        bool is_structurally_equivalent_to_impl(const TypeImpl& other) const;
-        size_t hash_impl() const;
-        void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
-        // Give access to the private interface implementations.
-        friend class loki::Base<TypeImpl>;
-
-    public:
-        const std::string& get_name() const;
-        const TypeList& get_bases() const;
-    };
-}
-
-
-namespace std 
+// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
+template<>
+struct less<mimir::Type>
 {
-    // Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-    template<>
-    struct less<mimir::Type>
-    {
-        bool operator()(const mimir::Type& left_type, const mimir::Type& right_type) const;
-    };
+    bool operator()(const mimir::Type& left_type, const mimir::Type& right_type) const;
+};
 
-    template<>
-    struct hash<mimir::TypeImpl>
-    {
-        std::size_t operator()(const mimir::TypeImpl& type) const;
-    };
+template<>
+struct hash<mimir::TypeImpl>
+{
+    std::size_t operator()(const mimir::TypeImpl& type) const;
+};
 }
 
 #endif

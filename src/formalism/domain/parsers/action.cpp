@@ -16,27 +16,28 @@
  */
 
 #include <mimir/formalism/domain/parsers/action.hpp>
-
-#include <mimir/formalism/domain/parsers/parameter.hpp>
 #include <mimir/formalism/domain/parsers/conditions.hpp>
 #include <mimir/formalism/domain/parsers/effects.hpp>
+#include <mimir/formalism/domain/parsers/parameter.hpp>
 
-
-namespace mimir 
+namespace mimir
 {
-    Action parse(loki::pddl::Action action, PDDLFactories& factories) {
-        return factories.actions.get_or_create<ActionImpl>(
-            action->get_name(),
-            parse(action->get_parameters(), factories), 
-            (action->get_condition().has_value() ? std::optional<Condition>(parse(action->get_condition().value(), factories)): std::nullopt),
-            (action->get_effect().has_value() ? std::optional<Effect>(parse(action->get_effect().value(), factories)) : std::nullopt));
-    }
+Action parse(loki::pddl::Action action, PDDLFactories& factories)
+{
+    return factories.actions.get_or_create<ActionImpl>(
+        action->get_name(),
+        parse(action->get_parameters(), factories),
+        (action->get_condition().has_value() ? std::optional<Condition>(parse(action->get_condition().value(), factories)) : std::nullopt),
+        (action->get_effect().has_value() ? std::optional<Effect>(parse(action->get_effect().value(), factories)) : std::nullopt));
+}
 
-    ActionList parse(loki::pddl::ActionList action_list, PDDLFactories& factories) {
-        auto result_action_list = ActionList();
-        for (const auto& action : action_list) {
-            result_action_list.push_back(parse(action, factories));
-        }
-        return result_action_list;
+ActionList parse(loki::pddl::ActionList action_list, PDDLFactories& factories)
+{
+    auto result_action_list = ActionList();
+    for (const auto& action : action_list)
+    {
+        result_action_list.push_back(parse(action, factories));
     }
+    return result_action_list;
+}
 }

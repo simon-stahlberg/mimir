@@ -15,24 +15,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/formalism/problem/parsers/numeric_fluent.hpp>
-
 #include <mimir/formalism/domain/parsers/function.hpp>
 #include <mimir/formalism/problem/parsers/ground_atom.hpp>
+#include <mimir/formalism/problem/parsers/numeric_fluent.hpp>
 
-namespace mimir 
+namespace mimir
 {
-    NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories) {
-        return factories.numeric_fluents.get_or_create<NumericFluentImpl>(
-            parse(numeric_fluent->get_function(), factories),
-            numeric_fluent->get_number());
-    }
+NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories)
+{
+    return factories.numeric_fluents.get_or_create<NumericFluentImpl>(parse(numeric_fluent->get_function(), factories), numeric_fluent->get_number());
+}
 
-    NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories) {
-        auto result_numeric_fluent_list = NumericFluentList();
-        for (const auto& numeric_fluent : numeric_fluent_list) {
-            result_numeric_fluent_list.push_back(parse(numeric_fluent, factories));
-        }
-        return result_numeric_fluent_list;
+NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories)
+{
+    auto result_numeric_fluent_list = NumericFluentList();
+    for (const auto& numeric_fluent : numeric_fluent_list)
+    {
+        result_numeric_fluent_list.push_back(parse(numeric_fluent, factories));
     }
+    return result_numeric_fluent_list;
+}
 }

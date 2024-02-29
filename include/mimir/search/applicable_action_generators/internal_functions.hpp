@@ -25,7 +25,8 @@ struct AssignmentPair
     AssignmentPair(size_t first_position, const Assignment& first_assignment, size_t second_position, const Assignment& second_assignment);
 };
 
-size_t get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects);
+size_t
+get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects);
 
 size_t num_assignments(int32_t arity, int32_t num_objects);
 
