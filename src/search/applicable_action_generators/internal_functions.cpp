@@ -208,48 +208,48 @@ GroundLiteral ground_literal(const FlatLiteral& flat_literal, const ObjectList& 
     return literal;
 }
 
-Action create_action(const FlatActionSchema& flat_action_schema, ObjectList&& terms, PDDLFactories& ref_factories)
-{
-    // Get the precondition of the ground action
+// GroundAction create_action(const FlatActionSchema& flat_action_schema, ObjectList&& terms, PDDLFactories& ref_factories)
+// {
+//     // Get the precondition of the ground action
 
-    GroundLiteralList precondition;
+//     GroundLiteralList precondition;
 
-    for (const auto& literal : flat_action_schema.static_precondition)
-    {
-        precondition.emplace_back(ground_literal(literal, terms, ref_factories));
-    }
+//     for (const auto& literal : flat_action_schema.static_precondition)
+//     {
+//         precondition.emplace_back(ground_literal(literal, terms, ref_factories));
+//     }
 
-    for (const auto& literal : flat_action_schema.fluent_precondition)
-    {
-        precondition.emplace_back(ground_literal(literal, terms, ref_factories));
-    }
+//     for (const auto& literal : flat_action_schema.fluent_precondition)
+//     {
+//         precondition.emplace_back(ground_literal(literal, terms, ref_factories));
+//     }
 
-    // Get the effect of the ground action
+//     // Get the effect of the ground action
 
-    GroundLiteralList unconditional_effect;
+//     GroundLiteralList unconditional_effect;
 
-    for (const auto& literal : flat_action_schema.unconditional_effect)
-    {
-        unconditional_effect.emplace_back(ground_literal(literal, terms, ref_factories));
-    }
+//     for (const auto& literal : flat_action_schema.unconditional_effect)
+//     {
+//         unconditional_effect.emplace_back(ground_literal(literal, terms, ref_factories));
+//     }
 
-    // Get the cost of the ground action
+//     // Get the cost of the ground action
 
-    // const double cost = 1.0;
+//     // const double cost = 1.0;
 
-    // TODO: Implement...
+//     // TODO: Implement...
 
-    // Finally, create the ground action
+//     // Finally, create the ground action
 
-    throw std::runtime_error("creating ations is not implemented");
+//     throw std::runtime_error("creating ations is not implemented");
 
-    // return create_action(problem,
-    //                      flat_action_schema.source,
-    //                      std::move(terms),
-    //                      std::move(precondition),
-    //                      std::move(unconditional_effect),
-    //                      std::move(conditional_effect),
-    //                      cost);
-}
+//     // return create_action(problem,
+//     //                      flat_action_schema.source,
+//     //                      std::move(terms),
+//     //                      std::move(precondition),
+//     //                      std::move(unconditional_effect),
+//     //                      std::move(conditional_effect),
+//     //                      cost);
+// }
 
 }

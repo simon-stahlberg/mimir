@@ -56,7 +56,11 @@ private:
 public:
     const std::string& get_name() const;
     const TypeList& get_bases() const;
+    bool is_subtype_of(const Type type) const;
+    bool is_subtype_of(const TypeList& types) const;
 };
+
+bool is_any_subtype_of(const TypeList& subtypes, const TypeList& types);
 }
 
 namespace std

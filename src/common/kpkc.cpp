@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <limits>
 #include <mimir/algorithms/kpkc.hpp>
 
 namespace mimir
 {
 // TODO: Try to replace data-structures with flatmemory implementations.
-bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolution_clock::time_point end_time,
-                                                  const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                   const std::vector<std::vector<size_t>>& partitions,
                                                   std::vector<boost::dynamic_bitset<>>& compatible_vertices,
                                                   boost::dynamic_bitset<>& partition_bits,
@@ -29,11 +29,6 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolu
                                                   std::vector<size_t>& partial_solution,
                                                   std::vector<std::vector<std::size_t>>& out_cliques)
 {
-    if (std::chrono::high_resolution_clock::now() > end_time)
-    {
-        return false;
-    }
-
     size_t k = partitions.size();
     size_t best_set_bits = std::numeric_limits<size_t>::max();
     size_t best_partition = std::numeric_limits<size_t>::max();
@@ -55,11 +50,6 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolu
     // Iterate through compatible vertices in the best partition
     while (adjacent_index < compatible_vertices[best_partition].size())
     {
-        if (std::chrono::high_resolution_clock::now() > end_time)
-        {
-            return false;
-        }
-
         size_t vertex = partitions[best_partition][adjacent_index];
         compatible_vertices[best_partition][adjacent_index] = 0;
         partial_solution.push_back(vertex);
@@ -100,17 +90,13 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolu
 
             if ((partial_solution.size() + possible_additions) == k)
             {
-                if (!find_all_k_cliques_in_k_partite_graph_helper(end_time,
-                                                                  adjacency_matrix,
-                                                                  partitions,
-                                                                  compatible_vertices_next,
-                                                                  partition_bits,
-                                                                  not_partition_bits,
-                                                                  partial_solution,
-                                                                  out_cliques))
-                {
-                    return false;
-                }
+                find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
+                                                             partitions,
+                                                             compatible_vertices_next,
+                                                             partition_bits,
+                                                             not_partition_bits,
+                                                             partial_solution,
+                                                             out_cliques);
             }
 
             partition_bits[best_partition] = 0;
@@ -120,12 +106,9 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const std::chrono::high_resolu
         partial_solution.pop_back();
         adjacent_index = compatible_vertices[best_partition].find_next(adjacent_index);
     }
-
-    return true;
 }
 
-bool find_all_k_cliques_in_k_partite_graph(const std::chrono::high_resolution_clock::time_point end_time,
-                                           const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+void find_all_k_cliques_in_k_partite_graph(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                            const std::vector<std::vector<size_t>>& partitions,
                                            std::vector<std::vector<std::size_t>>& out_cliques)
 {
@@ -145,15 +128,13 @@ bool find_all_k_cliques_in_k_partite_graph(const std::chrono::high_resolution_cl
     not_partition_bits.set();
     std::vector<size_t> partial_solution;
 
-    const auto finished = find_all_k_cliques_in_k_partite_graph_helper(end_time,
-                                                                       adjacency_matrix,
-                                                                       partitions,
-                                                                       compatible_vertices,
-                                                                       partition_bits,
-                                                                       not_partition_bits,
-                                                                       partial_solution,
-                                                                       out_cliques);
-
-    return finished;
+    find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
+                                                 partitions,
+                                                 compatible_vertices,
+                                                 partition_bits,
+                                                 not_partition_bits,
+                                                 partial_solution,
+                                                 out_cliques);
 }
-}  // namespace algorithms
+
+}

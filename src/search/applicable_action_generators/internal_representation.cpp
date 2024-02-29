@@ -94,7 +94,7 @@ static void conjunctive_effect(Effect effect, LiteralList& ref_literals)
     }
 }
 
-FlatActionSchema::FlatActionSchema(Domain domain, Action action_schema) :
+FlatAction::FlatAction(Domain domain, Action action_schema) :
     to_index_(),
     index_parameters_(),
     source(action_schema),
@@ -147,8 +147,8 @@ FlatActionSchema::FlatActionSchema(Domain domain, Action action_schema) :
     }
 }
 
-const std::vector<Parameter>& FlatActionSchema::get_parameters() const { return index_parameters_; }
+const std::vector<Parameter>& FlatAction::get_parameters() const { return index_parameters_; }
 
-size_t FlatActionSchema::get_parameter_index(Parameter parameter) const { return to_index_.at(parameter); }
+size_t FlatAction::get_parameter_index(Parameter parameter) const { return to_index_.at(parameter); }
 
 }

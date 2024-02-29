@@ -42,7 +42,7 @@ ObjectList ground_parameters(const std::vector<ParameterIndexOrConstantId>& para
 
 GroundLiteral ground_literal(const FlatLiteral& flat_literal, const ObjectList& terms, PDDLFactories& ref_factories);
 
-Action create_action(const FlatActionSchema& flat_action_schema, ObjectList&& terms, PDDLFactories& ref_factories);
+// GroundAction create_action(const FlatAction& flat_action_schema, ObjectList&& terms, PDDLFactories& ref_factories);
 
 }
 

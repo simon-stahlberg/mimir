@@ -33,7 +33,7 @@ public:
     FlatLiteral(Literal literal, const std::map<Parameter, size_t>& to_index, const std::map<Variable, Parameter>& to_parameter);
 };
 
-class FlatActionSchema
+class FlatAction
 {
 private:
     std::map<Parameter, size_t> to_index_;
@@ -48,7 +48,7 @@ public:
     std::vector<ParameterIndexOrConstantId> cost_arguments;
     size_t arity;
 
-    FlatActionSchema(Domain domain, Action action_schema);
+    FlatAction(Domain domain, Action action_schema);
 
     const std::vector<Parameter>& get_parameters() const;
     size_t get_parameter_index(Parameter parameter) const;

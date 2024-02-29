@@ -35,6 +35,43 @@ void TypeImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& 
 const std::string& TypeImpl::get_name() const { return m_name; }
 
 const TypeList& TypeImpl::get_bases() const { return m_bases; }
+
+bool TypeImpl::is_subtype_of(const Type type) const
+{
+    if (type == nullptr)
+    {
+        return false;
+    }
+
+    return is_subtype_of(type->get_bases());
+}
+
+bool TypeImpl::is_subtype_of(const TypeList& types) const
+{
+    for (const auto& type : types)
+    {
+        if (is_subtype_of(type))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool is_any_subtype_of(const TypeList& subtypes, const TypeList& types)
+{
+    for (const auto& subtype : subtypes)
+    {
+        if (subtype->is_subtype_of(types))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 }
 
 namespace std

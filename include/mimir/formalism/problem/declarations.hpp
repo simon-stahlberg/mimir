@@ -33,6 +33,10 @@ class GroundLiteralImpl;
 using GroundLiteral = const GroundLiteralImpl*;
 using GroundLiteralList = std::vector<GroundLiteral>;
 
+class GroundActionImpl;
+using GroundAction = const GroundActionImpl*;
+using GroundActionList = std::vector<GroundAction>;
+
 class NumericFluentImpl;
 using NumericFluent = const NumericFluentImpl*;
 using NumericFluentList = std::vector<NumericFluent>;

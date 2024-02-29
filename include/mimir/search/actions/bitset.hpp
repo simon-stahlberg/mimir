@@ -90,10 +90,10 @@ public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(BitsetActionConstView view) : m_view(view) {}
 
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() { return m_view.get<0>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() { return m_view.get<1>(); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() { return m_view.get<2>(); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() { return m_view.get<3>(); };
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<0>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<1>(); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<2>(); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<3>(); };
 };
 
 }
