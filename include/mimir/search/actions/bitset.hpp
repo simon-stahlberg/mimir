@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_ACTIONS_BITSET_HPP_
 
 #include "../../common/hash.hpp"
+#include "../../formalism/domain/action.hpp"
 #include "../types.hpp"
 #include "interface.hpp"
 
