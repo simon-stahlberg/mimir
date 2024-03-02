@@ -27,9 +27,9 @@ class Builder<ActionDispatcher<P, BitsetStateTag>> :
 private:
     BitsetActionBuilder m_builder;
 
-    /* Implement IBuilderBase interface */
+    /* Implement IBuilder interface */
     template<typename>
-    friend class IBuilderBase;
+    friend class IBuilder;
 
     [[nodiscard]] BitsetActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
     [[nodiscard]] const BitsetActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
