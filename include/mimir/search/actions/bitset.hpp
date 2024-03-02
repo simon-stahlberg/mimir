@@ -2,7 +2,6 @@
 #define MIMIR_SEARCH_ACTIONS_BITSET_HPP_
 
 #include "../../common/hash.hpp"
-#include "../../formalism/domain/action.hpp"
 #include "../types.hpp"
 #include "interface.hpp"
 
@@ -11,7 +10,7 @@ namespace mimir
 /**
  * Types
  */
-using BitsetActionLayout = flatmemory::Tuple<Action, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+using BitsetActionLayout = flatmemory::Tuple<BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 
 using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
 using BitsetActionConstView = flatmemory::ConstView<BitsetActionLayout>;
@@ -41,11 +40,10 @@ private:
 
 public:
     /// @brief Modify the bitsets, call finish, then copy the buffer to a container and use its returned view.
-    [[nodiscard]] Action get_action() { return m_builder.get<0>(); }
-    [[nodiscard]] Bitset& get_applicability_positive_precondition_bitset() { return m_builder.get<1>(); }
-    [[nodiscard]] Bitset& get_applicability_negative_precondition_bitset() { return m_builder.get<2>(); }
-    [[nodiscard]] Bitset& get_unconditional_positive_effect_bitset() { return m_builder.get<3>(); }
-    [[nodiscard]] Bitset& get_unconditional_negative_effect_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] Bitset& get_applicability_positive_precondition_bitset() { return m_builder.get<0>(); }
+    [[nodiscard]] Bitset& get_applicability_negative_precondition_bitset() { return m_builder.get<1>(); }
+    [[nodiscard]] Bitset& get_unconditional_positive_effect_bitset() { return m_builder.get<2>(); }
+    [[nodiscard]] Bitset& get_unconditional_negative_effect_bitset() { return m_builder.get<3>(); }
 };
 
 /**
@@ -59,8 +57,6 @@ class ConstView<ActionDispatcher<P, BitsetStateTag>> :
     public IActionView<ConstView<ActionDispatcher<P, BitsetStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;  // TODO: P
-
     BitsetActionConstView m_view;
 
     /* Implement IView interface: */
@@ -88,27 +84,16 @@ private:
     friend class IActionView;
 
     // We probably want to do that differently...
-    std::string str_impl() const { return get_action()->get_name() + "(...)"; }
+    std::string str_impl() const { return "Action(...)"; }
 
 public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(BitsetActionConstView view) : m_view(view) {}
 
-    [[nodiscard]] Action get_action() const { return m_view.get<0>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<1>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<2>(); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<3>(); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<4>(); };
-
-    [[nodiscard]] bool is_applicable(ConstStateView state, int min_arity = 0) const
-    {
-        auto state_bits = state.get_atoms_bitset();
-        auto positive_bits = get_applicability_positive_precondition_bitset();
-        auto negative_bits = get_applicability_negative_precondition_bitset();
-        throw std::runtime_error("not implemented");
-    }
-
-    [[nodiscard]] ConstStateView apply(ConstStateView state) const { throw std::runtime_error("not implemented"); }
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<0>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<1>(); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<2>(); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<3>(); };
 };
 
 }

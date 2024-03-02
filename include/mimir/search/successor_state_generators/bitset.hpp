@@ -23,7 +23,7 @@ private:
     BitsetStateSet m_states;
     Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
 
-    /* Implemenent ISSG interface */
+    /* Implement ISSG interface */
     template<typename>
     friend class ISSG;
 

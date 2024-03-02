@@ -3,12 +3,17 @@
 
 #include "../../algorithms/kpkc.hpp"
 #include "../../formalism/problem/declarations.hpp"
-#include "../../formalism/problem/ground_action.hpp"
 #include "interface.hpp"
 #include "internal_functions.hpp"
 #include "internal_representation.hpp"
+#include "mimir/search/actions/bitset.hpp"
+#include "mimir/search/actions/interface.hpp"
+#include "mimir/search/config.hpp"
+#include "mimir/search/states/bitset/interface.hpp"
 
 #include <boost/dynamic_bitset.hpp>
+#include <flatmemory/details/view_const.hpp>
+#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 
@@ -26,6 +31,10 @@ private:
     using ConstActionView = ConstView<ActionDispatcher<LiftedTag, BitsetStateTag>>;
 
     Problem m_problem;
+
+    BitsetActionVector m_actions;
+    Builder<ActionDispatcher<LiftedTag, BitsetStateTag>> m_action_builder;
+
     PDDLFactories& m_pddl_factories;
     std::vector<FlatAction> m_flat_actions;
     std::unordered_map<Action, std::vector<std::vector<size_t>>> m_partitions;
@@ -33,8 +42,21 @@ private:
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
     std::unordered_map<Action, std::unordered_map<size_t, std::vector<int>>> m_objects_by_parameter_type;
 
-    ConstActionView create_ground_action(const FlatAction& flat_flat_action, ObjectList&& terms, PDDLFactories& ref_factories) const
+    ConstActionView create_ground_action(const FlatAction& flat_flat_action, ObjectList&& terms, PDDLFactories& ref_factories)
     {
+        // auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
+        // auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
+        // auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
+        // auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
+
+        // // Set my bits here
+
+        // auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
+        // flatmemory_builder.finish();
+        // m_actions.push_back(flatmemory_builder);
+        // const auto& const_actions = m_actions;
+        // return ConstActionView(const_actions.back());
+
         throw std::runtime_error("not implemented");
     }
 
@@ -70,12 +92,14 @@ private:
     {
         // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
 
-        const auto ground_action = create_ground_action(flat_action, {}, ref_factories);
+        // const auto ground_action = create_ground_action(flat_action, {}, ref_factories);
 
-        if (ground_action.is_applicable(state))
-        {
-            out_applicable_actions.emplace_back(ground_action);
-        }
+        throw std::runtime_error("not implemented");
+
+        // if (ground_action.is_applicable(state))
+        // {
+        //     out_applicable_actions.emplace_back(ground_action);
+        // }
     }
 
     void
@@ -85,12 +109,14 @@ private:
 
         for (const auto& object_id : objects_by_parameter_type.at(0))
         {
-            auto ground_action = create_ground_action(flat_action, { ref_factories.objects.get(object_id) }, ref_factories);
+            // auto ground_action = create_ground_action(flat_action, { ref_factories.objects.get(object_id) }, ref_factories);
 
-            if (ground_action.is_applicable(state))
-            {
-                out_applicable_actions.emplace_back(ground_action);
-            }
+            throw std::runtime_error("not implemented");
+
+            // if (ground_action.is_applicable(state))
+            // {
+            //     out_applicable_actions.emplace_back(ground_action);
+            // }
         }
     }
 
@@ -143,12 +169,14 @@ private:
                 terms[parameter_index] = ref_factories.objects.get(object_id);
             }
 
-            const auto ground_action = create_ground_action(flat_action, std::move(terms), ref_factories);
+            // const auto ground_action = create_ground_action(flat_action, std::move(terms), ref_factories);
 
-            if (ground_action.is_applicable(state, 3))
-            {
-                out_applicable_actions.push_back(ground_action);
-            }
+            throw std::runtime_error("not implemented");
+
+            // if (ground_action.is_applicable(state, 3))
+            // {
+            //     out_applicable_actions.push_back(ground_action);
+            // }
         }
     }
 
@@ -196,7 +224,14 @@ private:
     friend class IAAG;
 
 public:
-    AAG(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
+    AAG(Problem problem, PDDLFactories& pddl_factories) :
+        m_problem(problem),
+        m_pddl_factories(pddl_factories),
+        m_flat_actions(),
+        m_partitions(),
+        m_to_vertex_assignment(),
+        m_statically_consistent_assignments(),
+        m_objects_by_parameter_type()
     {
         // Type information is used by the unary and general case
 
