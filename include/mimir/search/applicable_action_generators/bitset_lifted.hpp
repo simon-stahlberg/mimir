@@ -44,20 +44,20 @@ private:
 
     ConstActionView create_ground_action(const FlatAction& flat_flat_action, ObjectList&& terms, PDDLFactories& ref_factories)
     {
-        // auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
-        // auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
-        // auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
-        // auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
+        auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
+        auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
+        auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
+        auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
 
         // // Set my bits here
 
-        // auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
-        // flatmemory_builder.finish();
-        // m_actions.push_back(flatmemory_builder);
-        // const auto& const_actions = m_actions;
-        // return ConstActionView(const_actions.back());
+        auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
+        flatmemory_builder.finish();
+        m_actions.push_back(flatmemory_builder);
+        const auto& const_actions = m_actions;
+        return ConstActionView(const_actions.back());
 
-        throw std::runtime_error("not implemented");
+        //throw std::runtime_error("not implemented");
     }
 
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& terms, PDDLFactories& ref_factories) const
