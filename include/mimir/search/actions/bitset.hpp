@@ -16,6 +16,7 @@ using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
 using BitsetActionConstView = flatmemory::ConstView<BitsetActionLayout>;
 using BitsetActionVector = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
 
+
 /**
  * Implementation class
  */
