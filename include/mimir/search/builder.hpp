@@ -25,8 +25,8 @@ public:
 /**
  * Implementation class
  */
-template<typename T>
-class Builder : public IBuilder<Builder<T>>
+template<typename Tag>
+class Builder : public IBuilder<Builder<Tag>>
 {
 };
 }

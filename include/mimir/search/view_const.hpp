@@ -28,8 +28,8 @@ public:
 /**
  * Implementation class
  */
-template<typename T>
-class ConstView : public IConstView<ConstView<T>>
+template<typename Tag>
+class ConstView : public IConstView<ConstView<Tag>>
 {
 };
 }

@@ -28,8 +28,8 @@ public:
 /**
  * Implementation class
  */
-template<typename T>
-class View : public IView<View<T>>
+template<typename Tag>
+class View : public IView<View<Tag>>
 {
 };
 }
