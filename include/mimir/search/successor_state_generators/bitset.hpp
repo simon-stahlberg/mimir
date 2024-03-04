@@ -2,8 +2,12 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 
 #include "interface.hpp"
+#include "mimir/formalism/problem/declarations.hpp"
+#include "mimir/formalism/problem/problem.hpp"
+#include "mimir/search/config.hpp"
 
 #include <flatmemory/flatmemory.hpp>
+#include <stdexcept>
 
 namespace mimir
 {
@@ -27,11 +31,33 @@ private:
     template<typename>
     friend class ISSG;
 
-    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem)
+    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(const Problem& problem)
     {
-        // create the state
         int next_state_id = m_states.size();
-        m_state_builder.get_id() = next_state_id;
+
+        // Fetch member references.
+
+        auto& state_id = m_state_builder.get_id();
+        auto& state_bitset = m_state_builder.get_atoms_bitset();
+
+        // Assign values to members.
+
+        state_id = next_state_id;
+
+        for (const auto& literal : problem->get_initial_literals())
+        {
+            if (literal->is_negated())
+            {
+                throw std::runtime_error("negative literals in the initial state are not supported");
+            }
+            else
+            {
+                state_bitset.set(literal->get_atom()->get_identifier());
+            }
+        }
+
+        // Construct the state and store it.
+
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         return ConstStateView(m_states.insert(flatmemory_builder));
@@ -41,7 +67,7 @@ private:
     {
         // create a grounded state.
         // TODO (Dominik): implement
-        return ConstStateView(nullptr);
+        throw std::runtime_error("not implemented");
     }
 
 public:

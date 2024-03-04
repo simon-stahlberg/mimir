@@ -16,7 +16,6 @@ using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
 using BitsetActionConstView = flatmemory::ConstView<BitsetActionLayout>;
 using BitsetActionVector = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
 
-
 /**
  * Implementation class
  */
@@ -58,6 +57,8 @@ class ConstView<ActionDispatcher<P, BitsetStateTag>> :
     public IActionView<ConstView<ActionDispatcher<P, BitsetStateTag>>>
 {
 private:
+    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;
+
     BitsetActionConstView m_view;
 
     /* Implement IView interface: */
@@ -95,6 +96,13 @@ public:
     [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<1>(); }
     [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<2>(); };
     [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<3>(); };
+
+    [[nodiscard]] bool is_applicable(ConstStateView state) const
+    {
+        const auto state_bitset = state.get_atoms_bitset();
+        return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
+               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
+    }
 };
 
 }

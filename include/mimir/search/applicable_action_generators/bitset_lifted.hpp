@@ -6,6 +6,7 @@
 #include "interface.hpp"
 #include "internal_functions.hpp"
 #include "internal_representation.hpp"
+#include "mimir/formalism/domain/declarations.hpp"
 #include "mimir/search/actions/bitset.hpp"
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/config.hpp"
@@ -42,43 +43,74 @@ private:
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
     std::unordered_map<Action, std::unordered_map<size_t, std::vector<int>>> m_objects_by_parameter_type;
 
-    ConstActionView create_ground_action(const FlatAction& flat_flat_action, ObjectList&& terms, PDDLFactories& ref_factories)
+    void ground_variables(const std::vector<ParameterIndexOrConstantId>& variables, const ObjectList& binding, ObjectList& out_terms) const
     {
+        out_terms.clear();
+
+        for (const auto& variable : variables)
+        {
+            if (variable.is_constant())
+            {
+                out_terms.emplace_back(m_pddl_factories.objects.get(variable.get_value()));
+            }
+            else
+            {
+                out_terms.emplace_back(binding[variable.get_value()]);
+            }
+        }
+    }
+
+    GroundLiteral ground_literal(const FlatLiteral& literal, const ObjectList& binding) const
+    {
+        ObjectList grounded_terms;
+        ground_variables(literal.arguments, binding, grounded_terms);
+        auto grounded_atom = m_pddl_factories.get_or_create_ground_atom(literal.source->get_atom()->get_predicate(), grounded_terms);
+        auto grounded_literal = m_pddl_factories.get_or_create_ground_literal(literal.source->is_negated(), grounded_atom);
+        return grounded_literal;
+    }
+
+    ConstActionView ground_action(const FlatAction& flat_action, ObjectList&& binding)
+    {
+        const auto fill_bitsets = [this, &binding](const std::vector<FlatLiteral>& literals, Bitset& ref_positive_bitset, Bitset& ref_negative_bitset)
+        {
+            for (const auto& literal : literals)
+            {
+                const auto grounded_literal = ground_literal(literal, binding);
+
+                if (grounded_literal->is_negated())
+                {
+                    ref_negative_bitset.set(grounded_literal->get_identifier());
+                }
+                else
+                {
+                    ref_positive_bitset.set(grounded_literal->get_identifier());
+                }
+            }
+        };
+
         auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
         auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
+
+        fill_bitsets(flat_action.static_precondition, positive_precondition, negative_precondition);
+        fill_bitsets(flat_action.fluent_precondition, positive_precondition, negative_precondition);
+
         auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
         auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
 
-        // // Set my bits here
+        fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 
         auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         m_actions.push_back(flatmemory_builder);
-        const auto& const_actions = m_actions;
-        return ConstActionView(const_actions.back());
-
-        //throw std::runtime_error("not implemented");
+        return ConstActionView(m_actions.back());
     }
 
-    GroundLiteral ground_literal(const Literal& literal, const ObjectList& terms, PDDLFactories& ref_factories) const
-    {
-        assert(literal->get_atom()->get_terms().size() == terms.size());
-        auto grounded_atom = ref_factories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), terms);
-        auto grounded_literal = ref_factories.get_or_create_ground_literal(literal->is_negated(), grounded_atom);
-        return grounded_literal;
-    }
-
-    bool nullary_literal_holds(const FlatLiteral& literal, ConstStateView state, PDDLFactories& ref_factories) const
-    {
-        assert(literal.arity == 0);
-        return state.literal_holds(ground_literal(literal.source, {}, ref_factories));
-    }
-
-    bool nullary_preconditions_hold(const FlatAction& flat_action, ConstStateView state, PDDLFactories& ref_factories) const
+    /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
+    bool nullary_preconditions_hold(const FlatAction& flat_action, ConstStateView state) const
     {
         for (const auto& literal : flat_action.fluent_precondition)
         {
-            if (literal.arity == 0 && nullary_literal_holds(literal, state, ref_factories))
+            if (literal.arity == 0 && state.literal_holds(ground_literal(literal, {})))
             {
                 return false;
             }
@@ -87,44 +119,39 @@ private:
         return true;
     }
 
-    void
-    nullary_case(const FlatAction& flat_action, ConstStateView state, PDDLFactories& ref_factories, std::vector<ConstActionView>& out_applicable_actions) const
+    void nullary_case(const FlatAction& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
     {
         // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
 
-        // const auto ground_action = create_ground_action(flat_action, {}, ref_factories);
+        const auto grounded_action = ground_action(flat_action, {});
 
-        throw std::runtime_error("not implemented");
-
-        // if (ground_action.is_applicable(state))
-        // {
-        //     out_applicable_actions.emplace_back(ground_action);
-        // }
+        if (grounded_action.is_applicable(state))
+        {
+            out_applicable_actions.emplace_back(grounded_action);
+        }
     }
 
-    void
-    unary_case(const FlatAction& flat_action, ConstStateView state, PDDLFactories& ref_factories, std::vector<ConstActionView>& out_applicable_actions) const
+    void unary_case(const FlatAction& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
     {
+        // There is only one parameter, try all bindings with the correct type.
+
         const auto& objects_by_parameter_type = m_objects_by_parameter_type.at(flat_action.source);
 
         for (const auto& object_id : objects_by_parameter_type.at(0))
         {
-            // auto ground_action = create_ground_action(flat_action, { ref_factories.objects.get(object_id) }, ref_factories);
+            auto grounded_action = ground_action(flat_action, { m_pddl_factories.objects.get(object_id) });
 
-            throw std::runtime_error("not implemented");
-
-            // if (ground_action.is_applicable(state))
-            // {
-            //     out_applicable_actions.emplace_back(ground_action);
-            // }
+            if (grounded_action.is_applicable(state))
+            {
+                out_applicable_actions.emplace_back(grounded_action);
+            }
         }
     }
 
     void general_case(const std::vector<std::vector<bool>>& assignment_sets,
-                      FlatAction flat_action,
+                      const FlatAction& flat_action,
                       ConstStateView state,
-                      PDDLFactories& ref_factories,
-                      std::vector<ConstActionView>& out_applicable_actions) const
+                      std::vector<ConstActionView>& out_applicable_actions)
     {
         const auto& to_vertex_assignment = m_to_vertex_assignment.at(flat_action.source);
         const auto& statically_consistent_assignments = m_statically_consistent_assignments.at(flat_action.source);
@@ -166,17 +193,18 @@ private:
                 const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
                 const auto parameter_index = vertex_assignment.parameter_index;
                 const auto object_id = vertex_assignment.object_id;
-                terms[parameter_index] = ref_factories.objects.get(object_id);
+                terms[parameter_index] = m_pddl_factories.objects.get(object_id);
             }
 
-            // const auto ground_action = create_ground_action(flat_action, std::move(terms), ref_factories);
+            const auto grounded_action = ground_action(flat_action, std::move(terms));
 
-            throw std::runtime_error("not implemented");
+            // TODO: We do not need to check applicability if action consists of at most binary predicates in the precondition.
+            // Add this information to the FlatAction struct.
 
-            // if (ground_action.is_applicable(state, 3))
-            // {
-            //     out_applicable_actions.push_back(ground_action);
-            // }
+            if (grounded_action.is_applicable(state))
+            {
+                out_applicable_actions.push_back(grounded_action);
+            }
         }
     }
 
@@ -184,7 +212,7 @@ private:
     {
         out_applicable_actions.clear();
 
-        // Build the assignment sets, which is shared between all action schemas
+        // Create the assignment sets that are shared by all action schemas.
 
         std::vector<size_t> atom_ids;
 
@@ -195,26 +223,24 @@ private:
 
         const auto assignment_sets = build_assignment_sets(m_problem, atom_ids, m_pddl_factories);
 
-        // Get the applicable ground actions for all action schemas
+        // Get the applicable ground actions for each action schema.
 
         for (const auto& flat_action : m_flat_actions)
         {
-            if (!nullary_preconditions_hold(flat_action, state, m_pddl_factories))
+            if (nullary_preconditions_hold(flat_action, state))
             {
-                return;
-            }
-
-            if (flat_action.arity == 0)
-            {
-                return nullary_case(flat_action, state, m_pddl_factories, out_applicable_actions);
-            }
-            else if (flat_action.arity == 1)
-            {
-                return unary_case(flat_action, state, m_pddl_factories, out_applicable_actions);
-            }
-            else
-            {
-                return general_case(assignment_sets, flat_action, state, m_pddl_factories, out_applicable_actions);
+                if (flat_action.arity == 0)
+                {
+                    nullary_case(flat_action, state, out_applicable_actions);
+                }
+                else if (flat_action.arity == 1)
+                {
+                    unary_case(flat_action, state, out_applicable_actions);
+                }
+                else
+                {
+                    general_case(assignment_sets, flat_action, state, out_applicable_actions);
+                }
             }
         }
     }
@@ -233,7 +259,7 @@ public:
         m_statically_consistent_assignments(),
         m_objects_by_parameter_type()
     {
-        // Type information is used by the unary and general case
+        // Type information is used by the unary and general cases.
 
         for (const auto& flat_action : m_flat_actions)
         {
@@ -262,11 +288,11 @@ public:
                 }
             }
 
-            // The following is only used by the general case
+            // The following is used only by the general case.
 
             if (flat_action.arity >= 2)
             {
-                // Create a mapping between indices and parameter-object assignments
+                // Create a mapping between indices and parameter-object mappings.
 
                 for (uint32_t parameter_index = 0; parameter_index < flat_action.arity; ++parameter_index)
                 {
@@ -282,7 +308,8 @@ public:
                     partitions.push_back(std::move(partition));
                 }
 
-                // Filter assignment based on static atoms
+                // Filter assignment based on static atoms.
+
                 const auto& static_predicates = problem->get_domain()->get_static_predicates();
                 std::vector<size_t> static_atom_ids;
 

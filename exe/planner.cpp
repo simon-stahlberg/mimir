@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/config.hpp"
 #include <iostream>
 #include <mimir/search/planners.hpp>
 
@@ -30,7 +31,11 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
 
-    auto planner = Planner<SingleTag<BrFSTag<GroundedTag, BitsetStateTag>>>(domain_file_path, problem_file_path);
+    std::cout << "Initializing planner..." << std::endl;
+
+    auto planner = Planner<SingleTag<BrFSTag<LiftedTag, BitsetStateTag>>>(domain_file_path, problem_file_path);
+
+    std::cout << "Finding solution..." << std::endl;
 
     auto [stats, plan] = planner.find_solution();
 
