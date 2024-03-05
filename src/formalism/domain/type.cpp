@@ -43,6 +43,11 @@ bool TypeImpl::is_subtype_of(const Type type) const
         return false;
     }
 
+    if (type == this)
+    {
+        return true;
+    }
+
     return is_subtype_of(type->get_bases());
 }
 

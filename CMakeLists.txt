@@ -42,7 +42,9 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
 endif()
 
-set(CMAKE_BUILD_TYPE "Release")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
 

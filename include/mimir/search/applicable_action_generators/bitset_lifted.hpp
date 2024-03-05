@@ -261,6 +261,13 @@ public:
     {
         // Type information is used by the unary and general cases.
 
+        const auto& domain = problem->get_domain();
+
+        for (const auto& action : domain->get_actions())
+        {
+            m_flat_actions.emplace_back(FlatAction(domain, action));
+        }
+
         for (const auto& flat_action : m_flat_actions)
         {
             std::vector<std::vector<size_t>> partitions;

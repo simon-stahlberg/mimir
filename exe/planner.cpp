@@ -28,6 +28,7 @@ int main(int argc, char** argv)
         std::cout << "Usage: planner <domain:str> <problem:str>" << std::endl;
         return 1;
     }
+
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
 
