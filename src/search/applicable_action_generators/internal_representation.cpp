@@ -8,10 +8,246 @@
 #include <mimir/formalism/domain/parameter.hpp>
 #include <mimir/formalism/domain/predicate.hpp>
 #include <mimir/formalism/domain/term.hpp>
+#include <mimir/formalism/problem/problem.hpp>
 #include <mimir/search/applicable_action_generators/internal_representation.hpp>
 
 namespace mimir
 {
+
+/*
+ * Static helper functions
+ */
+
+static void to_precondition_literals(Condition precondition, LiteralList& out_literals)
+{
+    out_literals.clear();
+
+    if (const auto* precondition_literal = std::get_if<ConditionLiteralImpl>(precondition))
+    {
+        out_literals.emplace_back(precondition_literal->get_literal());
+    }
+    else if (const auto* precondition_and = std::get_if<ConditionAndImpl>(precondition))
+    {
+        for (const auto& inner_precondition : precondition_and->get_conditions())
+        {
+            to_precondition_literals(inner_precondition, out_literals);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("only conjunctions are supported");
+    }
+}
+
+static void to_effect_literals(Effect effect, LiteralList& out_literals)
+{
+    out_literals.clear();
+
+    if (const auto* effect_literal = std::get_if<EffectLiteralImpl>(effect))
+    {
+        out_literals.emplace_back(effect_literal->get_literal());
+    }
+    else if (const auto* effect_and = std::get_if<EffectAndImpl>(effect))
+    {
+        for (const auto& inner_effect : effect_and->get_effects())
+        {
+            to_effect_literals(inner_effect, out_literals);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("only conjunctions are supported");
+    }
+}
+
+/*
+ * Helper functions
+ */
+
+size_t get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects)
+{
+    const auto first = 1;
+    const auto second = first * (arity + 1);
+    const auto third = second * (arity + 1);
+    const auto fourth = third * (num_objects + 1);
+    const auto rank = (first * (first_position + 1)) + (second * (second_position + 1)) + (third * (first_object + 1)) + (fourth * (second_object + 1));
+    return (size_t) rank;
+}
+
+size_t num_assignments(int32_t arity, int32_t num_objects)
+{
+    const auto first = 1;
+    const auto second = first * (arity + 1);
+    const auto third = second * (arity + 1);
+    const auto fourth = third * (num_objects + 1);
+    const auto max = (first * arity) + (second * arity) + (third * num_objects) + (fourth * num_objects);
+    return (size_t) (max + 1);
+}
+
+std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std::vector<size_t>& atom_identifiers, const PDDLFactories& factories)
+{
+    const auto num_objects = problem->get_objects().size();
+    const auto& predicates = problem->get_domain()->get_predicates();
+
+    std::vector<std::vector<bool>> assignment_sets;
+    assignment_sets.resize(predicates.size());
+
+    for (const auto& predicate : predicates)
+    {
+        auto& assignment_set = assignment_sets[predicate->get_identifier()];
+        assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
+    }
+
+    for (const auto& identifier : atom_identifiers)
+    {
+        const auto& ground_atom = factories.ground_atoms.get(identifier);
+        const auto& arity = ground_atom->get_arity();
+        const auto& predicate = ground_atom->get_predicate();
+        const auto& arguments = ground_atom->get_objects();
+        auto& assignment_set = assignment_sets[predicate->get_identifier()];
+
+        for (size_t first_position = 0; first_position < arity; ++first_position)
+        {
+            const auto& first_object = arguments[first_position];
+            assignment_set[get_assignment_position(first_position, first_object->get_identifier(), -1, -1, arity, num_objects)] = true;
+
+            for (size_t second_position = first_position + 1; second_position < arity; ++second_position)
+            {
+                const auto& second_object = arguments[second_position];
+                assignment_set[get_assignment_position(second_position, second_object->get_identifier(), -1, -1, arity, num_objects)] = true;
+                assignment_set[get_assignment_position(first_position,
+                                                       first_object->get_identifier(),
+                                                       second_position,
+                                                       second_object->get_identifier(),
+                                                       arity,
+                                                       num_objects)] = true;
+            }
+        }
+    }
+
+    return assignment_sets;
+}
+
+bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
+                            const std::vector<FlatLiteral>& literals,
+                            const Assignment& first_assignment,
+                            const Assignment& second_assignment,
+                            Problem problem)
+{
+    for (const auto& literal : literals)
+    {
+        int32_t first_position = -1;
+        int32_t second_position = -1;
+        int32_t first_object_id = -1;
+        int32_t second_object_id = -1;
+        bool empty_assignment = true;
+
+        for (std::size_t index = 0; index < literal.arity; ++index)
+        {
+            const auto& term = literal.arguments[index];
+
+            if (term.is_constant())
+            {
+                if (literal.arity <= 2)
+                {
+                    const auto term_id = term.get_value();
+
+                    if (first_position < 0)
+                    {
+                        first_position = index;
+                        first_object_id = static_cast<int32_t>(term_id);
+                    }
+                    else
+                    {
+                        second_position = index;
+                        second_object_id = static_cast<int32_t>(term_id);
+                    }
+
+                    empty_assignment = false;
+                }
+            }
+            else
+            {
+                const auto term_index = term.get_value();
+
+                if (first_assignment.parameter_index == term_index)
+                {
+                    if (first_position < 0)
+                    {
+                        first_position = index;
+                        first_object_id = static_cast<int32_t>(first_assignment.object_id);
+                    }
+                    else
+                    {
+                        second_position = index;
+                        second_object_id = static_cast<int32_t>(first_assignment.object_id);
+                        break;
+                    }
+
+                    empty_assignment = false;
+                }
+                else if (second_assignment.parameter_index == term_index)
+                {
+                    if (first_position < 0)
+                    {
+                        first_position = index;
+                        first_object_id = static_cast<int32_t>(second_assignment.object_id);
+                    }
+                    else
+                    {
+                        second_position = index;
+                        second_object_id = static_cast<int32_t>(second_assignment.object_id);
+                        break;
+                    }
+
+                    empty_assignment = false;
+                }
+            }
+        }
+
+        if (!empty_assignment)
+        {
+            const auto& assignment_set = assignment_sets[literal.predicate_id];
+            const auto assignment_rank = get_assignment_position(first_position,
+                                                                 first_object_id,
+                                                                 second_position,
+                                                                 second_object_id,
+                                                                 static_cast<int32_t>(literal.arity),
+                                                                 static_cast<int32_t>(problem->get_objects().size()));
+
+            const auto consistent_with_state = assignment_set[assignment_rank];
+
+            if (!literal.negated && !consistent_with_state)
+            {
+                return false;
+            }
+            else if (literal.negated && consistent_with_state && ((literal.arity == 1) || ((literal.arity == 2) && (second_position >= 0))))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+/*
+ * Struct Assignment and AssignmentPair
+ */
+
+Assignment::Assignment(size_t parameter_index, size_t object_id) : parameter_index(parameter_index), object_id(object_id) {}
+
+AssignmentPair::AssignmentPair(size_t first_position, const Assignment& first_assignment, size_t second_position, const Assignment& second_assignment) :
+    first_position(first_position),
+    second_position(second_position),
+    first_assignment(first_assignment),
+    second_assignment(second_assignment)
+{
+}
+
+/*
+ * Class ParameterIndexOrConstantId
+ */
 
 ParameterIndexOrConstantId::ParameterIndexOrConstantId(size_t value, bool is_constant) : value(is_constant ? ~value : value) {};
 
@@ -25,6 +261,10 @@ bool ParameterIndexOrConstantId::is_constant() const
 bool ParameterIndexOrConstantId::is_variable() const { return !is_constant(); }
 
 size_t ParameterIndexOrConstantId::get_value() const { return is_constant() ? ~value : value; }
+
+/*
+ * Class FlatLiteral
+ */
 
 FlatLiteral::FlatLiteral(Literal literal, const std::map<Parameter, size_t>& to_index, const std::map<Variable, Parameter>& to_parameter) :
     source(literal),
@@ -56,44 +296,6 @@ FlatLiteral::FlatLiteral(Literal literal, const std::map<Parameter, size_t>& to_
     }
 }
 
-static void conjunctive_precondition(Condition precondition, LiteralList& ref_literals)
-{
-    if (const auto* precondition_literal = std::get_if<ConditionLiteralImpl>(precondition))
-    {
-        ref_literals.emplace_back(precondition_literal->get_literal());
-    }
-    else if (const auto* precondition_and = std::get_if<ConditionAndImpl>(precondition))
-    {
-        for (const auto& inner_precondition : precondition_and->get_conditions())
-        {
-            conjunctive_precondition(inner_precondition, ref_literals);
-        }
-    }
-    else
-    {
-        throw std::runtime_error("only conjunctive preconditions are supported");
-    }
-}
-
-static void conjunctive_effect(Effect effect, LiteralList& ref_literals)
-{
-    if (const auto* effect_literal = std::get_if<EffectLiteralImpl>(effect))
-    {
-        ref_literals.emplace_back(effect_literal->get_literal());
-    }
-    else if (const auto* effect_and = std::get_if<EffectAndImpl>(effect))
-    {
-        for (const auto& inner_effect : effect_and->get_effects())
-        {
-            conjunctive_effect(inner_effect, ref_literals);
-        }
-    }
-    else
-    {
-        throw std::runtime_error("only conjunctive effects are supported");
-    }
-}
-
 FlatAction::FlatAction(Domain domain, Action action_schema) :
     to_index_(),
     index_parameters_(),
@@ -118,7 +320,7 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
     if (precondition.has_value())
     {
         LiteralList precondition_literals;
-        conjunctive_precondition(precondition.value(), precondition_literals);
+        to_precondition_literals(precondition.value(), precondition_literals);
 
         for (const auto& literal : precondition_literals)
         {
@@ -138,7 +340,7 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
     if (effect.has_value())
     {
         LiteralList effect_literals;
-        conjunctive_effect(effect.value(), effect_literals);
+        to_effect_literals(effect.value(), effect_literals);
 
         for (const auto& literal : effect_literals)
         {

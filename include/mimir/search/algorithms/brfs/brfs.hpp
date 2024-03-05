@@ -58,6 +58,8 @@ private:
             const auto state = m_queue.front();
             m_queue.pop_front();
 
+            // TODO: Check if state is a goal state here.
+
             const auto search_node = this->m_search_nodes[state.get_id()];
 
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);

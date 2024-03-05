@@ -65,9 +65,39 @@ private:
 
     [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action)
     {
-        // create a grounded state.
-        // TODO (Dominik): implement
-        throw std::runtime_error("not implemented");
+        int next_state_id = m_states.size();
+
+        // Fetch member references.
+
+        auto& state_id = m_state_builder.get_id();
+        auto& state_bitset = m_state_builder.get_atoms_bitset();
+
+        // Assign values to members.
+
+        state_id = next_state_id;
+
+        // TODO: Optimize this operation, this is quite inefficient.
+
+        for (const auto& position : state.get_atoms_bitset())
+        {
+            state_bitset.set(position);
+        }
+
+        for (const auto& position : action.get_unconditional_negative_effect_bitset())
+        {
+            state_bitset.unset(position);
+        }
+
+        for (const auto& position : action.get_unconditional_positive_effect_bitset())
+        {
+            state_bitset.set(position);
+        }
+
+        // Construct the state and store it.
+
+        auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
+        flatmemory_builder.finish();
+        return ConstStateView(m_states.insert(flatmemory_builder));
     }
 
 public:

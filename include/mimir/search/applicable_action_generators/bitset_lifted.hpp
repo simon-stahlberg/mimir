@@ -4,7 +4,6 @@
 #include "../../algorithms/kpkc.hpp"
 #include "../../formalism/problem/declarations.hpp"
 #include "interface.hpp"
-#include "internal_functions.hpp"
 #include "internal_representation.hpp"
 #include "mimir/formalism/domain/declarations.hpp"
 #include "mimir/search/actions/bitset.hpp"
