@@ -7,6 +7,7 @@
 #include "mimir/formalism/problem/problem.hpp"
 #include "mimir/search/config.hpp"
 
+#include <cstddef>
 #include <flatmemory/flatmemory.hpp>
 #include <stdexcept>
 
@@ -101,6 +102,8 @@ private:
         flatmemory_builder.finish();
         return ConstStateView(m_states.insert(flatmemory_builder));
     }
+
+    [[nodiscard]] size_t state_count_impl() const { return m_states.size(); }
 
 public:
     explicit SSG(Problem problem) : m_problem(problem) {}

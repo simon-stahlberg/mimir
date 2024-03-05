@@ -7,6 +7,7 @@
 #include "../config.hpp"
 #include "../states.hpp"
 #include "../type_traits.hpp"
+#include <cstddef>
 
 namespace mimir
 {
@@ -37,6 +38,8 @@ public:
     {
         return self().get_or_create_successor_state_impl(state, action);
     }
+
+    [[nodiscard]] size_t state_count() const { return self().state_count_impl(); }
 };
 
 /**
