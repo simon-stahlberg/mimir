@@ -78,11 +78,11 @@ private:
 
                 if (grounded_literal->is_negated())
                 {
-                    ref_negative_bitset.set(grounded_literal->get_identifier());
+                    ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
                 }
                 else
                 {
-                    ref_positive_bitset.set(grounded_literal->get_identifier());
+                    ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
                 }
             }
         };

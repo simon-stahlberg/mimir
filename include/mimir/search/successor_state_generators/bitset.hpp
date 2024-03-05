@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 
 #include "interface.hpp"
+#include "mimir/formalism/common/types.hpp"
 #include "mimir/formalism/problem/declarations.hpp"
 #include "mimir/formalism/problem/problem.hpp"
 #include "mimir/search/config.hpp"
@@ -52,7 +53,8 @@ private:
             }
             else
             {
-                state_bitset.set(literal->get_atom()->get_identifier());
+                auto position = literal->get_atom()->get_identifier();
+                state_bitset.set(position);
             }
         }
 

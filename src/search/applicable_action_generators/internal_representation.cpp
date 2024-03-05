@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <mimir/common/translations.hpp>
 #include <mimir/formalism/domain/action.hpp>
 #include <mimir/formalism/domain/atom.hpp>
 #include <mimir/formalism/domain/conditions.hpp>
@@ -13,52 +14,6 @@
 
 namespace mimir
 {
-
-/*
- * Static helper functions
- */
-
-static void to_precondition_literals(Condition precondition, LiteralList& out_literals)
-{
-    out_literals.clear();
-
-    if (const auto* precondition_literal = std::get_if<ConditionLiteralImpl>(precondition))
-    {
-        out_literals.emplace_back(precondition_literal->get_literal());
-    }
-    else if (const auto* precondition_and = std::get_if<ConditionAndImpl>(precondition))
-    {
-        for (const auto& inner_precondition : precondition_and->get_conditions())
-        {
-            to_precondition_literals(inner_precondition, out_literals);
-        }
-    }
-    else
-    {
-        throw std::runtime_error("only conjunctions are supported");
-    }
-}
-
-static void to_effect_literals(Effect effect, LiteralList& out_literals)
-{
-    out_literals.clear();
-
-    if (const auto* effect_literal = std::get_if<EffectLiteralImpl>(effect))
-    {
-        out_literals.emplace_back(effect_literal->get_literal());
-    }
-    else if (const auto* effect_and = std::get_if<EffectAndImpl>(effect))
-    {
-        for (const auto& inner_effect : effect_and->get_effects())
-        {
-            to_effect_literals(inner_effect, out_literals);
-        }
-    }
-    else
-    {
-        throw std::runtime_error("only conjunctions are supported");
-    }
-}
 
 /*
  * Helper functions
@@ -320,7 +275,7 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
     if (precondition.has_value())
     {
         LiteralList precondition_literals;
-        to_precondition_literals(precondition.value(), precondition_literals);
+        to_literals(precondition.value(), precondition_literals);
 
         for (const auto& literal : precondition_literals)
         {
@@ -340,7 +295,7 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
     if (effect.has_value())
     {
         LiteralList effect_literals;
-        to_effect_literals(effect.value(), effect_literals);
+        to_literals(effect.value(), effect_literals);
 
         for (const auto& literal : effect_literals)
         {

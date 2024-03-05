@@ -15,7 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/config.hpp"
+
 #include <iostream>
 #include <mimir/search/planners.hpp>
 
@@ -39,6 +41,25 @@ int main(int argc, char** argv)
     std::cout << "Finding solution..." << std::endl;
 
     auto [stats, plan] = planner.find_solution();
+
+    switch (stats)
+    {
+        case IN_PROGRESS:
+            std::cout << "In progress!" << std::endl;
+            break;
+        case OUT_OF_TIME:
+            std::cout << "Out of time!" << std::endl;
+            break;
+        case OUT_OF_MEMORY:
+            std::cout << "Out of memory!" << std::endl;
+            break;
+        case FAILED:
+            std::cout << "Failed!" << std::endl;
+            break;
+        case SOLVED:
+            std::cout << "Solved!" << std::endl;
+            break;
+    }
 
     return 0;
 }

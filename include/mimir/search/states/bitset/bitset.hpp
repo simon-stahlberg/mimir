@@ -85,11 +85,11 @@ private:
 public:
     explicit ConstView(BitsetStateConstView view) : m_view(view) {}
 
-    bool contains(const GroundAtom& ground_atom) { return get_atoms_bitset_impl().get(ground_atom->get_identifier()); }
+    bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset_impl().get(ground_atom->get_identifier()); }
 
-    bool literal_holds(const GroundLiteral& literal) { return literal->is_negated() != contains(literal->get_atom()); }
+    bool literal_holds(const GroundLiteral& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
 
-    bool literals_hold(const GroundLiteralList& literals)
+    bool literals_hold(const GroundLiteralList& literals) const
     {
         for (const auto& literal : literals)
         {

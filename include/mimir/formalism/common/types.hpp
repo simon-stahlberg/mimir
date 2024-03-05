@@ -118,6 +118,42 @@ struct PDDLFactories
     {
         return ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
     }
+
+    GroundAtom to_ground_atom(Atom atom)
+    {
+        ObjectList terms;
+
+        for (const auto& term : atom->get_terms())
+        {
+            if (const auto* object_term = std::get_if<TermObjectImpl>(term))
+            {
+                terms.emplace_back(object_term->get_object());
+            }
+            else
+            {
+                throw std::runtime_error("atom contains a variable");
+            }
+        }
+
+        return get_or_create_ground_atom(atom->get_predicate(), terms);
+    }
+
+    /// @brief Converts an alraedy grounded Literal to type GroundLiteral.
+    GroundLiteral to_ground_literal(Literal literal)
+    {
+        return get_or_create_ground_literal(literal->is_negated(), to_ground_atom(literal->get_atom()));
+    }
+
+    /// @brief Converts a list of already grounded Literal elements to a list of type GroundLiteral.
+    void to_ground_literals(const LiteralList& literals, GroundLiteralList& out_ground_literals)
+    {
+        out_ground_literals.clear();
+
+        for (const auto& literal : literals)
+        {
+            out_ground_literals.emplace_back(to_ground_literal(literal));
+        }
+    }
 };
 }
 
