@@ -1,13 +1,12 @@
 #ifndef MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 #define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 
-#include "../../../formalism/parser.hpp"
-#include "../../algorithms.hpp"
+#include "../../../formalism/common/types.hpp"
+#include "../../../formalism/domain/declarations.hpp"
+#include "../../../formalism/problem/declarations.hpp"
 #include "../interface.hpp"
 
-#include <iostream>
 #include <tuple>
-#include <utility>
 
 namespace mimir
 {
@@ -33,10 +32,8 @@ private:
     template<typename>
     friend class IPlanner;
 
-    fs::path m_domain_file;
-    fs::path m_problem_file;
-
-    PDDLParser m_parser;
+    Domain m_domain;
+    Problem m_problem;
 
     Algorithm<AlgorithmDispatcher<A>> m_algorithm;
 
@@ -53,16 +50,18 @@ private:
         {
             plan.push_back(action_view.str());
         }
+
         return std::make_tuple(status, plan);
     }
 
-    const fs::path& get_domain_file_path_impl() const { return m_domain_file; }
-    const fs::path& get_problem_file_path_impl() const { return m_problem_file; }
+    const Domain& get_domain_impl() const { return m_domain; }
+    const Problem& get_problem_impl() const { return m_problem; }
 
 public:
-    Planner(const fs::path& domain_file_path, const fs::path& problem_file_path) :
-        m_parser(PDDLParser(domain_file_path, problem_file_path)),
-        m_algorithm(Algorithm<AlgorithmDispatcher<A>>(m_parser.get_problem(), m_parser.get_factories()))
+    Planner(const Domain& domain, const Problem& problem, PDDLFactories& factories) :
+        m_domain(domain),
+        m_problem(problem),
+        m_algorithm(Algorithm<AlgorithmDispatcher<A>>(problem, factories))
     {
     }
 };

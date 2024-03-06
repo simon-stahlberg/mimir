@@ -1,8 +1,8 @@
 #ifndef MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
 
-#include "../algorithms.hpp"
-#include "../config.hpp"
+#include "mimir/formalism/problem/declarations.hpp"
+#include "mimir/search/algorithms/interface.hpp"
 
 #include <loki/common/filesystem.hpp>
 #include <string>
@@ -27,8 +27,8 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    const fs::path& get_domain_file_path() const { return self().get_domain_file_path_impl(); }
-    const fs::path& get_problem_file_path() const { return self().get_problem_file_path_impl(); }
+    const Domain& get_domain() const { return self().get_domain_impl(); }
+    const Problem& get_problem() const { return self().get_problem_impl(); }
 
     std::tuple<SearchStatus, Plan> find_solution() { return self().find_solution_impl(); }
 };
