@@ -7,10 +7,12 @@
 #include "mimir/formalism/problem/declarations.hpp"
 #include "mimir/search/config.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
+#include "mimir/common/printers.hpp"
 
 #include <deque>
 #include <flatmemory/flatmemory.hpp>
 #include <vector>
+
 
 namespace mimir
 {
@@ -65,6 +67,8 @@ private:
 
         auto applicable_actions = ConstActionViewList();
 
+        std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
+
         m_queue.emplace_back(this->m_initial_state);
         while (!m_queue.empty())
         {
@@ -83,6 +87,8 @@ private:
             {
                 const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
                 m_queue.emplace_back(successor_state);
+
+                std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
             }
         }
 
