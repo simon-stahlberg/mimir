@@ -69,7 +69,10 @@ private:
 
         auto applicable_actions = ConstActionViewList();
 
-        std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
+        int num_expanded = 0;
+        int num_generated = 0;
+
+        // std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
 
         m_queue.emplace_back(this->m_initial_state);
         while (!m_queue.empty())
@@ -79,23 +82,35 @@ private:
 
             if (state.literals_hold(goal_ground_literals))
             {
+                std::cout << "Expanded: " << num_expanded << "; Generated: " << num_generated << std::endl;
+
                 return SearchStatus::SOLVED;
             }
 
+            ++num_expanded;
+
             // const auto search_node = this->m_search_nodes[state.get_id()];
 
-            std::cout << "---" << std::endl;
+            // std::cout << "---" << std::endl;
 
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
             {
+                ++num_generated;
+                const auto state_count = m_state_repository.state_count();
                 const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
-                m_queue.emplace_back(successor_state);
 
-                std::cout << "Action: " << std::make_tuple(action, std::cref(m_pddl_factories)) << std::endl;
-                std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
+                if (state_count != m_state_repository.state_count())
+                {
+                    m_queue.emplace_back(successor_state);
+
+                    // std::cout << "Action: " << std::make_tuple(action, std::cref(m_pddl_factories)) << std::endl;
+                    // std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
+                }
             }
         }
+
+        std::cout << "Expanded: " << num_expanded << "; Generated: " << num_generated << std::endl;
 
         return SearchStatus::FAILED;
     }
