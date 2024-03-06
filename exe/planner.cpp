@@ -40,6 +40,13 @@ int main(int argc, char** argv)
 
     auto parser = PDDLParser(domain_file_path, problem_file_path);
 
+    std::cout << "Domain:" << std::endl;
+    std::cout << *parser.get_domain() << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Problem:" << std::endl;
+    std::cout << *parser.get_problem() << std::endl;
+
     std::cout << "Initializing planner..." << std::endl;
 
     auto planner = Planner<SingleTag<BrFSTag<LiftedTag, BitsetStateTag>>>(parser.get_domain(), parser.get_problem(), parser.get_factories());

@@ -90,11 +90,17 @@ private:
         auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
         auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
 
+        positive_precondition.unset_all();
+        negative_precondition.unset_all();
+
         fill_bitsets(flat_action.static_precondition, positive_precondition, negative_precondition);
         fill_bitsets(flat_action.fluent_precondition, positive_precondition, negative_precondition);
 
         auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
         auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
+
+        positive_effect.unset_all();
+        negative_effect.unset_all();
 
         fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 

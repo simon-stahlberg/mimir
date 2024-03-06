@@ -43,4 +43,14 @@ void to_literals(Effect effect, LiteralList& ref_literals)
     }
 }
 
+void to_ground_atoms(const ConstBitsetView& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
+{
+    out_ground_atoms.clear();
+
+    for (const auto& atom_id : bitset)
+    {
+        out_ground_atoms.emplace_back(pddl_factories.ground_atoms.get(atom_id));
+    }
+}
+
 }

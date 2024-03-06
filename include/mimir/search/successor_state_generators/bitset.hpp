@@ -46,6 +46,8 @@ private:
 
         state_id = next_state_id;
 
+        state_bitset.unset_all();
+
         for (const auto& literal : problem->get_initial_literals())
         {
             if (literal->is_negated())
@@ -78,6 +80,8 @@ private:
         // Assign values to members.
 
         state_id = next_state_id;
+
+        state_bitset.unset_all();
 
         // TODO: Optimize this operation, this is quite inefficient.
 

@@ -2,17 +2,19 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
 
 #include "../interface.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/common/types.hpp"
 #include "mimir/formalism/problem/declarations.hpp"
 #include "mimir/search/config.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
-#include "mimir/common/printers.hpp"
 
 #include <deque>
 #include <flatmemory/flatmemory.hpp>
+#include <functional>
+#include <ostream>
+#include <tuple>
 #include <vector>
-
 
 namespace mimir
 {
@@ -82,12 +84,15 @@ private:
 
             // const auto search_node = this->m_search_nodes[state.get_id()];
 
+            std::cout << "---" << std::endl;
+
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
             {
                 const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
                 m_queue.emplace_back(successor_state);
 
+                std::cout << "Action: " << std::make_tuple(action, std::cref(m_pddl_factories)) << std::endl;
                 std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
             }
         }
