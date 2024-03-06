@@ -14,7 +14,27 @@ using BitsetStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
 
 using BitsetStateBuilder = flatmemory::Builder<BitsetStateLayout>;
 using BitsetStateConstView = flatmemory::ConstView<BitsetStateLayout>;
-using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout>;
+
+struct BitsetStateConstViewHash
+{
+    size_t operator()(const BitsetStateConstView& view) const
+    {
+        const auto bitset_view = view.get<1>();
+        return bitset_view.hash();
+    }
+};
+
+struct BitsetStateConstViewEqual
+{
+    bool operator()(const BitsetStateConstView& view_left, const BitsetStateConstView& view_right) const
+    {
+        const auto bitset_view_left = view_left.get<1>();
+        const auto bitset_view_right = view_left.get<1>();
+        return bitset_view_left == bitset_view_right;
+    }
+};
+
+using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout, BitsetStateConstViewHash, BitsetStateConstViewEqual>;
 
 /**
  * Implementation class
@@ -100,31 +120,6 @@ public:
         }
 
         return true;
-    }
-};
-}
-
-namespace std
-{
-// Inject hash and equality into std namespace
-template<>
-struct hash<mimir::BitsetStateConstView>
-{
-    std::size_t operator()(const mimir::BitsetStateConstView& view) const
-    {
-        const auto bitset_view = view.get<1>();
-        return bitset_view.hash();
-    }
-};
-
-template<>
-struct equal_to<mimir::BitsetStateConstView>
-{
-    bool operator()(const mimir::BitsetStateConstView& view_left, const mimir::BitsetStateConstView& view_right) const
-    {
-        const auto bitset_view_left = view_left.get<1>();
-        const auto bitset_view_right = view_left.get<1>();
-        return bitset_view_left == bitset_view_right;
     }
 };
 }
