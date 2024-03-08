@@ -28,10 +28,15 @@ namespace mimir
 {
 Problem parse(loki::pddl::Problem problem, PDDLFactories& factories)
 {
+    // Add constants to objects in problem.
+    const auto constants = parse(problem->get_domain()->get_constants(), factories);
+    auto objects = parse(problem->get_objects(), factories);
+    objects.insert(objects.end(), constants.begin(), constants.end());
+
     return factories.problems.get_or_create<ProblemImpl>(parse(problem->get_domain(), factories),
                                                          problem->get_name(),
                                                          parse(problem->get_requirements(), factories),
-                                                         parse(problem->get_objects(), factories),
+                                                         objects,
                                                          parse(problem->get_initial_literals(), factories),
                                                          parse(problem->get_numeric_fluents(), factories),
                                                          parse(problem->get_goal_condition(), factories),
