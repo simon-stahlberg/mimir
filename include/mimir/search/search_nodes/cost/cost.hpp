@@ -24,10 +24,11 @@ enum SearchNodeStatus
 /**
  * Flatmemory builder and view
  */
-using CostSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t>;
+using CostSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t, int32_t>;
 
 using CostSearchNodeBuilder = flatmemory::Builder<CostSearchNodeLayout>;
 using CostSearchNodeView = flatmemory::View<CostSearchNodeLayout>;
+using CostSearchNodeConstView = flatmemory::ConstView<CostSearchNodeLayout>;
 using CostSearchNodeVector = flatmemory::FixedSizedTypeVector<CostSearchNodeLayout>;
 
 /**
@@ -49,6 +50,7 @@ public:
     void set_status(SearchNodeStatus status) { m_builder.get<0>() = status; }
     void set_g_value(int32_t g_value) { m_builder.get<1>() = g_value; }
     void set_parent_state_id(int32_t parent_state_id) { m_builder.get<2>() = parent_state_id; }
+    void set_creating_action_id(int32_t creating_action_id) { m_builder.get<3>() = creating_action_id; }
 };
 
 class CostSearchNodeViewWrapper
@@ -62,6 +64,21 @@ public:
     SearchNodeStatus& get_status() { return m_view.get<0>(); }
     int32_t& get_g_value() { return m_view.get<1>(); }
     int32_t& get_parent_state_id() { return m_view.get<2>(); }
+    int32_t& get_creating_action_id() { return m_view.get<3>(); }
+};
+
+class CostSearchNodeConstViewWrapper
+{
+private:
+    CostSearchNodeConstView m_view;
+
+public:
+    CostSearchNodeConstViewWrapper(CostSearchNodeConstView view) : m_view(view) {}
+
+    SearchNodeStatus get_status() const { return m_view.get<0>(); }
+    int32_t get_g_value() const { return m_view.get<1>(); }
+    int32_t get_parent_state_id() const { return m_view.get<2>(); }
+    int32_t get_creating_action_id() const { return m_view.get<3>(); }
 };
 
 }

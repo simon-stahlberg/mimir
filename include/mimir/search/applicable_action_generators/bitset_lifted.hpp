@@ -104,6 +104,8 @@ private:
 
         fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 
+        m_action_builder.get_id() = m_actions.size();
+
         auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         m_actions.push_back(flatmemory_builder);
@@ -390,6 +392,16 @@ public:
             m_objects_by_parameter_type.emplace(flat_action.source, std::move(objects_by_parameter_type));
             m_statically_consistent_assignments.emplace(flat_action.source, std::move(statically_consistent_assignments));
         }
+    }
+
+    /// @brief Return the action with the given id.
+    [[nodiscard]] ConstActionView get_action(size_t action_id) const {
+        if (action_id < m_actions.size())
+        {
+            return ConstActionView(m_actions[action_id]);
+        }
+
+        throw std::invalid_argument("invalid identifier");
     }
 };
 

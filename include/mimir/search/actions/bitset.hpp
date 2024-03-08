@@ -10,7 +10,7 @@ namespace mimir
 /**
  * Types
  */
-using BitsetActionLayout = flatmemory::Tuple<BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+using BitsetActionLayout = flatmemory::Tuple<int32_t, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 
 using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
 using BitsetActionConstView = flatmemory::ConstView<BitsetActionLayout>;
@@ -39,11 +39,12 @@ private:
     friend class IActionBuilder;
 
 public:
-    /// @brief Modify the bitsets, call finish, then copy the buffer to a container and use its returned view.
-    [[nodiscard]] Bitset& get_applicability_positive_precondition_bitset() { return m_builder.get<0>(); }
-    [[nodiscard]] Bitset& get_applicability_negative_precondition_bitset() { return m_builder.get<1>(); }
-    [[nodiscard]] Bitset& get_unconditional_positive_effect_bitset() { return m_builder.get<2>(); }
-    [[nodiscard]] Bitset& get_unconditional_negative_effect_bitset() { return m_builder.get<3>(); }
+    /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
+    [[nodiscard]] int32_t& get_id() { return m_builder.get<0>(); }
+    [[nodiscard]] Bitset& get_applicability_positive_precondition_bitset() { return m_builder.get<1>(); }
+    [[nodiscard]] Bitset& get_applicability_negative_precondition_bitset() { return m_builder.get<2>(); }
+    [[nodiscard]] Bitset& get_unconditional_positive_effect_bitset() { return m_builder.get<3>(); }
+    [[nodiscard]] Bitset& get_unconditional_negative_effect_bitset() { return m_builder.get<4>(); }
 };
 
 /**
@@ -92,10 +93,11 @@ public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(BitsetActionConstView view) : m_view(view) {}
 
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<0>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<1>(); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<2>(); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<3>(); };
+    [[nodiscard]] int32_t get_id() const { return m_view.get<0>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<1>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<2>(); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<3>(); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<4>(); };
 
     [[nodiscard]] bool is_applicable(ConstStateView state) const
     {

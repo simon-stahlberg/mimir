@@ -46,9 +46,11 @@ private:
         auto plan = Plan();
         auto action_view_list = typename TypeTraits<std::remove_reference_t<decltype(m_algorithm)>>::ConstActionViewList();
         const auto status = m_algorithm.find_solution(action_view_list);
-        for (const auto& action_view : action_view_list)
+
+        std::cout << "Plan found with cost: " << action_view_list.size() << std::endl;
+        for (size_t i = 0; i < action_view_list.size(); ++i)
         {
-            plan.push_back(action_view.str());
+            std::cout << i << ". " << action_view_list[i].get_id() << std::endl;
         }
 
         return std::make_tuple(status, plan);

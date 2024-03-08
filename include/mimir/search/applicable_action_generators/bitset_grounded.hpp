@@ -27,6 +27,11 @@ private:
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories) {}
+
+    /// @brief Return the action with the given id.
+    [[nodiscard]] ConstActionView get_action(size_t action_id) const {
+        throw std::runtime_error("not implemented");
+    }
 };
 
 }
