@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <mimir/formalism/parser.hpp>
-#include <mimir/formalism/problem/declarations.hpp>
+#include <mimir/formalism/declarations.hpp>
 #include <mimir/search/algorithms.hpp>
 
 namespace mimir::tests

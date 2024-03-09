@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
 #include "../../common/mixins.hpp"
-#include "../../formalism/problem/declarations.hpp"
+#include "../../formalism/declarations.hpp"
 #include "../actions.hpp"
 #include "../config.hpp"
 #include "../states.hpp"

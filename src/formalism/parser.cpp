@@ -1,8 +1,8 @@
 #include <loki/domain/parser.hpp>
 #include <loki/problem/parser.hpp>
-#include <mimir/formalism/domain/parsers/domain.hpp>
+#include <mimir/formalism/parsers/domain.hpp>
 #include <mimir/formalism/parser.hpp>
-#include <mimir/formalism/problem/parsers/problem.hpp>
+#include <mimir/formalism/parsers/problem.hpp>
 
 namespace mimir
 {

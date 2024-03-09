@@ -1,6 +1,7 @@
 #include <mimir/common/translations.hpp>
-#include <mimir/formalism/domain/conditions.hpp>
-#include <mimir/formalism/domain/effects.hpp>
+#include <mimir/formalism/conditions.hpp>
+#include <mimir/formalism/effects.hpp>
+#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

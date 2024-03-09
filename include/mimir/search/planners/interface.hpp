@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
 
-#include "mimir/formalism/problem/declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 
 #include <loki/common/filesystem.hpp>

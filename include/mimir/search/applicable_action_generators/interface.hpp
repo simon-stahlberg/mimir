@@ -1,8 +1,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
-#include "../../formalism/common/types.hpp"
-#include "../../formalism/problem/declarations.hpp"
+#include "../../formalism/declarations.hpp"
 #include "../actions.hpp"
 #include "../states.hpp"
 #include "../type_traits.hpp"

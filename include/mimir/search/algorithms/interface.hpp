@@ -1,9 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 
-#include "../../common/mixins.hpp"
-#include "../../formalism/common/types.hpp"
-#include "../../formalism/problem/declarations.hpp"
+#include "../../formalism/declarations.hpp"
 #include "../actions.hpp"
 #include "../applicable_action_generators.hpp"
 #include "../config.hpp"

@@ -2,10 +2,10 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_LIFTED_HPP_
 
 #include "../../algorithms/kpkc.hpp"
-#include "../../formalism/problem/declarations.hpp"
+#include "../../formalism/declarations.hpp"
+#include "../../formalism/factories.hpp"
 #include "interface.hpp"
 #include "internal_representation.hpp"
-#include "mimir/formalism/domain/declarations.hpp"
 #include "mimir/search/actions/bitset.hpp"
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/config.hpp"

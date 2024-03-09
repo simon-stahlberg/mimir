@@ -2,9 +2,8 @@
 #define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 
 #include "../../../common/printers.hpp"
-#include "../../../formalism/common/types.hpp"
-#include "../../../formalism/domain/declarations.hpp"
-#include "../../../formalism/problem/declarations.hpp"
+#include "../../../formalism/factories.hpp"
+#include "../../../formalism/declarations.hpp"
 #include "../interface.hpp"
 
 #include <tuple>

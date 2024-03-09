@@ -1,8 +1,8 @@
 #ifndef MIMIR_SEARCH_STATES_BITSET_BITSET_HPP_
 #define MIMIR_SEARCH_STATES_BITSET_BITSET_HPP_
 
-#include "../../../formalism/problem/ground_atom.hpp"
-#include "../../../formalism/problem/ground_literal.hpp"
+#include "../../../formalism/ground_atom.hpp"
+#include "../../../formalism/ground_literal.hpp"
 #include "interface.hpp"
 
 namespace mimir

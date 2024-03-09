@@ -1,12 +1,10 @@
 #ifndef MIMIR_COMMON_PRINTERS_HPP_
 #define MIMIR_COMMON_PRINTERS_HPP_
 
-#include "../formalism/common/types.hpp"
-#include "../formalism/domain/declarations.hpp"
+#include "../formalism/declarations.hpp"
 #include "../search/actions/interface.hpp"
 #include "../search/actions/bitset.hpp"
 #include "../search/states/bitset/bitset.hpp"
-#include "mimir/formalism/problem/declarations.hpp"
 #include "mimir/search/config.hpp"
 #include "translations.hpp"
 

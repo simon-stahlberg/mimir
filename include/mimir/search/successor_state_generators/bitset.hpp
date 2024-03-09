@@ -2,9 +2,8 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 
 #include "interface.hpp"
-#include "mimir/formalism/common/types.hpp"
-#include "mimir/formalism/problem/declarations.hpp"
-#include "mimir/formalism/problem/problem.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/config.hpp"
 
 #include <cstddef>

@@ -5,8 +5,7 @@
 #include "../interface.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
-#include "mimir/formalism/common/types.hpp"
-#include "mimir/formalism/problem/declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/config.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
 
