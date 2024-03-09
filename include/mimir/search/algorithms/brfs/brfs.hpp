@@ -28,10 +28,10 @@ struct BrFSTag : public AlgorithmTag
 {
 };
 
+
 /**
  * Specialized implementation class.
  */
-
 template<IsPlanningModeTag P, IsStateTag S>
 class Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>> : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>>
 {
@@ -121,10 +121,12 @@ private:
         return SearchStatus::FAILED;
     }
 
-    /// @brief Compute the plan consisting of ground actions by collecting
-    ///        the creating actions and reversing them.
-    /// @param view is the search node from which backtracking begins.
-    /// @return
+    /// @brief Compute the plan consisting of ground actions by collecting the creating actions
+    ///        and reversing them.
+    /// @param view The search node from which backtracking begins for which the goal was
+    ///             satisfied.
+    /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
+    ///                      the to the state underlying the search node.
     void set_plan(const CostSearchNodeConstViewProxy& view, ConstActionViewList& out_plan) const
     {
         out_plan.clear();
@@ -140,6 +142,7 @@ private:
         std::reverse(out_plan.begin(), out_plan.end());
     }
 
+    /// @brief Creates a CostSearchNodeBuilderProxy whose attributes are default initialized.
     static auto create_default_search_node_builder()
     {
         auto builder = CostSearchNodeBuilderProxy(CostSearchNodeBuilder());

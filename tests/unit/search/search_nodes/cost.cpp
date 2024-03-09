@@ -20,7 +20,7 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest)
     search_node_builder.set_creating_action_id(99);
     search_node_builder.finish();
     EXPECT_NE(search_node_builder.get_data(), nullptr);
-    EXPECT_EQ(search_node_builder.get_size(), 16);
+    EXPECT_EQ(search_node_builder.get_size(), 20);
 
     // View the data generated in the builder.
     auto search_node_view = CostSearchNodeViewProxy(SearchNodeView(search_node_builder.get_data()));
