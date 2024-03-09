@@ -8,7 +8,7 @@
 namespace mimir
 {
 /**
- * Types
+ * Flatmemory types
  */
 using BitsetStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
 using BitsetStateBuilder = flatmemory::Builder<BitsetStateLayout>;
@@ -68,6 +68,7 @@ private:
     [[nodiscard]] BitsetBuilder& get_atoms_bitset_impl() { return m_builder.get<1>(); }
 };
 
+
 /**
  * Implementation class
  *
@@ -125,7 +126,7 @@ public:
 
 
 /**
- * Types
+ * Mimir types
 */
 template<IsPlanningModeTag P>
 using BitsetStateBuilderProxy = Builder<StateDispatcher<BitsetStateTag, P>>;

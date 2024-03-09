@@ -8,7 +8,7 @@
 namespace mimir
 {
 /**
- * Types
+ * Flatmemory types
  */
 using BitsetActionLayout = flatmemory::Tuple<int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
@@ -110,7 +110,7 @@ public:
 
 
 /**
- * Types
+ * Mimir types
 */
 template<IsPlanningModeTag P>
 using BitsetActionBuilderProxy = Builder<ActionDispatcher<P, BitsetStateTag>>;

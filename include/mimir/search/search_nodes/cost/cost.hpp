@@ -22,7 +22,7 @@ enum SearchNodeStatus
 };
 
 /**
- * Flatmemory builder and view
+ * Flatmemory types
  */
 using CostSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t, int32_t>;
 
