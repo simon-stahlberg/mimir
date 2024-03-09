@@ -1,12 +1,12 @@
 #ifndef MIMIR_COMMON_PRINTERS_HPP_
 #define MIMIR_COMMON_PRINTERS_HPP_
 
-#include "../formalism/declarations.hpp"
-#include "../search/actions/interface.hpp"
-#include "../search/actions/bitset.hpp"
-#include "../search/states/bitset/bitset.hpp"
+#include "mimir/common/translations.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/actions/bitset.hpp"
+#include "mimir/search/actions/interface.hpp"
 #include "mimir/search/config.hpp"
-#include "translations.hpp"
+#include "mimir/search/states/bitset/bitset.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -92,7 +92,6 @@ std::ostream& operator<<(std::ostream& os, const ConstBitsetActionViewProxy<P>& 
     os << ")";
     return os;
 }
-
 
 }
 

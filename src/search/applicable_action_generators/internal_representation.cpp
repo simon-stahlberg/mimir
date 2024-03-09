@@ -1,16 +1,16 @@
 #include <algorithm>
 #include <mimir/common/translations.hpp>
-#include <mimir/formalism/factories.hpp>
 #include <mimir/formalism/action.hpp>
 #include <mimir/formalism/atom.hpp>
 #include <mimir/formalism/conditions.hpp>
 #include <mimir/formalism/domain.hpp>
 #include <mimir/formalism/effects.hpp>
+#include <mimir/formalism/factories.hpp>
 #include <mimir/formalism/literal.hpp>
 #include <mimir/formalism/parameter.hpp>
 #include <mimir/formalism/predicate.hpp>
-#include <mimir/formalism/term.hpp>
 #include <mimir/formalism/problem.hpp>
+#include <mimir/formalism/term.hpp>
 #include <mimir/search/applicable_action_generators/internal_representation.hpp>
 
 namespace mimir

@@ -1,10 +1,10 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_BITSET_HPP_
 
-#include "interface.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/config.hpp"
+#include "mimir/search/successor_state_generators/interface.hpp"
 
 #include <cstddef>
 #include <flatmemory/flatmemory.hpp>

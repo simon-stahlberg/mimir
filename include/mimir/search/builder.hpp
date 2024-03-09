@@ -1,6 +1,8 @@
 #ifndef MIMIR_SEARCH_BUILDER_HPP_
 #define MIMIR_SEARCH_BUILDER_HPP_
 
+#include <flatmemory/flatmemory.hpp>
+
 namespace mimir
 {
 /**

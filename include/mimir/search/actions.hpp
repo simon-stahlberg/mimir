@@ -4,6 +4,6 @@
 /**
  * Include all specializations here
  */
-#include "actions/bitset.hpp"
+#include "mimir/search/actions/bitset.hpp"
 
 #endif  // MIMIR_ACTIONS_HPP_

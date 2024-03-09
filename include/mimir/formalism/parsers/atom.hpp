@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_ATOM_HPP_
 #define MIMIR_FORMALISM_PARSER_ATOM_HPP_
 
-#include "../atom.hpp"
-#include "../declarations.hpp"
+#include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {

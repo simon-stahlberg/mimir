@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_CONDITIONS_HPP_
 #define MIMIR_FORMALISM_CONDITIONS_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/domain/pddl/conditions.hpp>
 #include <string>

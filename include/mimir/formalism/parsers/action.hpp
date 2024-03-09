@@ -18,9 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_ACTION_HPP_
 #define MIMIR_FORMALISM_PARSER_ACTION_HPP_
 
-#include "../action.hpp"
-#include "../declarations.hpp"
-
+#include "mimir/formalism/action.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {

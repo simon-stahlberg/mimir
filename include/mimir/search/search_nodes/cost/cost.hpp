@@ -1,8 +1,8 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 #define MIMIR_SEARCH_SEARCH_NODES_COST_HPP_
 
-#include "../../actions.hpp"
-#include "../../states.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/states.hpp"
 
 #include <cassert>
 #include <flatmemory/flatmemory.hpp>

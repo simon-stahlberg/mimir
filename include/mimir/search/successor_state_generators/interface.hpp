@@ -1,12 +1,12 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
-#include "../../common/mixins.hpp"
-#include "../../formalism/declarations.hpp"
-#include "../actions.hpp"
-#include "../config.hpp"
-#include "../states.hpp"
-#include "../type_traits.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/config.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/type_traits.hpp"
+
 #include <cstddef>
 
 namespace mimir

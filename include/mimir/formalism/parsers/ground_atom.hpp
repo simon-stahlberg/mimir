@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_GROUND_ATOM_HPP_
 #define MIMIR_FORMALISM_PARSER_GROUND_ATOM_HPP_
 
-#include "../declarations.hpp"
-#include "../ground_atom.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 
 #include <variant>
 

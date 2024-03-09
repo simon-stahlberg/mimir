@@ -1,8 +1,8 @@
 #ifndef MIMIR_COMMON_TRANSLATIONS_HPP_
 #define MIMIR_COMMON_TRANSLATIONS_HPP_
 
-#include "../formalism/declarations.hpp"
-#include "../search/states/bitset/bitset.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/states/bitset/bitset.hpp"
 
 namespace mimir
 {

@@ -1,10 +1,10 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
-#include "../../formalism/declarations.hpp"
-#include "../actions.hpp"
-#include "../states.hpp"
-#include "../type_traits.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/type_traits.hpp"
 
 namespace mimir
 {

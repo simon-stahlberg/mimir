@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_VARIABLE_HPP_
 #define MIMIR_FORMALISM_PARSER_VARIABLE_HPP_
 
-#include "../declarations.hpp"
-#include "../variable.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/variable.hpp"
 
 namespace mimir
 {

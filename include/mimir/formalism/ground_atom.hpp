@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_ATOM_HPP_
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/problem/pddl/ground_atom.hpp>
 #include <string>

@@ -1,9 +1,9 @@
 #ifndef MIMIR_SEARCH_STATES_BITSET_BITSET_HPP_
 #define MIMIR_SEARCH_STATES_BITSET_BITSET_HPP_
 
-#include "../../../formalism/ground_atom.hpp"
-#include "../../../formalism/ground_literal.hpp"
-#include "interface.hpp"
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_literal.hpp"
+#include "mimir/search/states/bitset/interface.hpp"
 
 namespace mimir
 {
@@ -34,7 +34,6 @@ struct ConstBitsetStateViewEqual
 };
 
 using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout, ConstBitsetStateViewHash, ConstBitsetStateViewEqual>;
-
 
 /**
  * Implementation class
@@ -67,7 +66,6 @@ private:
 
     [[nodiscard]] BitsetBuilder& get_atoms_bitset_impl() { return m_builder.get<1>(); }
 };
-
 
 /**
  * Implementation class
@@ -124,10 +122,9 @@ public:
     }
 };
 
-
 /**
  * Mimir types
-*/
+ */
 template<IsPlanningModeTag P>
 using BitsetStateBuilderProxy = Builder<StateDispatcher<BitsetStateTag, P>>;
 

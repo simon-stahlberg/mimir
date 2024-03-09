@@ -18,10 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_NUMERIC_FLUENT_HPP_
 #define MIMIR_FORMALISM_PARSER_NUMERIC_FLUENT_HPP_
 
-#include "../declarations.hpp"
-#include "../numeric_fluent.hpp"
-
-#include <variant>
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/numeric_fluent.hpp"
 
 namespace mimir
 {

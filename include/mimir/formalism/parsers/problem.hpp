@@ -18,10 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PARSER_PROBLEM_HPP_
 
-#include "../declarations.hpp"
-#include "../problem.hpp"
-
-#include <variant>
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem.hpp"
 
 namespace mimir
 {

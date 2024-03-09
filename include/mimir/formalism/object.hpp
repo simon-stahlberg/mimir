@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_OBJECT_HPP_
 #define MIMIR_FORMALISM_OBJECT_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/domain/pddl/object.hpp>
 #include <string>

@@ -1,10 +1,10 @@
 #ifndef MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 #define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 
-#include "../../../common/printers.hpp"
-#include "../../../formalism/factories.hpp"
-#include "../../../formalism/declarations.hpp"
-#include "../interface.hpp"
+#include "mimir/common/printers.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/factories.hpp"
+#include "mimir/search/planners/interface.hpp"
 
 #include <tuple>
 

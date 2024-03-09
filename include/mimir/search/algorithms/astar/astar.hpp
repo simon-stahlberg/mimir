@@ -1,8 +1,8 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_ASTAR_HPP_
 
-#include "../../heuristics.hpp"
-#include "../interface.hpp"
+#include "mimir/search/algorithms/interface.hpp"
+#include "mimir/search/heuristics.hpp"
 
 #include <vector>
 

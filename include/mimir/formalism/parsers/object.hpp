@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_OBJECT_HPP_
 #define MIMIR_FORMALISM_PARSER_OBJECT_HPP_
 
-#include "../declarations.hpp"
-#include "../object.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/object.hpp"
 
 namespace mimir
 {

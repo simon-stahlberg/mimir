@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_PREDICATE_HPP_
 #define MIMIR_FORMALISM_PARSER_PREDICATE_HPP_
 
-#include "../declarations.hpp"
-#include "../predicate.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 namespace mimir
 {

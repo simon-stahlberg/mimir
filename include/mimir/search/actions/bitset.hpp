@@ -1,9 +1,9 @@
 #ifndef MIMIR_SEARCH_ACTIONS_BITSET_HPP_
 #define MIMIR_SEARCH_ACTIONS_BITSET_HPP_
 
-#include "../../common/hash.hpp"
-#include "../types.hpp"
-#include "interface.hpp"
+#include "mimir/common/hash.hpp"
+#include "mimir/search/actions/interface.hpp"
+#include "mimir/search/types.hpp"
 
 namespace mimir
 {
@@ -14,7 +14,6 @@ using BitsetActionLayout = flatmemory::Tuple<int32_t, Action, ObjectListLayout, 
 using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
 using ConstBitsetActionView = flatmemory::ConstView<BitsetActionLayout>;
 using BitsetActionVector = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
-
 
 /**
  * Implementation class
@@ -108,10 +107,9 @@ public:
     }
 };
 
-
 /**
  * Mimir types
-*/
+ */
 template<IsPlanningModeTag P>
 using BitsetActionBuilderProxy = Builder<ActionDispatcher<P, BitsetStateTag>>;
 

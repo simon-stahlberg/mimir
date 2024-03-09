@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_ACTION_HPP_
 #define MIMIR_FORMALISM_ACTION_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <functional>
 #include <loki/domain/pddl/action.hpp>

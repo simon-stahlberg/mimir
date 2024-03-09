@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_PARSER_FUNCTION_EXPRESSIONS_HPP_
 
-#include "../declarations.hpp"
-#include "../function_expressions.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/function_expressions.hpp"
 
 namespace mimir
 {

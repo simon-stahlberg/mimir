@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_TERM_HPP_
 #define MIMIR_FORMALISM_PARSER_TERM_HPP_
 
-#include "../declarations.hpp"
-#include "../term.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/term.hpp"
 
 #include <variant>
 

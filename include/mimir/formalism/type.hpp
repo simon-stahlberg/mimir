@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TYPE_HPP_
 #define MIMIR_FORMALISM_TYPE_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/domain/pddl/type.hpp>
 #include <string>

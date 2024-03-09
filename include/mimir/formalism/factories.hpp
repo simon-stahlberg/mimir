@@ -18,27 +18,27 @@
 #ifndef MIMIR_COMMON_FACTORIES_HPP_
 #define MIMIR_COMMON_FACTORIES_HPP_
 
-#include "action.hpp"
-#include "atom.hpp"
-#include "conditions.hpp"
-#include "domain.hpp"
-#include "effects.hpp"
-#include "function.hpp"
-#include "function_expressions.hpp"
-#include "function_skeleton.hpp"
-#include "literal.hpp"
-#include "object.hpp"
-#include "parameter.hpp"
-#include "predicate.hpp"
-#include "requirements.hpp"
-#include "term.hpp"
-#include "type.hpp"
-#include "variable.hpp"
-#include "ground_atom.hpp"
-#include "ground_literal.hpp"
-#include "metric.hpp"
-#include "numeric_fluent.hpp"
-#include "problem.hpp"
+#include "mimir/formalism/action.hpp"
+#include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/conditions.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/function.hpp"
+#include "mimir/formalism/function_expressions.hpp"
+#include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/metric.hpp"
+#include "mimir/formalism/numeric_fluent.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/parameter.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/requirements.hpp"
+#include "mimir/formalism/term.hpp"
+#include "mimir/formalism/type.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <loki/common/pddl/persistent_factory.hpp>
 
@@ -139,10 +139,7 @@ struct PDDLFactories
     }
 
     /// @brief Converts an alraedy grounded Literal to type GroundLiteral.
-    GroundLiteral to_ground_literal(Literal literal)
-    {
-        return get_or_create_ground_literal(literal->is_negated(), to_ground_atom(literal->get_atom()));
-    }
+    GroundLiteral to_ground_literal(Literal literal) { return get_or_create_ground_literal(literal->is_negated(), to_ground_atom(literal->get_atom())); }
 
     /// @brief Converts a list of already grounded Literal elements to a list of type GroundLiteral.
     void to_ground_literals(const LiteralList& literals, GroundLiteralList& out_ground_literals)

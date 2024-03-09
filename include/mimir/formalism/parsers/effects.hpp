@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_EFFECTS_HPP_
 #define MIMIR_FORMALISM_PARSER_EFFECTS_HPP_
 
-#include "../conditions.hpp"
-#include "../declarations.hpp"
+#include "mimir/formalism/conditions.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <variant>
 

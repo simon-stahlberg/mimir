@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_TYPES_HPP_
 #define MIMIR_SEARCH_TYPES_HPP_
 
-#include "../formalism/declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 

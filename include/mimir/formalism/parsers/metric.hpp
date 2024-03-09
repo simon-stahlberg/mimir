@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_METRIC_HPP_
 #define MIMIR_FORMALISM_PARSER_METRIC_HPP_
 
-#include "../declarations.hpp"
-#include "../metric.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/metric.hpp"
 
 #include <variant>
 

@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_GROUND_LITERAL_HPP_
 #define MIMIR_FORMALISM_PARSER_GROUND_LITERAL_HPP_
 
-#include "../declarations.hpp"
-#include "../ground_literal.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_literal.hpp"
 
 #include <variant>
 

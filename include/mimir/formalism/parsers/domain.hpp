@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_DOMAIN_HPP_
 #define MIMIR_FORMALISM_PARSER_DOMAIN_HPP_
 
-#include "../declarations.hpp"
-#include "../domain.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/domain.hpp"
 
 namespace mimir
 {

@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
 #define MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/problem/pddl/numeric_fluent.hpp>
 #include <string>

@@ -1,8 +1,7 @@
 #ifndef MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
 #define MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
 
-#include "../../common/mixins.hpp"
-#include "../type_traits.hpp"
+#include "mimir/search/type_traits.hpp"
 
 namespace mimir
 {

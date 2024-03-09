@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_ATOM_HPP_
 #define MIMIR_FORMALISM_ATOM_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/domain/pddl/atom.hpp>
 #include <string>

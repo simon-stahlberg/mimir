@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERNAL_REPRESENTATION_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERNAL_REPRESENTATION_HPP_
 
-#include "../../formalism/declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <map>
 

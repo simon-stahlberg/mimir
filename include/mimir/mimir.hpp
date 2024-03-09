@@ -4,14 +4,14 @@
 /**
  * Include all specializations here
  */
-#include "search/actions.hpp"
-#include "search/algorithms.hpp"
-#include "search/applicable_action_generators.hpp"
-#include "search/heuristics.hpp"
-#include "search/openlists.hpp"
-#include "search/planners.hpp"
-#include "search/search_nodes.hpp"
-#include "search/states.hpp"
-#include "search/successor_state_generators.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/algorithms.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/heuristics.hpp"
+#include "mimir/search/openlists.hpp"
+#include "mimir/search/planners.hpp"
+#include "mimir/search/search_nodes.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/successor_state_generators.hpp"
 
 #endif  // MIMIR_MIMIR_HPP_

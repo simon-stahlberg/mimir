@@ -4,6 +4,5 @@
 /**
  * Include all specializations here
  */
-#include "planners/single/single.hpp"
 
 #endif

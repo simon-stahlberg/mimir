@@ -1,8 +1,6 @@
 #ifndef MIMIR_SEARCH_CONFIG_HPP_
 #define MIMIR_SEARCH_CONFIG_HPP_
 
-#include "type_traits.hpp"
-
 #include <concepts>
 
 namespace mimir

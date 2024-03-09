@@ -1,13 +1,13 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
 
-#include "../../statistics.hpp"
-#include "../interface.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/config.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
+#include "mimir/search/statistics.hpp"
 
 #include <deque>
 #include <flatmemory/flatmemory.hpp>
@@ -26,7 +26,6 @@ template<IsPlanningModeTag P, IsStateTag S = BitsetStateTag>
 struct BrFSTag : public AlgorithmTag
 {
 };
-
 
 /**
  * Specialized implementation class.
@@ -58,13 +57,13 @@ private:
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        auto goal_literals = LiteralList{};
+        auto goal_literals = LiteralList {};
         to_literals(m_problem->get_goal_condition(), goal_literals);
 
-        auto goal_ground_literals = GroundLiteralList{};
+        auto goal_ground_literals = GroundLiteralList {};
         m_pddl_factories.to_ground_literals(goal_literals, goal_ground_literals);
 
-        auto applicable_actions = ConstActionViewList{};
+        auto applicable_actions = ConstActionViewList {};
 
         // std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
 
@@ -100,7 +99,6 @@ private:
 
                 if (state_count != m_state_repository.state_count())
                 {
-
                     auto successor_search_node = CostSearchNodeViewProxy(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
                     successor_search_node.get_g_value() = search_node.get_g_value() + 1;  // we use unit costs for now

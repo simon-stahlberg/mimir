@@ -28,7 +28,6 @@ Cpp11BracedListStyle: 'false'
 FixNamespaceComments: 'false'
 IncludeBlocks: Regroup
 IndentAccessModifiers: 'false'
-IndentCaseLabels: 'false'
 IndentCaseLabels: 'true'
 IndentPPDirectives: None
 IndentWidth: '4'

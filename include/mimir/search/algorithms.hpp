@@ -4,7 +4,7 @@
 /**
  * Include all specializations here
  */
-#include "algorithms/astar/astar.hpp"
-#include "algorithms/brfs/brfs.hpp"
+#include "mimir/search/algorithms/astar/astar.hpp"
+#include "mimir/search/algorithms/brfs/brfs.hpp"
 
 #endif  // MIMIR_SEARCH_ALGORITHM_HPP_

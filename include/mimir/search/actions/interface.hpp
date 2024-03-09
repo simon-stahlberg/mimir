@@ -1,11 +1,11 @@
 #ifndef MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
 
-#include "../builder.hpp"
-#include "../config.hpp"
-#include "../states.hpp"
-#include "../type_traits.hpp"
-#include "../view_const.hpp"
+#include "mimir/search/builder.hpp"
+#include "mimir/search/config.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/type_traits.hpp"
+#include "mimir/search/view_const.hpp"
 
 namespace mimir
 {

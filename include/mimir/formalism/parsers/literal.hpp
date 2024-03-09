@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_LITERAL_HPP_
 #define MIMIR_FORMALISM_PARSER_LITERAL_HPP_
 
-#include "../declarations.hpp"
-#include "../literal.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/literal.hpp"
 
 namespace mimir
 {

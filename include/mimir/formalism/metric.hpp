@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_METRIC_HPP_
 #define MIMIR_FORMALISM_METRIC_HPP_
 
-#include "declarations.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/problem/pddl/metric.hpp>
 #include <string>

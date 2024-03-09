@@ -1,7 +1,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_BLIND_BLIND_HPP_
 #define MIMIR_SEARCH_HEURISTICS_BLIND_BLIND_HPP_
 
-#include "../interface.hpp"
+#include "mimir/search/heuristics/interface.hpp"
 
 namespace mimir
 {

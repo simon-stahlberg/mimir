@@ -1,13 +1,12 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_LIFTED_HPP_
 
-#include "../../algorithms/kpkc.hpp"
-#include "../../formalism/declarations.hpp"
-#include "../../formalism/factories.hpp"
-#include "interface.hpp"
-#include "internal_representation.hpp"
+#include "mimir/algorithms/kpkc.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions/bitset.hpp"
-#include "mimir/search/actions/interface.hpp"
+#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators/internal_representation.hpp"
 #include "mimir/search/config.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
 
@@ -70,7 +69,8 @@ private:
 
     ConstActionView ground_action(const FlatAction& flat_action, ObjectList&& binding)
     {
-        const auto fill_bitsets = [this, &binding](const std::vector<FlatLiteral>& literals, BitsetBuilder& ref_positive_bitset, BitsetBuilder& ref_negative_bitset)
+        const auto fill_bitsets =
+            [this, &binding](const std::vector<FlatLiteral>& literals, BitsetBuilder& ref_positive_bitset, BitsetBuilder& ref_negative_bitset)
         {
             for (const auto& literal : literals)
             {
@@ -108,7 +108,8 @@ private:
         m_action_builder.get_action() = flat_action.source;
         auto& objects = m_action_builder.get_objects();
         objects.clear();
-        for (const auto& obj : binding) {
+        for (const auto& obj : binding)
+        {
             objects.push_back(obj);
         }
 
@@ -401,7 +402,8 @@ public:
     }
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] ConstActionView get_action(size_t action_id) const {
+    [[nodiscard]] ConstActionView get_action(size_t action_id) const
+    {
         if (action_id < m_actions.size())
         {
             return ConstActionView(m_actions[action_id]);

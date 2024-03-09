@@ -1,14 +1,14 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 
-#include "../../formalism/declarations.hpp"
-#include "../actions.hpp"
-#include "../applicable_action_generators.hpp"
-#include "../config.hpp"
-#include "../search_nodes.hpp"
-#include "../states.hpp"
-#include "../successor_state_generators.hpp"
-#include "../type_traits.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/config.hpp"
+#include "mimir/search/search_nodes.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/type_traits.hpp"
 
 namespace mimir
 {

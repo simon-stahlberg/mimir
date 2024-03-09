@@ -1,8 +1,8 @@
 #ifndef MIMIR_SEARCH_STATES_BITSET_INTERFACE_HPP_
 #define MIMIR_SEARCH_STATES_BITSET_INTERFACE_HPP_
 
-#include "../../types.hpp"
-#include "../interface.hpp"
+#include "mimir/search/states/interface.hpp"
+#include "mimir/search/types.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 
