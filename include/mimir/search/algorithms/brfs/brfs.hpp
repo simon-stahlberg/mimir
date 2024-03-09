@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
 
+#include "../../statistics.hpp"
 #include "../interface.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
@@ -44,11 +45,9 @@ private:
     SSG<SSGDispatcher<P, S>> m_state_repository;
     ConstStateView m_initial_state;
     AAG<AAGDispatcher<P, S>> m_successor_generator;
-
-    // Implement configuration independent functionality.
     std::deque<ConstStateView> m_queue;
-
     CostSearchNodeVector m_search_nodes;
+    Statistics m_statistics;
 
     /* Implement IAlgorithm interface. */
     template<typename>
@@ -56,22 +55,17 @@ private:
 
     SearchStatus find_solution_impl(ConstActionViewList& out_plan)
     {
-        // TODO: Implement tracking of visited states and the predecessor state.
-
         auto initial_search_node = CostSearchNodeViewProxy(this->m_search_nodes[this->m_initial_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        LiteralList goal_literals;
+        auto goal_literals = LiteralList{};
         to_literals(m_problem->get_goal_condition(), goal_literals);
 
-        GroundLiteralList goal_ground_literals;
+        auto goal_ground_literals = GroundLiteralList{};
         m_pddl_factories.to_ground_literals(goal_literals, goal_ground_literals);
 
-        auto applicable_actions = ConstActionViewList();
-
-        int num_expanded = 0;
-        int num_generated = 0;
+        auto applicable_actions = ConstActionViewList{};
 
         // std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
 
@@ -83,14 +77,14 @@ private:
 
             if (state.literals_hold(goal_ground_literals))
             {
-                std::cout << "Expanded: " << num_expanded << "; Generated: " << num_generated << std::endl;
+                std::cout << "Expanded: " << m_statistics.get_num_expanded() << "; Generated: " << m_statistics.get_num_generated() << std::endl;
 
-                compute_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
+                set_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
 
                 return SearchStatus::SOLVED;
             }
 
-            ++num_expanded;
+            m_statistics.increment_num_expanded();
 
             auto search_node = CostSearchNodeViewProxy(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
@@ -100,12 +94,14 @@ private:
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
             {
-                ++num_generated;
+                m_statistics.increment_num_generated();
+
                 const auto state_count = m_state_repository.state_count();
                 const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
 
                 if (state_count != m_state_repository.state_count())
                 {
+
                     auto successor_search_node = CostSearchNodeViewProxy(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
                     successor_search_node.get_g_value() = search_node.get_g_value() + 1;  // we use unit costs for now
@@ -120,7 +116,7 @@ private:
             }
         }
 
-        std::cout << "Expanded: " << num_expanded << "; Generated: " << num_generated << std::endl;
+        std::cout << "Expanded: " << m_statistics.get_num_expanded() << "; Generated: " << m_statistics.get_num_generated() << std::endl;
 
         return SearchStatus::FAILED;
     }
@@ -129,7 +125,7 @@ private:
     ///        the creating actions and reversing them.
     /// @param view is the search node from which backtracking begins.
     /// @return
-    void compute_plan(const CostSearchNodeConstViewProxy& view, ConstActionViewList& out_plan) const
+    void set_plan(const CostSearchNodeConstViewProxy& view, ConstActionViewList& out_plan) const
     {
         out_plan.clear();
         auto cur_view = view;

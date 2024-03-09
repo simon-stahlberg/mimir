@@ -71,6 +71,11 @@ int main(int argc, char** argv)
             break;
         case SOLVED:
             std::cout << "Solved!" << std::endl;
+            std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;
+            for (size_t i = 0; i < plan.get_actions().size(); ++i)
+            {
+                std::cout << i + 1 << ". " << plan.get_actions()[i] << std::endl;
+            }
             break;
     }
 

@@ -44,15 +44,19 @@ private:
 
     std::tuple<SearchStatus, Plan> find_solution_impl()
     {
-        auto plan = Plan();
         auto action_view_list = typename TypeTraits<std::remove_reference_t<decltype(m_algorithm)>>::ConstActionViewList();
         const auto status = m_algorithm.find_solution(action_view_list);
 
-        std::cout << "Plan found with cost: " << action_view_list.size() << std::endl;
+        std::vector<std::string> actions;
+        const auto cost = action_view_list.size();
         for (size_t i = 0; i < action_view_list.size(); ++i)
         {
-            std::cout << i << ". " << action_view_list[i] << std::endl;
+            std::stringstream ss;
+            ss << action_view_list[i];
+            actions.push_back(ss.str());
+            // TODO accumulate the action costs instead of returning the plan length.
         }
+        auto plan = Plan(std::move(actions), cost);
 
         return std::make_tuple(status, plan);
     }
