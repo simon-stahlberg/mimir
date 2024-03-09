@@ -35,7 +35,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] Bitset& get_atoms_bitset() { return self().get_atoms_bitset_impl(); }
+    [[nodiscard]] BitsetBuilder& get_atoms_bitset() { return self().get_atoms_bitset_impl(); }
 };
 
 template<typename Derived>

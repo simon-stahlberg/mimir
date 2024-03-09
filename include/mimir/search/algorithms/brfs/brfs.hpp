@@ -58,7 +58,7 @@ private:
     {
         // TODO: Implement tracking of visited states and the predecessor state.
 
-        auto initial_search_node = CostSearchNodeViewWrapper(this->m_search_nodes[this->m_initial_state.get_id()]);
+        auto initial_search_node = CostSearchNodeViewProxy(this->m_search_nodes[this->m_initial_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
@@ -85,14 +85,14 @@ private:
             {
                 std::cout << "Expanded: " << num_expanded << "; Generated: " << num_generated << std::endl;
 
-                compute_plan(CostSearchNodeConstViewWrapper(this->m_search_nodes[state.get_id()]), out_plan);
+                compute_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
 
                 return SearchStatus::SOLVED;
             }
 
             ++num_expanded;
 
-            auto search_node = CostSearchNodeViewWrapper(this->m_search_nodes[state.get_id()]);
+            auto search_node = CostSearchNodeViewProxy(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
 
             // std::cout << "---" << std::endl;
@@ -106,7 +106,7 @@ private:
 
                 if (state_count != m_state_repository.state_count())
                 {
-                    auto successor_search_node = CostSearchNodeViewWrapper(this->m_search_nodes[successor_state.get_id()]);
+                    auto successor_search_node = CostSearchNodeViewProxy(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
                     successor_search_node.get_g_value() = search_node.get_g_value() + 1;  // we use unit costs for now
                     successor_search_node.get_parent_state_id() = state.get_id();
@@ -129,7 +129,7 @@ private:
     ///        the creating actions and reversing them.
     /// @param view is the search node from which backtracking begins.
     /// @return
-    void compute_plan(const CostSearchNodeConstViewWrapper& view, ConstActionViewList& out_plan) const
+    void compute_plan(const CostSearchNodeConstViewProxy& view, ConstActionViewList& out_plan) const
     {
         out_plan.clear();
         auto cur_view = view;
@@ -138,7 +138,7 @@ private:
         {
             out_plan.push_back(m_successor_generator.get_action(cur_view.get_creating_action_id()));
 
-            cur_view = CostSearchNodeConstViewWrapper(this->m_search_nodes[cur_view.get_parent_state_id()]);
+            cur_view = CostSearchNodeConstViewProxy(this->m_search_nodes[cur_view.get_parent_state_id()]);
         }
 
         std::reverse(out_plan.begin(), out_plan.end());
@@ -146,7 +146,7 @@ private:
 
     static auto create_default_search_node_builder()
     {
-        auto builder = CostSearchNodeBuilderWrapper(CostSearchNodeBuilder());
+        auto builder = CostSearchNodeBuilderProxy(CostSearchNodeBuilder());
         builder.set_status(SearchNodeStatus::CLOSED);
         builder.set_g_value(-1);
         builder.set_parent_state_id(-1);

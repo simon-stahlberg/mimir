@@ -32,15 +32,15 @@ using CostSearchNodeConstView = flatmemory::ConstView<CostSearchNodeLayout>;
 using CostSearchNodeVector = flatmemory::FixedSizedTypeVector<CostSearchNodeLayout>;
 
 /**
- * Wrappers for more meaningful access
+ * Proxy for more meaningful access
  */
-class CostSearchNodeBuilderWrapper
+class CostSearchNodeBuilderProxy
 {
 private:
     CostSearchNodeBuilder m_builder;
 
 public:
-    CostSearchNodeBuilderWrapper(CostSearchNodeBuilder builder) : m_builder(std::move(builder)) {}
+    CostSearchNodeBuilderProxy(CostSearchNodeBuilder builder) : m_builder(std::move(builder)) {}
 
     void finish() { m_builder.finish(); }
     uint8_t* get_data() { return m_builder.buffer().data(); }
@@ -53,13 +53,13 @@ public:
     void set_creating_action_id(int32_t creating_action_id) { m_builder.get<3>() = creating_action_id; }
 };
 
-class CostSearchNodeViewWrapper
+class CostSearchNodeViewProxy
 {
 private:
     CostSearchNodeView m_view;
 
 public:
-    CostSearchNodeViewWrapper(CostSearchNodeView view) : m_view(view) {}
+    CostSearchNodeViewProxy(CostSearchNodeView view) : m_view(view) {}
 
     SearchNodeStatus& get_status() { return m_view.get<0>(); }
     int32_t& get_g_value() { return m_view.get<1>(); }
@@ -67,13 +67,13 @@ public:
     int32_t& get_creating_action_id() { return m_view.get<3>(); }
 };
 
-class CostSearchNodeConstViewWrapper
+class CostSearchNodeConstViewProxy
 {
 private:
     CostSearchNodeConstView m_view;
 
 public:
-    CostSearchNodeConstViewWrapper(CostSearchNodeConstView view) : m_view(view) {}
+    CostSearchNodeConstViewProxy(CostSearchNodeConstView view) : m_view(view) {}
 
     SearchNodeStatus get_status() const { return m_view.get<0>(); }
     int32_t get_g_value() const { return m_view.get<1>(); }

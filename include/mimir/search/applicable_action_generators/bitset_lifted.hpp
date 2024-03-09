@@ -70,7 +70,7 @@ private:
 
     ConstActionView ground_action(const FlatAction& flat_action, ObjectList&& binding)
     {
-        const auto fill_bitsets = [this, &binding](const std::vector<FlatLiteral>& literals, Bitset& ref_positive_bitset, Bitset& ref_negative_bitset)
+        const auto fill_bitsets = [this, &binding](const std::vector<FlatLiteral>& literals, BitsetBuilder& ref_positive_bitset, BitsetBuilder& ref_negative_bitset)
         {
             for (const auto& literal : literals)
             {
@@ -105,6 +105,12 @@ private:
         fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 
         m_action_builder.get_id() = m_actions.size();
+        m_action_builder.get_action() = flat_action.source;
+        auto& objects = m_action_builder.get_objects();
+        objects.clear();
+        for (const auto& obj : binding) {
+            objects.push_back(obj);
+        }
 
         auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
         flatmemory_builder.finish();

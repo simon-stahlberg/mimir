@@ -4,6 +4,7 @@
 #include "../formalism/common/types.hpp"
 #include "../formalism/domain/declarations.hpp"
 #include "../search/actions/interface.hpp"
+#include "../search/actions/bitset.hpp"
 #include "../search/states/bitset/bitset.hpp"
 #include "mimir/formalism/problem/declarations.hpp"
 #include "mimir/search/config.hpp"
@@ -49,7 +50,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<StateDispa
     return os;
 }
 
-/// @brief Prints a State to the output stream.
+/// @brief Prints an Action to the output stream.
 template<IsPlanningModeTag P>
 std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDispatcher<P, BitsetStateTag>>, const PDDLFactories&>& data)
 {
@@ -81,6 +82,19 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
 
     return os;
 }
+
+template<IsPlanningModeTag P>
+std::ostream& operator<<(std::ostream& os, const ConstBitsetActionViewProxy<P>& action)
+{
+    os << "(" << action.get_action()->get_name();
+    for (const auto& obj : action.get_objects())
+    {
+        os << " " << obj->get_name();
+    }
+    os << ")";
+    return os;
+}
+
 
 }
 

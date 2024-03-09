@@ -10,11 +10,11 @@ namespace mimir
 /**
  * Types
  */
-using BitsetActionLayout = flatmemory::Tuple<int32_t, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
-
+using BitsetActionLayout = flatmemory::Tuple<int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 using BitsetActionBuilder = flatmemory::Builder<BitsetActionLayout>;
-using BitsetActionConstView = flatmemory::ConstView<BitsetActionLayout>;
+using ConstBitsetActionView = flatmemory::ConstView<BitsetActionLayout>;
 using BitsetActionVector = flatmemory::VariableSizedTypeVector<BitsetActionLayout>;
+
 
 /**
  * Implementation class
@@ -41,10 +41,12 @@ private:
 public:
     /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
     [[nodiscard]] int32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] Bitset& get_applicability_positive_precondition_bitset() { return m_builder.get<1>(); }
-    [[nodiscard]] Bitset& get_applicability_negative_precondition_bitset() { return m_builder.get<2>(); }
-    [[nodiscard]] Bitset& get_unconditional_positive_effect_bitset() { return m_builder.get<3>(); }
-    [[nodiscard]] Bitset& get_unconditional_negative_effect_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] Action& get_action() { return m_builder.get<1>(); }
+    [[nodiscard]] ObjectListBuilder& get_objects() { return m_builder.get<2>(); }
+    [[nodiscard]] BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<3>(); }
+    [[nodiscard]] BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<5>(); }
+    [[nodiscard]] BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<6>(); }
 };
 
 /**
@@ -60,7 +62,7 @@ class ConstView<ActionDispatcher<P, BitsetStateTag>> :
 private:
     using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;
 
-    BitsetActionConstView m_view;
+    ConstBitsetActionView m_view;
 
     /* Implement IView interface: */
     template<typename>
@@ -86,18 +88,17 @@ private:
     template<typename>
     friend class IActionView;
 
-    // We probably want to do that differently...
-    std::string str_impl() const { return "Action(...)"; }
-
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit ConstView(BitsetActionConstView view) : m_view(view) {}
+    explicit ConstView(ConstBitsetActionView view) : m_view(view) {}
 
     [[nodiscard]] int32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<1>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<2>(); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<3>(); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<4>(); };
+    [[nodiscard]] Action get_action() const { return m_view.get<1>(); }
+    [[nodiscard]] ConstObjectListView get_objects() const { return m_view.get<2>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<3>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<5>(); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<6>(); };
 
     [[nodiscard]] bool is_applicable(ConstStateView state) const
     {
@@ -106,6 +107,16 @@ public:
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
     }
 };
+
+
+/**
+ * Types
+*/
+template<IsPlanningModeTag P>
+using BitsetActionBuilderProxy = Builder<ActionDispatcher<P, BitsetStateTag>>;
+
+template<IsPlanningModeTag P>
+using ConstBitsetActionViewProxy = ConstView<ActionDispatcher<P, BitsetStateTag>>;
 
 }
 

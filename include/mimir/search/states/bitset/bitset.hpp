@@ -11,22 +11,21 @@ namespace mimir
  * Types
  */
 using BitsetStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
-
 using BitsetStateBuilder = flatmemory::Builder<BitsetStateLayout>;
-using BitsetStateConstView = flatmemory::ConstView<BitsetStateLayout>;
+using ConstBitsetStateView = flatmemory::ConstView<BitsetStateLayout>;
 
-struct BitsetStateConstViewHash
+struct ConstBitsetStateViewHash
 {
-    size_t operator()(const BitsetStateConstView& view) const
+    size_t operator()(const ConstBitsetStateView& view) const
     {
         const auto bitset_view = view.get<1>();
         return bitset_view.hash();
     }
 };
 
-struct BitsetStateConstViewEqual
+struct ConstBitsetStateViewEqual
 {
-    bool operator()(const BitsetStateConstView& view_left, const BitsetStateConstView& view_right) const
+    bool operator()(const ConstBitsetStateView& view_left, const ConstBitsetStateView& view_right) const
     {
         const auto bitset_view_left = view_left.get<1>();
         const auto bitset_view_right = view_left.get<1>();
@@ -34,7 +33,8 @@ struct BitsetStateConstViewEqual
     }
 };
 
-using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout, BitsetStateConstViewHash, BitsetStateConstViewEqual>;
+using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout, ConstBitsetStateViewHash, ConstBitsetStateViewEqual>;
+
 
 /**
  * Implementation class
@@ -65,7 +65,7 @@ private:
     template<typename>
     friend class IBitsetStateBuilder;
 
-    [[nodiscard]] Bitset& get_atoms_bitset_impl() { return m_builder.get<1>(); }
+    [[nodiscard]] BitsetBuilder& get_atoms_bitset_impl() { return m_builder.get<1>(); }
 };
 
 /**
@@ -80,7 +80,7 @@ class ConstView<StateDispatcher<BitsetStateTag, P>> :
     public IBitsetStateView<ConstView<StateDispatcher<BitsetStateTag, P>>>
 {
 private:
-    BitsetStateConstView m_view;
+    ConstBitsetStateView m_view;
 
     /* Implement IView interface */
     template<typename>
@@ -103,7 +103,7 @@ private:
     [[nodiscard]] ConstBitsetView get_atoms_bitset_impl() const { return m_view.get<1>(); }
 
 public:
-    explicit ConstView(BitsetStateConstView view) : m_view(view) {}
+    explicit ConstView(ConstBitsetStateView view) : m_view(view) {}
 
     bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset_impl().get(ground_atom->get_identifier()); }
 
@@ -122,6 +122,17 @@ public:
         return true;
     }
 };
+
+
+/**
+ * Types
+*/
+template<IsPlanningModeTag P>
+using BitsetStateBuilderProxy = Builder<StateDispatcher<BitsetStateTag, P>>;
+
+template<IsPlanningModeTag P>
+using ConstBitsetStateViewProxy = ConstView<StateDispatcher<BitsetStateTag, P>>;
+
 }
 
 #endif

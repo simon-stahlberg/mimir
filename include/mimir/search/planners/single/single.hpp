@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 #define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 
+#include "../../../common/printers.hpp"
 #include "../../../formalism/common/types.hpp"
 #include "../../../formalism/domain/declarations.hpp"
 #include "../../../formalism/problem/declarations.hpp"
@@ -50,7 +51,7 @@ private:
         std::cout << "Plan found with cost: " << action_view_list.size() << std::endl;
         for (size_t i = 0; i < action_view_list.size(); ++i)
         {
-            std::cout << i << ". " << action_view_list[i].get_id() << std::endl;
+            std::cout << i << ". " << action_view_list[i] << std::endl;
         }
 
         return std::make_tuple(status, plan);
