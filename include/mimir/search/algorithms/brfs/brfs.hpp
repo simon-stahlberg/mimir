@@ -23,7 +23,7 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
  */
-template<IsPlanningModeTag P, IsStateTag S = BitsetStateTag>
+template<IsPlanningModeTag P, IsStateTag S = BitsetStateTag, IsEventHandlerTag E = DebugEventHandlerTag>
 struct BrFSTag : public AlgorithmTag
 {
 };
@@ -31,8 +31,8 @@ struct BrFSTag : public AlgorithmTag
 /**
  * Specialized implementation class.
  */
-template<IsPlanningModeTag P, IsStateTag S>
-class Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>> : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>>
+template<IsPlanningModeTag P, IsStateTag S, IsEventHandlerTag E>
+class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, E>>> : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, E>>>>
 {
 private:
     using ConstStateView = ConstView<StateDispatcher<S, P>>;
@@ -47,8 +47,7 @@ private:
     std::deque<ConstStateView> m_queue;
     CostSearchNodeVector m_search_nodes;
     Statistics m_statistics;
-    // TODO: parameterize by event handler tag
-    EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>> m_event_handler;
+    EventHandler<EventHandlerDispatcher<E>> m_event_handler;
 
     /* Implement IAlgorithm interface. */
     template<typename>

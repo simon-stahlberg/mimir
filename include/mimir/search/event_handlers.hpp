@@ -5,5 +5,6 @@
  * Include all specializations here
  */
 #include "mimir/search/event_handlers/debug.hpp"
+#include "mimir/search/event_handlers/minimal.hpp"
 
 #endif
