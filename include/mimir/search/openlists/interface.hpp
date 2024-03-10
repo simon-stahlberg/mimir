@@ -3,6 +3,9 @@
 
 #include "mimir/search/type_traits.hpp"
 
+#include <concepts>
+#include <cstdint>
+
 namespace mimir
 {
 

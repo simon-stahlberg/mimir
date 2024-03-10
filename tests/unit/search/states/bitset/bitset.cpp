@@ -1,5 +1,6 @@
+#include "mimir/search/states.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/search/states.hpp>
 
 namespace mimir::tests
 {

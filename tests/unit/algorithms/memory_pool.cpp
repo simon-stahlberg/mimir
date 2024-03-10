@@ -1,5 +1,6 @@
+#include "mimir/algorithms/memory_pool.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/algorithms/memory_pool.hpp>
 #include <string>
 
 namespace mimir::tests

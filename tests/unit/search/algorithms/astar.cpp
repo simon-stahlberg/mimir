@@ -1,8 +1,9 @@
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/parser.hpp"
+#include "mimir/search/algorithms.hpp"
+#include "mimir/search/heuristics.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/formalism/parser.hpp>
-#include <mimir/formalism/declarations.hpp>
-#include <mimir/search/algorithms.hpp>
-#include <mimir/search/heuristics.hpp>
 
 namespace mimir::tests
 {

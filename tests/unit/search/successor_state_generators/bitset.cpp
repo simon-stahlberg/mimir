@@ -1,7 +1,8 @@
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/parser.hpp"
+#include "mimir/search/successor_state_generators.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/formalism/parser.hpp>
-#include <mimir/formalism/declarations.hpp>
-#include <mimir/search/successor_state_generators.hpp>
 
 namespace mimir::tests
 {

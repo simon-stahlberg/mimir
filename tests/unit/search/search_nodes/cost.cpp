@@ -1,6 +1,7 @@
+#include "mimir/search/search_nodes.hpp"
+
 #include <flatmemory/flatmemory.hpp>
 #include <gtest/gtest.h>
-#include <mimir/search/search_nodes.hpp>
 
 namespace mimir::tests
 {

@@ -1,5 +1,6 @@
+#include "mimir/search/openlists.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/search/openlists.hpp>
 
 namespace mimir::tests
 {

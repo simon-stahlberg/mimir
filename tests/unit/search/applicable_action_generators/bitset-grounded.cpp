@@ -1,6 +1,7 @@
+#include "mimir/formalism/parser.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/formalism/parser.hpp>
-#include <mimir/search/applicable_action_generators.hpp>
 
 namespace mimir::tests
 {

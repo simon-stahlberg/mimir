@@ -1,5 +1,6 @@
+#include "mimir/search/heuristics.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/search/heuristics.hpp>
 
 namespace mimir::tests
 {

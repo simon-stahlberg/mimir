@@ -1,8 +1,9 @@
+#include "mimir/formalism/parser.hpp"
+#include "mimir/search/algorithms/astar/astar.hpp"
+#include "mimir/search/heuristics/blind/blind.hpp"
+#include "mimir/search/planners.hpp"
+
 #include <gtest/gtest.h>
-#include <mimir/formalism/parser.hpp>
-#include <mimir/search/algorithms/astar/astar.hpp>
-#include <mimir/search/heuristics/blind/blind.hpp>
-#include <mimir/search/planners.hpp>
 #include <string>
 
 namespace mimir::tests
