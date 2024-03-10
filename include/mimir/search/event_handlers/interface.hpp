@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
 
+#include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/statistics.hpp"
@@ -27,23 +28,23 @@ private:
 public:
     /// @brief React on generating a successor_state by applying an action.
     template<IsActionDispatcher A, IsStateDispatcher S>
-    void on_generate_state(ConstView<A> action, ConstView<S> successor_state) const
+    void on_generate_state(ConstView<A> action, ConstView<S> successor_state, const PDDLFactories& pddl_factories) const
     {
-        self().on_generate_state_impl(action, successor_state);
+        self().on_generate_state_impl(action, successor_state, pddl_factories);
     }
 
     /// @brief React on expanding a state.
     template<IsStateDispatcher S>
-    void on_expand_state(ConstView<S> state) const
+    void on_expand_state(ConstView<S> state, const PDDLFactories& pddl_factories) const
     {
-        self().on_expand_state_impl(state);
+        self().on_expand_state_impl(state, pddl_factories);
     }
 
     /// @brief React on starting a search.
     template<IsStateDispatcher S>
-    void on_start_search(ConstView<S> initial_state) const
+    void on_start_search(ConstView<S> initial_state, const PDDLFactories& pddl_factories) const
     {
-        self().on_start_search_impl(initial_state);
+        self().on_start_search_impl(initial_state, pddl_factories);
     }
 
     /// @brief React on ending a search.

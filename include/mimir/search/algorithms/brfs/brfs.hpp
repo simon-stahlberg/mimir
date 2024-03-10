@@ -68,8 +68,7 @@ private:
 
         auto applicable_actions = ConstActionViewList {};
 
-        m_event_handler.on_start_search(this->m_initial_state);
-        // std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
+        m_event_handler.on_start_search(this->m_initial_state, m_pddl_factories);
 
         m_queue.emplace_back(this->m_initial_state);
         while (!m_queue.empty())
@@ -79,8 +78,6 @@ private:
 
             if (state.literals_hold(goal_ground_literals))
             {
-                std::cout << "Expanded: " << m_statistics.get_num_expanded() << "; Generated: " << m_statistics.get_num_generated() << std::endl;
-
                 set_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
 
                 m_event_handler.on_solved(out_plan);
@@ -94,7 +91,7 @@ private:
             auto search_node = CostSearchNodeViewProxy(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
 
-            // std::cout << "---" << std::endl;
+            m_event_handler.on_expand_state(state, m_pddl_factories);
 
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
@@ -114,16 +111,13 @@ private:
 
                     m_queue.emplace_back(successor_state);
 
-                    m_event_handler.on_generate_state(action, successor_state);
-                    // std::cout << "Action: " << std::make_tuple(action, std::cref(m_pddl_factories)) << std::endl;
-                    // std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
+                    m_event_handler.on_generate_state(action, successor_state, m_pddl_factories);
                 }
             }
         }
 
         m_event_handler.on_exhausted();
         m_event_handler.on_end_search(m_statistics);
-        std::cout << "Expanded: " << m_statistics.get_num_expanded() << "; Generated: " << m_statistics.get_num_generated() << std::endl;
 
         return SearchStatus::EXHAUSTED;
     }
