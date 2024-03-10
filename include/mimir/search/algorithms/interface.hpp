@@ -4,7 +4,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/search_nodes.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/successor_state_generators.hpp"

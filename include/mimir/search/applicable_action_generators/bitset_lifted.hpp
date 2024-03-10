@@ -7,7 +7,7 @@
 #include "mimir/search/actions/bitset.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/internal_representation.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
 
 #include <boost/dynamic_bitset.hpp>

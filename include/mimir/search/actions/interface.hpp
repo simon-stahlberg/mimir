@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
 
 #include "mimir/search/builder.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/type_traits.hpp"
 #include "mimir/search/view_const.hpp"

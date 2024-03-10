@@ -5,7 +5,7 @@
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
 #include "mimir/search/statistics.hpp"
 

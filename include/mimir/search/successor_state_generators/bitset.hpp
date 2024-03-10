@@ -3,7 +3,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/successor_state_generators/interface.hpp"
 
 #include <cstddef>

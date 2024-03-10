@@ -3,7 +3,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/actions.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/type_traits.hpp"
 

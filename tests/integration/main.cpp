@@ -16,7 +16,7 @@
  */
 
 // Test loki include
-#include <loki/domain/parser.hpp>
+#include <loki/parser.hpp>
 
 // Test boost include
 #include <boost/container/small_vector.hpp>

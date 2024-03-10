@@ -18,7 +18,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms/brfs/brfs.hpp"
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/config.hpp"
+#include "mimir/search/planning_mode.hpp"
 
 #include <iostream>
 #include <mimir/search/planners.hpp>
