@@ -5,6 +5,7 @@
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
+#include "mimir/search/event_handlers.hpp"
 #include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
 #include "mimir/search/statistics.hpp"
@@ -46,6 +47,8 @@ private:
     std::deque<ConstStateView> m_queue;
     CostSearchNodeVector m_search_nodes;
     Statistics m_statistics;
+    // TODO: parameterize by event handler tag
+    EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>> m_event_handler;
 
     /* Implement IAlgorithm interface. */
     template<typename>
@@ -65,6 +68,7 @@ private:
 
         auto applicable_actions = ConstActionViewList {};
 
+        m_event_handler.on_start_search(this->m_initial_state);
         // std::cout << "Initial: " << std::make_tuple(this->m_initial_state, std::cref(m_pddl_factories)) << std::endl;
 
         m_queue.emplace_back(this->m_initial_state);
@@ -78,6 +82,9 @@ private:
                 std::cout << "Expanded: " << m_statistics.get_num_expanded() << "; Generated: " << m_statistics.get_num_generated() << std::endl;
 
                 set_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
+
+                m_event_handler.on_solved(out_plan);
+                m_event_handler.on_end_search(m_statistics);
 
                 return SearchStatus::SOLVED;
             }
@@ -107,15 +114,18 @@ private:
 
                     m_queue.emplace_back(successor_state);
 
+                    m_event_handler.on_generate_state(action, successor_state);
                     // std::cout << "Action: " << std::make_tuple(action, std::cref(m_pddl_factories)) << std::endl;
                     // std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
                 }
             }
         }
 
+        m_event_handler.on_exhausted();
+        m_event_handler.on_end_search(m_statistics);
         std::cout << "Expanded: " << m_statistics.get_num_expanded() << "; Generated: " << m_statistics.get_num_generated() << std::endl;
 
-        return SearchStatus::FAILED;
+        return SearchStatus::EXHAUSTED;
     }
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions

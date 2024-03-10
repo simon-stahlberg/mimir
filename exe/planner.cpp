@@ -69,6 +69,9 @@ int main(int argc, char** argv)
         case FAILED:
             std::cout << "Failed!" << std::endl;
             break;
+        case EXHAUSTED:
+            std::cout << "Exhausted!" << std::endl;
+            break;
         case SOLVED:
             std::cout << "Solved!" << std::endl;
             std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;

@@ -1,8 +1,11 @@
 #ifndef MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include <concepts>
+#include "mimir/search/actions.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/statistics.hpp"
 
+#include <concepts>
 
 namespace mimir
 {
@@ -22,17 +25,39 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void on_generate_state(/* state, creating_action, succ_state? */) const { self().on_generate_state_impl(); }
+    /// @brief React on generating a successor_state by applying an action.
+    template<IsActionDispatcher A, IsStateDispatcher S>
+    void on_generate_state(ConstView<A> action, ConstView<S> successor_state) const
+    {
+        self().on_generate_state_impl(action, successor_state);
+    }
 
-    void on_expand_state(/* state? */) const { self().on_expand_state_impl(); }
+    /// @brief React on expanding a state.
+    template<IsStateDispatcher S>
+    void on_expand_state(ConstView<S> state) const
+    {
+        self().on_expand_state_impl(state);
+    }
 
-    void on_start_search(/* initial_state? */) const { self().on_start_search_impl(); }
+    /// @brief React on starting a search.
+    template<IsStateDispatcher S>
+    void on_start_search(ConstView<S> initial_state) const
+    {
+        self().on_start_search_impl(initial_state);
+    }
 
-    void on_finish_search(/* statistics? */) const { self().on_finish_search_impl(); }
+    /// @brief React on ending a search.
+    void on_end_search(const Statistics& statistics) const { self().on_end_search_impl(statistics); }
 
-    void on_solved(/* plan? */) const { self().on_solved_impl(); }
+    /// @brief React on solving a search.
+    template<IsActionDispatcher A>
+    void on_solved(const std::vector<ConstView<A>>& ground_action_plan) const
+    {
+        self().on_solved_impl(ground_action_plan);
+    }
 
-    void on_unsolvable(/**/) const { self().on_unsolvable_impl(); }
+    /// @brief React on exhausting a search.
+    void on_exhausted() const { self().on_exhausted_impl(); }
 };
 
 /**
