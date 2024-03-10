@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "function_skeleton.hpp"
+
+#include "parameter.hpp"
+#include "type.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/function_skeleton.hpp>
-#include <mimir/formalism/parsers/parameter.hpp>
-#include <mimir/formalism/parsers/type.hpp>
 
 namespace mimir
 {

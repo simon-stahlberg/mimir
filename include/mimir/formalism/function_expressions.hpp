@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/function_expressions.hpp>
+#include <loki/pddl/function_expressions.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -42,7 +42,7 @@ private:
     FunctionExpressionNumberImpl(int identifier, double number);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const;
@@ -72,7 +72,7 @@ private:
                                          FunctionExpression right_function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const;
@@ -100,7 +100,7 @@ private:
     FunctionExpressionMultiOperatorImpl(int identifier, loki::pddl::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const;
@@ -126,7 +126,7 @@ private:
     FunctionExpressionMinusImpl(int identifier, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const;
@@ -151,7 +151,7 @@ private:
     FunctionExpressionFunctionImpl(int identifier, Function function);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const;

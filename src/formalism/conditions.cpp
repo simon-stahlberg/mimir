@@ -15,9 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <loki/common/collections.hpp>
-#include <loki/common/hash.hpp>
-#include <loki/common/pddl/visitors.hpp>
+#include <loki/pddl/visitors.hpp>
+#include <loki/utils/collections.hpp>
+#include <loki/utils/hash.hpp>
 #include <mimir/formalism/conditions.hpp>
 #include <mimir/formalism/literal.hpp>
 #include <mimir/formalism/parameter.hpp>

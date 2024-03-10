@@ -20,14 +20,14 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/requirements.hpp>
+#include <loki/pddl/requirements.hpp>
 #include <set>
 #include <string>
 #include <unordered_map>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -43,7 +43,7 @@ private:
     RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence

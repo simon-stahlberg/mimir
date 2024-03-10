@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/object.hpp>
+#include <loki/pddl/object.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -42,7 +42,7 @@ private:
     ObjectImpl(int identifier, std::string name, TypeList types = {});
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence

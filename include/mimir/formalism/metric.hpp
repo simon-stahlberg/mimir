@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/problem/pddl/metric.hpp>
+#include <loki/pddl/metric.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -42,7 +42,7 @@ private:
     OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence

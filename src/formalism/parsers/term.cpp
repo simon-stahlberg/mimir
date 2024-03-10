@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "term.hpp"
+
+#include "object.hpp"
+#include "variable.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/object.hpp>
-#include <mimir/formalism/parsers/term.hpp>
-#include <mimir/formalism/parsers/variable.hpp>
 
 namespace mimir
 {

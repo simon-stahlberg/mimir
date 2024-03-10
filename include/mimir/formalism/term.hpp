@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/term.hpp>
+#include <loki/pddl/term.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -41,7 +41,7 @@ private:
     TermObjectImpl(int identifier, Object object);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
@@ -63,7 +63,7 @@ private:
     TermVariableImpl(int identifier, Variable variable);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;

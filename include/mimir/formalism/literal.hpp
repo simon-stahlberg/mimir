@@ -20,15 +20,13 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/literal.hpp>
+#include <loki/pddl/literal.hpp>
 #include <string>
 
 namespace loki
 {
-
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
-
 }
 
 namespace mimir
@@ -45,7 +43,7 @@ private:
     LiteralImpl(int identifier, bool is_negated, Atom atom);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence

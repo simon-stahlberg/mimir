@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/problem/pddl/numeric_fluent.hpp>
+#include <loki/pddl/numeric_fluent.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -42,7 +42,7 @@ private:
     NumericFluentImpl(int identifier, Function function, double number);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     /// @brief Test for semantic equivalence

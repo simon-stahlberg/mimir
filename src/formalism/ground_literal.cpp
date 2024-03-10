@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <loki/common/collections.hpp>
-#include <loki/common/hash.hpp>
+#include <loki/utils/collections.hpp>
+#include <loki/utils/hash.hpp>
 #include <mimir/formalism/ground_atom.hpp>
 #include <mimir/formalism/ground_literal.hpp>
 

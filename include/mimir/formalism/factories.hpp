@@ -40,7 +40,7 @@
 #include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
-#include <loki/common/pddl/persistent_factory.hpp>
+#include <loki/utils/persistent_factory.hpp>
 
 namespace mimir
 {
@@ -48,27 +48,27 @@ namespace mimir
 // to avoid allocations and for continuous storage.
 // The values are just educated guesses based on the knowledge
 // that cache line size is 64 Bytes.
-using RequirementFactory = loki::PersistentFactory<RequirementsImpl, 100>;
-using TypeFactory = loki::PersistentFactory<TypeImpl, 1000>;
-using VariableFactory = loki::PersistentFactory<VariableImpl, 1000>;
-using TermFactory = loki::PersistentFactory<TermImpl, 1000>;
-using ObjectFactory = loki::PersistentFactory<ObjectImpl, 1000>;
-using AtomFactory = loki::PersistentFactory<AtomImpl, 1000>;
-using GroundAtomFactory = loki::PersistentFactory<GroundAtomImpl, 1000>;
-using LiteralFactory = loki::PersistentFactory<LiteralImpl, 1000>;
-using GroundLiteralFactory = loki::PersistentFactory<GroundLiteralImpl, 1000>;
-using ParameterFactory = loki::PersistentFactory<ParameterImpl, 1000>;
-using PredicateFactory = loki::PersistentFactory<PredicateImpl, 1000>;
-using FunctionExpressionFactory = loki::PersistentFactory<FunctionExpressionImpl, 1000>;
-using FunctionFactory = loki::PersistentFactory<FunctionImpl, 1000>;
-using FunctionSkeletonFactory = loki::PersistentFactory<FunctionSkeletonImpl, 1000>;
-using ConditionFactory = loki::PersistentFactory<ConditionImpl, 1000>;
-using EffectFactory = loki::PersistentFactory<EffectImpl, 1000>;
-using ActionFactory = loki::PersistentFactory<ActionImpl, 100>;
-using OptimizationMetricFactory = loki::PersistentFactory<OptimizationMetricImpl, 100>;
-using NumericFluentFactory = loki::PersistentFactory<NumericFluentImpl, 1000>;
-using DomainFactory = loki::PersistentFactory<DomainImpl, 1>;
-using ProblemFactory = loki::PersistentFactory<ProblemImpl, 100>;
+using RequirementFactory = loki::PersistentFactory<RequirementsImpl>;
+using TypeFactory = loki::PersistentFactory<TypeImpl>;
+using VariableFactory = loki::PersistentFactory<VariableImpl>;
+using TermFactory = loki::PersistentFactory<TermImpl>;
+using ObjectFactory = loki::PersistentFactory<ObjectImpl>;
+using AtomFactory = loki::PersistentFactory<AtomImpl>;
+using GroundAtomFactory = loki::PersistentFactory<GroundAtomImpl>;
+using LiteralFactory = loki::PersistentFactory<LiteralImpl>;
+using GroundLiteralFactory = loki::PersistentFactory<GroundLiteralImpl>;
+using ParameterFactory = loki::PersistentFactory<ParameterImpl>;
+using PredicateFactory = loki::PersistentFactory<PredicateImpl>;
+using FunctionExpressionFactory = loki::PersistentFactory<FunctionExpressionImpl>;
+using FunctionFactory = loki::PersistentFactory<FunctionImpl>;
+using FunctionSkeletonFactory = loki::PersistentFactory<FunctionSkeletonImpl>;
+using ConditionFactory = loki::PersistentFactory<ConditionImpl>;
+using EffectFactory = loki::PersistentFactory<EffectImpl>;
+using ActionFactory = loki::PersistentFactory<ActionImpl>;
+using OptimizationMetricFactory = loki::PersistentFactory<OptimizationMetricImpl>;
+using NumericFluentFactory = loki::PersistentFactory<NumericFluentImpl>;
+using DomainFactory = loki::PersistentFactory<DomainImpl>;
+using ProblemFactory = loki::PersistentFactory<ProblemImpl>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 struct PDDLFactories
@@ -95,7 +95,30 @@ struct PDDLFactories
     DomainFactory domains;
     ProblemFactory problems;
 
-    PDDLFactories() = default;
+    PDDLFactories() :
+        requirements(RequirementFactory(100)),
+        types(TypeFactory(1000)),
+        variables(VariableFactory(1000)),
+        terms(TermFactory(1000)),
+        objects(ObjectFactory(1000)),
+        atoms(AtomFactory(1000)),
+        ground_atoms(GroundAtomFactory(1000)),
+        literals(LiteralFactory(1000)),
+        ground_literals(GroundLiteralFactory(1000)),
+        parameters(ParameterFactory(1000)),
+        predicates(PredicateFactory(1000)),
+        function_expressions(FunctionExpressionFactory(1000)),
+        functions(FunctionFactory(1000)),
+        function_skeletons(FunctionSkeletonFactory(1000)),
+        conditions(ConditionFactory(1000)),
+        effects(EffectFactory(1000)),
+        actions(ActionFactory(100)),
+        optimization_metrics(OptimizationMetricFactory(10)),
+        numeric_fluents(NumericFluentFactory(1000)),
+        domains(DomainFactory(1)),
+        problems(ProblemFactory(10))
+    {
+    }
 
     // delete copy and move to avoid dangling references.
     PDDLFactories(const PDDLFactories& other) = delete;

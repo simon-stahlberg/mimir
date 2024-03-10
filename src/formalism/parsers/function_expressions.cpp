@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "function_expressions.hpp"
+
+#include "function.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/function.hpp>
-#include <mimir/formalism/parsers/function_expressions.hpp>
 
 namespace mimir
 {

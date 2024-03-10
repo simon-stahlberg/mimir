@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/effects.hpp>
+#include <loki/pddl/effects.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -42,7 +42,7 @@ private:
     EffectLiteralImpl(int identifier, Literal literal);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     // Give access to the private interface implementations.
@@ -67,7 +67,7 @@ private:
     EffectAndImpl(int identifier, EffectList effects);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     // Give access to the private interface implementations.
@@ -94,7 +94,7 @@ private:
     EffectNumericImpl(int identifier, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     // Give access to the private interface implementations.
@@ -122,7 +122,7 @@ private:
     EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     // Give access to the private interface implementations.
@@ -149,7 +149,7 @@ private:
     EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;

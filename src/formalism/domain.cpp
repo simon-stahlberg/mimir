@@ -16,8 +16,8 @@
  */
 
 #include <iostream>
-#include <loki/common/collections.hpp>
-#include <loki/common/hash.hpp>
+#include <loki/utils/collections.hpp>
+#include <loki/utils/hash.hpp>
 #include <mimir/formalism/action.hpp>
 #include <mimir/formalism/domain.hpp>
 #include <mimir/formalism/function_skeleton.hpp>

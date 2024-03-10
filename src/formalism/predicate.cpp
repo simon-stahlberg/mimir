@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <loki/common/hash.hpp>
+#include <loki/utils/hash.hpp>
 #include <memory>
 #include <mimir/formalism/parameter.hpp>
 #include <mimir/formalism/predicate.hpp>

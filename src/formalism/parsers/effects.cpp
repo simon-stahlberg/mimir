@@ -15,13 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "effects.hpp"
+
+#include "conditions.hpp"
+#include "function.hpp"
+#include "function_expressions.hpp"
+#include "literal.hpp"
+#include "parameter.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/conditions.hpp>
-#include <mimir/formalism/parsers/effects.hpp>
-#include <mimir/formalism/parsers/function.hpp>
-#include <mimir/formalism/parsers/function_expressions.hpp>
-#include <mimir/formalism/parsers/literal.hpp>
-#include <mimir/formalism/parsers/parameter.hpp>
 
 namespace mimir
 {

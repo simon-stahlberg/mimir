@@ -16,7 +16,7 @@
  */
 
 #include <cassert>
-#include <loki/common/hash.hpp>
+#include <loki/utils/hash.hpp>
 #include <mimir/formalism/requirements.hpp>
 
 namespace mimir

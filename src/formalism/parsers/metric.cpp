@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "metric.hpp"
+
+#include "function_expressions.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/function_expressions.hpp>
-#include <mimir/formalism/parsers/metric.hpp>
 
 namespace mimir
 {

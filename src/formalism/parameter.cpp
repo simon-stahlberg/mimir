@@ -16,8 +16,8 @@
  */
 
 #include <cassert>
-#include <loki/common/collections.hpp>
-#include <loki/common/hash.hpp>
+#include <loki/utils/collections.hpp>
+#include <loki/utils/hash.hpp>
 #include <mimir/formalism/parameter.hpp>
 #include <mimir/formalism/type.hpp>
 #include <mimir/formalism/variable.hpp>

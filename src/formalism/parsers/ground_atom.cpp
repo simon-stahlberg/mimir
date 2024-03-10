@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "ground_atom.hpp"
+
+#include "object.hpp"
+#include "predicate.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/object.hpp>
-#include <mimir/formalism/parsers/predicate.hpp>
-#include <mimir/formalism/parsers/ground_atom.hpp>
 
 namespace mimir
 {

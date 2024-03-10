@@ -4,7 +4,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 
-#include <loki/common/filesystem.hpp>
+#include <loki/utils/filesystem.hpp>
 #include <string>
 
 namespace mimir
@@ -17,15 +17,12 @@ private:
     uint64_t m_cost;
 
 public:
-    Plan(std::vector<std::string> actions, uint64_t cost) :
-        m_actions(std::move(actions)),
-        m_cost(cost) {}
+    Plan(std::vector<std::string> actions, uint64_t cost) : m_actions(std::move(actions)), m_cost(cost) {}
 
     const std::vector<std::string>& get_actions() const { return m_actions; }
 
     uint64_t get_cost() const { return m_cost; }
 };
-
 
 /**
  * Interface class

@@ -21,13 +21,13 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <functional>
-#include <loki/domain/pddl/action.hpp>
+#include <loki/pddl/action.hpp>
 #include <optional>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -46,7 +46,7 @@ private:
     ActionImpl(int identifier, std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     /// @brief Test for structural equivalence

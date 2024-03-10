@@ -15,15 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "problem.hpp"
+
+#include "conditions.hpp"
+#include "domain.hpp"
+#include "ground_literal.hpp"
+#include "metric.hpp"
+#include "numeric_fluent.hpp"
+#include "object.hpp"
+#include "requirements.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/conditions.hpp>
-#include <mimir/formalism/parsers/domain.hpp>
-#include <mimir/formalism/parsers/object.hpp>
-#include <mimir/formalism/parsers/requirements.hpp>
-#include <mimir/formalism/parsers/ground_literal.hpp>
-#include <mimir/formalism/parsers/metric.hpp>
-#include <mimir/formalism/parsers/numeric_fluent.hpp>
-#include <mimir/formalism/parsers/problem.hpp>
 
 namespace mimir
 {

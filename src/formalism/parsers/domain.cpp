@@ -15,14 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "domain.hpp"
+
+#include "action.hpp"
+#include "function_skeleton.hpp"
+#include "object.hpp"
+#include "predicate.hpp"
+#include "requirements.hpp"
+#include "type.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/action.hpp>
-#include <mimir/formalism/parsers/domain.hpp>
-#include <mimir/formalism/parsers/function_skeleton.hpp>
-#include <mimir/formalism/parsers/object.hpp>
-#include <mimir/formalism/parsers/predicate.hpp>
-#include <mimir/formalism/parsers/requirements.hpp>
-#include <mimir/formalism/parsers/type.hpp>
 
 namespace mimir
 {

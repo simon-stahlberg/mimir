@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/domain/pddl/conditions.hpp>
+#include <loki/pddl/conditions.hpp>
 #include <string>
 
 namespace loki
 {
-template<typename HolderType, ElementsPerSegment N>
+template<typename HolderType>
 class PersistentFactory;
 }
 
@@ -42,7 +42,7 @@ private:
     ConditionLiteralImpl(int identifier, Literal literal);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionLiteralImpl& other) const;
@@ -67,7 +67,7 @@ private:
     ConditionAndImpl(int identifier, ConditionList conditions);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionAndImpl& other) const;
@@ -92,7 +92,7 @@ private:
     ConditionOrImpl(int identifier, ConditionList conditions);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionOrImpl& other) const;
@@ -117,7 +117,7 @@ private:
     ConditionNotImpl(int identifier, Condition condition);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionNotImpl& other) const;
@@ -143,7 +143,7 @@ private:
     ConditionImplyImpl(int identifier, Condition condition_left, Condition condition_right);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionImplyImpl& other) const;
@@ -170,7 +170,7 @@ private:
     ConditionExistsImpl(int identifier, ParameterList parameters, Condition condition);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionExistsImpl& other) const;
@@ -197,7 +197,7 @@ private:
     ConditionForallImpl(int identifier, ParameterList parameters, Condition condition);
 
     // Give access to the constructor.
-    template<typename HolderType, ElementsPerSegment N>
+    template<typename>
     friend class loki::PersistentFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionForallImpl& other) const;

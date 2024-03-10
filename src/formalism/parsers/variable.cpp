@@ -15,8 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "variable.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/variable.hpp>
 
 namespace mimir
 {

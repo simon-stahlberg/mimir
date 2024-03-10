@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <loki/common/hash.hpp>
-#include <loki/common/pddl/visitors.hpp>
+#include <loki/pddl/visitors.hpp>
+#include <loki/utils/hash.hpp>
 #include <mimir/formalism/function.hpp>
 #include <mimir/formalism/function_skeleton.hpp>
 #include <mimir/formalism/term.hpp>

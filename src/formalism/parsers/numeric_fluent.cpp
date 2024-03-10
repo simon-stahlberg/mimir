@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "numeric_fluent.hpp"
+
+#include "function.hpp"
+#include "ground_atom.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/function.hpp>
-#include <mimir/formalism/parsers/ground_atom.hpp>
-#include <mimir/formalism/parsers/numeric_fluent.hpp>
 
 namespace mimir
 {

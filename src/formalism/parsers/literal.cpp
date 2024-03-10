@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "literal.hpp"
+
+#include "atom.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/atom.hpp>
-#include <mimir/formalism/parsers/literal.hpp>
 
 namespace mimir
 {

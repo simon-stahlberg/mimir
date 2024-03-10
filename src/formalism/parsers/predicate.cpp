@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "predicate.hpp"
+
+#include "parameter.hpp"
+
 #include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/parsers/parameter.hpp>
-#include <mimir/formalism/parsers/predicate.hpp>
 
 namespace mimir
 {
