@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/planners/interface.hpp"
@@ -45,19 +46,7 @@ private:
     {
         auto action_view_list = typename TypeTraits<std::remove_reference_t<decltype(m_algorithm)>>::ConstActionViewList();
         const auto status = m_algorithm.find_solution(action_view_list);
-
-        std::vector<std::string> actions;
-        const auto cost = action_view_list.size();
-        for (size_t i = 0; i < action_view_list.size(); ++i)
-        {
-            std::stringstream ss;
-            ss << action_view_list[i];
-            actions.push_back(ss.str());
-            // TODO accumulate the action costs instead of returning the plan length.
-        }
-        auto plan = Plan(std::move(actions), cost);
-
-        return std::make_tuple(status, plan);
+        return std::make_tuple(status, to_plan(action_view_list));
     }
 
     const Domain& get_domain_impl() const { return m_domain; }

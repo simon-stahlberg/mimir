@@ -1,8 +1,11 @@
 #ifndef MIMIR_COMMON_TRANSLATIONS_HPP_
 #define MIMIR_COMMON_TRANSLATIONS_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/states/bitset/bitset.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/plan.hpp"
+#include "mimir/search/states.hpp"
 
 namespace mimir
 {
@@ -22,6 +25,22 @@ void to_ground_atoms(ConstView<StateDispatcher<BitsetStateTag, P>> state, const 
 {
     const auto& bitset = state.get_atoms_bitset();
     to_ground_atoms(bitset, pddl_factories, out_ground_atoms);
+}
+
+/// @brief Translates a ground action list to a plan
+template<IsActionDispatcher A>
+Plan to_plan(const std::vector<ConstView<A>>& action_view_list)
+{
+    std::vector<std::string> actions;
+    const auto cost = action_view_list.size();
+    for (size_t i = 0; i < action_view_list.size(); ++i)
+    {
+        std::stringstream ss;
+        ss << action_view_list[i];
+        actions.push_back(ss.str());
+        // TODO accumulate the action costs instead of returning the plan length.
+    }
+    return Plan(std::move(actions), cost);
 }
 
 }

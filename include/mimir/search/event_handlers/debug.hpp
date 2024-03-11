@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_EVENT_HANDLERS_DEBUG_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/common/translations.hpp"
 #include "mimir/search/event_handlers/interface.hpp"
 
 namespace mimir
@@ -55,7 +56,12 @@ private:
     template<IsActionDispatcher A>
     void on_solved_impl(const std::vector<ConstView<A>>& ground_action_plan) const
     {
-        std::cout << "Solved!" << std::endl;
+        auto plan = to_plan(ground_action_plan);
+        std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;
+        for (size_t i = 0; i < plan.get_actions().size(); ++i)
+        {
+            std::cout << i + 1 << ". " << plan.get_actions()[i] << std::endl;
+        }
     }
 
     void on_exhausted_impl() const { std::cout << "Exhausted!" << std::endl; }

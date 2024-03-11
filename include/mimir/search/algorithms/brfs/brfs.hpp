@@ -8,7 +8,6 @@
 #include "mimir/search/event_handlers.hpp"
 #include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states/bitset/interface.hpp"
-#include "mimir/search/statistics.hpp"
 
 #include <deque>
 #include <flatmemory/flatmemory.hpp>

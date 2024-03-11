@@ -55,35 +55,5 @@ int main(int argc, char** argv)
 
     auto [stats, plan] = planner.find_solution();
 
-    std::cout << "\n\n"
-              << "prints from executable that will be moved into the event handler:" << std::endl;
-
-    switch (stats)
-    {
-        case IN_PROGRESS:
-            std::cout << "In progress!" << std::endl;
-            break;
-        case OUT_OF_TIME:
-            std::cout << "Out of time!" << std::endl;
-            break;
-        case OUT_OF_MEMORY:
-            std::cout << "Out of memory!" << std::endl;
-            break;
-        case FAILED:
-            std::cout << "Failed!" << std::endl;
-            break;
-        case EXHAUSTED:
-            std::cout << "Exhausted!" << std::endl;
-            break;
-        case SOLVED:
-            std::cout << "Solved!" << std::endl;
-            std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;
-            for (size_t i = 0; i < plan.get_actions().size(); ++i)
-            {
-                std::cout << i + 1 << ". " << plan.get_actions()[i] << std::endl;
-            }
-            break;
-    }
-
     return 0;
 }
