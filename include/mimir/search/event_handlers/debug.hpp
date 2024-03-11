@@ -4,6 +4,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
 #include "mimir/search/event_handlers/interface.hpp"
+#include "mimir/search/statistics.hpp"
 
 namespace mimir
 {
