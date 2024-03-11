@@ -55,6 +55,9 @@ int main(int argc, char** argv)
 
     auto [stats, plan] = planner.find_solution();
 
+    std::cout << "\n\n"
+              << "prints from executable that will be moved into the event handler:" << std::endl;
+
     switch (stats)
     {
         case IN_PROGRESS:

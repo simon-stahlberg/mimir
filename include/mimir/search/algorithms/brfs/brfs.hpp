@@ -23,7 +23,7 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
  */
-template<IsPlanningModeTag P, IsStateTag S = BitsetStateTag, IsEventHandlerTag E = DebugEventHandlerTag>
+template<IsPlanningModeTag P, IsStateTag S = BitsetStateTag, IsEventHandlerTag E = MinimalEventHandlerTag>
 struct BrFSTag : public AlgorithmTag
 {
 };
@@ -46,7 +46,6 @@ private:
     AAG<AAGDispatcher<P, S>> m_successor_generator;
     std::deque<ConstStateView> m_queue;
     CostSearchNodeVector m_search_nodes;
-    Statistics m_statistics;
     EventHandler<EventHandlerDispatcher<E>> m_event_handler;
 
     /* Implement IAlgorithm interface. */
@@ -79,13 +78,11 @@ private:
             {
                 set_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
 
+                m_event_handler.on_end_search();
                 m_event_handler.on_solved(out_plan);
-                m_event_handler.on_end_search(m_statistics);
 
                 return SearchStatus::SOLVED;
             }
-
-            m_statistics.increment_num_expanded();
 
             auto search_node = CostSearchNodeViewProxy(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
@@ -95,10 +92,9 @@ private:
             this->m_successor_generator.generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
             {
-                m_statistics.increment_num_generated();
-
                 const auto state_count = m_state_repository.state_count();
                 const auto& successor_state = this->m_state_repository.get_or_create_successor_state(state, action);
+                m_event_handler.on_generate_state(action, successor_state, m_pddl_factories);
 
                 if (state_count != m_state_repository.state_count())
                 {
@@ -109,14 +105,12 @@ private:
                     successor_search_node.get_creating_action_id() = action.get_id();
 
                     m_queue.emplace_back(successor_state);
-
-                    m_event_handler.on_generate_state(action, successor_state, m_pddl_factories);
                 }
             }
         }
 
+        m_event_handler.on_end_search();
         m_event_handler.on_exhausted();
-        m_event_handler.on_end_search(m_statistics);
 
         return SearchStatus::EXHAUSTED;
     }

@@ -18,12 +18,12 @@ struct MinimalEventHandlerTag : public EventHandlerTag
  * Implementation class
  */
 template<>
-class EventHandler<EventHandlerDispatcher<MinimalEventHandlerTag>> : public IEventHandler<EventHandler<EventHandlerDispatcher<MinimalEventHandlerTag>>>
+class EventHandler<EventHandlerDispatcher<MinimalEventHandlerTag>> : public EventHandlerBase<EventHandler<EventHandlerDispatcher<MinimalEventHandlerTag>>>
 {
 private:
-    /* Implement IEventHandler interface */
+    /* Implement EventHandlerBase interface */
     template<typename>
-    friend class IEventHandler;
+    friend class EventHandlerBase;
 
     template<IsActionDispatcher A, IsStateDispatcher S>
     void on_generate_state_impl(ConstView<A> action, ConstView<S> successor_state, const PDDLFactories& pddl_factories) const
@@ -40,7 +40,12 @@ private:
     {
     }
 
-    void on_end_search_impl(const Statistics& statistics) const {}
+    void on_end_search_impl() const
+    {
+        std::cout << "Num expanded states: " << this->m_statistics.get_num_expanded() << "\n"
+                  << "Num generated states: " << this->m_statistics.get_num_generated() << "\n"
+                  << "Search time: " << this->m_statistics.get_search_time_ms() << std::endl;
+    }
 
     template<IsActionDispatcher A>
     void on_solved_impl(const std::vector<ConstView<A>>& ground_action_plan) const

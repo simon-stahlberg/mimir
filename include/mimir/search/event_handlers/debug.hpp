@@ -18,12 +18,12 @@ struct DebugEventHandlerTag : public EventHandlerTag
  * Implementation class
  */
 template<>
-class EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>> : public IEventHandler<EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>>>
+class EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>> : public EventHandlerBase<EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>>>
 {
 private:
-    /* Implement IEventHandler interface */
+    /* Implement EventHandlerBase interface */
     template<typename>
-    friend class IEventHandler;
+    friend class EventHandlerBase;
 
     template<IsActionDispatcher A, IsStateDispatcher S>
     void on_generate_state_impl(ConstView<A> action, ConstView<S> successor_state, const PDDLFactories& pddl_factories) const
@@ -45,10 +45,11 @@ private:
         std::cout << "Initial: " << std::make_tuple(initial_state, std::cref(pddl_factories)) << std::endl;
     }
 
-    void on_end_search_impl(const Statistics& statistics) const
+    void on_end_search_impl() const
     {
-        std::cout << "Num expanded states: " << statistics.get_num_expanded() << "\n"
-                  << "Num generated states: " << statistics.get_num_generated() << std::endl;
+        std::cout << "Num expanded states: " << this->m_statistics.get_num_expanded() << "\n"
+                  << "Num generated states: " << this->m_statistics.get_num_generated() << "\n"
+                  << "Search time: " << this->m_statistics.get_search_time_ms() << std::endl;
     }
 
     template<IsActionDispatcher A>
