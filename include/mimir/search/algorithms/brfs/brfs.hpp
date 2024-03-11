@@ -53,6 +53,8 @@ private:
 
     SearchStatus find_solution_impl(ConstActionViewList& out_plan)
     {
+        m_event_handler.on_start_search(this->m_initial_state, m_pddl_factories);
+
         auto initial_search_node = CostSearchNodeViewProxy(this->m_search_nodes[this->m_initial_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
@@ -64,8 +66,6 @@ private:
         m_pddl_factories.to_ground_literals(goal_literals, goal_ground_literals);
 
         auto applicable_actions = ConstActionViewList {};
-
-        m_event_handler.on_start_search(this->m_initial_state, m_pddl_factories);
 
         m_queue.emplace_back(this->m_initial_state);
         while (!m_queue.empty())
