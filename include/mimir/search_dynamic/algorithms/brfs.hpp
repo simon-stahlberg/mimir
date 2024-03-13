@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_DYNAMIC_ALGORITHMS_BRFS_BRFS_HPP_
-#define MIMIR_SEARCH_DYNAMIC_ALGORITHMS_BRFS_BRFS_HPP_
+#ifndef MIMIR_SEARCH_DYNAMIC_ALGORITHMS_BRFS_HPP_
+#define MIMIR_SEARCH_DYNAMIC_ALGORITHMS_BRFS_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"

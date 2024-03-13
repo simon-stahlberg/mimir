@@ -130,7 +130,6 @@ public:
  */
 using DenseStateBuilderProxy = Builder<StateDispatcher<DenseStateTag>>;
 
-template<IsPlanningModeTag P>
 using ConstDenseStateViewProxy = ConstView<StateDispatcher<DenseStateTag>>;
 
 }
