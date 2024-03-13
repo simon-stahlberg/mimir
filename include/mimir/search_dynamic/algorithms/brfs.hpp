@@ -6,7 +6,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/event_handlers.hpp"
 #include "mimir/search/planning_mode.hpp"
-#include "mimir/search/states/bitset/interface.hpp"
+#include "mimir/search/states.hpp"
 #include "mimir/search_dynamic/algorithms/interface.hpp"
 #include "mimir/search_dynamic/applicable_action_generators/interface.hpp"
 #include "mimir/search_dynamic/successor_state_generators/interface.hpp"
