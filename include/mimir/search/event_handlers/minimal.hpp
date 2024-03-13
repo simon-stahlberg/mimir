@@ -46,7 +46,7 @@ private:
     {
         std::cout << "Num expanded states: " << this->m_statistics.get_num_expanded() << "\n"
                   << "Num generated states: " << this->m_statistics.get_num_generated() << "\n"
-                  << "Search time: " << this->m_statistics.get_search_time_ms() << std::endl;
+                  << "Search time: " << this->m_statistics.get_search_time_ms().count() << "ms" << std::endl;
     }
 
     template<IsActionDispatcher A>
