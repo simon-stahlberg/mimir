@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_DYNAMIC_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search_virtual/compile_flags.hpp"
+#include "mimir/search_dynamic/compile_flags.hpp"
 
 namespace mimir::dynamic
 {
