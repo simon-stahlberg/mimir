@@ -3,7 +3,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search_virtual/compile_flags.hpp"
+#include "mimir/search_dynamic/compile_flags.hpp"
 
 namespace mimir::dynamic
 {

@@ -4,6 +4,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search_dynamic/compile_flags.hpp"
 
 #include <loki/utils/filesystem.hpp>
 #include <string>
