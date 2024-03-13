@@ -3,10 +3,9 @@
 
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/actions/bitset.hpp"
-#include "mimir/search/actions/interface.hpp"
+#include "mimir/search/actions.hpp"
 #include "mimir/search/planning_mode.hpp"
-#include "mimir/search/states/bitset/bitset.hpp"
+#include "mimir/search/states.hpp"
 
 #include <ostream>
 #include <tuple>

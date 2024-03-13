@@ -1,12 +1,24 @@
-#ifndef MIMIR_SEARCH_STATES_BITSET_BITSET_HPP_
-#define MIMIR_SEARCH_STATES_BITSET_BITSET_HPP_
+#ifndef MIMIR_SEARCH_STATES_DENSE_HPP_
+#define MIMIR_SEARCH_STATES_DENSE_HPP_
 
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
-#include "mimir/search/states/bitset/interface.hpp"
+#include "mimir/search/states/interface.hpp"
+#include "mimir/search/types.hpp"
+
+#include <flatmemory/flatmemory.hpp>
 
 namespace mimir
 {
+/**
+ * Derived ID class.
+ *
+ * Define name and template parameters of your own implementation.
+ */
+class BitsetStateTag : public StateTag
+{
+};
+
 /**
  * Flatmemory types
  */
@@ -41,8 +53,7 @@ using BitsetStateSet = flatmemory::UnorderedSet<BitsetStateLayout, ConstBitsetSt
 template<IsPlanningModeTag P>
 class Builder<StateDispatcher<BitsetStateTag, P>> :
     public IBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>,
-    public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>,
-    public IBitsetStateBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>
+    public IStateBuilder<Builder<StateDispatcher<BitsetStateTag, P>>>
 {
 private:
     BitsetStateBuilder m_builder;
@@ -60,11 +71,8 @@ private:
 
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
-    /* Implement IBitsetStateBuilder interface */
-    template<typename>
-    friend class IBitsetStateBuilder;
-
-    [[nodiscard]] BitsetBuilder& get_atoms_bitset_impl() { return m_builder.get<1>(); }
+public:
+    [[nodiscard]] BitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
 };
 
 /**
@@ -75,8 +83,7 @@ private:
 template<IsPlanningModeTag P>
 class ConstView<StateDispatcher<BitsetStateTag, P>> :
     public IConstView<ConstView<StateDispatcher<BitsetStateTag, P>>>,
-    public IStateView<ConstView<StateDispatcher<BitsetStateTag, P>>>,
-    public IBitsetStateView<ConstView<StateDispatcher<BitsetStateTag, P>>>
+    public IStateView<ConstView<StateDispatcher<BitsetStateTag, P>>>
 {
 private:
     ConstBitsetStateView m_view;
@@ -85,9 +92,9 @@ private:
     template<typename>
     friend class IConstView;
 
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_atoms_bitset_impl() == other.get_atoms_bitset_impl(); }
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_atoms_bitset() == other.get_atoms_bitset(); }
 
-    [[nodiscard]] size_t hash_impl() const { return get_atoms_bitset_impl().hash(); }
+    [[nodiscard]] size_t hash_impl() const { return get_atoms_bitset().hash(); }
 
     /* Implement IStateView interface */
     template<typename>
@@ -95,16 +102,12 @@ private:
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 
-    /* Implement IBitsetStateView interface*/
-    template<typename>
-    friend class IBitsetStateView;
-
-    [[nodiscard]] ConstBitsetView get_atoms_bitset_impl() const { return m_view.get<1>(); }
-
 public:
     explicit ConstView(ConstBitsetStateView view) : m_view(view) {}
 
-    bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset_impl().get(ground_atom->get_identifier()); }
+    [[nodiscard]] ConstBitsetView get_atoms_bitset() const { return m_view.get<1>(); }
+
+    bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
     bool literal_holds(const GroundLiteral& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
 
@@ -120,6 +123,21 @@ public:
 
         return true;
     }
+};
+
+/**
+ * Type traits.
+ */
+template<IsPlanningModeTag P>
+struct TypeTraits<Builder<StateDispatcher<BitsetStateTag, P>>>
+{
+    using PlanningModeTag = P;
+};
+
+template<IsPlanningModeTag P>
+struct TypeTraits<ConstView<StateDispatcher<BitsetStateTag, P>>>
+{
+    using PlanningModeTag = P;
 };
 
 /**

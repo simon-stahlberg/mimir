@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ACTIONS_BITSET_HPP_
-#define MIMIR_SEARCH_ACTIONS_BITSET_HPP_
+#ifndef MIMIR_SEARCH_ACTIONS_DENSE_HPP_
+#define MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 
 #include "mimir/common/hash.hpp"
 #include "mimir/search/actions/interface.hpp"

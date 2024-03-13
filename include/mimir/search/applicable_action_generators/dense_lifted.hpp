@@ -1,14 +1,14 @@
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_LIFTED_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_BITSET_LIFTED_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
-#include "mimir/search/actions/bitset.hpp"
+#include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/internal_representation.hpp"
 #include "mimir/search/planning_mode.hpp"
-#include "mimir/search/states/bitset/interface.hpp"
+#include "mimir/search/states.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <flatmemory/details/view_const.hpp>

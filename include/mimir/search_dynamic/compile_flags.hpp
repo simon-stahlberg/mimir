@@ -12,8 +12,8 @@ namespace mimir::dynamic
 // can use compile flags to define different representations
 #ifdef FALSE
 #else
-using State = mimir::ConstBitsetStateView;
-using Action = mimir::ConstBitsetActionView;
+using State = mimir::ConstBitsetStateViewProxy;
+using Action = mimir::ConstBitsetActionViewProxy;
 #endif
 
 using ActionList = std::vector<Action>;
