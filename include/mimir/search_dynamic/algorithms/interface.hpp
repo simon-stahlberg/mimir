@@ -1,11 +1,11 @@
-#ifndef MIMIR_SEARCH_VIRTUAL_ALGORITHMS_INTERFACE_HPP_
-#define MIMIR_SEARCH_VIRTUAL_ALGORITHMS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_DYNAMIC_ALGORITHMS_INTERFACE_HPP_
+#define MIMIR_SEARCH_DYNAMIC_ALGORITHMS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search_virtual/compile_flags.hpp"
 
-namespace mimir::runtime
+namespace mimir::dynamic
 {
 
 /**

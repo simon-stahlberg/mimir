@@ -1,10 +1,10 @@
-#ifndef MIMIR_SEARCH_VIRTUAL_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
-#define MIMIR_SEARCH_VIRTUAL_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_DYNAMIC_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
+#define MIMIR_SEARCH_DYNAMIC_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search_virtual/compile_flags.hpp"
 
-namespace mimir::runtime
+namespace mimir::dynamic
 {
 /**
  * Interface class

@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_VIRTUAL_PLANNERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_VIRTUAL_PLANNERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_DYNAMIC_PLANNERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_DYNAMIC_PLANNERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
@@ -8,7 +8,7 @@
 #include <loki/utils/filesystem.hpp>
 #include <string>
 
-namespace mimir::runtime
+namespace mimir::dynamic
 {
 
 /**

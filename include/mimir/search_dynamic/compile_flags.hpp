@@ -1,12 +1,12 @@
-#ifndef MIMIR_SEARCH_VIRTUAL_COMPILE_FLAGS_HPP_
-#define MIMIR_SEARCH_VIRTUAL_COMPILE_FLAGS_HPP_
+#ifndef MIMIR_SEARCH_DYNAMIC_COMPILE_FLAGS_HPP_
+#define MIMIR_SEARCH_DYNAMIC_COMPILE_FLAGS_HPP_
 
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
 
 #include <vector>
 
-namespace mimir::runtime
+namespace mimir::dynamic
 {
 
 // can use compile flags to define different representations
