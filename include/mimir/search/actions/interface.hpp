@@ -17,9 +17,6 @@ template<typename Derived>
 class IActionBuilder
 {
 private:
-    using P = typename TypeTraits<Derived>::PlanningModeTag;
-    using S = typename TypeTraits<Derived>::StateTag;
-
     IActionBuilder() = default;
     friend Derived;
 
@@ -37,9 +34,6 @@ template<typename Derived>
 class IActionView
 {
 private:
-    using P = typename TypeTraits<Derived>::PlanningModeTag;
-    using S = typename TypeTraits<Derived>::StateTag;
-
     IActionView() = default;
     friend Derived;
 
@@ -60,7 +54,7 @@ public:
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
  */
-template<IsPlanningModeTag P, IsStateTag S>
+template<IsStateTag S>
 struct ActionDispatcher
 {
 };
@@ -70,8 +64,8 @@ struct is_action_dispatcher : std::false_type
 {
 };
 
-template<IsPlanningModeTag P, IsStateTag S>
-struct is_action_dispatcher<ActionDispatcher<P, S>> : std::true_type
+template<IsStateTag S>
+struct is_action_dispatcher<ActionDispatcher<S>> : std::true_type
 {
 };
 
@@ -81,17 +75,15 @@ concept IsActionDispatcher = is_action_dispatcher<T>::value;
 /**
  * Type traits.
  */
-template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<Builder<ActionDispatcher<P, S>>>
+template<IsStateTag S>
+struct TypeTraits<Builder<ActionDispatcher<S>>>
 {
-    using PlanningModeTag = P;
     using StateTag = S;
 };
 
-template<IsPlanningModeTag P, IsStateTag S>
-struct TypeTraits<ConstView<ActionDispatcher<P, S>>>
+template<IsStateTag S>
+struct TypeTraits<ConstView<ActionDispatcher<S>>>
 {
-    using PlanningModeTag = P;
     using StateTag = S;
 };
 

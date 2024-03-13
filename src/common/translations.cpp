@@ -1,7 +1,8 @@
-#include <mimir/common/translations.hpp>
-#include <mimir/formalism/conditions.hpp>
-#include <mimir/formalism/effects.hpp>
-#include <mimir/formalism/factories.hpp>
+#include "mimir/common/translations.hpp"
+
+#include "mimir/formalism/conditions.hpp"
+#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/factories.hpp"
 
 namespace mimir
 {
@@ -52,6 +53,12 @@ void to_ground_atoms(const ConstBitsetView& bitset, const PDDLFactories& pddl_fa
     {
         out_ground_atoms.emplace_back(pddl_factories.ground_atoms.get(atom_id));
     }
+}
+
+void to_ground_atoms(ConstView<StateDispatcher<DenseStateTag>> state, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
+{
+    const auto& bitset = state.get_atoms_bitset();
+    to_ground_atoms(bitset, pddl_factories, out_ground_atoms);
 }
 
 }

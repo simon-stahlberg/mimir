@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_ASTAR_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_ASTAR_ASTAR_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/heuristics.hpp"
@@ -12,7 +12,7 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
  */
-template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S = BitsetStateTag>
+template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S = DenseStateTag>
 struct AStarTag : public AlgorithmTag
 {
 };
@@ -24,8 +24,8 @@ template<IsPlanningModeTag P, IsHeuristicTag H, IsStateTag S>
 class Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>> : public IAlgorithm<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<S, P>>;
-    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstStateView = ConstView<StateDispatcher<S>>;
+    using ConstActionView = ConstView<ActionDispatcher<S>>;
     using ConstActionViewList = std::vector<ConstActionView>;
 
     Problem m_problem;
@@ -65,7 +65,7 @@ struct TypeTraits<Algorithm<AlgorithmDispatcher<AStarTag<P, H, S>>>>
     using HeuristicTag = H;
     using StateTag = S;
 
-    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionView = ConstView<ActionDispatcher<S>>;
     using ConstActionViewList = std::vector<ConstActionView>;
 };
 

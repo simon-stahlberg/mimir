@@ -19,8 +19,8 @@ private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
 
-    using ConstStateView = ConstView<StateDispatcher<S, P>>;
-    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstStateView = ConstView<StateDispatcher<S>>;
+    using ConstActionView = ConstView<ActionDispatcher<S>>;
 
     IAAG() = default;
     friend Derived;

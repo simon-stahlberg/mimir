@@ -33,8 +33,6 @@ template<typename Derived>
 class IStateBuilder
 {
 private:
-    using P = typename TypeTraits<Derived>::PlanningModeTag;
-
     IStateBuilder() = default;
     friend Derived;
 
@@ -50,8 +48,6 @@ template<typename Derived>
 class IStateView
 {
 private:
-    using P = typename TypeTraits<Derived>::PlanningModeTag;
-
     IStateView() = default;
     friend Derived;
 
@@ -70,7 +66,7 @@ public:
  * The template parameters are arguments that all specializations have in common.
  * Do not add your specialized arguments here, add them to your derived tag instead.
  */
-template<IsStateTag S, IsPlanningModeTag P>
+template<IsStateTag S>
 struct StateDispatcher
 {
 };
@@ -80,8 +76,8 @@ struct is_state_dispatcher : std::false_type
 {
 };
 
-template<IsStateTag S, IsPlanningModeTag P>
-struct is_state_dispatcher<StateDispatcher<S, P>> : std::true_type
+template<IsStateTag S>
+struct is_state_dispatcher<StateDispatcher<S>> : std::true_type
 {
 };
 

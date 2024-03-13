@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_HEURISTICS_BLIND_BLIND_HPP_
-#define MIMIR_SEARCH_HEURISTICS_BLIND_BLIND_HPP_
+#ifndef MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
+#define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 
 #include "mimir/search/heuristics/interface.hpp"
 
@@ -22,7 +22,7 @@ template<IsPlanningModeTag P, IsStateTag S>
 class Heuristic<HeuristicDispatcher<BlindTag, P, S>> : public IHeuristic<Heuristic<HeuristicDispatcher<BlindTag, P, S>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstStateView = ConstView<StateDispatcher<S>>;
 
     Problem m_problem;
 

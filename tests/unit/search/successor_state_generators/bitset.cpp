@@ -14,7 +14,7 @@ TEST(MimirTests, SearchSSGBitsetTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
-    auto lifted_ssg = SSG<SSGDispatcher<LiftedTag, BitsetStateTag>>(problem);
+    auto lifted_ssg = SSG<SSGDispatcher<LiftedTag, DenseStateTag>>(problem);
     const auto initial_state = lifted_ssg.get_or_create_initial_state(problem);
 }
 

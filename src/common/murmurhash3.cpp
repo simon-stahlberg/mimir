@@ -7,7 +7,7 @@
 // compile and run any of them on any platform, but your performance with the
 // non-native version will be less than optimal.
 
-#include <mimir/algorithms/murmurhash3.hpp>
+#include "mimir/algorithms/murmurhash3.hpp"
 
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros

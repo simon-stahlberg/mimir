@@ -4,6 +4,6 @@
 /**
  * Include all specializations here
  */
-#include "mimir/search/heuristics/blind/blind.hpp"
+#include "mimir/search/heuristics/blind.hpp"
 
 #endif  // MIMIR_SEARCH_HEURISTICS_HPP_

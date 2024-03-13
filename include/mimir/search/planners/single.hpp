@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
-#define MIMIR_SEARCH_PLANNERS_SINGLE_SINGLE_HPP_
+#ifndef MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
+#define MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"

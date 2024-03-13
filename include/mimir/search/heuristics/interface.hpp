@@ -18,7 +18,7 @@ class IHeuristic
 private:
     using P = typename TypeTraits<Derived>::PlanningModeTag;
     using S = typename TypeTraits<Derived>::StateTag;
-    using ConstStateView = ConstView<StateDispatcher<S, P>>;
+    using ConstStateView = ConstView<StateDispatcher<S>>;
 
     IHeuristic() = default;
     friend Derived;

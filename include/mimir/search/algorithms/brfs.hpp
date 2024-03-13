@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_BRFS_BRFS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
@@ -22,7 +22,7 @@ namespace mimir
 /**
  * ID class to dispatch a specialized implementation
  */
-template<IsPlanningModeTag P, IsStateTag S = BitsetStateTag, IsEventHandlerTag E = MinimalEventHandlerTag>
+template<IsPlanningModeTag P, IsStateTag S = DenseStateTag, IsEventHandlerTag E = MinimalEventHandlerTag>
 struct BrFSTag : public AlgorithmTag
 {
 };
@@ -34,8 +34,8 @@ template<IsPlanningModeTag P, IsStateTag S, IsEventHandlerTag E>
 class Algorithm<AlgorithmDispatcher<BrFSTag<P, S, E>>> : public IAlgorithm<Algorithm<AlgorithmDispatcher<BrFSTag<P, S, E>>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<S, P>>;
-    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstStateView = ConstView<StateDispatcher<S>>;
+    using ConstActionView = ConstView<ActionDispatcher<S>>;
     using ConstActionViewList = std::vector<ConstActionView>;
 
     Problem m_problem;
@@ -168,7 +168,7 @@ struct TypeTraits<Algorithm<AlgorithmDispatcher<BrFSTag<P, S>>>>
     using PlanningModeTag = P;
     using StateTag = S;
 
-    using ConstActionView = ConstView<ActionDispatcher<P, S>>;
+    using ConstActionView = ConstView<ActionDispatcher<S>>;
     using ConstActionViewList = std::vector<ConstActionView>;
 };
 

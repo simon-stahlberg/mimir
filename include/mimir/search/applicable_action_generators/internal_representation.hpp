@@ -2,6 +2,9 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERNAL_REPRESENTATION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+// Include to use our std::less for std::map
+#include "mimir/formalism/parameter.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <map>
 

@@ -10,11 +10,11 @@ namespace mimir
  * Fully specialized implementation class.
  */
 template<>
-class AAG<AAGDispatcher<GroundedTag, BitsetStateTag>> : public IAAG<AAG<AAGDispatcher<GroundedTag, BitsetStateTag>>>
+class AAG<AAGDispatcher<GroundedTag, DenseStateTag>> : public IAAG<AAG<AAGDispatcher<GroundedTag, DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, GroundedTag>>;
-    using ConstActionView = ConstView<ActionDispatcher<GroundedTag, BitsetStateTag>>;
+    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
+    using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
 
     Problem m_problem;
     PDDLFactories& m_pddl_factories;

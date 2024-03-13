@@ -16,7 +16,7 @@
  */
 
 #include "mimir/formalism/parser.hpp"
-#include "mimir/search/algorithms/brfs/brfs.hpp"
+#include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/planning_mode.hpp"
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
     std::cout << "Initializing planner..." << std::endl;
 
-    auto planner = Planner<SingleTag<BrFSTag<LiftedTag, BitsetStateTag>>>(parser.get_domain(), parser.get_problem(), parser.get_factories());
+    auto planner = Planner<SingleTag<BrFSTag<LiftedTag, DenseStateTag>>>(parser.get_domain(), parser.get_problem(), parser.get_factories());
 
     std::cout << "Finding solution..." << std::endl;
 

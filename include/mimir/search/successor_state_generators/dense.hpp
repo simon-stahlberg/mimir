@@ -17,16 +17,16 @@ namespace mimir
  * Implementation class
  */
 template<IsPlanningModeTag P>
-class SSG<SSGDispatcher<P, BitsetStateTag>> : public ISSG<SSG<SSGDispatcher<P, BitsetStateTag>>>
+class SSG<SSGDispatcher<P, DenseStateTag>> : public ISSG<SSG<SSGDispatcher<P, DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, P>>;
-    using ConstActionView = ConstView<ActionDispatcher<P, BitsetStateTag>>;
+    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
+    using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
 
     Problem m_problem;
 
-    BitsetStateSet m_states;
-    Builder<StateDispatcher<BitsetStateTag, P>> m_state_builder;
+    DenseStateSet m_states;
+    Builder<StateDispatcher<DenseStateTag>> m_state_builder;
 
     /* Implement ISSG interface */
     template<typename>

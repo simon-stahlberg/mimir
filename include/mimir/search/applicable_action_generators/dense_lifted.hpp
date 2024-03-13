@@ -23,16 +23,16 @@ namespace mimir
  * Fully specialized implementation class.
  */
 template<>
-class AAG<AAGDispatcher<LiftedTag, BitsetStateTag>> : public IAAG<AAG<AAGDispatcher<LiftedTag, BitsetStateTag>>>
+class AAG<AAGDispatcher<LiftedTag, DenseStateTag>> : public IAAG<AAG<AAGDispatcher<LiftedTag, DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<BitsetStateTag, LiftedTag>>;
-    using ConstActionView = ConstView<ActionDispatcher<LiftedTag, BitsetStateTag>>;
+    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
+    using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
 
     Problem m_problem;
 
-    BitsetActionVector m_actions;
-    Builder<ActionDispatcher<LiftedTag, BitsetStateTag>> m_action_builder;
+    DenseActionVector m_actions;
+    Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
     PDDLFactories& m_pddl_factories;
     std::vector<FlatAction> m_flat_actions;
