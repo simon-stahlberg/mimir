@@ -25,7 +25,7 @@ class IAlgorithm
 public:
     virtual ~IAlgorithm() = default;
 
-    virtual SearchStatus find_solution(VActionList& out_plan) = 0;
+    virtual SearchStatus find_solution(std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) = 0;
 };
 
 }

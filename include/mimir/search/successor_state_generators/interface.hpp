@@ -7,18 +7,92 @@
 namespace mimir
 {
 /**
- * Interface class
+ * Dynamic interface class
  */
-class ISSG
+class IDynamicSSG
 {
 public:
-    virtual ~ISSG() = default;
+    virtual ~IDynamicSSG() = default;
 
-    [[nodiscard]] virtual VState get_or_create_initial_state(Problem problem) = 0;
+    [[nodiscard]] virtual ConstView<StateDispatcher<StateReprTag>> get_or_create_initial_state(Problem problem) = 0;
 
-    [[nodiscard]] virtual VState get_or_create_successor_state(VState state, VAction action) = 0;
+    [[nodiscard]] virtual ConstView<StateDispatcher<StateReprTag>> get_or_create_successor_state(ConstView<StateDispatcher<StateReprTag>> state,
+                                                                                                 ConstView<ActionDispatcher<StateReprTag>> action) = 0;
 
     [[nodiscard]] virtual size_t state_count() const = 0;
+};
+
+/**
+ * Static interface class
+ */
+template<typename Derived>
+class IStaticSSG : public IDynamicSSG
+{
+private:
+    using S = typename TypeTraits<Derived>::StateTag;
+    using ConstStateView = ConstView<StateDispatcher<S>>;
+    using ConstActionView = ConstView<ActionDispatcher<S>>;
+
+    IStaticSSG() = default;
+    friend Derived;
+
+    /// @brief Helper to cast to Derived.
+    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
+    constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+public:
+    [[nodiscard]] ConstStateView get_or_create_initial_state(Problem problem) override { return self().get_or_create_initial_state_impl(problem); }
+
+    [[nodiscard]] ConstStateView get_or_create_successor_state(ConstStateView state, ConstActionView action) override
+    {
+        return self().get_or_create_successor_state_impl(state, action);
+    }
+
+    [[nodiscard]] size_t state_count() const override { return self().state_count_impl(); }
+};
+
+/**
+ * Dispatcher class.
+ *
+ * Wrap the tag to dispatch the correct overload.
+ * The template parameters are arguments that all specializations have in common.
+ * Do not add your specialized arguments here, add them to your derived tag instead.
+ */
+template<IsStateTag S>
+struct SSGDispatcher
+{
+};
+
+template<typename T>
+struct is_ssg_dispatcher : std::false_type
+{
+};
+
+template<IsStateTag S>
+struct is_ssg_dispatcher<SSGDispatcher<S>> : std::true_type
+{
+};
+
+template<typename T>
+concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
+
+/**
+ * General implementation class.
+ *
+ * Specialize the wrapped tag to provide your own implementation of a successor state generator.
+ */
+template<IsSSGDispatcher S>
+class SSG : public IStaticSSG<SSG<S>>
+{
+};
+
+/**
+ * Type traits.
+ */
+template<IsStateTag S>
+struct TypeTraits<SSG<SSGDispatcher<S>>>
+{
+    using StateTag = S;
 };
 }
 

@@ -19,17 +19,17 @@ class AStarAlgorithm : public IAlgorithm
 {
 private:
     Problem m_problem;
-    std::unique_ptr<ISSG> m_state_repository;
-    VState m_initial_state;
-    std::unique_ptr<IAAG> m_successor_generator;
+    std::unique_ptr<IDynamicSSG> m_state_repository;
+    ConstView<StateDispatcher<StateReprTag>> m_initial_state;
+    std::unique_ptr<IDynamicAAG> m_successor_generator;
     std::unique_ptr<IHeuristic> m_heuristic;
     std::unique_ptr<IEventHandler> m_event_handler;
 
 public:
     AStarAlgorithm(const Problem& problem,
                    PDDLFactories& pddl_factories,
-                   std::unique_ptr<ISSG>&& state_repository,
-                   std::unique_ptr<IAAG>&& successor_generator,
+                   std::unique_ptr<IDynamicSSG>&& state_repository,
+                   std::unique_ptr<IDynamicAAG>&& successor_generator,
                    std::unique_ptr<IHeuristic>&& heuristic,
                    std::unique_ptr<IEventHandler>&& event_handler) :
         m_problem(problem),
@@ -41,7 +41,7 @@ public:
     {
     }
 
-    SearchStatus find_solution(VActionList& out_plan) override
+    SearchStatus find_solution(std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) override
     {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;

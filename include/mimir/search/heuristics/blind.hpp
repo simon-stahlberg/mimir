@@ -17,7 +17,7 @@ private:
 public:
     BlindHeuristic(Problem problem) : m_problem(problem) {}
 
-    double compute_heuristic(VState state) override { return 0.; }
+    double compute_heuristic(ConstView<StateDispatcher<StateReprTag>> state) override { return 0.; }
 };
 
 }  // namespace mimir

@@ -29,10 +29,10 @@ class BrFsAlgorithm : public IAlgorithm
 private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
-    std::unique_ptr<ISSG> m_state_repository;
-    VState m_initial_state;
-    std::unique_ptr<IAAG> m_successor_generator;
-    std::deque<VState> m_queue;
+    std::unique_ptr<IDynamicSSG> m_state_repository;
+    ConstView<StateDispatcher<StateReprTag>> m_initial_state;
+    std::unique_ptr<IDynamicAAG> m_successor_generator;
+    std::deque<ConstView<StateDispatcher<StateReprTag>>> m_queue;
     CostSearchNodeVector m_search_nodes;
     std::unique_ptr<IEventHandler> m_event_handler;
 
@@ -42,7 +42,7 @@ private:
     ///             satisfied.
     /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
     ///                      the to the state underlying the search node.
-    void set_plan(const CostSearchNodeConstViewProxy& view, VActionList& out_plan) const
+    void set_plan(const CostSearchNodeConstViewProxy& view, std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) const
     {
         out_plan.clear();
         auto cur_view = view;
@@ -72,8 +72,8 @@ private:
 public:
     BrFsAlgorithm(const Problem& problem,
                   PDDLFactories& pddl_factories,
-                  std::unique_ptr<ISSG>&& state_repository,
-                  std::unique_ptr<IAAG>&& successor_generator,
+                  std::unique_ptr<IDynamicSSG>&& state_repository,
+                  std::unique_ptr<IDynamicAAG>&& successor_generator,
                   std::unique_ptr<IEventHandler>&& event_handler) :
         m_problem(problem),
         m_pddl_factories(pddl_factories),
@@ -85,7 +85,7 @@ public:
     {
     }
 
-    SearchStatus find_solution(VActionList& out_plan) override
+    SearchStatus find_solution(std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) override
     {
         m_event_handler->on_start_search(this->m_initial_state, m_pddl_factories);
 
@@ -99,7 +99,7 @@ public:
         auto goal_ground_literals = GroundLiteralList {};
         m_pddl_factories.to_ground_literals(goal_literals, goal_ground_literals);
 
-        auto applicable_actions = VActionList {};
+        auto applicable_actions = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
 
         m_queue.emplace_back(m_initial_state);
         while (!m_queue.empty())

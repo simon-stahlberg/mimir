@@ -15,7 +15,7 @@ class IHeuristic
 public:
     virtual ~IHeuristic() = default;
 
-    [[nodiscard]] virtual double compute_heuristic(VState state) = 0;
+    [[nodiscard]] virtual double compute_heuristic(ConstView<StateDispatcher<StateReprTag>> state) = 0;
 };
 
 }

@@ -20,11 +20,11 @@ private:
     template<typename>
     friend class EventHandlerBase;
 
-    void on_generate_state_impl(VAction action, VState successor_state, const PDDLFactories& pddl_factories) const {}
+    void on_generate_state_impl(VAction action, ConstView<StateDispatcher<StateReprTag>> successor_state, const PDDLFactories& pddl_factories) const {}
 
-    void on_expand_state_impl(VState state, const PDDLFactories& pddl_factories) const {}
+    void on_expand_state_impl(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) const {}
 
-    void on_start_search_impl(VState initial_state, const PDDLFactories& pddl_factories) const {}
+    void on_start_search_impl(ConstView<StateDispatcher<StateReprTag>> initial_state, const PDDLFactories& pddl_factories) const {}
 
     void on_end_search_impl() const
     {
@@ -33,8 +33,7 @@ private:
                   << "Search time: " << this->m_statistics.get_search_time_ms().count() << "ms" << std::endl;
     }
 
-    template<IsActionDispatcher A>
-    void on_solved_impl(const std::vector<ConstView<A>>& ground_action_plan) const
+    void on_solved_impl(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& ground_action_plan) const
     {
         auto plan = to_plan(ground_action_plan);
         std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;

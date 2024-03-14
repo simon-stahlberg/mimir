@@ -16,7 +16,8 @@ namespace mimir
 /**
  * Implementation class
  */
-class SSG : public ISSG
+template<>
+class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>
 {
 private:
     using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
@@ -27,10 +28,11 @@ private:
     DenseStateSet m_states;
     Builder<StateDispatcher<DenseStateTag>> m_state_builder;
 
-public:
-    explicit SSG(Problem problem) : m_problem(problem) {}
+    /* Implement IStaticSSG interface */
+    template<typename>
+    friend class IStaticSSG;
 
-    [[nodiscard]] VState get_or_create_initial_state(Problem problem) override
+    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(const Problem& problem)
     {
         int next_state_id = m_states.size();
 
@@ -65,7 +67,7 @@ public:
         return ConstStateView(m_states.insert(flatmemory_builder));
     }
 
-    [[nodiscard]] ConstStateView get_or_create_successor_state(ConstStateView state, ConstActionView action) override
+    [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action)
     {
         int next_state_id = m_states.size();
 
@@ -104,7 +106,10 @@ public:
         return ConstStateView(m_states.insert(flatmemory_builder));
     }
 
-    [[nodiscard]] size_t state_count() const override { return m_states.size(); }
+    [[nodiscard]] size_t state_count_impl() const { return m_states.size(); }
+
+public:
+    explicit SSG(Problem problem) : m_problem(problem) {}
 };
 
 }

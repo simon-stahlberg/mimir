@@ -34,7 +34,7 @@ public:
 
     std::tuple<SearchStatus, Plan> find_solution() override
     {
-        auto action_view_list = VActionList {};
+        auto action_view_list = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
         const auto status = m_algorithm->find_solution(action_view_list);
         return std::make_tuple(status, to_plan(action_view_list));
     }

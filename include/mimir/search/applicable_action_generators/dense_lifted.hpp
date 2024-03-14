@@ -22,7 +22,8 @@ namespace mimir
 /**
  * Fully specialized implementation class.
  */
-class LiftedAAG : public IAAG
+template<>
+class AAG<LiftedAAGDispatcher<DenseStateTag>> : public IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>
 {
 private:
     using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
@@ -221,8 +222,49 @@ private:
         }
     }
 
+    /* Implement IStaticAAG interface */
+    template<typename>
+    friend class IStaticAAG;
+
+    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
+    {
+        out_applicable_actions.clear();
+
+        // Create the assignment sets that are shared by all action schemas.
+
+        std::vector<size_t> atom_ids;
+
+        for (const auto& atom_id : state.get_atoms_bitset())
+        {
+            atom_ids.emplace_back(atom_id);
+        }
+
+        const auto assignment_sets = build_assignment_sets(m_problem, atom_ids, m_pddl_factories);
+
+        // Get the applicable ground actions for each action schema.
+
+        for (const auto& flat_action : m_flat_actions)
+        {
+            if (nullary_preconditions_hold(flat_action, state))
+            {
+                if (flat_action.arity == 0)
+                {
+                    nullary_case(flat_action, state, out_applicable_actions);
+                }
+                else if (flat_action.arity == 1)
+                {
+                    unary_case(flat_action, state, out_applicable_actions);
+                }
+                else
+                {
+                    general_case(assignment_sets, flat_action, state, out_applicable_actions);
+                }
+            }
+        }
+    }
+
 public:
-    LiftedAAG(Problem problem, PDDLFactories& pddl_factories) :
+    AAG(Problem problem, PDDLFactories& pddl_factories) :
         m_problem(problem),
         m_pddl_factories(pddl_factories),
         m_flat_actions(),
@@ -356,43 +398,6 @@ public:
             m_to_vertex_assignment.emplace(flat_action.source, std::move(to_vertex_assignment));
             m_objects_by_parameter_type.emplace(flat_action.source, std::move(objects_by_parameter_type));
             m_statically_consistent_assignments.emplace(flat_action.source, std::move(statically_consistent_assignments));
-        }
-    }
-
-    void generate_applicable_actions(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) override
-    {
-        out_applicable_actions.clear();
-
-        // Create the assignment sets that are shared by all action schemas.
-
-        std::vector<size_t> atom_ids;
-
-        for (const auto& atom_id : state.get_atoms_bitset())
-        {
-            atom_ids.emplace_back(atom_id);
-        }
-
-        const auto assignment_sets = build_assignment_sets(m_problem, atom_ids, m_pddl_factories);
-
-        // Get the applicable ground actions for each action schema.
-
-        for (const auto& flat_action : m_flat_actions)
-        {
-            if (nullary_preconditions_hold(flat_action, state))
-            {
-                if (flat_action.arity == 0)
-                {
-                    nullary_case(flat_action, state, out_applicable_actions);
-                }
-                else if (flat_action.arity == 1)
-                {
-                    unary_case(flat_action, state, out_applicable_actions);
-                }
-                else
-                {
-                    general_case(assignment_sets, flat_action, state, out_applicable_actions);
-                }
-            }
         }
     }
 

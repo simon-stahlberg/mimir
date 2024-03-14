@@ -12,11 +12,8 @@ namespace mimir
 // can use compile flags to define different representations
 #ifdef FALSE
 #else
-using VState = mimir::ConstDenseStateViewProxy;
-using VAction = mimir::ConstDenseActionViewProxy;
+using StateReprTag = DenseStateTag;
 #endif
-
-using VActionList = std::vector<VAction>;
 
 }
 
