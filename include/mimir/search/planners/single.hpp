@@ -5,6 +5,7 @@
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/search/algorithms.hpp"
 #include "mimir/search/planners/interface.hpp"
 
 #include <tuple>
@@ -13,20 +14,9 @@ namespace mimir
 {
 
 /**
- * Derived ID class.
- *
- * Define name and template parameters of your own implementation.
- */
-template<IsAlgorithmTag A>
-struct SingleTag : public PlannerTag
-{
-};
-
-/**
  * Specialized implementation class.
  */
-template<IsAlgorithmTag A>
-class Planner<SingleTag<A>> : public IPlanner<Planner<SingleTag<A>>>
+class SinglePlanner : public IPlanner
 {
 private:
     // Give access to the private interface implementations.
@@ -36,7 +26,7 @@ private:
     Domain m_domain;
     Problem m_problem;
 
-    Algorithm<AlgorithmDispatcher<A>> m_algorithm;
+    std::unique_ptr<IAlgorithm> m_algorithm;
 
     /* Implement IPlanner Interface*/
     template<typename>
@@ -44,8 +34,8 @@ private:
 
     std::tuple<SearchStatus, Plan> find_solution_impl()
     {
-        auto action_view_list = typename TypeTraits<std::remove_reference_t<decltype(m_algorithm)>>::ConstActionViewList();
-        const auto status = m_algorithm.find_solution(action_view_list);
+        auto action_view_list = VActionList {};
+        const auto status = m_algorithm->find_solution(action_view_list);
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
@@ -53,10 +43,10 @@ private:
     const Problem& get_problem_impl() const { return m_problem; }
 
 public:
-    Planner(const Domain& domain, const Problem& problem, PDDLFactories& factories) :
+    SinglePlanner(const Domain& domain, const Problem& problem, PDDLFactories& factories, std::unique_ptr<IAlgorithm>&& algorithm) :
         m_domain(domain),
         m_problem(problem),
-        m_algorithm(Algorithm<AlgorithmDispatcher<A>>(problem, factories))
+        m_algorithm(std::move(algorithm))
     {
     }
 };

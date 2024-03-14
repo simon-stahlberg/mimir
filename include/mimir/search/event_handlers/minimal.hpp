@@ -4,43 +4,27 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
 #include "mimir/search/event_handlers/interface.hpp"
-#include "mimir/search/statistics.hpp"
+
+#include <iostream>
 
 namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation
- */
-struct MinimalEventHandlerTag : public EventHandlerTag
-{
-};
-
-/**
  * Implementation class
  */
-template<>
-class EventHandler<EventHandlerDispatcher<MinimalEventHandlerTag>> : public EventHandlerBase<EventHandler<EventHandlerDispatcher<MinimalEventHandlerTag>>>
+class MinimalEventHandler : public EventHandlerBase<MinimalEventHandler>
 {
 private:
     /* Implement EventHandlerBase interface */
     template<typename>
     friend class EventHandlerBase;
 
-    template<IsActionDispatcher A, IsStateDispatcher S>
-    void on_generate_state_impl(ConstView<A> action, ConstView<S> successor_state, const PDDLFactories& pddl_factories) const
-    {
-    }
+    void on_generate_state_impl(VAction action, VState successor_state, const PDDLFactories& pddl_factories) const {}
 
-    template<IsStateDispatcher S>
-    void on_expand_state_impl(ConstView<S> state, const PDDLFactories& pddl_factories) const
-    {
-    }
+    void on_expand_state_impl(VState state, const PDDLFactories& pddl_factories) const {}
 
-    template<IsStateDispatcher S>
-    void on_start_search_impl(ConstView<S> initial_state, const PDDLFactories& pddl_factories) const
-    {
-    }
+    void on_start_search_impl(VState initial_state, const PDDLFactories& pddl_factories) const {}
 
     void on_end_search_impl() const
     {

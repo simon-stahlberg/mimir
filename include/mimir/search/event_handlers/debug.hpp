@@ -4,45 +4,35 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/translations.hpp"
 #include "mimir/search/event_handlers/interface.hpp"
-#include "mimir/search/statistics.hpp"
+
+#include <iostream>
 
 namespace mimir
 {
 
 /**
- * ID class to dispatch a specialized implementation
- */
-struct DebugEventHandlerTag : public EventHandlerTag
-{
-};
-
-/**
  * Implementation class
  */
-template<>
-class EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>> : public EventHandlerBase<EventHandler<EventHandlerDispatcher<DebugEventHandlerTag>>>
+class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
 {
 private:
     /* Implement EventHandlerBase interface */
     template<typename>
     friend class EventHandlerBase;
 
-    template<IsActionDispatcher A, IsStateDispatcher S>
-    void on_generate_state_impl(ConstView<A> action, ConstView<S> successor_state, const PDDLFactories& pddl_factories) const
+    void on_generate_state_impl(VAction action, VState successor_state, const PDDLFactories& pddl_factories) const
     {
         std::cout << "Action: " << std::make_tuple(action, std::cref(pddl_factories)) << std::endl;
         std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(pddl_factories)) << std::endl;
     }
 
-    template<IsStateDispatcher S>
-    void on_expand_state_impl(ConstView<S> state, const PDDLFactories& pddl_factories) const
+    void on_expand_state_impl(VState state, const PDDLFactories& pddl_factories) const
     {
         std::cout << "---" << std::endl;
         std::cout << "State: " << std::make_tuple(state, std::cref(pddl_factories)) << std::endl;
     }
 
-    template<IsStateDispatcher S>
-    void on_start_search_impl(ConstView<S> initial_state, const PDDLFactories& pddl_factories) const
+    void on_start_search_impl(VState initial_state, const PDDLFactories& pddl_factories) const
     {
         std::cout << "Initial: " << std::make_tuple(initial_state, std::cref(pddl_factories)) << std::endl;
     }
@@ -54,8 +44,7 @@ private:
                   << "Search time: " << this->m_statistics.get_search_time_ms().count() << "ms" << std::endl;
     }
 
-    template<IsActionDispatcher A>
-    void on_solved_impl(const std::vector<ConstView<A>>& ground_action_plan) const
+    void on_solved_impl(const VActionList& ground_action_plan) const
     {
         auto plan = to_plan(ground_action_plan);
         std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;
