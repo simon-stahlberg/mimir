@@ -1,6 +1,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
+#include "mimir/search/event_handlers.hpp"
 
 #include <gtest/gtest.h>
 
@@ -13,9 +14,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
     PDDLParser parser(domain_file, problem_file);
-    auto grounded_brfs = Algorithm<AlgorithmDispatcher<BrFSTag<GroundedTag>>>(parser.get_problem(), parser.get_factories());
-    using ConstActionViewList = typename TypeTraits<decltype(grounded_brfs)>::ConstActionViewList;
-    ConstActionViewList plan;
+    auto state_repository = std::make_unique<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
+    auto successor_generator = std::make_unique<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto event_handler = std::make_unique<MinimalEventHandler>();
+    auto grounded_brfs =
+        BrFsAlgorithm(parser.get_problem(), parser.get_factories(), std::move(state_repository), std::move(successor_generator), std::move(event_handler));
+    auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
     const auto search_status = grounded_brfs.find_solution(plan);
 }
 
@@ -25,9 +29,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
     PDDLParser parser(domain_file, problem_file);
-    auto lifted_brfs = Algorithm<AlgorithmDispatcher<BrFSTag<LiftedTag>>>(parser.get_problem(), parser.get_factories());
-    using ConstActionViewList = typename TypeTraits<decltype(lifted_brfs)>::ConstActionViewList;
-    ConstActionViewList plan;
+    auto state_repository = std::make_unique<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
+    auto successor_generator = std::make_unique<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto event_handler = std::make_unique<MinimalEventHandler>();
+    auto lifted_brfs =
+        BrFsAlgorithm(parser.get_problem(), parser.get_factories(), std::move(state_repository), std::move(successor_generator), std::move(event_handler));
+    auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
     const auto search_status = lifted_brfs.find_solution(plan);
 }
 

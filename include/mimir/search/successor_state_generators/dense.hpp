@@ -32,7 +32,7 @@ private:
     template<typename>
     friend class IStaticSSG;
 
-    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(const Problem& problem)
+    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem)
     {
         int next_state_id = m_states.size();
 

@@ -35,6 +35,7 @@
 #include "mimir/search/actions.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/event_handlers.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/planners.hpp"

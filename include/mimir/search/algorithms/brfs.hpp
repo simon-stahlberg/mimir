@@ -5,11 +5,11 @@
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/event_handlers/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/search_nodes/cost/cost.hpp"
-#include "mimir/search/successor_state_generators/interface.hpp"
+#include "mimir/search/successor_state_generators.hpp"
 
 #include <deque>
 #include <flatmemory/flatmemory.hpp>

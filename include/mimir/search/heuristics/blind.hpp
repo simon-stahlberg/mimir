@@ -2,22 +2,34 @@
 #define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 
 #include "mimir/search/heuristics/interface.hpp"
+#include "mimir/search/type_traits.hpp"
 
 namespace mimir
 {
 
 /**
+ * Derived ID class.
+ *
+ * Define name and template parameters of your own implementation.
+ */
+struct BlindTag : public HeuristicTag
+{
+};
+
+/**
  * Specialized implementation class.
  */
-class BlindHeuristic : public IHeuristic
+template<>
+class Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>> : public IStaticHeuristic<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>
 {
 private:
-    Problem m_problem;
+    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
 
-public:
-    BlindHeuristic(Problem problem) : m_problem(problem) {}
+    /* Implement IStaticHeuristic interface. */
+    template<typename>
+    friend class IStaticHeuristic;
 
-    double compute_heuristic(ConstView<StateDispatcher<StateReprTag>> state) override { return 0.; }
+    double compute_heuristic_impl(const ConstStateView& state) { return 0.; }
 };
 
 }  // namespace mimir

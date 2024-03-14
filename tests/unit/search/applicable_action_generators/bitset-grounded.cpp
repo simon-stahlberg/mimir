@@ -12,7 +12,7 @@ TEST(MimirTests, SearchAAGsDefaultGroundedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
     PDDLParser parser(domain_file, problem_file);
-    auto grounded_aag = AAG<AAGDispatcher<GroundedTag, DenseStateTag>>(parser.get_problem(), parser.get_factories());
+    auto grounded_aag = AAG<GroundedAAGDispatcher<DenseStateTag>>(parser.get_problem(), parser.get_factories());
 }
 
 }

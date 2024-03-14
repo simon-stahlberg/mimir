@@ -15,13 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/parser.hpp"
-#include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/planning_mode.hpp"
+#include "mimir/mimir.hpp"
 
 #include <iostream>
-#include <mimir/search/planners.hpp>
 
 using namespace mimir;
 
@@ -49,11 +45,20 @@ int main(int argc, char** argv)
 
     std::cout << "Initializing planner..." << std::endl;
 
-    auto planner = Planner<SingleTag<BrFSTag<LiftedTag, DenseStateTag>>>(parser.get_domain(), parser.get_problem(), parser.get_factories());
+    auto state_repository = std::make_unique<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
+    auto successor_generator = std::make_unique<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto event_handler = std::make_unique<MinimalEventHandler>();
+    auto lifted_brfs = std::make_unique<BrFsAlgorithm>(parser.get_problem(),
+                                                       parser.get_factories(),
+                                                       std::move(state_repository),
+                                                       std::move(successor_generator),
+                                                       std::move(event_handler));
+
+    auto planner = std::make_unique<SinglePlanner>(parser.get_domain(), parser.get_problem(), parser.get_factories(), std::move(lifted_brfs));
 
     std::cout << "Finding solution..." << std::endl;
 
-    auto [stats, plan] = planner.find_solution();
+    auto [stats, plan] = planner->find_solution();
 
     return 0;
 }

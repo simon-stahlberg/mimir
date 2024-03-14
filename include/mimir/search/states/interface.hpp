@@ -3,7 +3,6 @@
 
 #include "mimir/search/builder.hpp"
 #include "mimir/search/planning_mode.hpp"
-#include "mimir/search/type_traits.hpp"
 #include "mimir/search/view_const.hpp"
 
 #include <cstdint>

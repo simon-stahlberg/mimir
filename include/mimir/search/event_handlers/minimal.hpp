@@ -20,7 +20,11 @@ private:
     template<typename>
     friend class EventHandlerBase;
 
-    void on_generate_state_impl(VAction action, ConstView<StateDispatcher<StateReprTag>> successor_state, const PDDLFactories& pddl_factories) const {}
+    void on_generate_state_impl(ConstView<ActionDispatcher<StateReprTag>> action,
+                                ConstView<StateDispatcher<StateReprTag>> successor_state,
+                                const PDDLFactories& pddl_factories) const
+    {
+    }
 
     void on_expand_state_impl(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) const {}
 

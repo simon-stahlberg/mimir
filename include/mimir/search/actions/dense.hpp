@@ -3,6 +3,7 @@
 
 #include "mimir/common/hash.hpp"
 #include "mimir/search/actions/interface.hpp"
+#include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
 
 namespace mimir
