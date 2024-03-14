@@ -19,28 +19,10 @@ namespace mimir
 class SinglePlanner : public IPlanner
 {
 private:
-    // Give access to the private interface implementations.
-    template<typename>
-    friend class IPlanner;
-
     Domain m_domain;
     Problem m_problem;
 
     std::unique_ptr<IAlgorithm> m_algorithm;
-
-    /* Implement IPlanner Interface*/
-    template<typename>
-    friend class IPlanner;
-
-    std::tuple<SearchStatus, Plan> find_solution_impl()
-    {
-        auto action_view_list = VActionList {};
-        const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list));
-    }
-
-    const Domain& get_domain_impl() const { return m_domain; }
-    const Problem& get_problem_impl() const { return m_problem; }
 
 public:
     SinglePlanner(const Domain& domain, const Problem& problem, PDDLFactories& factories, std::unique_ptr<IAlgorithm>&& algorithm) :
@@ -49,6 +31,16 @@ public:
         m_algorithm(std::move(algorithm))
     {
     }
+
+    std::tuple<SearchStatus, Plan> find_solution() override
+    {
+        auto action_view_list = VActionList {};
+        const auto status = m_algorithm->find_solution(action_view_list);
+        return std::make_tuple(status, to_plan(action_view_list));
+    }
+
+    const Domain& get_domain() const override { return m_domain; }
+    const Problem& get_problem() const override { return m_problem; }
 };
 
 }

@@ -2,7 +2,10 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/heuristics.hpp"
+#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/event_handlers/interface.hpp"
+#include "mimir/search/heuristics/interface.hpp"
+#include "mimir/search/successor_state_generators/interface.hpp"
 
 #include <vector>
 

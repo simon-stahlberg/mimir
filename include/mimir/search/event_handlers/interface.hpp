@@ -17,6 +17,8 @@ namespace mimir
 class IEventHandler
 {
 public:
+    virtual ~IEventHandler() = default;
+
     /// @brief React on generating a successor_state by applying an action.
     virtual void on_generate_state(VAction action, VState successor_state, const PDDLFactories& pddl_factories) = 0;
 
@@ -53,11 +55,8 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    /* Implement IEventHandler interface */
-    template<typename>
-    friend class IEventHandler;
-
-    void on_generate_state(VAction action, VState successor_state, const PDDLFactories& pddl_factories) override;
+public:
+    void on_generate_state(VAction action, VState successor_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
@@ -71,7 +70,7 @@ private:
         self().on_expand_state_impl(state, pddl_factories);
     }
 
-    void on_start_search(VState initial_state, const PDDLFactories& pddl_factories) - override
+    void on_start_search(VState initial_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
