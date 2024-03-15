@@ -1,0 +1,20 @@
+include CMakeLists.txt
+include LICENSE.md
+include MANIFEST.in
+include pyproject.toml
+include README.md
+include setup.py
+include Config.cmake.in
+include dependencies/benchmark/CMakeLists.txt
+include dependencies/boost/CMakeLists.txt
+include dependencies/flatmemory/CMakeLists.txt
+include dependencies/googletest/CMakeLists.txt
+include dependencies/loki/CMakeLists.txt
+include dependencies/pybind11/CMakeLists.txt
+include dependencies/CMakeLists.txt
+recursive-include cmake/ *
+recursive-include exe/ *
+recursive-include include/ *
+recursive-include python/ *
+recursive-include src/ *
+recursive-include tests/ *

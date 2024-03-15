@@ -2,15 +2,15 @@ find_package(pybind11 CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH
 # Set result variables
 find_package(pybind11)
 
-pybind11_add_module(_mimir MODULE)
-target_sources(_mimir
+pybind11_add_module(_pymimir MODULE)
+target_sources(_pymimir
     PRIVATE
         main.cpp
-        mimir/formalism/bindings.cpp
-        mimir/search/bindings.cpp)
-target_link_libraries(_mimir
+        pymimir/formalism/bindings.cpp
+        pymimir/search/bindings.cpp)
+target_link_libraries(_pymimir
     PRIVATE
         pybind11::module
         mimir::core)
-target_link_options(_mimir PRIVATE -static-libstdc++)
-target_compile_definitions(_mimir PUBLIC MIMIR_VERSION_INFO="${MIMIR_VERSION_INFO}")
+target_link_options(_pymimir PRIVATE -static-libstdc++)
+target_compile_definitions(_pymimir PUBLIC MIMIR_VERSION_INFO="${MIMIR_VERSION_INFO}")

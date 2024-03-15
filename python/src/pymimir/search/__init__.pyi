@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Union, List, MutableSet, Tuple
 
-from mimir.formalism import Problem, PDDLFactories
+from pymimir.formalism import Problem, PDDLFactories
 
 
 class SearchNodeStatus(Enum):
@@ -65,7 +65,3 @@ class BrFsAlgorithm(IAlgorithm):
 
 class AStarAlgorithm(IAlgorithm):
     def __init__(self, problem: Problem, pddl_factories: PDDLFactories, state_repository: ISSG, successor_state_generator: IAAG, heuristic: IHeuristic, event_handler: IEventHandler) -> None: ...
-
-
-
-

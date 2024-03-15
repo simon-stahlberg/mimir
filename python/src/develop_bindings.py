@@ -9,8 +9,8 @@ LIB_PATH = ROOT_DIR / "build" / "python" / "src"
 
 sys.path.append(str(LIB_PATH))
 
-from mimir.formalism import PDDLParser
-from mimir.search import SSG, LiftedAAG, MinimalEventHandler, BrFsAlgorithm
+from pymimir.formalism import PDDLParser
+from pymimir.search import SSG, LiftedAAG, MinimalEventHandler, DebugEventHandler, BrFsAlgorithm
 
 
 if __name__ == "__main__":
