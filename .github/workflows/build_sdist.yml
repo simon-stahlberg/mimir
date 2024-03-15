@@ -3,15 +3,13 @@ name: Build Source Distribution
 on:
   push:
     branches:
-      - main
-      #- master
-      #- serialization
+      - dynamic
 
 jobs:
   build_wheels:
     runs-on: ubuntu-latest
 
-    #if: github.repository_owner == 'rleap-project'
+    if: github.repository_owner == 'simon-stahlberg'
 
     steps:
     - name: Checkout repository
@@ -30,8 +28,8 @@ jobs:
     - name: Build source distribution
       run: python setup.py sdist
 
-    #- name: Upload to PyPI
-    #  env:
-    #    TWINE_USERNAME: __token__
-    #    TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-    #  run: twine upload --skip-existing --repository-url https://upload.pypi.org/legacy/ dist/*
+    - name: Upload to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: twine upload --skip-existing --repository-url https://upload.pypi.org/legacy/ dist/*
