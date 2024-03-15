@@ -17,9 +17,8 @@
 
 #include "predicate.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "parameter.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

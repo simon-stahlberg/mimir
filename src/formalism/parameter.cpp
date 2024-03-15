@@ -15,12 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/parameter.hpp"
+
+#include "mimir/formalism/type.hpp"
+#include "mimir/formalism/variable.hpp"
+
 #include <cassert>
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/parameter.hpp>
-#include <mimir/formalism/type.hpp>
-#include <mimir/formalism/variable.hpp>
 
 namespace mimir
 {

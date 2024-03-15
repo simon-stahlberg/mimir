@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/numeric_fluent.hpp"
+
+#include "mimir/formalism/function.hpp"
+
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/function.hpp>
-#include <mimir/formalism/numeric_fluent.hpp>
 
 namespace mimir
 {

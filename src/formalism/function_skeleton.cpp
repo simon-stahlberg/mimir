@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/function_skeleton.hpp"
+
+#include "mimir/formalism/parameter.hpp"
+
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/function_skeleton.hpp>
-#include <mimir/formalism/parameter.hpp>
 
 namespace mimir
 {

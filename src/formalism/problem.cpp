@@ -15,18 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/problem.hpp"
+
+#include "loki/pddl/visitors.hpp"
+#include "mimir/formalism/conditions.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/metric.hpp"
+#include "mimir/formalism/numeric_fluent.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/requirements.hpp"
+
 #include <iostream>
-#include <loki/pddl/visitors.hpp>
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/conditions.hpp>
-#include <mimir/formalism/domain.hpp>
-#include <mimir/formalism/ground_literal.hpp>
-#include <mimir/formalism/metric.hpp>
-#include <mimir/formalism/numeric_fluent.hpp>
-#include <mimir/formalism/object.hpp>
-#include <mimir/formalism/problem.hpp>
-#include <mimir/formalism/requirements.hpp>
 
 using namespace std;
 

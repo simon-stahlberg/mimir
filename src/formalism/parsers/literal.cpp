@@ -18,8 +18,7 @@
 #include "literal.hpp"
 
 #include "atom.hpp"
-
-#include <mimir/formalism/factories.hpp>
+#include "mimir/formalism/factories.hpp"
 
 namespace mimir
 {

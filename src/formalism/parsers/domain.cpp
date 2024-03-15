@@ -19,12 +19,11 @@
 
 #include "action.hpp"
 #include "function_skeleton.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "object.hpp"
 #include "predicate.hpp"
 #include "requirements.hpp"
 #include "type.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

@@ -17,7 +17,7 @@
 
 #include "requirements.hpp"
 
-#include <mimir/formalism/factories.hpp>
+#include "mimir/formalism/factories.hpp"
 
 namespace mimir
 {

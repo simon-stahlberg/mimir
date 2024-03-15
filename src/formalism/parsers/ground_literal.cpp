@@ -18,8 +18,7 @@
 #include "ground_literal.hpp"
 
 #include "ground_atom.hpp"
-
-#include <mimir/formalism/factories.hpp>
+#include "mimir/formalism/factories.hpp"
 
 namespace mimir
 {

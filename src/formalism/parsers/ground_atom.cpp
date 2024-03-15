@@ -17,10 +17,9 @@
 
 #include "ground_atom.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "object.hpp"
 #include "predicate.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

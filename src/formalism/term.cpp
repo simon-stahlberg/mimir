@@ -15,11 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/term.hpp"
+
+#include "loki/pddl/visitors.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/variable.hpp"
+
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/object.hpp>
-#include <mimir/formalism/term.hpp>
-#include <mimir/formalism/variable.hpp>
 
 namespace mimir
 {
@@ -62,7 +65,10 @@ const Variable& TermVariableImpl::get_variable() const { return m_variable; }
 
 namespace std
 {
-bool less<mimir::Term>::operator()(const mimir::Term& left_term, const mimir::Term& right_term) const { return *left_term < *right_term; }
+bool less<mimir::Term>::operator()(const mimir::Term& left_term, const mimir::Term& right_term) const
+{
+    return std::visit(loki::pddl::LessComparatorVisitor(), *left_term, *right_term);
+}
 
 std::size_t hash<mimir::TermObjectImpl>::operator()(const mimir::TermObjectImpl& term) const { return term.hash(); }
 

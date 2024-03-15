@@ -17,9 +17,8 @@
 
 #include "object.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "type.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

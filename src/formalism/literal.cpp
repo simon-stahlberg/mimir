@@ -15,10 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/literal.hpp"
+
+#include "mimir/formalism/atom.hpp"
+
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/atom.hpp>
-#include <mimir/formalism/literal.hpp>
 
 namespace mimir
 {

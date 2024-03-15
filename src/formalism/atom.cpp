@@ -15,12 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <loki/pddl/visitors.hpp>
+#include "mimir/formalism/atom.hpp"
+
+#include "loki/pddl/visitors.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/term.hpp"
+
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/atom.hpp>
-#include <mimir/formalism/predicate.hpp>
-#include <mimir/formalism/term.hpp>
 
 namespace mimir
 {

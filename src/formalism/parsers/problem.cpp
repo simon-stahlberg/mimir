@@ -21,11 +21,10 @@
 #include "domain.hpp"
 #include "ground_literal.hpp"
 #include "metric.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "numeric_fluent.hpp"
 #include "object.hpp"
 #include "requirements.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

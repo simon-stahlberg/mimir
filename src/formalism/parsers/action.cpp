@@ -19,9 +19,8 @@
 
 #include "conditions.hpp"
 #include "effects.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "parameter.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

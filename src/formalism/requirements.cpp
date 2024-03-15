@@ -15,9 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/requirements.hpp"
+
 #include <cassert>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/requirements.hpp>
 
 namespace mimir
 {

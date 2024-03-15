@@ -17,10 +17,9 @@
 
 #include "term.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "object.hpp"
 #include "variable.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

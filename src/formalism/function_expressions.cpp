@@ -15,12 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/function_expressions.hpp"
+
+#include "loki/pddl/visitors.hpp"
+#include "mimir/formalism/function.hpp"
+
 #include <cassert>
-#include <loki/pddl/visitors.hpp>
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/function.hpp>
-#include <mimir/formalism/function_expressions.hpp>
 
 namespace mimir
 {

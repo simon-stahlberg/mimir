@@ -17,10 +17,9 @@
 
 #include "parameter.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "type.hpp"
 #include "variable.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

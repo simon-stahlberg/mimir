@@ -18,8 +18,7 @@
 #include "metric.hpp"
 
 #include "function_expressions.hpp"
-
-#include <mimir/formalism/factories.hpp>
+#include "mimir/formalism/factories.hpp"
 
 namespace mimir
 {

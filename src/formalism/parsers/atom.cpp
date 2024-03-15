@@ -17,10 +17,9 @@
 
 #include "atom.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "predicate.hpp"
 #include "term.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {

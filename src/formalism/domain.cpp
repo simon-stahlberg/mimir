@@ -15,16 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/domain.hpp"
+
+#include "mimir/formalism/action.hpp"
+#include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/requirements.hpp"
+#include "mimir/formalism/type.hpp"
+
 #include <iostream>
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/action.hpp>
-#include <mimir/formalism/domain.hpp>
-#include <mimir/formalism/function_skeleton.hpp>
-#include <mimir/formalism/object.hpp>
-#include <mimir/formalism/predicate.hpp>
-#include <mimir/formalism/requirements.hpp>
-#include <mimir/formalism/type.hpp>
 #include <unordered_map>
 
 using namespace std;
@@ -209,6 +211,8 @@ const PredicateList& DomainImpl::get_predicates() const { return m_predicates; }
 const PredicateList& DomainImpl::get_static_predicates() const { return m_static_predicates; }
 
 const PredicateList& DomainImpl::get_fluent_predicates() const { return m_fluent_predicates; }
+
+const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functions; }
 
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 

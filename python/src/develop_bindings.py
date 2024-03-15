@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 ROOT_DIR = (Path.cwd().parent.parent).absolute()
-LIB_PATH = ROOT_DIR / "build" / "python"
+LIB_PATH = ROOT_DIR / "build" / "python" / "src"
 
 sys.path.append(str(LIB_PATH))
 

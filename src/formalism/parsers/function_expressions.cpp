@@ -18,8 +18,7 @@
 #include "function_expressions.hpp"
 
 #include "function.hpp"
-
-#include <mimir/formalism/factories.hpp>
+#include "mimir/formalism/factories.hpp"
 
 namespace mimir
 {

@@ -15,16 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/effects.hpp"
+
+#include "loki/pddl/visitors.hpp"
+#include "mimir/formalism/conditions.hpp"
+#include "mimir/formalism/function.hpp"
+#include "mimir/formalism/function_expressions.hpp"
+#include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/parameter.hpp"
+
 #include <cassert>
-#include <loki/pddl/visitors.hpp>
 #include <loki/utils/collections.hpp>
 #include <loki/utils/hash.hpp>
-#include <mimir/formalism/conditions.hpp>
-#include <mimir/formalism/effects.hpp>
-#include <mimir/formalism/function.hpp>
-#include <mimir/formalism/function_expressions.hpp>
-#include <mimir/formalism/literal.hpp>
-#include <mimir/formalism/parameter.hpp>
 
 namespace mimir
 {
@@ -180,7 +182,10 @@ const Effect& EffectConditionalWhenImpl::get_effect() const { return m_effect; }
 
 namespace std
 {
-bool less<mimir::Effect>::operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const { return *left_effect < *right_effect; }
+bool less<mimir::Effect>::operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const
+{
+    return std::visit(loki::pddl::LessComparatorVisitor(), *left_effect, *right_effect);
+}
 
 std::size_t hash<mimir::EffectLiteralImpl>::operator()(const mimir::EffectLiteralImpl& effect) const { return effect.hash(); }
 

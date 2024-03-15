@@ -17,10 +17,9 @@
 
 #include "function_skeleton.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "parameter.hpp"
 #include "type.hpp"
-
-#include <mimir/formalism/factories.hpp>
 
 namespace mimir
 {
