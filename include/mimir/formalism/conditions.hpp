@@ -132,7 +132,7 @@ public:
 };
 
 /* Imply */
-class ConditionImplyImpl : public loki::Base<ConditionNotImpl>
+class ConditionImplyImpl : public loki::Base<ConditionImplyImpl>
 {
 private:
     Condition m_condition_left;

@@ -15,5 +15,5 @@ from mimir.search import *
 
 if __name__ == "__main__":
     parser = PDDLParser(str(ROOT_DIR / "data" / "gripper" / "domain.pddl"), str(ROOT_DIR / "data" / "gripper" / "problem.pddl"))
-    print(parser.get_domain().get_actions())
-    print(parser.get_problem().get_objects())
+    print(str(parser.get_domain()))
+    print(str(parser.get_problem()))
