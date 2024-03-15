@@ -84,6 +84,48 @@ struct CastVisitor
 
 void init_formalism(py::module_& m_formalism)
 {
+    py::enum_<loki::pddl::RequirementEnum>(m_formalism, "RequirementEnum")
+        .value("STRIPS", loki::pddl::RequirementEnum::STRIPS)
+        .value("TYPING", loki::pddl::RequirementEnum::TYPING)
+        .value("NEGATIVE_PRECONDITIONS", loki::pddl::RequirementEnum::NEGATIVE_PRECONDITIONS)
+        .value("DISJUNCTIVE_PRECONDITIONS", loki::pddl::RequirementEnum::DISJUNCTIVE_PRECONDITIONS)
+        .value("EQUALITY", loki::pddl::RequirementEnum::EQUALITY)
+        .value("EXISTENTIAL_PRECONDITIONS", loki::pddl::RequirementEnum::EXISTENTIAL_PRECONDITIONS)
+        .value("UNIVERSAL_PRECONDITIONS", loki::pddl::RequirementEnum::UNIVERSAL_PRECONDITIONS)
+        .value("QUANTIFIED_PRECONDITIONS", loki::pddl::RequirementEnum::QUANTIFIED_PRECONDITIONS)
+        .value("CONDITIONAL_EFFECTS", loki::pddl::RequirementEnum::CONDITIONAL_EFFECTS)
+        .value("FLUENTS", loki::pddl::RequirementEnum::FLUENTS)
+        .value("OBJECT_FLUENTS", loki::pddl::RequirementEnum::OBJECT_FLUENTS)
+        .value("NUMERIC_FLUENTS", loki::pddl::RequirementEnum::NUMERIC_FLUENTS)
+        .value("ADL", loki::pddl::RequirementEnum::ADL)
+        .value("DURATIVE_ACTIONS", loki::pddl::RequirementEnum::DURATIVE_ACTIONS)
+        .value("DERIVED_PREDICATES", loki::pddl::RequirementEnum::DERIVED_PREDICATES)
+        .value("TIMED_INITIAL_LITERALS", loki::pddl::RequirementEnum::TIMED_INITIAL_LITERALS)
+        .value("PREFERENCES", loki::pddl::RequirementEnum::PREFERENCES)
+        .value("CONSTRAINTS", loki::pddl::RequirementEnum::CONSTRAINTS)
+        .value("ACTION_COSTS", loki::pddl::RequirementEnum::ACTION_COSTS)
+        .export_values();
+
+    py::enum_<loki::pddl::AssignOperatorEnum>(m_formalism, "AssignOperatorEnum")
+        .value("ASSIGN", loki::pddl::AssignOperatorEnum::ASSIGN)
+        .value("SCALE_UP", loki::pddl::AssignOperatorEnum::SCALE_UP)
+        .value("SCALE_DOWN", loki::pddl::AssignOperatorEnum::SCALE_DOWN)
+        .value("INCREASE", loki::pddl::AssignOperatorEnum::INCREASE)
+        .value("DECREASE", loki::pddl::AssignOperatorEnum::DECREASE)
+        .export_values();
+
+    py::enum_<loki::pddl::BinaryOperatorEnum>(m_formalism, "BinaryOperatorEnum")
+        .value("MUL", loki::pddl::BinaryOperatorEnum::MUL)
+        .value("PLUS", loki::pddl::BinaryOperatorEnum::PLUS)
+        .value("MINUS", loki::pddl::BinaryOperatorEnum::MINUS)
+        .value("DIV", loki::pddl::BinaryOperatorEnum::DIV)
+        .export_values();
+
+    py::enum_<loki::pddl::MultiOperatorEnum>(m_formalism, "MultiOperatorEnum")
+        .value("MUL", loki::pddl::MultiOperatorEnum::MUL)
+        .value("PLUS", loki::pddl::MultiOperatorEnum::PLUS)
+        .export_values();
+
     py::class_<ActionImpl>(m_formalism, "Action")  //
         .def("get_identifier", &ActionImpl::get_identifier)
         .def("get_arity", &ActionImpl::get_arity)
@@ -261,7 +303,7 @@ void init_formalism(py::module_& m_formalism)
         .def(py::init<std::string, std::string>())
         .def("get_domain", &PDDLParser::get_domain)
         .def("get_problem", &PDDLParser::get_problem)
-        .def("get_factories", &PDDLParser::get_factories);
+        .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference);
 
     py::class_<PredicateImpl>(m_formalism, "Predicate")  //
         .def("get_identifier", &PredicateImpl::get_identifier)

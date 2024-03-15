@@ -15,3 +15,4 @@ from mimir.search import *
 
 if __name__ == "__main__":
     parser = PDDLParser(str(ROOT_DIR / "data" / "gripper" / "domain.pddl"), str(ROOT_DIR / "data" / "gripper" / "problem.pddl"))
+
