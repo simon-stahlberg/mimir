@@ -27,7 +27,7 @@ namespace mimir
 {
 
 /* Forward declarations */
-class PDDLFactories;
+struct PDDLFactories;
 
 /* Data types*/
 using ElementsPerSegment = size_t;
