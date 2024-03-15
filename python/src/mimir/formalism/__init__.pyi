@@ -1,79 +1,130 @@
+from typing import Union
 
-class Base:
+
+class Object:
     def get_identifier(self) -> int: ...
 
-class Object(Base):
-    pass
-
 class Variable:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Type:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Parameter:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Predicate:
-    pass
+    def get_identifier(self) -> int: ...
 
 class TermObject:
+    def get_identifier(self) -> int: ...
     def get_object(self) -> Object: ...
 
 class TermVariable:
+    def get_identifier(self) -> int: ...
     def get_variable(self) -> Variable: ...
 
 class Term:
-    def get_object(self) -> TermObject: ...
-    def get_variable(self) -> TermVariable: ...
+    def get(self) -> Union[TermObject, TermVariable]: ...
 
 class Requirements:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Atom:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Literal:
-    pass
+    def get_identifier(self) -> int: ...
 
 class GroundAtom:
-    pass
+    def get_identifier(self) -> int: ...
 
 class GroundLiteral:
-    pass
+    def get_identifier(self) -> int: ...
 
 class NumericFluent:
-    pass
+    def get_identifier(self) -> int: ...
+
+class ConditionLiteral:
+    def get_identifier(self) -> int: ...
+
+class ConditionAndImpl:
+    def get_identifier(self) -> int: ...
+
+class ConditionOrImpl:
+    def get_identifier(self) -> int: ...
+
+class ConditionNotImpl:
+    def get_identifier(self) -> int: ...
+
+class ConditionImplyImpl:
+    def get_identifier(self) -> int: ...
+
+class ConditionExistsImpl:
+    def get_identifier(self) -> int: ...
+
+class ConditionForallImpl:
+    def get_identifier(self) -> int: ...
 
 class Condition:
     pass
 
+class EffectLiteral:
+    def get_identifier(self) -> int: ...
+
+class EffectAndImpl:
+    def get_identifier(self) -> int: ...
+
+class EffectNumericImpl:
+    def get_identifier(self) -> int: ...
+
+class EffectConditionalForallImpl:
+    def get_identifier(self) -> int: ...
+
+class EffectConditionalWhenImpl:
+    def get_identifier(self) -> int: ...
+
 class Effect:
     pass
+
+class FunctionExpressionNumber:
+    def get_identifier(self) -> int: ...
+
+class FunctionExpressionBinaryOperator:
+    def get_identifier(self) -> int: ...
+
+class FunctionExpressionMultiOperator:
+    def get_identifier(self) -> int: ...
+
+class FunctionExpressionMinus:
+    def get_identifier(self) -> int: ...
+
+class FunctionExpressionFunction:
+    def get_identifier(self) -> int: ...
 
 class FunctionExpression:
     pass
 
 class FunctionSkeleton:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Function:
-    pass
+    def get_identifier(self) -> int: ...
 
 class OptimizationMetric:
-    pass
+    def get_identifier(self) -> int: ...
 
 class PDDLFactories:
     pass
 
 class Action:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Domain:
-    pass
+    def get_identifier(self) -> int: ...
 
 class Problem:
-    pass
+    def get_identifier(self) -> int: ...
 
 class PDDLParser:
     def __init__(self, domain_filepath: str, problem_filepath: str) -> None: ...

@@ -97,6 +97,37 @@ void init_formalism(py::module_& m_formalism)
         .def("get_predicate", &AtomImpl::get_predicate)
         .def("get_terms", [](const AtomImpl& atom) { return wrap_terms(atom.get_terms()); });
 
+    py::class_<ConditionLiteralImpl>(m_formalism, "ConditionLiteral")  //
+        .def("get_identifier", &ConditionLiteralImpl::get_identifier)
+        .def("get_literal", &ConditionLiteralImpl::get_literal);
+
+    py::class_<ConditionAndImpl>(m_formalism, "ConditionAnd")  //
+        .def("get_identifier", &ConditionAndImpl::get_identifier)
+        .def("get_conditions", [](const ConditionAndImpl& condition) { return wrap_conditions(condition.get_conditions()); });
+
+    py::class_<ConditionOrImpl>(m_formalism, "ConditionOr")  //
+        .def("get_identifier", &ConditionOrImpl::get_identifier)
+        .def("get_conditions", [](const ConditionOrImpl& condition) { return wrap_conditions(condition.get_conditions()); });
+
+    py::class_<ConditionNotImpl>(m_formalism, "ConditionNot")  //
+        .def("get_identifier", &ConditionNotImpl::get_identifier)
+        .def("get_condition", [](const ConditionNotImpl& condition) { return WrappedCondition(condition.get_condition()); });
+
+    py::class_<ConditionImplyImpl>(m_formalism, "ConditionImply")  //
+        .def("get_identifier", &ConditionImplyImpl::get_identifier)
+        .def("get_condition_left", [](const ConditionImplyImpl& condition) { return WrappedCondition(condition.get_condition_left()); })
+        .def("get_condition_right", [](const ConditionImplyImpl& condition) { return WrappedCondition(condition.get_condition_right()); });
+
+    py::class_<ConditionExistsImpl>(m_formalism, "ConditionExists")  //
+        .def("get_identifier", &ConditionExistsImpl::get_identifier)
+        .def("get_parameters", &ConditionExistsImpl::get_parameters)
+        .def("get_condition", [](const ConditionExistsImpl& condition) { return WrappedCondition(condition.get_condition()); });
+
+    py::class_<ConditionForallImpl>(m_formalism, "ConditionForall")  //
+        .def("get_identifier", &ConditionForallImpl::get_identifier)
+        .def("get_parameters", &ConditionForallImpl::get_parameters)
+        .def("get_condition", [](const ConditionForallImpl& condition) { return WrappedCondition(condition.get_condition()); });
+
     py::class_<ConditionImpl>(m_formalism, "Condition")  //
         .def("get", [](const WrappedCondition& wrappedCondition) -> py::object { return std::visit(CastVisitor(), *wrappedCondition.condition); });
     ;
@@ -113,8 +144,63 @@ void init_formalism(py::module_& m_formalism)
         .def("get_actions", &DomainImpl::get_actions)
         .def("get_requirements", &DomainImpl::get_requirements);
 
+    py::class_<EffectLiteralImpl>(m_formalism, "EffectLiteral")  //
+        .def("get_identifier", &EffectLiteralImpl::get_identifier)
+        .def("get_literal", &EffectLiteralImpl::get_literal);
+
+    py::class_<EffectAndImpl>(m_formalism, "EffectAnd")  //
+        .def("get_identifier", &EffectAndImpl::get_identifier)
+        .def("get_effects", [](const EffectAndImpl& effect) { return wrap_effects(effect.get_effects()); });
+
+    py::class_<EffectNumericImpl>(m_formalism, "EffectNumeric")  //
+        .def("get_identifier", &EffectNumericImpl::get_identifier)
+        .def("get_assign_operator", &EffectNumericImpl::get_assign_operator)
+        .def("get_function", &EffectNumericImpl::get_function)
+        .def("get_function_expression", [](const EffectNumericImpl& effect) { return WrappedFunctionExpression(effect.get_function_expression()); });
+
+    py::class_<EffectConditionalForallImpl>(m_formalism, "EffectConditionalForall")  //
+        .def("get_identifier", &EffectConditionalForallImpl::get_identifier)
+        .def("get_effect", [](const EffectConditionalForallImpl& effect) { return WrappedEffect(effect.get_effect()); })
+        .def("get_parameters", &EffectConditionalForallImpl::get_parameters);
+
+    py::class_<EffectConditionalWhenImpl>(m_formalism, "EffectConditionalWhen")  //
+        .def("get_identifier", &EffectConditionalWhenImpl::get_identifier)
+        .def("get_condition", [](const EffectConditionalWhenImpl& effect) { return WrappedCondition(effect.get_condition()); })
+        .def("get_effect", [](const EffectConditionalWhenImpl& effect) { return WrappedEffect(effect.get_effect()); });
+    ;
+
     py::class_<EffectImpl>(m_formalism, "Effect")  //
         .def("get", [](const WrappedEffect& wrappedEffect) -> py::object { return std::visit(CastVisitor(), *wrappedEffect.effect); });
+
+    py::class_<FunctionExpressionNumberImpl>(m_formalism, "FunctionExpressionNumber")  //
+        .def("get_identifier", &FunctionExpressionNumberImpl::get_identifier)
+        .def("get_number", &FunctionExpressionNumberImpl::get_number);
+
+    py::class_<FunctionExpressionBinaryOperatorImpl>(m_formalism, "FunctionExpressionBinaryOperator")  //
+        .def("get_identifier", &FunctionExpressionBinaryOperatorImpl::get_identifier)
+        .def("get_binary_operator", &FunctionExpressionBinaryOperatorImpl::get_binary_operator)
+        .def("get_left_function_expression",
+             [](const FunctionExpressionBinaryOperatorImpl& function_expression)
+             { return WrappedFunctionExpression(function_expression.get_left_function_expression()); })
+        .def("get_right_function_expression",
+             [](const FunctionExpressionBinaryOperatorImpl& function_expression)
+             { return WrappedFunctionExpression(function_expression.get_right_function_expression()); });
+
+    py::class_<FunctionExpressionMultiOperatorImpl>(m_formalism, "FunctionExpressionMultiOperator")  //
+        .def("get_identifier", &FunctionExpressionMultiOperatorImpl::get_identifier)
+        .def("get_multi_operator", &FunctionExpressionMultiOperatorImpl::get_multi_operator)
+        .def("get_function_expressions",
+             [](const FunctionExpressionMultiOperatorImpl& function_expression)
+             { return wrap_function_expressions(function_expression.get_function_expressions()); });
+
+    py::class_<FunctionExpressionMinusImpl>(m_formalism, "FunctionExpressionMinus")  //
+        .def("get_identifier", &FunctionExpressionMinusImpl::get_identifier)
+        .def("get_function_expression",
+             [](const FunctionExpressionMinusImpl& function_expression) { return WrappedFunctionExpression(function_expression.get_function_expression()); });
+    ;
+
+    py::class_<FunctionExpressionFunctionImpl>(m_formalism, "FunctionExpressionFunction")  //
+        .def("get_identifier", &FunctionExpressionFunctionImpl::get_identifier);
 
     py::class_<FunctionExpressionImpl>(m_formalism, "FunctionExpression")  //
         .def("get",
