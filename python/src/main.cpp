@@ -6,14 +6,17 @@
 
 namespace py = pybind11;
 
+void init_formalism(py::module_&);
 void init_search(py::module_&);
 
 PYBIND11_MODULE(_mimir, m)
 {
-    m.doc() = "Python bindings for the dlplan description logics first-order features for planning";
+    m.doc() = "Python bindings for the Mimir planning library.";
 
-    py::module_ m_search = m.def_submodule("search", "The core submodule.");
+    py::module_ m_formalism = m.def_submodule("formalism", "The formalism submodule.");
+    py::module_ m_search = m.def_submodule("search", "The search submodule.");
 
+    init_formalism(m);
     init_search(m);
 
 #ifdef VERSION_INFO

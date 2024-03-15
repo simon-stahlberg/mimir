@@ -85,7 +85,7 @@ void init_formalism(py::module_& m_formalism)
 
     py::class_<Literal>(m_formalism, "Literal");
 
-    py::class_<OptimizationMetric>(m_formalism, "Metric");
+    py::class_<OptimizationMetric>(m_formalism, "OptimizationMetric");
 
     py::class_<NumericFluent>(m_formalism, "NumericFluent");
 

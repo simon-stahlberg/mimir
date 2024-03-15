@@ -12,8 +12,6 @@ namespace py = pybind11;
 
 void init_search(py::module_& m_search)
 {
-    py::class_<IDynamicSSG>(m_search, "ISSG");
-
     /* SSGs */
     py::class_<IDynamicSSG>(m_search, "ISSG")  //
         .def("get_or_create_initial_state", &IDynamicSSG::get_or_create_initial_state)
@@ -26,7 +24,7 @@ void init_search(py::module_& m_search)
         .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
         .def("get_action", &IDynamicAAG::get_action);
     py::class_<AAG<LiftedAAGDispatcher<StateReprTag>>, IDynamicAAG>(m_search, "LiftedAAG");
-    py::class_<AAG<GroundedAAGDispatcher<StateReprTag>>, IDynamicAAG>(m_search, "LiftedAAG");
+    py::class_<AAG<GroundedAAGDispatcher<StateReprTag>>, IDynamicAAG>(m_search, "GroundedAAG");
 
     /* Event Handlers */
     py::class_<IEventHandler>(m_search, "IEventHandler");
