@@ -126,22 +126,27 @@ void init_formalism(py::module_& m_formalism)
         .value("PLUS", loki::pddl::MultiOperatorEnum::PLUS)
         .export_values();
 
+    pybind11::enum_<loki::pddl::OptimizationMetricEnum>(m_formalism, "OptimizationMetricEnum")
+        .value("MINIMIZE", loki::pddl::OptimizationMetricEnum::MINIMIZE)
+        .value("MAXIMIZE", loki::pddl::OptimizationMetricEnum::MAXIMIZE)
+        .export_values();
+
     py::class_<ActionImpl>(m_formalism, "Action")  //
         .def("get_identifier", &ActionImpl::get_identifier)
         .def("get_arity", &ActionImpl::get_arity)
-        .def("get_condition", &ActionImpl::get_condition)
-        .def("get_effect", &ActionImpl::get_effect)
-        .def("get_name", &ActionImpl::get_name)
-        .def("get_parameters", &ActionImpl::get_parameters);
+        .def("get_condition", &ActionImpl::get_condition, py::return_value_policy::reference)
+        .def("get_effect", &ActionImpl::get_effect, py::return_value_policy::reference)
+        .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
+        .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference);
 
     py::class_<AtomImpl>(m_formalism, "Atom")  //
         .def("get_identifier", &AtomImpl::get_identifier)
-        .def("get_predicate", &AtomImpl::get_predicate)
+        .def("get_predicate", &AtomImpl::get_predicate, py::return_value_policy::reference)
         .def("get_terms", [](const AtomImpl& atom) { return wrap_terms(atom.get_terms()); });
 
     py::class_<ConditionLiteralImpl>(m_formalism, "ConditionLiteral")  //
         .def("get_identifier", &ConditionLiteralImpl::get_identifier)
-        .def("get_literal", &ConditionLiteralImpl::get_literal);
+        .def("get_literal", &ConditionLiteralImpl::get_literal, py::return_value_policy::reference);
 
     py::class_<ConditionAndImpl>(m_formalism, "ConditionAnd")  //
         .def("get_identifier", &ConditionAndImpl::get_identifier)
@@ -162,12 +167,12 @@ void init_formalism(py::module_& m_formalism)
 
     py::class_<ConditionExistsImpl>(m_formalism, "ConditionExists")  //
         .def("get_identifier", &ConditionExistsImpl::get_identifier)
-        .def("get_parameters", &ConditionExistsImpl::get_parameters)
+        .def("get_parameters", &ConditionExistsImpl::get_parameters, py::return_value_policy::reference)
         .def("get_condition", [](const ConditionExistsImpl& condition) { return WrappedCondition(condition.get_condition()); });
 
     py::class_<ConditionForallImpl>(m_formalism, "ConditionForall")  //
         .def("get_identifier", &ConditionForallImpl::get_identifier)
-        .def("get_parameters", &ConditionForallImpl::get_parameters)
+        .def("get_parameters", &ConditionForallImpl::get_parameters, py::return_value_policy::reference)
         .def("get_condition", [](const ConditionForallImpl& condition) { return WrappedCondition(condition.get_condition()); });
 
     py::class_<ConditionImpl>(m_formalism, "Condition")  //
@@ -176,19 +181,19 @@ void init_formalism(py::module_& m_formalism)
 
     py::class_<DomainImpl>(m_formalism, "Domain")  //
         .def("get_identifier", &DomainImpl::get_identifier)
-        .def("get_name", &DomainImpl::get_name)
-        .def("get_types", &DomainImpl::get_types)
-        .def("get_constants", &DomainImpl::get_constants)
-        .def("get_predicates", &DomainImpl::get_predicates)
-        .def("get_fluent_predicates", &DomainImpl::get_fluent_predicates)
-        .def("get_static_predicates", &DomainImpl::get_static_predicates)
-        .def("get_functions", &DomainImpl::get_functions)
-        .def("get_actions", &DomainImpl::get_actions)
-        .def("get_requirements", &DomainImpl::get_requirements);
+        .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference)
+        .def("get_types", &DomainImpl::get_types, py::return_value_policy::reference)
+        .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference)
+        .def("get_predicates", &DomainImpl::get_predicates, py::return_value_policy::reference)
+        .def("get_fluent_predicates", &DomainImpl::get_fluent_predicates, py::return_value_policy::reference)
+        .def("get_static_predicates", &DomainImpl::get_static_predicates, py::return_value_policy::reference)
+        .def("get_functions", &DomainImpl::get_functions, py::return_value_policy::reference)
+        .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference)
+        .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference);
 
     py::class_<EffectLiteralImpl>(m_formalism, "EffectLiteral")  //
         .def("get_identifier", &EffectLiteralImpl::get_identifier)
-        .def("get_literal", &EffectLiteralImpl::get_literal);
+        .def("get_literal", &EffectLiteralImpl::get_literal, py::return_value_policy::reference);
 
     py::class_<EffectAndImpl>(m_formalism, "EffectAnd")  //
         .def("get_identifier", &EffectAndImpl::get_identifier)
@@ -197,13 +202,13 @@ void init_formalism(py::module_& m_formalism)
     py::class_<EffectNumericImpl>(m_formalism, "EffectNumeric")  //
         .def("get_identifier", &EffectNumericImpl::get_identifier)
         .def("get_assign_operator", &EffectNumericImpl::get_assign_operator)
-        .def("get_function", &EffectNumericImpl::get_function)
+        .def("get_function", &EffectNumericImpl::get_function, py::return_value_policy::reference)
         .def("get_function_expression", [](const EffectNumericImpl& effect) { return WrappedFunctionExpression(effect.get_function_expression()); });
 
     py::class_<EffectConditionalForallImpl>(m_formalism, "EffectConditionalForall")  //
         .def("get_identifier", &EffectConditionalForallImpl::get_identifier)
-        .def("get_effect", [](const EffectConditionalForallImpl& effect) { return WrappedEffect(effect.get_effect()); })
-        .def("get_parameters", &EffectConditionalForallImpl::get_parameters);
+        .def("get_parameters", &EffectConditionalForallImpl::get_parameters)
+        .def("get_effect", [](const EffectConditionalForallImpl& effect) { return WrappedEffect(effect.get_effect()); });
 
     py::class_<EffectConditionalWhenImpl>(m_formalism, "EffectConditionalWhen")  //
         .def("get_identifier", &EffectConditionalWhenImpl::get_identifier)
@@ -252,96 +257,96 @@ void init_formalism(py::module_& m_formalism)
 
     py::class_<FunctionSkeletonImpl>(m_formalism, "FunctionSkeleton")  //
         .def("get_identifier", &FunctionSkeletonImpl::get_identifier)
-        .def("get_name", &FunctionSkeletonImpl::get_name)
-        .def("get_parameters", &FunctionSkeletonImpl::get_parameters)
+        .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference)
+        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::return_value_policy::reference)
         .def("get_type", &FunctionSkeletonImpl::get_type);
 
     py::class_<FunctionImpl>(m_formalism, "Function")  //
         .def("get_identifier", &FunctionImpl::get_identifier)
-        .def("get_function_skeleton", &FunctionImpl::get_function_skeleton)
+        .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference)
         .def("get_terms", [](const FunctionImpl& function) { return wrap_terms(function.get_terms()); });
 
     py::class_<GroundAtomImpl>(m_formalism, "GroundAtom")  //
         .def("get_identifier", &GroundAtomImpl::get_identifier)
         .def("get_arity", &GroundAtomImpl::get_arity)
-        .def("get_predicate", &GroundAtomImpl::get_predicate)
-        .def("get_objects", &GroundAtomImpl::get_objects);
+        .def("get_predicate", &GroundAtomImpl::get_predicate, py::return_value_policy::reference)
+        .def("get_objects", &GroundAtomImpl::get_objects, py::return_value_policy::reference);
 
     py::class_<GroundLiteralImpl>(m_formalism, "GroundLiteral")  //
         .def("get_identifier", &GroundLiteralImpl::get_identifier)
-        .def("get_atom", &GroundLiteralImpl::get_atom)
+        .def("get_atom", &GroundLiteralImpl::get_atom, py::return_value_policy::reference)
         .def("is_negated", &GroundLiteralImpl::is_negated);
 
     py::class_<LiteralImpl>(m_formalism, "Literal")  //
         .def("get_identifier", &LiteralImpl::get_identifier)
-        .def("get_atom", &LiteralImpl::get_atom)
+        .def("get_atom", &LiteralImpl::get_atom, py::return_value_policy::reference)
         .def("is_negated", &LiteralImpl::is_negated);
 
     py::class_<OptimizationMetricImpl>(m_formalism, "OptimizationMetric")  //
         .def("get_identifier", &OptimizationMetricImpl::get_identifier)
         .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return WrappedFunctionExpression(metric.get_function_expression()); })
-        .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric);
+        .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference);
 
     py::class_<NumericFluentImpl>(m_formalism, "NumericFluent")  //
         .def("get_identifier", &NumericFluentImpl::get_identifier)
-        .def("get_function", &NumericFluentImpl::get_function)
+        .def("get_function", &NumericFluentImpl::get_function, py::return_value_policy::reference)
         .def("get_number", &NumericFluentImpl::get_number);
 
     py::class_<ObjectImpl>(m_formalism, "Object")  //
         .def("get_identifier", &ObjectImpl::get_identifier)
-        .def("get_name", &ObjectImpl::get_name)
-        .def("get_bases", &ObjectImpl::get_bases);
+        .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference)
+        .def("get_bases", &ObjectImpl::get_bases, py::return_value_policy::reference);
 
     py::class_<ParameterImpl>(m_formalism, "Parameter")  //
-        .def("get_identifier", &ParameterImpl::get_identifier)
-        .def("get_variable", &ParameterImpl::get_variable)
-        .def("get_bases", &ParameterImpl::get_bases);
+        .def("get_identifier", &ParameterImpl::get_identifier, py::return_value_policy::reference)
+        .def("get_variable", &ParameterImpl::get_variable, py::return_value_policy::reference)
+        .def("get_bases", &ParameterImpl::get_bases, py::return_value_policy::reference);
 
     py::class_<PDDLFactories>(m_formalism, "PDDLFactories");
 
     py::class_<PDDLParser>(m_formalism, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
-        .def("get_domain", &PDDLParser::get_domain)
-        .def("get_problem", &PDDLParser::get_problem)
+        .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference)
+        .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference)
         .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference);
 
     py::class_<PredicateImpl>(m_formalism, "Predicate")  //
         .def("get_identifier", &PredicateImpl::get_identifier)
-        .def("get_name", &PredicateImpl::get_name)
-        .def("get_parameters", &PredicateImpl::get_parameters);
+        .def("get_name", &PredicateImpl::get_name, py::return_value_policy::reference)
+        .def("get_parameters", &PredicateImpl::get_parameters, py::return_value_policy::reference);
 
     py::class_<ProblemImpl>(m_formalism, "Problem")  //
         .def("get_identifier", &ProblemImpl::get_identifier)
-        .def("get_name", &ProblemImpl::get_name)
-        .def("get_domain", &ProblemImpl::get_domain)
-        .def("get_requirements", &ProblemImpl::get_requirements)
-        .def("get_objects", &ProblemImpl::get_objects)
-        .def("get_initial_literals", &ProblemImpl::get_initial_literals)
-        .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents)
-        .def("get_optimization_metric", &ProblemImpl::get_optimization_metric)
-        .def("get_goal_condition", &ProblemImpl::get_goal_condition);
+        .def("get_name", &ProblemImpl::get_name, py::return_value_policy::reference)
+        .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference)
+        .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference)
+        .def("get_objects", &ProblemImpl::get_objects, py::return_value_policy::reference)
+        .def("get_initial_literals", &ProblemImpl::get_initial_literals, py::return_value_policy::reference)
+        .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference)
+        .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference)
+        .def("get_goal_condition", &ProblemImpl::get_goal_condition, py::return_value_policy::reference);
 
     py::class_<RequirementsImpl>(m_formalism, "Requirements")  //
         .def("get_identifier", &RequirementsImpl::get_identifier)
-        .def("get_requirements", &RequirementsImpl::get_requirements);
+        .def("get_requirements", &RequirementsImpl::get_requirements, py::return_value_policy::reference);
 
     py::class_<TermObjectImpl>(m_formalism, "TermObject")  //
         .def("get_identifier", &TermObjectImpl::get_identifier)
-        .def("get_object", &TermObjectImpl::get_object);
+        .def("get_object", &TermObjectImpl::get_object, py::return_value_policy::reference);
 
     py::class_<TermVariableImpl>(m_formalism, "TermVariable")  //
         .def("get_identifier", &TermVariableImpl::get_identifier)
-        .def("get_variable", &TermVariableImpl::get_variable);
+        .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference);
 
     py::class_<WrappedTerm>(m_formalism, "Term")  //
         .def("get", [](const WrappedTerm& wrappedTerm) -> py::object { return std::visit(CastVisitor(), *wrappedTerm.term); });
 
     py::class_<TypeImpl>(m_formalism, "Type")  //
         .def("get_identifier", &TypeImpl::get_identifier)
-        .def("get_name", &TypeImpl::get_name)
-        .def("get_bases", &TypeImpl::get_bases);
+        .def("get_name", &TypeImpl::get_name, py::return_value_policy::reference)
+        .def("get_bases", &TypeImpl::get_bases, py::return_value_policy::reference);
 
     py::class_<VariableImpl>(m_formalism, "Variable")  //
         .def("get_identifier", &VariableImpl::get_identifier)
-        .def("get_name", &VariableImpl::get_name);
+        .def("get_name", &VariableImpl::get_name, py::return_value_policy::reference);
 }
