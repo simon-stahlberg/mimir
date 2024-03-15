@@ -5,9 +5,9 @@ find_package(pybind11)
 pybind11_add_module(_mimir MODULE)
 target_sources(_mimir
     PRIVATE
-        src/main.cpp
-        src/mimir/formalism/bindings.cpp
-        src/mimir/search/bindings.cpp)
+        main.cpp
+        mimir/formalism/bindings.cpp
+        mimir/search/bindings.cpp)
 target_link_libraries(_mimir
     PRIVATE
         pybind11::module
