@@ -42,7 +42,7 @@ class CMakeBuild(build_ext):
         )
 
         subprocess.run(
-            ["cmake", "--build", f"{str(temp_directory)}/dependencies/build", "-j16"]
+            ["cmake", "--build", f"{str(temp_directory)}/dependencies/build", f"-j{multiprocessing.cpu_count()}"]
         )
 
         # Build dlplan
