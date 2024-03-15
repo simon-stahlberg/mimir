@@ -106,7 +106,7 @@ private:
         return ConstStateView(m_states.insert(flatmemory_builder));
     }
 
-    [[nodiscard]] size_t state_count_impl() const { return m_states.size(); }
+    [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
     explicit SSG(Problem problem) : m_problem(problem) {}

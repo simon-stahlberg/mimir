@@ -125,11 +125,11 @@ public:
             this->m_successor_generator->generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
             {
-                const auto state_count = m_state_repository->state_count();
+                const auto state_count = m_state_repository->get_state_count();
                 const auto& successor_state = this->m_state_repository->get_or_create_successor_state(state, action);
                 m_event_handler->on_generate_state(action, successor_state, m_pddl_factories);
 
-                if (state_count != m_state_repository->state_count())
+                if (state_count != m_state_repository->get_state_count())
                 {
                     auto successor_search_node = CostSearchNodeViewProxy(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;

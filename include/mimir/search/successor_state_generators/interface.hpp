@@ -19,7 +19,7 @@ public:
     [[nodiscard]] virtual ConstView<StateDispatcher<StateReprTag>> get_or_create_successor_state(ConstView<StateDispatcher<StateReprTag>> state,
                                                                                                  ConstView<ActionDispatcher<StateReprTag>> action) = 0;
 
-    [[nodiscard]] virtual size_t state_count() const = 0;
+    [[nodiscard]] virtual size_t get_state_count() const = 0;
 };
 
 /**
@@ -48,7 +48,7 @@ public:
         return self().get_or_create_successor_state_impl(state, action);
     }
 
-    [[nodiscard]] size_t state_count() const override { return self().state_count_impl(); }
+    [[nodiscard]] size_t get_state_count() const override { return self().get_state_count_impl(); }
 };
 
 /**
