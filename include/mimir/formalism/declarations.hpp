@@ -32,7 +32,6 @@ struct PDDLFactories;
 /* Data types*/
 using ElementsPerSegment = size_t;
 
-
 /* Domain Specific */
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;
@@ -126,7 +125,6 @@ using ActionList = std::vector<Action>;
 class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
-
 
 /* Problem specific */
 class GroundAtomImpl;

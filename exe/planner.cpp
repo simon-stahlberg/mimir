@@ -45,16 +45,16 @@ int main(int argc, char** argv)
 
     std::cout << "Initializing planner..." << std::endl;
 
-    auto state_repository = std::make_unique<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
-    auto successor_generator = std::make_unique<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto event_handler = std::make_unique<MinimalEventHandler>();
-    auto lifted_brfs = std::make_unique<BrFsAlgorithm>(parser.get_problem(),
+    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
+    auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto event_handler = std::make_shared<MinimalEventHandler>();
+    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(parser.get_problem(),
                                                        parser.get_factories(),
                                                        std::move(state_repository),
                                                        std::move(successor_generator),
                                                        std::move(event_handler));
 
-    auto planner = std::make_unique<SinglePlanner>(parser.get_domain(), parser.get_problem(), parser.get_factories(), std::move(lifted_brfs));
+    auto planner = std::make_shared<SinglePlanner>(parser.get_domain(), parser.get_problem(), parser.get_factories(), std::move(lifted_brfs));
 
     std::cout << "Finding solution..." << std::endl;
 

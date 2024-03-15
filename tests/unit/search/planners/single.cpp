@@ -15,11 +15,11 @@ TEST(MimirTests, SearchPlannersSingleTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
-    auto state_repository = std::make_unique<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
-    auto successor_generator = std::make_unique<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto blind_heuristic = std::make_unique<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
-    auto event_handler = std::make_unique<MinimalEventHandler>();
-    auto lifted_astar = std::make_unique<AStarAlgorithm>(parser.get_problem(),
+    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
+    auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
+    auto event_handler = std::make_shared<MinimalEventHandler>();
+    auto lifted_astar = std::make_shared<AStarAlgorithm>(parser.get_problem(),
                                                          parser.get_factories(),
                                                          std::move(state_repository),
                                                          std::move(successor_generator),

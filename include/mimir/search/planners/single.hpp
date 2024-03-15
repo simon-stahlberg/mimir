@@ -22,10 +22,10 @@ private:
     Domain m_domain;
     Problem m_problem;
 
-    std::unique_ptr<IAlgorithm> m_algorithm;
+    std::shared_ptr<IAlgorithm> m_algorithm;
 
 public:
-    SinglePlanner(const Domain& domain, const Problem& problem, PDDLFactories& factories, std::unique_ptr<IAlgorithm>&& algorithm) :
+    SinglePlanner(const Domain& domain, const Problem& problem, PDDLFactories& factories, std::shared_ptr<IAlgorithm> algorithm) :
         m_domain(domain),
         m_problem(problem),
         m_algorithm(std::move(algorithm))

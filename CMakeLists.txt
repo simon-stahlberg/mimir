@@ -109,7 +109,7 @@ add_subdirectory(src)
 # Target Python Mimir
 # -------------------
 if(BUILD_PYMIMIR)
-    add_subdirectory(lib)
+    add_subdirectory(python)
 endif()
 
 # ----------

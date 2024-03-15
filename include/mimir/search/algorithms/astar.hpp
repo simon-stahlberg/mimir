@@ -19,19 +19,19 @@ class AStarAlgorithm : public IAlgorithm
 {
 private:
     Problem m_problem;
-    std::unique_ptr<IDynamicSSG> m_state_repository;
+    std::shared_ptr<IDynamicSSG> m_state_repository;
     ConstView<StateDispatcher<StateReprTag>> m_initial_state;
-    std::unique_ptr<IDynamicAAG> m_successor_generator;
-    std::unique_ptr<IDynamicHeuristic> m_heuristic;
-    std::unique_ptr<IEventHandler> m_event_handler;
+    std::shared_ptr<IDynamicAAG> m_successor_generator;
+    std::shared_ptr<IDynamicHeuristic> m_heuristic;
+    std::shared_ptr<IEventHandler> m_event_handler;
 
 public:
     AStarAlgorithm(const Problem& problem,
                    PDDLFactories& pddl_factories,
-                   std::unique_ptr<IDynamicSSG>&& state_repository,
-                   std::unique_ptr<IDynamicAAG>&& successor_generator,
-                   std::unique_ptr<IDynamicHeuristic>&& heuristic,
-                   std::unique_ptr<IEventHandler>&& event_handler) :
+                   std::shared_ptr<IDynamicSSG> state_repository,
+                   std::shared_ptr<IDynamicAAG> successor_generator,
+                   std::shared_ptr<IDynamicHeuristic> heuristic,
+                   std::shared_ptr<IEventHandler> event_handler) :
         m_problem(problem),
         m_state_repository(std::move(state_repository)),
         m_initial_state(m_state_repository->get_or_create_initial_state(problem)),
