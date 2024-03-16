@@ -26,8 +26,7 @@ private:
     using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
 
     /* Implement IStaticHeuristic interface. */
-    template<typename>
-    friend class IStaticHeuristic;
+    friend class IStaticHeuristic<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>;
 
     double compute_heuristic_impl(const ConstStateView& state) { return 0.; }
 };

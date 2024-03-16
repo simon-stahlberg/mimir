@@ -28,6 +28,9 @@ class OpenList<OpenListDispatcher<PriorityQueueTag<T>>> : public IOpenList<OpenL
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
 
+    /* Implement IOpenList interface */
+    friend class IOpenList<OpenList<OpenListDispatcher<PriorityQueueTag<T>>>>;
+
     void insert_impl(const T& item, double priority) { priority_queue_.emplace(priority, item); }
 
     T pop_impl()
@@ -38,9 +41,6 @@ private:
     }
 
     std::size_t size_impl() { return priority_queue_.size(); }
-
-    template<typename>
-    friend class IOpenList;
 };
 
 /**

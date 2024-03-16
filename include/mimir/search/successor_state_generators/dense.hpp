@@ -29,8 +29,7 @@ private:
     Builder<StateDispatcher<DenseStateTag>> m_state_builder;
 
     /* Implement IStaticSSG interface */
-    template<typename>
-    friend class IStaticSSG;
+    friend class IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem)
     {

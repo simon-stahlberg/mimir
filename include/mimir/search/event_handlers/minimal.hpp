@@ -17,8 +17,7 @@ class MinimalEventHandler : public EventHandlerBase<MinimalEventHandler>
 {
 private:
     /* Implement EventHandlerBase interface */
-    template<typename>
-    friend class EventHandlerBase;
+    friend class EventHandlerBase<MinimalEventHandler>;
 
     void on_generate_state_impl(ConstView<ActionDispatcher<StateReprTag>> action,
                                 ConstView<StateDispatcher<StateReprTag>> successor_state,

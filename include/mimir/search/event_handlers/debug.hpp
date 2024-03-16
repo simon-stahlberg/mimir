@@ -17,8 +17,7 @@ class DebugEventHandler : public EventHandlerBase<DebugEventHandler>
 {
 private:
     /* Implement EventHandlerBase interface */
-    template<typename>
-    friend class EventHandlerBase;
+    friend class EventHandlerBase<DebugEventHandler>;
 
     void on_generate_state_impl(ConstView<ActionDispatcher<StateReprTag>> action,
                                 ConstView<StateDispatcher<StateReprTag>> successor_state,

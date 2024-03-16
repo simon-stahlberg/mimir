@@ -21,8 +21,7 @@ private:
     PDDLFactories& m_pddl_factories;
 
     /* Implement IStaticAAG interface */
-    template<typename>
-    friend class IStaticAAG;
+    friend class IStaticAAG<AAG<GroundedAAGDispatcher<DenseStateTag>>>;
 
     void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) {}
 
