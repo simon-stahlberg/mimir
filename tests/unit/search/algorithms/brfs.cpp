@@ -37,8 +37,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
     auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
     const auto search_status = lifted_brfs.find_solution(plan);
 
+    std::cout << "SearchStatus: " << search_status << std::endl;
+    std::cout << "Plan cost: " << plan.size() << std::endl;
+
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.size(), 5);
+    EXPECT_TRUE(false);
 }
 
 }

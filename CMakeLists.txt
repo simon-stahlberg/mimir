@@ -40,6 +40,7 @@ else()
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
     set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
+
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
