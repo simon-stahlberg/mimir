@@ -64,13 +64,13 @@ void to_ground_atoms(ConstView<StateDispatcher<DenseStateTag>> state, const PDDL
 Plan to_plan(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& action_view_list)
 {
     std::vector<std::string> actions;
-    const auto cost = action_view_list.size();
-    for (size_t i = 0; i < action_view_list.size(); ++i)
+    auto cost = 0;
+    for (const auto action : action_view_list)
     {
         std::stringstream ss;
-        ss << action_view_list[i];
+        ss << action;
         actions.push_back(ss.str());
-        // TODO accumulate the action costs instead of returning the plan length.
+        cost += action.get_cost();
     }
     return Plan(std::move(actions), cost);
 }

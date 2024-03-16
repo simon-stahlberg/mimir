@@ -105,6 +105,8 @@ private:
         fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 
         m_action_builder.get_id() = m_actions.size();
+        // TODO: evaluate function expression to obtain the action cost.
+        m_action_builder.get_cost() = 1;
         m_action_builder.get_action() = flat_action.source;
         auto& objects = m_action_builder.get_objects();
         objects.clear();

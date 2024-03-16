@@ -11,7 +11,7 @@ namespace mimir
 /**
  * Flatmemory types
  */
-using DenseActionLayout = flatmemory::Tuple<int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+using DenseActionLayout = flatmemory::Tuple<int32_t, int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 using DenseActionBuilder = flatmemory::Builder<DenseActionLayout>;
 using ConstDenseActionView = flatmemory::ConstView<DenseActionLayout>;
 using DenseActionVector = flatmemory::VariableSizedTypeVector<DenseActionLayout>;
@@ -39,12 +39,13 @@ private:
 public:
     /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
     [[nodiscard]] int32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] Action& get_action() { return m_builder.get<1>(); }
-    [[nodiscard]] ObjectListBuilder& get_objects() { return m_builder.get<2>(); }
-    [[nodiscard]] BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<3>(); }
-    [[nodiscard]] BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<4>(); }
-    [[nodiscard]] BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<5>(); }
-    [[nodiscard]] BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<6>(); }
+    [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
+    [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
+    [[nodiscard]] ObjectListBuilder& get_objects() { return m_builder.get<3>(); }
+    [[nodiscard]] BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
+    [[nodiscard]] BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
+    [[nodiscard]] BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
 };
 
 /**
@@ -89,12 +90,13 @@ public:
     explicit ConstView(ConstDenseActionView view) : m_view(view) {}
 
     [[nodiscard]] int32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] Action get_action() const { return m_view.get<1>(); }
-    [[nodiscard]] ConstObjectListView get_objects() const { return m_view.get<2>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<3>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<4>(); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<5>(); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<6>(); };
+    [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
+    [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
+    [[nodiscard]] ConstObjectListView get_objects() const { return m_view.get<3>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
+    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
+    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
 
     [[nodiscard]] bool is_applicable(ConstStateView state) const
     {
