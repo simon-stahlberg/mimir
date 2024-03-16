@@ -20,4 +20,3 @@ def test_brfs():
 
     assert search_status == SearchStatus.SOLVED
     assert len(plan) == 5
-
