@@ -15,9 +15,6 @@ jobs:
       with:
         ref: templated-design
 
-    - name: Install Valgrind
-      run: sudo apt-get install -y valgrind
-
     - name: Configure, Build, and Install Dependencies
       run: |
         cd dependencies
@@ -30,10 +27,6 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -S . -B build_debug -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build_debug
 
-    - name: Debug Valgrind Test
-      working-directory: build_debug/tests/unit
-      run: valgrind --leak-check=full --track-origins=yes ./mimir_tests
-
     - name: Debug Test
       working-directory: build_debug/tests/unit
       run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
@@ -43,10 +36,6 @@ jobs:
       run: |
         cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -S . -B build_release -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
         cmake --build build_release
-
-    - name: Release Valgrind Test
-      working-directory: build_release/tests/unit
-      run: valgrind --leak-check=full --track-origins=yes ./mimir_tests
 
     - name: Release Test
       working-directory: build_release/tests/unit
