@@ -4,13 +4,17 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
     steps:
     - name: Checkout Mimir
       uses: actions/checkout@v2
       with:
         ref: templated-design
-      
+
     - name: Install Valgrind
       run: sudo apt-get install -y valgrind
 
