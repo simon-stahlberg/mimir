@@ -66,21 +66,11 @@ private:
     /* Implement IView interface: */
     friend class IConstView<ConstView<ActionDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const
-    {
-        return get_applicability_positive_precondition_bitset() == other.get_applicability_positive_precondition_bitset()
-               && get_applicability_negative_precondition_bitset() == other.get_applicability_negative_precondition_bitset()
-               && get_unconditional_positive_effect_bitset() == other.get_unconditional_positive_effect_bitset()
-               && get_unconditional_negative_effect_bitset() == other.get_unconditional_negative_effect_bitset();
-    }
+    /// @brief Compute equality based on the lifted action and the objects assigned to the parameters.
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_action() == other.get_action() && get_objects() == other.get_objects(); }
 
-    [[nodiscard]] size_t hash_impl() const
-    {
-        return hash_combine(get_applicability_positive_precondition_bitset().hash(),
-                            get_applicability_negative_precondition_bitset().hash(),
-                            get_unconditional_positive_effect_bitset().hash(),
-                            get_unconditional_negative_effect_bitset().hash());
-    }
+    /// @brief Compute hash based on the lifted action and the objects assigned to the parameters.
+    [[nodiscard]] size_t hash_impl() const { return hash_combine(get_action(), get_objects().hash()); }
 
     /* Implement IActionView interface */
     friend class IActionView<ConstView<ActionDispatcher<DenseStateTag>>>;
