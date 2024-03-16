@@ -27,6 +27,8 @@ jobs:
 
       - name: Build and install
         run: python -m pip install --verbose .[test]
+        env:
+          PYMIMIR_DEBUG_BUILD: 1
 
       - name: Test
         run: pytest python/tests

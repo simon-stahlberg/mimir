@@ -30,7 +30,8 @@ class CMakeBuild(build_ext):
         if not extdir.endswith(os.path.sep):
             extdir += os.path.sep
 
-        cfg = "Debug" if self.debug else "Release"
+        build_type = "Debug" if os.environ.get('PYMIMIR_DEBUG_BUILD') else "Release"
+        print("Pymimir build type:", build_type)
 
         temp_directory = Path.cwd() / self.build_temp
         # Create the temporary build directory, if it does not already exist
@@ -51,7 +52,7 @@ class CMakeBuild(build_ext):
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
-            f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
+            f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
             f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
         ]
         build_args = []
