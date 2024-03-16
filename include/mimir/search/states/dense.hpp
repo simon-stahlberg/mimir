@@ -60,15 +60,13 @@ private:
     DenseStateBuilder m_builder;
 
     /* Implement IBuilder interface */
-    template<typename>
-    friend class IBuilder;
+    friend class IBuilder<Builder<StateDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] DenseStateBuilder& get_flatmemory_builder_impl() { return m_builder; }
     [[nodiscard]] const DenseStateBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IStateBuilder interface */
-    template<typename>
-    friend class IStateBuilder;
+    friend class IStateBuilder<Builder<StateDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
@@ -90,16 +88,14 @@ private:
     ConstDenseStateView m_view;
 
     /* Implement IView interface */
-    template<typename>
-    friend class IConstView;
+    friend class IConstView<ConstView<StateDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_atoms_bitset() == other.get_atoms_bitset(); }
 
     [[nodiscard]] size_t hash_impl() const { return get_atoms_bitset().hash(); }
 
     /* Implement IStateView interface */
-    template<typename>
-    friend class IStateView;
+    friend class IStateView<ConstView<StateDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 

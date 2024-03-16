@@ -9,7 +9,7 @@ namespace py = pybind11;
 void init_formalism(py::module_&);
 void init_search(py::module_&);
 
-PYBIND11_MODULE(_mimir, m)
+PYBIND11_MODULE(_pymimir, m)
 {
     m.doc() = "Python bindings for the Mimir planning library.";
 

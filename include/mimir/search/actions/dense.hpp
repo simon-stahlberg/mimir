@@ -28,15 +28,13 @@ private:
     DenseActionBuilder m_builder;
 
     /* Implement IBuilder interface */
-    template<typename>
-    friend class IBuilder;
+    friend class IBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] DenseActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
     [[nodiscard]] const DenseActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IActionBuilder interface */
-    template<typename>
-    friend class IActionBuilder;
+    friend class IActionBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
 
 public:
     /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
@@ -65,8 +63,7 @@ private:
     ConstDenseActionView m_view;
 
     /* Implement IView interface: */
-    template<typename>
-    friend class IConstView;
+    friend class IConstView<ConstView<ActionDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] bool are_equal_impl(const ConstView& other) const
     {
@@ -85,8 +82,7 @@ private:
     }
 
     /* Implement IActionView interface */
-    template<typename>
-    friend class IActionView;
+    friend class IActionView<ConstView<ActionDispatcher<DenseStateTag>>>;
 
 public:
     /// @brief Create a view on a DefaultAction.
