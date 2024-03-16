@@ -13,7 +13,7 @@ jobs:
     - name: Checkout Mimir
       uses: actions/checkout@v2
       with:
-        ref: templated-design
+        ref: dynamic
 
     - name: Configure, Build, and Install Dependencies
       run: |
