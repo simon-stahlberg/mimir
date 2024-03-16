@@ -1,4 +1,5 @@
 from pymimir.formalism import PDDLParser
+from pymimir.search import SSG, LiftedAAG, MinimalEventHandler, BrFsAlgorithm, SearchStatus
 
 from pathlib import Path
 
@@ -11,4 +12,11 @@ def test_pddl_parser():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "problem.pddl")
     parser = PDDLParser(domain_filepath, problem_filepath)
-    assert(parser.get_domain() == parser.get_problem().get_domain())
+    ssg = SSG(parser.get_problem())
+    aag = LiftedAAG(parser.get_problem(), parser.get_factories())
+    event_handler = MinimalEventHandler()
+    brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), ssg, aag, event_handler)
+    search_status, plan = brfs.find_solution()
+
+    assert search_status == SearchStatus.SOLVED
+    assert len(plan) == 5
