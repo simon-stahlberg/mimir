@@ -12,21 +12,25 @@ namespace py = pybind11;
 struct WrappedTerm
 {
     Term term;
+    explicit WrappedTerm(const Term& t) : term(t) {}
 };
 
 struct WrappedCondition
 {
     Condition condition;
+    explicit WrappedCondition(const Condition& c) : condition(c) {}
 };
 
 struct WrappedEffect
 {
     Effect effect;
+    explicit WrappedEffect(const Effect& e) : effect(e) {}
 };
 
 struct WrappedFunctionExpression
 {
     FunctionExpression function_expression;
+    explicit WrappedFunctionExpression(const FunctionExpression& e) : function_expression(e) {}
 };
 
 std::vector<WrappedTerm> wrap_terms(const TermList& terms)
