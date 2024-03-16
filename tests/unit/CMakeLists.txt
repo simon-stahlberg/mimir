@@ -33,6 +33,6 @@ target_link_libraries(${TEST_NAME}
         mimir::core
         GTest::GTest
         GTest::Main)
-
+target_link_options(${TEST_NAME} PRIVATE -static-libstdc++)
 add_test(domain_gtests ${TEST_NAME})
 

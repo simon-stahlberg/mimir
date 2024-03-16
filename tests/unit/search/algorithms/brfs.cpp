@@ -36,6 +36,9 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
         BrFsAlgorithm(parser.get_problem(), parser.get_factories(), std::move(state_repository), std::move(successor_generator), std::move(event_handler));
     auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
     const auto search_status = lifted_brfs.find_solution(plan);
+
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.size(), 5);
 }
 
 }
