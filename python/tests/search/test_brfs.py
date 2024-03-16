@@ -1,5 +1,5 @@
 from pymimir.formalism import PDDLParser
-from pymimir.search import SSG, LiftedAAG, MinimalEventHandler, BrFsAlgorithm, SearchStatus
+from pymimir.search import SSG, LiftedAAG, MinimalEventHandler, DebugEventHandler, BrFsAlgorithm, SearchStatus
 
 from pathlib import Path
 
@@ -14,7 +14,7 @@ def test_brfs():
     parser = PDDLParser(domain_filepath, problem_filepath)
     ssg = SSG(parser.get_problem())
     aag = LiftedAAG(parser.get_problem(), parser.get_factories())
-    event_handler = MinimalEventHandler()
+    event_handler = DebugEventHandler()
     brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), ssg, aag, event_handler)
     search_status, plan = brfs.find_solution()
 
