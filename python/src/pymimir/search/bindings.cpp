@@ -30,10 +30,28 @@ void init_search(py::module_& m_search)
 
     /* State */
     py::class_<ConstView<StateDispatcher<StateReprTag>>>(m_search, "State")  //
+        .def("__hash__", &ConstView<StateDispatcher<StateReprTag>>::hash)
+        .def("__eq__", &ConstView<StateDispatcher<StateReprTag>>::operator==)
+        .def("to_string",
+             [](ConstView<StateDispatcher<StateReprTag>> self, PDDLFactories& pddl_factories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(self, std::cref(pddl_factories));
+                 return ss.str();
+             })
         .def("get_id", &ConstView<StateDispatcher<StateReprTag>>::get_id);
 
     /* Action */
     py::class_<ConstView<ActionDispatcher<StateReprTag>>>(m_search, "GroundAction")  //
+        .def("__hash__", &ConstView<ActionDispatcher<StateReprTag>>::hash)
+        .def("__eq__", &ConstView<ActionDispatcher<StateReprTag>>::operator==)
+        .def("to_string",
+             [](ConstView<ActionDispatcher<StateReprTag>> self, PDDLFactories& pddl_factories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(self, std::cref(pddl_factories));
+                 return ss.str();
+             })
         .def("get_id", &ConstView<ActionDispatcher<StateReprTag>>::get_id);
 
     /* SSGs */

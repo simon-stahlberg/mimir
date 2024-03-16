@@ -20,7 +20,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] bool operator==(const IConstView& other) const { return self().are_equal_impl(other); }
+    [[nodiscard]] bool operator==(const Derived& other) const { return self().are_equal_impl(other); }
 
     [[nodiscard]] size_t hash() const { return self().hash_impl(); }
 };
