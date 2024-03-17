@@ -21,13 +21,8 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <loki/pddl/effects.hpp>
+#include <loki/pddl/factory.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -43,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectLiteralImpl>;
@@ -68,7 +63,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectAndImpl>;
@@ -95,7 +90,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     // Give access to the private interface implementations.
     friend class Base<EffectNumericImpl>;
@@ -123,7 +118,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectConditionalForallImpl>;
@@ -150,7 +145,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
     size_t hash_impl() const;
@@ -162,46 +157,6 @@ private:
 public:
     const Condition& get_condition() const;
     const Effect& get_effect() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Effect>
-{
-    bool operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const;
-};
-
-template<>
-struct hash<mimir::EffectLiteralImpl>
-{
-    std::size_t operator()(const mimir::EffectLiteralImpl& effect) const;
-};
-
-template<>
-struct hash<mimir::EffectAndImpl>
-{
-    std::size_t operator()(const mimir::EffectAndImpl& effect) const;
-};
-
-template<>
-struct hash<mimir::EffectNumericImpl>
-{
-    std::size_t operator()(const mimir::EffectNumericImpl& effect) const;
-};
-
-template<>
-struct hash<mimir::EffectConditionalForallImpl>
-{
-    std::size_t operator()(const mimir::EffectConditionalForallImpl& effect) const;
-};
-
-template<>
-struct hash<mimir::EffectConditionalWhenImpl>
-{
-    std::size_t operator()(const mimir::EffectConditionalWhenImpl& effect) const;
 };
 }
 

@@ -217,10 +217,3 @@ const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functio
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 }
-
-namespace std
-{
-bool less<mimir::Domain>::operator()(const mimir::Domain& left_domain, const mimir::Domain& right_domain) const { return *left_domain < *right_domain; }
-
-std::size_t hash<mimir::DomainImpl>::operator()(const mimir::DomainImpl& domain) const { return domain.hash(); }
-}

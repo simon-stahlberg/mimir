@@ -20,14 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/numeric_fluent.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -43,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const;
@@ -56,22 +51,6 @@ private:
 public:
     const Function& get_function() const;
     double get_number() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::NumericFluent>
-{
-    bool operator()(const mimir::NumericFluent& left_numeric_fluent, const mimir::NumericFluent& right_numeric_fluent) const;
-};
-
-template<>
-struct hash<mimir::NumericFluentImpl>
-{
-    std::size_t operator()(const mimir::NumericFluentImpl& numeric_fluent) const;
 };
 }
 

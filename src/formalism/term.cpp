@@ -62,15 +62,3 @@ void TermVariableImpl::str_impl(std::ostringstream& out, const loki::FormattingO
 
 const Variable& TermVariableImpl::get_variable() const { return m_variable; }
 }
-
-namespace std
-{
-bool less<mimir::Term>::operator()(const mimir::Term& left_term, const mimir::Term& right_term) const
-{
-    return std::visit(loki::pddl::LessComparatorVisitor(), *left_term, *right_term);
-}
-
-std::size_t hash<mimir::TermObjectImpl>::operator()(const mimir::TermObjectImpl& term) const { return term.hash(); }
-
-std::size_t hash<mimir::TermVariableImpl>::operator()(const mimir::TermVariableImpl& term) const { return term.hash(); }
-}

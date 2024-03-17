@@ -79,10 +79,3 @@ bool is_any_subtype_of(const TypeList& subtypes, const TypeList& types)
 }
 
 }
-
-namespace std
-{
-bool less<mimir::Type>::operator()(const mimir::Type& left_type, const mimir::Type& right_type) const { return *left_type < *right_type; }
-
-std::size_t hash<mimir::TypeImpl>::operator()(const mimir::TypeImpl& type) const { return type.hash(); }
-}

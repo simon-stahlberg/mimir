@@ -169,37 +169,3 @@ void FunctionExpressionFunctionImpl::str_impl(std::ostringstream& out, const lok
 
 const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
 }
-
-namespace std
-{
-bool less<mimir::FunctionExpression>::operator()(const mimir::FunctionExpression& left_function_expression,
-                                                 const mimir::FunctionExpression& right_function_expression) const
-{
-    return *left_function_expression < *right_function_expression;
-}
-
-std::size_t hash<mimir::FunctionExpressionNumberImpl>::operator()(const mimir::FunctionExpressionNumberImpl& function_expression) const
-{
-    return function_expression.hash();
-}
-
-std::size_t hash<mimir::FunctionExpressionBinaryOperatorImpl>::operator()(const mimir::FunctionExpressionBinaryOperatorImpl& function_expression) const
-{
-    return function_expression.hash();
-}
-
-std::size_t hash<mimir::FunctionExpressionMultiOperatorImpl>::operator()(const mimir::FunctionExpressionMultiOperatorImpl& function_expression) const
-{
-    return function_expression.hash();
-}
-
-std::size_t hash<mimir::FunctionExpressionMinusImpl>::operator()(const mimir::FunctionExpressionMinusImpl& function_expression) const
-{
-    return function_expression.hash();
-}
-
-std::size_t hash<mimir::FunctionExpressionFunctionImpl>::operator()(const mimir::FunctionExpressionFunctionImpl& function_expression) const
-{
-    return function_expression.hash();
-}
-}

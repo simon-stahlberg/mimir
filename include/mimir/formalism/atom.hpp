@@ -21,13 +21,8 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <loki/pddl/atom.hpp>
+#include <loki/pddl/factory.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -43,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const AtomImpl& other) const;
@@ -56,22 +51,6 @@ private:
 public:
     const Predicate& get_predicate() const;
     const TermList& get_terms() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Atom>
-{
-    bool operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const;
-};
-
-template<>
-struct hash<mimir::AtomImpl>
-{
-    std::size_t operator()(const mimir::AtomImpl& atom) const;
 };
 }
 

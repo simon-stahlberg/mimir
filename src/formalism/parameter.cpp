@@ -68,13 +68,3 @@ const Variable& ParameterImpl::get_variable() const { return m_variable; }
 
 const TypeList& ParameterImpl::get_bases() const { return m_types; }
 }
-
-namespace std
-{
-bool less<mimir::Parameter>::operator()(const mimir::Parameter& left_parameter, const mimir::Parameter& right_parameter) const
-{
-    return *left_parameter < *right_parameter;
-}
-
-std::size_t hash<mimir::ParameterImpl>::operator()(const mimir::ParameterImpl& parameter) const { return parameter.hash(); }
-}

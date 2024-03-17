@@ -37,10 +37,3 @@ const std::string& ObjectImpl::get_name() const { return m_name; }
 
 const TypeList& ObjectImpl::get_bases() const { return m_types; }
 }
-
-namespace std
-{
-bool less<mimir::Object>::operator()(const mimir::Object& left_object, const mimir::Object& right_object) const { return *left_object < *right_object; }
-
-std::size_t hash<mimir::ObjectImpl>::operator()(const mimir::ObjectImpl& object) const { return object.hash(); }
-}

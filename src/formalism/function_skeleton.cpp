@@ -57,14 +57,3 @@ const ParameterList& FunctionSkeletonImpl::get_parameters() const { return m_par
 
 const Type& FunctionSkeletonImpl::get_type() const { return m_type; }
 }
-
-namespace std
-{
-bool less<mimir::FunctionSkeleton>::operator()(const mimir::FunctionSkeleton& left_function, const mimir::FunctionSkeleton& right_function) const
-{
-    return *left_function < *right_function;
-}
-
-std::size_t hash<mimir::FunctionSkeletonImpl>::operator()(const mimir::FunctionSkeletonImpl& function) const { return function.hash(); }
-
-}

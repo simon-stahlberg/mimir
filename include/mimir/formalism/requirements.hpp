@@ -20,16 +20,11 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/requirements.hpp>
 #include <set>
 #include <string>
 #include <unordered_map>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -44,7 +39,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;
@@ -58,22 +53,6 @@ public:
     bool test(loki::pddl::RequirementEnum requirement) const;
 
     const loki::pddl::RequirementEnumSet& get_requirements() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Requirements>
-{
-    bool operator()(const mimir::Requirements& left_requirements, const mimir::Requirements& right_requirements) const;
-};
-
-template<>
-struct hash<mimir::RequirementsImpl>
-{
-    std::size_t operator()(const mimir::RequirementsImpl& requirements) const;
 };
 }
 

@@ -20,14 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/ground_atom.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -43,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const;
@@ -57,22 +52,6 @@ public:
     const Predicate& get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::GroundAtom>
-{
-    bool operator()(const mimir::GroundAtom& left_atom, const mimir::GroundAtom& right_atom) const;
-};
-
-template<>
-struct hash<mimir::GroundAtomImpl>
-{
-    std::size_t operator()(const mimir::GroundAtomImpl& atom) const;
 };
 }
 

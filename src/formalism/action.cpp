@@ -145,10 +145,3 @@ bool any_affects(const ActionList& actions, Predicate predicate)
     return false;
 }
 }
-
-namespace std
-{
-bool less<mimir::Action>::operator()(const mimir::Action& left_action, const mimir::Action& right_action) const { return *left_action < *right_action; }
-
-std::size_t hash<mimir::ActionImpl>::operator()(const mimir::ActionImpl& action) const { return action.hash(); }
-}

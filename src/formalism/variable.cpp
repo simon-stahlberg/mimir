@@ -32,13 +32,3 @@ void VariableImpl::str_impl(std::ostringstream& out, const loki::FormattingOptio
 
 const std::string& VariableImpl::get_name() const { return m_name; }
 }
-
-namespace std
-{
-bool less<mimir::Variable>::operator()(const mimir::Variable& left_variable, const mimir::Variable& right_variable) const
-{
-    return *left_variable < *right_variable;
-}
-
-std::size_t hash<mimir::VariableImpl>::operator()(const mimir::VariableImpl& variable) const { return variable.hash(); }
-}

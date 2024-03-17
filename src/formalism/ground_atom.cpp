@@ -57,10 +57,3 @@ const ObjectList& GroundAtomImpl::get_objects() const { return m_objects; }
 size_t GroundAtomImpl::get_arity() const { return m_objects.size(); }
 
 }
-
-namespace std
-{
-bool less<mimir::GroundAtom>::operator()(const mimir::GroundAtom& left_atom, const mimir::GroundAtom& right_atom) const { return *left_atom < *right_atom; }
-
-std::size_t hash<mimir::GroundAtomImpl>::operator()(const mimir::GroundAtomImpl& atom) const { return atom.hash(); }
-}

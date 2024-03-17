@@ -20,14 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/literal.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -44,7 +39,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const LiteralImpl& other) const;
@@ -59,22 +54,6 @@ public:
     const Atom& get_atom() const;
 };
 
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Literal>
-{
-    bool operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const;
-};
-
-template<>
-struct hash<mimir::LiteralImpl>
-{
-    std::size_t operator()(const mimir::LiteralImpl& literal) const;
-};
 }
 
 #endif

@@ -47,10 +47,3 @@ const Predicate& AtomImpl::get_predicate() const { return m_predicate; }
 
 const TermList& AtomImpl::get_terms() const { return m_terms; }
 }
-
-namespace std
-{
-bool less<mimir::Atom>::operator()(const mimir::Atom& left_atom, const mimir::Atom& right_atom) const { return *left_atom < *right_atom; }
-
-std::size_t hash<mimir::AtomImpl>::operator()(const mimir::AtomImpl& atom) const { return atom.hash(); }
-}

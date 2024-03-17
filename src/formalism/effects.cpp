@@ -180,20 +180,3 @@ const Condition& EffectConditionalWhenImpl::get_condition() const { return m_con
 const Effect& EffectConditionalWhenImpl::get_effect() const { return m_effect; }
 }
 
-namespace std
-{
-bool less<mimir::Effect>::operator()(const mimir::Effect& left_effect, const mimir::Effect& right_effect) const
-{
-    return std::visit(loki::pddl::LessComparatorVisitor(), *left_effect, *right_effect);
-}
-
-std::size_t hash<mimir::EffectLiteralImpl>::operator()(const mimir::EffectLiteralImpl& effect) const { return effect.hash(); }
-
-std::size_t hash<mimir::EffectAndImpl>::operator()(const mimir::EffectAndImpl& effect) const { return effect.hash(); }
-
-std::size_t hash<mimir::EffectNumericImpl>::operator()(const mimir::EffectNumericImpl& effect) const { return effect.hash(); }
-
-std::size_t hash<mimir::EffectConditionalForallImpl>::operator()(const mimir::EffectConditionalForallImpl& effect) const { return effect.hash(); }
-
-std::size_t hash<mimir::EffectConditionalWhenImpl>::operator()(const mimir::EffectConditionalWhenImpl& effect) const { return effect.hash(); }
-}

@@ -20,14 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/term.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -42,7 +37,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
     size_t hash_impl() const;
@@ -64,7 +59,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;
     size_t hash_impl() const;
@@ -75,28 +70,6 @@ private:
 
 public:
     const Variable& get_variable() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Term>
-{
-    bool operator()(const mimir::Term& left_term, const mimir::Term& right_term) const;
-};
-
-template<>
-struct hash<mimir::TermObjectImpl>
-{
-    std::size_t operator()(const mimir::TermObjectImpl& term) const;
-};
-
-template<>
-struct hash<mimir::TermVariableImpl>
-{
-    std::size_t operator()(const mimir::TermVariableImpl& term) const;
 };
 }
 

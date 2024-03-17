@@ -20,14 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/function_expressions.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -43,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const;
     size_t hash_impl() const;
@@ -73,7 +68,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const;
     size_t hash_impl() const;
@@ -101,7 +96,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const;
     size_t hash_impl() const;
@@ -127,7 +122,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const;
     size_t hash_impl() const;
@@ -152,7 +147,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const;
     size_t hash_impl() const;
@@ -163,46 +158,6 @@ private:
 
 public:
     const Function& get_function() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::FunctionExpression>
-{
-    bool operator()(const mimir::FunctionExpression& left_function_expression, const mimir::FunctionExpression& right_function_expression) const;
-};
-
-template<>
-struct hash<mimir::FunctionExpressionNumberImpl>
-{
-    std::size_t operator()(const mimir::FunctionExpressionNumberImpl& function_expressions) const;
-};
-
-template<>
-struct hash<mimir::FunctionExpressionBinaryOperatorImpl>
-{
-    std::size_t operator()(const mimir::FunctionExpressionBinaryOperatorImpl& function_expressions) const;
-};
-
-template<>
-struct hash<mimir::FunctionExpressionMultiOperatorImpl>
-{
-    std::size_t operator()(const mimir::FunctionExpressionMultiOperatorImpl& function_expressions) const;
-};
-
-template<>
-struct hash<mimir::FunctionExpressionMinusImpl>
-{
-    std::size_t operator()(const mimir::FunctionExpressionMinusImpl& function_expressions) const;
-};
-
-template<>
-struct hash<mimir::FunctionExpressionFunctionImpl>
-{
-    std::size_t operator()(const mimir::FunctionExpressionFunctionImpl& function_expressions) const;
 };
 }
 

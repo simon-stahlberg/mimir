@@ -20,15 +20,10 @@
 
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/pddl/factory.hpp>
 #include <loki/pddl/problem.hpp>
 #include <optional>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -58,7 +53,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ProblemImpl& other) const;
@@ -77,22 +72,6 @@ public:
     const NumericFluentList& get_numeric_fluents() const;
     const Condition& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Problem>
-{
-    bool operator()(const mimir::Problem& left_problem, const mimir::Problem& right_problem) const;
-};
-
-template<>
-struct hash<mimir::ProblemImpl>
-{
-    std::size_t operator()(const mimir::ProblemImpl& problem) const;
 };
 }
 

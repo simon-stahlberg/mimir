@@ -229,25 +229,3 @@ const ParameterList& ConditionForallImpl::get_parameters() const { return m_para
 
 const Condition& ConditionForallImpl::get_condition() const { return m_condition; }
 }
-
-namespace std
-{
-bool less<mimir::Condition>::operator()(const mimir::Condition& left_condition, const mimir::Condition& right_condition) const
-{
-    return std::visit(loki::pddl::LessComparatorVisitor(), *left_condition, *right_condition);
-}
-
-std::size_t hash<mimir::ConditionLiteralImpl>::operator()(const mimir::ConditionLiteralImpl& condition) const { return condition.hash(); }
-
-std::size_t hash<mimir::ConditionAndImpl>::operator()(const mimir::ConditionAndImpl& condition) const { return condition.hash(); }
-
-std::size_t hash<mimir::ConditionOrImpl>::operator()(const mimir::ConditionOrImpl& condition) const { return condition.hash(); }
-
-std::size_t hash<mimir::ConditionNotImpl>::operator()(const mimir::ConditionNotImpl& condition) const { return condition.hash(); }
-
-std::size_t hash<mimir::ConditionImplyImpl>::operator()(const mimir::ConditionImplyImpl& condition) const { return condition.hash(); }
-
-std::size_t hash<mimir::ConditionExistsImpl>::operator()(const mimir::ConditionExistsImpl& condition) const { return condition.hash(); }
-
-std::size_t hash<mimir::ConditionForallImpl>::operator()(const mimir::ConditionForallImpl& condition) const { return condition.hash(); }
-}

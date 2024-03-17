@@ -22,14 +22,9 @@
 
 #include <functional>
 #include <loki/pddl/action.hpp>
+#include <loki/pddl/factory.hpp>
 #include <optional>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -47,7 +42,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const ActionImpl& other) const;
@@ -68,22 +63,6 @@ public:
 };
 
 bool any_affects(const ActionList& actions, Predicate predicate);
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Action>
-{
-    bool operator()(const mimir::Action& left_action, const mimir::Action& right_action) const;
-};
-
-template<>
-struct hash<mimir::ActionImpl>
-{
-    std::size_t operator()(const mimir::ActionImpl& action) const;
-};
 }
 
 #endif

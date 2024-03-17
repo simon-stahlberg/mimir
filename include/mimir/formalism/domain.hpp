@@ -21,16 +21,11 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <loki/pddl/domain.hpp>
+#include <loki/pddl/factory.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -60,7 +55,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const DomainImpl& other) const;
@@ -80,22 +75,6 @@ public:
     const PredicateList& get_fluent_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash functions to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Domain>
-{
-    bool operator()(const mimir::Domain& domain_left, const mimir::Domain& domain_right) const;
-};
-
-template<>
-struct hash<mimir::DomainImpl>
-{
-    std::size_t operator()(const mimir::DomainImpl& domain) const;
 };
 }
 

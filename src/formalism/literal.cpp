@@ -49,10 +49,3 @@ bool LiteralImpl::is_negated() const { return m_is_negated; }
 
 const Atom& LiteralImpl::get_atom() const { return m_atom; }
 }
-
-namespace std
-{
-bool less<mimir::Literal>::operator()(const mimir::Literal& left_literal, const mimir::Literal& right_literal) const { return *left_literal < *right_literal; }
-
-std::size_t hash<mimir::LiteralImpl>::operator()(const mimir::LiteralImpl& literal) const { return literal.hash(); }
-}

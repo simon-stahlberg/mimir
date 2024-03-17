@@ -40,7 +40,7 @@
 #include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
-#include <loki/utils/persistent_factory.hpp>
+#include <loki/pddl/factory.hpp>
 
 namespace mimir
 {
@@ -48,27 +48,27 @@ namespace mimir
 // to avoid allocations and for continuous storage.
 // The values are just educated guesses based on the knowledge
 // that cache line size is 64 Bytes.
-using RequirementFactory = loki::PersistentFactory<RequirementsImpl>;
-using TypeFactory = loki::PersistentFactory<TypeImpl>;
-using VariableFactory = loki::PersistentFactory<VariableImpl>;
-using TermFactory = loki::PersistentFactory<TermImpl>;
-using ObjectFactory = loki::PersistentFactory<ObjectImpl>;
-using AtomFactory = loki::PersistentFactory<AtomImpl>;
-using GroundAtomFactory = loki::PersistentFactory<GroundAtomImpl>;
-using LiteralFactory = loki::PersistentFactory<LiteralImpl>;
-using GroundLiteralFactory = loki::PersistentFactory<GroundLiteralImpl>;
-using ParameterFactory = loki::PersistentFactory<ParameterImpl>;
-using PredicateFactory = loki::PersistentFactory<PredicateImpl>;
-using FunctionExpressionFactory = loki::PersistentFactory<FunctionExpressionImpl>;
-using FunctionFactory = loki::PersistentFactory<FunctionImpl>;
-using FunctionSkeletonFactory = loki::PersistentFactory<FunctionSkeletonImpl>;
-using ConditionFactory = loki::PersistentFactory<ConditionImpl>;
-using EffectFactory = loki::PersistentFactory<EffectImpl>;
-using ActionFactory = loki::PersistentFactory<ActionImpl>;
-using OptimizationMetricFactory = loki::PersistentFactory<OptimizationMetricImpl>;
-using NumericFluentFactory = loki::PersistentFactory<NumericFluentImpl>;
-using DomainFactory = loki::PersistentFactory<DomainImpl>;
-using ProblemFactory = loki::PersistentFactory<ProblemImpl>;
+using RequirementFactory = loki::PDDLFactory<RequirementsImpl>;
+using TypeFactory = loki::PDDLFactory<TypeImpl>;
+using VariableFactory = loki::PDDLFactory<VariableImpl>;
+using TermFactory = loki::PDDLFactory<TermImpl>;
+using ObjectFactory = loki::PDDLFactory<ObjectImpl>;
+using AtomFactory = loki::PDDLFactory<AtomImpl>;
+using GroundAtomFactory = loki::PDDLFactory<GroundAtomImpl>;
+using LiteralFactory = loki::PDDLFactory<LiteralImpl>;
+using GroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl>;
+using ParameterFactory = loki::PDDLFactory<ParameterImpl>;
+using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
+using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
+using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
+using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
+using ConditionFactory = loki::PDDLFactory<ConditionImpl>;
+using EffectFactory = loki::PDDLFactory<EffectImpl>;
+using ActionFactory = loki::PDDLFactory<ActionImpl>;
+using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
+using NumericFluentFactory = loki::PDDLFactory<NumericFluentImpl>;
+using DomainFactory = loki::PDDLFactory<DomainImpl>;
+using ProblemFactory = loki::PDDLFactory<ProblemImpl>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 struct PDDLFactories

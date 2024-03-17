@@ -21,13 +21,8 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <loki/pddl/conditions.hpp>
+#include <loki/pddl/factory.hpp>
 #include <string>
-
-namespace loki
-{
-template<typename HolderType>
-class PersistentFactory;
-}
 
 namespace mimir
 {
@@ -43,7 +38,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionLiteralImpl& other) const;
     size_t hash_impl() const;
@@ -68,7 +63,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionAndImpl& other) const;
     size_t hash_impl() const;
@@ -93,7 +88,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionOrImpl& other) const;
     size_t hash_impl() const;
@@ -118,7 +113,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionNotImpl& other) const;
     size_t hash_impl() const;
@@ -144,7 +139,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionImplyImpl& other) const;
     size_t hash_impl() const;
@@ -171,7 +166,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionExistsImpl& other) const;
     size_t hash_impl() const;
@@ -198,7 +193,7 @@ private:
 
     // Give access to the constructor.
     template<typename>
-    friend class loki::PersistentFactory;
+    friend class loki::PDDLFactory;
 
     bool is_structurally_equivalent_to_impl(const ConditionForallImpl& other) const;
     size_t hash_impl() const;
@@ -210,58 +205,6 @@ private:
 public:
     const ParameterList& get_parameters() const;
     const Condition& get_condition() const;
-};
-}
-
-namespace std
-{
-// Inject comparison and hash function to make pointers behave appropriately with ordered and unordered datastructures
-template<>
-struct less<mimir::Condition>
-{
-    bool operator()(const mimir::Condition& left_condition, const mimir::Condition& right_condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionLiteralImpl>
-{
-    std::size_t operator()(const mimir::ConditionLiteralImpl& condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionAndImpl>
-{
-    std::size_t operator()(const mimir::ConditionAndImpl& condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionOrImpl>
-{
-    std::size_t operator()(const mimir::ConditionOrImpl& condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionNotImpl>
-{
-    std::size_t operator()(const mimir::ConditionNotImpl& condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionImplyImpl>
-{
-    std::size_t operator()(const mimir::ConditionImplyImpl& condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionExistsImpl>
-{
-    std::size_t operator()(const mimir::ConditionExistsImpl& condition) const;
-};
-
-template<>
-struct hash<mimir::ConditionForallImpl>
-{
-    std::size_t operator()(const mimir::ConditionForallImpl& condition) const;
 };
 }
 

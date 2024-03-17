@@ -62,13 +62,3 @@ const FunctionSkeleton& FunctionImpl::get_function_skeleton() const { return m_f
 
 const TermList& FunctionImpl::get_terms() const { return m_terms; }
 }
-
-namespace std
-{
-bool less<mimir::Function>::operator()(const mimir::Function& left_function, const mimir::Function& right_function) const
-{
-    return *left_function < *right_function;
-}
-
-std::size_t hash<mimir::FunctionImpl>::operator()(const mimir::FunctionImpl& function) const { return function.hash(); }
-}

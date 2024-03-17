@@ -59,13 +59,3 @@ const ParameterList& PredicateImpl::get_parameters() const { return m_parameters
 
 size_t PredicateImpl::get_arity() const { return m_parameters.size(); }
 }
-
-namespace std
-{
-bool less<mimir::Predicate>::operator()(const mimir::Predicate& left_predicate, const mimir::Predicate& right_predicate) const
-{
-    return *left_predicate < *right_predicate;
-}
-
-std::size_t hash<mimir::PredicateImpl>::operator()(const mimir::PredicateImpl& predicate) const { return predicate.hash(); }
-}

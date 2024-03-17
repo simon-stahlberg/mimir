@@ -54,13 +54,3 @@ loki::pddl::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metr
 const FunctionExpression& OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
 
 }
-
-namespace std
-{
-bool less<mimir::OptimizationMetric>::operator()(const mimir::OptimizationMetric& left_metric, const mimir::OptimizationMetric& right_metric) const
-{
-    return *left_metric < *right_metric;
-}
-
-std::size_t hash<mimir::OptimizationMetricImpl>::operator()(const mimir::OptimizationMetricImpl& metric) const { return metric.hash(); }
-}
