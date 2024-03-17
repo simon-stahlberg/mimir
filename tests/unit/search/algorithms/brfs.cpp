@@ -42,7 +42,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.size(), 5);
-    EXPECT_TRUE(false);
 }
 
 }
