@@ -41,7 +41,7 @@ struct ConstDenseStateViewEqual
     bool operator()(const ConstDenseStateView& view_left, const ConstDenseStateView& view_right) const
     {
         const auto bitset_view_left = view_left.get<1>();
-        const auto bitset_view_right = view_left.get<1>();
+        const auto bitset_view_right = view_right.get<1>();
         return bitset_view_left == bitset_view_right;
     }
 };
