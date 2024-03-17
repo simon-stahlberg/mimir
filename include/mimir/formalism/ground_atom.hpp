@@ -37,8 +37,7 @@ private:
     GroundAtomImpl(int identifier, Predicate predicate, ObjectList objects);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<GroundAtomImpl, loki::Hash<GroundAtomImpl*>, loki::EqualTo<GroundAtomImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const;

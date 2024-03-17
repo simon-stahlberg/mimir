@@ -54,8 +54,7 @@ private:
                ActionList actions);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<DomainImpl, loki::Hash<DomainImpl*>, loki::EqualTo<DomainImpl*>>;
 
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const DomainImpl& other) const;

@@ -52,8 +52,7 @@ private:
                 std::optional<OptimizationMetric> optimization_metric);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<ProblemImpl, loki::Hash<ProblemImpl*>, loki::EqualTo<ProblemImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ProblemImpl& other) const;

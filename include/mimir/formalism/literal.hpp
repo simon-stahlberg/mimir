@@ -38,8 +38,7 @@ private:
     LiteralImpl(int identifier, bool is_negated, Atom atom);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<LiteralImpl, loki::Hash<LiteralImpl*>, loki::EqualTo<LiteralImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const LiteralImpl& other) const;

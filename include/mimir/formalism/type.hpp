@@ -37,8 +37,7 @@ private:
     TypeImpl(int identifier, std::string name, TypeList bases = {});
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<TypeImpl, loki::Hash<TypeImpl*>, loki::EqualTo<TypeImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const TypeImpl& other) const;

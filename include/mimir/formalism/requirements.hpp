@@ -38,8 +38,7 @@ private:
     RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<RequirementsImpl, loki::Hash<RequirementsImpl*>, loki::EqualTo<RequirementsImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;

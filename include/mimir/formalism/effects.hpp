@@ -37,8 +37,7 @@ private:
     EffectLiteralImpl(int identifier, Literal literal);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectLiteralImpl>;
@@ -62,8 +61,7 @@ private:
     EffectAndImpl(int identifier, EffectList effects);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectAndImpl>;
@@ -89,8 +87,7 @@ private:
     EffectNumericImpl(int identifier, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
     // Give access to the private interface implementations.
     friend class Base<EffectNumericImpl>;
@@ -117,8 +114,7 @@ private:
     EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectConditionalForallImpl>;
@@ -144,8 +140,7 @@ private:
     EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
     bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
     size_t hash_impl() const;

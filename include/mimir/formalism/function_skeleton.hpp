@@ -38,8 +38,7 @@ private:
     FunctionSkeletonImpl(int identifier, std::string name, ParameterList parameters, Type type);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<FunctionSkeletonImpl, loki::Hash<FunctionSkeletonImpl*>, loki::EqualTo<FunctionSkeletonImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const;

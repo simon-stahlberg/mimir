@@ -36,8 +36,7 @@ private:
     TermObjectImpl(int identifier, Object object);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<TermImpl, loki::Hash<TermImpl*>, loki::EqualTo<TermImpl*>>;
 
     bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
     size_t hash_impl() const;
@@ -58,8 +57,7 @@ private:
     TermVariableImpl(int identifier, Variable variable);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<TermImpl, loki::Hash<TermImpl*>, loki::EqualTo<TermImpl*>>;
 
     bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;
     size_t hash_impl() const;

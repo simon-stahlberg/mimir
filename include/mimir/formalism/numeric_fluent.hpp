@@ -37,8 +37,7 @@ private:
     NumericFluentImpl(int identifier, Function function, double number);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<NumericFluentImpl, loki::Hash<NumericFluentImpl*>, loki::EqualTo<NumericFluentImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const;

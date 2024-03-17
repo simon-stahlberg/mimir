@@ -37,8 +37,7 @@ private:
     PredicateImpl(int identifier, std::string name, ParameterList parameters);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<PredicateImpl, loki::Hash<PredicateImpl*>, loki::EqualTo<PredicateImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const PredicateImpl& other) const;

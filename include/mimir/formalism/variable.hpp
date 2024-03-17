@@ -36,8 +36,7 @@ private:
     VariableImpl(int identifier, std::string name);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<VariableImpl, loki::Hash<VariableImpl*>, loki::EqualTo<VariableImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;

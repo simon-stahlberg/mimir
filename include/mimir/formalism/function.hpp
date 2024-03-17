@@ -37,8 +37,7 @@ private:
     FunctionImpl(int identifier, FunctionSkeleton function_skeleton, TermList terms);
 
     // Give access to the constructor.
-    template<typename>
-    friend class loki::PDDLFactory;
+    friend class loki::PDDLFactory<FunctionImpl, loki::Hash<FunctionImpl*>, loki::EqualTo<FunctionImpl*>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const FunctionImpl& other) const;
