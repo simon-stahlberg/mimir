@@ -19,14 +19,10 @@ TEST(MimirTests, SearchPlannersSingleTest)
     auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
     auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
     auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto lifted_astar = std::make_shared<AStarAlgorithm>(parser.get_problem(),
-                                                         parser.get_factories(),
-                                                         std::move(state_repository),
-                                                         std::move(successor_generator),
-                                                         std::move(blind_heuristic),
-                                                         std::move(event_handler));
+    auto lifted_astar =
+        std::make_shared<AStarAlgorithm>(parser.get_problem(), parser.get_factories(), state_repository, successor_generator, blind_heuristic, event_handler);
 
-    auto planner = SinglePlanner(parser.get_domain(), parser.get_problem(), parser.get_factories(), std::move(lifted_astar));
+    auto planner = SinglePlanner(parser.get_domain(), parser.get_problem(), parser.get_factories(), lifted_astar);
     const auto [status, plan] = planner.find_solution();
 }
 

@@ -78,25 +78,10 @@ private:
         // Assign values to members.
 
         state_id = next_state_id;
-
         state_bitset.unset_all();
-
-        // TODO: Optimize this operation, this is quite inefficient.
-
-        for (const auto& position : state.get_atoms_bitset())
-        {
-            state_bitset.set(position);
-        }
-
-        for (const auto& position : action.get_unconditional_negative_effect_bitset())
-        {
-            state_bitset.unset(position);
-        }
-
-        for (const auto& position : action.get_unconditional_positive_effect_bitset())
-        {
-            state_bitset.set(position);
-        }
+        state_bitset |= state.get_atoms_bitset();
+        state_bitset -= action.get_unconditional_negative_effect_bitset();
+        state_bitset |= action.get_unconditional_positive_effect_bitset();
 
         // Construct the state and store it.
 

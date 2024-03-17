@@ -17,8 +17,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTest)
     auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
     auto successor_generator = std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
     auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto grounded_brfs =
-        BrFsAlgorithm(parser.get_problem(), parser.get_factories(), std::move(state_repository), std::move(successor_generator), std::move(event_handler));
+    auto grounded_brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), state_repository, successor_generator, event_handler);
     auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
     const auto search_status = grounded_brfs.find_solution(plan);
 }
@@ -32,8 +31,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
     auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
     auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
     auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto lifted_brfs =
-        BrFsAlgorithm(parser.get_problem(), parser.get_factories(), std::move(state_repository), std::move(successor_generator), std::move(event_handler));
+    auto lifted_brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), state_repository, successor_generator, event_handler);
     auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
     const auto search_status = lifted_brfs.find_solution(plan);
 
@@ -42,6 +40,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.size(), 5);
+    EXPECT_EQ(event_handler->get_statistics().get_num_expanded(), 24);
+    EXPECT_EQ(event_handler->get_statistics().get_num_generated(), 90);
 }
 
 }

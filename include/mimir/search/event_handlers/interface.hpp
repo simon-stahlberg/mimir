@@ -38,6 +38,8 @@ public:
 
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
+
+    virtual const Statistics& get_statistics() const = 0;
 };
 
 /**
@@ -93,7 +95,7 @@ public:
     void on_exhausted() override { self().on_exhausted_impl(); }
 
     /// @brief Get the statistics.
-    const Statistics& get_statistics() const { return m_statistics; }
+    const Statistics& get_statistics() const override { return m_statistics; }
 };
 
 }
