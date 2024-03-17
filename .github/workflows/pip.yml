@@ -1,6 +1,9 @@
 name: Pip
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dynamic
 
 jobs:
   build:
@@ -15,8 +18,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          ref: dynamic
 
       - uses: actions/setup-python@v2
         with:
