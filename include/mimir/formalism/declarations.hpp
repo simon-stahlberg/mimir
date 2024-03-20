@@ -55,10 +55,6 @@ using TermImpl = std::variant<TermObjectImpl, TermVariableImpl>;
 using Term = const TermImpl*;
 using TermList = boost::container::small_vector<Term, 2>;  // often unary and binary predicates
 
-class AtomImpl;
-using Atom = const AtomImpl*;
-using AtomList = std::vector<Atom>;
-
 class ParameterImpl;
 using Parameter = const ParameterImpl*;
 using ParameterList = boost::container::small_vector<Parameter, 10>;  // often actions, quantifiers with few parameters
@@ -68,9 +64,25 @@ class PredicateImpl;
 using Predicate = const PredicateImpl*;
 using PredicateList = std::vector<Predicate>;
 
+class AtomImpl;
+using Atom = const AtomImpl*;
+using AtomList = std::vector<Atom>;
+
+class GroundAtomImpl;
+using GroundAtom = const GroundAtomImpl*;
+using GroundAtomList = std::vector<GroundAtom>;
+
 class LiteralImpl;
 using Literal = const LiteralImpl*;
 using LiteralList = std::vector<Literal>;
+
+class GroundLiteralImpl;
+using GroundLiteral = const GroundLiteralImpl*;
+using GroundLiteralList = std::vector<GroundLiteral>;
+
+class NumericFluentImpl;
+using NumericFluent = const NumericFluentImpl*;
+using NumericFluentList = std::vector<NumericFluent>;
 
 class ConditionLiteralImpl;
 class ConditionAndImpl;
@@ -114,10 +126,6 @@ class FunctionImpl;
 using Function = const FunctionImpl*;
 using FunctionList = std::vector<Function>;
 
-class ConstraintImpl;
-using Constraint = const ConstraintImpl*;
-using ConstraintList = std::vector<Constraint>;
-
 class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
@@ -125,23 +133,6 @@ using ActionList = std::vector<Action>;
 class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
-
-/* Problem specific */
-class GroundAtomImpl;
-using GroundAtom = const GroundAtomImpl*;
-using GroundAtomList = std::vector<GroundAtom>;
-
-class GroundLiteralImpl;
-using GroundLiteral = const GroundLiteralImpl*;
-using GroundLiteralList = std::vector<GroundLiteral>;
-
-class GroundActionImpl;
-using GroundAction = const GroundActionImpl*;
-using GroundActionList = std::vector<GroundAction>;
-
-class NumericFluentImpl;
-using NumericFluent = const NumericFluentImpl*;
-using NumericFluentList = std::vector<NumericFluent>;
 
 class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
