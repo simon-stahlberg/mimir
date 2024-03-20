@@ -2,6 +2,7 @@
 #define MIMIR_FORMALISM_TRANSLATIONS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/factories.hpp"
 
 #include <tuple>
 #include <variant>
