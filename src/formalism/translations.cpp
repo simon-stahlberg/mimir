@@ -20,10 +20,4 @@
 namespace mimir
 {
 
-std::tuple<Problem, PDDLFactories> to_positive_normalized_problem(const Problem& problem) {}
-
-std::tuple<Problem, PDDLFactories> to_effect_normalized_problem(const Problem& problem) {}
-
-std::tuple<Problem, PDDLFactories> to_delete_relaxed_problem(const Problem& problem) {}
-
 }
