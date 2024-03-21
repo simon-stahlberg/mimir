@@ -3,6 +3,8 @@
 
 #include "mimir/formalism/translators/base.hpp"
 
+namespace mimir
+{
 class TypeTranslator : public BaseTranslator<TypeTranslator>
 {
 private:
@@ -10,4 +12,5 @@ private:
     friend class BaseTranslator<TypeTranslator>;
 };
 
+}
 #endif
