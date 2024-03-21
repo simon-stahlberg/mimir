@@ -2,17 +2,20 @@
 #include "mimir/formalism/translators.hpp"
 
 #include <gtest/gtest.h>
+#include <loki/parser.hpp>
 
 namespace mimir::tests
 {
 
 TEST(MimirTests, FormalismTranslatorsBase)
 {
-    // Instantiate grounded version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
-    PDDLParser parser(domain_file, problem_file);
+    auto domain_parser = loki::DomainParser(domain_file);
+    auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
     auto translator = std::make_unique<TypeTranslator>();
+    auto translated_pddl_factories = loki::PDDLFactories();
+    auto translated_problem = translator->run(*problem_parser.get_problem(), translated_pddl_factories);
 }
 
 }
