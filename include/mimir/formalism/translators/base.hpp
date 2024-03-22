@@ -409,7 +409,6 @@ public:
 
     loki::pddl::Problem translate_impl(const loki::pddl::ProblemImpl& problem)
     {
-        std::cout << "BaseTranslator translate problem" << std::endl;
         return this->m_pddl_factories.problems.get_or_create<loki::pddl::ProblemImpl>(
             this->translate(*problem.get_domain()),
             problem.get_name(),

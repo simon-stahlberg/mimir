@@ -15,20 +15,40 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
-    loki::pddl::Problem translate_impl(const loki::pddl::ProblemImpl& problem)
+    std::unordered_map<loki::pddl::Type, loki::pddl::Predicate> m_type_to_predicate;
+
+    void prepare_impl(const loki::pddl::DomainImpl& domain)
     {
-        std::cout << "TypeTranslator translate problem" << std::endl;
-        return this->m_pddl_factories.problems.get_or_create<loki::pddl::ProblemImpl>(
-            this->translate(*problem.get_domain()),
-            problem.get_name(),
-            this->translate(*problem.get_requirements()),
-            this->translate(problem.get_objects()),
-            this->translate(problem.get_initial_literals()),
-            this->translate(problem.get_numeric_fluents()),
-            this->translate(*problem.get_goal_condition()),
-            (problem.get_optimization_metric().has_value() ?
-                 std::optional<loki::pddl::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
-                 std::nullopt));
+        this->prepare(*domain.get_requirements());
+        for (const auto& type : domain.get_types())
+        {
+            auto predicate = this->m_pddl_factories.predicates.get_or_create<loki::pddl::PredicateImpl>(
+                type->get_name(),
+                loki::pddl::ParameterList { this->m_pddl_factories.parameters.get_or_create<loki::pddl::ParameterImpl>(
+                    this->m_pddl_factories.variables.get_or_create<loki::pddl::VariableImpl>("?arg1"),
+                    loki::pddl::TypeList {}) });
+            m_type_to_predicate.emplace(type, predicate);
+        }
+        this->prepare(domain.get_constants());
+        this->prepare(domain.get_predicates());
+        this->prepare(domain.get_functions());
+        this->prepare(domain.get_actions());
+    }
+
+    loki::pddl::Domain translate_impl(const loki::pddl::DomainImpl& domain)
+    {
+        auto predicates = this->translate(domain.get_predicates());
+        for (const auto [type, predicate] : m_type_to_predicate)
+        {
+            predicates.push_back(predicate);
+        }
+        return this->m_pddl_factories.domains.get_or_create<loki::pddl::DomainImpl>(domain.get_name(),
+                                                                                    this->translate(*domain.get_requirements()),
+                                                                                    loki::pddl::TypeList {},
+                                                                                    this->translate(domain.get_constants()),
+                                                                                    predicates,
+                                                                                    this->translate(domain.get_functions()),
+                                                                                    this->translate(domain.get_actions()));
     }
 
 public:
