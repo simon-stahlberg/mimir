@@ -14,8 +14,8 @@ TEST(MimirTests, FormalismTranslatorsBase)
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
     auto translated_pddl_factories = loki::PDDLFactories();
-    auto translator = std::make_unique<TypeTranslator>(translated_pddl_factories);
-    auto translated_problem = translator->run(*problem_parser.get_problem());
+    auto translator = TypeTranslator(translated_pddl_factories);
+    auto translated_problem = translator.run(*problem_parser.get_problem());
 }
 
 }
