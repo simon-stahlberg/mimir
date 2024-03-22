@@ -13,9 +13,9 @@ TEST(MimirTests, FormalismTranslatorsBase)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
-    auto translator = std::make_unique<TypeTranslator>();
     auto translated_pddl_factories = loki::PDDLFactories();
-    auto translated_problem = translator->run(*problem_parser.get_problem(), translated_pddl_factories);
+    auto translator = std::make_unique<TypeTranslator>(translated_pddl_factories);
+    auto translated_problem = translator->run(*problem_parser.get_problem());
 }
 
 }

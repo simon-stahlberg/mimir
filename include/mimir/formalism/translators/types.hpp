@@ -10,6 +10,9 @@ class TypeTranslator : public BaseTranslator<TypeTranslator>
 private:
     /* Implement BaseTranslator interface. */
     friend class BaseTranslator<TypeTranslator>;
+
+public:
+    explicit TypeTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator<TypeTranslator>(pddl_factories) {}
 };
 
 }
