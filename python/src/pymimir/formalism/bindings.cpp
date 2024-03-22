@@ -9,6 +9,10 @@
 using namespace mimir;
 namespace py = pybind11;
 
+/**
+ * Wrap variants to not expose them to the bindings.
+ */
+
 struct WrappedTerm
 {
     Term term;
@@ -86,6 +90,11 @@ struct CastVisitor
     }
 };
 
+/**
+ * Print utils
+ */
+
+/// @brief Return string representation of a PDDL object of type T as if typing is enabled.
 template<typename T>
 std::string to_string_inner(const T& element)
 {
@@ -95,6 +104,8 @@ std::string to_string_inner(const T& element)
     return ss.str();
 }
 
+/// @brief Return string representation of a PDDL object of type T
+///        from which typing enabled can be derived of which does not use it.
 template<typename T>
 std::string to_string_outter(const T& element)
 {
@@ -103,6 +114,10 @@ std::string to_string_outter(const T& element)
     element.str(ss, options);
     return ss.str();
 }
+
+/**
+ * Bindings
+ */
 
 void init_formalism(py::module_& m_formalism)
 {
