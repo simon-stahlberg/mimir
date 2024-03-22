@@ -2,6 +2,7 @@
 
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/action.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
