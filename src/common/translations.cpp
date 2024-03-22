@@ -3,6 +3,7 @@
 #include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 
 namespace mimir
 {
