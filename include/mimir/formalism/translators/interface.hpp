@@ -111,6 +111,28 @@ public:
     void prepare(const loki::pddl::ProblemImpl& problem) { self().prepare_base(problem); }
 
     /// @brief Apply problem translation.
+    template<typename T>
+    auto translate(const std::vector<const T*>& vec)
+    {
+        std::vector<const T*> result_vec;
+        result_vec.reserve(vec.size());
+        for (const auto ptr : vec)
+        {
+            result_vec.push_back(self().translate(*ptr));
+        }
+        return result_vec;
+    }
+    template<typename T, size_t N>
+    auto translate(const boost::container::small_vector<const T*, N>& vec)
+    {
+        boost::container::small_vector<const T*, N> result_vec;
+        result_vec.reserve(vec.size());
+        for (const auto ptr : vec)
+        {
+            result_vec.push_back(self().translate(*ptr));
+        }
+        return result_vec;
+    }
     loki::pddl::Requirements translate(const loki::pddl::RequirementsImpl& requirements) { return self().translate_base(requirements); }
     loki::pddl::Type translate(const loki::pddl::TypeImpl& type) { return self().translate_base(type); }
     loki::pddl::Object translate(const loki::pddl::ObjectImpl& object) { return self().translate_base(object); }

@@ -22,7 +22,7 @@ private:
 
 public:
     /// @brief Collect information.
-    ///        Default behavior recursively calls prepare.
+    ///        Default implementation recursively calls prepare.
     void prepare_base(const loki::pddl::RequirementsImpl& requirements) { self().prepare_impl(requirements); }
     void prepare_base(const loki::pddl::TypeImpl& type) { self().prepare_impl(type); }
     void prepare_base(const loki::pddl::ObjectImpl& object) { self().prepare_impl(object); }
@@ -61,35 +61,74 @@ public:
     void prepare_base(const loki::pddl::ProblemImpl& problem) { self().prepare_impl(problem); }
 
     void prepare_impl(const loki::pddl::RequirementsImpl& requirements) {}
-    void prepare_impl(const loki::pddl::TypeImpl& type) {}
+    void prepare_impl(const loki::pddl::TypeImpl& type) { this->prepare(type.get_bases()); }
     void prepare_impl(const loki::pddl::ObjectImpl& object) {}
     void prepare_impl(const loki::pddl::VariableImpl& variable) {}
-    void prepare_impl(const loki::pddl::TermObjectImpl& term) {}
-    void prepare_impl(const loki::pddl::TermVariableImpl& term) {}
-    void prepare_impl(const loki::pddl::ParameterImpl& parameter) {}
+    void prepare_impl(const loki::pddl::TermObjectImpl& term) { this->prepare(*term.get_object()); }
+    void prepare_impl(const loki::pddl::TermVariableImpl& term) { this->prepare(*term.get_variable()); }
+    void prepare_impl(const loki::pddl::ParameterImpl& parameter) { this->prepare(*parameter.get_variable()); }
     void prepare_impl(const loki::pddl::PredicateImpl& predicate) {}
-    void prepare_impl(const loki::pddl::AtomImpl& atom) {}
-    void prepare_impl(const loki::pddl::GroundAtomImpl& atom) {}
-    void prepare_impl(const loki::pddl::LiteralImpl& literal) {}
-    void prepare_impl(const loki::pddl::NumericFluentImpl& numeric_fluent) {}
-    void prepare_impl(const loki::pddl::GroundLiteralImpl& literal) {}
-    void prepare_impl(const loki::pddl::ConditionLiteralImpl& condition) {}
-    void prepare_impl(const loki::pddl::ConditionAndImpl& condition) {}
-    void prepare_impl(const loki::pddl::ConditionOrImpl& condition) {}
-    void prepare_impl(const loki::pddl::ConditionNotImpl& condition) {}
-    void prepare_impl(const loki::pddl::ConditionImplyImpl& condition) {}
-    void prepare_impl(const loki::pddl::ConditionExistsImpl& condition) {}
-    void prepare_impl(const loki::pddl::ConditionForallImpl& condition) {}
-    void prepare_impl(const loki::pddl::EffectLiteralImpl& effect) {}
-    void prepare_impl(const loki::pddl::EffectAndImpl& effect) {}
-    void prepare_impl(const loki::pddl::EffectNumericImpl& effect) {}
-    void prepare_impl(const loki::pddl::EffectConditionalForallImpl& effect) {}
-    void prepare_impl(const loki::pddl::EffectConditionalWhenImpl& effect) {}
+    void prepare_impl(const loki::pddl::AtomImpl& atom)
+    {
+        this->prepare(*atom.get_predicate());
+        this->prepare(atom.get_terms());
+    }
+    void prepare_impl(const loki::pddl::GroundAtomImpl& atom)
+    {
+        this->prepare(*atom.get_predicate());
+        this->prepare(atom.get_objects());
+    }
+    void prepare_impl(const loki::pddl::LiteralImpl& literal) { this->prepare(*literal.get_atom()); }
+    void prepare_impl(const loki::pddl::NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
+    void prepare_impl(const loki::pddl::GroundLiteralImpl& literal) { this->prepare(*literal.get_atom()); }
+    void prepare_impl(const loki::pddl::ConditionLiteralImpl& condition) { this->prepare(*condition.get_literal()); }
+    void prepare_impl(const loki::pddl::ConditionAndImpl& condition) { this->prepare(condition.get_conditions()); }
+    void prepare_impl(const loki::pddl::ConditionOrImpl& condition) { this->prepare(condition.get_conditions()); }
+    void prepare_impl(const loki::pddl::ConditionNotImpl& condition) { this->prepare(*condition.get_condition()); }
+    void prepare_impl(const loki::pddl::ConditionImplyImpl& condition)
+    {
+        this->prepare(*condition.get_condition_left());
+        this->prepare(*condition.get_condition_right());
+    }
+    void prepare_impl(const loki::pddl::ConditionExistsImpl& condition)
+    {
+        this->prepare(condition.get_parameters());
+        this->prepare(*condition.get_condition());
+    }
+    void prepare_impl(const loki::pddl::ConditionForallImpl& condition)
+    {
+        this->prepare(condition.get_parameters());
+        this->prepare(*condition.get_condition());
+    }
+    void prepare_impl(const loki::pddl::EffectLiteralImpl& effect) { this->prepare(*effect.get_literal()); }
+    void prepare_impl(const loki::pddl::EffectAndImpl& effect) { this->prepare(effect.get_effects()); }
+    void prepare_impl(const loki::pddl::EffectNumericImpl& effect)
+    {
+        this->prepare(*effect.get_function());
+        this->prepare(*effect.get_function_expression());
+    }
+    void prepare_impl(const loki::pddl::EffectConditionalForallImpl& effect)
+    {
+        this->prepare(effect.get_parameters());
+        this->prepare(*effect.get_effect());
+    }
+    void prepare_impl(const loki::pddl::EffectConditionalWhenImpl& effect)
+    {
+        this->prepare(*effect.get_condition());
+        this->prepare(*effect.get_effect());
+    }
     void prepare_impl(const loki::pddl::FunctionExpressionNumberImpl& function_expression) {}
-    void prepare_impl(const loki::pddl::FunctionExpressionBinaryOperatorImpl& function_expression) {}
-    void prepare_impl(const loki::pddl::FunctionExpressionMultiOperatorImpl& function_expression) {}
-    void prepare_impl(const loki::pddl::FunctionExpressionMinusImpl& function_expression) {}
-    void prepare_impl(const loki::pddl::FunctionExpressionFunctionImpl& function_expression) {}
+    void prepare_impl(const loki::pddl::FunctionExpressionBinaryOperatorImpl& function_expression)
+    {
+        this->prepare(*function_expression.get_left_function_expression());
+        this->prepare(*function_expression.get_right_function_expression());
+    }
+    void prepare_impl(const loki::pddl::FunctionExpressionMultiOperatorImpl& function_expression)
+    {
+        this->prepare(function_expression.get_function_expressions());
+    }
+    void prepare_impl(const loki::pddl::FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
+    void prepare_impl(const loki::pddl::FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
     void prepare_impl(const loki::pddl::FunctionSkeletonImpl& function_skeleton)
     {
         this->prepare(function_skeleton.get_parameters());
@@ -138,8 +177,56 @@ public:
 
     /// @brief Apply problem translation.
     ///        Default behavior reparses it into the pddl_factories.
+    loki::pddl::Requirements translate_base(const loki::pddl::RequirementsImpl& requirements) { return self().translate_impl(requirements); }
+    loki::pddl::Type translate_base(const loki::pddl::TypeImpl& type) { return self().translate_impl(type); }
+    loki::pddl::Object translate_base(const loki::pddl::ObjectImpl& object) { return self().translate_impl(object); }
+    loki::pddl::Variable translate_base(const loki::pddl::VariableImpl& variable) { return self().translate_impl(variable); }
+    loki::pddl::Term translate_base(const loki::pddl::TermObjectImpl& term) { return self().translate_impl(term); }
+    loki::pddl::Term translate_base(const loki::pddl::TermVariableImpl& term) { return self().translate_impl(term); }
+    loki::pddl::Parameter translate_base(const loki::pddl::ParameterImpl& parameter) { return self().translate_impl(parameter); }
+    loki::pddl::Parameter translate_base(const loki::pddl::PredicateImpl& predicate) { return self().translate_impl(predicate); }
+    loki::pddl::Atom translate_base(const loki::pddl::AtomImpl& atom) { return self().translate_impl(atom); }
+    loki::pddl::GroundAtom translate_base(const loki::pddl::GroundAtomImpl& atom) { return self().translate_impl(atom); }
+    loki::pddl::Literal translate_base(const loki::pddl::LiteralImpl& literal) { return self().translate_impl(literal); }
+    loki::pddl::GroundLiteral translate_base(const loki::pddl::GroundLiteralImpl& literal) { return self().translate_impl(literal); }
+    loki::pddl::NumericFluent translate_base(const loki::pddl::NumericFluentImpl& numeric_fluent) { return self().translate_impl(numeric_fluent); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionLiteralImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionAndImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionOrImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionNotImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionImplyImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionExistsImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Condition translate_base(const loki::pddl::ConditionForallImpl& condition) { return self().translate_impl(condition); }
+    loki::pddl::Effect translate_base(const loki::pddl::EffectLiteralImpl& effect) { return self().translate_impl(effect); }
+    loki::pddl::Effect translate_base(const loki::pddl::EffectAndImpl& effect) { return self().translate_impl(effect); }
+    loki::pddl::Effect translate_base(const loki::pddl::EffectNumericImpl& effect) { return self().translate_impl(effect); }
+    loki::pddl::Effect translate_base(const loki::pddl::EffectConditionalForallImpl& effect) { return self().translate_impl(effect); }
+    loki::pddl::Effect translate_base(const loki::pddl::EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
+    loki::pddl::FunctionExpression translate_base(const loki::pddl::FunctionExpressionNumberImpl& function_expression)
+    {
+        return self().translate_impl(function_expression);
+    }
+    loki::pddl::FunctionExpression translate_base(const loki::pddl::FunctionExpressionBinaryOperatorImpl& function_expression)
+    {
+        return self().translate_impl(function_expression);
+    }
+    loki::pddl::FunctionExpression translate_base(const loki::pddl::FunctionExpressionMultiOperatorImpl& function_expression)
+    {
+        return self().translate_impl(function_expression);
+    }
+    loki::pddl::FunctionExpression translate_base(const loki::pddl::FunctionExpressionMinusImpl& function_expression)
+    {
+        return self().translate_impl(function_expression);
+    }
+    loki::pddl::FunctionExpression translate_base(const loki::pddl::FunctionExpressionFunctionImpl& function_expression)
+    {
+        return self().translate_impl(function_expression);
+    }
+    loki::pddl::FunctionSkeleton translate_base(const loki::pddl::FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
+    loki::pddl::Function translate_base(const loki::pddl::FunctionImpl& function) { return self().translate_impl(function); }
     loki::pddl::Domain translate_base(const loki::pddl::DomainImpl& domain) { return self().translate_impl(domain); }
     loki::pddl::Action translate_base(const loki::pddl::ActionImpl& action) { return self().translate_impl(action); }
+    loki::pddl::Action translate_base(const loki::pddl::OptimizationMetricImpl& metric) { return self().translate_impl(metric); }
     loki::pddl::Problem translate_base(const loki::pddl::ProblemImpl& problem) { return self().translate_impl(problem); }
 
     loki::pddl::Action translate_impl(const loki::pddl::ActionImpl& action) {}
