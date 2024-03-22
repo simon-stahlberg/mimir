@@ -57,12 +57,15 @@ private:
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ProblemImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<ProblemImpl>;
 
 public:
+    void str(std::ostream& out, const loki::FormattingOptions& options) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const ProblemImpl& problem);
+
     const Domain& get_domain() const;
     const std::string& get_name() const;
     const Requirements& get_requirements() const;

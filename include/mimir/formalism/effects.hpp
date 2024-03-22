@@ -42,10 +42,11 @@ private:
     // Give access to the private interface implementations.
     friend class loki::Base<EffectLiteralImpl>;
 
-public:
     bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
 
     const Literal& get_literal() const;
 };
@@ -66,10 +67,11 @@ private:
     // Give access to the private interface implementations.
     friend class loki::Base<EffectAndImpl>;
 
-public:
     bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
 
     const EffectList& get_effects() const;
 };
@@ -92,10 +94,11 @@ private:
     // Give access to the private interface implementations.
     friend class Base<EffectNumericImpl>;
 
-public:
     bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
 
     loki::pddl::AssignOperatorEnum get_assign_operator() const;
     const Function& get_function() const;
@@ -119,10 +122,11 @@ private:
     // Give access to the private interface implementations.
     friend class loki::Base<EffectConditionalForallImpl>;
 
-public:
     bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
+
+public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
 
     const ParameterList& get_parameters() const;
     const Effect& get_effect() const;
@@ -142,14 +146,15 @@ private:
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
-    bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
-
     // Give access to the private interface implementations.
     friend class loki::Base<EffectConditionalWhenImpl>;
 
+    bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
+    size_t hash_impl() const;
+
 public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
+
     const Condition& get_condition() const;
     const Effect& get_effect() const;
 };

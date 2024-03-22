@@ -40,7 +40,7 @@ bool FunctionExpressionNumberImpl::is_structurally_equivalent_to_impl(const Func
 
 size_t FunctionExpressionNumberImpl::hash_impl() const { return std::hash<double>()(m_number); }
 
-void FunctionExpressionNumberImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const { out << m_number; }
+void FunctionExpressionNumberImpl::str(std::ostream& out, const loki::FormattingOptions& /*options*/, bool /*typing_enabled*/) const { out << m_number; }
 
 double FunctionExpressionNumberImpl::get_number() const { return m_number; }
 
@@ -71,12 +71,12 @@ size_t FunctionExpressionBinaryOperatorImpl::hash_impl() const
     return hash_combine(m_binary_operator, m_left_function_expression, m_right_function_expression);
 }
 
-void FunctionExpressionBinaryOperatorImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const
+void FunctionExpressionBinaryOperatorImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
     out << "(" << to_string(m_binary_operator) << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_left_function_expression);
+    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_left_function_expression);
     out << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_right_function_expression);
+    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_right_function_expression);
     out << ")";
 }
 
@@ -110,14 +110,14 @@ size_t FunctionExpressionMultiOperatorImpl::hash_impl() const
     return loki::hash_combine(m_multi_operator, loki::hash_container(loki::get_sorted_vector(m_function_expressions)));
 }
 
-void FunctionExpressionMultiOperatorImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const
+void FunctionExpressionMultiOperatorImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
     out << "(" << to_string(m_multi_operator);
     assert(!m_function_expressions.empty());
     for (const auto& function_expression : m_function_expressions)
     {
         out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *function_expression);
+        std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *function_expression);
     }
     out << ")";
 }
@@ -144,9 +144,11 @@ bool FunctionExpressionMinusImpl::is_structurally_equivalent_to_impl(const Funct
 
 size_t FunctionExpressionMinusImpl::hash_impl() const { return hash_combine(m_function_expression); }
 
-void FunctionExpressionMinusImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const
+void FunctionExpressionMinusImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
-    out << "(- " << m_function_expression << ")";
+    out << "(- ";
+    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_function_expression);
+    out << ")";
 }
 
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
@@ -165,7 +167,10 @@ bool FunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(const Fu
 
 size_t FunctionExpressionFunctionImpl::hash_impl() const { return hash_combine(m_function); }
 
-void FunctionExpressionFunctionImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const { out << *m_function; }
+void FunctionExpressionFunctionImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+{
+    m_function->str(out, options, typing_enabled);
+}
 
 const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
 }

@@ -31,7 +31,30 @@ bool TypeImpl::is_structurally_equivalent_to_impl(const TypeImpl& other) const
 
 size_t TypeImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(loki::get_sorted_vector(m_bases))); }
 
-void TypeImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
+void TypeImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+{
+    out << m_name;
+    if (typing_enabled)
+    {
+        assert(!m_bases.empty());
+        out << " - ";
+        if (m_bases.size() > 1)
+        {
+            out << "(either ";
+            for (size_t i = 0; i < m_bases.size(); ++i)
+            {
+                if (i != 0)
+                    out << " ";
+                out << m_bases[i]->get_name();
+            }
+            out << ")";
+        }
+        else if (m_bases.size() == 1)
+        {
+            out << m_bases.front()->get_name();
+        }
+    }
+}
 
 const std::string& TypeImpl::get_name() const { return m_name; }
 

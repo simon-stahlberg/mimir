@@ -40,9 +40,7 @@ bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& othe
 
 size_t PredicateImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
 
-void PredicateImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const { str(out, options, true); }
-
-void PredicateImpl::str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void PredicateImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
     out << "(" << m_name;
     for (size_t i = 0; i < m_parameters.size(); ++i)

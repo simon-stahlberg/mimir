@@ -43,12 +43,13 @@ private:
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<RequirementsImpl>;
 
 public:
+    void str(std::ostream& out, const loki::FormattingOptions& options) const;
+
     bool test(loki::pddl::RequirementEnum requirement) const;
 
     const loki::pddl::RequirementEnumSet& get_requirements() const;

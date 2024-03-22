@@ -42,12 +42,13 @@ private:
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const OptimizationMetricImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<OptimizationMetricImpl>;
 
 public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
+
     loki::pddl::OptimizationMetricEnum get_optimization_metric() const;
     const FunctionExpression& get_function_expression() const;
 };

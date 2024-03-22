@@ -32,13 +32,13 @@ bool AtomImpl::is_structurally_equivalent_to_impl(const AtomImpl& other) const {
 
 size_t AtomImpl::hash_impl() const { return loki::hash_combine(m_predicate, loki::hash_container(m_terms)); }
 
-void AtomImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const
+void AtomImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
     out << "(" << m_predicate->get_name();
     for (size_t i = 0; i < m_terms.size(); ++i)
     {
         out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
+        std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_terms[i]);
     }
     out << ")";
 }

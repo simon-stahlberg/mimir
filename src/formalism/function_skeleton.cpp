@@ -38,9 +38,7 @@ bool FunctionSkeletonImpl::is_structurally_equivalent_to_impl(const FunctionSkel
 
 size_t FunctionSkeletonImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters), m_type); }
 
-void FunctionSkeletonImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const { str(out, options, true); }
-
-void FunctionSkeletonImpl::str(std::ostringstream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void FunctionSkeletonImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
     out << "(" << m_name;
     for (size_t i = 0; i < m_parameters.size(); ++i)

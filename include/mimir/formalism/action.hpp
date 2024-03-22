@@ -46,12 +46,13 @@ private:
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const ActionImpl& other) const;
     size_t hash_impl() const;
-    void str_impl(std::ostringstream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<ActionImpl>;
 
 public:
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
+
     const std::string& get_name() const;
     const ParameterList& get_parameters() const;
     const std::optional<Condition>& get_condition() const;

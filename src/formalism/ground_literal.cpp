@@ -33,15 +33,17 @@ bool GroundLiteralImpl::is_structurally_equivalent_to_impl(const GroundLiteralIm
 
 size_t GroundLiteralImpl::hash_impl() const { return loki::hash_combine(m_is_negated, m_atom); }
 
-void GroundLiteralImpl::str_impl(std::ostringstream& out, const loki::FormattingOptions& /*options*/) const
+void GroundLiteralImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
 {
     if (m_is_negated)
     {
-        out << "(not " << *m_atom << ")";
+        out << "(not ";
+        m_atom->str(out, options, typing_enabled);
+        out << ")";
     }
     else
     {
-        out << *m_atom;
+        m_atom->str(out, options, typing_enabled);
     }
 }
 
