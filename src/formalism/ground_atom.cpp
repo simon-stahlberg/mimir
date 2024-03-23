@@ -50,12 +50,6 @@ void GroundAtomImpl::str(std::ostream& out, const loki::FormattingOptions& /*opt
     out << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, const GroundAtomImpl& atom)
-{
-    atom.str(os, loki::FormattingOptions { 0, 4 }, false);
-    return os;
-}
-
 const Predicate& GroundAtomImpl::get_predicate() const { return m_predicate; }
 
 const ObjectList& GroundAtomImpl::get_objects() const { return m_objects; }

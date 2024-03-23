@@ -201,12 +201,6 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
     out << std::string(options.indent, ' ') << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, const DomainImpl& domain)
-{
-    domain.str(os, loki::FormattingOptions { 0, 4 });
-    return os;
-}
-
 const std::string& DomainImpl::get_name() const { return m_name; }
 
 const Requirements& DomainImpl::get_requirements() const { return m_requirements; }

@@ -50,7 +50,11 @@ private:
 public:
     void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
 
-    friend std::ostream& operator<<(std::ostream& os, const GroundAtomImpl& atom);
+    friend std::ostream& operator<<(std::ostream& os, const GroundAtomImpl& atom)
+    {
+        atom.str(os, loki::FormattingOptions { 0, 4 }, false);
+        return os;
+    }
 
     const Predicate& get_predicate() const;
     const ObjectList& get_objects() const;

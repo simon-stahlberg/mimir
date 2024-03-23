@@ -157,12 +157,6 @@ void ProblemImpl::str(std::ostream& out, const loki::FormattingOptions& options)
     out << string(options.indent, ' ') << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, const ProblemImpl& problem)
-{
-    problem.str(os, loki::FormattingOptions { 0, 4 });
-    return os;
-}
-
 const Domain& ProblemImpl::get_domain() const { return m_domain; }
 
 const std::string& ProblemImpl::get_name() const { return m_name; }

@@ -64,7 +64,11 @@ private:
 public:
     void str(std::ostream& out, const loki::FormattingOptions& options) const;
 
-    friend std::ostream& operator<<(std::ostream& os, const ProblemImpl& problem);
+    friend std::ostream& operator<<(std::ostream& os, const ProblemImpl& problem)
+    {
+        problem.str(os, loki::FormattingOptions { 0, 4 });
+        return os;
+    }
 
     const Domain& get_domain() const;
     const std::string& get_name() const;
