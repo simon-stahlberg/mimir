@@ -10,6 +10,10 @@ class ConjunctiveConditionsTranslator : public BaseTranslator<ConjunctiveConditi
 private:
     /* Implement BaseTranslator interface. */
     friend class BaseTranslator<ConjunctiveConditionsTranslator>;
+
+    // Provide default implementations
+    using BaseTranslator::prepare_impl;
+    using BaseTranslator::translate_impl;
 };
 
 }

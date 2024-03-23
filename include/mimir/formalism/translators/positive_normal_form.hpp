@@ -11,6 +11,10 @@ class PositiveNormalFormTranslator : public BaseTranslator<PositiveNormalFormTra
 private:
     /* Implement BaseTranslator interface. */
     friend class BaseTranslator<PositiveNormalFormTranslator>;
+
+    // Provide default implementations
+    using BaseTranslator::prepare_impl;
+    using BaseTranslator::translate_impl;
 };
 }
 

@@ -11,6 +11,10 @@ class EffectNormalFormTranslator : public BaseTranslator<EffectNormalFormTransla
 private:
     /* Implement BaseTranslator interface. */
     friend class BaseTranslator<EffectNormalFormTranslator>;
+
+    // Provide default implementations
+    using BaseTranslator::prepare_impl;
+    using BaseTranslator::translate_impl;
 };
 }
 

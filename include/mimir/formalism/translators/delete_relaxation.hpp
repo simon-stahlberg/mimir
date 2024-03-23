@@ -11,6 +11,10 @@ class DeleteRelaxedTranslator : public BaseTranslator<DeleteRelaxedTranslator>
 private:
     /* Implement BaseTranslator interface. */
     friend class BaseTranslator<DeleteRelaxedTranslator>;
+
+    // Provide default implementations
+    using BaseTranslator::prepare_impl;
+    using BaseTranslator::translate_impl;
 };
 }
 
