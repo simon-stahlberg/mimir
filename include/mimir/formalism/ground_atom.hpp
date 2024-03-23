@@ -22,6 +22,7 @@
 
 #include <loki/pddl/factory.hpp>
 #include <loki/pddl/ground_atom.hpp>
+#include <ostream>
 #include <string>
 
 namespace mimir
