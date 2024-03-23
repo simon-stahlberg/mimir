@@ -236,155 +236,159 @@ public:
 
     loki::pddl::Requirements translate_impl(const loki::pddl::RequirementsImpl& requirements)
     {
-        return this->m_pddl_factories.requirements.get_or_create<loki::pddl::RequirementsImpl>(requirements.get_requirements());
+        return this->m_pddl_factories.requirements.template get_or_create<loki::pddl::RequirementsImpl>(requirements.get_requirements());
     }
     loki::pddl::Type translate_impl(const loki::pddl::TypeImpl& type)
     {
-        return this->m_pddl_factories.types.get_or_create<loki::pddl::TypeImpl>(type.get_name(), this->translate(type.get_bases()));
+        return this->m_pddl_factories.types.template get_or_create<loki::pddl::TypeImpl>(type.get_name(), this->translate(type.get_bases()));
     }
     loki::pddl::Object translate_impl(const loki::pddl::ObjectImpl& object)
     {
-        return this->m_pddl_factories.objects.get_or_create<loki::pddl::ObjectImpl>(object.get_name(), this->translate(object.get_bases()));
+        return this->m_pddl_factories.objects.template get_or_create<loki::pddl::ObjectImpl>(object.get_name(), this->translate(object.get_bases()));
     }
     loki::pddl::Variable translate_impl(const loki::pddl::VariableImpl& variable)
     {
-        return this->m_pddl_factories.variables.get_or_create<loki::pddl::VariableImpl>(variable.get_name());
+        return this->m_pddl_factories.variables.template get_or_create<loki::pddl::VariableImpl>(variable.get_name());
     }
     loki::pddl::Term translate_impl(const loki::pddl::TermObjectImpl& term)
     {
-        return this->m_pddl_factories.terms.get_or_create<loki::pddl::TermObjectImpl>(this->translate(*term.get_object()));
+        return this->m_pddl_factories.terms.template get_or_create<loki::pddl::TermObjectImpl>(this->translate(*term.get_object()));
     }
     loki::pddl::Term translate_impl(const loki::pddl::TermVariableImpl& term)
     {
-        return this->m_pddl_factories.terms.get_or_create<loki::pddl::TermVariableImpl>(this->translate(*term.get_variable()));
+        return this->m_pddl_factories.terms.template get_or_create<loki::pddl::TermVariableImpl>(this->translate(*term.get_variable()));
     }
     loki::pddl::Parameter translate_impl(const loki::pddl::ParameterImpl& parameter)
     {
-        return this->m_pddl_factories.parameters.get_or_create<loki::pddl::ParameterImpl>(this->translate(*parameter.get_variable()),
-                                                                                          this->translate(parameter.get_bases()));
+        return this->m_pddl_factories.parameters.template get_or_create<loki::pddl::ParameterImpl>(this->translate(*parameter.get_variable()),
+                                                                                                   this->translate(parameter.get_bases()));
     }
     loki::pddl::Predicate translate_impl(const loki::pddl::PredicateImpl& predicate)
     {
-        return this->m_pddl_factories.predicates.get_or_create<loki::pddl::PredicateImpl>(predicate.get_name(), this->translate(predicate.get_parameters()));
+        return this->m_pddl_factories.predicates.template get_or_create<loki::pddl::PredicateImpl>(predicate.get_name(),
+                                                                                                   this->translate(predicate.get_parameters()));
     }
     loki::pddl::Atom translate_impl(const loki::pddl::AtomImpl& atom)
     {
-        return this->m_pddl_factories.atoms.get_or_create<loki::pddl::AtomImpl>(this->translate(*atom.get_predicate()), this->translate(atom.get_terms()));
+        return this->m_pddl_factories.atoms.template get_or_create<loki::pddl::AtomImpl>(this->translate(*atom.get_predicate()),
+                                                                                         this->translate(atom.get_terms()));
     }
     loki::pddl::GroundAtom translate_impl(const loki::pddl::GroundAtomImpl& atom)
     {
-        return this->m_pddl_factories.ground_atoms.get_or_create<loki::pddl::GroundAtomImpl>(this->translate(*atom.get_predicate()),
-                                                                                             this->translate(atom.get_objects()));
+        return this->m_pddl_factories.ground_atoms.template get_or_create<loki::pddl::GroundAtomImpl>(this->translate(*atom.get_predicate()),
+                                                                                                      this->translate(atom.get_objects()));
     }
     loki::pddl::Literal translate_impl(const loki::pddl::LiteralImpl& literal)
     {
-        return this->m_pddl_factories.literals.get_or_create<loki::pddl::LiteralImpl>(literal.is_negated(), this->translate(*literal.get_atom()));
+        return this->m_pddl_factories.literals.template get_or_create<loki::pddl::LiteralImpl>(literal.is_negated(), this->translate(*literal.get_atom()));
     }
     loki::pddl::GroundLiteral translate_impl(const loki::pddl::GroundLiteralImpl& literal)
     {
-        return this->m_pddl_factories.ground_literals.get_or_create<loki::pddl::GroundLiteralImpl>(literal.is_negated(), this->translate(*literal.get_atom()));
+        return this->m_pddl_factories.ground_literals.template get_or_create<loki::pddl::GroundLiteralImpl>(literal.is_negated(),
+                                                                                                            this->translate(*literal.get_atom()));
     }
     loki::pddl::NumericFluent translate_impl(const loki::pddl::NumericFluentImpl& numeric_fluent)
     {
-        return this->m_pddl_factories.numeric_fluents.get_or_create<loki::pddl::NumericFluentImpl>(this->translate(*numeric_fluent.get_function()),
-                                                                                                   numeric_fluent.get_number());
+        return this->m_pddl_factories.numeric_fluents.template get_or_create<loki::pddl::NumericFluentImpl>(this->translate(*numeric_fluent.get_function()),
+                                                                                                            numeric_fluent.get_number());
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionLiteralImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionLiteralImpl>(this->translate(*condition.get_literal()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionLiteralImpl>(this->translate(*condition.get_literal()));
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionAndImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionAndImpl>(this->translate(condition.get_conditions()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionAndImpl>(this->translate(condition.get_conditions()));
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionOrImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionOrImpl>(this->translate(condition.get_conditions()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionOrImpl>(this->translate(condition.get_conditions()));
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionNotImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionNotImpl>(this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionNotImpl>(this->translate(*condition.get_condition()));
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionImplyImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionImplyImpl>(this->translate(*condition.get_condition_left()),
-                                                                                               this->translate(*condition.get_condition_right()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionImplyImpl>(this->translate(*condition.get_condition_left()),
+                                                                                                        this->translate(*condition.get_condition_right()));
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionExistsImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionExistsImpl>(this->translate(condition.get_parameters()),
-                                                                                                this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionExistsImpl>(this->translate(condition.get_parameters()),
+                                                                                                         this->translate(*condition.get_condition()));
     }
     loki::pddl::Condition translate_impl(const loki::pddl::ConditionForallImpl& condition)
     {
-        return this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionForallImpl>(this->translate(condition.get_parameters()),
-                                                                                                this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionForallImpl>(this->translate(condition.get_parameters()),
+                                                                                                         this->translate(*condition.get_condition()));
     }
     loki::pddl::Effect translate_impl(const loki::pddl::EffectLiteralImpl& effect)
     {
-        return this->m_pddl_factories.effects.get_or_create<loki::pddl::EffectLiteralImpl>(this->translate(*effect.get_literal()));
+        return this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectLiteralImpl>(this->translate(*effect.get_literal()));
     }
     loki::pddl::Effect translate_impl(const loki::pddl::EffectAndImpl& effect)
     {
-        return this->m_pddl_factories.effects.get_or_create<loki::pddl::EffectAndImpl>(this->translate(effect.get_effects()));
+        return this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectAndImpl>(this->translate(effect.get_effects()));
     }
     loki::pddl::Effect translate_impl(const loki::pddl::EffectNumericImpl& effect)
     {
-        return this->m_pddl_factories.effects.get_or_create<loki::pddl::EffectNumericImpl>(effect.get_assign_operator(),
-                                                                                           this->translate(*effect.get_function()),
-                                                                                           this->translate(*effect.get_function_expression()));
+        return this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectNumericImpl>(effect.get_assign_operator(),
+                                                                                                    this->translate(*effect.get_function()),
+                                                                                                    this->translate(*effect.get_function_expression()));
     }
     loki::pddl::Effect translate_impl(const loki::pddl::EffectConditionalForallImpl& effect)
     {
-        return this->m_pddl_factories.effects.get_or_create<loki::pddl::EffectConditionalForallImpl>(this->translate(effect.get_parameters()),
-                                                                                                     this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectConditionalForallImpl>(this->translate(effect.get_parameters()),
+                                                                                                              this->translate(*effect.get_effect()));
     }
     loki::pddl::Effect translate_impl(const loki::pddl::EffectConditionalWhenImpl& effect)
     {
-        return this->m_pddl_factories.effects.get_or_create<loki::pddl::EffectConditionalWhenImpl>(this->translate(*effect.get_condition()),
-                                                                                                   this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectConditionalWhenImpl>(this->translate(*effect.get_condition()),
+                                                                                                            this->translate(*effect.get_effect()));
     }
     loki::pddl::FunctionExpression translate_impl(const loki::pddl::FunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.get_or_create<loki::pddl::FunctionExpressionNumberImpl>(function_expression.get_number());
+        return this->m_pddl_factories.function_expressions.template get_or_create<loki::pddl::FunctionExpressionNumberImpl>(function_expression.get_number());
     }
     loki::pddl::FunctionExpression translate_impl(const loki::pddl::FunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.get_or_create<loki::pddl::FunctionExpressionBinaryOperatorImpl>(
+        return this->m_pddl_factories.function_expressions.template get_or_create<loki::pddl::FunctionExpressionBinaryOperatorImpl>(
             function_expression.get_binary_operator(),
             this->translate(*function_expression.get_left_function_expression()),
             this->translate(*function_expression.get_right_function_expression()));
     }
     loki::pddl::FunctionExpression translate_impl(const loki::pddl::FunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.get_or_create<loki::pddl::FunctionExpressionMultiOperatorImpl>(
+        return this->m_pddl_factories.function_expressions.template get_or_create<loki::pddl::FunctionExpressionMultiOperatorImpl>(
             function_expression.get_multi_operator(),
             this->translate(function_expression.get_function_expressions()));
     }
     loki::pddl::FunctionExpression translate_impl(const loki::pddl::FunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.get_or_create<loki::pddl::FunctionExpressionMinusImpl>(
+        return this->m_pddl_factories.function_expressions.template get_or_create<loki::pddl::FunctionExpressionMinusImpl>(
             this->translate(*function_expression.get_function_expression()));
     }
     loki::pddl::FunctionExpression translate_impl(const loki::pddl::FunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.get_or_create<loki::pddl::FunctionExpressionFunctionImpl>(
+        return this->m_pddl_factories.function_expressions.template get_or_create<loki::pddl::FunctionExpressionFunctionImpl>(
             this->translate(*function_expression.get_function()));
     }
     loki::pddl::FunctionSkeleton translate_impl(const loki::pddl::FunctionSkeletonImpl& function_skeleton)
     {
-        return this->m_pddl_factories.function_skeletons.get_or_create<loki::pddl::FunctionSkeletonImpl>(function_skeleton.get_name(),
-                                                                                                         this->translate(function_skeleton.get_parameters()),
-                                                                                                         this->translate(*function_skeleton.get_type()));
+        return this->m_pddl_factories.function_skeletons.template get_or_create<loki::pddl::FunctionSkeletonImpl>(
+            function_skeleton.get_name(),
+            this->translate(function_skeleton.get_parameters()),
+            this->translate(*function_skeleton.get_type()));
     }
     loki::pddl::Function translate_impl(const loki::pddl::FunctionImpl& function)
     {
-        return this->m_pddl_factories.functions.get_or_create<loki::pddl::FunctionImpl>(this->translate(*function.get_function_skeleton()),
-                                                                                        this->translate(function.get_terms()));
+        return this->m_pddl_factories.functions.template get_or_create<loki::pddl::FunctionImpl>(this->translate(*function.get_function_skeleton()),
+                                                                                                 this->translate(function.get_terms()));
     }
     loki::pddl::Action translate_impl(const loki::pddl::ActionImpl& action)
     {
-        return this->m_pddl_factories.actions.get_or_create<loki::pddl::ActionImpl>(
+        return this->m_pddl_factories.actions.template get_or_create<loki::pddl::ActionImpl>(
             action.get_name(),
             this->translate(action.get_parameters()),
             (action.get_condition().has_value() ? std::optional<loki::pddl::Condition>(this->translate(*action.get_condition().value())) : std::nullopt),
@@ -392,24 +396,24 @@ public:
     }
     loki::pddl::Domain translate_impl(const loki::pddl::DomainImpl& domain)
     {
-        return this->m_pddl_factories.domains.get_or_create<loki::pddl::DomainImpl>(domain.get_name(),
-                                                                                    this->translate(*domain.get_requirements()),
-                                                                                    this->translate(domain.get_types()),
-                                                                                    this->translate(domain.get_constants()),
-                                                                                    this->translate(domain.get_predicates()),
-                                                                                    this->translate(domain.get_functions()),
-                                                                                    this->translate(domain.get_actions()));
+        return this->m_pddl_factories.domains.template get_or_create<loki::pddl::DomainImpl>(domain.get_name(),
+                                                                                             this->translate(*domain.get_requirements()),
+                                                                                             this->translate(domain.get_types()),
+                                                                                             this->translate(domain.get_constants()),
+                                                                                             this->translate(domain.get_predicates()),
+                                                                                             this->translate(domain.get_functions()),
+                                                                                             this->translate(domain.get_actions()));
     }
     loki::pddl::OptimizationMetric translate_impl(const loki::pddl::OptimizationMetricImpl& metric)
     {
-        return this->m_pddl_factories.optimization_metrics.get_or_create<loki::pddl::OptimizationMetricImpl>(
+        return this->m_pddl_factories.optimization_metrics.template get_or_create<loki::pddl::OptimizationMetricImpl>(
             metric.get_optimization_metric(),
             this->translate(*metric.get_function_expression()));
     }
 
     loki::pddl::Problem translate_impl(const loki::pddl::ProblemImpl& problem)
     {
-        return this->m_pddl_factories.problems.get_or_create<loki::pddl::ProblemImpl>(
+        return this->m_pddl_factories.problems.template get_or_create<loki::pddl::ProblemImpl>(
             this->translate(*problem.get_domain()),
             problem.get_name(),
             this->translate(*problem.get_requirements()),
