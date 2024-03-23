@@ -158,6 +158,8 @@ private:
                  std::nullopt));
     }
 
+    loki::pddl::Problem run_impl(const loki::pddl::ProblemImpl& problem) { return self().translate(problem); }
+
 public:
     explicit TypeTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator<TypeTranslator>(pddl_factories) {}
 };
