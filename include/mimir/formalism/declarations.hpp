@@ -130,6 +130,10 @@ class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
 
+class DerivedPredicateImpl;
+using DerivedPredicate = const DerivedPredicateImpl*;
+using DerivedPredicateList = std::vector<DerivedPredicate>;
+
 class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;

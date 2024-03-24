@@ -61,6 +61,7 @@ public:
     void prepare_base(const loki::pddl::FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
     void prepare_base(const loki::pddl::FunctionImpl& function) { self().prepare_impl(function); }
     void prepare_base(const loki::pddl::ActionImpl& action) { self().prepare_impl(action); }
+    void prepare_base(const loki::pddl::DerivedPredicateImpl& derived_predicate) { self().prepare_impl(derived_predicate); }
     void prepare_base(const loki::pddl::DomainImpl& domain) { self().prepare_impl(domain); }
     void prepare_base(const loki::pddl::OptimizationMetricImpl& metric) { self().prepare_impl(metric); }
     void prepare_base(const loki::pddl::ProblemImpl& problem) { self().prepare_impl(problem); }
@@ -156,6 +157,11 @@ public:
             this->prepare(*action.get_effect().value());
         }
     }
+    void prepare_impl(const loki::pddl::DerivedPredicateImpl& derived_predicate)
+    {
+        this->prepare(derived_predicate.get_predicate());
+        this->prepare(derived_predicate.get_condition());
+    }
     void prepare_impl(const loki::pddl::DomainImpl& domain)
     {
         this->prepare(*domain.get_requirements());
@@ -230,6 +236,7 @@ public:
     loki::pddl::FunctionSkeleton translate_base(const loki::pddl::FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
     loki::pddl::Function translate_base(const loki::pddl::FunctionImpl& function) { return self().translate_impl(function); }
     loki::pddl::Action translate_base(const loki::pddl::ActionImpl& action) { return self().translate_impl(action); }
+    loki::pddl::DerivedPredicate translate_base(const loki::pddl::DerivedPredicateImpl& derived_predicate) { return self().translate_impl(derived_predicate); }
     loki::pddl::Domain translate_base(const loki::pddl::DomainImpl& domain) { return self().translate_impl(domain); }
     loki::pddl::OptimizationMetric translate_base(const loki::pddl::OptimizationMetricImpl& metric) { return self().translate_impl(metric); }
     loki::pddl::Problem translate_base(const loki::pddl::ProblemImpl& problem) { return self().translate_impl(problem); }
@@ -393,6 +400,12 @@ public:
             this->translate(action.get_parameters()),
             (action.get_condition().has_value() ? std::optional<loki::pddl::Condition>(this->translate(*action.get_condition().value())) : std::nullopt),
             (action.get_effect().has_value() ? std::optional<loki::pddl::Effect>(this->translate(*action.get_effect().value())) : std::nullopt));
+    }
+    loki::pddl::DerivedPredicate translate_impl(const loki::pddl::DerivedPredicateImpl& derived_predicate)
+    {
+        return this->m_pddl_factories.derived_predicates.template get_or_create<loki::pddl::DerivedPredicateImpl>(
+            this->translate(*derived_predicate.get_predicate()),
+            this->translate(*derived_predicate.get_condition()));
     }
     loki::pddl::Domain translate_impl(const loki::pddl::DomainImpl& domain)
     {

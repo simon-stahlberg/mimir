@@ -112,7 +112,8 @@ private:
                                                                                     translated_constants,
                                                                                     translated_predicates,
                                                                                     this->translate(domain.get_functions()),
-                                                                                    this->translate(domain.get_actions()));
+                                                                                    this->translate(domain.get_actions()),
+                                                                                    this->translate(domain.get_derived_predicates()));
     }
 
     loki::pddl::Problem translate_impl(const loki::pddl::ProblemImpl& problem)

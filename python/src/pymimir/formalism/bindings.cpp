@@ -199,6 +199,12 @@ void init_formalism(py::module_& m_formalism)
         .def("get", [](const WrappedCondition& wrappedCondition) -> py::object { return std::visit(CastVisitor(), *wrappedCondition.condition); });
     ;
 
+    py::class_<DerivedPredicateImpl>(m_formalism, "DerivedPredicate")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<DerivedPredicateImpl>::str, py::const_))
+        .def("get_identifier", &DerivedPredicateImpl::get_identifier)
+        .def("get_predicate", &DerivedPredicateImpl::get_predicate, py::return_value_policy::reference)
+        .def("get_condition", &DerivedPredicateImpl::get_condition, py::return_value_policy::reference);
+
     py::class_<DomainImpl>(m_formalism, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
         .def("get_identifier", &DomainImpl::get_identifier)

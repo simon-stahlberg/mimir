@@ -41,6 +41,7 @@ private:
     PredicateList m_fluent_predicates;
     FunctionSkeletonList m_functions;
     ActionList m_actions;
+    DerivedPredicateList m_derived_predicates;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -51,7 +52,8 @@ private:
                ObjectList constants,
                PredicateList predicates,
                FunctionSkeletonList functions,
-               ActionList actions);
+               ActionList actions,
+               DerivedPredicateList derived_predicates);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<DomainImpl, loki::Hash<DomainImpl*>, loki::EqualTo<DomainImpl*>>;
@@ -74,6 +76,7 @@ public:
     const PredicateList& get_fluent_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
+    const DerivedPredicateList& get_derived_predicates() const;
 };
 }
 

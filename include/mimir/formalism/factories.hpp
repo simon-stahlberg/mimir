@@ -21,6 +21,7 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/conditions.hpp"
+#include "mimir/formalism/derived_predicate.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
@@ -65,6 +66,7 @@ using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
 using ConditionFactory = loki::PDDLFactory<ConditionImpl>;
 using EffectFactory = loki::PDDLFactory<EffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
+using DerivedPredicateFactory = loki::PDDLFactory<DerivedPredicateImpl>;
 using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
 using NumericFluentFactory = loki::PDDLFactory<NumericFluentImpl>;
 using DomainFactory = loki::PDDLFactory<DomainImpl>;
@@ -90,6 +92,7 @@ struct PDDLFactories
     ConditionFactory conditions;
     EffectFactory effects;
     ActionFactory actions;
+    DerivedPredicateFactory derived_predicates;
     OptimizationMetricFactory optimization_metrics;
     NumericFluentFactory numeric_fluents;
     DomainFactory domains;
@@ -113,6 +116,7 @@ struct PDDLFactories
         conditions(ConditionFactory(1000)),
         effects(EffectFactory(1000)),
         actions(ActionFactory(100)),
+        derived_predicates(DerivedPredicateFactory(100)),
         optimization_metrics(OptimizationMetricFactory(10)),
         numeric_fluents(NumericFluentFactory(1000)),
         domains(DomainFactory(1)),
