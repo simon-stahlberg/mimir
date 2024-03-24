@@ -28,7 +28,7 @@ bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other)
 
 size_t VariableImpl::hash_impl() const { return loki::hash_combine(m_name); }
 
-void VariableImpl::str(std::ostream& out, const loki::FormattingOptions& /*options*/, bool /*typing_enabled*/) const { out << m_name; }
+void VariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }
 }

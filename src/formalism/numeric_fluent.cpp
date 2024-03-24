@@ -32,10 +32,10 @@ bool NumericFluentImpl::is_structurally_equivalent_to_impl(const NumericFluentIm
 
 size_t NumericFluentImpl::hash_impl() const { return hash_combine(m_function, m_number); }
 
-void NumericFluentImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void NumericFluentImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(= ";
-    m_function->str(out, options, typing_enabled);
+    m_function->str(out, options);
     out << " " << m_number << ")";
 }
 

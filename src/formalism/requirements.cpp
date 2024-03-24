@@ -28,7 +28,7 @@ bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl
 
 size_t RequirementsImpl::hash_impl() const { return loki::hash_container(m_requirements); }
 
-void RequirementsImpl::str(std::ostream& out, const loki::FormattingOptions& /*options*/) const
+void RequirementsImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
 {
     out << "(:requirements ";
     int i = 0;

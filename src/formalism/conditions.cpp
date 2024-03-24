@@ -40,10 +40,7 @@ bool ConditionLiteralImpl::is_structurally_equivalent_to_impl(const ConditionLit
 
 size_t ConditionLiteralImpl::hash_impl() const { return std::hash<Literal>()(m_literal); }
 
-void ConditionLiteralImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
-{
-    m_literal->str(out, options, typing_enabled);
-}
+void ConditionLiteralImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_literal->str(out, options); }
 
 const Literal& ConditionLiteralImpl::get_literal() const { return m_literal; }
 
@@ -61,14 +58,14 @@ bool ConditionAndImpl::is_structurally_equivalent_to_impl(const ConditionAndImpl
 
 size_t ConditionAndImpl::hash_impl() const { return hash_container(get_sorted_vector(m_conditions)); }
 
-void ConditionAndImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ConditionAndImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(and ";
     for (size_t i = 0; i < m_conditions.size(); ++i)
     {
         if (i != 0)
             out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_conditions[i]);
+        std::visit(loki::pddl::StringifyVisitor(out, options), *m_conditions[i]);
     }
     out << ")";
 }
@@ -89,14 +86,14 @@ bool ConditionOrImpl::is_structurally_equivalent_to_impl(const ConditionOrImpl& 
 
 size_t ConditionOrImpl::hash_impl() const { return hash_container(get_sorted_vector(m_conditions)); }
 
-void ConditionOrImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ConditionOrImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(or ";
     for (size_t i = 0; i < m_conditions.size(); ++i)
     {
         if (i != 0)
             out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_conditions[i]);
+        std::visit(loki::pddl::StringifyVisitor(out, options), *m_conditions[i]);
     }
     out << ")";
 }
@@ -117,10 +114,10 @@ bool ConditionNotImpl::is_structurally_equivalent_to_impl(const ConditionNotImpl
 
 size_t ConditionNotImpl::hash_impl() const { return hash_combine(m_condition); }
 
-void ConditionNotImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ConditionNotImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(not ";
-    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_condition);
+    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
     out << ")";
 }
 
@@ -145,12 +142,12 @@ bool ConditionImplyImpl::is_structurally_equivalent_to_impl(const ConditionImply
 
 size_t ConditionImplyImpl::hash_impl() const { return hash_combine(m_condition_left, m_condition_right); }
 
-void ConditionImplyImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ConditionImplyImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(imply ";
-    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_condition_left);
+    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition_left);
     out << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_condition_right);
+    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition_right);
     out << ")";
 }
 
@@ -177,17 +174,17 @@ bool ConditionExistsImpl::is_structurally_equivalent_to_impl(const ConditionExis
 
 size_t ConditionExistsImpl::hash_impl() const { return hash_combine(hash_container(m_parameters), m_condition); }
 
-void ConditionExistsImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ConditionExistsImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(exists (";
     for (size_t i = 0; i < m_parameters.size(); ++i)
     {
         if (i != 0)
             out << " ";
-        m_parameters[i]->str(out, options, typing_enabled);
+        m_parameters[i]->str(out, options);
     }
     out << ") ";
-    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_condition);
+    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
     out << ")";
 }
 
@@ -214,17 +211,17 @@ bool ConditionForallImpl::is_structurally_equivalent_to_impl(const ConditionFora
 
 size_t ConditionForallImpl::hash_impl() const { return hash_combine(hash_container(m_parameters), m_condition); }
 
-void ConditionForallImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ConditionForallImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(forall (";
     for (size_t i = 0; i < m_parameters.size(); ++i)
     {
         if (i != 0)
             out << " ";
-        m_parameters[i]->str(out, options, typing_enabled);
+        m_parameters[i]->str(out, options);
     }
     out << ") ";
-    std::visit(loki::pddl::StringifyVisitor(out, options, typing_enabled), *m_condition);
+    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
     out << ")";
 }
 

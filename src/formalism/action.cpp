@@ -47,7 +47,7 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
 
 size_t ActionImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters), *m_condition, *m_effect); }
 
-void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
     out << std::string(options.indent, ' ') << "(action " << m_name << "\n" << std::string(nested_options.indent, ' ') << ":parameters (";
@@ -55,20 +55,20 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
     {
         if (i != 0)
             out << " ";
-        m_parameters[i]->str(out, options, typing_enabled);
+        m_parameters[i]->str(out, options);
     }
     out << ")";
     out << "\n";
     out << std::string(nested_options.indent, ' ') << ":conditions ";
     if (m_condition.has_value())
-        std::visit(loki::pddl::StringifyVisitor(out, nested_options, typing_enabled), *m_condition.value());
+        std::visit(loki::pddl::StringifyVisitor(out, nested_options), *m_condition.value());
     else
         out << "()";
 
     out << "\n";
     out << std::string(nested_options.indent, ' ') << ":effects ";
     if (m_effect.has_value())
-        std::visit(loki::pddl::StringifyVisitor(out, nested_options, typing_enabled), *m_effect.value());
+        std::visit(loki::pddl::StringifyVisitor(out, nested_options), *m_effect.value());
     else
         out << "()";
 

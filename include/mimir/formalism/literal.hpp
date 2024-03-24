@@ -43,13 +43,12 @@ private:
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const LiteralImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<LiteralImpl>;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     bool is_negated() const;
     const Atom& get_atom() const;
 };

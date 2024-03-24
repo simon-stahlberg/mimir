@@ -40,7 +40,7 @@ bool GroundAtomImpl::is_structurally_equivalent_to_impl(const GroundAtomImpl& ot
 
 size_t GroundAtomImpl::hash_impl() const { return loki::hash_combine(m_predicate, loki::hash_container(m_objects)); }
 
-void GroundAtomImpl::str(std::ostream& out, const loki::FormattingOptions& /*options*/, bool /*typing_enabled*/) const
+void GroundAtomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
 {
     out << "(" << m_predicate->get_name();
     for (size_t i = 0; i < m_objects.size(); ++i)

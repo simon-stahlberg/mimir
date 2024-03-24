@@ -76,7 +76,7 @@ size_t ProblemImpl::hash_impl() const
                         optimization_hash);
 }
 
-void ProblemImpl::str(std::ostream& out, const loki::FormattingOptions& options) const
+void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << string(options.indent, ' ') << "(define (problem " << m_name << ")\n";
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
@@ -97,26 +97,32 @@ void ProblemImpl::str(std::ostream& out, const loki::FormattingOptions& options)
             objects_by_types[object->get_bases()].push_back(object);
         }
         size_t i = 0;
-        for (const auto& pair : objects_by_types)
+        for (const auto& [types, objects] : objects_by_types)
         {
             if (i != 0)
                 out << "\n" << string(nested_options.indent, ' ');
-            const auto& objects = pair.second;
             for (size_t i = 0; i < objects.size(); ++i)
             {
                 if (i != 0)
-                    out << " ";
-                objects[i]->str(out, nested_options, false);
+                    out << " " << objects[i]->get_name();
             }
             if (m_requirements->test(loki::pddl::RequirementEnum::TYPING))
             {
                 out << " - ";
-                const auto& types = pair.first;
-                for (size_t i = 0; i < types.size(); ++i)
+                if (types.size() > 1)
                 {
-                    if (i != 0)
-                        out << " ";
-                    types[i]->str(out, nested_options, false);
+                    out << "(either ";
+                    for (size_t i = 0; i < types.size(); ++i)
+                    {
+                        if (i != 0)
+                            out << " ";
+                        types[i]->get_name();
+                    }
+                    out << ")";
+                }
+                else if (types.size() == 1)
+                {
+                    out << types.front()->get_name();
                 }
             }
             ++i;
@@ -129,23 +135,23 @@ void ProblemImpl::str(std::ostream& out, const loki::FormattingOptions& options)
     {
         if (i != 0)
             out << " ";
-        m_initial_literals[i]->str(out, nested_options, m_requirements->test(loki::pddl::RequirementEnum::TYPING));
+        m_initial_literals[i]->str(out, nested_options);
     }
     for (size_t i = 0; i < m_numeric_fluents.size(); ++i)
     {
         out << " ";
-        m_numeric_fluents[i]->str(out, nested_options, m_requirements->test(loki::pddl::RequirementEnum::TYPING));
+        m_numeric_fluents[i]->str(out, nested_options);
     }
 
     out << ")\n";
     out << string(nested_options.indent, ' ') << "(:goal ";
-    std::visit(loki::pddl::StringifyVisitor(out, options, m_requirements->test(loki::pddl::RequirementEnum::TYPING)), *m_goal_condition);
+    std::visit(loki::pddl::StringifyVisitor(out, options), *m_goal_condition);
 
     out << ")\n";
     if (m_optimization_metric.has_value())
     {
         out << string(nested_options.indent, ' ') << "(:metric ";
-        m_optimization_metric.value()->str(out, nested_options, m_requirements->test(loki::pddl::RequirementEnum::TYPING));
+        m_optimization_metric.value()->str(out, nested_options);
         out << ")\n";
     }
     /*

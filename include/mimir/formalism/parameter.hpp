@@ -42,13 +42,12 @@ private:
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ParameterImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<ParameterImpl>;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     const Variable& get_variable() const;
     const TypeList& get_bases() const;
 };

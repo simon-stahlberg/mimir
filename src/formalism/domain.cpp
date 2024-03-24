@@ -85,7 +85,7 @@ size_t DomainImpl::hash_impl() const
                               loki::hash_container(loki::get_sorted_vector(m_actions)));
 }
 
-void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) const
+void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << string(options.indent, ' ') << "(define (domain " << m_name << ")\n";
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
@@ -104,24 +104,31 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
             subtypes_by_parent_types[type->get_bases()].push_back(type);
         }
         size_t i = 0;
-        for (const auto& pair : subtypes_by_parent_types)
+        for (const auto& [types, sub_types] : subtypes_by_parent_types)
         {
             if (i != 0)
                 out << "\n" << string(nested_options.indent, ' ');
-            const auto& sub_types = pair.second;
             for (size_t i = 0; i < sub_types.size(); ++i)
             {
                 if (i != 0)
                     out << " ";
-                sub_types[i]->str(out, nested_options, false);
+                out << sub_types[i]->get_name();
             }
             out << " - ";
-            const auto& types = pair.first;
-            for (size_t i = 0; i < types.size(); ++i)
+            if (types.size() > 1)
             {
-                if (i != 0)
-                    out << " ";
-                types[i]->str(out, nested_options, false);
+                out << "(either ";
+                for (size_t i = 0; i < types.size(); ++i)
+                {
+                    if (i != 0)
+                        out << " ";
+                    types[i]->get_name();
+                }
+                out << ")";
+            }
+            else if (types.size() == 1)
+            {
+                out << types.front()->get_name();
             }
             ++i;
         }
@@ -145,7 +152,7 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
             {
                 if (i != 0)
                     out << " ";
-                constants[i]->str(out, nested_options, false);
+                constants[i]->str(out, nested_options);
             }
             if (m_requirements->test(loki::pddl::RequirementEnum::TYPING))
             {
@@ -155,7 +162,7 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
                 {
                     if (i != 0)
                         out << " ";
-                    types[i]->str(out, nested_options, false);
+                    types[i]->str(out, nested_options);
                 }
             }
             ++i;
@@ -169,7 +176,7 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
         {
             if (i != 0)
                 out << " ";
-            m_predicates[i]->str(out, nested_options, m_requirements->test(loki::pddl::RequirementEnum::TYPING));
+            m_predicates[i]->str(out, nested_options);
         }
         out << ")\n";
     }
@@ -180,7 +187,7 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
         {
             if (i != 0)
                 out << " ";
-            m_functions[i]->str(out, nested_options, m_requirements->test(loki::pddl::RequirementEnum::TYPING));
+            m_functions[i]->str(out, nested_options);
         }
     }
 
@@ -195,7 +202,7 @@ void DomainImpl::str(std::ostream& out, const loki::FormattingOptions& options) 
 
     for (const auto& action : m_actions)
     {
-        action->str(out, nested_options, m_requirements->test(loki::pddl::RequirementEnum::TYPING));
+        action->str(out, nested_options);
     }
 
     out << std::string(options.indent, ' ') << ")";

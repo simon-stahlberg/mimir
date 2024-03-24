@@ -37,12 +37,11 @@ bool ParameterImpl::is_structurally_equivalent_to_impl(const ParameterImpl& othe
 
 size_t ParameterImpl::hash_impl() const { return loki::hash_combine(m_variable, loki::hash_container(loki::get_sorted_vector(m_types))); }
 
-void ParameterImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const
+void ParameterImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
 {
     out << m_variable->get_name();
-    if (typing_enabled)
+    if (!m_types.empty())
     {
-        assert(!m_types.empty());
         out << " - ";
         if (m_types.size() > 1)
         {
@@ -51,13 +50,13 @@ void ParameterImpl::str(std::ostream& out, const loki::FormattingOptions& option
             {
                 if (i != 0)
                     out << " ";
-                m_types[i]->str(out, options, false);
+                m_types[i]->get_name();
             }
             out << ")";
         }
         else if (m_types.size() == 1)
         {
-            m_types.front()->str(out, options, false);
+            out << m_types.front()->get_name();
         }
     }
 }

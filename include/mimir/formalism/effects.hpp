@@ -44,10 +44,9 @@ private:
 
     bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     const Literal& get_literal() const;
 };
 
@@ -69,10 +68,9 @@ private:
 
     bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     const EffectList& get_effects() const;
 };
 
@@ -96,10 +94,9 @@ private:
 
     bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     loki::pddl::AssignOperatorEnum get_assign_operator() const;
     const Function& get_function() const;
     const FunctionExpression& get_function_expression() const;
@@ -124,10 +121,9 @@ private:
 
     bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     const ParameterList& get_parameters() const;
     const Effect& get_effect() const;
 };
@@ -151,10 +147,9 @@ private:
 
     bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool typing_enabled) const;
-
     const Condition& get_condition() const;
     const Effect& get_effect() const;
 };

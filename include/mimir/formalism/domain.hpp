@@ -59,19 +59,12 @@ private:
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const DomainImpl& other) const;
     size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
     friend class loki::Base<DomainImpl>;
 
 public:
-    void str(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    friend std::ostream& operator<<(std::ostream& os, const DomainImpl& domain)
-    {
-        domain.str(os, loki::FormattingOptions { 0, 4 });
-        return os;
-    }
-
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const TypeList& get_types() const;
