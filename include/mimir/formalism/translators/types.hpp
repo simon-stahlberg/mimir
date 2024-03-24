@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TYPES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TYPES_HPP_
 
@@ -121,17 +138,17 @@ private:
         // Remove :typing requirement
         auto requirements_enum_set = problem.get_requirements()->get_requirements();
         requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
-        auto requirements = this->m_pddl_factories.requirements.get_or_create<loki::pddl::RequirementsImpl>(requirements_enum_set);
+        auto translated_requirements = this->m_pddl_factories.requirements.get_or_create<loki::pddl::RequirementsImpl>(requirements_enum_set);
 
         // Make objects untyped
-        auto objects = loki::pddl::ObjectList {};
-        objects.reserve(problem.get_objects().size());
+        auto translated_objects = loki::pddl::ObjectList {};
+        translated_objects.reserve(problem.get_objects().size());
         auto additional_initial_literals = loki::pddl::GroundLiteralList {};
         for (const auto& object : problem.get_objects())
         {
             auto translated_object = translate_typed_object_to_untyped_object(*object);
             auto additional_literals = translate_typed_object_to_ground_literals(*object);
-            objects.push_back(translated_object);
+            translated_objects.push_back(translated_object);
             additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
         }
 
@@ -143,15 +160,15 @@ private:
         }
 
         // Translate other initial literals and add additional literals
-        auto initial_literals = this->translate(problem.get_initial_literals());
-        initial_literals.insert(initial_literals.end(), additional_initial_literals.begin(), additional_initial_literals.end());
+        auto translated_initial_literals = this->translate(problem.get_initial_literals());
+        translated_initial_literals.insert(translated_initial_literals.end(), additional_initial_literals.begin(), additional_initial_literals.end());
 
         return this->m_pddl_factories.problems.get_or_create<loki::pddl::ProblemImpl>(
             this->translate(*problem.get_domain()),
             problem.get_name(),
-            requirements,
-            this->translate(problem.get_objects()),
-            initial_literals,
+            translated_requirements,
+            translated_objects,
+            translated_initial_literals,
             this->translate(problem.get_numeric_fluents()),
             this->translate(*problem.get_goal_condition()),
             (problem.get_optimization_metric().has_value() ?
