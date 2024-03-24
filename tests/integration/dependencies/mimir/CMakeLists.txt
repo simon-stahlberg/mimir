@@ -18,7 +18,7 @@ endforeach()
 ExternalProject_Add(
     mimir
     GIT_REPOSITORY https://github.com/simon-stahlberg/mimir.git
-    GIT_TAG templated-design
+    GIT_TAG dynamic
     PREFIX ${CMAKE_BINARY_DIR}/mimir
     DEPENDS loki boost flatmemory
     CMAKE_ARGS ${CMAKE_ARGS}
