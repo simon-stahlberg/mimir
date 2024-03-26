@@ -22,6 +22,9 @@
 
 namespace mimir
 {
+/**
+ * Compile away types.
+ */
 class TypeTranslator : public BaseTranslator<TypeTranslator>
 {
 private:
