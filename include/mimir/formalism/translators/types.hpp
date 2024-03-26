@@ -35,17 +35,17 @@ private:
     /// @brief Translate a type to a predicate of arity 1.
     loki::pddl::Predicate translate_type_to_predicate(const loki::pddl::TypeImpl& type)
     {
-        return this->m_pddl_factories.predicates.get_or_create<loki::pddl::PredicateImpl>(
+        return this->m_pddl_factories.predicates.template get_or_create<loki::pddl::PredicateImpl>(
             type.get_name(),
-            loki::pddl::ParameterList { this->m_pddl_factories.parameters.get_or_create<loki::pddl::ParameterImpl>(
-                this->m_pddl_factories.variables.get_or_create<loki::pddl::VariableImpl>("?arg"),
+            loki::pddl::ParameterList { this->m_pddl_factories.parameters.template get_or_create<loki::pddl::ParameterImpl>(
+                this->m_pddl_factories.variables.template get_or_create<loki::pddl::VariableImpl>("?arg"),
                 loki::pddl::TypeList {}) });
     }
 
     /// @brief Translate an typed object to an untyped objects.
     loki::pddl::Object translate_typed_object_to_untyped_object(const loki::pddl::ObjectImpl& object)
     {
-        return this->m_pddl_factories.objects.get_or_create<loki::pddl::ObjectImpl>(object.get_name(), loki::pddl::TypeList {});
+        return this->m_pddl_factories.objects.template get_or_create<loki::pddl::ObjectImpl>(object.get_name(), loki::pddl::TypeList {});
     }
 
     /// @brief Translate an typed object to a list of ground literal for all its original types.
@@ -56,10 +56,10 @@ private:
         auto types = collect_types_from_type_hierarchy(object.get_bases());
         for (const auto& type : types)
         {
-            auto additional_literal = this->m_pddl_factories.ground_literals.get_or_create<loki::pddl::GroundLiteralImpl>(
+            auto additional_literal = this->m_pddl_factories.ground_literals.template get_or_create<loki::pddl::GroundLiteralImpl>(
                 false,
-                this->m_pddl_factories.ground_atoms.get_or_create<loki::pddl::GroundAtomImpl>(translate_type_to_predicate(*type),
-                                                                                              loki::pddl::ObjectList { translated_object }));
+                this->m_pddl_factories.ground_atoms.template get_or_create<loki::pddl::GroundAtomImpl>(translate_type_to_predicate(*type),
+                                                                                                       loki::pddl::ObjectList { translated_object }));
             additional_literals.push_back(additional_literal);
         }
         return additional_literals;
@@ -69,7 +69,8 @@ private:
     loki::pddl::Parameter translate_typed_parameter_to_untyped_parameter(const loki::pddl::ParameterImpl& parameter)
     {
         auto translated_parameter =
-            this->m_pddl_factories.parameters.get_or_create<loki::pddl::ParameterImpl>(this->translate(*parameter.get_variable()), loki::pddl::TypeList {});
+            this->m_pddl_factories.parameters.template get_or_create<loki::pddl::ParameterImpl>(this->translate(*parameter.get_variable()),
+                                                                                                loki::pddl::TypeList {});
         return translated_parameter;
     }
 
@@ -91,12 +92,12 @@ private:
         auto types = collect_types_from_type_hierarchy(parameter.get_bases());
         for (const auto& type : types)
         {
-            auto condition = this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionLiteralImpl>(
-                this->m_pddl_factories.literals.get_or_create<loki::pddl::LiteralImpl>(
+            auto condition = this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionLiteralImpl>(
+                this->m_pddl_factories.literals.template get_or_create<loki::pddl::LiteralImpl>(
                     false,
-                    this->m_pddl_factories.atoms.get_or_create<loki::pddl::AtomImpl>(
+                    this->m_pddl_factories.atoms.template get_or_create<loki::pddl::AtomImpl>(
                         translate_type_to_predicate(*type),
-                        loki::pddl::TermList { this->m_pddl_factories.terms.get_or_create<loki::pddl::TermVariableImpl>(translated_variable) })));
+                        loki::pddl::TermList { this->m_pddl_factories.terms.template get_or_create<loki::pddl::TermVariableImpl>(translated_variable) })));
             conditions.push_back(condition);
         }
         return conditions;
@@ -120,6 +121,66 @@ private:
 
     loki::pddl::Parameter translate_impl(const loki::pddl::ParameterImpl& parameter) { return translate_typed_parameter_to_untyped_parameter(parameter); }
 
+    loki::pddl::Condition translate_impl(const loki::pddl::ConditionExistsImpl& condition)
+    {
+        // Translate parameters
+        auto translated_parameters = this->translate(condition.get_parameters());
+
+        // Translate condition
+        auto conditions = loki::pddl::ConditionList {};
+        for (const auto& parameter : condition.get_parameters())
+        {
+            auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+            conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
+        }
+        conditions.push_back(this->translate(*condition.get_condition()));
+
+        auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionAndImpl>(conditions);
+
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionExistsImpl>(translated_parameters, translated_condition);
+    }
+
+    loki::pddl::Condition translate_impl(const loki::pddl::ConditionForallImpl& condition)
+    {
+        // Translate parameters
+        auto translated_parameters = this->translate(condition.get_parameters());
+
+        // Translate condition
+        auto conditions = loki::pddl::ConditionList {};
+        for (const auto& parameter : condition.get_parameters())
+        {
+            auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+            conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
+        }
+        conditions.push_back(this->translate(*condition.get_condition()));
+
+        auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionAndImpl>(conditions);
+
+        return this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionForallImpl>(translated_parameters, translated_condition);
+    }
+
+    loki::pddl::Effect translate_impl(const loki::pddl::EffectConditionalForallImpl& effect)
+    {
+        // Translate parameters
+        auto translated_parameters = this->translate(effect.get_parameters());
+
+        // Translate condition
+        auto conditions = loki::pddl::ConditionList {};
+        for (const auto& parameter : effect.get_parameters())
+        {
+            auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+            conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
+        }
+        auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionAndImpl>(conditions);
+
+        // Translate effect
+        auto translated_effect = this->translate(*effect.get_effect());
+
+        return this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectConditionalForallImpl>(
+            translated_parameters,
+            this->m_pddl_factories.effects.template get_or_create<loki::pddl::EffectConditionalWhenImpl>(translated_condition, translated_effect));
+    }
+
     loki::pddl::Action translate_impl(const loki::pddl::ActionImpl& action)
     {
         // Translate parameters
@@ -139,7 +200,7 @@ private:
         auto translated_condition =
             conditions.empty() ?
                 std::nullopt :
-                std::optional<loki::pddl::Condition>(this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionAndImpl>(conditions));
+                std::optional<loki::pddl::Condition>(this->m_pddl_factories.conditions.template get_or_create<loki::pddl::ConditionAndImpl>(conditions));
 
         return this->m_pddl_factories.actions.template get_or_create<loki::pddl::ActionImpl>(
             action.get_name(),
@@ -153,7 +214,7 @@ private:
         // Remove :typing requirement
         auto requirements_enum_set = domain.get_requirements()->get_requirements();
         requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
-        auto translated_requirements = this->m_pddl_factories.requirements.get_or_create<loki::pddl::RequirementsImpl>(requirements_enum_set);
+        auto translated_requirements = this->m_pddl_factories.requirements.template get_or_create<loki::pddl::RequirementsImpl>(requirements_enum_set);
 
         // Make constants untyped
         auto translated_constants = loki::pddl::ObjectList {};
@@ -170,14 +231,14 @@ private:
         {
             translated_predicates.push_back(translate_type_to_predicate(*type));
         }
-        return this->m_pddl_factories.domains.get_or_create<loki::pddl::DomainImpl>(domain.get_name(),
-                                                                                    translated_requirements,
-                                                                                    loki::pddl::TypeList {},
-                                                                                    translated_constants,
-                                                                                    translated_predicates,
-                                                                                    this->translate(domain.get_functions()),
-                                                                                    this->translate(domain.get_actions()),
-                                                                                    this->translate(domain.get_derived_predicates()));
+        return this->m_pddl_factories.domains.template get_or_create<loki::pddl::DomainImpl>(domain.get_name(),
+                                                                                             translated_requirements,
+                                                                                             loki::pddl::TypeList {},
+                                                                                             translated_constants,
+                                                                                             translated_predicates,
+                                                                                             this->translate(domain.get_functions()),
+                                                                                             this->translate(domain.get_actions()),
+                                                                                             this->translate(domain.get_derived_predicates()));
     }
 
     loki::pddl::Problem translate_impl(const loki::pddl::ProblemImpl& problem)
@@ -185,7 +246,7 @@ private:
         // Remove :typing requirement
         auto requirements_enum_set = problem.get_requirements()->get_requirements();
         requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
-        auto translated_requirements = this->m_pddl_factories.requirements.get_or_create<loki::pddl::RequirementsImpl>(requirements_enum_set);
+        auto translated_requirements = this->m_pddl_factories.requirements.template get_or_create<loki::pddl::RequirementsImpl>(requirements_enum_set);
 
         // Make objects untyped
         auto translated_objects = loki::pddl::ObjectList {};
@@ -210,7 +271,7 @@ private:
         auto translated_initial_literals = this->translate(problem.get_initial_literals());
         translated_initial_literals.insert(translated_initial_literals.end(), additional_initial_literals.begin(), additional_initial_literals.end());
 
-        return this->m_pddl_factories.problems.get_or_create<loki::pddl::ProblemImpl>(
+        return this->m_pddl_factories.problems.template get_or_create<loki::pddl::ProblemImpl>(
             this->translate(*problem.get_domain()),
             problem.get_name(),
             translated_requirements,
