@@ -234,6 +234,7 @@ private:
         {
             translated_predicates.push_back(translate_type_to_predicate(*type));
         }
+
         return this->m_pddl_factories.domains.template get_or_create<loki::pddl::DomainImpl>(domain.get_name(),
                                                                                              translated_requirements,
                                                                                              loki::pddl::TypeList {},
