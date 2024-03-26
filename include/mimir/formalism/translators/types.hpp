@@ -83,6 +83,25 @@ private:
         }
     }
 
+    /// @brief Translate an typed parameter to a list of condition literal for all its original types.
+    loki::pddl::ConditionList translate_typed_parameter_to_condition_literals(const loki::pddl::ParameterImpl& parameter)
+    {
+        auto conditions = loki::pddl::ConditionList {};
+        auto translated_variable = this->translate(*parameter.get_variable());
+        auto types = collect_types_from_type_hierarchy(parameter.get_bases());
+        for (const auto& type : types)
+        {
+            auto condition = this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionLiteralImpl>(
+                this->m_pddl_factories.literals.get_or_create<loki::pddl::LiteralImpl>(
+                    false,
+                    this->m_pddl_factories.atoms.get_or_create<loki::pddl::AtomImpl>(
+                        translate_type_to_predicate(*type),
+                        loki::pddl::TermList { this->m_pddl_factories.terms.get_or_create<loki::pddl::TermVariableImpl>(translated_variable) })));
+            conditions.push_back(condition);
+        }
+        return conditions;
+    }
+
     /// @brief Compute all types from a hierarchy of types.
     loki::pddl::TypeList collect_types_from_type_hierarchy(const loki::pddl::TypeList& type_list)
     {
@@ -100,6 +119,34 @@ private:
     loki::pddl::Object translate_impl(const loki::pddl::ObjectImpl& object) { return translate_typed_object_to_untyped_object(object); }
 
     loki::pddl::Parameter translate_impl(const loki::pddl::ParameterImpl& parameter) { return translate_typed_parameter_to_untyped_parameter(parameter); }
+
+    loki::pddl::Action translate_impl(const loki::pddl::ActionImpl& action)
+    {
+        // Translate parameters
+        auto translated_parameters = this->translate(action.get_parameters());
+
+        // Translate condition
+        auto conditions = loki::pddl::ConditionList {};
+        for (const auto& parameter : action.get_parameters())
+        {
+            auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+            conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
+        }
+        if (action.get_condition().has_value())
+        {
+            conditions.push_back(this->translate(*action.get_condition().value()));
+        }
+        auto translated_condition =
+            conditions.empty() ?
+                std::nullopt :
+                std::optional<loki::pddl::Condition>(this->m_pddl_factories.conditions.get_or_create<loki::pddl::ConditionAndImpl>(conditions));
+
+        return this->m_pddl_factories.actions.template get_or_create<loki::pddl::ActionImpl>(
+            action.get_name(),
+            translated_parameters,
+            translated_condition,
+            (action.get_effect().has_value() ? std::optional<loki::pddl::Effect>(this->translate(*action.get_effect().value())) : std::nullopt));
+    }
 
     loki::pddl::Domain translate_impl(const loki::pddl::DomainImpl& domain)
     {
