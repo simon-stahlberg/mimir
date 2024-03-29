@@ -54,11 +54,16 @@ private:
     public:
         explicit ConditionNotVisitor(NNFTranslator& translator);
 
+        /// @brief Default: wrap the translation into a not condition.
+        template<typename ConditionImpl>
+        Condition operator()(const ConditionImpl& condition)
+        {
+            return m_translator.m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(m_translator.translate(condition));
+        }
         Condition operator()(const ConditionLiteralImpl& condition);
         Condition operator()(const ConditionNotImpl& condition);
         Condition operator()(const ConditionAndImpl& condition);
         Condition operator()(const ConditionOrImpl& condition);
-        Condition operator()(const ConditionImplyImpl& condition);
         Condition operator()(const ConditionExistsImpl& condition);
         Condition operator()(const ConditionForallImpl& condition);
     };

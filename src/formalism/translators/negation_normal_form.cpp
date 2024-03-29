@@ -50,11 +50,6 @@ Condition NNFTranslator::ConditionNotVisitor::operator()(const ConditionOrImpl& 
     return m_translator.m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
 }
 
-Condition NNFTranslator::ConditionNotVisitor::operator()(const ConditionImplyImpl& condition)
-{
-    return m_translator.m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(m_translator.translate(condition));
-}
-
 Condition NNFTranslator::ConditionNotVisitor::operator()(const ConditionExistsImpl& condition)
 {
     return m_translator.m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(

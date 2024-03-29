@@ -104,7 +104,8 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
             for (size_t i = 0; i < objects.size(); ++i)
             {
                 if (i != 0)
-                    out << " " << objects[i]->get_name();
+                    out << " ";
+                out << objects[i]->get_name();
             }
             if (m_requirements->test(loki::pddl::RequirementEnum::TYPING))
             {
