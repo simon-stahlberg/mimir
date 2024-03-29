@@ -3,6 +3,8 @@
 
 #include "mimir/formalism/translators/interface.hpp"
 
+#include <unordered_set>
+
 namespace mimir
 {
 
