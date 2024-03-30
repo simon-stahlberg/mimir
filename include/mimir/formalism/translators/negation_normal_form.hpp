@@ -73,7 +73,6 @@ private:
      */
     Condition translate_impl(const ConditionImplyImpl& condition);
     Condition translate_impl(const ConditionNotImpl& condition);
-    Problem translate_impl(const ProblemImpl& problem);
 
     Problem run_impl(const ProblemImpl& problem);
 

@@ -73,23 +73,19 @@ Condition NNFTranslator::translate_impl(const ConditionImplyImpl& condition)
 
 Condition NNFTranslator::translate_impl(const ConditionNotImpl& condition)
 {
-    return std::visit(NNFTranslator::ConditionNotVisitor(*this), *this->translate(*condition.get_condition()));
-}
+    auto current = Condition { nullptr };
 
-Problem NNFTranslator::translate_impl(const ProblemImpl& problem)
-{
-    // Apply translations exhaustively.
-    auto translated_problem = Problem { nullptr };
     while (true)
     {
-        auto new_translated_problem = this->translate(problem);
-        if (translated_problem == new_translated_problem)
+        auto translated = std::visit(NNFTranslator::ConditionNotVisitor(*this), *this->translate(*condition.get_condition()));
+
+        if (current == translated)
         {
             break;
         }
-        translated_problem = new_translated_problem;
+        current = translated;
     }
-    return translated_problem;
+    return current;
 }
 
 Problem NNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }

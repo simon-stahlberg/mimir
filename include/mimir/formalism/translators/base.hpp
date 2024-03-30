@@ -3,7 +3,7 @@
 
 #include "mimir/formalism/translators/interface.hpp"
 
-#include <functional>
+#include <loki/pddl/visitors.hpp>
 #include <unordered_set>
 
 namespace mimir
@@ -52,14 +52,28 @@ private:
 protected:
     PDDLFactories& m_pddl_factories;
 
-    std::unordered_set<Requirements> m_translated_requirements;
-    std::unordered_set<Type> m_translated_types;
-    std::unordered_set<Object> m_translated_objects;
-    std::unordered_set<Variable> m_translated_variables;
-    std::unordered_set<Term> m_translated_terms;
-    std::unordered_set<Condition> m_translated_conditions;
-    std::unordered_set<Effect> m_translated_effects;
-    std::unordered_set<FunctionExpression> m_translated_function_expressions;
+    // std::unordered_set<Requirements> m_translated_requirements;
+    // std::unordered_set<Type> m_translated_types;
+    // std::unordered_set<Object> m_translated_objects;
+    // std::unordered_set<Variable> m_translated_variables;
+    // std::unordered_set<Term> m_translated_terms;
+    // std::unordered_set<Parameter> m_translated_parameters;
+    // std::unordered_set<Predicate> m_translated_predicates;
+    // std::unordered_set<Atom> m_translated_atoms;
+    // std::unordered_set<Literal> m_translated_literals;
+    // std::unordered_set<GroundAtom> m_translated_ground_atoms;
+    // std::unordered_set<GroundLiteral> m_translated_ground_literals;
+    // std::unordered_set<NumericFluent> m_translated_numeric_fluents;
+    // std::unordered_set<Condition> m_translated_conditions;
+    // std::unordered_set<Effect> m_translated_effects;
+    // std::unordered_set<FunctionExpression> m_translated_function_expressions;
+    // std::unordered_set<FunctionSkeleton> m_translated_function_skeletons;
+    // std::unordered_set<Function> m_translated_functions;
+    // std::unordered_set<Action> m_translated_actions;
+    // std::unordered_set<DerivedPredicate> m_translated_derived_predicates;
+    // std::unordered_set<Domain> m_translated_domains;
+    // std::unordered_set<OptimizationMetric> m_translated_metrics;
+    // std::unordered_set<Problem> m_translated_problems;
 
 public:
     explicit BaseTranslator(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
@@ -225,65 +239,13 @@ public:
         }
     }
 
-    /// @brief Apply problem translation.
-    ///        Default behavior reparses it into the pddl_factories.
-
-    /// @brief Iteratively translate until obtaining stable result.
-    template<typename Impl>
-    const Impl* iterative_translate_base(const Impl& element, std::unordered_set<const Impl*>& cache)
-    {
-        // Try access cached result.
-        auto it = cache.find(&element);
-        if (it != cache.end())
-        {
-            return *it;
-        }
-
-        // Compute result
-        const Impl* current = &element;
-        while (true)
-        {
-            const Impl* translated = self().translate_impl(*current);
-            if (translated == current)
-            {
-                cache.insert(current);
-                break;
-            }
-            current = translated;
-        }
-        return current;
-    }
-    template<typename Impl>
-    const Impl* iterative_visit_translate_base(const Impl& element, std::unordered_set<const Impl*>& cache)
-    {
-        // Try access cached result.
-        auto it = cache.find(&element);
-        if (it != cache.end())
-        {
-            return *it;
-        }
-
-        // Compute result
-        const Impl* current = &element;
-        while (true)
-        {
-            const Impl* translated = std::visit(TranslateVisitor(*this), *current);
-            if (translated == current)
-            {
-                cache.insert(current);
-                break;
-            }
-            current = translated;
-        }
-        return current;
-    }
-    Requirements translate_base(const RequirementsImpl& requirements) { return iterative_translate_base(requirements, m_translated_requirements); }
-    Type translate_base(const TypeImpl& type) { return iterative_translate_base(type, m_translated_types); }
-    Object translate_base(const ObjectImpl& object) { return iterative_translate_base(object, m_translated_objects); }
-    Variable translate_base(const VariableImpl& variable) { return iterative_translate_base(variable, m_translated_variables); }
+    Requirements translate_base(const RequirementsImpl& requirements) { return self().translate_impl(requirements); }
+    Type translate_base(const TypeImpl& type) { return self().translate_impl(type); }
+    Object translate_base(const ObjectImpl& object) { return self().translate_impl(object); }
+    Variable translate_base(const VariableImpl& variable) { return self().translate_impl(variable); }
     Term translate_base(const TermObjectImpl& term) { return self().translate_impl(term); }
     Term translate_base(const TermVariableImpl& term) { return self().translate_impl(term); }
-    Term translate_base(const TermImpl& term) { return iterative_visit_translate_base(term, m_translated_terms); }
+    Term translate_base(const TermImpl& term) { return std::visit(TranslateVisitor(*this), term); }
     Parameter translate_base(const ParameterImpl& parameter) { return self().translate_impl(parameter); }
     Predicate translate_base(const PredicateImpl& predicate) { return self().translate_impl(predicate); }
     Atom translate_base(const AtomImpl& atom) { return self().translate_impl(atom); }
@@ -298,22 +260,19 @@ public:
     Condition translate_base(const ConditionImplyImpl& condition) { return self().translate_impl(condition); }
     Condition translate_base(const ConditionExistsImpl& condition) { return self().translate_impl(condition); }
     Condition translate_base(const ConditionForallImpl& condition) { return self().translate_impl(condition); }
-    Condition translate_base(const ConditionImpl& condition) { return iterative_visit_translate_base(condition, m_translated_conditions); }
+    Condition translate_base(const ConditionImpl& condition) { return std::visit(TranslateVisitor(*this), condition); }
     Effect translate_base(const EffectLiteralImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectAndImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectNumericImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectConditionalForallImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
-    Effect translate_base(const EffectImpl& effect) { return iterative_visit_translate_base(effect, m_translated_effects); }
+    Effect translate_base(const EffectImpl& effect) { return std::visit(TranslateVisitor(*this), effect); }
     FunctionExpression translate_base(const FunctionExpressionNumberImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionMinusImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionFunctionImpl& function_expression) { return self().translate_impl(function_expression); }
-    FunctionExpression translate_base(const FunctionExpressionImpl& function_expression)
-    {
-        return iterative_visit_translate_base(function_expression, m_translated_function_expressions);
-    }
+    FunctionExpression translate_base(const FunctionExpressionImpl& function_expression) { return std::visit(TranslateVisitor(*this), function_expression); }
     FunctionSkeleton translate_base(const FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
     Function translate_base(const FunctionImpl& function) { return self().translate_impl(function); }
     Action translate_base(const ActionImpl& action) { return self().translate_impl(action); }
@@ -488,7 +447,8 @@ public:
                                                                                  this->translate(domain.get_constants()),
                                                                                  this->translate(domain.get_predicates()),
                                                                                  this->translate(domain.get_functions()),
-                                                                                 this->translate(domain.get_actions()));
+                                                                                 this->translate(domain.get_actions()),
+                                                                                 this->translate(domain.get_derived_predicates()));
     }
     OptimizationMetric translate_impl(const OptimizationMetricImpl& metric)
     {

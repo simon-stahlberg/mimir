@@ -113,7 +113,7 @@ Condition TypeTranslator::translate_impl(const ConditionExistsImpl& condition)
 
     auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(conditions);
 
-    return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(translated_parameters, translated_condition);
+    return translated_condition;
 }
 
 Condition TypeTranslator::translate_impl(const ConditionForallImpl& condition)
@@ -206,14 +206,15 @@ Domain TypeTranslator::translate_impl(const DomainImpl& domain)
         translated_predicates.push_back(translate_type_to_predicate(*type));
     }
 
-    return this->m_pddl_factories.domains.template get_or_create<DomainImpl>(domain.get_name(),
-                                                                             translated_requirements,
-                                                                             TypeList {},
-                                                                             translated_constants,
-                                                                             translated_predicates,
-                                                                             this->translate(domain.get_functions()),
-                                                                             this->translate(domain.get_actions()),
-                                                                             this->translate(domain.get_derived_predicates()));
+    auto translated_domain = this->m_pddl_factories.domains.template get_or_create<DomainImpl>(domain.get_name(),
+                                                                                               translated_requirements,
+                                                                                               TypeList {},
+                                                                                               translated_constants,
+                                                                                               translated_predicates,
+                                                                                               this->translate(domain.get_functions()),
+                                                                                               this->translate(domain.get_actions()),
+                                                                                               this->translate(domain.get_derived_predicates()));
+    return translated_domain;
 }
 
 Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
@@ -246,7 +247,7 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
     auto translated_initial_literals = this->translate(problem.get_initial_literals());
     translated_initial_literals.insert(translated_initial_literals.end(), additional_initial_literals.begin(), additional_initial_literals.end());
 
-    return this->m_pddl_factories.problems.template get_or_create<ProblemImpl>(
+    auto translated_problem = this->m_pddl_factories.problems.template get_or_create<ProblemImpl>(
         this->translate(*problem.get_domain()),
         problem.get_name(),
         translated_requirements,
@@ -256,6 +257,7 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
         this->translate(*problem.get_goal_condition()),
         (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
                                                          std::nullopt));
+    return translated_problem;
 }
 
 Problem TypeTranslator::run_impl(const ProblemImpl& problem) { return self().translate(problem); }
