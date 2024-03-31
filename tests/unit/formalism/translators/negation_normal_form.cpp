@@ -7,7 +7,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, FormalismTranslatorsTypes)
+TEST(MimirTests, FormalismTranslatorsNegationNormalForm)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic/problem.pddl");
@@ -23,13 +23,9 @@ TEST(MimirTests, FormalismTranslatorsTypes)
     std::cout << *domain << std::endl;
     std::cout << *problem << std::endl;
 
-    auto type_translator = TypeTranslator(parser.get_factories());
-    auto translated_problem = type_translator.run(*problem);
-    auto translated_domain = translated_problem->get_domain();
-
     auto nnf_translator = NNFTranslator(parser.get_factories());
-    translated_problem = nnf_translator.run(*translated_problem);
-    translated_domain = translated_problem->get_domain();
+    auto translated_problem = nnf_translator.run(*problem);
+    auto translated_domain = translated_problem->get_domain();
 
     std::cout << "\nTranslated domain and problem" << std::endl;
     std::cout << *translated_problem->get_domain() << std::endl;
