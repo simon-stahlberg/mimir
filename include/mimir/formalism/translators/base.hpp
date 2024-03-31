@@ -52,29 +52,6 @@ private:
 protected:
     PDDLFactories& m_pddl_factories;
 
-    // std::unordered_set<Requirements> m_translated_requirements;
-    // std::unordered_set<Type> m_translated_types;
-    // std::unordered_set<Object> m_translated_objects;
-    // std::unordered_set<Variable> m_translated_variables;
-    // std::unordered_set<Term> m_translated_terms;
-    // std::unordered_set<Parameter> m_translated_parameters;
-    // std::unordered_set<Predicate> m_translated_predicates;
-    // std::unordered_set<Atom> m_translated_atoms;
-    // std::unordered_set<Literal> m_translated_literals;
-    // std::unordered_set<GroundAtom> m_translated_ground_atoms;
-    // std::unordered_set<GroundLiteral> m_translated_ground_literals;
-    // std::unordered_set<NumericFluent> m_translated_numeric_fluents;
-    // std::unordered_set<Condition> m_translated_conditions;
-    // std::unordered_set<Effect> m_translated_effects;
-    // std::unordered_set<FunctionExpression> m_translated_function_expressions;
-    // std::unordered_set<FunctionSkeleton> m_translated_function_skeletons;
-    // std::unordered_set<Function> m_translated_functions;
-    // std::unordered_set<Action> m_translated_actions;
-    // std::unordered_set<DerivedPredicate> m_translated_derived_predicates;
-    // std::unordered_set<Domain> m_translated_domains;
-    // std::unordered_set<OptimizationMetric> m_translated_metrics;
-    // std::unordered_set<Problem> m_translated_problems;
-
 public:
     explicit BaseTranslator(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
@@ -239,6 +216,8 @@ public:
         }
     }
 
+    /// @brief Apply problem translation.
+    ///        Default behavior reparses it into the pddl_factories.
     Requirements translate_base(const RequirementsImpl& requirements) { return self().translate_impl(requirements); }
     Type translate_base(const TypeImpl& type) { return self().translate_impl(type); }
     Object translate_base(const ObjectImpl& object) { return self().translate_impl(object); }

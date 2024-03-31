@@ -25,10 +25,16 @@ namespace mimir
 /**
  * Translate formulas to disjunctive normal form (DNF) using the following rules.
  *
- * 1. not (not A)    => A
- * 2. not (A or B)   => not A and not B
- * 3. not (A and B)  => not A or not B
- * 4. A and (B or C) => A and B or A and C
+ * 1. not (not A)                      => A
+ * 2. not (A or B)                     => not A and not B
+ * 3. not (A and B)                    => not A or not B
+ * 4. A and (B or C)                   => A and B or A and C
+ * 5. A and (B and C)                  => A and B and C
+ * 6. A or (B or C)                    => A or B or C
+ * 7. exists(vars, or(A, B))           => or(exists(vars, A), exists(vars, B))
+ * 8. forall(vars, or(A, B))           => or(forall(vars, A), forall(vars, B))
+ * 9. exists(vars1, exists(vars2, A))  => exists(vars1+vars2, A)
+ * 10. forall(vars1, forall(vars2, A)) => forall(vars1+vars2, A)
  */
 class DNFTranslator : public BaseTranslator<DNFTranslator>
 {
