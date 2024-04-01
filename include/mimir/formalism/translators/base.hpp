@@ -23,38 +23,17 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
-    struct PrepareVisitor
-    {
-        BaseTranslator& m_translator;
-
-        explicit PrepareVisitor(BaseTranslator& translator) : m_translator(translator) {}
-
-        template<typename T>
-        void operator()(const T& element) const
-        {
-            m_translator.prepare(element);
-        }
-    };
-
-    struct TranslateVisitor
-    {
-        BaseTranslator& m_translator;
-
-        explicit TranslateVisitor(BaseTranslator& translator) : m_translator(translator) {}
-
-        template<typename T>
-        auto operator()(const T& element) const
-        {
-            return m_translator.translate(element);
-        }
-    };
-
 protected:
     PDDLFactories& m_pddl_factories;
 
     explicit BaseTranslator(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
-    Condition translate_flatten_condition_and(const ConditionAndImpl& condition)
+    /**
+     * Flatten conjunctions.
+     *
+     * 1. A and (B and C)  =>  A and B and C
+     */
+    Condition translate_flatten_conjunctions(const ConditionAndImpl& condition)
     {
         auto translated_nested_conditions = ConditionList {};
         for (const auto& nested_condition : condition.get_conditions())
@@ -74,7 +53,12 @@ protected:
         return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
     }
 
-    Condition translate_flatten_condition_or(const ConditionOrImpl& condition)
+    /**
+     * Flatten disjunctions.
+     *
+     * 1. A or (B or C)  =>  A or B or C
+     */
+    Condition translate_flatten_disjunctions(const ConditionOrImpl& condition)
     {
         auto translated_nested_conditions = ConditionList {};
         for (const auto& nested_condition : condition.get_conditions())
@@ -94,6 +78,36 @@ protected:
         return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
     }
 
+    /**
+     * Push negation inwards.
+     *
+     * 1. not (A or B)    =>  not A and not B
+     * 2. not (A and B)   =>  not A or not B
+     * 3. not (not A)     =>  A
+     * 4. not exists x A  =>  forall x not A
+     * 5. not forall x A  =>  exists x not A
+     * 6. not (A -> B)    =>  not (not A or B)  =>  A and not B
+     */
+    Condition translate_push_negation_inwards(const ConditionNotImpl& condition)
+    {
+        if (const auto condition_lit = std::get_if<ConditionLiteralImpl>(condition.get_condition()))
+        {
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(
+                this->m_pddl_factories.literals.template get_or_create<Literal>(!condition_lit->get_literal()->is_negated(),
+                                                                                condition_lit->get_literal()->get_atom()));
+        }
+        else if (const auto condition_not = std::get_if<ConditionNotImpl>(condition.get_condition()))
+        {
+            return this->translate(*condition_not->get_condition());
+        }
+        else if (const auto condition_imply = std::get_if<ConditionImplyImpl>(condition.get_condition()))
+        {
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList {
+                this->translate(*condition_imply->get_condition_left()),
+                this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition_imply->get_condition_right())) });
+        }
+    }
+
 protected:
     /* Implement ITranslator interface */
     friend class ITranslator<BaseTranslator<Derived>>;
@@ -106,7 +120,10 @@ protected:
     void prepare_base(const VariableImpl& variable) { self().prepare_impl(variable); }
     void prepare_base(const TermObjectImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermVariableImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const TermImpl& term) { std::visit(PrepareVisitor(*this), term); }
+    void prepare_base(const TermImpl& term)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
+    }
     void prepare_base(const ParameterImpl& parameter) { self().prepare_impl(parameter); }
     void prepare_base(const PredicateImpl& predicate) { self().prepare_impl(predicate); }
     void prepare_base(const AtomImpl& atom) { self().prepare_impl(atom); }
@@ -121,19 +138,28 @@ protected:
     void prepare_base(const ConditionImplyImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const ConditionExistsImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const ConditionForallImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const ConditionImpl& condition) { std::visit(PrepareVisitor(*this), condition); }
+    void prepare_base(const ConditionImpl& condition)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, condition);
+    }
     void prepare_base(const EffectLiteralImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectAndImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectNumericImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectConditionalForallImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectConditionalWhenImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const EffectImpl& effect) { std::visit(PrepareVisitor(*this), effect); }
+    void prepare_base(const EffectImpl& effect)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, effect);
+    }
     void prepare_base(const FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
     void prepare_base(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
-    void prepare_base(const FunctionExpressionImpl& function_expression) { std::visit(PrepareVisitor(*this), function_expression); }
+    void prepare_base(const FunctionExpressionImpl& function_expression)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
+    }
     void prepare_base(const FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
     void prepare_base(const FunctionImpl& function) { self().prepare_impl(function); }
     void prepare_base(const ActionImpl& action) { self().prepare_impl(action); }
@@ -267,7 +293,10 @@ protected:
     Variable translate_base(const VariableImpl& variable) { return self().translate_impl(variable); }
     Term translate_base(const TermObjectImpl& term) { return self().translate_impl(term); }
     Term translate_base(const TermVariableImpl& term) { return self().translate_impl(term); }
-    Term translate_base(const TermImpl& term) { return std::visit(TranslateVisitor(*this), term); }
+    Term translate_base(const TermImpl& term)
+    {
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, term);
+    }
     Parameter translate_base(const ParameterImpl& parameter) { return self().translate_impl(parameter); }
     Predicate translate_base(const PredicateImpl& predicate) { return self().translate_impl(predicate); }
     Atom translate_base(const AtomImpl& atom) { return self().translate_impl(atom); }
@@ -282,19 +311,28 @@ protected:
     Condition translate_base(const ConditionImplyImpl& condition) { return self().translate_impl(condition); }
     Condition translate_base(const ConditionExistsImpl& condition) { return self().translate_impl(condition); }
     Condition translate_base(const ConditionForallImpl& condition) { return self().translate_impl(condition); }
-    Condition translate_base(const ConditionImpl& condition) { return std::visit(TranslateVisitor(*this), condition); }
+    Condition translate_base(const ConditionImpl& condition)
+    {
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
+    }
     Effect translate_base(const EffectLiteralImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectAndImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectNumericImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectConditionalForallImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
-    Effect translate_base(const EffectImpl& effect) { return std::visit(TranslateVisitor(*this), effect); }
+    Effect translate_base(const EffectImpl& effect)
+    {
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, effect);
+    }
     FunctionExpression translate_base(const FunctionExpressionNumberImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionMinusImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionFunctionImpl& function_expression) { return self().translate_impl(function_expression); }
-    FunctionExpression translate_base(const FunctionExpressionImpl& function_expression) { return std::visit(TranslateVisitor(*this), function_expression); }
+    FunctionExpression translate_base(const FunctionExpressionImpl& function_expression)
+    {
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression);
+    }
     FunctionSkeleton translate_base(const FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
     Function translate_base(const FunctionImpl& function) { return self().translate_impl(function); }
     Action translate_base(const ActionImpl& action) { return self().translate_impl(action); }

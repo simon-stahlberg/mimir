@@ -34,9 +34,9 @@ Condition DNFTranslator::translate_impl(const ConditionNotImpl& condition)
     return std::visit(PushInwardsConditionNotVisitor(*this), *this->translate(*condition.get_condition()));
 }
 
-Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition) { return this->translate_flatten_condition_and(condition); }
+Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition) { return this->translate_flatten_conjunctions(condition); }
 
-Condition DNFTranslator::translate_impl(const ConditionOrImpl& condition) { return this->translate_flatten_condition_or(condition); }
+Condition DNFTranslator::translate_impl(const ConditionOrImpl& condition) { return this->translate_flatten_disjunctions(condition); }
 
 Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
@@ -54,7 +54,7 @@ Condition DNFTranslator::translate_impl(const ConditionImpl& condition)
 
     while (true)
     {
-        auto translated = std::visit(BaseTranslator::TranslateVisitor(*this), condition);
+        auto translated = std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
 
         if (current == translated)
         {
