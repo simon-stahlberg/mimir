@@ -52,8 +52,10 @@ private:
 protected:
     PDDLFactories& m_pddl_factories;
 
-public:
     explicit BaseTranslator(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+
+    /* Implement ITranslator interface */
+    friend class ITranslator<BaseTranslator<Derived>>;
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
@@ -458,6 +460,9 @@ public:
         self().prepare(problem);
         return self().translate(problem);
     }
+
+public:
+    PDDLFactories& get_pddl_factories() { return m_pddl_factories; }
 };
 
 }
