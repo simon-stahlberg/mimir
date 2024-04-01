@@ -54,6 +54,47 @@ protected:
 
     explicit BaseTranslator(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
+    Condition translate_flatten_condition_and(const ConditionAndImpl& condition)
+    {
+        auto translated_nested_conditions = ConditionList {};
+        for (const auto& nested_condition : condition.get_conditions())
+        {
+            if (const auto and_condition = std::get_if<ConditionAndImpl>(nested_condition))
+            {
+                auto translated_nested_and_conditions = this->translate(and_condition->get_conditions());
+                translated_nested_conditions.insert(translated_nested_conditions.end(),
+                                                    translated_nested_and_conditions.begin(),
+                                                    translated_nested_and_conditions.end());
+            }
+            else
+            {
+                translated_nested_conditions.push_back(this->translate(*nested_condition));
+            }
+        }
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
+    }
+
+    Condition translate_flatten_condition_or(const ConditionOrImpl& condition)
+    {
+        auto translated_nested_conditions = ConditionList {};
+        for (const auto& nested_condition : condition.get_conditions())
+        {
+            if (const auto or_condition = std::get_if<ConditionOrImpl>(nested_condition))
+            {
+                auto translated_nested_and_conditions = this->translate(or_condition->get_conditions());
+                translated_nested_conditions.insert(translated_nested_conditions.end(),
+                                                    translated_nested_and_conditions.begin(),
+                                                    translated_nested_and_conditions.end());
+            }
+            else
+            {
+                translated_nested_conditions.push_back(this->translate(*nested_condition));
+            }
+        }
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
+    }
+
+protected:
     /* Implement ITranslator interface */
     friend class ITranslator<BaseTranslator<Derived>>;
 

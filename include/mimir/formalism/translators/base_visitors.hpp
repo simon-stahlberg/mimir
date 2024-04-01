@@ -86,18 +86,24 @@ public:
 };
 
 /**
- * Flatten conjunctions.
+ * Apply conjunctive disjunctive distributivity.
  *
- * 1. A and (B and C)  =>  A and B and C
+ * 1. A and (B or C)  =>  A and B or A and C
  */
 template<typename Derived>
-class FlattenConditionAndVisitor
+class DistributiveConditionAndOrVisitor
 {
 private:
     BaseTranslator<Derived>& m_translator;
+    // Multipliers are all nested conditions until the currently visited element
+    const ConditionList& m_multipliers;
 
 public:
-    explicit FlattenConditionAndVisitor(BaseTranslator<Derived>& translator) : m_translator(translator) {}
+    DistributiveConditionAndOrVisitor(BaseTranslator<Derived>& translator, const ConditionList& multipliers) :
+        m_translator(translator),
+        m_multipliers(multipliers)
+    {
+    }
 
     /// @brief Return translated nested conditions.
     template<typename ConditionImpl>
@@ -105,30 +111,20 @@ public:
     {
         return ConditionList { m_translator.translate(condition) };
     }
-    ConditionList operator()(const ConditionAndImpl& condition) { return m_translator.translate(condition.get_conditions()); }
-};
-
-/**
- * Flatten disjunctions.
- *
- * 1. 9. A or (B or C)  =>  A or B or C
- */
-template<typename Derived>
-class FlattenConditionOrVisitor
-{
-private:
-    BaseTranslator<Derived>& m_translator;
-
-public:
-    explicit FlattenConditionOrVisitor(BaseTranslator<Derived>& translator) : m_translator(translator) {}
-
-    /// @brief Return translated nested conditions.
-    template<typename ConditionImpl>
-    ConditionList operator()(const ConditionImpl& condition)
+    ConditionList operator()(const ConditionOrImpl& condition)
     {
-        return ConditionList { m_translator.translate(condition) };
+        auto translated_result_conditions = ConditionList {};
+        auto translated_nested_conditions = m_translator.translate(condition.get_conditions());
+        for (const auto multiplier : m_multipliers)
+        {
+            for (const auto& nested_condition : translated_nested_conditions)
+            {
+                translated_result_conditions.push_back(
+                    m_translator.get_pddl_factories().conditions.template get_or_create<ConditionAndImpl>(ConditionList { multiplier, nested_condition }));
+            }
+        }
+        return translated_result_conditions;
     }
-    ConditionList operator()(const ConditionOrImpl& condition) { return m_translator.translate(condition.get_conditions()); }
 };
 
 /**

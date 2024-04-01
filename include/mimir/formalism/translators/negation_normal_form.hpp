@@ -52,11 +52,11 @@ private:
      */
     Condition translate_impl(const ConditionImplyImpl& condition);
     Condition translate_impl(const ConditionNotImpl& condition);
-    Condition translate_impl(const ConditionImpl& condition);
     Condition translate_impl(const ConditionAndImpl& condition);
     Condition translate_impl(const ConditionOrImpl& condition);
     Condition translate_impl(const ConditionExistsImpl& condition);
     Condition translate_impl(const ConditionForallImpl& condition);
+    Condition translate_impl(const ConditionImpl& condition);
 
     Problem run_impl(const ProblemImpl& problem);
 

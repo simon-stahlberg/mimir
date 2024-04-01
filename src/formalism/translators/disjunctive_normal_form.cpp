@@ -15,40 +15,40 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/translators/negation_normal_form.hpp"
+#include "mimir/formalism/translators/disjunctive_normal_form.hpp"
 
 #include "mimir/formalism/translators/base_visitors.hpp"
 
 namespace mimir
 {
 
-Condition NNFTranslator::translate_impl(const ConditionImplyImpl& condition)
+Condition DNFTranslator::translate_impl(const ConditionImplyImpl& condition)
 {
     return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(
         ConditionList { this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition.get_condition_left())),
                         this->translate(*condition.get_condition_right()) });
 }
 
-Condition NNFTranslator::translate_impl(const ConditionNotImpl& condition)
+Condition DNFTranslator::translate_impl(const ConditionNotImpl& condition)
 {
     return std::visit(PushInwardsConditionNotVisitor(*this), *this->translate(*condition.get_condition()));
 }
 
-Condition NNFTranslator::translate_impl(const ConditionAndImpl& condition) { return this->translate_flatten_condition_and(condition); }
+Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition) { return this->translate_flatten_condition_and(condition); }
 
-Condition NNFTranslator::translate_impl(const ConditionOrImpl& condition) { return this->translate_flatten_condition_or(condition); }
+Condition DNFTranslator::translate_impl(const ConditionOrImpl& condition) { return this->translate_flatten_condition_or(condition); }
 
-Condition NNFTranslator::translate_impl(const ConditionExistsImpl& condition)
+Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
     return std::visit(FlattenConditionExistsVisitor(*this, condition), *this->translate(*condition.get_condition()));
 }
 
-Condition NNFTranslator::translate_impl(const ConditionForallImpl& condition)
+Condition DNFTranslator::translate_impl(const ConditionForallImpl& condition)
 {
     return std::visit(FlattenConditionForallVisitor(*this, condition), *this->translate(*condition.get_condition()));
 }
 
-Condition NNFTranslator::translate_impl(const ConditionImpl& condition)
+Condition DNFTranslator::translate_impl(const ConditionImpl& condition)
 {
     auto current = Condition { nullptr };
 
@@ -65,8 +65,8 @@ Condition NNFTranslator::translate_impl(const ConditionImpl& condition)
     return current;
 }
 
-Problem NNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
+Problem DNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
 
-NNFTranslator::NNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
+DNFTranslator::DNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
 
 }

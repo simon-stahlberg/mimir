@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSLATORS_NEGATION_NORMAL_FORM_HPP_
-#define MIMIR_FORMALISM_TRANSLATORS_NEGATION_NORMAL_FORM_HPP_
+#ifndef MIMIR_FORMALISM_TRANSLATORS_DISJUNCTIVE_NORMAL_FORM_HPP_
+#define MIMIR_FORMALISM_TRANSLATORS_DISJUNCTIVE_NORMAL_FORM_HPP_
 
 #include "mimir/formalism/translators/base.hpp"
 
@@ -25,16 +25,9 @@ namespace mimir
 /**
  * Translate formulas to disjunctive normal form (DNF) using the following rules.
  *
- * 1. not (not A)                      => A
- * 2. not (A or B)                     => not A and not B
- * 3. not (A and B)                    => not A or not B
- * 4. A and (B or C)                   => A and B or A and C
- * 5. A and (B and C)                  => A and B and C
- * 6. A or (B or C)                    => A or B or C
- * 7. exists(vars, or(A, B))           => or(exists(vars, A), exists(vars, B))
- * 8. forall(vars, or(A, B))           => or(forall(vars, A), forall(vars, B))
- * 9. exists(vars1, exists(vars2, A))  => exists(vars1+vars2, A)
- * 10. forall(vars1, forall(vars2, A)) => forall(vars1+vars2, A)
+ * NNF +
+ *
+ * 1. A and (B or C)  =>  A and B or A and C
  */
 class DNFTranslator : public BaseTranslator<DNFTranslator>
 {
@@ -47,37 +40,15 @@ private:
     using BaseTranslator::translate_impl;
 
     /**
-     * Utility functions
-     */
-    class ConditionNotVisitor
-    {
-    private:
-        DNFTranslator& m_translator;
-
-    public:
-        explicit ConditionNotVisitor(DNFTranslator& translator);
-
-        /// @brief Default: wrap the translation into a not condition.
-        template<typename ConditionImpl>
-        Condition operator()(const ConditionImpl& condition)
-        {
-            return m_translator.m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(m_translator.translate(condition));
-        }
-        Condition operator()(const ConditionLiteralImpl& condition);
-        Condition operator()(const ConditionNotImpl& condition);
-        Condition operator()(const ConditionAndImpl& condition);
-        Condition operator()(const ConditionOrImpl& condition);
-        Condition operator()(const ConditionImplyImpl& condition);
-        Condition operator()(const ConditionExistsImpl& condition);
-        Condition operator()(const ConditionForallImpl& condition);
-    };
-
-    /**
      * Translate
      */
     Condition translate_impl(const ConditionImplyImpl& condition);
     Condition translate_impl(const ConditionNotImpl& condition);
-    Problem translate_impl(const ProblemImpl& problem);
+    Condition translate_impl(const ConditionAndImpl& condition);
+    Condition translate_impl(const ConditionOrImpl& condition);
+    Condition translate_impl(const ConditionExistsImpl& condition);
+    Condition translate_impl(const ConditionForallImpl& condition);
+    Condition translate_impl(const ConditionImpl& condition);
 
     Problem run_impl(const ProblemImpl& problem);
 
