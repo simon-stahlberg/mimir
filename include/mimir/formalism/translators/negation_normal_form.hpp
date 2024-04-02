@@ -112,11 +112,11 @@ private:
             auto translated_parameters = this->translate(condition.get_parameters());
             auto translated_additional_parameters = this->translate(exists_condition->get_parameters());
             translated_parameters.insert(translated_parameters.end(), translated_additional_parameters.begin(), translated_additional_parameters.end());
-            return this->get_pddl_factories().conditions.template get_or_create<ConditionExistsImpl>(translated_parameters,
-                                                                                                     this->translate(*exists_condition->get_condition()));
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(translated_parameters,
+                                                                                                 this->translate(*exists_condition->get_condition()));
         }
-        return this->get_pddl_factories().conditions.template get_or_create<ConditionExistsImpl>(this->translate(condition.get_parameters()),
-                                                                                                 this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(this->translate(condition.get_parameters()),
+                                                                                             this->translate(*condition.get_condition()));
     }
 
     /**
@@ -131,11 +131,11 @@ private:
             auto translated_parameters = this->translate(condition.get_parameters());
             auto translated_additional_parameters = this->translate(universal_condition->get_parameters());
             translated_parameters.insert(translated_parameters.end(), translated_additional_parameters.begin(), translated_additional_parameters.end());
-            return this->get_pddl_factories().conditions.template get_or_create<ConditionForallImpl>(translated_parameters,
-                                                                                                     this->translate(*universal_condition->get_condition()));
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(translated_parameters,
+                                                                                                 this->translate(*universal_condition->get_condition()));
         }
-        return this->get_pddl_factories().conditions.template get_or_create<ConditionForallImpl>(this->translate(condition.get_parameters()),
-                                                                                                 this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(this->translate(condition.get_parameters()),
+                                                                                             this->translate(*condition.get_condition()));
     }
 
     /**
@@ -173,9 +173,9 @@ private:
             for (const auto& nested_condition : condition_and->get_conditions())
             {
                 translated_nested_conditions.push_back(
-                    this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
+                    this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
             }
-            return this->get_pddl_factories().conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
         }
         else if (const auto condition_or = std::get_if<ConditionOrImpl>(condition.get_condition()))
         {
@@ -184,21 +184,21 @@ private:
             for (const auto& nested_condition : condition_or->get_conditions())
             {
                 translated_nested_conditions.push_back(
-                    this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
+                    this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
             }
-            return this->get_pddl_factories().conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
         }
         else if (const auto condition_exists = std::get_if<ConditionExistsImpl>(condition.get_condition()))
         {
-            return this->get_pddl_factories().conditions.template get_or_create<ConditionForallImpl>(
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(
                 this->translate(condition_exists->get_parameters()),
-                this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
+                this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
         }
         else if (const auto condition_forall = std::get_if<ConditionForallImpl>(condition.get_condition()))
         {
-            return this->get_pddl_factories().conditions.template get_or_create<ConditionExistsImpl>(
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(
                 this->translate(condition_exists->get_parameters()),
-                this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
+                this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
         }
         throw std::runtime_error("Missing implementation to push negations inwards.");
     }

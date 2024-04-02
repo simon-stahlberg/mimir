@@ -522,9 +522,6 @@ protected:
         self().prepare(problem);
         return self().translate(problem);
     }
-
-public:
-    PDDLFactories& get_pddl_factories() { return m_pddl_factories; }
 };
 
 }
