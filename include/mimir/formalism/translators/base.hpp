@@ -42,7 +42,7 @@ private:
     std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_translated_function_skeletons;
     std::unordered_map<Function, Function> m_translated_functions;
     std::unordered_map<Action, Action> m_translated_actions;
-    std::unordered_map<DerivedPredicate, DerivedPredicate> m_translated_derived_predicate;
+    std::unordered_map<DerivedPredicate, DerivedPredicate> m_translated_derived_predicates;
     std::unordered_map<Domain, Domain> m_translated_domains;
     std::unordered_map<OptimizationMetric, OptimizationMetric> m_translated_optimization_metrics;
     std::unordered_map<Problem, Problem> m_translated_problems;
@@ -64,10 +64,7 @@ protected:
     void prepare_base(const VariableImpl& variable) { self().prepare_impl(variable); }
     void prepare_base(const TermObjectImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermVariableImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const TermImpl& term)
-    {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
-    }
+    void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
     void prepare_base(const ParameterImpl& parameter) { self().prepare_impl(parameter); }
     void prepare_base(const PredicateImpl& predicate) { self().prepare_impl(predicate); }
     void prepare_base(const AtomImpl& atom) { self().prepare_impl(atom); }
@@ -82,28 +79,19 @@ protected:
     void prepare_base(const ConditionImplyImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const ConditionExistsImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const ConditionForallImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const ConditionImpl& condition)
-    {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, condition);
-    }
+    void prepare_base(const ConditionImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const EffectLiteralImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectAndImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectNumericImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectConditionalForallImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectConditionalWhenImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const EffectImpl& effect)
-    {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, effect);
-    }
+    void prepare_base(const EffectImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
     void prepare_base(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
-    void prepare_base(const FunctionExpressionImpl& function_expression)
-    {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
-    }
+    void prepare_base(const FunctionExpressionImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
     void prepare_base(const FunctionImpl& function) { self().prepare_impl(function); }
     void prepare_base(const ActionImpl& action) { self().prepare_impl(action); }
@@ -118,6 +106,10 @@ protected:
     void prepare_impl(const VariableImpl& variable) {}
     void prepare_impl(const TermObjectImpl& term) { this->prepare(*term.get_object()); }
     void prepare_impl(const TermVariableImpl& term) { this->prepare(*term.get_variable()); }
+    void prepare_impl(const TermImpl& term)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
+    }
     void prepare_impl(const ParameterImpl& parameter) { this->prepare(*parameter.get_variable()); }
     void prepare_impl(const PredicateImpl& predicate) {}
     void prepare_impl(const AtomImpl& atom)
@@ -152,6 +144,10 @@ protected:
         this->prepare(condition.get_parameters());
         this->prepare(*condition.get_condition());
     }
+    void prepare_impl(const ConditionImpl& condition)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, condition);
+    }
     void prepare_impl(const EffectLiteralImpl& effect) { this->prepare(*effect.get_literal()); }
     void prepare_impl(const EffectAndImpl& effect) { this->prepare(effect.get_effects()); }
     void prepare_impl(const EffectNumericImpl& effect)
@@ -169,6 +165,10 @@ protected:
         this->prepare(*effect.get_condition());
         this->prepare(*effect.get_effect());
     }
+    void prepare_impl(const EffectImpl& effect)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, effect);
+    }
     void prepare_impl(const FunctionExpressionNumberImpl& function_expression) {}
     void prepare_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
     {
@@ -178,6 +178,10 @@ protected:
     void prepare_impl(const FunctionExpressionMultiOperatorImpl& function_expression) { this->prepare(function_expression.get_function_expressions()); }
     void prepare_impl(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
     void prepare_impl(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
+    void prepare_impl(const FunctionExpressionImpl& function_expression)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
+    }
     void prepare_impl(const FunctionSkeletonImpl& function_skeleton)
     {
         this->prepare(function_skeleton.get_parameters());
@@ -252,28 +256,19 @@ protected:
     Condition translate_base(const ConditionImplyImpl& condition) { return self().translate_impl(condition); }
     Condition translate_base(const ConditionExistsImpl& condition) { return self().translate_impl(condition); }
     Condition translate_base(const ConditionForallImpl& condition) { return self().translate_impl(condition); }
-    Condition translate_base(const ConditionImpl& condition)
-    {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
-    }
+    Condition translate_base(const ConditionImpl& condition) { return self().translate_impl(condition); }
     Effect translate_base(const EffectLiteralImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectAndImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectNumericImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectConditionalForallImpl& effect) { return self().translate_impl(effect); }
     Effect translate_base(const EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
-    Effect translate_base(const EffectImpl& effect)
-    {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, effect);
-    }
+    Effect translate_base(const EffectImpl& effect) { return self().translate_impl(effect); }
     FunctionExpression translate_base(const FunctionExpressionNumberImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionMinusImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionExpression translate_base(const FunctionExpressionFunctionImpl& function_expression) { return self().translate_impl(function_expression); }
-    FunctionExpression translate_base(const FunctionExpressionImpl& function_expression)
-    {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression);
-    }
+    FunctionExpression translate_base(const FunctionExpressionImpl& function_expression) { return self().translate_impl(function_expression); }
     FunctionSkeleton translate_base(const FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
     Function translate_base(const FunctionImpl& function) { return self().translate_impl(function); }
     Action translate_base(const ActionImpl& action) { return self().translate_impl(action); }
@@ -437,6 +432,13 @@ protected:
         return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(this->translate(condition.get_parameters()),
                                                                                              this->translate(*condition.get_condition()));
     }
+    Condition translate_impl(const ConditionImpl& condition)
+    {
+        return cached_translated_impl(condition,
+                                      m_translated_conditions,
+                                      [this, &condition](const ConditionImpl& arg)
+                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, condition); });
+    }
     Effect translate_impl(const EffectLiteralImpl& effect)
     {
         return this->m_pddl_factories.effects.template get_or_create<EffectLiteralImpl>(this->translate(*effect.get_literal()));
@@ -460,6 +462,13 @@ protected:
     {
         return this->m_pddl_factories.effects.template get_or_create<EffectConditionalWhenImpl>(this->translate(*effect.get_condition()),
                                                                                                 this->translate(*effect.get_effect()));
+    }
+    Effect translate_impl(const EffectImpl& effect)
+    {
+        return cached_translated_impl(effect,
+                                      m_translated_effects,
+                                      [this, &effect](const EffectImpl& arg)
+                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, effect); });
     }
     FunctionExpression translate_impl(const FunctionExpressionNumberImpl& function_expression)
     {
@@ -488,59 +497,108 @@ protected:
         return this->m_pddl_factories.function_expressions.template get_or_create<FunctionExpressionFunctionImpl>(
             this->translate(*function_expression.get_function()));
     }
+    FunctionExpression translate_impl(const FunctionExpressionImpl& function_expression)
+    {
+        return cached_translated_impl(function_expression,
+                                      m_translated_function_expressions,
+                                      [this, &function_expression](const FunctionExpressionImpl& arg)
+                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression); });
+    }
     FunctionSkeleton translate_impl(const FunctionSkeletonImpl& function_skeleton)
     {
-        return this->m_pddl_factories.function_skeletons.template get_or_create<FunctionSkeletonImpl>(function_skeleton.get_name(),
-                                                                                                      this->translate(function_skeleton.get_parameters()),
-                                                                                                      this->translate(*function_skeleton.get_type()));
+        return cached_translated_impl(function_skeleton,
+                                      m_translated_function_skeletons,
+                                      [this](const FunctionSkeletonImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.function_skeletons.template get_or_create<FunctionSkeletonImpl>(
+                                              arg.get_name(),
+                                              this->translate(arg.get_parameters()),
+                                              this->translate(*arg.get_type()));
+                                      });
     }
     Function translate_impl(const FunctionImpl& function)
     {
-        return this->m_pddl_factories.functions.template get_or_create<FunctionImpl>(this->translate(*function.get_function_skeleton()),
-                                                                                     this->translate(function.get_terms()));
+        return cached_translated_impl(function,
+                                      m_translated_functions,
+                                      [this](const FunctionImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.functions.template get_or_create<FunctionImpl>(
+                                              this->translate(*arg.get_function_skeleton()),
+                                              this->translate(arg.get_terms()));
+                                      });
     }
     Action translate_impl(const ActionImpl& action)
     {
-        return this->m_pddl_factories.actions.template get_or_create<ActionImpl>(
-            action.get_name(),
-            this->translate(action.get_parameters()),
-            (action.get_condition().has_value() ? std::optional<Condition>(this->translate(*action.get_condition().value())) : std::nullopt),
-            (action.get_effect().has_value() ? std::optional<Effect>(this->translate(*action.get_effect().value())) : std::nullopt));
+        return cached_translated_impl(
+            action,
+            m_translated_actions,
+            [this](const ActionImpl& arg)
+            {
+                return this->m_pddl_factories.actions.template get_or_create<ActionImpl>(
+                    arg.get_name(),
+                    this->translate(arg.get_parameters()),
+                    (arg.get_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_condition().value())) : std::nullopt),
+                    (arg.get_effect().has_value() ? std::optional<Effect>(this->translate(*arg.get_effect().value())) : std::nullopt));
+            });
     }
     DerivedPredicate translate_impl(const DerivedPredicateImpl& derived_predicate)
     {
-        return this->m_pddl_factories.derived_predicates.template get_or_create<DerivedPredicateImpl>(this->translate(*derived_predicate.get_predicate()),
-                                                                                                      this->translate(*derived_predicate.get_condition()));
+        return cached_translated_impl(derived_predicate,
+                                      m_translated_derived_predicates,
+                                      [this](const DerivedPredicateImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.derived_predicates.template get_or_create<DerivedPredicateImpl>(
+                                              this->translate(*arg.get_predicate()),
+                                              this->translate(*arg.get_condition()));
+                                      });
     }
     Domain translate_impl(const DomainImpl& domain)
     {
-        return this->m_pddl_factories.domains.template get_or_create<DomainImpl>(domain.get_name(),
-                                                                                 this->translate(*domain.get_requirements()),
-                                                                                 this->translate(domain.get_types()),
-                                                                                 this->translate(domain.get_constants()),
-                                                                                 this->translate(domain.get_predicates()),
-                                                                                 this->translate(domain.get_functions()),
-                                                                                 this->translate(domain.get_actions()),
-                                                                                 this->translate(domain.get_derived_predicates()));
+        return cached_translated_impl(domain,
+                                      m_translated_domains,
+                                      [this](const DomainImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.domains.template get_or_create<DomainImpl>(
+                                              arg.get_name(),
+                                              this->translate(*arg.get_requirements()),
+                                              this->translate(arg.get_types()),
+                                              this->translate(arg.get_constants()),
+                                              this->translate(arg.get_predicates()),
+                                              this->translate(arg.get_functions()),
+                                              this->translate(arg.get_actions()),
+                                              this->translate(arg.get_derived_predicates()));
+                                      });
     }
     OptimizationMetric translate_impl(const OptimizationMetricImpl& metric)
     {
-        return this->m_pddl_factories.optimization_metrics.template get_or_create<OptimizationMetricImpl>(metric.get_optimization_metric(),
-                                                                                                          this->translate(*metric.get_function_expression()));
+        return cached_translated_impl(metric,
+                                      m_translated_optimization_metrics,
+                                      [this](const OptimizationMetricImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.optimization_metrics.template get_or_create<OptimizationMetricImpl>(
+                                              arg.get_optimization_metric(),
+                                              this->translate(*arg.get_function_expression()));
+                                      });
     }
 
     Problem translate_impl(const ProblemImpl& problem)
     {
-        return this->m_pddl_factories.problems.template get_or_create<ProblemImpl>(
-            this->translate(*problem.get_domain()),
-            problem.get_name(),
-            this->translate(*problem.get_requirements()),
-            this->translate(problem.get_objects()),
-            this->translate(problem.get_initial_literals()),
-            this->translate(problem.get_numeric_fluents()),
-            this->translate(*problem.get_goal_condition()),
-            (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
-                                                             std::nullopt));
+        return cached_translated_impl(problem,
+                                      m_translated_problems,
+                                      [this](const ProblemImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.problems.template get_or_create<ProblemImpl>(
+                                              this->translate(*arg.get_domain()),
+                                              arg.get_name(),
+                                              this->translate(*arg.get_requirements()),
+                                              this->translate(arg.get_objects()),
+                                              this->translate(arg.get_initial_literals()),
+                                              this->translate(arg.get_numeric_fluents()),
+                                              this->translate(*arg.get_goal_condition()),
+                                              (arg.get_optimization_metric().has_value() ?
+                                                   std::optional<OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
+                                                   std::nullopt));
+                                      });
     }
 
     /// @brief Recursively apply preparation followed by translation.
