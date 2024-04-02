@@ -35,7 +35,7 @@ private:
     std::unordered_map<GroundAtom, GroundAtom> m_translated_ground_atoms;
     std::unordered_map<Literal, Literal> m_translated_literals;
     std::unordered_map<GroundLiteral, GroundLiteral> m_translated_ground_literals;
-    std::unordered_map<NumericFluent, NumericFluent> m_translated_numeric_fluent;
+    std::unordered_map<NumericFluent, NumericFluent> m_translated_numeric_fluents;
     std::unordered_map<Condition, Condition> m_translated_conditions;
     std::unordered_map<Effect, Effect> m_translated_effects;
     std::unordered_map<FunctionExpression, FunctionExpression> m_translated_function_expressions;
@@ -347,34 +347,64 @@ protected:
     }
     Parameter translate_impl(const ParameterImpl& parameter)
     {
-        return this->m_pddl_factories.parameters.template get_or_create<ParameterImpl>(this->translate(*parameter.get_variable()),
-                                                                                       this->translate(parameter.get_bases()));
+        return cached_translated_impl(parameter,
+                                      m_translated_parameters,
+                                      [this](const ParameterImpl& arg) {
+                                          return this->m_pddl_factories.parameters.template get_or_create<ParameterImpl>(this->translate(*arg.get_variable()),
+                                                                                                                         this->translate(arg.get_bases()));
+                                      });
     }
     Predicate translate_impl(const PredicateImpl& predicate)
     {
-        return this->m_pddl_factories.predicates.template get_or_create<PredicateImpl>(predicate.get_name(), this->translate(predicate.get_parameters()));
+        return cached_translated_impl(
+            predicate,
+            m_translated_predicates,
+            [this](const PredicateImpl& arg)
+            { return this->m_pddl_factories.predicates.template get_or_create<PredicateImpl>(arg.get_name(), this->translate(arg.get_parameters())); });
     }
     Atom translate_impl(const AtomImpl& atom)
     {
-        return this->m_pddl_factories.atoms.template get_or_create<AtomImpl>(this->translate(*atom.get_predicate()), this->translate(atom.get_terms()));
+        return cached_translated_impl(
+            atom,
+            m_translated_atoms,
+            [this](const AtomImpl& arg)
+            { return this->m_pddl_factories.atoms.template get_or_create<AtomImpl>(this->translate(*arg.get_predicate()), this->translate(arg.get_terms())); });
     }
     GroundAtom translate_impl(const GroundAtomImpl& atom)
     {
-        return this->m_pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(this->translate(*atom.get_predicate()),
-                                                                                          this->translate(atom.get_objects()));
+        return cached_translated_impl(atom,
+                                      m_translated_ground_atoms,
+                                      [this](const GroundAtomImpl& arg)
+                                      {
+                                          return this->m_pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(
+                                              this->translate(*arg.get_predicate()),
+                                              this->translate(arg.get_objects()));
+                                      });
     }
     Literal translate_impl(const LiteralImpl& literal)
     {
-        return this->m_pddl_factories.literals.template get_or_create<LiteralImpl>(literal.is_negated(), this->translate(*literal.get_atom()));
+        return cached_translated_impl(
+            literal,
+            m_translated_literals,
+            [this](const LiteralImpl& arg)
+            { return this->m_pddl_factories.literals.template get_or_create<LiteralImpl>(arg.is_negated(), this->translate(*arg.get_atom())); });
     }
     GroundLiteral translate_impl(const GroundLiteralImpl& literal)
     {
-        return this->m_pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(literal.is_negated(), this->translate(*literal.get_atom()));
+        return cached_translated_impl(
+            literal,
+            m_translated_ground_literals,
+            [this](const GroundLiteralImpl& arg)
+            { return this->m_pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(arg.is_negated(), this->translate(*arg.get_atom())); });
     }
     NumericFluent translate_impl(const NumericFluentImpl& numeric_fluent)
     {
-        return this->m_pddl_factories.numeric_fluents.template get_or_create<NumericFluentImpl>(this->translate(*numeric_fluent.get_function()),
-                                                                                                numeric_fluent.get_number());
+        return cached_translated_impl(
+            numeric_fluent,
+            m_translated_numeric_fluents,
+            [this](const NumericFluentImpl& arg) {
+                return this->m_pddl_factories.numeric_fluents.template get_or_create<NumericFluentImpl>(this->translate(*arg.get_function()), arg.get_number());
+            });
     }
     Condition translate_impl(const ConditionLiteralImpl& condition)
     {
