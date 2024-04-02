@@ -56,45 +56,24 @@ Condition DNFTranslator::translate_impl(const ConditionForallImpl& condition)
 
 Condition DNFTranslator::translate_impl(const ConditionImpl& condition)
 {
-    auto current = &condition;
-
     // Retrieve cached translations
-    auto it = m_translated_conditions.find(current);
+    auto it = m_translated_conditions.find(&condition);
     if (it != m_translated_conditions.end())
     {
         return it->second;
     }
 
     // Translate
-    ConditionList intermediate_results;
-    while (true)
-    {
-        // 1. Apply nnf translator
-        auto translated = m_nnf_translator.translate(*current);
-
-        // 2. Apply DNF translator
-        translated = std::visit([this](auto&& arg) { return this->translate(arg); }, *translated);
-
-        intermediate_results.push_back(translated);
-
-        if (current == translated)
-        {
-            break;
-        }
-        current = translated;
-    }
+    auto translated = std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
 
     // Cache translations
-    for (const auto& result : intermediate_results)
-    {
-        m_translated_conditions.emplace(result, current);
-    }
+    m_translated_conditions.emplace(&condition, translated);
 
-    return current;
+    return translated;
 }
 
-Problem DNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
+Problem DNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(*NNFTranslator(m_pddl_factories).translate(problem)); }
 
-DNFTranslator::DNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories), m_nnf_translator(NNFTranslator(pddl_factories)) {}
+DNFTranslator::DNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
 
 }

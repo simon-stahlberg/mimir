@@ -24,9 +24,9 @@
 namespace mimir
 {
 /**
- * Translate formulas to disjunctive normal form (DNF) using the following rules.
+ * Translate formulas to disjunctive normal form (DNF) in bottom-up manner using the following rules.
  *
- * NNF +
+ * First, applies NNF translator follow by:
  *
  * 1. A and (B or C)  =>  A and B or A and C
  * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
@@ -42,8 +42,7 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
-    NNFTranslator m_nnf_translator;
-
+    // Cache translations
     std::unordered_map<Condition, Condition> m_translated_conditions;
 
     /**

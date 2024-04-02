@@ -23,7 +23,7 @@
 namespace mimir
 {
 /**
- * Translate formulas to negation normal form (NNF) using the following rules.
+ * Translate formulas to negation normal form (NNF) in top-down manner using the following rules.
  *
  * 1. A -> B                           =>  not A or B
  * 2. A <-> B                          => (not A or B) and (A or not B)
@@ -47,6 +47,7 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    // Cache translations
     std::unordered_map<Condition, Condition> m_translated_conditions;
 
     /**
@@ -163,7 +164,7 @@ private:
         {
             return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList {
                 this->translate(*condition_imply->get_condition_left()),
-                this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition_imply->get_condition_right())) });
+                this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition_imply->get_condition_right())) });
         }
         else if (const auto condition_and = std::get_if<ConditionAndImpl>(condition.get_condition()))
         {
@@ -172,7 +173,7 @@ private:
             for (const auto& nested_condition : condition_and->get_conditions())
             {
                 translated_nested_conditions.push_back(
-                    this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(this->translate(*nested_condition)));
+                    this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
             }
             return this->get_pddl_factories().conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
         }
@@ -183,7 +184,7 @@ private:
             for (const auto& nested_condition : condition_or->get_conditions())
             {
                 translated_nested_conditions.push_back(
-                    this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(this->translate(*nested_condition)));
+                    this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
             }
             return this->get_pddl_factories().conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
         }
@@ -191,15 +192,15 @@ private:
         {
             return this->get_pddl_factories().conditions.template get_or_create<ConditionForallImpl>(
                 this->translate(condition_exists->get_parameters()),
-                this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition.get_condition())));
+                this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
         }
         else if (const auto condition_forall = std::get_if<ConditionForallImpl>(condition.get_condition()))
         {
             return this->get_pddl_factories().conditions.template get_or_create<ConditionExistsImpl>(
                 this->translate(condition_exists->get_parameters()),
-                this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition.get_condition())));
+                this->translate(*this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
         }
-        return this->get_pddl_factories().conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition.get_condition()));
+        throw std::runtime_error("Missing implementation to push negations inwards.");
     }
 
     /**

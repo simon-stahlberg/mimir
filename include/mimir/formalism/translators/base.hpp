@@ -5,7 +5,7 @@
 
 #include <deque>
 #include <loki/pddl/visitors.hpp>
-#include <unordered_set>
+#include <unordered_map>
 
 namespace mimir
 {
@@ -23,6 +23,15 @@ private:
     /// @brief Helper to cast to Derived.
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
+
+    std::unordered_map<Requirements, Requirements> m_translated_requirements;
+    std::unordered_map<Type, Type> m_translated_types;
+    std::unordered_map<Object, Object> m_translated_objects;
+    std::unordered_map<Variable, Variable> m_translated_variables;
+    std::unordered_map<Term, Term> m_translated_terms;
+    std::unordered_map<Condition, Condition> m_translated_conditions;
+    std::unordered_map<Effect, Effect> m_translated_effects;
+    std::unordered_map<FunctionExpression, FunctionExpression> m_translated_function_expressions;
 
 protected:
     PDDLFactories& m_pddl_factories;
@@ -262,8 +271,9 @@ protected:
     OptimizationMetric translate_base(const OptimizationMetricImpl& metric) { return self().translate_impl(metric); }
     Problem translate_base(const ProblemImpl& problem) { return self().translate_impl(problem); }
 
-    template<typename Impl>
-    auto translate_cached(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, std::function<const Impl*(const Impl&)> translateFunc)
+    /// @brief Retrieve or create cache entry of translation to avoid recomputations.
+    template<typename Impl, typename TranslateFunc>
+    auto cached_translated_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
     {
         auto current = &impl;
 
@@ -280,55 +290,28 @@ protected:
 
         return translated;
     }
-
-    template<typename Impl>
-    auto
-    translate_cached_iteratively(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, std::function<const Impl*(const Impl&)> translateFunc)
-    {
-        auto current = &impl;
-
-        // Access cache
-        auto it = cache.find(current);
-        if (it != cache.end())
-        {
-            return it->second;
-        }
-
-        // Translate
-        ConditionList intermediate_results;
-        while (true)
-        {
-            auto translated = translateFunc(*current);
-
-            intermediate_results.push_back(translated);
-
-            if (current == translated)
-            {
-                break;
-            }
-            current = translated;
-        }
-
-        // Cache translations
-        for (const auto& result : intermediate_results)
-        {
-            cache.emplace(&impl, current);
-        }
-
-        return current;
-    }
-
     Requirements translate_impl(const RequirementsImpl& requirements)
     {
-        return this->m_pddl_factories.requirements.template get_or_create<RequirementsImpl>(requirements.get_requirements());
+        return cached_translated_impl(requirements,
+                                      m_translated_requirements,
+                                      [this](const RequirementsImpl& arg)
+                                      { return this->m_pddl_factories.requirements.template get_or_create<RequirementsImpl>(arg.get_requirements()); });
     }
     Type translate_impl(const TypeImpl& type)
     {
-        return this->m_pddl_factories.types.template get_or_create<TypeImpl>(type.get_name(), this->translate(type.get_bases()));
+        return cached_translated_impl(
+            type,
+            m_translated_types,
+            [this](const TypeImpl& arg)
+            { return this->m_pddl_factories.types.template get_or_create<TypeImpl>(arg.get_name(), this->translate(arg.get_bases())); });
     }
     Object translate_impl(const ObjectImpl& object)
     {
-        return this->m_pddl_factories.objects.template get_or_create<ObjectImpl>(object.get_name(), this->translate(object.get_bases()));
+        return cached_translated_impl(
+            object,
+            m_translated_objects,
+            [this](const ObjectImpl& arg)
+            { return this->m_pddl_factories.objects.template get_or_create<ObjectImpl>(arg.get_name(), this->translate(arg.get_bases())); });
     }
     Variable translate_impl(const VariableImpl& variable) { return this->m_pddl_factories.variables.template get_or_create<VariableImpl>(variable.get_name()); }
     Term translate_impl(const TermObjectImpl& term)

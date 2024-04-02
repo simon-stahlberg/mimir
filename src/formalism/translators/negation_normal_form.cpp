@@ -39,38 +39,20 @@ Condition NNFTranslator::translate_impl(const ConditionForallImpl& condition) { 
 
 Condition NNFTranslator::translate_impl(const ConditionImpl& condition)
 {
-    auto current = &condition;
-
     // Retrieve cached translations
-    auto it = m_translated_conditions.find(current);
+    auto it = m_translated_conditions.find(&condition);
     if (it != m_translated_conditions.end())
     {
         return it->second;
     }
 
     // Translate
-    ConditionList intermediate_results;
-    while (true)
-    {
-        // 2. Apply DNF translator
-        auto translated = std::visit([this](auto&& arg) { return this->translate(arg); }, *current);
-
-        intermediate_results.push_back(translated);
-
-        if (current == translated)
-        {
-            break;
-        }
-        current = translated;
-    }
+    auto translated = std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
 
     // Cache translations
-    for (const auto& result : intermediate_results)
-    {
-        m_translated_conditions.emplace(result, current);
-    }
+    m_translated_conditions.emplace(&condition, translated);
 
-    return current;
+    return translated;
 }
 
 Problem NNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
