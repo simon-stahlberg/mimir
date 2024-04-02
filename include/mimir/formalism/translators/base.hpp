@@ -29,9 +29,23 @@ private:
     std::unordered_map<Object, Object> m_translated_objects;
     std::unordered_map<Variable, Variable> m_translated_variables;
     std::unordered_map<Term, Term> m_translated_terms;
+    std::unordered_map<Parameter, Parameter> m_translated_parameters;
+    std::unordered_map<Predicate, Predicate> m_translated_predicates;
+    std::unordered_map<Atom, Atom> m_translated_atoms;
+    std::unordered_map<GroundAtom, GroundAtom> m_translated_ground_atoms;
+    std::unordered_map<Literal, Literal> m_translated_literals;
+    std::unordered_map<GroundLiteral, GroundLiteral> m_translated_ground_literals;
+    std::unordered_map<NumericFluent, NumericFluent> m_translated_numeric_fluent;
     std::unordered_map<Condition, Condition> m_translated_conditions;
     std::unordered_map<Effect, Effect> m_translated_effects;
     std::unordered_map<FunctionExpression, FunctionExpression> m_translated_function_expressions;
+    std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_translated_function_skeletons;
+    std::unordered_map<Function, Function> m_translated_functions;
+    std::unordered_map<Action, Action> m_translated_actions;
+    std::unordered_map<DerivedPredicate, DerivedPredicate> m_translated_derived_predicate;
+    std::unordered_map<Domain, Domain> m_translated_domains;
+    std::unordered_map<OptimizationMetric, OptimizationMetric> m_translated_optimization_metrics;
+    std::unordered_map<Problem, Problem> m_translated_problems;
 
 protected:
     PDDLFactories& m_pddl_factories;
@@ -223,10 +237,7 @@ protected:
     Variable translate_base(const VariableImpl& variable) { return self().translate_impl(variable); }
     Term translate_base(const TermObjectImpl& term) { return self().translate_impl(term); }
     Term translate_base(const TermVariableImpl& term) { return self().translate_impl(term); }
-    Term translate_base(const TermImpl& term)
-    {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, term);
-    }
+    Term translate_base(const TermImpl& term) { return self().translate_impl(term); }
     Parameter translate_base(const ParameterImpl& parameter) { return self().translate_impl(parameter); }
     Predicate translate_base(const PredicateImpl& predicate) { return self().translate_impl(predicate); }
     Atom translate_base(const AtomImpl& atom) { return self().translate_impl(atom); }
@@ -313,7 +324,13 @@ protected:
             [this](const ObjectImpl& arg)
             { return this->m_pddl_factories.objects.template get_or_create<ObjectImpl>(arg.get_name(), this->translate(arg.get_bases())); });
     }
-    Variable translate_impl(const VariableImpl& variable) { return this->m_pddl_factories.variables.template get_or_create<VariableImpl>(variable.get_name()); }
+    Variable translate_impl(const VariableImpl& variable)
+    {
+        return cached_translated_impl(variable,
+                                      m_translated_variables,
+                                      [this](const VariableImpl& arg)
+                                      { return this->m_pddl_factories.variables.template get_or_create<VariableImpl>(arg.get_name()); });
+    }
     Term translate_impl(const TermObjectImpl& term)
     {
         return this->m_pddl_factories.terms.template get_or_create<TermObjectImpl>(this->translate(*term.get_object()));
@@ -321,6 +338,12 @@ protected:
     Term translate_impl(const TermVariableImpl& term)
     {
         return this->m_pddl_factories.terms.template get_or_create<TermVariableImpl>(this->translate(*term.get_variable()));
+    }
+    Term translate_impl(const TermImpl& term)
+    {
+        return cached_translated_impl(term,
+                                      m_translated_terms,
+                                      [this, &term](const TermImpl& arg) { return std::visit([this](auto&& arg) { return this->translate(arg); }, term); });
     }
     Parameter translate_impl(const ParameterImpl& parameter)
     {

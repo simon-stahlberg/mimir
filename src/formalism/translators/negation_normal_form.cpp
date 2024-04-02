@@ -23,7 +23,7 @@ namespace mimir
 Condition NNFTranslator::translate_impl(const ConditionImplyImpl& condition)
 {
     return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(
-        ConditionList { this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition.get_condition_left())),
+        ConditionList { this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition.get_condition_left())),
                         this->translate(*condition.get_condition_right()) });
 }
 
