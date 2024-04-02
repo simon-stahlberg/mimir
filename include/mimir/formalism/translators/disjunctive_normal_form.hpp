@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TRANSLATORS_DISJUNCTIVE_NORMAL_FORM_HPP_
 
 #include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/negation_normal_form.hpp"
 
 namespace mimir
 {
@@ -28,6 +29,8 @@ namespace mimir
  * NNF +
  *
  * 1. A and (B or C)  =>  A and B or A and C
+ * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
+ * 3. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
  */
 class DNFTranslator : public BaseTranslator<DNFTranslator>
 {
@@ -39,13 +42,12 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    NNFTranslator m_nnf_translator;
+
     /**
      * Translate
      */
-    Condition translate_impl(const ConditionImplyImpl& condition);
-    Condition translate_impl(const ConditionNotImpl& condition);
     Condition translate_impl(const ConditionAndImpl& condition);
-    Condition translate_impl(const ConditionOrImpl& condition);
     Condition translate_impl(const ConditionExistsImpl& condition);
     Condition translate_impl(const ConditionForallImpl& condition);
     Condition translate_impl(const ConditionImpl& condition);

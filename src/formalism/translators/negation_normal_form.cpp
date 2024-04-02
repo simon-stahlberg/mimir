@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/translators/negation_normal_form.hpp"
 
-#include "mimir/formalism/translators/base_visitors.hpp"
-
 namespace mimir
 {
 
@@ -29,24 +27,15 @@ Condition NNFTranslator::translate_impl(const ConditionImplyImpl& condition)
                         this->translate(*condition.get_condition_right()) });
 }
 
-Condition NNFTranslator::translate_impl(const ConditionNotImpl& condition)
-{
-    return std::visit(PushInwardsConditionNotVisitor(*this), *this->translate(*condition.get_condition()));
-}
+Condition NNFTranslator::translate_impl(const ConditionNotImpl& condition) { return this->translate_push_negation_inwards(condition); }
 
 Condition NNFTranslator::translate_impl(const ConditionAndImpl& condition) { return this->translate_flatten_conjunctions(condition); }
 
 Condition NNFTranslator::translate_impl(const ConditionOrImpl& condition) { return this->translate_flatten_disjunctions(condition); }
 
-Condition NNFTranslator::translate_impl(const ConditionExistsImpl& condition)
-{
-    return std::visit(FlattenConditionExistsVisitor(*this, condition), *this->translate(*condition.get_condition()));
-}
+Condition NNFTranslator::translate_impl(const ConditionExistsImpl& condition) { return this->translate_flatten_existential_quantifier(condition); }
 
-Condition NNFTranslator::translate_impl(const ConditionForallImpl& condition)
-{
-    return std::visit(FlattenConditionForallVisitor(*this, condition), *this->translate(*condition.get_condition()));
-}
+Condition NNFTranslator::translate_impl(const ConditionForallImpl& condition) { return this->translate_flatten_universal_quantifier(condition); }
 
 Condition NNFTranslator::translate_impl(const ConditionImpl& condition)
 {
