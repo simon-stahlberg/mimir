@@ -20,6 +20,7 @@
 
 #include <boost/container/small_vector.hpp>
 #include <unordered_map>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -95,6 +96,7 @@ using ConditionImpl =
     std::variant<ConditionLiteralImpl, ConditionAndImpl, ConditionOrImpl, ConditionNotImpl, ConditionImplyImpl, ConditionExistsImpl, ConditionForallImpl>;
 using Condition = const ConditionImpl*;
 using ConditionList = std::vector<Condition>;
+using ConditionSet = std::unordered_set<Condition>;
 
 class EffectLiteralImpl;
 class EffectAndImpl;

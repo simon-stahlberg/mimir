@@ -32,10 +32,11 @@ namespace mimir
  * 5. not (not A)                      => A
  * 6. not exists x A                   => forall x not A
  * 7. not forall x A                   => exists x not A
- * 8. A and (B and C)                  => A and B and C
- * 9. A or (B or C)                    => A or B or C
- * 10. exists(vars1, exists(vars2, A)) => exists(vars1+vars2, A)
- * 11. forall(vars1, forall(vars2, A)) => forall(vars1+vars2, A)
+ * 8. not (A -> B)                     => not (not A or B)                => A and not B
+ * 9. A and (B and C)                  => A and B and C
+ * 10. A or (B or C)                    => A or B or C
+ * 11. exists(vars1, exists(vars2, A)) => exists(vars1+vars2, A)
+ * 12. forall(vars1, forall(vars2, A)) => forall(vars1+vars2, A)
  */
 class NNFTranslator : public BaseTranslator<NNFTranslator>
 {
@@ -53,166 +54,133 @@ private:
     /**
      * Flatten conjunctions.
      *
-     * 1. A and (B and C)  =>  A and B and C
+     * 9. A and (B and C)  =>  A and B and C
      */
-    Condition translate_flatten_conjunctions(const ConditionAndImpl& condition)
+    Condition flatten_conjunctions(const ConditionAndImpl& condition)
     {
-        auto translated_nested_conditions = ConditionList {};
+        auto parts = ConditionSet {};
         for (const auto& nested_condition : condition.get_conditions())
         {
             if (const auto and_condition = std::get_if<ConditionAndImpl>(nested_condition))
             {
-                auto translated_nested_and_conditions = this->translate(and_condition->get_conditions());
-                translated_nested_conditions.insert(translated_nested_conditions.end(),
-                                                    translated_nested_and_conditions.begin(),
-                                                    translated_nested_and_conditions.end());
+                const auto nested_parts = std::get_if<ConditionAndImpl>(flatten_conjunctions(*and_condition));
+
+                parts.insert(nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
             }
             else
             {
-                translated_nested_conditions.push_back(this->translate(*nested_condition));
+                parts.insert(nested_condition);
             }
         }
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList(parts.begin(), parts.end()));
     }
 
     /**
      * Flatten disjunctions.
      *
-     * 1. A or (B or C)  =>  A or B or C
+     * 10. A or (B or C)  =>  A or B or C
      */
-    Condition translate_flatten_disjunctions(const ConditionOrImpl& condition)
+    Condition flatten_disjunctions(const ConditionOrImpl& condition)
     {
-        auto translated_nested_conditions = ConditionList {};
+        auto parts = ConditionSet {};
         for (const auto& nested_condition : condition.get_conditions())
         {
             if (const auto or_condition = std::get_if<ConditionOrImpl>(nested_condition))
             {
-                auto translated_nested_and_conditions = this->translate(or_condition->get_conditions());
-                translated_nested_conditions.insert(translated_nested_conditions.end(),
-                                                    translated_nested_and_conditions.begin(),
-                                                    translated_nested_and_conditions.end());
+                const auto nested_parts = std::get_if<ConditionOrImpl>(flatten_disjunctions(*or_condition));
+
+                parts.insert(nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
             }
             else
             {
-                translated_nested_conditions.push_back(this->translate(*nested_condition));
+                parts.insert(nested_condition);
             }
         }
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList(parts.begin(), parts.end()));
     }
 
     /**
      * Flatten existential quantifiers.
      *
-     * 1. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
+     * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
      */
-    Condition translate_flatten_existential_quantifier(const ConditionExistsImpl& condition)
+    Condition flatten_existential_quantifier(const ConditionExistsImpl& condition)
     {
-        if (const auto exists_condition = std::get_if<ConditionExistsImpl>(condition.get_condition()))
+        if (const auto condition_exists = std::get_if<ConditionExistsImpl>(condition.get_condition()))
         {
-            auto translated_parameters = this->translate(condition.get_parameters());
-            auto translated_additional_parameters = this->translate(exists_condition->get_parameters());
-            translated_parameters.insert(translated_parameters.end(), translated_additional_parameters.begin(), translated_additional_parameters.end());
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(translated_parameters,
-                                                                                                 this->translate(*exists_condition->get_condition()));
+            const auto nested_condition = std::get_if<ConditionExistsImpl>(flatten_existential_quantifier(*condition_exists));
+            auto parameters = condition.get_parameters();
+            const auto additional_parameters = nested_condition->get_parameters();
+            parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(parameters, nested_condition->get_condition());
         }
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(this->translate(condition.get_parameters()),
-                                                                                             this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(condition.get_parameters(), condition.get_condition());
     }
 
     /**
      * Flatten universal quantifiers.
      *
-     * 1. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
+     * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
      */
-    Condition translate_flatten_universal_quantifier(const ConditionForallImpl& condition)
+    Condition flatten_universal_quantifier(const ConditionForallImpl& condition)
     {
-        if (const auto universal_condition = std::get_if<ConditionForallImpl>(condition.get_condition()))
+        if (const auto condition_forall = std::get_if<ConditionForallImpl>(condition.get_condition()))
         {
-            auto translated_parameters = this->translate(condition.get_parameters());
-            auto translated_additional_parameters = this->translate(universal_condition->get_parameters());
-            translated_parameters.insert(translated_parameters.end(), translated_additional_parameters.begin(), translated_additional_parameters.end());
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(translated_parameters,
-                                                                                                 this->translate(*universal_condition->get_condition()));
+            const auto nested_condition = std::get_if<ConditionForallImpl>(flatten_universal_quantifier(*condition_forall));
+            auto parameters = condition.get_parameters();
+            const auto additional_parameters = nested_condition->get_parameters();
+            parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+            return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(parameters, nested_condition->get_condition());
         }
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(this->translate(condition.get_parameters()),
-                                                                                             this->translate(*condition.get_condition()));
-    }
-
-    /**
-     * Push negation inwards.
-     *
-     * 1. not (A or B)    =>  not A and not B
-     * 2. not (A and B)   =>  not A or not B
-     * 3. not (not A)     =>  A
-     * 4. not exists x A  =>  forall x not A
-     * 5. not forall x A  =>  exists x not A
-     * 6. not (A -> B)    =>  not (not A or B)  =>  A and not B
-     */
-    Condition translate_push_negation_inwards(const ConditionNotImpl& condition)
-    {
-        if (const auto condition_lit = std::get_if<ConditionLiteralImpl>(condition.get_condition()))
-        {
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(
-                this->m_pddl_factories.literals.template get_or_create<LiteralImpl>(!condition_lit->get_literal()->is_negated(),
-                                                                                    this->translate(*condition_lit->get_literal()->get_atom())));
-        }
-        else if (const auto condition_not = std::get_if<ConditionNotImpl>(condition.get_condition()))
-        {
-            return this->translate(*condition_not->get_condition());
-        }
-        else if (const auto condition_imply = std::get_if<ConditionImplyImpl>(condition.get_condition()))
-        {
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList {
-                this->translate(*condition_imply->get_condition_left()),
-                this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition_imply->get_condition_right())) });
-        }
-        else if (const auto condition_and = std::get_if<ConditionAndImpl>(condition.get_condition()))
-        {
-            auto translated_nested_conditions = ConditionList {};
-            translated_nested_conditions.reserve(condition_and->get_conditions().size());
-            for (const auto& nested_condition : condition_and->get_conditions())
-            {
-                translated_nested_conditions.push_back(
-                    this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
-            }
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(translated_nested_conditions);
-        }
-        else if (const auto condition_or = std::get_if<ConditionOrImpl>(condition.get_condition()))
-        {
-            auto translated_nested_conditions = ConditionList {};
-            translated_nested_conditions.reserve(condition_or->get_conditions().size());
-            for (const auto& nested_condition : condition_or->get_conditions())
-            {
-                translated_nested_conditions.push_back(
-                    this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(nested_condition)));
-            }
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_nested_conditions);
-        }
-        else if (const auto condition_exists = std::get_if<ConditionExistsImpl>(condition.get_condition()))
-        {
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(
-                this->translate(condition_exists->get_parameters()),
-                this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
-        }
-        else if (const auto condition_forall = std::get_if<ConditionForallImpl>(condition.get_condition()))
-        {
-            return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(
-                this->translate(condition_exists->get_parameters()),
-                this->translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(condition.get_condition())));
-        }
-        throw std::runtime_error("Missing implementation to push negations inwards.");
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(condition.get_parameters(), condition.get_condition());
     }
 
     /**
      * Translate
      */
+
+    /**
+     * Eliminate implication
+     *
+     * 1. A -> B   =>  not A or B
+     * 2. A <-> B  =>  (not A or B) and (A or not B)
+     */
     Condition translate_impl(const ConditionImplyImpl& condition);
+    /**
+     * Push negation inwards.
+     *
+     * 3. not (A or B)    =>  not A and not B
+     * 4. not (A and B)   =>  not A or not B
+     * 5. not (not A)     =>  A
+     * 6. not exists x A  =>  forall x not A
+     * 7. not forall x A  =>  exists x not A
+     * 8. not (A -> B)    =>  not (not A or B)  =>  A and not B
+     */
     Condition translate_impl(const ConditionNotImpl& condition);
+    /**
+     * Flatten conjunctions.
+     *
+     * 9. A and (B and C)  =>  A and B and C
+     */
     Condition translate_impl(const ConditionAndImpl& condition);
+    /**
+     * Flatten disjunctions.
+     *
+     * 10. A or (B or C)  =>  A or B or C
+     */
     Condition translate_impl(const ConditionOrImpl& condition);
+    /**
+     * Flatten existential quantifiers.
+     *
+     * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
+     */
     Condition translate_impl(const ConditionExistsImpl& condition);
+    /**
+     * Flatten universal quantifiers.
+     *
+     * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
+     */
     Condition translate_impl(const ConditionForallImpl& condition);
-    Condition translate_impl(const ConditionImpl& condition);
 
     Problem run_impl(const ProblemImpl& problem);
 
