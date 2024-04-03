@@ -35,6 +35,14 @@ private:
     // Provide default implementations
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
+
+    std::unordered_map<const ConditionForallImpl*, Axiom> m_condition_to_axiom;
+    std::unordered_map<Axiom, Condition> m_axiom_to_literal;
+
+    Condition translate_impl(const ConditionForallImpl& condition);
+
+public:
+    explicit UniversalQuantifierTranslator(PDDLFactories& pddl_factories);
 };
 }
 
