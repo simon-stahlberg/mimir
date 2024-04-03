@@ -20,6 +20,83 @@
 namespace mimir
 {
 
+/**
+ * Types
+ */
+Predicate translate_type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories)
+{
+    return pddl_factories.predicates.template get_or_create<PredicateImpl>(
+        type.get_name(),
+        ParameterList { pddl_factories.parameters.template get_or_create<ParameterImpl>(pddl_factories.variables.template get_or_create<VariableImpl>("?arg"),
+                                                                                        TypeList {}) });
+}
+
+Object translate_typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories)
+{
+    return pddl_factories.objects.template get_or_create<ObjectImpl>(object.get_name(), TypeList {});
+}
+
+GroundLiteralList translate_typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories)
+{
+    auto additional_literals = GroundLiteralList {};
+    auto translated_object = translate_typed_object_to_untyped_object(object, pddl_factories);
+    auto types = collect_types_from_type_hierarchy(object.get_bases());
+    for (const auto& type : types)
+    {
+        auto additional_literal = pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(
+            false,
+            pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(translate_type_to_predicate(*type, pddl_factories),
+                                                                               ObjectList { translated_object }));
+        additional_literals.push_back(additional_literal);
+    }
+    return additional_literals;
+}
+
+Parameter translate_typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
+{
+    auto translated_parameter = pddl_factories.parameters.template get_or_create<ParameterImpl>(parameter.get_variable(), TypeList {});
+    return translated_parameter;
+}
+
+ConditionList translate_typed_parameter_to_condition_literals(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
+{
+    auto conditions = ConditionList {};
+    auto types = collect_types_from_type_hierarchy(parameter.get_bases());
+    for (const auto& type : types)
+    {
+        auto condition = pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(pddl_factories.literals.template get_or_create<LiteralImpl>(
+            false,
+            pddl_factories.atoms.template get_or_create<AtomImpl>(
+                translate_type_to_predicate(*type, pddl_factories),
+                TermList { pddl_factories.terms.template get_or_create<TermVariableImpl>(parameter.get_variable()) })));
+        conditions.push_back(condition);
+    }
+    return conditions;
+}
+
+static void collect_types_from_type_hierarchy_recursively(const Type& type, std::unordered_set<Type>& ref_type_list)
+{
+    ref_type_list.insert(type);
+    for (const auto& base_type : type->get_bases())
+    {
+        collect_types_from_type_hierarchy_recursively(base_type, ref_type_list);
+    }
+}
+
+TypeList collect_types_from_type_hierarchy(const TypeList& type_list)
+{
+    std::unordered_set<Type> flat_type_set;
+    for (const auto& type : type_list)
+    {
+        collect_types_from_type_hierarchy_recursively(type, flat_type_set);
+    }
+    return TypeList(flat_type_set.begin(), flat_type_set.end());
+}
+
+/**
+ * Conditions
+ */
+
 Condition flatten_conjunctions(const ConditionAndImpl& condition, PDDLFactories& pddl_factories)
 {
     auto parts = ConditionSet {};

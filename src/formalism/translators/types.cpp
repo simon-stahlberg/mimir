@@ -17,85 +17,17 @@
 
 #include "mimir/formalism/translators/types.hpp"
 
+#include "mimir/formalism/translators/utils.hpp"
+
 namespace mimir
 {
 
-Predicate TypeTranslator::translate_type_to_predicate(const TypeImpl& type)
+Object TypeTranslator::translate_impl(const ObjectImpl& object) { return translate_typed_object_to_untyped_object(object, this->m_pddl_factories); }
+
+Parameter TypeTranslator::translate_impl(const ParameterImpl& parameter)
 {
-    return this->m_pddl_factories.predicates.template get_or_create<PredicateImpl>(
-        type.get_name(),
-        ParameterList { this->m_pddl_factories.parameters.template get_or_create<ParameterImpl>(
-            this->m_pddl_factories.variables.template get_or_create<VariableImpl>("?arg"),
-            TypeList {}) });
+    return translate_typed_parameter_to_untyped_parameter(parameter, this->m_pddl_factories);
 }
-
-Object TypeTranslator::translate_typed_object_to_untyped_object(const ObjectImpl& object)
-{
-    return this->m_pddl_factories.objects.template get_or_create<ObjectImpl>(object.get_name(), TypeList {});
-}
-
-GroundLiteralList TypeTranslator::translate_typed_object_to_ground_literals(const ObjectImpl& object)
-{
-    auto additional_literals = GroundLiteralList {};
-    auto translated_object = translate_typed_object_to_untyped_object(object);
-    auto types = collect_types_from_type_hierarchy(object.get_bases());
-    for (const auto& type : types)
-    {
-        auto additional_literal = this->m_pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(
-            false,
-            this->m_pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(translate_type_to_predicate(*type), ObjectList { translated_object }));
-        additional_literals.push_back(additional_literal);
-    }
-    return additional_literals;
-}
-
-Parameter TypeTranslator::translate_typed_parameter_to_untyped_parameter(const ParameterImpl& parameter)
-{
-    auto translated_parameter =
-        this->m_pddl_factories.parameters.template get_or_create<ParameterImpl>(this->translate(*parameter.get_variable()), TypeList {});
-    return translated_parameter;
-}
-
-void TypeTranslator::collect_types_from_type_hierarchy_recursively(const Type& type, std::unordered_set<Type>& ref_type_list)
-{
-    ref_type_list.insert(type);
-    for (const auto& base_type : type->get_bases())
-    {
-        collect_types_from_type_hierarchy_recursively(base_type, ref_type_list);
-    }
-}
-
-ConditionList TypeTranslator::translate_typed_parameter_to_condition_literals(const ParameterImpl& parameter)
-{
-    auto conditions = ConditionList {};
-    auto translated_variable = this->translate(*parameter.get_variable());
-    auto types = collect_types_from_type_hierarchy(parameter.get_bases());
-    for (const auto& type : types)
-    {
-        auto condition =
-            this->m_pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(this->m_pddl_factories.literals.template get_or_create<LiteralImpl>(
-                false,
-                this->m_pddl_factories.atoms.template get_or_create<AtomImpl>(
-                    translate_type_to_predicate(*type),
-                    TermList { this->m_pddl_factories.terms.template get_or_create<TermVariableImpl>(translated_variable) })));
-        conditions.push_back(condition);
-    }
-    return conditions;
-}
-
-TypeList TypeTranslator::collect_types_from_type_hierarchy(const TypeList& type_list)
-{
-    std::unordered_set<Type> flat_type_set;
-    for (const auto& type : type_list)
-    {
-        collect_types_from_type_hierarchy_recursively(type, flat_type_set);
-    }
-    return TypeList(flat_type_set.begin(), flat_type_set.end());
-}
-
-Object TypeTranslator::translate_impl(const ObjectImpl& object) { return translate_typed_object_to_untyped_object(object); }
-
-Parameter TypeTranslator::translate_impl(const ParameterImpl& parameter) { return translate_typed_parameter_to_untyped_parameter(parameter); }
 
 Condition TypeTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
@@ -106,7 +38,7 @@ Condition TypeTranslator::translate_impl(const ConditionExistsImpl& condition)
     auto conditions = ConditionList {};
     for (const auto& parameter : condition.get_parameters())
     {
-        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     conditions.push_back(this->translate(*condition.get_condition()));
@@ -125,7 +57,7 @@ Condition TypeTranslator::translate_impl(const ConditionForallImpl& condition)
     auto conditions = ConditionList {};
     for (const auto& parameter : condition.get_parameters())
     {
-        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     conditions.push_back(this->translate(*condition.get_condition()));
@@ -144,7 +76,7 @@ Effect TypeTranslator::translate_impl(const EffectConditionalForallImpl& effect)
     auto conditions = ConditionList {};
     for (const auto& parameter : effect.get_parameters())
     {
-        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(conditions);
@@ -166,7 +98,7 @@ Action TypeTranslator::translate_impl(const ActionImpl& action)
     auto conditions = ConditionList {};
     for (const auto& parameter : action.get_parameters())
     {
-        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter);
+        auto additional_conditions = translate_typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     if (action.get_condition().has_value())
@@ -195,7 +127,7 @@ Domain TypeTranslator::translate_impl(const DomainImpl& domain)
     translated_constants.reserve(domain.get_constants().size());
     for (const auto& object : domain.get_constants())
     {
-        auto translated_object = translate_typed_object_to_untyped_object(*object);
+        auto translated_object = translate_typed_object_to_untyped_object(*object, this->m_pddl_factories);
         translated_constants.push_back(translated_object);
     }
 
@@ -203,7 +135,7 @@ Domain TypeTranslator::translate_impl(const DomainImpl& domain)
     auto translated_predicates = this->translate(domain.get_predicates());
     for (const auto type : collect_types_from_type_hierarchy(domain.get_types()))
     {
-        translated_predicates.push_back(translate_type_to_predicate(*type));
+        translated_predicates.push_back(translate_type_to_predicate(*type, this->m_pddl_factories));
     }
 
     auto translated_domain = this->m_pddl_factories.domains.template get_or_create<DomainImpl>(domain.get_name(),
@@ -230,8 +162,8 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
     auto additional_initial_literals = GroundLiteralList {};
     for (const auto& object : problem.get_objects())
     {
-        auto translated_object = translate_typed_object_to_untyped_object(*object);
-        auto additional_literals = translate_typed_object_to_ground_literals(*object);
+        auto translated_object = translate_typed_object_to_untyped_object(*object, this->m_pddl_factories);
+        auto additional_literals = translate_typed_object_to_ground_literals(*object, this->m_pddl_factories);
         translated_objects.push_back(translated_object);
         additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
     }
@@ -239,7 +171,7 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
     // Make constants untyped
     for (const auto& object : problem.get_domain()->get_constants())
     {
-        auto additional_literals = translate_typed_object_to_ground_literals(*object);
+        auto additional_literals = translate_typed_object_to_ground_literals(*object, this->m_pddl_factories);
         additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
     }
 
