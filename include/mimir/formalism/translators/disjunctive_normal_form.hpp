@@ -42,9 +42,6 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
-    // Cache translations
-    std::unordered_map<Condition, Condition> m_translated_conditions;
-
     /**
      * Translate
      */
