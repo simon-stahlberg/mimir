@@ -22,58 +22,60 @@ namespace mimir
 
 Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition)
 {
-    const auto translated_parts = this->translate(condition.get_conditions());
-    auto disjunctive_parts = ConditionList {};
-    auto other_parts = ConditionList {};
-    for (const auto part : translated_parts)
+    auto disjunctive_parts = ConditionSet {};
+    auto other_parts = ConditionSet {};
+    for (const auto part : condition.get_conditions())
     {
-        if (const auto disjunctive_part = std::get_if<ConditionOrImpl>(part))
+        const auto translated_part = this->translate(*part);
+
+        if (const auto disjunctive_part = std::get_if<ConditionOrImpl>(translated_part))
         {
-            disjunctive_parts.push_back(part);
+            disjunctive_parts.insert(translated_part);
         }
         else
         {
-            other_parts.push_back(part);
+            other_parts.insert(translated_part);
         }
     }
 
     if (disjunctive_parts.empty())
     {
         // No disjunctive parts to distribute
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(translated_parts);
+        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList(other_parts.begin(), other_parts.end()));
     }
 
-    auto result_parts = ConditionList {};
+    auto result_parts = ConditionSet {};
     if (other_parts.empty())
     {
         // Immediately start with first disjunctive part
-        auto part = disjunctive_parts.back();
-        disjunctive_parts.pop_back();
-        result_parts = ConditionList { part };
+        const auto it = disjunctive_parts.begin();
+        disjunctive_parts.erase(it);
+        result_parts = ConditionSet { *it };
     }
     else
     {
         // Start with conjunctive part
-        result_parts = ConditionList { this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(other_parts) };
+        result_parts =
+            ConditionSet { this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList(other_parts.begin(), other_parts.end())) };
     }
 
     while (!disjunctive_parts.empty())
     {
         auto previous_result_parts = std::move(result_parts);
-        result_parts = ConditionList {};
-        auto disjunctive_part_to_distribute = disjunctive_parts.back();
-        const auto& current_parts = std::get_if<ConditionOrImpl>(disjunctive_part_to_distribute)->get_conditions();
-        disjunctive_parts.pop_back();
+        result_parts = ConditionSet {};
+        const auto it = disjunctive_parts.begin();
+        disjunctive_parts.erase(it);
+        const auto& current_parts = std::get_if<ConditionOrImpl>(*it)->get_conditions();
         for (const auto& part1 : previous_result_parts)
         {
             for (const auto& part2 : current_parts)
             {
-                result_parts.push_back(this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList { part1, part2 }));
+                result_parts.insert(this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList { part1, part2 }));
             }
         }
     }
 
-    return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(result_parts);
+    return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList(result_parts.begin(), result_parts.end()));
 }
 
 Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
