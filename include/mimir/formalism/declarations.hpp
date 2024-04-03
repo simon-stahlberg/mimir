@@ -47,7 +47,8 @@ using ObjectList = std::vector<Object>;
 
 class VariableImpl;
 using Variable = const VariableImpl*;
-using VariableList = std::vector<Variable>;  // not used
+using VariableList = std::vector<Variable>;
+using VariableSet = std::unordered_set<Variable>;
 using VariableAssignment = std::unordered_map<Variable, Object>;
 
 class TermObjectImpl;

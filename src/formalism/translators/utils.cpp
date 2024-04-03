@@ -159,4 +159,31 @@ Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDD
     }
     return pddl_factories.conditions.template get_or_create<ConditionForallImpl>(condition.get_parameters(), condition.get_condition());
 }
+
+void collect_free_variables_recursively(const ConditionImpl& condition, VariableSet& ref_quantified_variables, VariableSet& ref_free_variables)
+{
+    if (const auto condition_imply = std::get_if<ConditionImplyImpl>(&condition))
+    {
+        collect_free_variables_recursively(*condition_imply->get_condition_left(), ref_quantified_variables, ref_free_variables);
+        collect_free_variables_recursively(*condition_imply->get_condition_right(), ref_quantified_variables, ref_free_variables);
+    }
+    else if (const auto condition_and = std::get_if<ConditionAndImpl>(&condition))
+    {
+        for (const auto& part : condition_and->get_conditions())
+        {
+            collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
+        }
+    }
+    // TODO
+}
+
+VariableList collect_free_variables(const ConditionImpl& condition)
+{
+    auto quantified_variables = VariableSet {};
+    auto free_variables = VariableSet {};
+
+    collect_free_variables_recursively(condition, quantified_variables, free_variables);
+
+    return VariableList(free_variables.begin(), free_variables.end());
+}
 }

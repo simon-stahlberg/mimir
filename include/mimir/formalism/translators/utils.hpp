@@ -78,6 +78,10 @@ extern Condition flatten_existential_quantifier(const ConditionExistsImpl& condi
  */
 extern Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDDLFactories& pddl_factories);
 
+/**
+ * Return all free variables of a condition, i.e., variables that are not quantified.
+ */
+extern VariableList collect_free_variables(const ConditionImpl& condition);
 }
 
 #endif

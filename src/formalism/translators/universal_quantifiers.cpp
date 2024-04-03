@@ -30,8 +30,15 @@ Condition UniversalQuantifierTranslator::translate_impl(const ConditionForallImp
     {
         return m_axiom_to_literal.at(it->second);
     }
+
+    // const auto axiom_condition = m_nnf_translator.translate(*this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(&condition));
+    //  parameters are free variables
 }
 
-UniversalQuantifierTranslator::UniversalQuantifierTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
+UniversalQuantifierTranslator::UniversalQuantifierTranslator(PDDLFactories& pddl_factories) :
+    BaseTranslator(pddl_factories),
+    m_nnf_translator(NNFTranslator(pddl_factories))
+{
+}
 
 }
