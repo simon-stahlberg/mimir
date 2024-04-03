@@ -54,38 +54,6 @@ private:
     std::unordered_map<Condition, Condition> m_translated_conditions;
 
     /**
-     * Utility
-     */
-
-    /**
-     * Flatten conjunctions.
-     *
-     * 9. A and (B and C)  =>  A and B and C
-     */
-    Condition flatten_conjunctions(const ConditionAndImpl& condition);
-
-    /**
-     * Flatten disjunctions.
-     *
-     * 10. A or (B or C)  =>  A or B or C
-     */
-    Condition flatten_disjunctions(const ConditionOrImpl& condition);
-
-    /**
-     * Flatten existential quantifiers.
-     *
-     * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
-     */
-    Condition flatten_existential_quantifier(const ConditionExistsImpl& condition);
-
-    /**
-     * Flatten universal quantifiers.
-     *
-     * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
-     */
-    Condition flatten_universal_quantifier(const ConditionForallImpl& condition);
-
-    /**
      * Translate
      */
 

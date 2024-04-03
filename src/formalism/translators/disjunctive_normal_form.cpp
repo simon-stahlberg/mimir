@@ -17,6 +17,8 @@
 
 #include "mimir/formalism/translators/disjunctive_normal_form.hpp"
 
+#include "mimir/formalism/translators/utils.hpp"
+
 namespace mimir
 {
 
@@ -70,7 +72,9 @@ Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition)
         {
             for (const auto& part2 : current_parts)
             {
-                result_parts.insert(this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList { part1, part2 }));
+                result_parts.insert(flatten_conjunctions(
+                    *std::get_if<ConditionAndImpl>(this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList { part1, part2 })),
+                    this->m_pddl_factories));
             }
         }
     }
