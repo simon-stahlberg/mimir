@@ -29,19 +29,19 @@ namespace mimir
  */
 
 /// @brief Translate a type to a predicate of arity 1.
-extern Predicate translate_type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories);
+extern Predicate type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories);
 
 /// @brief Translate an typed object to an untyped objects.
-extern Object translate_typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories);
+extern Object typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories);
 
 /// @brief Translate an typed object to a list of ground literal for all its original types.
-extern GroundLiteralList translate_typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories);
+extern GroundLiteralList typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories);
 
 /// @brief Translate a typed parameter to an untyped parameter.
-extern Parameter translate_typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories);
+extern Parameter typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories);
 
 /// @brief Translate an typed parameter to a list of condition literal for all its original types.
-extern ConditionList translate_typed_parameter_to_condition_literals(const ParameterImpl& parameter, PDDLFactories& pddl_factories);
+extern ConditionList typed_parameter_to_condition_literals(const ParameterImpl& parameter, PDDLFactories& pddl_factories);
 
 /// @brief Compute all types from a hierarchy of types.
 extern TypeList collect_types_from_type_hierarchy(const TypeList& type_list);

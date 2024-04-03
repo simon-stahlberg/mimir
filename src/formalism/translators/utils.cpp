@@ -23,7 +23,7 @@ namespace mimir
 /**
  * Types
  */
-Predicate translate_type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories)
+Predicate type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories)
 {
     return pddl_factories.predicates.template get_or_create<PredicateImpl>(
         type.get_name(),
@@ -31,34 +31,33 @@ Predicate translate_type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_
                                                                                         TypeList {}) });
 }
 
-Object translate_typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories)
+Object typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories)
 {
     return pddl_factories.objects.template get_or_create<ObjectImpl>(object.get_name(), TypeList {});
 }
 
-GroundLiteralList translate_typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories)
+GroundLiteralList typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories)
 {
     auto additional_literals = GroundLiteralList {};
-    auto translated_object = translate_typed_object_to_untyped_object(object, pddl_factories);
+    auto translated_object = typed_object_to_untyped_object(object, pddl_factories);
     auto types = collect_types_from_type_hierarchy(object.get_bases());
     for (const auto& type : types)
     {
         auto additional_literal = pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(
             false,
-            pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(translate_type_to_predicate(*type, pddl_factories),
-                                                                               ObjectList { translated_object }));
+            pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(type_to_predicate(*type, pddl_factories), ObjectList { translated_object }));
         additional_literals.push_back(additional_literal);
     }
     return additional_literals;
 }
 
-Parameter translate_typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
+Parameter typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
 {
     auto translated_parameter = pddl_factories.parameters.template get_or_create<ParameterImpl>(parameter.get_variable(), TypeList {});
     return translated_parameter;
 }
 
-ConditionList translate_typed_parameter_to_condition_literals(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
+ConditionList typed_parameter_to_condition_literals(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
 {
     auto conditions = ConditionList {};
     auto types = collect_types_from_type_hierarchy(parameter.get_bases());
@@ -67,7 +66,7 @@ ConditionList translate_typed_parameter_to_condition_literals(const ParameterImp
         auto condition = pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(pddl_factories.literals.template get_or_create<LiteralImpl>(
             false,
             pddl_factories.atoms.template get_or_create<AtomImpl>(
-                translate_type_to_predicate(*type, pddl_factories),
+                type_to_predicate(*type, pddl_factories),
                 TermList { pddl_factories.terms.template get_or_create<TermVariableImpl>(parameter.get_variable()) })));
         conditions.push_back(condition);
     }
