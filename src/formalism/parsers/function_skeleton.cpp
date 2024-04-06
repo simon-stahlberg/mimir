@@ -25,9 +25,9 @@ namespace mimir
 {
 FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories)
 {
-    return factories.function_skeletons.get_or_create<FunctionSkeletonImpl>(function_skeleton->get_name(),
-                                                                            parse(function_skeleton->get_parameters(), factories),
-                                                                            parse(function_skeleton->get_type(), factories));
+    return factories.get_or_create_function_skeleton(function_skeleton->get_name(),
+                                                     parse(function_skeleton->get_parameters(), factories),
+                                                     parse(function_skeleton->get_type(), factories));
 }
 
 FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories)

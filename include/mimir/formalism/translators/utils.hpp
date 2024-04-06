@@ -82,6 +82,20 @@ extern Condition flatten_universal_quantifier(const ConditionForallImpl& conditi
  * Return all free variables of a condition, i.e., variables that are not quantified.
  */
 extern VariableList collect_free_variables(const ConditionImpl& condition);
+
+/**
+ * General
+ */
+
+/**
+ * Uniquify elements in a vector of elements.
+ */
+template<typename T>
+extern std::vector<const T*> uniquify_elements(const std::vector<const T*>& vec)
+{
+    std::unordered_set<const T*> set(vec.begin(), vec.end());
+    return std::vector<const T*>(set.begin(), set.end());
+}
 }
 
 #endif

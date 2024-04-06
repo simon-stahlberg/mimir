@@ -24,47 +24,46 @@ namespace mimir
 
 Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition)
 {
-    auto disjunctive_parts = ConditionSet {};
-    auto other_parts = ConditionSet {};
+    auto disjunctive_parts = ConditionList {};
+    auto other_parts = ConditionList {};
     for (const auto part : condition.get_conditions())
     {
         const auto translated_part = this->translate(*part);
 
         if (const auto disjunctive_part = std::get_if<ConditionOrImpl>(translated_part))
         {
-            disjunctive_parts.insert(translated_part);
+            disjunctive_parts.push_back(translated_part);
         }
         else
         {
-            other_parts.insert(translated_part);
+            other_parts.push_back(translated_part);
         }
     }
 
     if (disjunctive_parts.empty())
     {
         // No disjunctive parts to distribute
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList(other_parts.begin(), other_parts.end()));
+        return this->m_pddl_factories.get_or_create_condition_and(uniquify_elements(other_parts));
     }
 
-    auto result_parts = ConditionSet {};
+    auto result_parts = ConditionList {};
     if (other_parts.empty())
     {
         // Immediately start with first disjunctive part
         const auto it = disjunctive_parts.begin();
         disjunctive_parts.erase(it);
-        result_parts = ConditionSet { *it };
+        result_parts = ConditionList { *it };
     }
     else
     {
         // Start with conjunctive part
-        result_parts =
-            ConditionSet { this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList(other_parts.begin(), other_parts.end())) };
+        result_parts = ConditionList { this->m_pddl_factories.get_or_create_condition_and(uniquify_elements(other_parts)) };
     }
 
     while (!disjunctive_parts.empty())
     {
         auto previous_result_parts = std::move(result_parts);
-        result_parts = ConditionSet {};
+        result_parts = ConditionList {};
         const auto it = disjunctive_parts.begin();
         disjunctive_parts.erase(it);
         const auto& current_parts = std::get_if<ConditionOrImpl>(*it)->get_conditions();
@@ -72,14 +71,14 @@ Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition)
         {
             for (const auto& part2 : current_parts)
             {
-                result_parts.insert(flatten_conjunctions(
-                    *std::get_if<ConditionAndImpl>(this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList { part1, part2 })),
-                    this->m_pddl_factories));
+                result_parts.push_back(
+                    flatten_conjunctions(*std::get_if<ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(ConditionList { part1, part2 })),
+                                         this->m_pddl_factories));
             }
         }
     }
 
-    return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList(result_parts.begin(), result_parts.end()));
+    return this->m_pddl_factories.get_or_create_condition_or(uniquify_elements(result_parts));
 }
 
 Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
@@ -91,11 +90,11 @@ Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
         auto result_parts = ConditionList {};
         for (const auto& part : translated_disjunctive_condition->get_conditions())
         {
-            result_parts.push_back(this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(translated_parameters, part));
+            result_parts.push_back(this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, part));
         }
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(result_parts);
+        return this->m_pddl_factories.get_or_create_condition_or(result_parts);
     }
-    return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(translated_parameters, translated_condition);
+    return this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, translated_condition);
 }
 
 Condition DNFTranslator::translate_impl(const ConditionForallImpl& condition)
@@ -107,11 +106,11 @@ Condition DNFTranslator::translate_impl(const ConditionForallImpl& condition)
         auto result_parts = ConditionList {};
         for (const auto& part : translated_disjunctive_condition->get_conditions())
         {
-            result_parts.push_back(this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(translated_parameters, part));
+            result_parts.push_back(this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, part));
         }
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(result_parts);
+        return this->m_pddl_factories.get_or_create_condition_or(result_parts);
     }
-    return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(translated_parameters, translated_condition);
+    return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
 Problem DNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(*NNFTranslator(m_pddl_factories).translate(problem)); }

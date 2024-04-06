@@ -35,15 +35,15 @@ Problem parse(loki::pddl::Problem problem, PDDLFactories& factories)
     auto objects = parse(problem->get_objects(), factories);
     objects.insert(objects.end(), constants.begin(), constants.end());
 
-    return factories.problems.get_or_create<ProblemImpl>(parse(problem->get_domain(), factories),
-                                                         problem->get_name(),
-                                                         parse(problem->get_requirements(), factories),
-                                                         objects,
-                                                         parse(problem->get_initial_literals(), factories),
-                                                         parse(problem->get_numeric_fluents(), factories),
-                                                         parse(problem->get_goal_condition(), factories),
-                                                         (problem->get_optimization_metric().has_value() ?
-                                                              std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
-                                                              std::nullopt));
+    return factories.get_or_create_problem(parse(problem->get_domain(), factories),
+                                           problem->get_name(),
+                                           parse(problem->get_requirements(), factories),
+                                           objects,
+                                           parse(problem->get_initial_literals(), factories),
+                                           parse(problem->get_numeric_fluents(), factories),
+                                           parse(problem->get_goal_condition(), factories),
+                                           (problem->get_optimization_metric().has_value() ?
+                                                std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
+                                                std::nullopt));
 }
 }

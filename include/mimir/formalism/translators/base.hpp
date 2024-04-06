@@ -301,39 +301,30 @@ protected:
         return cached_translated_impl(requirements,
                                       m_translated_requirements,
                                       [this](const RequirementsImpl& arg)
-                                      { return this->m_pddl_factories.requirements.template get_or_create<RequirementsImpl>(arg.get_requirements()); });
+                                      { return this->m_pddl_factories.get_or_create_requirements(arg.get_requirements()); });
     }
     Type translate_impl(const TypeImpl& type)
     {
-        return cached_translated_impl(
-            type,
-            m_translated_types,
-            [this](const TypeImpl& arg)
-            { return this->m_pddl_factories.types.template get_or_create<TypeImpl>(arg.get_name(), this->translate(arg.get_bases())); });
+        return cached_translated_impl(type,
+                                      m_translated_types,
+                                      [this](const TypeImpl& arg)
+                                      { return this->m_pddl_factories.get_or_create_type(arg.get_name(), this->translate(arg.get_bases())); });
     }
     Object translate_impl(const ObjectImpl& object)
     {
-        return cached_translated_impl(
-            object,
-            m_translated_objects,
-            [this](const ObjectImpl& arg)
-            { return this->m_pddl_factories.objects.template get_or_create<ObjectImpl>(arg.get_name(), this->translate(arg.get_bases())); });
+        return cached_translated_impl(object,
+                                      m_translated_objects,
+                                      [this](const ObjectImpl& arg)
+                                      { return this->m_pddl_factories.get_or_create_object(arg.get_name(), this->translate(arg.get_bases())); });
     }
     Variable translate_impl(const VariableImpl& variable)
     {
         return cached_translated_impl(variable,
                                       m_translated_variables,
-                                      [this](const VariableImpl& arg)
-                                      { return this->m_pddl_factories.variables.template get_or_create<VariableImpl>(arg.get_name()); });
+                                      [this](const VariableImpl& arg) { return this->m_pddl_factories.get_or_create_variable(arg.get_name()); });
     }
-    Term translate_impl(const TermObjectImpl& term)
-    {
-        return this->m_pddl_factories.terms.template get_or_create<TermObjectImpl>(this->translate(*term.get_object()));
-    }
-    Term translate_impl(const TermVariableImpl& term)
-    {
-        return this->m_pddl_factories.terms.template get_or_create<TermVariableImpl>(this->translate(*term.get_variable()));
-    }
+    Term translate_impl(const TermObjectImpl& term) { return this->m_pddl_factories.get_or_create_term_object(this->translate(*term.get_object())); }
+    Term translate_impl(const TermVariableImpl& term) { return this->m_pddl_factories.get_or_create_term_variable(this->translate(*term.get_variable())); }
     Term translate_impl(const TermImpl& term)
     {
         return cached_translated_impl(term,
@@ -342,20 +333,18 @@ protected:
     }
     Parameter translate_impl(const ParameterImpl& parameter)
     {
-        return cached_translated_impl(parameter,
-                                      m_translated_parameters,
-                                      [this](const ParameterImpl& arg) {
-                                          return this->m_pddl_factories.parameters.template get_or_create<ParameterImpl>(this->translate(*arg.get_variable()),
-                                                                                                                         this->translate(arg.get_bases()));
-                                      });
+        return cached_translated_impl(
+            parameter,
+            m_translated_parameters,
+            [this](const ParameterImpl& arg)
+            { return this->m_pddl_factories.get_or_create_parameter(this->translate(*arg.get_variable()), this->translate(arg.get_bases())); });
     }
     Predicate translate_impl(const PredicateImpl& predicate)
     {
-        return cached_translated_impl(
-            predicate,
-            m_translated_predicates,
-            [this](const PredicateImpl& arg)
-            { return this->m_pddl_factories.predicates.template get_or_create<PredicateImpl>(arg.get_name(), this->translate(arg.get_parameters())); });
+        return cached_translated_impl(predicate,
+                                      m_translated_predicates,
+                                      [this](const PredicateImpl& arg)
+                                      { return this->m_pddl_factories.get_or_create_predicate(arg.get_name(), this->translate(arg.get_parameters())); });
     }
     Atom translate_impl(const AtomImpl& atom)
     {
@@ -363,74 +352,65 @@ protected:
             atom,
             m_translated_atoms,
             [this](const AtomImpl& arg)
-            { return this->m_pddl_factories.atoms.template get_or_create<AtomImpl>(this->translate(*arg.get_predicate()), this->translate(arg.get_terms())); });
+            { return this->m_pddl_factories.get_or_create_atom(this->translate(*arg.get_predicate()), this->translate(arg.get_terms())); });
     }
     GroundAtom translate_impl(const GroundAtomImpl& atom)
     {
-        return cached_translated_impl(atom,
-                                      m_translated_ground_atoms,
-                                      [this](const GroundAtomImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(
-                                              this->translate(*arg.get_predicate()),
-                                              this->translate(arg.get_objects()));
-                                      });
+        return cached_translated_impl(
+            atom,
+            m_translated_ground_atoms,
+            [this](const GroundAtomImpl& arg)
+            { return this->m_pddl_factories.get_or_create_ground_atom(this->translate(*arg.get_predicate()), this->translate(arg.get_objects())); });
     }
     Literal translate_impl(const LiteralImpl& literal)
     {
-        return cached_translated_impl(
-            literal,
-            m_translated_literals,
-            [this](const LiteralImpl& arg)
-            { return this->m_pddl_factories.literals.template get_or_create<LiteralImpl>(arg.is_negated(), this->translate(*arg.get_atom())); });
+        return cached_translated_impl(literal,
+                                      m_translated_literals,
+                                      [this](const LiteralImpl& arg)
+                                      { return this->m_pddl_factories.get_or_create_literal(arg.is_negated(), this->translate(*arg.get_atom())); });
     }
     GroundLiteral translate_impl(const GroundLiteralImpl& literal)
     {
-        return cached_translated_impl(
-            literal,
-            m_translated_ground_literals,
-            [this](const GroundLiteralImpl& arg)
-            { return this->m_pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(arg.is_negated(), this->translate(*arg.get_atom())); });
+        return cached_translated_impl(literal,
+                                      m_translated_ground_literals,
+                                      [this](const GroundLiteralImpl& arg)
+                                      { return this->m_pddl_factories.get_or_create_ground_literal(arg.is_negated(), this->translate(*arg.get_atom())); });
     }
     NumericFluent translate_impl(const NumericFluentImpl& numeric_fluent)
     {
-        return cached_translated_impl(
-            numeric_fluent,
-            m_translated_numeric_fluents,
-            [this](const NumericFluentImpl& arg) {
-                return this->m_pddl_factories.numeric_fluents.template get_or_create<NumericFluentImpl>(this->translate(*arg.get_function()), arg.get_number());
-            });
+        return cached_translated_impl(numeric_fluent,
+                                      m_translated_numeric_fluents,
+                                      [this](const NumericFluentImpl& arg)
+                                      { return this->m_pddl_factories.get_or_create_numeric_fluent(this->translate(*arg.get_function()), arg.get_number()); });
     }
     Condition translate_impl(const ConditionLiteralImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(this->translate(*condition.get_literal()));
+        return this->m_pddl_factories.get_or_create_condition_literal(this->translate(*condition.get_literal()));
     }
     Condition translate_impl(const ConditionAndImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(this->translate(condition.get_conditions()));
+        return this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()));
     }
     Condition translate_impl(const ConditionOrImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionOrImpl>(this->translate(condition.get_conditions()));
+        return this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()));
     }
     Condition translate_impl(const ConditionNotImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionNotImpl>(this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.get_or_create_condition_not(this->translate(*condition.get_condition()));
     }
     Condition translate_impl(const ConditionImplyImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionImplyImpl>(this->translate(*condition.get_condition_left()),
-                                                                                            this->translate(*condition.get_condition_right()));
+        return this->m_pddl_factories.get_or_create_condition_imply(this->translate(*condition.get_condition_left()),
+                                                                    this->translate(*condition.get_condition_right()));
     }
     Condition translate_impl(const ConditionExistsImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(this->translate(condition.get_parameters()),
-                                                                                             this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
     }
     Condition translate_impl(const ConditionForallImpl& condition)
     {
-        return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(this->translate(condition.get_parameters()),
-                                                                                             this->translate(*condition.get_condition()));
+        return this->m_pddl_factories.get_or_create_condition_forall(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
     }
     Condition translate_impl(const ConditionImpl& condition)
     {
@@ -441,27 +421,22 @@ protected:
     }
     Effect translate_impl(const EffectLiteralImpl& effect)
     {
-        return this->m_pddl_factories.effects.template get_or_create<EffectLiteralImpl>(this->translate(*effect.get_literal()));
+        return this->m_pddl_factories.get_or_create_effect_literal(this->translate(*effect.get_literal()));
     }
-    Effect translate_impl(const EffectAndImpl& effect)
-    {
-        return this->m_pddl_factories.effects.template get_or_create<EffectAndImpl>(this->translate(effect.get_effects()));
-    }
+    Effect translate_impl(const EffectAndImpl& effect) { return this->m_pddl_factories.get_or_create_effect_and(this->translate(effect.get_effects())); }
     Effect translate_impl(const EffectNumericImpl& effect)
     {
-        return this->m_pddl_factories.effects.template get_or_create<EffectNumericImpl>(effect.get_assign_operator(),
-                                                                                        this->translate(*effect.get_function()),
-                                                                                        this->translate(*effect.get_function_expression()));
+        return this->m_pddl_factories.get_or_create_effect_numeric(effect.get_assign_operator(),
+                                                                   this->translate(*effect.get_function()),
+                                                                   this->translate(*effect.get_function_expression()));
     }
     Effect translate_impl(const EffectConditionalForallImpl& effect)
     {
-        return this->m_pddl_factories.effects.template get_or_create<EffectConditionalForallImpl>(this->translate(effect.get_parameters()),
-                                                                                                  this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.get_or_create_effect_conditional_forall(this->translate(effect.get_parameters()), this->translate(*effect.get_effect()));
     }
     Effect translate_impl(const EffectConditionalWhenImpl& effect)
     {
-        return this->m_pddl_factories.effects.template get_or_create<EffectConditionalWhenImpl>(this->translate(*effect.get_condition()),
-                                                                                                this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
     }
     Effect translate_impl(const EffectImpl& effect)
     {
@@ -472,30 +447,26 @@ protected:
     }
     FunctionExpression translate_impl(const FunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.template get_or_create<FunctionExpressionNumberImpl>(function_expression.get_number());
+        return this->m_pddl_factories.get_or_create_function_expression_number(function_expression.get_number());
     }
     FunctionExpression translate_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.template get_or_create<FunctionExpressionBinaryOperatorImpl>(
-            function_expression.get_binary_operator(),
-            this->translate(*function_expression.get_left_function_expression()),
-            this->translate(*function_expression.get_right_function_expression()));
+        return this->m_pddl_factories.get_or_create_function_expression_binary_operator(function_expression.get_binary_operator(),
+                                                                                        this->translate(*function_expression.get_left_function_expression()),
+                                                                                        this->translate(*function_expression.get_right_function_expression()));
     }
     FunctionExpression translate_impl(const FunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.template get_or_create<FunctionExpressionMultiOperatorImpl>(
-            function_expression.get_multi_operator(),
-            this->translate(function_expression.get_function_expressions()));
+        return this->m_pddl_factories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                       this->translate(function_expression.get_function_expressions()));
     }
     FunctionExpression translate_impl(const FunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.template get_or_create<FunctionExpressionMinusImpl>(
-            this->translate(*function_expression.get_function_expression()));
+        return this->m_pddl_factories.get_or_create_function_expression_minus(this->translate(*function_expression.get_function_expression()));
     }
     FunctionExpression translate_impl(const FunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_factories.function_expressions.template get_or_create<FunctionExpressionFunctionImpl>(
-            this->translate(*function_expression.get_function()));
+        return this->m_pddl_factories.get_or_create_function_expression_function(this->translate(*function_expression.get_function()));
     }
     FunctionExpression translate_impl(const FunctionExpressionImpl& function_expression)
     {
@@ -508,24 +479,19 @@ protected:
     {
         return cached_translated_impl(function_skeleton,
                                       m_translated_function_skeletons,
-                                      [this](const FunctionSkeletonImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.function_skeletons.template get_or_create<FunctionSkeletonImpl>(
-                                              arg.get_name(),
-                                              this->translate(arg.get_parameters()),
-                                              this->translate(*arg.get_type()));
+                                      [this](const FunctionSkeletonImpl& arg) {
+                                          return this->m_pddl_factories.get_or_create_function_skeleton(arg.get_name(),
+                                                                                                        this->translate(arg.get_parameters()),
+                                                                                                        this->translate(*arg.get_type()));
                                       });
     }
     Function translate_impl(const FunctionImpl& function)
     {
-        return cached_translated_impl(function,
-                                      m_translated_functions,
-                                      [this](const FunctionImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.functions.template get_or_create<FunctionImpl>(
-                                              this->translate(*arg.get_function_skeleton()),
-                                              this->translate(arg.get_terms()));
-                                      });
+        return cached_translated_impl(
+            function,
+            m_translated_functions,
+            [this](const FunctionImpl& arg)
+            { return this->m_pddl_factories.get_or_create_function(this->translate(*arg.get_function_skeleton()), this->translate(arg.get_terms())); });
     }
     Action translate_impl(const ActionImpl& action)
     {
@@ -534,7 +500,7 @@ protected:
             m_translated_actions,
             [this](const ActionImpl& arg)
             {
-                return this->m_pddl_factories.actions.template get_or_create<ActionImpl>(
+                return this->m_pddl_factories.get_or_create_action(
                     arg.get_name(),
                     this->translate(arg.get_parameters()),
                     (arg.get_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_condition().value())) : std::nullopt),
@@ -543,14 +509,11 @@ protected:
     }
     DerivedPredicate translate_impl(const DerivedPredicateImpl& derived_predicate)
     {
-        return cached_translated_impl(derived_predicate,
-                                      m_translated_derived_predicates,
-                                      [this](const DerivedPredicateImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.derived_predicates.template get_or_create<DerivedPredicateImpl>(
-                                              this->translate(*arg.get_predicate()),
-                                              this->translate(*arg.get_condition()));
-                                      });
+        return cached_translated_impl(
+            derived_predicate,
+            m_translated_derived_predicates,
+            [this](const DerivedPredicateImpl& arg)
+            { return this->m_pddl_factories.get_or_create_derived_predicate(this->translate(*arg.get_predicate()), this->translate(*arg.get_condition())); });
     }
     Domain translate_impl(const DomainImpl& domain)
     {
@@ -558,26 +521,23 @@ protected:
                                       m_translated_domains,
                                       [this](const DomainImpl& arg)
                                       {
-                                          return this->m_pddl_factories.domains.template get_or_create<DomainImpl>(
-                                              arg.get_name(),
-                                              this->translate(*arg.get_requirements()),
-                                              this->translate(arg.get_types()),
-                                              this->translate(arg.get_constants()),
-                                              this->translate(arg.get_predicates()),
-                                              this->translate(arg.get_functions()),
-                                              this->translate(arg.get_actions()),
-                                              this->translate(arg.get_derived_predicates()));
+                                          return this->m_pddl_factories.get_or_create_domain(arg.get_name(),
+                                                                                             this->translate(*arg.get_requirements()),
+                                                                                             this->translate(arg.get_types()),
+                                                                                             this->translate(arg.get_constants()),
+                                                                                             this->translate(arg.get_predicates()),
+                                                                                             this->translate(arg.get_functions()),
+                                                                                             this->translate(arg.get_actions()),
+                                                                                             this->translate(arg.get_derived_predicates()));
                                       });
     }
     OptimizationMetric translate_impl(const OptimizationMetricImpl& metric)
     {
         return cached_translated_impl(metric,
                                       m_translated_optimization_metrics,
-                                      [this](const OptimizationMetricImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.optimization_metrics.template get_or_create<OptimizationMetricImpl>(
-                                              arg.get_optimization_metric(),
-                                              this->translate(*arg.get_function_expression()));
+                                      [this](const OptimizationMetricImpl& arg) {
+                                          return this->m_pddl_factories.get_or_create_optimization_metric(arg.get_optimization_metric(),
+                                                                                                          this->translate(*arg.get_function_expression()));
                                       });
     }
 
@@ -587,7 +547,7 @@ protected:
                                       m_translated_problems,
                                       [this](const ProblemImpl& arg)
                                       {
-                                          return this->m_pddl_factories.problems.template get_or_create<ProblemImpl>(
+                                          return this->m_pddl_factories.get_or_create_problem(
                                               this->translate(*arg.get_domain()),
                                               arg.get_name(),
                                               this->translate(*arg.get_requirements()),

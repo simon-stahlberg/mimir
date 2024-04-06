@@ -26,7 +26,7 @@ namespace mimir
 {
 Action parse(loki::pddl::Action action, PDDLFactories& factories)
 {
-    return factories.actions.get_or_create<ActionImpl>(
+    return factories.get_or_create_action(
         action->get_name(),
         parse(action->get_parameters(), factories),
         (action->get_condition().has_value() ? std::optional<Condition>(parse(action->get_condition().value(), factories)) : std::nullopt),

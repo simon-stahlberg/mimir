@@ -28,37 +28,37 @@ ConditionVisitor::ConditionVisitor(PDDLFactories& factories_) : factories(factor
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionLiteralImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionLiteralImpl>(parse(node.get_literal(), factories));
+    return factories.get_or_create_condition_literal(parse(node.get_literal(), factories));
 }
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionAndImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionAndImpl>(parse(node.get_conditions(), factories));
+    return factories.get_or_create_condition_and(parse(node.get_conditions(), factories));
 }
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionOrImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionOrImpl>(parse(node.get_conditions(), factories));
+    return factories.get_or_create_condition_or(parse(node.get_conditions(), factories));
 }
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionNotImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionNotImpl>(parse(node.get_condition(), factories));
+    return factories.get_or_create_condition_not(parse(node.get_condition(), factories));
 }
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionImplyImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionImplyImpl>(parse(node.get_condition_left(), factories), parse(node.get_condition_right(), factories));
+    return factories.get_or_create_condition_imply(parse(node.get_condition_left(), factories), parse(node.get_condition_right(), factories));
 }
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionExistsImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionExistsImpl>(parse(node.get_parameters(), factories), parse(node.get_condition(), factories));
+    return factories.get_or_create_condition_exists(parse(node.get_parameters(), factories), parse(node.get_condition(), factories));
 }
 
 Condition ConditionVisitor::operator()(const loki::pddl::ConditionForallImpl& node)
 {
-    return factories.conditions.get_or_create<ConditionForallImpl>(parse(node.get_parameters(), factories), parse(node.get_condition(), factories));
+    return factories.get_or_create_condition_forall(parse(node.get_parameters(), factories), parse(node.get_condition(), factories));
 }
 
 Condition parse(loki::pddl::Condition condition, PDDLFactories& factories) { return std::visit(ConditionVisitor(factories), *condition); }

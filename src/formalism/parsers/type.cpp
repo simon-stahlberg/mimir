@@ -21,10 +21,7 @@
 
 namespace mimir
 {
-Type parse(loki::pddl::Type type, PDDLFactories& factories)
-{
-    return factories.types.get_or_create<TypeImpl>(type->get_name(), parse(type->get_bases(), factories));
-}
+Type parse(loki::pddl::Type type, PDDLFactories& factories) { return factories.get_or_create_type(type->get_name(), parse(type->get_bases(), factories)); }
 
 TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories)
 {

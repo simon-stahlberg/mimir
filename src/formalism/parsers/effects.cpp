@@ -30,29 +30,26 @@ EffectVisitor::EffectVisitor(PDDLFactories& factories_) : factories(factories_) 
 
 Effect EffectVisitor::operator()(const loki::pddl::EffectLiteralImpl& node)
 {
-    return factories.effects.get_or_create<EffectLiteralImpl>(parse(node.get_literal(), factories));
+    return factories.get_or_create_effect_literal(parse(node.get_literal(), factories));
 }
 
-Effect EffectVisitor::operator()(const loki::pddl::EffectAndImpl& node)
-{
-    return factories.effects.get_or_create<EffectAndImpl>(parse(node.get_effects(), factories));
-}
+Effect EffectVisitor::operator()(const loki::pddl::EffectAndImpl& node) { return factories.get_or_create_effect_and(parse(node.get_effects(), factories)); }
 
 Effect EffectVisitor::operator()(const loki::pddl::EffectNumericImpl& node)
 {
-    return factories.effects.get_or_create<EffectNumericImpl>(node.get_assign_operator(),
-                                                              parse(node.get_function(), factories),
-                                                              parse(node.get_function_expression(), factories));
+    return factories.get_or_create_effect_numeric(node.get_assign_operator(),
+                                                  parse(node.get_function(), factories),
+                                                  parse(node.get_function_expression(), factories));
 }
 
 Effect EffectVisitor::operator()(const loki::pddl::EffectConditionalForallImpl& node)
 {
-    return factories.effects.get_or_create<EffectConditionalForallImpl>(parse(node.get_parameters(), factories), parse(node.get_effect(), factories));
+    return factories.get_or_create_effect_conditional_forall(parse(node.get_parameters(), factories), parse(node.get_effect(), factories));
 }
 
 Effect EffectVisitor::operator()(const loki::pddl::EffectConditionalWhenImpl& node)
 {
-    return factories.effects.get_or_create<EffectConditionalWhenImpl>(parse(node.get_condition(), factories), parse(node.get_effect(), factories));
+    return factories.get_or_create_effect_conditional_when(parse(node.get_condition(), factories), parse(node.get_effect(), factories));
 }
 
 Effect parse(loki::pddl::Effect effect, PDDLFactories& factories) { return std::visit(EffectVisitor(factories), *effect); }

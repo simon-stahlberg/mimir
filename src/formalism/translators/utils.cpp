@@ -25,15 +25,14 @@ namespace mimir
  */
 Predicate type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories)
 {
-    return pddl_factories.predicates.template get_or_create<PredicateImpl>(
+    return pddl_factories.get_or_create_predicate(
         type.get_name(),
-        ParameterList { pddl_factories.parameters.template get_or_create<ParameterImpl>(pddl_factories.variables.template get_or_create<VariableImpl>("?arg"),
-                                                                                        TypeList {}) });
+        ParameterList { pddl_factories.get_or_create_parameter(pddl_factories.get_or_create_variable("?arg"), TypeList {}) });
 }
 
 Object typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories)
 {
-    return pddl_factories.objects.template get_or_create<ObjectImpl>(object.get_name(), TypeList {});
+    return pddl_factories.get_or_create_object(object.get_name(), TypeList {});
 }
 
 GroundLiteralList typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories)
@@ -43,9 +42,9 @@ GroundLiteralList typed_object_to_ground_literals(const ObjectImpl& object, PDDL
     auto types = collect_types_from_type_hierarchy(object.get_bases());
     for (const auto& type : types)
     {
-        auto additional_literal = pddl_factories.ground_literals.template get_or_create<GroundLiteralImpl>(
+        auto additional_literal = pddl_factories.get_or_create_ground_literal(
             false,
-            pddl_factories.ground_atoms.template get_or_create<GroundAtomImpl>(type_to_predicate(*type, pddl_factories), ObjectList { translated_object }));
+            pddl_factories.get_or_create_ground_atom(type_to_predicate(*type, pddl_factories), ObjectList { translated_object }));
         additional_literals.push_back(additional_literal);
     }
     return additional_literals;
@@ -53,7 +52,7 @@ GroundLiteralList typed_object_to_ground_literals(const ObjectImpl& object, PDDL
 
 Parameter typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
 {
-    auto translated_parameter = pddl_factories.parameters.template get_or_create<ParameterImpl>(parameter.get_variable(), TypeList {});
+    auto translated_parameter = pddl_factories.get_or_create_parameter(parameter.get_variable(), TypeList {});
     return translated_parameter;
 }
 
@@ -63,11 +62,10 @@ ConditionList typed_parameter_to_condition_literals(const ParameterImpl& paramet
     auto types = collect_types_from_type_hierarchy(parameter.get_bases());
     for (const auto& type : types)
     {
-        auto condition = pddl_factories.conditions.template get_or_create<ConditionLiteralImpl>(pddl_factories.literals.template get_or_create<LiteralImpl>(
+        auto condition = pddl_factories.get_or_create_condition_literal(pddl_factories.get_or_create_literal(
             false,
-            pddl_factories.atoms.template get_or_create<AtomImpl>(
-                type_to_predicate(*type, pddl_factories),
-                TermList { pddl_factories.terms.template get_or_create<TermVariableImpl>(parameter.get_variable()) })));
+            pddl_factories.get_or_create_atom(type_to_predicate(*type, pddl_factories),
+                                              TermList { pddl_factories.get_or_create_term_variable(parameter.get_variable()) })));
         conditions.push_back(condition);
     }
     return conditions;
@@ -98,40 +96,40 @@ TypeList collect_types_from_type_hierarchy(const TypeList& type_list)
 
 Condition flatten_conjunctions(const ConditionAndImpl& condition, PDDLFactories& pddl_factories)
 {
-    auto parts = ConditionSet {};
+    auto parts = ConditionList {};
     for (const auto& nested_condition : condition.get_conditions())
     {
         if (const auto and_condition = std::get_if<ConditionAndImpl>(nested_condition))
         {
             const auto nested_parts = std::get_if<ConditionAndImpl>(flatten_conjunctions(*and_condition, pddl_factories));
 
-            parts.insert(nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
+            parts.insert(parts.end(), nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
         }
         else
         {
-            parts.insert(nested_condition);
+            parts.push_back(nested_condition);
         }
     }
-    return pddl_factories.conditions.template get_or_create<ConditionAndImpl>(ConditionList(parts.begin(), parts.end()));
+    return pddl_factories.get_or_create_condition_and(uniquify_elements(parts));
 }
 
 Condition flatten_disjunctions(const ConditionOrImpl& condition, PDDLFactories& pddl_factories)
 {
-    auto parts = ConditionSet {};
+    auto parts = ConditionList {};
     for (const auto& nested_condition : condition.get_conditions())
     {
         if (const auto or_condition = std::get_if<ConditionOrImpl>(nested_condition))
         {
             const auto nested_parts = std::get_if<ConditionOrImpl>(flatten_disjunctions(*or_condition, pddl_factories));
 
-            parts.insert(nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
+            parts.insert(parts.end(), nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
         }
         else
         {
-            parts.insert(nested_condition);
+            parts.push_back(nested_condition);
         }
     }
-    return pddl_factories.conditions.template get_or_create<ConditionOrImpl>(ConditionList(parts.begin(), parts.end()));
+    return pddl_factories.get_or_create_condition_or(uniquify_elements(parts));
 }
 
 Condition flatten_existential_quantifier(const ConditionExistsImpl& condition, PDDLFactories& pddl_factories)
@@ -142,9 +140,9 @@ Condition flatten_existential_quantifier(const ConditionExistsImpl& condition, P
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition->get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(parameters, nested_condition->get_condition());
+        return pddl_factories.get_or_create_condition_exists(parameters, nested_condition->get_condition());
     }
-    return pddl_factories.conditions.template get_or_create<ConditionExistsImpl>(condition.get_parameters(), condition.get_condition());
+    return pddl_factories.get_or_create_condition_exists(condition.get_parameters(), condition.get_condition());
 }
 
 Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDDLFactories& pddl_factories)
@@ -155,9 +153,9 @@ Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDD
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition->get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_factories.conditions.template get_or_create<ConditionForallImpl>(parameters, nested_condition->get_condition());
+        return pddl_factories.get_or_create_condition_forall(parameters, nested_condition->get_condition());
     }
-    return pddl_factories.conditions.template get_or_create<ConditionForallImpl>(condition.get_parameters(), condition.get_condition());
+    return pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition());
 }
 
 void collect_free_variables_recursively(const ConditionImpl& condition, VariableSet& ref_quantified_variables, VariableSet& ref_free_variables)

@@ -26,30 +26,29 @@ FunctionExpressionVisitor::FunctionExpressionVisitor(PDDLFactories& factories_) 
 
 FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionNumberImpl& node)
 {
-    return factories.function_expressions.get_or_create<FunctionExpressionNumberImpl>(node.get_number());
+    return factories.get_or_create_function_expression_number(node.get_number());
 }
 
 FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& node)
 {
-    return factories.function_expressions.get_or_create<FunctionExpressionBinaryOperatorImpl>(node.get_binary_operator(),
-                                                                                              parse(node.get_left_function_expression(), factories),
-                                                                                              parse(node.get_right_function_expression(), factories));
+    return factories.get_or_create_function_expression_binary_operator(node.get_binary_operator(),
+                                                                       parse(node.get_left_function_expression(), factories),
+                                                                       parse(node.get_right_function_expression(), factories));
 }
 
 FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionMultiOperatorImpl& node)
 {
-    return factories.function_expressions.get_or_create<FunctionExpressionMultiOperatorImpl>(node.get_multi_operator(),
-                                                                                             parse(node.get_function_expressions(), factories));
+    return factories.get_or_create_function_expression_multi_operator(node.get_multi_operator(), parse(node.get_function_expressions(), factories));
 }
 
 FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionMinusImpl& node)
 {
-    return factories.function_expressions.get_or_create<FunctionExpressionMinusImpl>(parse(node.get_function_expression(), factories));
+    return factories.get_or_create_function_expression_minus(parse(node.get_function_expression(), factories));
 }
 
 FunctionExpression FunctionExpressionVisitor::operator()(const loki::pddl::FunctionExpressionFunctionImpl& node)
 {
-    return factories.function_expressions.get_or_create<FunctionExpressionFunctionImpl>(parse(node.get_function(), factories));
+    return factories.get_or_create_function_expression_function(parse(node.get_function(), factories));
 }
 
 FunctionExpression parse(loki::pddl::FunctionExpression function_expression, PDDLFactories& factories)

@@ -25,7 +25,7 @@ namespace mimir
 {
 GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories)
 {
-    return factories.ground_atoms.get_or_create<GroundAtomImpl>(parse(ground_atom->get_predicate(), factories), parse(ground_atom->get_objects(), factories));
+    return factories.get_or_create_ground_atom(parse(ground_atom->get_predicate(), factories), parse(ground_atom->get_objects(), factories));
 }
 
 GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories)

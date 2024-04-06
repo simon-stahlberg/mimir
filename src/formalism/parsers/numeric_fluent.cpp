@@ -25,7 +25,7 @@ namespace mimir
 {
 NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories)
 {
-    return factories.numeric_fluents.get_or_create<NumericFluentImpl>(parse(numeric_fluent->get_function(), factories), numeric_fluent->get_number());
+    return factories.get_or_create_numeric_fluent(parse(numeric_fluent->get_function(), factories), numeric_fluent->get_number());
 }
 
 NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories)

@@ -40,7 +40,7 @@ Condition TypeTranslator::translate_impl(const ConditionExistsImpl& condition)
     }
     conditions.push_back(this->translate(*condition.get_condition()));
 
-    auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(conditions);
+    auto translated_condition = this->m_pddl_factories.get_or_create_condition_and(conditions);
 
     return translated_condition;
 }
@@ -59,9 +59,9 @@ Condition TypeTranslator::translate_impl(const ConditionForallImpl& condition)
     }
     conditions.push_back(this->translate(*condition.get_condition()));
 
-    auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(conditions);
+    auto translated_condition = this->m_pddl_factories.get_or_create_condition_and(conditions);
 
-    return this->m_pddl_factories.conditions.template get_or_create<ConditionForallImpl>(translated_parameters, translated_condition);
+    return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
 Effect TypeTranslator::translate_impl(const EffectConditionalForallImpl& effect)
@@ -76,14 +76,14 @@ Effect TypeTranslator::translate_impl(const EffectConditionalForallImpl& effect)
         auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
-    auto translated_condition = this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(conditions);
+    auto translated_condition = this->m_pddl_factories.get_or_create_condition_and(conditions);
 
     // Translate effect
     auto translated_effect = this->translate(*effect.get_effect());
 
-    return this->m_pddl_factories.effects.template get_or_create<EffectConditionalForallImpl>(
+    return this->m_pddl_factories.get_or_create_effect_conditional_forall(
         translated_parameters,
-        this->m_pddl_factories.effects.template get_or_create<EffectConditionalWhenImpl>(translated_condition, translated_effect));
+        this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect));
 }
 
 Action TypeTranslator::translate_impl(const ActionImpl& action)
@@ -102,14 +102,10 @@ Action TypeTranslator::translate_impl(const ActionImpl& action)
     {
         conditions.push_back(this->translate(*action.get_condition().value()));
     }
-    auto translated_condition =
-        conditions.empty() ? std::nullopt : std::optional<Condition>(this->m_pddl_factories.conditions.template get_or_create<ConditionAndImpl>(conditions));
+    auto translated_condition = conditions.empty() ? std::nullopt : std::optional<Condition>(this->m_pddl_factories.get_or_create_condition_and(conditions));
+    auto translated_effect = action.get_effect().has_value() ? std::optional<Effect>(this->translate(*action.get_effect().value())) : std::nullopt;
 
-    return this->m_pddl_factories.actions.template get_or_create<ActionImpl>(
-        action.get_name(),
-        translated_parameters,
-        translated_condition,
-        (action.get_effect().has_value() ? std::optional<Effect>(this->translate(*action.get_effect().value())) : std::nullopt));
+    return this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
 }
 
 Domain TypeTranslator::translate_impl(const DomainImpl& domain)
@@ -117,7 +113,7 @@ Domain TypeTranslator::translate_impl(const DomainImpl& domain)
     // Remove :typing requirement
     auto requirements_enum_set = domain.get_requirements()->get_requirements();
     requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
-    auto translated_requirements = this->m_pddl_factories.requirements.template get_or_create<RequirementsImpl>(requirements_enum_set);
+    auto translated_requirements = this->m_pddl_factories.get_or_create_requirements(requirements_enum_set);
 
     // Make constants untyped
     auto translated_constants = ObjectList {};
@@ -135,14 +131,14 @@ Domain TypeTranslator::translate_impl(const DomainImpl& domain)
         translated_predicates.push_back(type_to_predicate(*type, this->m_pddl_factories));
     }
 
-    auto translated_domain = this->m_pddl_factories.domains.template get_or_create<DomainImpl>(domain.get_name(),
-                                                                                               translated_requirements,
-                                                                                               TypeList {},
-                                                                                               translated_constants,
-                                                                                               translated_predicates,
-                                                                                               this->translate(domain.get_functions()),
-                                                                                               this->translate(domain.get_actions()),
-                                                                                               this->translate(domain.get_derived_predicates()));
+    auto translated_domain = this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+                                                                         translated_requirements,
+                                                                         TypeList {},
+                                                                         translated_constants,
+                                                                         translated_predicates,
+                                                                         this->translate(domain.get_functions()),
+                                                                         this->translate(domain.get_actions()),
+                                                                         this->translate(domain.get_derived_predicates()));
     return translated_domain;
 }
 
@@ -151,7 +147,7 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
     // Remove :typing requirement
     auto requirements_enum_set = problem.get_requirements()->get_requirements();
     requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
-    auto translated_requirements = this->m_pddl_factories.requirements.template get_or_create<RequirementsImpl>(requirements_enum_set);
+    auto translated_requirements = this->m_pddl_factories.get_or_create_requirements(requirements_enum_set);
 
     // Make objects untyped
     auto translated_objects = ObjectList {};
@@ -176,7 +172,7 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
     auto translated_initial_literals = this->translate(problem.get_initial_literals());
     translated_initial_literals.insert(translated_initial_literals.end(), additional_initial_literals.begin(), additional_initial_literals.end());
 
-    auto translated_problem = this->m_pddl_factories.problems.template get_or_create<ProblemImpl>(
+    auto translated_problem = this->m_pddl_factories.get_or_create_problem(
         this->translate(*problem.get_domain()),
         problem.get_name(),
         translated_requirements,

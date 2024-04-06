@@ -25,7 +25,7 @@ namespace mimir
 {
 Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories)
 {
-    return factories.parameters.get_or_create<ParameterImpl>(parse(parameter->get_variable(), factories), parse(parameter->get_bases(), factories));
+    return factories.get_or_create_parameter(parse(parameter->get_variable(), factories), parse(parameter->get_bases(), factories));
 }
 
 ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories)

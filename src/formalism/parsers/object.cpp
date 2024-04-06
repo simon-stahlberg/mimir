@@ -24,7 +24,7 @@ namespace mimir
 {
 Object parse(loki::pddl::Object object, PDDLFactories& factories)
 {
-    return factories.objects.get_or_create<ObjectImpl>(object->get_name(), parse(object->get_bases(), factories));
+    return factories.get_or_create_object(object->get_name(), parse(object->get_bases(), factories));
 }
 
 ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories)

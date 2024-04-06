@@ -49,7 +49,7 @@ private:
         {
             if (variable.is_constant())
             {
-                out_terms.emplace_back(m_pddl_factories.objects.get(variable.get_value()));
+                out_terms.emplace_back(m_pddl_factories.get_object(variable.get_value()));
             }
             else
             {
@@ -155,7 +155,7 @@ private:
 
         for (const auto& object_id : objects_by_parameter_type.at(0))
         {
-            auto grounded_action = ground_action(flat_action, { m_pddl_factories.objects.get(object_id) });
+            auto grounded_action = ground_action(flat_action, { m_pddl_factories.get_object(object_id) });
 
             if (grounded_action.is_applicable(state))
             {
@@ -209,7 +209,7 @@ private:
                 const auto& vertex_assignment = to_vertex_assignment.at(vertex_id);
                 const auto parameter_index = vertex_assignment.parameter_index;
                 const auto object_id = vertex_assignment.object_id;
-                terms[parameter_index] = m_pddl_factories.objects.get(object_id);
+                terms[parameter_index] = m_pddl_factories.get_object(object_id);
             }
 
             const auto grounded_action = ground_action(flat_action, std::move(terms));

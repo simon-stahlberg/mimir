@@ -24,7 +24,7 @@ namespace mimir
 {
 Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories)
 {
-    return factories.predicates.get_or_create<PredicateImpl>(predicate->get_name(), parse(predicate->get_parameters(), factories));
+    return factories.get_or_create_predicate(predicate->get_name(), parse(predicate->get_parameters(), factories));
 }
 
 PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories)

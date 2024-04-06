@@ -24,7 +24,7 @@ namespace mimir
 {
 OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories)
 {
-    return factories.optimization_metrics.get_or_create<OptimizationMetricImpl>(optimization_metric->get_optimization_metric(),
-                                                                                parse(optimization_metric->get_function_expression(), factories));
+    return factories.get_or_create_optimization_metric(optimization_metric->get_optimization_metric(),
+                                                       parse(optimization_metric->get_function_expression(), factories));
 }
 }

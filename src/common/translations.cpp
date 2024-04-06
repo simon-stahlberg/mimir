@@ -52,7 +52,7 @@ void to_ground_atoms(const ConstBitsetView& bitset, const PDDLFactories& pddl_fa
 
     for (const auto& atom_id : bitset)
     {
-        out_ground_atoms.emplace_back(pddl_factories.ground_atoms.get(atom_id));
+        out_ground_atoms.emplace_back(pddl_factories.get_ground_atom(atom_id));
     }
 }
 

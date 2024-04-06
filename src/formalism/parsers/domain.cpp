@@ -30,13 +30,13 @@ namespace mimir
 {
 Domain parse(loki::pddl::Domain domain, PDDLFactories& factories)
 {
-    return factories.domains.get_or_create<DomainImpl>(domain->get_name(),
-                                                       parse(domain->get_requirements(), factories),
-                                                       parse(domain->get_types(), factories),
-                                                       parse(domain->get_constants(), factories),
-                                                       parse(domain->get_predicates(), factories),
-                                                       parse(domain->get_functions(), factories),
-                                                       parse(domain->get_actions(), factories),
-                                                       parse(domain->get_derived_predicates(), factories));
+    return factories.get_or_create_domain(domain->get_name(),
+                                          parse(domain->get_requirements(), factories),
+                                          parse(domain->get_types(), factories),
+                                          parse(domain->get_constants(), factories),
+                                          parse(domain->get_predicates(), factories),
+                                          parse(domain->get_functions(), factories),
+                                          parse(domain->get_actions(), factories),
+                                          parse(domain->get_derived_predicates(), factories));
 }
 }

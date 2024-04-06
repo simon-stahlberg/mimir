@@ -74,7 +74,7 @@ std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std:
 
     for (const auto& identifier : atom_identifiers)
     {
-        const auto& ground_atom = factories.ground_atoms.get(identifier);
+        const auto& ground_atom = factories.get_ground_atom(identifier);
         const auto& arity = ground_atom->get_arity();
         const auto& predicate = ground_atom->get_predicate();
         const auto& arguments = ground_atom->get_objects();

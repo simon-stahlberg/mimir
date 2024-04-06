@@ -23,6 +23,6 @@ namespace mimir
 {
 Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories)
 {
-    return factories.requirements.get_or_create<RequirementsImpl>(requirements->get_requirements());
+    return factories.get_or_create_requirements(requirements->get_requirements());
 }
 }

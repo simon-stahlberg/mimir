@@ -25,8 +25,8 @@ namespace mimir
 {
 DerivedPredicate parse(loki::pddl::DerivedPredicate derived_predicate, PDDLFactories& factories)
 {
-    return factories.derived_predicates.get_or_create<DerivedPredicateImpl>(parse(derived_predicate->get_predicate(), factories),
-                                                                            parse(derived_predicate->get_condition(), factories));
+    return factories.get_or_create_derived_predicate(parse(derived_predicate->get_predicate(), factories),
+                                                     parse(derived_predicate->get_condition(), factories));
 }
 
 extern DerivedPredicateList parse(loki::pddl::DerivedPredicateList derived_predicate_list, PDDLFactories& factories)

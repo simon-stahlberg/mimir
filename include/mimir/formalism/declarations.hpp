@@ -97,7 +97,6 @@ using ConditionImpl =
     std::variant<ConditionLiteralImpl, ConditionAndImpl, ConditionOrImpl, ConditionNotImpl, ConditionImplyImpl, ConditionExistsImpl, ConditionForallImpl>;
 using Condition = const ConditionImpl*;
 using ConditionList = std::vector<Condition>;
-using ConditionSet = std::unordered_set<Condition>;
 
 class EffectLiteralImpl;
 class EffectAndImpl;
