@@ -139,6 +139,7 @@ using DerivedPredicateList = std::vector<DerivedPredicate>;
 class AxiomImpl;
 using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;
+using AxiomSet = std::unordered_set<Axiom>;
 
 class DomainImpl;
 using Domain = const DomainImpl*;

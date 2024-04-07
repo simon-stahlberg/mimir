@@ -40,11 +40,11 @@ namespace mimir
  * 11. exists(vars1, exists(vars2, A)) => exists(vars1+vars2, A)
  * 12. forall(vars1, forall(vars2, A)) => forall(vars1+vars2, A)
  */
-class NNFTranslator : public BaseTranslator<NNFTranslator>
+class ToNNFTranslator : public BaseTranslator<ToNNFTranslator>
 {
 private:
     /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<NNFTranslator>;
+    friend class BaseTranslator<ToNNFTranslator>;
 
     // Provide default implementations
     using BaseTranslator::prepare_impl;
@@ -100,7 +100,7 @@ private:
     Problem run_impl(const ProblemImpl& problem);
 
 public:
-    explicit NNFTranslator(PDDLFactories& pddl_factories);
+    explicit ToNNFTranslator(PDDLFactories& pddl_factories);
 };
 
 }

@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/translators/disjunctive_normal_form.hpp"
+#include "mimir/formalism/translators/to_disjunctive_normal_form.hpp"
 
 #include "mimir/formalism/translators/utils.hpp"
 
 namespace mimir
 {
 
-Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition)
+Condition ToDNFTranslator::translate_impl(const ConditionAndImpl& condition)
 {
     auto disjunctive_parts = ConditionList {};
     auto other_parts = ConditionList {};
@@ -81,7 +81,7 @@ Condition DNFTranslator::translate_impl(const ConditionAndImpl& condition)
     return this->m_pddl_factories.get_or_create_condition_or(uniquify_elements(result_parts));
 }
 
-Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
+Condition ToDNFTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_condition = this->translate(*condition.get_condition());
@@ -97,7 +97,7 @@ Condition DNFTranslator::translate_impl(const ConditionExistsImpl& condition)
     return this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, translated_condition);
 }
 
-Condition DNFTranslator::translate_impl(const ConditionForallImpl& condition)
+Condition ToDNFTranslator::translate_impl(const ConditionForallImpl& condition)
 {
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_condition = this->translate(*condition.get_condition());
@@ -113,8 +113,8 @@ Condition DNFTranslator::translate_impl(const ConditionForallImpl& condition)
     return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
-Problem DNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(*NNFTranslator(m_pddl_factories).translate(problem)); }
+Problem ToDNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(*ToNNFTranslator(m_pddl_factories).translate(problem)); }
 
-DNFTranslator::DNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
+ToDNFTranslator::ToDNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
 
 }

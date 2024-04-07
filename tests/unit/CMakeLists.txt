@@ -15,9 +15,9 @@ set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 
 add_executable(${TEST_NAME}
     "algorithms/memory_pool.cpp"
-    "formalism/translators/disjunctive_normal_form.cpp"
-    "formalism/translators/negation_normal_form.cpp"
-    "formalism/translators/types.cpp"
+    "formalism/translators/to_disjunctive_normal_form.cpp"
+    "formalism/translators/to_negation_normal_form.cpp"
+    "formalism/translators/remove_types.cpp"
     "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"

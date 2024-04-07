@@ -23,11 +23,11 @@ TEST(MimirTests, FormalismTranslatorsTypes)
     std::cout << *domain << std::endl;
     std::cout << *problem << std::endl;
 
-    auto type_translator = TypeTranslator(parser.get_factories());
+    auto type_translator = RemoveTypesTranslator(parser.get_factories());
     auto translated_problem = type_translator.run(*problem);
     auto translated_domain = translated_problem->get_domain();
 
-    auto nnf_translator = NNFTranslator(parser.get_factories());
+    auto nnf_translator = ToNNFTranslator(parser.get_factories());
     translated_problem = nnf_translator.run(*translated_problem);
     translated_domain = translated_problem->get_domain();
 

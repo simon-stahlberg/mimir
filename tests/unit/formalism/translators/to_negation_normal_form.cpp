@@ -7,10 +7,10 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, FormalismTranslatorsDisjunctiveNormalForm)
+TEST(MimirTests, FormalismTranslatorsNegationNormalForm)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "schedule/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "schedule/problem.pddl");
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic/problem.pddl");
 
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
@@ -23,8 +23,8 @@ TEST(MimirTests, FormalismTranslatorsDisjunctiveNormalForm)
     std::cout << *domain << std::endl;
     std::cout << *problem << std::endl;
 
-    auto dnf_translator = DNFTranslator(parser.get_factories());
-    auto translated_problem = dnf_translator.run(*problem);
+    auto nnf_translator = ToNNFTranslator(parser.get_factories());
+    auto translated_problem = nnf_translator.run(*problem);
     auto translated_domain = translated_problem->get_domain();
 
     std::cout << "\nTranslated domain and problem" << std::endl;

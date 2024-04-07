@@ -15,21 +15,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSLATORS_TYPES_HPP_
-#define MIMIR_FORMALISM_TRANSLATORS_TYPES_HPP_
+#ifndef MIMIR_FORMALISM_TRANSLATORS_DISJUNCTIVE_NORMAL_FORM_HPP_
+#define MIMIR_FORMALISM_TRANSLATORS_DISJUNCTIVE_NORMAL_FORM_HPP_
 
 #include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
 namespace mimir
 {
 /**
- * Compile away types.
+ * Translate formulas to disjunctive normal form (DNF) in bottom-up manner using the following rules.
+ *
+ * First, applies NNF translator follow by:
+ *
+ * 1. A and (B or C)  =>  A and B or A and C
+ * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
+ * 3. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
  */
-class TypeTranslator : public BaseTranslator<TypeTranslator>
+class ToDNFTranslator : public BaseTranslator<ToDNFTranslator>
 {
 private:
     /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<TypeTranslator>;
+    friend class BaseTranslator<ToDNFTranslator>;
 
     // Provide default implementations
     using BaseTranslator::prepare_impl;
@@ -38,20 +45,28 @@ private:
     /**
      * Translate
      */
-    Object translate_impl(const ObjectImpl& object);
-    Parameter translate_impl(const ParameterImpl& parameter);
+
+    /**
+     * Apply conjunctive disjunctive distributivity.
+     *
+     * 1. A and (B or C)  =>  A and B or A and C
+     */
+    Condition translate_impl(const ConditionAndImpl& condition);
+    /**
+     * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
+     */
     Condition translate_impl(const ConditionExistsImpl& condition);
+    /**
+     * 3. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
+     */
     Condition translate_impl(const ConditionForallImpl& condition);
-    Effect translate_impl(const EffectConditionalForallImpl& effect);
-    Action translate_impl(const ActionImpl& action);
-    Domain translate_impl(const DomainImpl& domain);
-    Problem translate_impl(const ProblemImpl& problem);
 
     Problem run_impl(const ProblemImpl& problem);
 
 public:
-    explicit TypeTranslator(PDDLFactories& pddl_factories);
+    explicit ToDNFTranslator(PDDLFactories& pddl_factories);
 };
 
 }
+
 #endif

@@ -15,18 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/translators/types.hpp"
+#include "mimir/formalism/translators/remove_types.hpp"
 
 #include "mimir/formalism/translators/utils.hpp"
 
 namespace mimir
 {
 
-Object TypeTranslator::translate_impl(const ObjectImpl& object) { return typed_object_to_untyped_object(object, this->m_pddl_factories); }
+Object RemoveTypesTranslator::translate_impl(const ObjectImpl& object) { return typed_object_to_untyped_object(object, this->m_pddl_factories); }
 
-Parameter TypeTranslator::translate_impl(const ParameterImpl& parameter) { return typed_parameter_to_untyped_parameter(parameter, this->m_pddl_factories); }
+Parameter RemoveTypesTranslator::translate_impl(const ParameterImpl& parameter)
+{
+    return typed_parameter_to_untyped_parameter(parameter, this->m_pddl_factories);
+}
 
-Condition TypeTranslator::translate_impl(const ConditionExistsImpl& condition)
+Condition RemoveTypesTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
     // Translate parameters
     auto translated_parameters = this->translate(condition.get_parameters());
@@ -45,7 +48,7 @@ Condition TypeTranslator::translate_impl(const ConditionExistsImpl& condition)
     return translated_condition;
 }
 
-Condition TypeTranslator::translate_impl(const ConditionForallImpl& condition)
+Condition RemoveTypesTranslator::translate_impl(const ConditionForallImpl& condition)
 {
     // Translate parameters
     auto translated_parameters = this->translate(condition.get_parameters());
@@ -64,7 +67,7 @@ Condition TypeTranslator::translate_impl(const ConditionForallImpl& condition)
     return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
-Effect TypeTranslator::translate_impl(const EffectConditionalForallImpl& effect)
+Effect RemoveTypesTranslator::translate_impl(const EffectConditionalForallImpl& effect)
 {
     // Translate parameters
     auto translated_parameters = this->translate(effect.get_parameters());
@@ -86,7 +89,7 @@ Effect TypeTranslator::translate_impl(const EffectConditionalForallImpl& effect)
         this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect));
 }
 
-Action TypeTranslator::translate_impl(const ActionImpl& action)
+Action RemoveTypesTranslator::translate_impl(const ActionImpl& action)
 {
     // Translate parameters
     auto translated_parameters = this->translate(action.get_parameters());
@@ -108,7 +111,7 @@ Action TypeTranslator::translate_impl(const ActionImpl& action)
     return this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
 }
 
-Domain TypeTranslator::translate_impl(const DomainImpl& domain)
+Domain RemoveTypesTranslator::translate_impl(const DomainImpl& domain)
 {
     // Remove :typing requirement
     auto requirements_enum_set = domain.get_requirements()->get_requirements();
@@ -142,7 +145,7 @@ Domain TypeTranslator::translate_impl(const DomainImpl& domain)
     return translated_domain;
 }
 
-Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
+Problem RemoveTypesTranslator::translate_impl(const ProblemImpl& problem)
 {
     // Remove :typing requirement
     auto requirements_enum_set = problem.get_requirements()->get_requirements();
@@ -185,8 +188,8 @@ Problem TypeTranslator::translate_impl(const ProblemImpl& problem)
     return translated_problem;
 }
 
-Problem TypeTranslator::run_impl(const ProblemImpl& problem) { return self().translate(problem); }
+Problem RemoveTypesTranslator::run_impl(const ProblemImpl& problem) { return self().translate(problem); }
 
-TypeTranslator::TypeTranslator(PDDLFactories& pddl_factories) : BaseTranslator<TypeTranslator>(pddl_factories) {}
+RemoveTypesTranslator::RemoveTypesTranslator(PDDLFactories& pddl_factories) : BaseTranslator<RemoveTypesTranslator>(pddl_factories) {}
 
 }

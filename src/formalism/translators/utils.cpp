@@ -160,10 +160,27 @@ Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDD
 
 void collect_free_variables_recursively(const ConditionImpl& condition, VariableSet& ref_quantified_variables, VariableSet& ref_free_variables)
 {
-    if (const auto condition_imply = std::get_if<ConditionImplyImpl>(&condition))
+    if (const auto condition_literal = std::get_if<ConditionLiteralImpl>(&condition))
+    {
+        for (const auto& term : condition_literal->get_literal()->get_atom()->get_terms())
+        {
+            if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+            {
+                if (!ref_free_variables.count(term_variable->get_variable()))
+                {
+                    ref_free_variables.insert(term_variable->get_variable());
+                }
+            }
+        }
+    }
+    else if (const auto condition_imply = std::get_if<ConditionImplyImpl>(&condition))
     {
         collect_free_variables_recursively(*condition_imply->get_condition_left(), ref_quantified_variables, ref_free_variables);
         collect_free_variables_recursively(*condition_imply->get_condition_right(), ref_quantified_variables, ref_free_variables);
+    }
+    else if (const auto condition_not = std::get_if<ConditionNotImpl>(&condition))
+    {
+        collect_free_variables_recursively(*condition_not->get_condition(), ref_quantified_variables, ref_free_variables);
     }
     else if (const auto condition_and = std::get_if<ConditionAndImpl>(&condition))
     {
@@ -172,7 +189,29 @@ void collect_free_variables_recursively(const ConditionImpl& condition, Variable
             collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
         }
     }
-    // TODO
+    else if (const auto condition_or = std::get_if<ConditionOrImpl>(&condition))
+    {
+        for (const auto& part : condition_or->get_conditions())
+        {
+            collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
+        }
+    }
+    else if (const auto condition_exists = std::get_if<ConditionExistsImpl>(&condition))
+    {
+        for (const auto& parameter : condition_exists->get_parameters())
+        {
+            ref_quantified_variables.insert(parameter->get_variable());
+        }
+        collect_free_variables_recursively(*condition_exists->get_condition(), ref_quantified_variables, ref_free_variables);
+    }
+    else if (const auto condition_forall = std::get_if<ConditionForallImpl>(&condition))
+    {
+        for (const auto& parameter : condition_forall->get_parameters())
+        {
+            ref_quantified_variables.insert(parameter->get_variable());
+        }
+        collect_free_variables_recursively(*condition_forall->get_condition(), ref_quantified_variables, ref_free_variables);
+    }
 }
 
 VariableList collect_free_variables(const ConditionImpl& condition)

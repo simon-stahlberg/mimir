@@ -19,7 +19,10 @@
 #define MIMIR_FORMALISM_TRANSLATORS_UNIVERSAL_QUANTIFIERS_HPP_
 
 #include "mimir/formalism/translators/base.hpp"
-#include "mimir/formalism/translators/negation_normal_form.hpp"
+#include "mimir/formalism/translators/scopes.hpp"
+#include "mimir/formalism/translators/to_negation_normal_form.hpp"
+
+#include <deque>
 
 namespace mimir
 {
@@ -27,25 +30,29 @@ namespace mimir
 /**
  * Compile away universal quantifiers by introducing axioms.
  */
-class UniversalQuantifierTranslator : public BaseTranslator<UniversalQuantifierTranslator>
+class RemoveUniversalQuantifierTranslator : public BaseTranslator<RemoveUniversalQuantifierTranslator>
 {
 private:
     /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<UniversalQuantifierTranslator>;
+    friend class BaseTranslator<RemoveUniversalQuantifierTranslator>;
 
     // Provide default implementations
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
-    NNFTranslator m_nnf_translator;
+    ToNNFTranslator m_nnf_translator;
+    ScopeStack m_scopes;
 
-    std::unordered_map<const ConditionForallImpl*, Axiom> m_condition_to_axiom;
-    std::unordered_map<Axiom, Condition> m_axiom_to_literal;
+    AxiomSet m_axioms;
+    std::unordered_map<const ConditionForallImpl*, Condition> m_condition_to_substituted_condition;
 
+    /// @brief Translate the condition while keeping track of scopes
+    Condition translate_impl(const ConditionExistsImpl& condition);
     Condition translate_impl(const ConditionForallImpl& condition);
+    Action translate_impl(const ActionImpl& action);
 
 public:
-    explicit UniversalQuantifierTranslator(PDDLFactories& pddl_factories);
+    explicit RemoveUniversalQuantifierTranslator(PDDLFactories& pddl_factories);
 };
 }
 

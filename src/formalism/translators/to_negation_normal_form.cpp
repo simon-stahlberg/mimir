@@ -15,20 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/translators/negation_normal_form.hpp"
+#include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
 #include "mimir/formalism/translators/utils.hpp"
 
 namespace mimir
 {
 
-Condition NNFTranslator::translate_impl(const ConditionImplyImpl& condition)
+Condition ToNNFTranslator::translate_impl(const ConditionImplyImpl& condition)
 {
     return this->translate(*this->m_pddl_factories.get_or_create_condition_or(
         ConditionList { this->m_pddl_factories.get_or_create_condition_not(condition.get_condition_left()), condition.get_condition_right() }));
 }
 
-Condition NNFTranslator::translate_impl(const ConditionNotImpl& condition)
+Condition ToNNFTranslator::translate_impl(const ConditionNotImpl& condition)
 {
     if (const auto condition_lit = std::get_if<ConditionLiteralImpl>(condition.get_condition()))
     {
@@ -88,19 +88,19 @@ Condition NNFTranslator::translate_impl(const ConditionNotImpl& condition)
     throw std::runtime_error("Missing implementation to push negations inwards.");
 }
 
-Condition NNFTranslator::translate_impl(const ConditionAndImpl& condition)
+Condition ToNNFTranslator::translate_impl(const ConditionAndImpl& condition)
 {
     return flatten_conjunctions(*std::get_if<ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
                                 this->m_pddl_factories);
 }
 
-Condition NNFTranslator::translate_impl(const ConditionOrImpl& condition)
+Condition ToNNFTranslator::translate_impl(const ConditionOrImpl& condition)
 {
     return flatten_disjunctions(*std::get_if<ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
                                 this->m_pddl_factories);
 }
 
-Condition NNFTranslator::translate_impl(const ConditionExistsImpl& condition)
+Condition ToNNFTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
     return flatten_existential_quantifier(
         *std::get_if<ConditionExistsImpl>(
@@ -108,7 +108,7 @@ Condition NNFTranslator::translate_impl(const ConditionExistsImpl& condition)
         this->m_pddl_factories);
 }
 
-Condition NNFTranslator::translate_impl(const ConditionForallImpl& condition)
+Condition ToNNFTranslator::translate_impl(const ConditionForallImpl& condition)
 {
     return flatten_universal_quantifier(
         *std::get_if<ConditionForallImpl>(
@@ -116,8 +116,8 @@ Condition NNFTranslator::translate_impl(const ConditionForallImpl& condition)
         this->m_pddl_factories);
 }
 
-Problem NNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
+Problem ToNNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
 
-NNFTranslator::NNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
+ToNNFTranslator::ToNNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
 
 }
