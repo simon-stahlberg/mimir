@@ -281,17 +281,17 @@ protected:
     template<typename Impl, typename TranslateFunc>
     auto cached_translated_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
     {
-        auto current = &impl;
-
-        // Access cache
-        auto it = cache.find(current);
+        // Access from cache
+        auto it = cache.find(&impl);
         if (it != cache.end())
         {
             return it->second;
         }
 
+        // Translate
         auto translated = translateFunc(impl);
 
+        // Insert into cache
         cache.emplace(&impl, translated);
 
         return translated;

@@ -30,17 +30,17 @@ namespace mimir
 /**
  * Compile away universal quantifiers by introducing axioms.
  */
-class RemoveUniversalQuantifierTranslator : public BaseTranslator<RemoveUniversalQuantifierTranslator>
+class RemoveUniversalQuantifiersTranslator : public BaseTranslator<RemoveUniversalQuantifiersTranslator>
 {
 private:
     /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<RemoveUniversalQuantifierTranslator>;
+    friend class BaseTranslator<RemoveUniversalQuantifiersTranslator>;
 
     // Provide default implementations
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
-    ToNNFTranslator m_nnf_translator;
+    ToNNFTranslator& m_to_nnf_translator;
     ScopeStack m_scopes;
 
     AxiomSet m_axioms;
@@ -52,7 +52,7 @@ private:
     Action translate_impl(const ActionImpl& action);
 
 public:
-    explicit RemoveUniversalQuantifierTranslator(PDDLFactories& pddl_factories);
+    RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
 };
 }
 

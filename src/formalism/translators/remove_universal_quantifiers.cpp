@@ -23,7 +23,7 @@ using namespace std::string_literals;
 
 namespace mimir
 {
-Condition RemoveUniversalQuantifierTranslator::translate_impl(const ConditionExistsImpl& condition)
+Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionExistsImpl& condition)
 {
     auto scope = m_scopes.open_scope();
 
@@ -37,7 +37,7 @@ Condition RemoveUniversalQuantifierTranslator::translate_impl(const ConditionExi
     return result;
 }
 
-Condition RemoveUniversalQuantifierTranslator::translate_impl(const ConditionForallImpl& condition)
+Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionForallImpl& condition)
 {
     // Access already computed axioms
     auto it = m_condition_to_substituted_condition.find(&condition);
@@ -56,7 +56,7 @@ Condition RemoveUniversalQuantifierTranslator::translate_impl(const ConditionFor
     // Note: axiom_condition may contain conjunctions or disjunctions
     const auto axiom_condition = this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
         condition.get_parameters(),
-        m_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
+        m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
 
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
     auto parameters = ParameterList {};
@@ -72,7 +72,7 @@ Condition RemoveUniversalQuantifierTranslator::translate_impl(const ConditionFor
     }
     parameters.shrink_to_fit();
 
-    const auto axiom_name = "@axiom("s + std::visit([](const auto& arg) { return arg.str(); }, *axiom_condition) + ")";
+    const auto axiom_name = "@axiom["s + std::visit([](const auto& arg) { return arg.str(); }, *axiom_condition) + "]";
     const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, parameters);
     const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
     auto substituted_condition = this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom));
@@ -86,9 +86,37 @@ Condition RemoveUniversalQuantifierTranslator::translate_impl(const ConditionFor
     return substituted_condition;
 }
 
-RemoveUniversalQuantifierTranslator::RemoveUniversalQuantifierTranslator(PDDLFactories& pddl_factories) :
+Action RemoveUniversalQuantifiersTranslator::translate_impl(const ActionImpl& action)
+{
+    return this->cached_translated_impl(
+        action,
+        m_translated_actions,
+        [this](const ActionImpl& arg)
+        {
+            auto& scope = this->m_scopes.open_scope();
+
+            for (const auto& parameter : arg.get_parameters())
+            {
+                scope.insert(parameter);
+            }
+
+            std::cout << arg.get_name() << std::endl;
+
+            auto translated_action = this->m_pddl_factories.get_or_create_action(
+                arg.get_name(),
+                arg.get_parameters(),
+                (arg.get_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_condition().value())) : std::nullopt),
+                arg.get_effect());
+
+            this->m_scopes.close_scope();
+
+            return translated_action;
+        });
+}
+
+RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseTranslator(pddl_factories),
-    m_nnf_translator(ToNNFTranslator(pddl_factories))
+    m_to_nnf_translator(to_nnf_translator)
 {
 }
 }

@@ -46,7 +46,7 @@ public:
         }
         if (m_parent_scope)
         {
-            m_parent_scope->get_parameter(variable);
+            return m_parent_scope->get_parameter(variable);
         }
         return std::nullopt;
     }
@@ -66,9 +66,10 @@ private:
 public:
     Scope& open_scope()
     {
-        m_stack.empty() ? m_stack.push_back(std::make_unique<Scope>()) : m_stack.push_back(std::make_unique<Scope>(m_stack.back().get()));
+        m_stack.empty() ? m_stack.push_back(std::make_unique<Scope>()) : m_stack.push_back(std::make_unique<Scope>(&get()));
         return get();
     }
+
     void close_scope()
     {
         assert(!m_stack.empty());

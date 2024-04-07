@@ -42,6 +42,8 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    ToNNFTranslator& m_to_nnf_translator;
+
     /**
      * Translate
      */
@@ -64,7 +66,7 @@ private:
     Problem run_impl(const ProblemImpl& problem);
 
 public:
-    explicit ToDNFTranslator(PDDLFactories& pddl_factories);
+    ToDNFTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
 };
 
 }

@@ -7,7 +7,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, FormalismTranslatorsDisjunctiveNormalForm)
+TEST(MimirTests, FormalismTranslatorsToDisjunctiveNormalForm)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "schedule/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "schedule/problem.pddl");
@@ -23,8 +23,9 @@ TEST(MimirTests, FormalismTranslatorsDisjunctiveNormalForm)
     std::cout << *domain << std::endl;
     std::cout << *problem << std::endl;
 
-    auto dnf_translator = ToDNFTranslator(parser.get_factories());
-    auto translated_problem = dnf_translator.run(*problem);
+    auto to_nnf_translator = ToNNFTranslator(parser.get_factories());
+    auto to_dnf_translator = ToDNFTranslator(parser.get_factories(), to_nnf_translator);
+    auto translated_problem = to_dnf_translator.run(*problem);
     auto translated_domain = translated_problem->get_domain();
 
     std::cout << "\nTranslated domain and problem" << std::endl;

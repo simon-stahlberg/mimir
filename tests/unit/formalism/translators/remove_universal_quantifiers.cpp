@@ -7,10 +7,10 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, FormalismTranslatorsRemoveTypes)
+TEST(MimirTests, FormalismTranslatorsRemoveUniversalQuantifiers)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic/problem.pddl");
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/problem.pddl");
 
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
@@ -29,6 +29,10 @@ TEST(MimirTests, FormalismTranslatorsRemoveTypes)
 
     auto to_nnf_translator = ToNNFTranslator(parser.get_factories());
     translated_problem = to_nnf_translator.run(*translated_problem);
+    translated_domain = translated_problem->get_domain();
+
+    auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(parser.get_factories(), to_nnf_translator);
+    translated_problem = remove_universal_quantifiers_translator.run(*translated_problem);
     translated_domain = translated_problem->get_domain();
 
     std::cout << "\nTranslated domain and problem" << std::endl;

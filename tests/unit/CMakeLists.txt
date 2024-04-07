@@ -18,6 +18,7 @@ add_executable(${TEST_NAME}
     "formalism/translators/to_disjunctive_normal_form.cpp"
     "formalism/translators/to_negation_normal_form.cpp"
     "formalism/translators/remove_types.cpp"
+    "formalism/translators/remove_universal_quantifiers.cpp"
     "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"

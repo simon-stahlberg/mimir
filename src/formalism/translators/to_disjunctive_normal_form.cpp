@@ -113,8 +113,12 @@ Condition ToDNFTranslator::translate_impl(const ConditionForallImpl& condition)
     return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
-Problem ToDNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(*ToNNFTranslator(m_pddl_factories).translate(problem)); }
+Problem ToDNFTranslator::run_impl(const ProblemImpl& problem) { return this->translate(*m_to_nnf_translator.translate(problem)); }
 
-ToDNFTranslator::ToDNFTranslator(PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
+ToDNFTranslator::ToDNFTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
+    BaseTranslator(pddl_factories),
+    m_to_nnf_translator(to_nnf_translator)
+{
+}
 
 }
