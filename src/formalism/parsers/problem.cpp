@@ -18,6 +18,7 @@
 #include "problem.hpp"
 
 #include "conditions.hpp"
+#include "derived_predicate.hpp"
 #include "domain.hpp"
 #include "ground_literal.hpp"
 #include "metric.hpp"
@@ -44,6 +45,7 @@ Problem parse(loki::pddl::Problem problem, PDDLFactories& factories)
                                            parse(problem->get_goal_condition(), factories),
                                            (problem->get_optimization_metric().has_value() ?
                                                 std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
-                                                std::nullopt));
+                                                std::nullopt),
+                                           DerivedPredicateList {});
 }
 }

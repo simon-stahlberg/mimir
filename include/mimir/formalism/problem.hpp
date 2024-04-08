@@ -38,6 +38,7 @@ private:
     NumericFluentList m_numeric_fluents;
     Condition m_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
+    DerivedPredicateList m_derived_predicates;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -49,7 +50,8 @@ private:
                 GroundLiteralList initial_literals,
                 NumericFluentList numeric_fluents,
                 Condition goal_condition,
-                std::optional<OptimizationMetric> optimization_metric);
+                std::optional<OptimizationMetric> optimization_metric,
+                DerivedPredicateList derived_predicates);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ProblemImpl, loki::Hash<ProblemImpl*>, loki::EqualTo<ProblemImpl*>>;
@@ -71,6 +73,7 @@ public:
     const NumericFluentList& get_numeric_fluents() const;
     const Condition& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
+    const DerivedPredicateList& get_derived_predicates() const;
 };
 }
 

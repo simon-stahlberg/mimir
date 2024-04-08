@@ -184,7 +184,8 @@ Problem RemoveTypesTranslator::translate_impl(const ProblemImpl& problem)
         this->translate(problem.get_numeric_fluents()),
         this->translate(*problem.get_goal_condition()),
         (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
-                                                         std::nullopt));
+                                                         std::nullopt),
+        this->translate(problem.get_derived_predicates()));
     return translated_problem;
 }
 

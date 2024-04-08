@@ -43,7 +43,7 @@ private:
     ToNNFTranslator& m_to_nnf_translator;
     ScopeStack m_scopes;
 
-    AxiomSet m_axioms;
+    DerivedPredicateSet m_axioms;
     std::unordered_map<const ConditionForallImpl*, Condition> m_condition_to_substituted_condition;
 
     /// @brief Translate the condition while keeping track of scopes
@@ -51,8 +51,13 @@ private:
     Condition translate_impl(const ConditionForallImpl& condition);
     Action translate_impl(const ActionImpl& action);
 
+    Problem run_impl(const ProblemImpl& problem);
+
 public:
     RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
+
+    /// @brief Return the generated axioms.
+    DerivedPredicateList get_axioms() const;
 };
 }
 

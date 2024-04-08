@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/derived_predicate.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -68,7 +67,6 @@ using ConditionFactory = loki::PDDLFactory<ConditionImpl>;
 using EffectFactory = loki::PDDLFactory<EffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
 using DerivedPredicateFactory = loki::PDDLFactory<DerivedPredicateImpl>;
-using AxiomFactory = loki::PDDLFactory<AxiomImpl>;
 using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
 using NumericFluentFactory = loki::PDDLFactory<NumericFluentImpl>;
 using DomainFactory = loki::PDDLFactory<DomainImpl>;
@@ -96,7 +94,6 @@ private:
     EffectFactory effects;
     ActionFactory actions;
     DerivedPredicateFactory derived_predicates;
-    AxiomFactory axioms;
     OptimizationMetricFactory optimization_metrics;
     NumericFluentFactory numeric_fluents;
     DomainFactory domains;
@@ -122,7 +119,6 @@ public:
         effects(EffectFactory(1000)),
         actions(ActionFactory(100)),
         derived_predicates(DerivedPredicateFactory(100)),
-        axioms(AxiomFactory(100)),
         optimization_metrics(OptimizationMetricFactory(10)),
         numeric_fluents(NumericFluentFactory(1000)),
         domains(DomainFactory(1)),
@@ -366,14 +362,6 @@ public:
         return derived_predicates.get_or_create<DerivedPredicateImpl>(std::move(predicate), std::move(condition));
     }
 
-    /// @brief Get or create an axiom for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(ParameterList parameters, Atom atom, Condition condition)
-    {
-        return axioms.get_or_create<AxiomImpl>(std::move(parameters), std::move(atom), std::move(condition));
-    }
-
     /// @brief Get or create an optimization metric for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
@@ -422,7 +410,8 @@ public:
                                   GroundLiteralList initial_literals,
                                   NumericFluentList numeric_fluents,
                                   Condition goal_condition,
-                                  std::optional<OptimizationMetric> optimization_metric)
+                                  std::optional<OptimizationMetric> optimization_metric,
+                                  DerivedPredicateList derived_predicates)
     {
         return problems.get_or_create<ProblemImpl>(std::move(domain),
                                                    std::move(name),
@@ -431,7 +420,8 @@ public:
                                                    std::move(initial_literals),
                                                    std::move(numeric_fluents),
                                                    std::move(goal_condition),
-                                                   std::move(optimization_metric));
+                                                   std::move(optimization_metric),
+                                                   std::move(derived_predicates));
     }
 
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }

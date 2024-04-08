@@ -557,7 +557,8 @@ protected:
                                               this->translate(*arg.get_goal_condition()),
                                               (arg.get_optimization_metric().has_value() ?
                                                    std::optional<OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
-                                                   std::nullopt));
+                                                   std::nullopt),
+                                              this->translate(arg.get_derived_predicates()));
                                       });
     }
 
