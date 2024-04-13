@@ -72,11 +72,10 @@ Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionFo
     }
     parameters.shrink_to_fit();
 
-    // const auto axiom_name = "@axiom["s + std::visit([](const auto& arg) { return arg.str(); }, *axiom_condition) + "]";
     const auto axiom_name = "@axiom["s + condition.str() + "]";
     const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, parameters);
     m_derived_predicates.insert(predicate);
-    const auto literal = this->m_pddl_factories.get_or_create_literal(true, this->m_pddl_factories.get_or_create_atom(predicate, terms));
+    const auto literal = this->m_pddl_factories.get_or_create_literal(false, this->m_pddl_factories.get_or_create_atom(predicate, terms));
     const auto substituted_condition = this->m_pddl_factories.get_or_create_condition_literal(
         this->m_pddl_factories.get_or_create_literal(true, this->m_pddl_factories.get_or_create_atom(predicate, terms)));
     const auto axiom = this->m_pddl_factories.get_or_create_axiom(literal, axiom_condition);
