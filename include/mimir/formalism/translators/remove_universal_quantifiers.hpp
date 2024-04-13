@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSLATORS_UNIVERSAL_QUANTIFIERS_HPP_
-#define MIMIR_FORMALISM_TRANSLATORS_UNIVERSAL_QUANTIFIERS_HPP_
+#ifndef MIMIR_FORMALISM_TRANSLATORS_REMOVE_UNIVERSAL_QUANTIFIERS_HPP_
+#define MIMIR_FORMALISM_TRANSLATORS_REMOVE_UNIVERSAL_QUANTIFIERS_HPP_
 
 #include "mimir/formalism/translators/base.hpp"
 #include "mimir/formalism/translators/scopes.hpp"
@@ -43,9 +43,8 @@ private:
     ToNNFTranslator& m_to_nnf_translator;
     ScopeStack m_scopes;
 
-    // Translation introduces additional `derived` predicates.
+    // Translation might introduce additional derived predicates and axioms.
     std::unordered_set<loki::Predicate> m_derived_predicates;
-    // The resulting axioms
     std::unordered_set<loki::Axiom> m_axioms;
     // Cache translations
     std::unordered_map<const loki::ConditionForallImpl*, loki::Condition> m_condition_to_substituted_condition;
