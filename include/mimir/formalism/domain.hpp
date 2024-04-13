@@ -37,11 +37,12 @@ private:
     TypeList m_types;
     ObjectList m_constants;
     PredicateList m_predicates;
+    PredicateList m_derived_predicates;
     PredicateList m_static_predicates;
     PredicateList m_fluent_predicates;
     FunctionSkeletonList m_functions;
     ActionList m_actions;
-    DerivedPredicateList m_derived_predicates;
+    AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -51,9 +52,10 @@ private:
                TypeList types,
                ObjectList constants,
                PredicateList predicates,
+               PredicateList derived_predicates,
                FunctionSkeletonList functions,
                ActionList actions,
-               DerivedPredicateList derived_predicates);
+               AxiomList axioms);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<DomainImpl, loki::Hash<DomainImpl*>, loki::EqualTo<DomainImpl*>>;
@@ -74,9 +76,10 @@ public:
     const PredicateList& get_predicates() const;
     const PredicateList& get_static_predicates() const;
     const PredicateList& get_fluent_predicates() const;
+    const PredicateList& get_derived_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
-    const DerivedPredicateList& get_derived_predicates() const;
+    const AxiomList& get_axioms() const;
 };
 }
 

@@ -34,11 +34,12 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
+    PredicateList m_derived_predicates;
     GroundLiteralList m_initial_literals;
     NumericFluentList m_numeric_fluents;
-    Condition m_goal_condition;
+    std::optional<Condition> m_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
-    DerivedPredicateList m_derived_predicates;
+    AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -47,11 +48,12 @@ private:
                 std::string name,
                 Requirements requirements,
                 ObjectList objects,
+                PredicateList derived_predicates,
                 GroundLiteralList initial_literals,
                 NumericFluentList numeric_fluents,
-                Condition goal_condition,
+                std::optional<Condition> goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
-                DerivedPredicateList derived_predicates);
+                AxiomList axioms);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ProblemImpl, loki::Hash<ProblemImpl*>, loki::EqualTo<ProblemImpl*>>;
@@ -69,11 +71,12 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
+    const PredicateList& get_derived_predicates() const;
     const GroundLiteralList& get_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
-    const Condition& get_goal_condition() const;
+    const std::optional<Condition>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
-    const DerivedPredicateList& get_derived_predicates() const;
+    const AxiomList& get_axioms() const;
 };
 }
 

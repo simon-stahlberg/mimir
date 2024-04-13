@@ -98,7 +98,7 @@ public:
     void prepare(const FunctionSkeletonImpl& function_skeleton) { self().prepare_base(function_skeleton); }
     void prepare(const FunctionImpl& function) { self().prepare_base(function); }
     void prepare(const ActionImpl& action) { self().prepare_base(action); }
-    void prepare(const DerivedPredicateImpl& derived_predicate) { self().prepare_base(derived_predicate); }
+    void prepare(const AxiomImpl& axiom) { self().prepare_base(axiom); }
     void prepare(const DomainImpl& domain) { self().prepare_base(domain); }
     void prepare(const OptimizationMetricImpl& metric) { self().prepare_base(metric); }
     void prepare(const ProblemImpl& problem) { self().prepare_base(problem); }
@@ -163,7 +163,7 @@ public:
     FunctionSkeleton translate(const FunctionSkeletonImpl& function_skeleton) { return self().translate_base(function_skeleton); }
     Function translate(const FunctionImpl& function) { return self().translate_base(function); }
     Action translate(const ActionImpl& action) { return self().translate_base(action); }
-    DerivedPredicate translate(const DerivedPredicateImpl& derived_predicate) { return self().translate_base(derived_predicate); }
+    Axiom translate(const AxiomImpl& axiom) { return self().translate_base(axiom); }
     Domain translate(const DomainImpl& domain) { return self().translate_base(domain); }
     OptimizationMetric translate(const OptimizationMetricImpl& metric) { return self().translate_base(metric); }
     Problem translate(const ProblemImpl& problem) { return self().translate_base(problem); }

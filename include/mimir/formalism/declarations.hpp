@@ -132,11 +132,6 @@ class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
 
-class DerivedPredicateImpl;
-using DerivedPredicate = const DerivedPredicateImpl*;
-using DerivedPredicateList = std::vector<DerivedPredicate>;
-using DerivedPredicateSet = std::unordered_set<DerivedPredicate>;
-
 class AxiomImpl;
 using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;

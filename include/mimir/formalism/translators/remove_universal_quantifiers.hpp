@@ -43,7 +43,11 @@ private:
     ToNNFTranslator& m_to_nnf_translator;
     ScopeStack m_scopes;
 
-    DerivedPredicateSet m_axioms;
+    // Translation introduces additional `derived` predicates.
+    std::unordered_set<Predicate> m_derived_predicates;
+    // The resulting axioms
+    std::unordered_set<Axiom> m_axioms;
+    // Cache translations
     std::unordered_map<const ConditionForallImpl*, Condition> m_condition_to_substituted_condition;
 
     /// @brief Translate the condition while keeping track of scopes
@@ -55,9 +59,6 @@ private:
 
 public:
     RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
-
-    /// @brief Return the generated axioms.
-    DerivedPredicateList get_axioms() const;
 };
 }
 

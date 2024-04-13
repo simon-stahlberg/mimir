@@ -18,13 +18,14 @@
 #include "mimir/formalism/problem.hpp"
 
 #include "loki/pddl/visitors.hpp"
+#include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/conditions.hpp"
-#include "mimir/formalism/derived_predicate.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/type.hpp"
 
@@ -41,44 +42,48 @@ ProblemImpl::ProblemImpl(int identifier,
                          std::string name,
                          Requirements requirements,
                          ObjectList objects,
+                         PredicateList derived_predicates,
                          GroundLiteralList initial_literals,
                          NumericFluentList numeric_fluents,
-                         Condition goal_condition,
+                         std::optional<Condition> goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
-                         DerivedPredicateList derived_predicates) :
+                         AxiomList axioms) :
     Base(identifier),
     m_domain(std::move(domain)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
     m_objects(std::move(objects)),
+    m_derived_predicates(std::move(derived_predicates)),
     m_initial_literals(std::move(initial_literals)),
     m_numeric_fluents(std::move(numeric_fluents)),
     m_goal_condition(std::move(goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
-    m_derived_predicates(std::move(derived_predicates))
+    m_axioms(std::move(axioms))
 {
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
 {
     return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements)
-           && (get_sorted_vector(m_objects) == get_sorted_vector(other.m_objects))
-           && (get_sorted_vector(m_initial_literals)) == get_sorted_vector(other.m_initial_literals) && (m_goal_condition == other.m_goal_condition)
-           && (m_optimization_metric == other.m_optimization_metric)
-           && (get_sorted_vector(m_derived_predicates) == get_sorted_vector(other.m_derived_predicates));
+           && (loki::get_sorted_vector(m_objects) == loki::get_sorted_vector(other.m_objects))
+           && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
+           && (loki::get_sorted_vector(m_initial_literals)) == loki::get_sorted_vector(other.m_initial_literals) && (m_goal_condition == other.m_goal_condition)
+           && (m_optimization_metric == other.m_optimization_metric) && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
 }
 
 size_t ProblemImpl::hash_impl() const
 {
-    size_t optimization_hash = (m_optimization_metric.has_value()) ? hash_combine(m_optimization_metric) : 0;
-    return hash_combine(m_domain,
-                        m_name,
-                        m_requirements,
-                        hash_container(get_sorted_vector(m_objects)),
-                        hash_container(get_sorted_vector(m_initial_literals)),
-                        m_goal_condition,
-                        optimization_hash,
-                        hash_container(get_sorted_vector(m_derived_predicates)));
+    size_t goal_hash = (m_goal_condition.has_value()) ? loki::hash_combine(m_goal_condition.value()) : 0;
+    size_t optimization_hash = (m_optimization_metric.has_value()) ? loki::hash_combine(m_optimization_metric) : 0;
+    return loki::hash_combine(m_domain,
+                              m_name,
+                              m_requirements,
+                              loki::hash_container(loki::get_sorted_vector(m_objects)),
+                              loki::hash_container(loki::get_sorted_vector(m_derived_predicates)),
+                              loki::hash_container(loki::get_sorted_vector(m_initial_literals)),
+                              goal_hash,
+                              optimization_hash,
+                              loki::hash_container(loki::get_sorted_vector(m_axioms)));
 }
 
 void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -136,22 +141,41 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
         out << ")\n";
     }
 
-    out << string(nested_options.indent, ' ') << "(:init ";
-    for (size_t i = 0; i < m_initial_literals.size(); ++i)
+    if (!m_derived_predicates.empty())
     {
-        if (i != 0)
-            out << " ";
-        m_initial_literals[i]->str(out, nested_options);
-    }
-    for (size_t i = 0; i < m_numeric_fluents.size(); ++i)
-    {
-        out << " ";
-        m_numeric_fluents[i]->str(out, nested_options);
+        out << string(nested_options.indent, ' ') << "(:derived-predicates ";
+        for (size_t i = 0; i < m_derived_predicates.size(); ++i)
+        {
+            if (i != 0)
+                out << " ";
+            m_derived_predicates[i]->str(out, nested_options);
+        }
+        out << ")\n";
     }
 
+    if (!(m_initial_literals.empty() && m_numeric_fluents.empty()))
+    {
+        out << string(nested_options.indent, ' ') << "(:init ";
+        for (size_t i = 0; i < m_initial_literals.size(); ++i)
+        {
+            if (i != 0)
+                out << " ";
+            m_initial_literals[i]->str(out, nested_options);
+        }
+        for (size_t i = 0; i < m_numeric_fluents.size(); ++i)
+        {
+            out << " ";
+            m_numeric_fluents[i]->str(out, nested_options);
+        }
+    }
     out << ")\n";
-    out << string(nested_options.indent, ' ') << "(:goal ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_goal_condition);
+
+    if (m_goal_condition.has_value())
+    {
+        out << string(nested_options.indent, ' ') << "(:goal ";
+        std::visit(loki::pddl::StringifyVisitor(out, options), *m_goal_condition.value());
+        out << ")\n";
+    }
 
     out << ")\n";
     if (m_optimization_metric.has_value())
@@ -165,11 +189,11 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
     {
         derived_predicate->str(out, nested_options);
     }
-    /*
-    if (node.constraints.has_value()) {
-        ss << string(nested_options.indent, ' ') << parse_text(node.constraints.value(), nested_options) << "\n";
+
+    for (const auto& axiom : m_axioms)
+    {
+        axiom->str(out, nested_options);
     }
-    */
 
     out << string(options.indent, ' ') << ")";
 }
@@ -182,14 +206,16 @@ const Requirements& ProblemImpl::get_requirements() const { return m_requirement
 
 const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
+const PredicateList& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+
 const GroundLiteralList& ProblemImpl::get_initial_literals() const { return m_initial_literals; }
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
 
-const Condition& ProblemImpl::get_goal_condition() const { return m_goal_condition; }
+const std::optional<Condition>& ProblemImpl::get_goal_condition() const { return m_goal_condition; }
 
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
-const DerivedPredicateList& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
 }

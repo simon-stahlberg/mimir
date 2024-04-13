@@ -42,7 +42,7 @@ private:
     std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_translated_function_skeletons;
     std::unordered_map<Function, Function> m_translated_functions;
     std::unordered_map<Action, Action> m_translated_actions;
-    std::unordered_map<DerivedPredicate, DerivedPredicate> m_translated_derived_predicates;
+    std::unordered_map<Axiom, Axiom> m_translated_axioms;
     std::unordered_map<Domain, Domain> m_translated_domains;
     std::unordered_map<OptimizationMetric, OptimizationMetric> m_translated_optimization_metrics;
     std::unordered_map<Problem, Problem> m_translated_problems;
@@ -95,7 +95,7 @@ protected:
     void prepare_base(const FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
     void prepare_base(const FunctionImpl& function) { self().prepare_impl(function); }
     void prepare_base(const ActionImpl& action) { self().prepare_impl(action); }
-    void prepare_base(const DerivedPredicateImpl& derived_predicate) { self().prepare_impl(derived_predicate); }
+    void prepare_base(const AxiomImpl& axiom) { self().prepare_impl(axiom); }
     void prepare_base(const DomainImpl& domain) { self().prepare_impl(domain); }
     void prepare_base(const OptimizationMetricImpl& metric) { self().prepare_impl(metric); }
     void prepare_base(const ProblemImpl& problem) { self().prepare_impl(problem); }
@@ -204,10 +204,10 @@ protected:
             this->prepare(*action.get_effect().value());
         }
     }
-    void prepare_impl(const DerivedPredicateImpl& derived_predicate)
+    void prepare_impl(const AxiomImpl& axiom)
     {
-        this->prepare(derived_predicate.get_predicate());
-        this->prepare(derived_predicate.get_condition());
+        this->prepare(*axiom.get_condition());
+        this->prepare(*axiom.get_literal());
     }
     void prepare_impl(const DomainImpl& domain)
     {
@@ -272,7 +272,7 @@ protected:
     FunctionSkeleton translate_base(const FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
     Function translate_base(const FunctionImpl& function) { return self().translate_impl(function); }
     Action translate_base(const ActionImpl& action) { return self().translate_impl(action); }
-    DerivedPredicate translate_base(const DerivedPredicateImpl& derived_predicate) { return self().translate_impl(derived_predicate); }
+    Axiom translate_base(const AxiomImpl& axiom) { return self().translate_impl(axiom); }
     Domain translate_base(const DomainImpl& domain) { return self().translate_impl(domain); }
     OptimizationMetric translate_base(const OptimizationMetricImpl& metric) { return self().translate_impl(metric); }
     Problem translate_base(const ProblemImpl& problem) { return self().translate_impl(problem); }
@@ -507,13 +507,13 @@ protected:
                     (arg.get_effect().has_value() ? std::optional<Effect>(this->translate(*arg.get_effect().value())) : std::nullopt));
             });
     }
-    DerivedPredicate translate_impl(const DerivedPredicateImpl& derived_predicate)
+    Axiom translate_impl(const AxiomImpl& axiom)
     {
         return cached_translated_impl(
-            derived_predicate,
-            m_translated_derived_predicates,
-            [this](const DerivedPredicateImpl& arg)
-            { return this->m_pddl_factories.get_or_create_derived_predicate(this->translate(*arg.get_predicate()), this->translate(*arg.get_condition())); });
+            axiom,
+            m_translated_axioms,
+            [this](const AxiomImpl& arg)
+            { return this->m_pddl_factories.get_or_create_axiom(this->translate(*arg.get_literal()), this->translate(*arg.get_condition())); });
     }
     Domain translate_impl(const DomainImpl& domain)
     {
@@ -526,9 +526,10 @@ protected:
                                                                                              this->translate(arg.get_types()),
                                                                                              this->translate(arg.get_constants()),
                                                                                              this->translate(arg.get_predicates()),
+                                                                                             this->translate(arg.get_derived_predicates()),
                                                                                              this->translate(arg.get_functions()),
                                                                                              this->translate(arg.get_actions()),
-                                                                                             this->translate(arg.get_derived_predicates()));
+                                                                                             this->translate(arg.get_axioms()));
                                       });
     }
     OptimizationMetric translate_impl(const OptimizationMetricImpl& metric)
@@ -543,23 +544,24 @@ protected:
 
     Problem translate_impl(const ProblemImpl& problem)
     {
-        return cached_translated_impl(problem,
-                                      m_translated_problems,
-                                      [this](const ProblemImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.get_or_create_problem(
-                                              this->translate(*arg.get_domain()),
-                                              arg.get_name(),
-                                              this->translate(*arg.get_requirements()),
-                                              this->translate(arg.get_objects()),
-                                              this->translate(arg.get_initial_literals()),
-                                              this->translate(arg.get_numeric_fluents()),
-                                              this->translate(*arg.get_goal_condition()),
-                                              (arg.get_optimization_metric().has_value() ?
-                                                   std::optional<OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
-                                                   std::nullopt),
-                                              this->translate(arg.get_derived_predicates()));
-                                      });
+        return cached_translated_impl(
+            problem,
+            m_translated_problems,
+            [this](const ProblemImpl& arg)
+            {
+                return this->m_pddl_factories.get_or_create_problem(
+                    this->translate(*arg.get_domain()),
+                    arg.get_name(),
+                    this->translate(*arg.get_requirements()),
+                    this->translate(arg.get_objects()),
+                    this->translate(arg.get_derived_predicates()),
+                    this->translate(arg.get_initial_literals()),
+                    this->translate(arg.get_numeric_fluents()),
+                    (arg.get_goal_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_goal_condition().value())) : std::nullopt),
+                    (arg.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
+                                                                 std::nullopt),
+                    this->translate(arg.get_axioms()));
+            });
     }
 
     /// @brief Recursively apply preparation followed by translation.

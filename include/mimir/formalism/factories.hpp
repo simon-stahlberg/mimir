@@ -20,8 +20,8 @@
 
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/conditions.hpp"
-#include "mimir/formalism/derived_predicate.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
@@ -66,7 +66,7 @@ using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
 using ConditionFactory = loki::PDDLFactory<ConditionImpl>;
 using EffectFactory = loki::PDDLFactory<EffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
-using DerivedPredicateFactory = loki::PDDLFactory<DerivedPredicateImpl>;
+using AxiomFactory = loki::PDDLFactory<AxiomImpl>;
 using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
 using NumericFluentFactory = loki::PDDLFactory<NumericFluentImpl>;
 using DomainFactory = loki::PDDLFactory<DomainImpl>;
@@ -93,7 +93,7 @@ private:
     ConditionFactory conditions;
     EffectFactory effects;
     ActionFactory actions;
-    DerivedPredicateFactory derived_predicates;
+    AxiomFactory axioms;
     OptimizationMetricFactory optimization_metrics;
     NumericFluentFactory numeric_fluents;
     DomainFactory domains;
@@ -118,7 +118,7 @@ public:
         conditions(ConditionFactory(1000)),
         effects(EffectFactory(1000)),
         actions(ActionFactory(100)),
-        derived_predicates(DerivedPredicateFactory(100)),
+        axioms(AxiomFactory(100)),
         optimization_metrics(OptimizationMetricFactory(10)),
         numeric_fluents(NumericFluentFactory(1000)),
         domains(DomainFactory(1)),
@@ -357,10 +357,7 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    DerivedPredicate get_or_create_derived_predicate(Predicate predicate, Condition condition)
-    {
-        return derived_predicates.get_or_create<DerivedPredicateImpl>(std::move(predicate), std::move(condition));
-    }
+    Axiom get_or_create_axiom(Literal literal, Condition condition) { return axioms.get_or_create<AxiomImpl>(std::move(literal), std::move(condition)); }
 
     /// @brief Get or create an optimization metric for the given parameters.
     ///
@@ -386,18 +383,20 @@ public:
                                 TypeList types,
                                 ObjectList constants,
                                 PredicateList predicates,
+                                PredicateList derived_predicates,
                                 FunctionSkeletonList functions,
                                 ActionList actions,
-                                DerivedPredicateList derived_predicates)
+                                AxiomList axioms)
     {
         return domains.get_or_create<DomainImpl>(std::move(name),
                                                  std::move(requirements),
                                                  std::move(types),
                                                  std::move(constants),
                                                  std::move(predicates),
+                                                 std::move(derived_predicates),
                                                  std::move(functions),
                                                  std::move(actions),
-                                                 std::move(derived_predicates));
+                                                 std::move(axioms));
     }
 
     /// @brief Get or create a problem for the given parameters.
@@ -407,21 +406,23 @@ public:
                                   std::string name,
                                   Requirements requirements,
                                   ObjectList objects,
+                                  PredicateList derived_predicates,
                                   GroundLiteralList initial_literals,
                                   NumericFluentList numeric_fluents,
-                                  Condition goal_condition,
+                                  std::optional<Condition> goal_condition,
                                   std::optional<OptimizationMetric> optimization_metric,
-                                  DerivedPredicateList derived_predicates)
+                                  AxiomList axioms)
     {
         return problems.get_or_create<ProblemImpl>(std::move(domain),
                                                    std::move(name),
                                                    std::move(requirements),
                                                    std::move(objects),
+                                                   std::move(derived_predicates),
                                                    std::move(initial_literals),
                                                    std::move(numeric_fluents),
                                                    std::move(goal_condition),
                                                    std::move(optimization_metric),
-                                                   std::move(derived_predicates));
+                                                   std::move(axioms));
     }
 
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }

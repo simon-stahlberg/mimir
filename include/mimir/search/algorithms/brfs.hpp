@@ -94,8 +94,10 @@ public:
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
         auto goal_literals = LiteralList {};
-        to_literals(m_problem->get_goal_condition(), goal_literals);
-
+        if (m_problem->get_goal_condition().has_value())
+        {
+            to_literals(m_problem->get_goal_condition().value(), goal_literals);
+        }
         auto goal_ground_literals = GroundLiteralList {};
         m_pddl_factories.to_ground_literals(goal_literals, goal_ground_literals);
 
@@ -133,7 +135,7 @@ public:
                 {
                     auto successor_search_node = CostSearchNodeViewProxy(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
-                    successor_search_node.get_g_value() = search_node.get_g_value() + 1;  // we use unit costs for now
+                    successor_search_node.get_g_value() = search_node.get_g_value() + 1;
                     successor_search_node.get_parent_state_id() = state.get_id();
                     successor_search_node.get_creating_action_id() = action.get_id();
 

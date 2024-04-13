@@ -139,9 +139,10 @@ Domain RemoveTypesTranslator::translate_impl(const DomainImpl& domain)
                                                                          TypeList {},
                                                                          translated_constants,
                                                                          translated_predicates,
+                                                                         this->translate(domain.get_derived_predicates()),
                                                                          this->translate(domain.get_functions()),
                                                                          this->translate(domain.get_actions()),
-                                                                         this->translate(domain.get_derived_predicates()));
+                                                                         this->translate(domain.get_axioms()));
     return translated_domain;
 }
 
@@ -180,12 +181,13 @@ Problem RemoveTypesTranslator::translate_impl(const ProblemImpl& problem)
         problem.get_name(),
         translated_requirements,
         translated_objects,
+        this->translate(problem.get_derived_predicates()),
         translated_initial_literals,
         this->translate(problem.get_numeric_fluents()),
-        this->translate(*problem.get_goal_condition()),
+        (problem.get_goal_condition().has_value() ? std::optional<Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
         (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
                                                          std::nullopt),
-        this->translate(problem.get_derived_predicates()));
+        this->translate(problem.get_axioms()));
     return translated_problem;
 }
 

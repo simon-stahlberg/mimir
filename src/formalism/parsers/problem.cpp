@@ -17,14 +17,15 @@
 
 #include "problem.hpp"
 
+#include "axiom.hpp"
 #include "conditions.hpp"
-#include "derived_predicate.hpp"
 #include "domain.hpp"
 #include "ground_literal.hpp"
 #include "metric.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "numeric_fluent.hpp"
 #include "object.hpp"
+#include "predicate.hpp"
 #include "requirements.hpp"
 
 namespace mimir
@@ -36,16 +37,17 @@ Problem parse(loki::pddl::Problem problem, PDDLFactories& factories)
     auto objects = parse(problem->get_objects(), factories);
     objects.insert(objects.end(), constants.begin(), constants.end());
 
-    return factories.get_or_create_problem(parse(problem->get_domain(), factories),
-                                           problem->get_name(),
-                                           parse(problem->get_requirements(), factories),
-                                           objects,
-                                           parse(problem->get_initial_literals(), factories),
-                                           parse(problem->get_numeric_fluents(), factories),
-                                           parse(problem->get_goal_condition(), factories),
-                                           (problem->get_optimization_metric().has_value() ?
-                                                std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
-                                                std::nullopt),
-                                           DerivedPredicateList {});
+    return factories.get_or_create_problem(
+        parse(problem->get_domain(), factories),
+        problem->get_name(),
+        parse(problem->get_requirements(), factories),
+        objects,
+        parse(problem->get_derived_predicates(), factories),
+        parse(problem->get_initial_literals(), factories),
+        parse(problem->get_numeric_fluents(), factories),
+        (problem->get_goal_condition().has_value() ? std::optional<Condition>(parse(problem->get_goal_condition().value(), factories)) : std::nullopt),
+        (problem->get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
+                                                          std::nullopt),
+        parse(problem->get_axioms(), factories));
 }
 }

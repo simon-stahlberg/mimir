@@ -18,7 +18,7 @@
 #include "domain.hpp"
 
 #include "action.hpp"
-#include "derived_predicate.hpp"
+#include "axiom.hpp"
 #include "function_skeleton.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "object.hpp"
@@ -35,8 +35,9 @@ Domain parse(loki::pddl::Domain domain, PDDLFactories& factories)
                                           parse(domain->get_types(), factories),
                                           parse(domain->get_constants(), factories),
                                           parse(domain->get_predicates(), factories),
+                                          parse(domain->get_derived_predicates(), factories),
                                           parse(domain->get_functions(), factories),
                                           parse(domain->get_actions(), factories),
-                                          parse(domain->get_derived_predicates(), factories));
+                                          parse(domain->get_axioms(), factories));
 }
 }
