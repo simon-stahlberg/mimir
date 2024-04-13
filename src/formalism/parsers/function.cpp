@@ -23,12 +23,12 @@
 
 namespace mimir
 {
-Function parse(loki::pddl::Function function, PDDLFactories& factories)
+Function parse(loki::Function function, PDDLFactories& factories)
 {
     return factories.get_or_create_function(parse(function->get_function_skeleton(), factories), parse(function->get_terms(), factories));
 }
 
-FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories)
+FunctionList parse(loki::FunctionList function_list, PDDLFactories& factories)
 {
     auto result_function_list = FunctionList();
     for (const auto& function : function_list)

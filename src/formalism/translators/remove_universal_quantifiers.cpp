@@ -23,7 +23,7 @@ using namespace std::string_literals;
 
 namespace mimir
 {
-Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionExistsImpl& condition)
+loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
     auto scope = m_scopes.open_scope();
 
@@ -37,7 +37,7 @@ Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionEx
     return result;
 }
 
-Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionForallImpl& condition)
+loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ConditionForallImpl& condition)
 {
     // Access already computed axioms
     auto it = m_condition_to_substituted_condition.find(&condition);
@@ -59,8 +59,8 @@ Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionFo
         m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
 
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
-    auto parameters = ParameterList {};
-    auto terms = TermList {};
+    auto parameters = loki::ParameterList {};
+    auto terms = loki::TermList {};
     for (const auto free_variable : collect_free_variables(*axiom_condition))
     {
         const auto optional_parameter = scope.get_parameter(free_variable);
@@ -88,12 +88,12 @@ Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionFo
     return substituted_condition;
 }
 
-Action RemoveUniversalQuantifiersTranslator::translate_impl(const ActionImpl& action)
+loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)
 {
     return this->cached_translated_impl(
         action,
         m_translated_actions,
-        [this](const ActionImpl& arg)
+        [this](const loki::ActionImpl& arg)
         {
             auto& scope = this->m_scopes.open_scope();
 
@@ -105,7 +105,7 @@ Action RemoveUniversalQuantifiersTranslator::translate_impl(const ActionImpl& ac
             auto translated_action = this->m_pddl_factories.get_or_create_action(
                 arg.get_name(),
                 arg.get_parameters(),
-                (arg.get_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_condition().value())) : std::nullopt),
+                (arg.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*arg.get_condition().value())) : std::nullopt),
                 arg.get_effect());
 
             this->m_scopes.close_scope();
@@ -114,12 +114,12 @@ Action RemoveUniversalQuantifiersTranslator::translate_impl(const ActionImpl& ac
         });
 }
 
-Domain RemoveUniversalQuantifiersTranslator::translate_impl(const DomainImpl& domain)
+loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(const loki::DomainImpl& domain)
 {
     return this->cached_translated_impl(
         domain,
         m_translated_domains,
-        [this](const DomainImpl& arg)
+        [this](const loki::DomainImpl& arg)
         {
             // Clear containers that store derived predicates and axioms obtained during translation.
             m_axioms.clear();
@@ -150,12 +150,12 @@ Domain RemoveUniversalQuantifiersTranslator::translate_impl(const DomainImpl& do
         });
 }
 
-Problem RemoveUniversalQuantifiersTranslator::translate_impl(const ProblemImpl& problem)
+loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ProblemImpl& problem)
 {
     return this->cached_translated_impl(
         problem,
         m_translated_problems,
-        [this](const ProblemImpl& arg)
+        [this](const loki::ProblemImpl& arg)
         {
             // Translate the domain
             auto translated_domain = this->translate(*arg.get_domain());
@@ -170,7 +170,7 @@ Problem RemoveUniversalQuantifiersTranslator::translate_impl(const ProblemImpl& 
 
             // Translate the goal condition
             auto translated_goal =
-                (arg.get_goal_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_goal_condition().value())) : std::nullopt);
+                (arg.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*arg.get_goal_condition().value())) : std::nullopt);
 
             // Combine all derived predicates and axioms.
             translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
@@ -187,15 +187,15 @@ Problem RemoveUniversalQuantifiersTranslator::translate_impl(const ProblemImpl& 
                 this->translate(arg.get_initial_literals()),
                 this->translate(arg.get_numeric_fluents()),
                 translated_goal,
-                (arg.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
+                (arg.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
                                                              std::nullopt),
                 translated_axioms);
         });
 }
 
-Problem RemoveUniversalQuantifiersTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
+loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
+RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseTranslator(pddl_factories),
     m_to_nnf_translator(to_nnf_translator)
 {

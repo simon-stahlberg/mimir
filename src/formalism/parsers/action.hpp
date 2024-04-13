@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Action parse(loki::pddl::Action action, PDDLFactories& factories);
-extern ActionList parse(loki::pddl::ActionList action_list, PDDLFactories& factories);
+extern Action parse(loki::Action action, PDDLFactories& factories);
+extern ActionList parse(loki::ActionList action_list, PDDLFactories& factories);
 }
 
 #endif

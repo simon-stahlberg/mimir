@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Object parse(loki::pddl::Object object, PDDLFactories& factories);
-extern ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories);
+extern Object parse(loki::Object object, PDDLFactories& factories);
+extern ObjectList parse(loki::ObjectList object_list, PDDLFactories& factories);
 }
 
 #endif

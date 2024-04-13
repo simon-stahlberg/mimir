@@ -19,7 +19,7 @@
 
 #include "mimir/formalism/function.hpp"
 
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {

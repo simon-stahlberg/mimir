@@ -25,13 +25,13 @@ namespace mimir
 {
 TermVisitor::TermVisitor(PDDLFactories& factories_) : factories(factories_) {}
 
-Term TermVisitor::operator()(const loki::pddl::TermObjectImpl& node) { return factories.get_or_create_term_object(parse(node.get_object(), factories)); }
+Term TermVisitor::operator()(const loki::TermObjectImpl& node) { return factories.get_or_create_term_object(parse(node.get_object(), factories)); }
 
-Term TermVisitor::operator()(const loki::pddl::TermVariableImpl& node) { return factories.get_or_create_term_variable(parse(node.get_variable(), factories)); }
+Term TermVisitor::operator()(const loki::TermVariableImpl& node) { return factories.get_or_create_term_variable(parse(node.get_variable(), factories)); }
 
-Term parse(loki::pddl::Term term, PDDLFactories& factories) { return std::visit(TermVisitor(factories), *term); }
+Term parse(loki::Term term, PDDLFactories& factories) { return std::visit(TermVisitor(factories), *term); }
 
-TermList parse(loki::pddl::TermList term_list, PDDLFactories& factories)
+TermList parse(loki::TermList term_list, PDDLFactories& factories)
 {
     auto result_term_list = TermList();
     for (const auto& term : term_list)

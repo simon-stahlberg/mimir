@@ -33,17 +33,17 @@ private:
 public:
     ConditionVisitor(PDDLFactories& factories_);
 
-    Condition operator()(const loki::pddl::ConditionLiteralImpl& node);
-    Condition operator()(const loki::pddl::ConditionAndImpl& node);
-    Condition operator()(const loki::pddl::ConditionOrImpl& node);
-    Condition operator()(const loki::pddl::ConditionNotImpl& node);
-    Condition operator()(const loki::pddl::ConditionImplyImpl& node);
-    Condition operator()(const loki::pddl::ConditionExistsImpl& node);
-    Condition operator()(const loki::pddl::ConditionForallImpl& node);
+    Condition operator()(const loki::ConditionLiteralImpl& node);
+    Condition operator()(const loki::ConditionAndImpl& node);
+    Condition operator()(const loki::ConditionOrImpl& node);
+    Condition operator()(const loki::ConditionNotImpl& node);
+    Condition operator()(const loki::ConditionImplyImpl& node);
+    Condition operator()(const loki::ConditionExistsImpl& node);
+    Condition operator()(const loki::ConditionForallImpl& node);
 };
 
-extern Condition parse(loki::pddl::Condition condition, PDDLFactories& factories);
-extern ConditionList parse(loki::pddl::ConditionList condition_list, PDDLFactories& factories);
+extern Condition parse(loki::Condition condition, PDDLFactories& factories);
+extern ConditionList parse(loki::ConditionList condition_list, PDDLFactories& factories);
 }
 
 #endif

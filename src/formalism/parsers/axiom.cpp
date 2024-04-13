@@ -23,12 +23,12 @@
 
 namespace mimir
 {
-Axiom parse(loki::pddl::Axiom axiom, PDDLFactories& factories)
+Axiom parse(loki::Axiom axiom, PDDLFactories& factories)
 {
     return factories.get_or_create_axiom(parse(axiom->get_literal(), factories), parse(axiom->get_condition(), factories));
 }
 
-extern AxiomList parse(loki::pddl::AxiomList axiom_list, PDDLFactories& factories)
+extern AxiomList parse(loki::AxiomList axiom_list, PDDLFactories& factories)
 {
     auto result_axiom_list = AxiomList();
     for (const auto& axiom : axiom_list)

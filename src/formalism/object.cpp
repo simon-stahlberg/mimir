@@ -17,8 +17,7 @@
 
 #include "mimir/formalism/object.hpp"
 
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 #include <mimir/formalism/type.hpp>
 
 namespace mimir

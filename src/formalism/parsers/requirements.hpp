@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-extern Requirements parse(loki::pddl::Requirements requirements, PDDLFactories& factories);
+extern Requirements parse(loki::Requirements requirements, PDDLFactories& factories);
 }
 
 #endif

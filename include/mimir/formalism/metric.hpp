@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/factory.hpp>
-#include <loki/pddl/metric.hpp>
+#include <loki/loki.hpp>
 #include <string>
 
 namespace mimir
@@ -29,12 +28,12 @@ namespace mimir
 class OptimizationMetricImpl : public loki::Base<OptimizationMetricImpl>
 {
 private:
-    loki::pddl::OptimizationMetricEnum m_optimization_metric;
+    loki::OptimizationMetricEnum m_optimization_metric;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
+    OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<OptimizationMetricImpl, loki::Hash<OptimizationMetricImpl*>, loki::EqualTo<OptimizationMetricImpl*>>;
@@ -48,7 +47,7 @@ private:
     friend class loki::Base<OptimizationMetricImpl>;
 
 public:
-    loki::pddl::OptimizationMetricEnum get_optimization_metric() const;
+    loki::OptimizationMetricEnum get_optimization_metric() const;
     const FunctionExpression& get_function_expression() const;
 };
 }

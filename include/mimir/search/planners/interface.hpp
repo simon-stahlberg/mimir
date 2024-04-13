@@ -5,7 +5,7 @@
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/plan.hpp"
 
-#include <loki/utils/filesystem.hpp>
+#include <loki/loki.hpp>
 #include <string>
 
 namespace mimir

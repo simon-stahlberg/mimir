@@ -22,12 +22,12 @@
 
 namespace mimir
 {
-Object parse(loki::pddl::Object object, PDDLFactories& factories)
+Object parse(loki::Object object, PDDLFactories& factories)
 {
     return factories.get_or_create_object(object->get_name(), parse(object->get_bases(), factories));
 }
 
-ObjectList parse(loki::pddl::ObjectList object_list, PDDLFactories& factories)
+ObjectList parse(loki::ObjectList object_list, PDDLFactories& factories)
 {
     auto result_object_list = ObjectList();
     for (const auto& object : object_list)

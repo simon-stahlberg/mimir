@@ -17,18 +17,16 @@
 
 #include "mimir/formalism/metric.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 
 #include <cassert>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 using namespace std;
 
 namespace mimir
 {
-OptimizationMetricImpl::OptimizationMetricImpl(int identifier, loki::pddl::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression) :
+OptimizationMetricImpl::OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression) :
     Base(identifier),
     m_optimization_metric(optimization_metric),
     m_function_expression(std::move(function_expression))
@@ -45,11 +43,11 @@ size_t OptimizationMetricImpl::hash_impl() const { return hash_combine(m_optimiz
 void OptimizationMetricImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(" << to_string(m_optimization_metric) << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_function_expression);
+    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
     out << ")";
 }
 
-loki::pddl::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
+loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const FunctionExpression& OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
 

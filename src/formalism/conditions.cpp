@@ -17,12 +17,10 @@
 
 #include "mimir/formalism/conditions.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/parameter.hpp"
 
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -65,7 +63,7 @@ void ConditionAndImpl::str_impl(std::ostream& out, const loki::FormattingOptions
     {
         if (i != 0)
             out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *m_conditions[i]);
+        std::visit(loki::StringifyVisitor(out, options), *m_conditions[i]);
     }
     out << ")";
 }
@@ -93,7 +91,7 @@ void ConditionOrImpl::str_impl(std::ostream& out, const loki::FormattingOptions&
     {
         if (i != 0)
             out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *m_conditions[i]);
+        std::visit(loki::StringifyVisitor(out, options), *m_conditions[i]);
     }
     out << ")";
 }
@@ -117,7 +115,7 @@ size_t ConditionNotImpl::hash_impl() const { return hash_combine(m_condition); }
 void ConditionNotImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(not ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
+    std::visit(loki::StringifyVisitor(out, options), *m_condition);
     out << ")";
 }
 
@@ -145,9 +143,9 @@ size_t ConditionImplyImpl::hash_impl() const { return hash_combine(m_condition_l
 void ConditionImplyImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(imply ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition_left);
+    std::visit(loki::StringifyVisitor(out, options), *m_condition_left);
     out << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition_right);
+    std::visit(loki::StringifyVisitor(out, options), *m_condition_right);
     out << ")";
 }
 
@@ -184,7 +182,7 @@ void ConditionExistsImpl::str_impl(std::ostream& out, const loki::FormattingOpti
         m_parameters[i]->str(out, options);
     }
     out << ") ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
+    std::visit(loki::StringifyVisitor(out, options), *m_condition);
     out << ")";
 }
 
@@ -221,7 +219,7 @@ void ConditionForallImpl::str_impl(std::ostream& out, const loki::FormattingOpti
         m_parameters[i]->str(out, options);
     }
     out << ") ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
+    std::visit(loki::StringifyVisitor(out, options), *m_condition);
     out << ")";
 }
 

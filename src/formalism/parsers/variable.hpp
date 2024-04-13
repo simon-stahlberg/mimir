@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-extern Variable parse(loki::pddl::Variable variable, PDDLFactories& factories);
+extern Variable parse(loki::Variable variable, PDDLFactories& factories);
 }
 
 #endif

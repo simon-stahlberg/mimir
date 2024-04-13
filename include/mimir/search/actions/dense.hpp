@@ -1,7 +1,6 @@
 #ifndef MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 #define MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 
-#include "mimir/common/hash.hpp"
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
@@ -70,7 +69,7 @@ private:
     [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_action() == other.get_action() && get_objects() == other.get_objects(); }
 
     /// @brief Compute hash based on the lifted action and the objects assigned to the parameters.
-    [[nodiscard]] size_t hash_impl() const { return hash_combine(get_action(), get_objects().hash()); }
+    [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(get_action(), get_objects().hash()); }
 
     /* Implement IActionView interface */
     friend class IActionView<ConstView<ActionDispatcher<DenseStateTag>>>;

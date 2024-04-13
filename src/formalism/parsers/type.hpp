@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Type parse(loki::pddl::Type type, PDDLFactories& factories);
-extern TypeList parse(loki::pddl::TypeList type_list, PDDLFactories& factories);
+extern Type parse(loki::Type type, PDDLFactories& factories);
+extern TypeList parse(loki::TypeList type_list, PDDLFactories& factories);
 }
 
 #endif

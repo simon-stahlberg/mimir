@@ -17,12 +17,10 @@
 
 #include "mimir/formalism/term.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/variable.hpp"
 
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {

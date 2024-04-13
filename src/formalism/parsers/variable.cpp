@@ -21,5 +21,5 @@
 
 namespace mimir
 {
-Variable parse(loki::pddl::Variable variable, PDDLFactories& factories) { return factories.get_or_create_variable(variable->get_name()); }
+Variable parse(loki::Variable variable, PDDLFactories& factories) { return factories.get_or_create_variable(variable->get_name()); }
 }

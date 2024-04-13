@@ -23,55 +23,55 @@ namespace mimir
 /**
  * Types
  */
-Predicate type_to_predicate(const TypeImpl& type, PDDLFactories& pddl_factories)
+loki::Predicate type_to_predicate(const loki::TypeImpl& type, loki::PDDLFactories& pddl_factories)
 {
     return pddl_factories.get_or_create_predicate(
         type.get_name(),
-        ParameterList { pddl_factories.get_or_create_parameter(pddl_factories.get_or_create_variable("?arg"), TypeList {}) });
+        loki::ParameterList { pddl_factories.get_or_create_parameter(pddl_factories.get_or_create_variable("?arg"), loki::TypeList {}) });
 }
 
-Object typed_object_to_untyped_object(const ObjectImpl& object, PDDLFactories& pddl_factories)
+loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories)
 {
-    return pddl_factories.get_or_create_object(object.get_name(), TypeList {});
+    return pddl_factories.get_or_create_object(object.get_name(), loki::TypeList {});
 }
 
-GroundLiteralList typed_object_to_ground_literals(const ObjectImpl& object, PDDLFactories& pddl_factories)
+loki::GroundLiteralList typed_object_to_ground_literals(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories)
 {
-    auto additional_literals = GroundLiteralList {};
+    auto additional_literals = loki::GroundLiteralList {};
     auto translated_object = typed_object_to_untyped_object(object, pddl_factories);
     auto types = collect_types_from_type_hierarchy(object.get_bases());
     for (const auto& type : types)
     {
         auto additional_literal = pddl_factories.get_or_create_ground_literal(
             false,
-            pddl_factories.get_or_create_ground_atom(type_to_predicate(*type, pddl_factories), ObjectList { translated_object }));
+            pddl_factories.get_or_create_ground_atom(type_to_predicate(*type, pddl_factories), loki::ObjectList { translated_object }));
         additional_literals.push_back(additional_literal);
     }
     return additional_literals;
 }
 
-Parameter typed_parameter_to_untyped_parameter(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
+loki::Parameter typed_parameter_to_untyped_parameter(const loki::ParameterImpl& parameter, loki::PDDLFactories& pddl_factories)
 {
-    auto translated_parameter = pddl_factories.get_or_create_parameter(parameter.get_variable(), TypeList {});
+    auto translated_parameter = pddl_factories.get_or_create_parameter(parameter.get_variable(), loki::TypeList {});
     return translated_parameter;
 }
 
-ConditionList typed_parameter_to_condition_literals(const ParameterImpl& parameter, PDDLFactories& pddl_factories)
+loki::ConditionList typed_parameter_to_condition_literals(const loki::ParameterImpl& parameter, loki::PDDLFactories& pddl_factories)
 {
-    auto conditions = ConditionList {};
+    auto conditions = loki::ConditionList {};
     auto types = collect_types_from_type_hierarchy(parameter.get_bases());
     for (const auto& type : types)
     {
         auto condition = pddl_factories.get_or_create_condition_literal(pddl_factories.get_or_create_literal(
             false,
             pddl_factories.get_or_create_atom(type_to_predicate(*type, pddl_factories),
-                                              TermList { pddl_factories.get_or_create_term_variable(parameter.get_variable()) })));
+                                              loki::TermList { pddl_factories.get_or_create_term_variable(parameter.get_variable()) })));
         conditions.push_back(condition);
     }
     return conditions;
 }
 
-static void collect_types_from_type_hierarchy_recursively(const Type& type, std::unordered_set<Type>& ref_type_list)
+static void collect_types_from_type_hierarchy_recursively(const loki::Type& type, std::unordered_set<loki::Type>& ref_type_list)
 {
     ref_type_list.insert(type);
     for (const auto& base_type : type->get_bases())
@@ -80,28 +80,28 @@ static void collect_types_from_type_hierarchy_recursively(const Type& type, std:
     }
 }
 
-TypeList collect_types_from_type_hierarchy(const TypeList& type_list)
+loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& type_list)
 {
-    std::unordered_set<Type> flat_type_set;
+    std::unordered_set<loki::Type> flat_type_set;
     for (const auto& type : type_list)
     {
         collect_types_from_type_hierarchy_recursively(type, flat_type_set);
     }
-    return TypeList(flat_type_set.begin(), flat_type_set.end());
+    return loki::TypeList(flat_type_set.begin(), flat_type_set.end());
 }
 
 /**
  * Conditions
  */
 
-Condition flatten_conjunctions(const ConditionAndImpl& condition, PDDLFactories& pddl_factories)
+loki::Condition flatten_conjunctions(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories)
 {
-    auto parts = ConditionList {};
+    auto parts = loki::ConditionList {};
     for (const auto& nested_condition : condition.get_conditions())
     {
-        if (const auto and_condition = std::get_if<ConditionAndImpl>(nested_condition))
+        if (const auto and_condition = std::get_if<loki::ConditionAndImpl>(nested_condition))
         {
-            const auto nested_parts = std::get_if<ConditionAndImpl>(flatten_conjunctions(*and_condition, pddl_factories));
+            const auto nested_parts = std::get_if<loki::ConditionAndImpl>(flatten_conjunctions(*and_condition, pddl_factories));
 
             parts.insert(parts.end(), nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
         }
@@ -113,14 +113,14 @@ Condition flatten_conjunctions(const ConditionAndImpl& condition, PDDLFactories&
     return pddl_factories.get_or_create_condition_and(uniquify_elements(parts));
 }
 
-Condition flatten_disjunctions(const ConditionOrImpl& condition, PDDLFactories& pddl_factories)
+loki::Condition flatten_disjunctions(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories)
 {
-    auto parts = ConditionList {};
+    auto parts = loki::ConditionList {};
     for (const auto& nested_condition : condition.get_conditions())
     {
-        if (const auto or_condition = std::get_if<ConditionOrImpl>(nested_condition))
+        if (const auto or_condition = std::get_if<loki::ConditionOrImpl>(nested_condition))
         {
-            const auto nested_parts = std::get_if<ConditionOrImpl>(flatten_disjunctions(*or_condition, pddl_factories));
+            const auto nested_parts = std::get_if<loki::ConditionOrImpl>(flatten_disjunctions(*or_condition, pddl_factories));
 
             parts.insert(parts.end(), nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
         }
@@ -132,11 +132,11 @@ Condition flatten_disjunctions(const ConditionOrImpl& condition, PDDLFactories& 
     return pddl_factories.get_or_create_condition_or(uniquify_elements(parts));
 }
 
-Condition flatten_existential_quantifier(const ConditionExistsImpl& condition, PDDLFactories& pddl_factories)
+loki::Condition flatten_existential_quantifier(const loki::ConditionExistsImpl& condition, loki::PDDLFactories& pddl_factories)
 {
-    if (const auto condition_exists = std::get_if<ConditionExistsImpl>(condition.get_condition()))
+    if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.get_condition()))
     {
-        const auto nested_condition = std::get_if<ConditionExistsImpl>(flatten_existential_quantifier(*condition_exists, pddl_factories));
+        const auto nested_condition = std::get_if<loki::ConditionExistsImpl>(flatten_existential_quantifier(*condition_exists, pddl_factories));
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition->get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
@@ -145,11 +145,11 @@ Condition flatten_existential_quantifier(const ConditionExistsImpl& condition, P
     return pddl_factories.get_or_create_condition_exists(condition.get_parameters(), condition.get_condition());
 }
 
-Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDDLFactories& pddl_factories)
+loki::Condition flatten_universal_quantifier(const loki::ConditionForallImpl& condition, loki::PDDLFactories& pddl_factories)
 {
-    if (const auto condition_forall = std::get_if<ConditionForallImpl>(condition.get_condition()))
+    if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(condition.get_condition()))
     {
-        const auto nested_condition = std::get_if<ConditionForallImpl>(flatten_universal_quantifier(*condition_forall, pddl_factories));
+        const auto nested_condition = std::get_if<loki::ConditionForallImpl>(flatten_universal_quantifier(*condition_forall, pddl_factories));
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition->get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
@@ -158,13 +158,15 @@ Condition flatten_universal_quantifier(const ConditionForallImpl& condition, PDD
     return pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition());
 }
 
-void collect_free_variables_recursively(const ConditionImpl& condition, VariableSet& ref_quantified_variables, VariableSet& ref_free_variables)
+void collect_free_variables_recursively(const loki::ConditionImpl& condition,
+                                        std::unordered_set<loki::Variable>& ref_quantified_variables,
+                                        std::unordered_set<loki::Variable>& ref_free_variables)
 {
-    if (const auto condition_literal = std::get_if<ConditionLiteralImpl>(&condition))
+    if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(&condition))
     {
         for (const auto& term : condition_literal->get_literal()->get_atom()->get_terms())
         {
-            if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+            if (const auto term_variable = std::get_if<loki::TermVariableImpl>(term))
             {
                 if (!ref_free_variables.count(term_variable->get_variable()))
                 {
@@ -173,30 +175,30 @@ void collect_free_variables_recursively(const ConditionImpl& condition, Variable
             }
         }
     }
-    else if (const auto condition_imply = std::get_if<ConditionImplyImpl>(&condition))
+    else if (const auto condition_imply = std::get_if<loki::ConditionImplyImpl>(&condition))
     {
         collect_free_variables_recursively(*condition_imply->get_condition_left(), ref_quantified_variables, ref_free_variables);
         collect_free_variables_recursively(*condition_imply->get_condition_right(), ref_quantified_variables, ref_free_variables);
     }
-    else if (const auto condition_not = std::get_if<ConditionNotImpl>(&condition))
+    else if (const auto condition_not = std::get_if<loki::ConditionNotImpl>(&condition))
     {
         collect_free_variables_recursively(*condition_not->get_condition(), ref_quantified_variables, ref_free_variables);
     }
-    else if (const auto condition_and = std::get_if<ConditionAndImpl>(&condition))
+    else if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(&condition))
     {
         for (const auto& part : condition_and->get_conditions())
         {
             collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
         }
     }
-    else if (const auto condition_or = std::get_if<ConditionOrImpl>(&condition))
+    else if (const auto condition_or = std::get_if<loki::ConditionOrImpl>(&condition))
     {
         for (const auto& part : condition_or->get_conditions())
         {
             collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
         }
     }
-    else if (const auto condition_exists = std::get_if<ConditionExistsImpl>(&condition))
+    else if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(&condition))
     {
         for (const auto& parameter : condition_exists->get_parameters())
         {
@@ -204,7 +206,7 @@ void collect_free_variables_recursively(const ConditionImpl& condition, Variable
         }
         collect_free_variables_recursively(*condition_exists->get_condition(), ref_quantified_variables, ref_free_variables);
     }
-    else if (const auto condition_forall = std::get_if<ConditionForallImpl>(&condition))
+    else if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(&condition))
     {
         for (const auto& parameter : condition_forall->get_parameters())
         {
@@ -214,13 +216,13 @@ void collect_free_variables_recursively(const ConditionImpl& condition, Variable
     }
 }
 
-VariableList collect_free_variables(const ConditionImpl& condition)
+loki::VariableList collect_free_variables(const loki::ConditionImpl& condition)
 {
-    auto quantified_variables = VariableSet {};
-    auto free_variables = VariableSet {};
+    auto quantified_variables = std::unordered_set<loki::Variable> {};
+    auto free_variables = std::unordered_set<loki::Variable> {};
 
     collect_free_variables_recursively(condition, quantified_variables, free_variables);
 
-    return VariableList(free_variables.begin(), free_variables.end());
+    return loki::VariableList(free_variables.begin(), free_variables.end());
 }
 }

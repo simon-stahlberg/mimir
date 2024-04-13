@@ -4,7 +4,7 @@
 #include "parsers/domain.hpp"
 #include "parsers/problem.hpp"
 
-#include <loki/parser.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {

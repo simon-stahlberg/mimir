@@ -21,7 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
 
-#include <loki/utils/filesystem.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {

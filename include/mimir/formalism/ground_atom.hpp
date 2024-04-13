@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/factory.hpp>
-#include <loki/pddl/ground_atom.hpp>
+#include <loki/loki.hpp>
 #include <ostream>
 #include <string>
 

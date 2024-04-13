@@ -25,7 +25,7 @@
 
 namespace mimir
 {
-extern OptimizationMetric parse(loki::pddl::OptimizationMetric optimization_metric, PDDLFactories& factories);
+extern OptimizationMetric parse(loki::OptimizationMetric optimization_metric, PDDLFactories& factories);
 }
 
 #endif

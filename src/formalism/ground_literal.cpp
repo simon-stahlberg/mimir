@@ -19,8 +19,7 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {

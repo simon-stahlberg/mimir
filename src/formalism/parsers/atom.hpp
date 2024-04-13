@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Atom parse(loki::pddl::Atom atom, PDDLFactories& factories);
-extern AtomList parse(loki::pddl::AtomList atom_list, PDDLFactories& factories);
+extern Atom parse(loki::Atom atom, PDDLFactories& factories);
+extern AtomList parse(loki::AtomList atom_list, PDDLFactories& factories);
 }
 
 #endif

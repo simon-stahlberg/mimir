@@ -30,7 +30,7 @@
 
 namespace mimir
 {
-Problem parse(loki::pddl::Problem problem, PDDLFactories& factories)
+Problem parse(loki::Problem problem, PDDLFactories& factories)
 {
     // Add constants to objects in problem.
     const auto constants = parse(problem->get_domain()->get_constants(), factories);

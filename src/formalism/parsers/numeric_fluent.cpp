@@ -23,12 +23,12 @@
 
 namespace mimir
 {
-NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories)
+NumericFluent parse(loki::NumericFluent numeric_fluent, PDDLFactories& factories)
 {
     return factories.get_or_create_numeric_fluent(parse(numeric_fluent->get_function(), factories), numeric_fluent->get_number());
 }
 
-NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories)
+NumericFluentList parse(loki::NumericFluentList numeric_fluent_list, PDDLFactories& factories)
 {
     auto result_numeric_fluent_list = NumericFluentList();
     for (const auto& numeric_fluent : numeric_fluent_list)

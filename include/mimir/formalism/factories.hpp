@@ -41,7 +41,7 @@
 #include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
-#include <loki/pddl/factory.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -135,7 +135,7 @@ public:
     /// @brief Get or create requriements for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Requirements get_or_create_requirements(loki::pddl::RequirementEnumSet requirement_set)
+    Requirements get_or_create_requirements(loki::RequirementEnumSet requirement_set)
     {
         return requirements.get_or_create<RequirementsImpl>(std::move(requirement_set));
     }
@@ -218,7 +218,7 @@ public:
     /// @brief Get or create a binary operator function expression for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    FunctionExpression get_or_create_function_expression_binary_operator(loki::pddl::BinaryOperatorEnum binary_operator,
+    FunctionExpression get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
                                                                          FunctionExpression left_function_expression,
                                                                          FunctionExpression right_function_expression)
     {
@@ -230,8 +230,7 @@ public:
     /// @brief Get or create a multi operator function expression for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    FunctionExpression get_or_create_function_expression_multi_operator(loki::pddl::MultiOperatorEnum multi_operator,
-                                                                        FunctionExpressionList function_expressions_)
+    FunctionExpression get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions_)
     {
         return function_expressions.get_or_create<FunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions_));
     }
@@ -325,7 +324,7 @@ public:
     /// @brief Get or create an numeric effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_numeric(loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression)
+    Effect get_or_create_effect_numeric(loki::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression)
     {
         return effects.get_or_create<EffectNumericImpl>(std::move(assign_operator), std::move(function), std::move(function_expression));
     }
@@ -362,7 +361,7 @@ public:
     /// @brief Get or create an optimization metric for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    OptimizationMetric get_or_create_optimization_metric(loki::pddl::OptimizationMetricEnum metric, FunctionExpression function_expression)
+    OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, FunctionExpression function_expression)
     {
         return optimization_metrics.get_or_create<OptimizationMetricImpl>(std::move(metric), std::move(function_expression));
     }

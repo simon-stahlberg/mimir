@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/effects.hpp>
-#include <loki/pddl/factory.hpp>
+#include <loki/loki.hpp>
 #include <string>
 
 namespace mimir
@@ -78,13 +77,13 @@ public:
 class EffectNumericImpl : public loki::Base<EffectNumericImpl>
 {
 private:
-    loki::pddl::AssignOperatorEnum m_assign_operator;
+    loki::AssignOperatorEnum m_assign_operator;
     Function m_function;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectNumericImpl(int identifier, loki::pddl::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
+    EffectNumericImpl(int identifier, loki::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
@@ -97,7 +96,7 @@ private:
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    loki::pddl::AssignOperatorEnum get_assign_operator() const;
+    loki::AssignOperatorEnum get_assign_operator() const;
     const Function& get_function() const;
     const FunctionExpression& get_function_expression() const;
 };

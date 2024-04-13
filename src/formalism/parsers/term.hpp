@@ -33,13 +33,13 @@ private:
 public:
     TermVisitor(PDDLFactories& factories_);
 
-    Term operator()(const loki::pddl::TermObjectImpl& node);
+    Term operator()(const loki::TermObjectImpl& node);
 
-    Term operator()(const loki::pddl::TermVariableImpl& node);
+    Term operator()(const loki::TermVariableImpl& node);
 };
 
-extern Term parse(loki::pddl::Term term, PDDLFactories& factories);
-extern TermList parse(loki::pddl::TermList term_list, PDDLFactories& factories);
+extern Term parse(loki::Term term, PDDLFactories& factories);
+extern TermList parse(loki::TermList term_list, PDDLFactories& factories);
 }
 
 #endif

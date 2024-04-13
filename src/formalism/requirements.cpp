@@ -18,11 +18,11 @@
 #include "mimir/formalism/requirements.hpp"
 
 #include <cassert>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
-RequirementsImpl::RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements) : Base(identifier), m_requirements(std::move(requirements)) {}
+RequirementsImpl::RequirementsImpl(int identifier, loki::RequirementEnumSet requirements) : Base(identifier), m_requirements(std::move(requirements)) {}
 
 bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl& other) const { return (m_requirements == other.m_requirements); }
 
@@ -42,7 +42,7 @@ void RequirementsImpl::str_impl(std::ostream& out, const loki::FormattingOptions
     out << ")";
 }
 
-bool RequirementsImpl::test(loki::pddl::RequirementEnum requirement) const { return m_requirements.count(requirement); }
+bool RequirementsImpl::test(loki::RequirementEnum requirement) const { return m_requirements.count(requirement); }
 
-const loki::pddl::RequirementEnumSet& RequirementsImpl::get_requirements() const { return m_requirements; }
+const loki::RequirementEnumSet& RequirementsImpl::get_requirements() const { return m_requirements; }
 }

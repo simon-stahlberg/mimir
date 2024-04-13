@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories);
-extern ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories);
+extern Parameter parse(loki::Parameter parameter, PDDLFactories& factories);
+extern ParameterList parse(loki::ParameterList parameter_list, PDDLFactories& factories);
 }
 
 #endif

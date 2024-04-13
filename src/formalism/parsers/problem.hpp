@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-extern Problem parse(loki::pddl::Problem problem, PDDLFactories& factories);
+extern Problem parse(loki::Problem problem, PDDLFactories& factories);
 }
 
 #endif

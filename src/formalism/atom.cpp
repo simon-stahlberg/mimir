@@ -17,12 +17,10 @@
 
 #include "mimir/formalism/atom.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -38,7 +36,7 @@ void AtomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& option
     for (size_t i = 0; i < m_terms.size(); ++i)
     {
         out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
+        std::visit(loki::StringifyVisitor(out, options), *m_terms[i]);
     }
     out << ")";
 }

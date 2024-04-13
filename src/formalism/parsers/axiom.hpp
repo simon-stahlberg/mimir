@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Axiom parse(loki::pddl::Axiom axiom, PDDLFactories& factories);
-extern AxiomList parse(loki::pddl::AxiomList axiom_list, PDDLFactories& factories);
+extern Axiom parse(loki::Axiom axiom, PDDLFactories& factories);
+extern AxiomList parse(loki::AxiomList axiom_list, PDDLFactories& factories);
 }
 
 #endif

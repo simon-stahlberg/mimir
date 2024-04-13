@@ -22,20 +22,20 @@
 namespace mimir
 {
 
-Object RemoveTypesTranslator::translate_impl(const ObjectImpl& object) { return typed_object_to_untyped_object(object, this->m_pddl_factories); }
+loki::Object RemoveTypesTranslator::translate_impl(const loki::ObjectImpl& object) { return typed_object_to_untyped_object(object, this->m_pddl_factories); }
 
-Parameter RemoveTypesTranslator::translate_impl(const ParameterImpl& parameter)
+loki::Parameter RemoveTypesTranslator::translate_impl(const loki::ParameterImpl& parameter)
 {
     return typed_parameter_to_untyped_parameter(parameter, this->m_pddl_factories);
 }
 
-Condition RemoveTypesTranslator::translate_impl(const ConditionExistsImpl& condition)
+loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
     // Translate parameters
     auto translated_parameters = this->translate(condition.get_parameters());
 
     // Translate condition
-    auto conditions = ConditionList {};
+    auto conditions = loki::ConditionList {};
     for (const auto& parameter : condition.get_parameters())
     {
         auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
@@ -48,13 +48,13 @@ Condition RemoveTypesTranslator::translate_impl(const ConditionExistsImpl& condi
     return translated_condition;
 }
 
-Condition RemoveTypesTranslator::translate_impl(const ConditionForallImpl& condition)
+loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionForallImpl& condition)
 {
     // Translate parameters
     auto translated_parameters = this->translate(condition.get_parameters());
 
     // Translate condition
-    auto conditions = ConditionList {};
+    auto conditions = loki::ConditionList {};
     for (const auto& parameter : condition.get_parameters())
     {
         auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
@@ -67,13 +67,13 @@ Condition RemoveTypesTranslator::translate_impl(const ConditionForallImpl& condi
     return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
-Effect RemoveTypesTranslator::translate_impl(const EffectConditionalForallImpl& effect)
+loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectConditionalForallImpl& effect)
 {
     // Translate parameters
     auto translated_parameters = this->translate(effect.get_parameters());
 
     // Translate condition
-    auto conditions = ConditionList {};
+    auto conditions = loki::ConditionList {};
     for (const auto& parameter : effect.get_parameters())
     {
         auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
@@ -89,13 +89,13 @@ Effect RemoveTypesTranslator::translate_impl(const EffectConditionalForallImpl& 
         this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect));
 }
 
-Action RemoveTypesTranslator::translate_impl(const ActionImpl& action)
+loki::Action RemoveTypesTranslator::translate_impl(const loki::ActionImpl& action)
 {
     // Translate parameters
     auto translated_parameters = this->translate(action.get_parameters());
 
     // Translate condition
-    auto conditions = ConditionList {};
+    auto conditions = loki::ConditionList {};
     for (const auto& parameter : action.get_parameters())
     {
         auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
@@ -105,21 +105,22 @@ Action RemoveTypesTranslator::translate_impl(const ActionImpl& action)
     {
         conditions.push_back(this->translate(*action.get_condition().value()));
     }
-    auto translated_condition = conditions.empty() ? std::nullopt : std::optional<Condition>(this->m_pddl_factories.get_or_create_condition_and(conditions));
-    auto translated_effect = action.get_effect().has_value() ? std::optional<Effect>(this->translate(*action.get_effect().value())) : std::nullopt;
+    auto translated_condition =
+        conditions.empty() ? std::nullopt : std::optional<loki::Condition>(this->m_pddl_factories.get_or_create_condition_and(conditions));
+    auto translated_effect = action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt;
 
     return this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
 }
 
-Domain RemoveTypesTranslator::translate_impl(const DomainImpl& domain)
+loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domain)
 {
     // Remove :typing requirement
     auto requirements_enum_set = domain.get_requirements()->get_requirements();
-    requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
+    requirements_enum_set.erase(loki::RequirementEnum::TYPING);
     auto translated_requirements = this->m_pddl_factories.get_or_create_requirements(requirements_enum_set);
 
     // Make constants untyped
-    auto translated_constants = ObjectList {};
+    auto translated_constants = loki::ObjectList {};
     translated_constants.reserve(domain.get_constants().size());
     for (const auto& object : domain.get_constants())
     {
@@ -136,7 +137,7 @@ Domain RemoveTypesTranslator::translate_impl(const DomainImpl& domain)
 
     auto translated_domain = this->m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                                          translated_requirements,
-                                                                         TypeList {},
+                                                                         loki::TypeList {},
                                                                          translated_constants,
                                                                          translated_predicates,
                                                                          this->translate(domain.get_derived_predicates()),
@@ -146,17 +147,17 @@ Domain RemoveTypesTranslator::translate_impl(const DomainImpl& domain)
     return translated_domain;
 }
 
-Problem RemoveTypesTranslator::translate_impl(const ProblemImpl& problem)
+loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& problem)
 {
     // Remove :typing requirement
     auto requirements_enum_set = problem.get_requirements()->get_requirements();
-    requirements_enum_set.erase(loki::pddl::RequirementEnum::TYPING);
+    requirements_enum_set.erase(loki::RequirementEnum::TYPING);
     auto translated_requirements = this->m_pddl_factories.get_or_create_requirements(requirements_enum_set);
 
     // Make objects untyped
-    auto translated_objects = ObjectList {};
+    auto translated_objects = loki::ObjectList {};
     translated_objects.reserve(problem.get_objects().size());
-    auto additional_initial_literals = GroundLiteralList {};
+    auto additional_initial_literals = loki::GroundLiteralList {};
     for (const auto& object : problem.get_objects())
     {
         auto translated_object = typed_object_to_untyped_object(*object, this->m_pddl_factories);
@@ -184,15 +185,15 @@ Problem RemoveTypesTranslator::translate_impl(const ProblemImpl& problem)
         this->translate(problem.get_derived_predicates()),
         translated_initial_literals,
         this->translate(problem.get_numeric_fluents()),
-        (problem.get_goal_condition().has_value() ? std::optional<Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
-        (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
+        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
+        (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
                                                          std::nullopt),
         this->translate(problem.get_axioms()));
     return translated_problem;
 }
 
-Problem RemoveTypesTranslator::run_impl(const ProblemImpl& problem) { return self().translate(problem); }
+loki::Problem RemoveTypesTranslator::run_impl(const loki::ProblemImpl& problem) { return self().translate(problem); }
 
-RemoveTypesTranslator::RemoveTypesTranslator(PDDLFactories& pddl_factories) : BaseTranslator<RemoveTypesTranslator>(pddl_factories) {}
+RemoveTypesTranslator::RemoveTypesTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator<RemoveTypesTranslator>(pddl_factories) {}
 
 }

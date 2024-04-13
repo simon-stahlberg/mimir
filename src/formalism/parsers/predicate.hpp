@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories);
-extern PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories);
+extern Predicate parse(loki::Predicate predicate, PDDLFactories& factories);
+extern PredicateList parse(loki::PredicateList predicate_list, PDDLFactories& factories);
 }
 
 #endif

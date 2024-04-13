@@ -18,9 +18,8 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_SCOPES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_SCOPES_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-
 #include <deque>
+#include <loki/loki.hpp>
 #include <memory>
 #include <unordered_map>
 
@@ -32,12 +31,12 @@ class Scope
 private:
     const Scope* m_parent_scope;
 
-    std::unordered_map<Variable, Parameter> m_variable_to_parameter;
+    std::unordered_map<loki::Variable, loki::Parameter> m_variable_to_parameter;
 
 public:
     explicit Scope(const Scope* parent_scope = nullptr) : m_parent_scope(parent_scope) {}
 
-    std::optional<Parameter> get_parameter(const Variable& variable) const
+    std::optional<loki::Parameter> get_parameter(const loki::Variable& variable) const
     {
         auto it = m_variable_to_parameter.find(variable);
         if (it != m_variable_to_parameter.end())
@@ -51,7 +50,7 @@ public:
         return std::nullopt;
     }
 
-    void insert(const Parameter& parameter)
+    void insert(const loki::Parameter& parameter)
     {
         assert(!m_variable_to_parameter.count(parameter->get_variable()));
         m_variable_to_parameter.emplace(parameter->get_variable(), parameter);

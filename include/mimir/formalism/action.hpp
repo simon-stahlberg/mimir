@@ -21,8 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <functional>
-#include <loki/pddl/action.hpp>
-#include <loki/pddl/factory.hpp>
+#include <loki/loki.hpp>
 #include <optional>
 #include <string>
 

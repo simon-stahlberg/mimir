@@ -21,8 +21,7 @@
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {

@@ -33,15 +33,15 @@ private:
 public:
     EffectVisitor(PDDLFactories& factories_);
 
-    Effect operator()(const loki::pddl::EffectLiteralImpl& node);
-    Effect operator()(const loki::pddl::EffectAndImpl& node);
-    Effect operator()(const loki::pddl::EffectNumericImpl& node);
-    Effect operator()(const loki::pddl::EffectConditionalForallImpl& node);
-    Effect operator()(const loki::pddl::EffectConditionalWhenImpl& node);
+    Effect operator()(const loki::EffectLiteralImpl& node);
+    Effect operator()(const loki::EffectAndImpl& node);
+    Effect operator()(const loki::EffectNumericImpl& node);
+    Effect operator()(const loki::EffectConditionalForallImpl& node);
+    Effect operator()(const loki::EffectConditionalWhenImpl& node);
 };
 
-extern Effect parse(loki::pddl::Effect effect, PDDLFactories& factories);
-extern EffectList parse(loki::pddl::EffectList effect_list, PDDLFactories& factories);
+extern Effect parse(loki::Effect effect, PDDLFactories& factories);
+extern EffectList parse(loki::EffectList effect_list, PDDLFactories& factories);
 }
 
 #endif

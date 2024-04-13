@@ -22,12 +22,12 @@
 
 namespace mimir
 {
-Literal parse(loki::pddl::Literal literal, PDDLFactories& factories)
+Literal parse(loki::Literal literal, PDDLFactories& factories)
 {
     return factories.get_or_create_literal(literal->is_negated(), parse(literal->get_atom(), factories));
 }
 
-LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories)
+LiteralList parse(loki::LiteralList literal_list, PDDLFactories& factories)
 {
     auto result_literal_list = LiteralList();
     for (const auto& literal : literal_list)

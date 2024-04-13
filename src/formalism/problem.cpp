@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/problem.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -30,8 +29,7 @@
 #include "mimir/formalism/type.hpp"
 
 #include <iostream>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 using namespace std;
 
@@ -117,7 +115,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
                     out << " ";
                 out << objects[i]->get_name();
             }
-            if (m_requirements->test(loki::pddl::RequirementEnum::TYPING))
+            if (m_requirements->test(loki::RequirementEnum::TYPING))
             {
                 out << " - ";
                 if (types.size() > 1)
@@ -173,7 +171,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
     if (m_goal_condition.has_value())
     {
         out << string(nested_options.indent, ' ') << "(:goal ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *m_goal_condition.value());
+        std::visit(loki::StringifyVisitor(out, options), *m_goal_condition.value());
         out << ")\n";
     }
 

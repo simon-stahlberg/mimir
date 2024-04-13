@@ -38,19 +38,19 @@ private:
     /**
      * Translate
      */
-    Object translate_impl(const ObjectImpl& object);
-    Parameter translate_impl(const ParameterImpl& parameter);
-    Condition translate_impl(const ConditionExistsImpl& condition);
-    Condition translate_impl(const ConditionForallImpl& condition);
-    Effect translate_impl(const EffectConditionalForallImpl& effect);
-    Action translate_impl(const ActionImpl& action);
-    Domain translate_impl(const DomainImpl& domain);
-    Problem translate_impl(const ProblemImpl& problem);
+    loki::Object translate_impl(const loki::ObjectImpl& object);
+    loki::Parameter translate_impl(const loki::ParameterImpl& parameter);
+    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
+    loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect);
+    loki::Action translate_impl(const loki::ActionImpl& action);
+    loki::Domain translate_impl(const loki::DomainImpl& domain);
+    loki::Problem translate_impl(const loki::ProblemImpl& problem);
 
-    Problem run_impl(const ProblemImpl& problem);
+    loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit RemoveTypesTranslator(PDDLFactories& pddl_factories);
+    explicit RemoveTypesTranslator(loki::PDDLFactories& pddl_factories);
 };
 
 }

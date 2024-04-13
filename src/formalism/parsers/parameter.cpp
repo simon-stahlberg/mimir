@@ -23,12 +23,12 @@
 
 namespace mimir
 {
-Parameter parse(loki::pddl::Parameter parameter, PDDLFactories& factories)
+Parameter parse(loki::Parameter parameter, PDDLFactories& factories)
 {
     return factories.get_or_create_parameter(parse(parameter->get_variable(), factories), parse(parameter->get_bases(), factories));
 }
 
-ParameterList parse(loki::pddl::ParameterList parameter_list, PDDLFactories& factories)
+ParameterList parse(loki::ParameterList parameter_list, PDDLFactories& factories)
 {
     auto result_parameter_list = ParameterList();
     for (const auto& parameter : parameter_list)

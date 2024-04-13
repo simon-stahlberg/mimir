@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Function parse(loki::pddl::Function function, PDDLFactories& factories);
-extern FunctionList parse(loki::pddl::FunctionList function_list, PDDLFactories& factories);
+extern Function parse(loki::Function function, PDDLFactories& factories);
+extern FunctionList parse(loki::FunctionList function_list, PDDLFactories& factories);
 }
 
 #endif

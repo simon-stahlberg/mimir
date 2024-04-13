@@ -23,14 +23,14 @@
 
 namespace mimir
 {
-FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories)
+FunctionSkeleton parse(loki::FunctionSkeleton function_skeleton, PDDLFactories& factories)
 {
     return factories.get_or_create_function_skeleton(function_skeleton->get_name(),
                                                      parse(function_skeleton->get_parameters(), factories),
                                                      parse(function_skeleton->get_type(), factories));
 }
 
-FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories)
+FunctionSkeletonList parse(loki::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories)
 {
     auto result_function_skeleton_list = FunctionSkeletonList();
     for (const auto& function_skeleton : function_skeleton_list)

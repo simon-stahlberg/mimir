@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-extern Domain parse(loki::pddl::Domain domain, PDDLFactories& factories);
+extern Domain parse(loki::Domain domain, PDDLFactories& factories);
 }
 
 #endif

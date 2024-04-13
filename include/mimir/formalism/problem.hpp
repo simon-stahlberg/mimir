@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/factory.hpp>
-#include <loki/pddl/problem.hpp>
+#include <loki/loki.hpp>
 #include <optional>
 #include <string>
 

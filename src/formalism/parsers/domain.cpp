@@ -28,7 +28,7 @@
 
 namespace mimir
 {
-Domain parse(loki::pddl::Domain domain, PDDLFactories& factories)
+Domain parse(loki::Domain domain, PDDLFactories& factories)
 {
     return factories.get_or_create_domain(domain->get_name(),
                                           parse(domain->get_requirements(), factories),

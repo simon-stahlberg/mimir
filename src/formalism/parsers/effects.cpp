@@ -28,33 +28,30 @@ namespace mimir
 {
 EffectVisitor::EffectVisitor(PDDLFactories& factories_) : factories(factories_) {}
 
-Effect EffectVisitor::operator()(const loki::pddl::EffectLiteralImpl& node)
-{
-    return factories.get_or_create_effect_literal(parse(node.get_literal(), factories));
-}
+Effect EffectVisitor::operator()(const loki::EffectLiteralImpl& node) { return factories.get_or_create_effect_literal(parse(node.get_literal(), factories)); }
 
-Effect EffectVisitor::operator()(const loki::pddl::EffectAndImpl& node) { return factories.get_or_create_effect_and(parse(node.get_effects(), factories)); }
+Effect EffectVisitor::operator()(const loki::EffectAndImpl& node) { return factories.get_or_create_effect_and(parse(node.get_effects(), factories)); }
 
-Effect EffectVisitor::operator()(const loki::pddl::EffectNumericImpl& node)
+Effect EffectVisitor::operator()(const loki::EffectNumericImpl& node)
 {
     return factories.get_or_create_effect_numeric(node.get_assign_operator(),
                                                   parse(node.get_function(), factories),
                                                   parse(node.get_function_expression(), factories));
 }
 
-Effect EffectVisitor::operator()(const loki::pddl::EffectConditionalForallImpl& node)
+Effect EffectVisitor::operator()(const loki::EffectConditionalForallImpl& node)
 {
     return factories.get_or_create_effect_conditional_forall(parse(node.get_parameters(), factories), parse(node.get_effect(), factories));
 }
 
-Effect EffectVisitor::operator()(const loki::pddl::EffectConditionalWhenImpl& node)
+Effect EffectVisitor::operator()(const loki::EffectConditionalWhenImpl& node)
 {
     return factories.get_or_create_effect_conditional_when(parse(node.get_condition(), factories), parse(node.get_effect(), factories));
 }
 
-Effect parse(loki::pddl::Effect effect, PDDLFactories& factories) { return std::visit(EffectVisitor(factories), *effect); }
+Effect parse(loki::Effect effect, PDDLFactories& factories) { return std::visit(EffectVisitor(factories), *effect); }
 
-EffectList parse(loki::pddl::EffectList effect_list, PDDLFactories& factories)
+EffectList parse(loki::EffectList effect_list, PDDLFactories& factories)
 {
     auto result_effect_list = EffectList();
     for (const auto& effect : effect_list)

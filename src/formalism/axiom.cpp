@@ -21,9 +21,7 @@
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/literal.hpp"
 
-#include <loki/pddl/visitors.hpp>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -43,7 +41,7 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
     out << std::string(options.indent, ' ') << "(:derived " << *m_literal << "\n";
     out << std::string(nested_options.indent, ' ');
-    std::visit(loki::pddl::StringifyVisitor(out, nested_options), *m_condition);
+    std::visit(loki::StringifyVisitor(out, nested_options), *m_condition);
     out << ")\n";
 }
 

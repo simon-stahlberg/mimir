@@ -17,12 +17,10 @@
 
 #include "mimir/formalism/function_expressions.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/function.hpp"
 
 #include <cassert>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -46,7 +44,7 @@ double FunctionExpressionNumberImpl::get_number() const { return m_number; }
 
 /* FunctionExpressionBinaryOperator */
 FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(int identifier,
-                                                                           loki::pddl::BinaryOperatorEnum binary_operator,
+                                                                           loki::BinaryOperatorEnum binary_operator,
                                                                            FunctionExpression left_function_expression,
                                                                            FunctionExpression right_function_expression) :
     Base(identifier),
@@ -74,13 +72,13 @@ size_t FunctionExpressionBinaryOperatorImpl::hash_impl() const
 void FunctionExpressionBinaryOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(" << to_string(m_binary_operator) << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_left_function_expression);
+    std::visit(loki::StringifyVisitor(out, options), *m_left_function_expression);
     out << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_right_function_expression);
+    std::visit(loki::StringifyVisitor(out, options), *m_right_function_expression);
     out << ")";
 }
 
-loki::pddl::BinaryOperatorEnum FunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
+loki::BinaryOperatorEnum FunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
 const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_left_function_expression() const { return m_left_function_expression; }
 
@@ -88,7 +86,7 @@ const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_right_functi
 
 /* FunctionExpressionMultiOperator */
 FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(int identifier,
-                                                                         loki::pddl::MultiOperatorEnum multi_operator,
+                                                                         loki::MultiOperatorEnum multi_operator,
                                                                          FunctionExpressionList function_expressions) :
     Base(identifier),
     m_multi_operator(multi_operator),
@@ -117,12 +115,12 @@ void FunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki
     for (const auto& function_expression : m_function_expressions)
     {
         out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *function_expression);
+        std::visit(loki::StringifyVisitor(out, options), *function_expression);
     }
     out << ")";
 }
 
-loki::pddl::MultiOperatorEnum FunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
+loki::MultiOperatorEnum FunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
 
 const FunctionExpressionList& FunctionExpressionMultiOperatorImpl::get_function_expressions() const { return m_function_expressions; }
 
@@ -147,7 +145,7 @@ size_t FunctionExpressionMinusImpl::hash_impl() const { return hash_combine(m_fu
 void FunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(- ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_function_expression);
+    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
     out << ")";
 }
 

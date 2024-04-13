@@ -2,7 +2,7 @@
 #include "mimir/formalism/translators.hpp"
 
 #include <gtest/gtest.h>
-#include <loki/parser.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir::tests
 {
@@ -15,19 +15,18 @@ TEST(MimirTests, FormalismTranslatorsRemoveTypes)
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
 
-    auto parser = PDDLParser(domain_file, problem_file);
-    auto domain = parser.get_domain();
-    auto problem = parser.get_problem();
+    auto domain = domain_parser.get_domain();
+    auto problem = problem_parser.get_problem();
 
     std::cout << "\nInput domain and problem" << std::endl;
     std::cout << *domain << std::endl;
     std::cout << *problem << std::endl;
 
-    auto remove_types_translator = RemoveTypesTranslator(parser.get_factories());
+    auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
     auto translated_problem = remove_types_translator.run(*problem);
     auto translated_domain = translated_problem->get_domain();
 
-    auto to_nnf_translator = ToNNFTranslator(parser.get_factories());
+    auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
     translated_problem = to_nnf_translator.run(*translated_problem);
     translated_domain = translated_problem->get_domain();
 

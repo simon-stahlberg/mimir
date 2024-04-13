@@ -25,8 +25,8 @@
 
 namespace mimir
 {
-extern GroundLiteral parse(loki::pddl::GroundLiteral ground_literal, PDDLFactories& factories);
-extern GroundLiteralList parse(loki::pddl::GroundLiteralList ground_literal_list, PDDLFactories& factories);
+extern GroundLiteral parse(loki::GroundLiteral ground_literal, PDDLFactories& factories);
+extern GroundLiteralList parse(loki::GroundLiteralList ground_literal_list, PDDLFactories& factories);
 }
 
 #endif

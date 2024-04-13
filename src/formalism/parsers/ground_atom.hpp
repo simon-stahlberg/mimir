@@ -25,8 +25,8 @@
 
 namespace mimir
 {
-extern GroundAtom parse(loki::pddl::GroundAtom ground_atom, PDDLFactories& factories);
-extern GroundAtomList parse(loki::pddl::GroundAtomList ground_atom_list, PDDLFactories& factories);
+extern GroundAtom parse(loki::GroundAtom ground_atom, PDDLFactories& factories);
+extern GroundAtomList parse(loki::GroundAtomList ground_atom_list, PDDLFactories& factories);
 }
 
 #endif

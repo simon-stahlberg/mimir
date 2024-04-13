@@ -44,23 +44,23 @@ private:
     ScopeStack m_scopes;
 
     // Translation introduces additional `derived` predicates.
-    std::unordered_set<Predicate> m_derived_predicates;
+    std::unordered_set<loki::Predicate> m_derived_predicates;
     // The resulting axioms
-    std::unordered_set<Axiom> m_axioms;
+    std::unordered_set<loki::Axiom> m_axioms;
     // Cache translations
-    std::unordered_map<const ConditionForallImpl*, Condition> m_condition_to_substituted_condition;
+    std::unordered_map<const loki::ConditionForallImpl*, loki::Condition> m_condition_to_substituted_condition;
 
     /// @brief Translate the condition while keeping track of scopes
-    Condition translate_impl(const ConditionExistsImpl& condition);
-    Condition translate_impl(const ConditionForallImpl& condition);
-    Action translate_impl(const ActionImpl& action);
-    Domain translate_impl(const DomainImpl& domain);
-    Problem translate_impl(const ProblemImpl& problem);
+    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
+    loki::Action translate_impl(const loki::ActionImpl& action);
+    loki::Domain translate_impl(const loki::DomainImpl& domain);
+    loki::Problem translate_impl(const loki::ProblemImpl& problem);
 
-    Problem run_impl(const ProblemImpl& problem);
+    loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
+    RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
 };
 }
 

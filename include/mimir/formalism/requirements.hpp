@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/factory.hpp>
-#include <loki/pddl/requirements.hpp>
+#include <loki/loki.hpp>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -31,11 +30,11 @@ namespace mimir
 class RequirementsImpl : public loki::Base<RequirementsImpl>
 {
 private:
-    loki::pddl::RequirementEnumSet m_requirements;
+    loki::RequirementEnumSet m_requirements;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    RequirementsImpl(int identifier, loki::pddl::RequirementEnumSet requirements);
+    RequirementsImpl(int identifier, loki::RequirementEnumSet requirements);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<RequirementsImpl, loki::Hash<RequirementsImpl*>, loki::EqualTo<RequirementsImpl*>>;
@@ -49,9 +48,9 @@ private:
     friend class loki::Base<RequirementsImpl>;
 
 public:
-    bool test(loki::pddl::RequirementEnum requirement) const;
+    bool test(loki::RequirementEnum requirement) const;
 
-    const loki::pddl::RequirementEnumSet& get_requirements() const;
+    const loki::RequirementEnumSet& get_requirements() const;
 };
 }
 

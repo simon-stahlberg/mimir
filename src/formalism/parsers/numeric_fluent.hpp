@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern NumericFluent parse(loki::pddl::NumericFluent numeric_fluent, PDDLFactories& factories);
-extern NumericFluentList parse(loki::pddl::NumericFluentList numeric_fluent_list, PDDLFactories& factories);
+extern NumericFluent parse(loki::NumericFluent numeric_fluent, PDDLFactories& factories);
+extern NumericFluentList parse(loki::NumericFluentList numeric_fluent_list, PDDLFactories& factories);
 }
 
 #endif

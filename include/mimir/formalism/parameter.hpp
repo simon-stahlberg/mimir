@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/factory.hpp>
-#include <loki/pddl/parameter.hpp>
+#include <loki/loki.hpp>
 #include <string>
 
 namespace mimir

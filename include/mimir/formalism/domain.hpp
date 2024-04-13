@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/domain.hpp>
-#include <loki/pddl/factory.hpp>
+#include <loki/loki.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>

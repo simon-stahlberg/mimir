@@ -31,15 +31,15 @@ private:
 public:
     FunctionExpressionVisitor(PDDLFactories& factories_);
 
-    FunctionExpression operator()(const loki::pddl::FunctionExpressionNumberImpl& node);
-    FunctionExpression operator()(const loki::pddl::FunctionExpressionBinaryOperatorImpl& node);
-    FunctionExpression operator()(const loki::pddl::FunctionExpressionMultiOperatorImpl& node);
-    FunctionExpression operator()(const loki::pddl::FunctionExpressionMinusImpl& node);
-    FunctionExpression operator()(const loki::pddl::FunctionExpressionFunctionImpl& node);
+    FunctionExpression operator()(const loki::FunctionExpressionNumberImpl& node);
+    FunctionExpression operator()(const loki::FunctionExpressionBinaryOperatorImpl& node);
+    FunctionExpression operator()(const loki::FunctionExpressionMultiOperatorImpl& node);
+    FunctionExpression operator()(const loki::FunctionExpressionMinusImpl& node);
+    FunctionExpression operator()(const loki::FunctionExpressionFunctionImpl& node);
 };
 
-extern FunctionExpression parse(loki::pddl::FunctionExpression function_expression, PDDLFactories& factories);
-extern FunctionExpressionList parse(loki::pddl::FunctionExpressionList function_expression_list, PDDLFactories& factories);
+extern FunctionExpression parse(loki::FunctionExpression function_expression, PDDLFactories& factories);
+extern FunctionExpressionList parse(loki::FunctionExpressionList function_expression_list, PDDLFactories& factories);
 }
 
 #endif

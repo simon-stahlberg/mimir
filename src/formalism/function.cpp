@@ -17,11 +17,10 @@
 
 #include "mimir/formalism/function.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/term.hpp"
 
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -52,7 +51,7 @@ void FunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& op
         {
             if (i != 0)
                 out << " ";
-            std::visit(loki::pddl::StringifyVisitor(out, options), *m_terms[i]);
+            std::visit(loki::StringifyVisitor(out, options), *m_terms[i]);
         }
         out << "))";
     }

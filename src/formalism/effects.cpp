@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/effects.hpp"
 
-#include "loki/pddl/visitors.hpp"
 #include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
@@ -25,8 +24,7 @@
 #include "mimir/formalism/parameter.hpp"
 
 #include <cassert>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -68,7 +66,7 @@ void EffectAndImpl::str_impl(std::ostream& out, const loki::FormattingOptions& o
     {
         if (i != 0)
             out << " ";
-        std::visit(loki::pddl::StringifyVisitor(out, options), *m_effects[i]);
+        std::visit(loki::StringifyVisitor(out, options), *m_effects[i]);
     }
     out << ")";
 }
@@ -76,10 +74,7 @@ void EffectAndImpl::str_impl(std::ostream& out, const loki::FormattingOptions& o
 const EffectList& EffectAndImpl::get_effects() const { return m_effects; }
 
 /* EffectNumeric */
-EffectNumericImpl::EffectNumericImpl(int identifier,
-                                     loki::pddl::AssignOperatorEnum assign_operator,
-                                     Function function,
-                                     FunctionExpression function_expression) :
+EffectNumericImpl::EffectNumericImpl(int identifier, loki::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression) :
     Base(identifier),
     m_assign_operator(assign_operator),
     m_function(std::move(function)),
@@ -103,11 +98,11 @@ void EffectNumericImpl::str_impl(std::ostream& out, const loki::FormattingOption
     out << "(" << to_string(m_assign_operator) << " ";
     m_function->str(out, options);
     out << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_function_expression);
+    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
     out << ")";
 }
 
-loki::pddl::AssignOperatorEnum EffectNumericImpl::get_assign_operator() const { return m_assign_operator; }
+loki::AssignOperatorEnum EffectNumericImpl::get_assign_operator() const { return m_assign_operator; }
 
 const Function& EffectNumericImpl::get_function() const { return m_function; }
 
@@ -142,7 +137,7 @@ void EffectConditionalForallImpl::str_impl(std::ostream& out, const loki::Format
         m_parameters[i]->str(out, options);
     }
     out << ") ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_effect);
+    std::visit(loki::StringifyVisitor(out, options), *m_effect);
     out << ")";
 }
 
@@ -171,9 +166,9 @@ size_t EffectConditionalWhenImpl::hash_impl() const { return hash_combine(m_cond
 void EffectConditionalWhenImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(when ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_condition);
+    std::visit(loki::StringifyVisitor(out, options), *m_condition);
     out << " ";
-    std::visit(loki::pddl::StringifyVisitor(out, options), *m_effect);
+    std::visit(loki::StringifyVisitor(out, options), *m_effect);
     out << ")";
 }
 

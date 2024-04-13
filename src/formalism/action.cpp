@@ -24,9 +24,7 @@
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
 
-#include <loki/pddl/visitors.hpp>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -61,14 +59,14 @@ void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
     out << "\n";
     out << std::string(nested_options.indent, ' ') << ":conditions ";
     if (m_condition.has_value())
-        std::visit(loki::pddl::StringifyVisitor(out, nested_options), *m_condition.value());
+        std::visit(loki::StringifyVisitor(out, nested_options), *m_condition.value());
     else
         out << "()";
 
     out << "\n";
     out << std::string(nested_options.indent, ' ') << ":effects ";
     if (m_effect.has_value())
-        std::visit(loki::pddl::StringifyVisitor(out, nested_options), *m_effect.value());
+        std::visit(loki::StringifyVisitor(out, nested_options), *m_effect.value());
     else
         out << "()";
 

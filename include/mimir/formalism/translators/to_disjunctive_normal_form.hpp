@@ -53,20 +53,20 @@ private:
      *
      * 1. A and (B or C)  =>  A and B or A and C
      */
-    Condition translate_impl(const ConditionAndImpl& condition);
+    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
     /**
      * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
      */
-    Condition translate_impl(const ConditionExistsImpl& condition);
+    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
     /**
      * 3. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
      */
-    Condition translate_impl(const ConditionForallImpl& condition);
+    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
 
-    Problem run_impl(const ProblemImpl& problem);
+    loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    ToDNFTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
+    ToDNFTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
 };
 
 }

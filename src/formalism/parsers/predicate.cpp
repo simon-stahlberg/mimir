@@ -22,12 +22,12 @@
 
 namespace mimir
 {
-Predicate parse(loki::pddl::Predicate predicate, PDDLFactories& factories)
+Predicate parse(loki::Predicate predicate, PDDLFactories& factories)
 {
     return factories.get_or_create_predicate(predicate->get_name(), parse(predicate->get_parameters(), factories));
 }
 
-PredicateList parse(loki::pddl::PredicateList predicate_list, PDDLFactories& factories)
+PredicateList parse(loki::PredicateList predicate_list, PDDLFactories& factories)
 {
     auto result_predicate_list = PredicateList();
     for (const auto& predicate : predicate_list)

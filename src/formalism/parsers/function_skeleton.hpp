@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern FunctionSkeleton parse(loki::pddl::FunctionSkeleton function_skeleton, PDDLFactories& factories);
-extern FunctionSkeletonList parse(loki::pddl::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories);
+extern FunctionSkeleton parse(loki::FunctionSkeleton function_skeleton, PDDLFactories& factories);
+extern FunctionSkeletonList parse(loki::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories);
 }
 
 #endif

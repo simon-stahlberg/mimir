@@ -26,8 +26,7 @@
 #include "mimir/formalism/type.hpp"
 
 #include <iostream>
-#include <loki/utils/collections.hpp>
-#include <loki/utils/hash.hpp>
+#include <loki/loki.hpp>
 #include <unordered_map>
 
 using namespace std;
@@ -163,7 +162,7 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
                     out << " ";
                 constants[i]->str(out, nested_options);
             }
-            if (m_requirements->test(loki::pddl::RequirementEnum::TYPING))
+            if (m_requirements->test(loki::RequirementEnum::TYPING))
             {
                 out << " - ";
                 const auto& types = pair.first;

@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-extern Literal parse(loki::pddl::Literal literal, PDDLFactories& factories);
-extern LiteralList parse(loki::pddl::LiteralList literal_list, PDDLFactories& factories);
+extern Literal parse(loki::Literal literal, PDDLFactories& factories);
+extern LiteralList parse(loki::LiteralList literal_list, PDDLFactories& factories);
 }
 
 #endif

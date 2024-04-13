@@ -20,8 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 
-#include <loki/pddl/factory.hpp>
-#include <loki/pddl/function_expressions.hpp>
+#include <loki/loki.hpp>
 #include <string>
 
 namespace mimir
@@ -54,14 +53,14 @@ public:
 class FunctionExpressionBinaryOperatorImpl : public loki::Base<FunctionExpressionBinaryOperatorImpl>
 {
 private:
-    loki::pddl::BinaryOperatorEnum m_binary_operator;
+    loki::BinaryOperatorEnum m_binary_operator;
     FunctionExpression m_left_function_expression;
     FunctionExpression m_right_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     FunctionExpressionBinaryOperatorImpl(int identifier,
-                                         loki::pddl::BinaryOperatorEnum binary_operator,
+                                         loki::BinaryOperatorEnum binary_operator,
                                          FunctionExpression left_function_expression,
                                          FunctionExpression right_function_expression);
 
@@ -76,7 +75,7 @@ private:
     friend class loki::Base<FunctionExpressionBinaryOperatorImpl>;
 
 public:
-    loki::pddl::BinaryOperatorEnum get_binary_operator() const;
+    loki::BinaryOperatorEnum get_binary_operator() const;
     const FunctionExpression& get_left_function_expression() const;
     const FunctionExpression& get_right_function_expression() const;
 };
@@ -85,12 +84,12 @@ public:
 class FunctionExpressionMultiOperatorImpl : public loki::Base<FunctionExpressionMultiOperatorImpl>
 {
 private:
-    loki::pddl::MultiOperatorEnum m_multi_operator;
+    loki::MultiOperatorEnum m_multi_operator;
     FunctionExpressionList m_function_expressions;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionMultiOperatorImpl(int identifier, loki::pddl::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
+    FunctionExpressionMultiOperatorImpl(int identifier, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<FunctionExpressionImpl, loki::Hash<FunctionExpressionImpl*>, loki::EqualTo<FunctionExpressionImpl*>>;
@@ -103,7 +102,7 @@ private:
     friend class loki::Base<FunctionExpressionMultiOperatorImpl>;
 
 public:
-    loki::pddl::MultiOperatorEnum get_multi_operator() const;
+    loki::MultiOperatorEnum get_multi_operator() const;
     const FunctionExpressionList& get_function_expressions() const;
 };
 
