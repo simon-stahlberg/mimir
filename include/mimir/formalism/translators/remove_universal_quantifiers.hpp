@@ -54,6 +54,8 @@ private:
     Condition translate_impl(const ConditionExistsImpl& condition);
     Condition translate_impl(const ConditionForallImpl& condition);
     Action translate_impl(const ActionImpl& action);
+    Domain translate_impl(const DomainImpl& domain);
+    Problem translate_impl(const ProblemImpl& problem);
 
     Problem run_impl(const ProblemImpl& problem);
 

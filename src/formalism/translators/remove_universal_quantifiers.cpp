@@ -115,45 +115,86 @@ Action RemoveUniversalQuantifiersTranslator::translate_impl(const ActionImpl& ac
         });
 }
 
-Problem RemoveUniversalQuantifiersTranslator::run_impl(const ProblemImpl& problem)
+Domain RemoveUniversalQuantifiersTranslator::translate_impl(const DomainImpl& domain)
 {
-    m_axioms.clear();
-    m_derived_predicates.clear();
-    // Translate domain, create new domain with axioms
-    auto translated_domain = this->translate(*problem.get_domain());
-    auto translated_derived_predicates = this->translate(problem.get_domain()->get_derived_predicates());
-    auto translated_axioms = this->translate(problem.get_domain()->get_axioms());
-    translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
-    translated_derived_predicates = uniquify_elements(translated_derived_predicates);
-    translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
-    translated_axioms = uniquify_elements(translated_axioms);
-    translated_domain = m_pddl_factories.get_or_create_domain(translated_domain->get_name(),
-                                                              translated_domain->get_requirements(),
-                                                              translated_domain->get_types(),
-                                                              translated_domain->get_constants(),
-                                                              translated_domain->get_predicates(),
-                                                              translated_derived_predicates,
-                                                              translated_domain->get_functions(),
-                                                              translated_domain->get_actions(),
-                                                              translated_axioms);
-    // Translate problem, create new problem with all axioms
-    auto translated_problem = this->translate(problem);
-    translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
-    translated_derived_predicates = uniquify_elements(translated_derived_predicates);
-    translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
-    translated_axioms = uniquify_elements(translated_axioms);
-    translated_problem = m_pddl_factories.get_or_create_problem(translated_domain,
-                                                                translated_problem->get_name(),
-                                                                translated_problem->get_requirements(),
-                                                                translated_problem->get_objects(),
-                                                                translated_derived_predicates,
-                                                                translated_problem->get_initial_literals(),
-                                                                translated_problem->get_numeric_fluents(),
-                                                                translated_problem->get_goal_condition(),
-                                                                translated_problem->get_optimization_metric(),
-                                                                translated_axioms);
-    return translated_problem;
+    return this->cached_translated_impl(
+        domain,
+        m_translated_domains,
+        [this](const DomainImpl& arg)
+        {
+            // Clear containers that store derived predicates and axioms obtained during translation.
+            m_axioms.clear();
+            m_derived_predicates.clear();
+
+            // Translate existing derived predicates and axioms.
+            auto translated_derived_predicates = this->translate(arg.get_derived_predicates());
+            auto translated_axioms = this->translate(arg.get_axioms());
+
+            // Translate universal quantifiers in conditions to axioms.
+            auto translated_actions = this->translate(arg.get_actions());
+
+            // Combine all derived predicates and axioms.
+            translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
+            translated_derived_predicates = uniquify_elements(translated_derived_predicates);
+            translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
+            translated_axioms = uniquify_elements(translated_axioms);
+
+            return this->m_pddl_factories.get_or_create_domain(arg.get_name(),
+                                                               this->translate(*arg.get_requirements()),
+                                                               this->translate(arg.get_types()),
+                                                               this->translate(arg.get_constants()),
+                                                               this->translate(arg.get_predicates()),
+                                                               translated_derived_predicates,
+                                                               this->translate(arg.get_functions()),
+                                                               translated_actions,
+                                                               translated_axioms);
+        });
 }
+
+Problem RemoveUniversalQuantifiersTranslator::translate_impl(const ProblemImpl& problem)
+{
+    return this->cached_translated_impl(
+        problem,
+        m_translated_problems,
+        [this](const ProblemImpl& arg)
+        {
+            // Translate the domain
+            auto translated_domain = this->translate(*arg.get_domain());
+
+            // Clear containers that store derived predicates and axioms obtained during translation.
+            m_axioms.clear();
+            m_derived_predicates.clear();
+
+            // Translate existing derived predicates and axioms.
+            auto translated_derived_predicates = this->translate(arg.get_derived_predicates());
+            auto translated_axioms = this->translate(arg.get_axioms());
+
+            // Translate the goal condition
+            auto translated_goal =
+                (arg.get_goal_condition().has_value() ? std::optional<Condition>(this->translate(*arg.get_goal_condition().value())) : std::nullopt);
+
+            // Combine all derived predicates and axioms.
+            translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
+            translated_derived_predicates = uniquify_elements(translated_derived_predicates);
+            translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
+            translated_axioms = uniquify_elements(translated_axioms);
+
+            return this->m_pddl_factories.get_or_create_problem(
+                translated_domain,
+                arg.get_name(),
+                this->translate(*arg.get_requirements()),
+                this->translate(arg.get_objects()),
+                translated_derived_predicates,
+                this->translate(arg.get_initial_literals()),
+                this->translate(arg.get_numeric_fluents()),
+                translated_goal,
+                (arg.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
+                                                             std::nullopt),
+                translated_axioms);
+        });
+}
+
+Problem RemoveUniversalQuantifiersTranslator::run_impl(const ProblemImpl& problem) { return this->translate(problem); }
 
 RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseTranslator(pddl_factories),
