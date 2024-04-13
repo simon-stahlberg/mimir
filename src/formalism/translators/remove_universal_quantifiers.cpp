@@ -193,7 +193,10 @@ loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::P
         });
 }
 
-loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
+loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem)
+{
+    return this->translate(*this->m_to_nnf_translator.run(problem));
+}
 
 RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseTranslator(pddl_factories),

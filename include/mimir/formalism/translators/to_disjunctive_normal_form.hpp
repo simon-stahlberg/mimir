@@ -55,6 +55,12 @@ private:
      */
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
     /**
+     * Apply flattening of conjunctions.
+     *
+     * 1. A or (B or C)  =>  A or B or C
+     */
+    loki::Condition translate_impl(const loki::ConditionOrImpl& condition);
+    /**
      * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
      */
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);

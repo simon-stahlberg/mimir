@@ -20,9 +20,8 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     // TODO: compiling away types results in segfault during planning in the successor generator
     problem = remove_types_translator.run(*problem);
 
-    // To negation normal form
+    // Negation normal form translator
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
-    problem = to_nnf_translator.run(*problem);
 
     // Remove universal quantifiers
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
@@ -31,6 +30,10 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     // Simplify goal
     auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_factories());
     problem = simplify_goal_translator.run(*problem);
+
+    // To disjunctive normal form
+    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_factories(), to_nnf_translator);
+    problem = to_dnf_translator.run(*problem);
 
     // Parse into mimir domain and problem structures
     m_domain = parse(problem->get_domain(), m_factories);

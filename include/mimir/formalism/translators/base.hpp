@@ -235,14 +235,32 @@ protected:
 
     /// @brief Apply problem translation.
     ///        Default behavior reparses it into the pddl_factories.
-    loki::Requirements translate_base(const loki::RequirementsImpl& requirements) { return self().translate_impl(requirements); }
-    loki::Type translate_base(const loki::TypeImpl& type) { return self().translate_impl(type); }
-    loki::Object translate_base(const loki::ObjectImpl& object) { return self().translate_impl(object); }
-    loki::Variable translate_base(const loki::VariableImpl& variable) { return self().translate_impl(variable); }
+    loki::Requirements translate_base(const loki::RequirementsImpl& requirements)
+    {
+        return cached_translated_impl(requirements, m_translated_requirements, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Type translate_base(const loki::TypeImpl& type)
+    {
+        return cached_translated_impl(type, m_translated_types, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Object translate_base(const loki::ObjectImpl& object)
+    {
+        return cached_translated_impl(object, m_translated_objects, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Variable translate_base(const loki::VariableImpl& variable)
+    {
+        return cached_translated_impl(variable, m_translated_variables, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
     loki::Term translate_base(const loki::TermObjectImpl& term) { return self().translate_impl(term); }
     loki::Term translate_base(const loki::TermVariableImpl& term) { return self().translate_impl(term); }
-    loki::Term translate_base(const loki::TermImpl& term) { return self().translate_impl(term); }
-    loki::Parameter translate_base(const loki::ParameterImpl& parameter) { return self().translate_impl(parameter); }
+    loki::Term translate_base(const loki::TermImpl& term)
+    {
+        return cached_translated_impl(term, m_translated_terms, [this, &term](const auto& arg) { return this->self().translate_impl(term); });
+    }
+    loki::Parameter translate_base(const loki::ParameterImpl& parameter)
+    {
+        return cached_translated_impl(parameter, m_translated_parameters, [this](const auto& arg) { return self().translate_impl(arg); });
+    }
     loki::Predicate translate_base(const loki::PredicateImpl& predicate) { return self().translate_impl(predicate); }
     loki::Atom translate_base(const loki::AtomImpl& atom) { return self().translate_impl(atom); }
     loki::GroundAtom translate_base(const loki::GroundAtomImpl& atom) { return self().translate_impl(atom); }
@@ -310,31 +328,17 @@ protected:
     }
     loki::Requirements translate_impl(const loki::RequirementsImpl& requirements)
     {
-        return cached_translated_impl(requirements,
-                                      m_translated_requirements,
-                                      [this](const loki::RequirementsImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_requirements(arg.get_requirements()); });
+        return this->m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
     }
     loki::Type translate_impl(const loki::TypeImpl& type)
     {
-        return cached_translated_impl(type,
-                                      m_translated_types,
-                                      [this](const loki::TypeImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_type(arg.get_name(), this->translate(arg.get_bases())); });
+        return this->m_pddl_factories.get_or_create_type(type.get_name(), this->translate(type.get_bases()));
     }
     loki::Object translate_impl(const loki::ObjectImpl& object)
     {
-        return cached_translated_impl(object,
-                                      m_translated_objects,
-                                      [this](const loki::ObjectImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_object(arg.get_name(), this->translate(arg.get_bases())); });
+        return this->m_pddl_factories.get_or_create_object(object.get_name(), this->translate(object.get_bases()));
     }
-    loki::Variable translate_impl(const loki::VariableImpl& variable)
-    {
-        return cached_translated_impl(variable,
-                                      m_translated_variables,
-                                      [this](const loki::VariableImpl& arg) { return this->m_pddl_factories.get_or_create_variable(arg.get_name()); });
-    }
+    loki::Variable translate_impl(const loki::VariableImpl& variable) { return this->m_pddl_factories.get_or_create_variable(variable.get_name()); }
     loki::Term translate_impl(const loki::TermObjectImpl& term)
     {
         return this->m_pddl_factories.get_or_create_term_object(this->translate(*term.get_object()));
@@ -345,18 +349,11 @@ protected:
     }
     loki::Term translate_impl(const loki::TermImpl& term)
     {
-        return cached_translated_impl(term,
-                                      m_translated_terms,
-                                      [this, &term](const loki::TermImpl& arg)
-                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, term); });
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, term);
     }
     loki::Parameter translate_impl(const loki::ParameterImpl& parameter)
     {
-        return cached_translated_impl(
-            parameter,
-            m_translated_parameters,
-            [this](const loki::ParameterImpl& arg)
-            { return this->m_pddl_factories.get_or_create_parameter(this->translate(*arg.get_variable()), this->translate(arg.get_bases())); });
+        return this->m_pddl_factories.get_or_create_parameter(this->translate(*parameter.get_variable()), this->translate(parameter.get_bases()));
     }
     loki::Predicate translate_impl(const loki::PredicateImpl& predicate)
     {
