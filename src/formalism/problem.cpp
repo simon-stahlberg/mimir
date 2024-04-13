@@ -177,17 +177,11 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
         out << ")\n";
     }
 
-    out << ")\n";
     if (m_optimization_metric.has_value())
     {
         out << string(nested_options.indent, ' ') << "(:metric ";
         m_optimization_metric.value()->str(out, nested_options);
         out << ")\n";
-    }
-
-    for (const auto& derived_predicate : m_derived_predicates)
-    {
-        derived_predicate->str(out, nested_options);
     }
 
     for (const auto& axiom : m_axioms)

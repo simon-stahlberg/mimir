@@ -2,8 +2,6 @@
 
 Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) easy to integrate, use, and extend. Mimir implements standard search algorithms such as breadth-first search and AStar search. Mimir also provides Python bindings for the most common template instantiations.
 
-**Static dispatch:** Mimir is fully based on static dispatch. The planner configuration is given at compile time allowing the compiler to produce more optimized code.
-
 **Buffering:** Mimir serializes data types to cache-efficient flat memory layouts with zero-cost de-serialization. Mimir copies the buffers and reuses preallocated buffers. Mimir uses it for states, search nodes, and ground actions. Mimir provides additional general implementations on top of flatbuffers for pointers and bitsets which can be used to make algorithms more efficient.
 
 
@@ -13,8 +11,7 @@ Mimir is a C++20 planning library for grounded and lifted planning. We created M
 ```cpp
 const auto domain_file = std::string("domain.pddl");
 const auto problem_file = std::string("problem.pddl");
-auto planner = Planner<SingleTag<AStarTag<GroundedTag, BlindTag, DenseStateTag>>>(domain_file, problem_file);
-const auto [statistics, plan] = planner.find_solution();
+// TODO
 ```
 
 
@@ -73,10 +70,9 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 
 ### Directory Structure
 
-- Put base classes in a header file with the suffix `template.hpp` in subdirectory `<name>s`.
+- Put interface classes in a header file with the suffix `interface.hpp` in subdirectory `<name>s`.
 - Put declarations of a derived class with tag `<tag>` in the subdirectory `<name>s`.
-- Put a specialization of the derived class in a header file with the name `<tag>-<tags...>.hpp` in the subdirectory `<name>s` where `<tags...>` is a list of `_` separated tags that identify the specialization.
-- Include all specializations of the derived class with tag `<tag>` in `<tag>s.hpp`.
+- Include all specializations of the derived class with tag `<tag>` in `<name>s.hpp`.
 
 We sometimes use reasonable shortcuts for `<tag>` to make it more readable.
 
@@ -87,4 +83,3 @@ We sometimes use reasonable shortcuts for `<tag>` to make it more readable.
 ### Concepts
 
 - Use prefixes `Is` or `Has` to obtain more meaningful names.
-- Always apply `Is` concepts in the template argument declaration to provide type hints for the IDE.

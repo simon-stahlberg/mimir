@@ -72,7 +72,8 @@ Condition RemoveUniversalQuantifiersTranslator::translate_impl(const ConditionFo
     }
     parameters.shrink_to_fit();
 
-    const auto axiom_name = "@axiom["s + std::visit([](const auto& arg) { return arg.str(); }, *axiom_condition) + "]";
+    // const auto axiom_name = "@axiom["s + std::visit([](const auto& arg) { return arg.str(); }, *axiom_condition) + "]";
+    const auto axiom_name = "@axiom["s + condition.str() + "]";
     const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, parameters);
     m_derived_predicates.insert(predicate);
     const auto literal = this->m_pddl_factories.get_or_create_literal(true, this->m_pddl_factories.get_or_create_atom(predicate, terms));
@@ -117,6 +118,7 @@ Action RemoveUniversalQuantifiersTranslator::translate_impl(const ActionImpl& ac
 Problem RemoveUniversalQuantifiersTranslator::run_impl(const ProblemImpl& problem)
 {
     m_axioms.clear();
+    m_derived_predicates.clear();
     // Translate domain, create new domain with axioms
     auto translated_domain = this->translate(*problem.get_domain());
     auto translated_derived_predicates = this->translate(problem.get_domain()->get_derived_predicates());
