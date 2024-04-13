@@ -23,6 +23,7 @@
 #include "mimir/formalism/translators/positive_normal_form.hpp"
 #include "mimir/formalism/translators/remove_types.hpp"
 #include "mimir/formalism/translators/remove_universal_quantifiers.hpp"
+#include "mimir/formalism/translators/simplify_goal.hpp"
 #include "mimir/formalism/translators/to_disjunctive_normal_form.hpp"
 #include "mimir/formalism/translators/to_negation_normal_form.hpp"
 

@@ -28,6 +28,10 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
     problem = remove_universal_quantifiers_translator.run(*problem);
 
+    // Simplify goal
+    auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_factories());
+    problem = simplify_goal_translator.run(*problem);
+
     // Parse into mimir domain and problem structures
     m_domain = parse(problem->get_domain(), m_factories);
     m_problem = parse(problem, m_factories);
