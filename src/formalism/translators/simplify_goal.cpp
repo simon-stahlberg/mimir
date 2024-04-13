@@ -58,40 +58,34 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
 
 loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& problem)
 {
-    return this->cached_translated_impl(
-        problem,
-        m_translated_problems,
-        [this](const loki::ProblemImpl& arg)
-        {
-            // Translate existing derived predicates and axioms.
-            auto translated_derived_predicates = this->translate(arg.get_derived_predicates());
-            auto translated_axioms = this->translate(arg.get_axioms());
+    // Translate existing derived predicates and axioms.
+    auto translated_derived_predicates = this->translate(problem.get_derived_predicates());
+    auto translated_axioms = this->translate(problem.get_axioms());
 
-            // Translate the goal condition
-            auto translated_goal =
-                (arg.get_goal_condition().has_value() ? std::optional<loki::Condition>(
-                     simplify_goal_condition(*arg.get_goal_condition().value(), this->m_pddl_factories, this->m_derived_predicates, this->m_axioms)) :
-                                                        std::nullopt);
+    // Translate the goal condition
+    auto translated_goal =
+        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(
+             simplify_goal_condition(*problem.get_goal_condition().value(), this->m_pddl_factories, this->m_derived_predicates, this->m_axioms)) :
+                                                    std::nullopt);
 
-            // Combine all derived predicates and axioms.
-            translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
-            translated_derived_predicates = uniquify_elements(translated_derived_predicates);
-            translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
-            translated_axioms = uniquify_elements(translated_axioms);
+    // Combine all derived predicates and axioms.
+    translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
+    translated_derived_predicates = uniquify_elements(translated_derived_predicates);
+    translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
+    translated_axioms = uniquify_elements(translated_axioms);
 
-            return this->m_pddl_factories.get_or_create_problem(
-                this->translate(*arg.get_domain()),
-                arg.get_name(),
-                this->translate(*arg.get_requirements()),
-                this->translate(arg.get_objects()),
-                translated_derived_predicates,
-                this->translate(arg.get_initial_literals()),
-                this->translate(arg.get_numeric_fluents()),
-                translated_goal,
-                (arg.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
-                                                             std::nullopt),
-                translated_axioms);
-        });
+    return this->m_pddl_factories.get_or_create_problem(
+        this->translate(*problem.get_domain()),
+        problem.get_name(),
+        this->translate(*problem.get_requirements()),
+        this->translate(problem.get_objects()),
+        translated_derived_predicates,
+        this->translate(problem.get_initial_literals()),
+        this->translate(problem.get_numeric_fluents()),
+        translated_goal,
+        (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
+                                                         std::nullopt),
+        translated_axioms);
 }
 
 loki::Problem SimplifyGoalTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }

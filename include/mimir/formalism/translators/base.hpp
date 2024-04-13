@@ -259,14 +259,32 @@ protected:
     }
     loki::Parameter translate_base(const loki::ParameterImpl& parameter)
     {
-        return cached_translated_impl(parameter, m_translated_parameters, [this](const auto& arg) { return self().translate_impl(arg); });
+        return cached_translated_impl(parameter, m_translated_parameters, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
-    loki::Predicate translate_base(const loki::PredicateImpl& predicate) { return self().translate_impl(predicate); }
-    loki::Atom translate_base(const loki::AtomImpl& atom) { return self().translate_impl(atom); }
-    loki::GroundAtom translate_base(const loki::GroundAtomImpl& atom) { return self().translate_impl(atom); }
-    loki::Literal translate_base(const loki::LiteralImpl& literal) { return self().translate_impl(literal); }
-    loki::GroundLiteral translate_base(const loki::GroundLiteralImpl& literal) { return self().translate_impl(literal); }
-    loki::NumericFluent translate_base(const loki::NumericFluentImpl& numeric_fluent) { return self().translate_impl(numeric_fluent); }
+    loki::Predicate translate_base(const loki::PredicateImpl& predicate)
+    {
+        return cached_translated_impl(predicate, m_translated_predicates, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Atom translate_base(const loki::AtomImpl& atom)
+    {
+        return cached_translated_impl(atom, m_translated_atoms, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::GroundAtom translate_base(const loki::GroundAtomImpl& atom)
+    {
+        return cached_translated_impl(atom, m_translated_ground_atoms, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Literal translate_base(const loki::LiteralImpl& literal)
+    {
+        return cached_translated_impl(literal, m_translated_literals, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::GroundLiteral translate_base(const loki::GroundLiteralImpl& literal)
+    {
+        return cached_translated_impl(literal, m_translated_ground_literals, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::NumericFluent translate_base(const loki::NumericFluentImpl& numeric_fluent)
+    {
+        return cached_translated_impl(numeric_fluent, m_translated_numeric_fluents, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
     loki::Condition translate_base(const loki::ConditionLiteralImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionAndImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionOrImpl& condition) { return self().translate_impl(condition); }
@@ -274,13 +292,19 @@ protected:
     loki::Condition translate_base(const loki::ConditionImplyImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionExistsImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionForallImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionImpl& condition) { return self().translate_impl(condition); }
+    loki::Condition translate_base(const loki::ConditionImpl& condition)
+    {
+        return cached_translated_impl(condition, m_translated_conditions, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
     loki::Effect translate_base(const loki::EffectLiteralImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectAndImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectNumericImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectConditionalForallImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectImpl& effect) { return self().translate_impl(effect); }
+    loki::Effect translate_base(const loki::EffectImpl& effect)
+    {
+        return cached_translated_impl(effect, m_translated_effects, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
     loki::FunctionExpression translate_base(const loki::FunctionExpressionNumberImpl& function_expression)
     {
         return self().translate_impl(function_expression);
@@ -298,14 +322,40 @@ protected:
     {
         return self().translate_impl(function_expression);
     }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionImpl& function_expression) { return self().translate_impl(function_expression); }
-    loki::FunctionSkeleton translate_base(const loki::FunctionSkeletonImpl& function_skeleton) { return self().translate_impl(function_skeleton); }
-    loki::Function translate_base(const loki::FunctionImpl& function) { return self().translate_impl(function); }
-    loki::Action translate_base(const loki::ActionImpl& action) { return self().translate_impl(action); }
-    loki::Axiom translate_base(const loki::AxiomImpl& axiom) { return self().translate_impl(axiom); }
-    loki::Domain translate_base(const loki::DomainImpl& domain) { return self().translate_impl(domain); }
-    loki::OptimizationMetric translate_base(const loki::OptimizationMetricImpl& metric) { return self().translate_impl(metric); }
-    loki::Problem translate_base(const loki::ProblemImpl& problem) { return self().translate_impl(problem); }
+    loki::FunctionExpression translate_base(const loki::FunctionExpressionImpl& function_expression)
+    {
+        return cached_translated_impl(function_expression,
+                                      m_translated_function_expressions,
+                                      [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::FunctionSkeleton translate_base(const loki::FunctionSkeletonImpl& function_skeleton)
+    {
+        return cached_translated_impl(function_skeleton, m_translated_function_skeletons, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Function translate_base(const loki::FunctionImpl& function)
+    {
+        return cached_translated_impl(function, m_translated_functions, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Action translate_base(const loki::ActionImpl& action)
+    {
+        return cached_translated_impl(action, m_translated_actions, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Axiom translate_base(const loki::AxiomImpl& axiom)
+    {
+        return cached_translated_impl(axiom, m_translated_axioms, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Domain translate_base(const loki::DomainImpl& domain)
+    {
+        return cached_translated_impl(domain, m_translated_domains, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::OptimizationMetric translate_base(const loki::OptimizationMetricImpl& metric)
+    {
+        return cached_translated_impl(metric, m_translated_optimization_metrics, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
+    loki::Problem translate_base(const loki::ProblemImpl& problem)
+    {
+        return cached_translated_impl(problem, m_translated_problems, [this](const auto& arg) { return this->self().translate_impl(arg); });
+    }
 
     /// @brief Retrieve or create cache entry of translation to avoid recomputations.
     template<typename Impl, typename TranslateFunc>
@@ -357,47 +407,27 @@ protected:
     }
     loki::Predicate translate_impl(const loki::PredicateImpl& predicate)
     {
-        return cached_translated_impl(predicate,
-                                      m_translated_predicates,
-                                      [this](const loki::PredicateImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_predicate(arg.get_name(), this->translate(arg.get_parameters())); });
+        return this->m_pddl_factories.get_or_create_predicate(predicate.get_name(), this->translate(predicate.get_parameters()));
     }
     loki::Atom translate_impl(const loki::AtomImpl& atom)
     {
-        return cached_translated_impl(
-            atom,
-            m_translated_atoms,
-            [this](const loki::AtomImpl& arg)
-            { return this->m_pddl_factories.get_or_create_atom(this->translate(*arg.get_predicate()), this->translate(arg.get_terms())); });
+        return this->m_pddl_factories.get_or_create_atom(this->translate(*atom.get_predicate()), this->translate(atom.get_terms()));
     }
     loki::GroundAtom translate_impl(const loki::GroundAtomImpl& atom)
     {
-        return cached_translated_impl(
-            atom,
-            m_translated_ground_atoms,
-            [this](const loki::GroundAtomImpl& arg)
-            { return this->m_pddl_factories.get_or_create_ground_atom(this->translate(*arg.get_predicate()), this->translate(arg.get_objects())); });
+        return this->m_pddl_factories.get_or_create_ground_atom(this->translate(*atom.get_predicate()), this->translate(atom.get_objects()));
     }
     loki::Literal translate_impl(const loki::LiteralImpl& literal)
     {
-        return cached_translated_impl(literal,
-                                      m_translated_literals,
-                                      [this](const loki::LiteralImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_literal(arg.is_negated(), this->translate(*arg.get_atom())); });
+        return this->m_pddl_factories.get_or_create_literal(literal.is_negated(), this->translate(*literal.get_atom()));
     }
     loki::GroundLiteral translate_impl(const loki::GroundLiteralImpl& literal)
     {
-        return cached_translated_impl(literal,
-                                      m_translated_ground_literals,
-                                      [this](const loki::GroundLiteralImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_ground_literal(arg.is_negated(), this->translate(*arg.get_atom())); });
+        return this->m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), this->translate(*literal.get_atom()));
     }
     loki::NumericFluent translate_impl(const loki::NumericFluentImpl& numeric_fluent)
     {
-        return cached_translated_impl(numeric_fluent,
-                                      m_translated_numeric_fluents,
-                                      [this](const loki::NumericFluentImpl& arg)
-                                      { return this->m_pddl_factories.get_or_create_numeric_fluent(this->translate(*arg.get_function()), arg.get_number()); });
+        return this->m_pddl_factories.get_or_create_numeric_fluent(this->translate(*numeric_fluent.get_function()), numeric_fluent.get_number());
     }
     loki::Condition translate_impl(const loki::ConditionLiteralImpl& condition)
     {
@@ -430,10 +460,7 @@ protected:
     }
     loki::Condition translate_impl(const loki::ConditionImpl& condition)
     {
-        return cached_translated_impl(condition,
-                                      m_translated_conditions,
-                                      [this, &condition](const loki::ConditionImpl& arg)
-                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, condition); });
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
     }
     loki::Effect translate_impl(const loki::EffectLiteralImpl& effect)
     {
@@ -459,10 +486,7 @@ protected:
     }
     loki::Effect translate_impl(const loki::EffectImpl& effect)
     {
-        return cached_translated_impl(effect,
-                                      m_translated_effects,
-                                      [this, &effect](const loki::EffectImpl& arg)
-                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, effect); });
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, effect);
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionNumberImpl& function_expression)
     {
@@ -489,99 +513,62 @@ protected:
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionImpl& function_expression)
     {
-        return cached_translated_impl(function_expression,
-                                      m_translated_function_expressions,
-                                      [this, &function_expression](const loki::FunctionExpressionImpl& arg)
-                                      { return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression); });
+        return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression);
     }
     loki::FunctionSkeleton translate_impl(const loki::FunctionSkeletonImpl& function_skeleton)
     {
-        return cached_translated_impl(function_skeleton,
-                                      m_translated_function_skeletons,
-                                      [this](const loki::FunctionSkeletonImpl& arg) {
-                                          return this->m_pddl_factories.get_or_create_function_skeleton(arg.get_name(),
-                                                                                                        this->translate(arg.get_parameters()),
-                                                                                                        this->translate(*arg.get_type()));
-                                      });
+        return this->m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(),
+                                                                      this->translate(function_skeleton.get_parameters()),
+                                                                      this->translate(*function_skeleton.get_type()));
     }
     loki::Function translate_impl(const loki::FunctionImpl& function)
     {
-        return cached_translated_impl(
-            function,
-            m_translated_functions,
-            [this](const loki::FunctionImpl& arg)
-            { return this->m_pddl_factories.get_or_create_function(this->translate(*arg.get_function_skeleton()), this->translate(arg.get_terms())); });
+        return this->m_pddl_factories.get_or_create_function(this->translate(*function.get_function_skeleton()), this->translate(function.get_terms()));
     }
     loki::Action translate_impl(const loki::ActionImpl& action)
     {
-        return cached_translated_impl(
-            action,
-            m_translated_actions,
-            [this](const loki::ActionImpl& arg)
-            {
-                return this->m_pddl_factories.get_or_create_action(
-                    arg.get_name(),
-                    this->translate(arg.get_parameters()),
-                    (arg.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*arg.get_condition().value())) : std::nullopt),
-                    (arg.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*arg.get_effect().value())) : std::nullopt));
-            });
+        return this->m_pddl_factories.get_or_create_action(
+            action.get_name(),
+            this->translate(action.get_parameters()),
+            (action.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*action.get_condition().value())) : std::nullopt),
+            (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt));
     }
     loki::Axiom translate_impl(const loki::AxiomImpl& axiom)
     {
-        return cached_translated_impl(
-            axiom,
-            m_translated_axioms,
-            [this](const loki::AxiomImpl& arg)
-            { return this->m_pddl_factories.get_or_create_axiom(this->translate(*arg.get_literal()), this->translate(*arg.get_condition())); });
+        return this->m_pddl_factories.get_or_create_axiom(this->translate(*axiom.get_literal()), this->translate(*axiom.get_condition()));
     }
     loki::Domain translate_impl(const loki::DomainImpl& domain)
     {
-        return cached_translated_impl(domain,
-                                      m_translated_domains,
-                                      [this](const loki::DomainImpl& arg)
-                                      {
-                                          return this->m_pddl_factories.get_or_create_domain(arg.get_name(),
-                                                                                             this->translate(*arg.get_requirements()),
-                                                                                             this->translate(arg.get_types()),
-                                                                                             this->translate(arg.get_constants()),
-                                                                                             this->translate(arg.get_predicates()),
-                                                                                             this->translate(arg.get_derived_predicates()),
-                                                                                             this->translate(arg.get_functions()),
-                                                                                             this->translate(arg.get_actions()),
-                                                                                             this->translate(arg.get_axioms()));
-                                      });
+        return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+                                                           this->translate(*domain.get_requirements()),
+                                                           this->translate(domain.get_types()),
+                                                           this->translate(domain.get_constants()),
+                                                           this->translate(domain.get_predicates()),
+                                                           this->translate(domain.get_derived_predicates()),
+                                                           this->translate(domain.get_functions()),
+                                                           this->translate(domain.get_actions()),
+                                                           this->translate(domain.get_axioms()));
     }
     loki::OptimizationMetric translate_impl(const loki::OptimizationMetricImpl& metric)
     {
-        return cached_translated_impl(metric,
-                                      m_translated_optimization_metrics,
-                                      [this](const loki::OptimizationMetricImpl& arg) {
-                                          return this->m_pddl_factories.get_or_create_optimization_metric(arg.get_optimization_metric(),
-                                                                                                          this->translate(*arg.get_function_expression()));
-                                      });
+        return this->m_pddl_factories.get_or_create_optimization_metric(metric.get_optimization_metric(), this->translate(*metric.get_function_expression()));
     }
 
     loki::Problem translate_impl(const loki::ProblemImpl& problem)
     {
-        return cached_translated_impl(
-            problem,
-            m_translated_problems,
-            [this](const loki::ProblemImpl& arg)
-            {
-                return this->m_pddl_factories.get_or_create_problem(
-                    this->translate(*arg.get_domain()),
-                    arg.get_name(),
-                    this->translate(*arg.get_requirements()),
-                    this->translate(arg.get_objects()),
-                    this->translate(arg.get_derived_predicates()),
-                    this->translate(arg.get_initial_literals()),
-                    this->translate(arg.get_numeric_fluents()),
-                    (arg.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*arg.get_goal_condition().value())) : std::nullopt),
-                    (arg.get_optimization_metric().has_value() ?
-                         std::optional<loki::OptimizationMetric>(this->translate(*arg.get_optimization_metric().value())) :
-                         std::nullopt),
-                    this->translate(arg.get_axioms()));
-            });
+        return this->m_pddl_factories.get_or_create_problem(
+            this->translate(*problem.get_domain()),
+            problem.get_name(),
+            this->translate(*problem.get_requirements()),
+            this->translate(problem.get_objects()),
+            this->translate(problem.get_derived_predicates()),
+            this->translate(problem.get_initial_literals()),
+            this->translate(problem.get_numeric_fluents()),
+            (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
+            (problem.get_optimization_metric().has_value() ?
+                 std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
+                 std::nullopt),
+            this->translate(problem.get_axioms()));
     }
 
     /// @brief Recursively apply preparation followed by translation.
@@ -594,7 +581,6 @@ protected:
         return self().translate(problem);
     }
 };
-
 }
 
 #endif
