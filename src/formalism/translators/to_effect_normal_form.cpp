@@ -63,9 +63,8 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
                 parts.push_back(std::get_if<loki::EffectConditionalWhenImpl>(part)->get_condition());
             }
 
-            effect_when.push_back(this->m_pddl_factories.get_or_create_effect_conditional_when(
-                flatten(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(parts)), this->m_pddl_factories),
-                nested_effect));
+            effect_when.push_back(this->translate(
+                *this->m_pddl_factories.get_or_create_effect_conditional_when(this->m_pddl_factories.get_or_create_condition_or(parts), nested_effect)));
         }
     }
 
@@ -142,6 +141,13 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectConditionalWhenIm
     }
 
     return this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect);
+}
+
+loki::Condition ToENFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
+{
+    // 9. A and (B and C)  =>  A and B and C
+    return flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
+                   this->m_pddl_factories);
 }
 
 loki::Problem ToENFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }

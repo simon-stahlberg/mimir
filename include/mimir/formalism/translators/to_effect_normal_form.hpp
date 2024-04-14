@@ -54,6 +54,12 @@ private:
      * 8. phi > forall(vars, e)  => forall(vars, phi > e)
      */
     loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
+    /**
+     * Flatten conjunctions.
+     *
+     * 9. A and (B and C)  =>  A and B and C
+     */
+    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
 
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 

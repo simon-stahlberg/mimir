@@ -2,7 +2,6 @@
 #define MIMIR_FORMALISM_TRANSLATORS_BASE_HPP_
 
 #include "mimir/formalism/translators/interface.hpp"
-#include "mimir/formalism/translators/utils.hpp"
 
 #include <deque>
 #include <loki/loki.hpp>
@@ -434,25 +433,13 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_condition_literal(this->translate(*condition.get_literal()));
     }
-    /**
-     * Flatten conjunctions.
-     *
-     * A and (B and C)  =>  A and B and C
-     */
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition)
     {
-        return flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
-                       this->m_pddl_factories);
+        return this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()));
     }
-    /**
-     * Flatten disjunctions.
-     *
-     * A or (B or C)  =>  A or B or C
-     */
     loki::Condition translate_impl(const loki::ConditionOrImpl& condition)
     {
-        return flatten(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
-                       this->m_pddl_factories);
+        return this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()));
     }
     loki::Condition translate_impl(const loki::ConditionNotImpl& condition)
     {
@@ -463,29 +450,13 @@ protected:
         return this->m_pddl_factories.get_or_create_condition_imply(this->translate(*condition.get_condition_left()),
                                                                     this->translate(*condition.get_condition_right()));
     }
-    /**
-     * Flatten existential quantifiers.
-     *
-     * exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
-     */
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition)
     {
-        return flatten(
-            *std::get_if<loki::ConditionExistsImpl>(this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                                                          this->translate(*condition.get_condition()))),
-            this->m_pddl_factories);
+        return this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
     }
-    /**
-     * Flatten universal quantifiers.
-     *
-     * forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
-     */
     loki::Condition translate_impl(const loki::ConditionForallImpl& condition)
     {
-        return flatten(
-            *std::get_if<loki::ConditionForallImpl>(this->m_pddl_factories.get_or_create_condition_forall(this->translate(condition.get_parameters()),
-                                                                                                          this->translate(*condition.get_condition()))),
-            this->m_pddl_factories);
+        return this->m_pddl_factories.get_or_create_condition_forall(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
     }
     loki::Condition translate_impl(const loki::ConditionImpl& condition)
     {
@@ -495,15 +466,9 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_effect_literal(this->translate(*effect.get_literal()));
     }
-    /**
-     * Flatten conjunctive effects
-     *
-     * e1 and (e2 and e3)     =>  e1 and e2 and e3
-     */
     loki::Effect translate_impl(const loki::EffectAndImpl& effect)
     {
-        return flatten(*std::get_if<loki::EffectAndImpl>(this->m_pddl_factories.get_or_create_effect_and(this->translate(effect.get_effects()))),
-                       this->m_pddl_factories);
+        return this->m_pddl_factories.get_or_create_effect_and(this->translate(effect.get_effects()));
     }
     loki::Effect translate_impl(const loki::EffectNumericImpl& effect)
     {

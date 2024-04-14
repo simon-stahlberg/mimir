@@ -55,11 +55,17 @@ private:
      */
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
     /**
-     * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
+     * Apply flattening of conjunctions.
+     *
+     * 2. A or (B or C)  =>  A or B or C
+     */
+    loki::Condition translate_impl(const loki::ConditionOrImpl& condition);
+    /**
+     * 3. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
      */
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
     /**
-     * 3. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
+     * 4. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
      */
     loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
 

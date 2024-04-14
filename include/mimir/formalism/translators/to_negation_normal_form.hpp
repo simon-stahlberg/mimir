@@ -72,6 +72,30 @@ private:
      * 8. not (A -> B)    =>  not (not A or B)  =>  A and not B
      */
     loki::Condition translate_impl(const loki::ConditionNotImpl& condition);
+    /**
+     * Flatten conjunctions.
+     *
+     * 9. A and (B and C)  =>  A and B and C
+     */
+    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
+    /**
+     * Flatten disjunctions.
+     *
+     * 10. A or (B or C)  =>  A or B or C
+     */
+    loki::Condition translate_impl(const loki::ConditionOrImpl& condition);
+    /**
+     * Flatten existential quantifiers.
+     *
+     * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
+     */
+    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    /**
+     * Flatten universal quantifiers.
+     *
+     * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
+     */
+    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
 
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
