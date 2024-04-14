@@ -37,8 +37,20 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    /**
+     * 3. (c1 > e) and (c2 > e)  =>  (c1 or c2) > e
+     * 4. e and (c > e)          =>  e
+     * 8. e1 and (e2 and e3)     =>  e1 and e2 and e3
+     */
     loki::Effect translate_impl(const loki::EffectAndImpl& effect);
+    /**
+     * forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
+     */
     loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect);
+    /**
+     * 1. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
+     * 2. phi > (psi > e)    =>  (phi and psi) > e
+     */
     loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
 
     loki::Problem run_impl(const loki::ProblemImpl& problem);

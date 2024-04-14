@@ -122,6 +122,19 @@ loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki::PDDLFa
     return pddl_factories.get_or_create_effect_conditional_when(effect.get_condition(), effect.get_effect());
 }
 
+loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDLFactories& pddl_factories)
+{
+    if (const auto effect_forall = std::get_if<loki::EffectConditionalForallImpl>(effect.get_effect()))
+    {
+        const auto nested_effect = std::get_if<loki::EffectConditionalForallImpl>(flatten(*effect_forall, pddl_factories));
+        auto parameters = effect.get_parameters();
+        const auto additional_parameters = nested_effect->get_parameters();
+        parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+        return pddl_factories.get_or_create_effect_conditional_forall(parameters, nested_effect->get_effect());
+    }
+    return pddl_factories.get_or_create_effect_conditional_forall(effect.get_parameters(), effect.get_effect());
+}
+
 void collect_free_variables_recursively(const loki::ConditionImpl& condition,
                                         std::unordered_set<loki::Variable>& ref_quantified_variables,
                                         std::unordered_set<loki::Variable>& ref_free_variables)

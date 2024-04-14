@@ -32,44 +32,51 @@ namespace mimir
 /**
  * Flatten conjunctions.
  *
- * 9. A and (B and C)  =>  A and B and C
+ * A and (B and C)  =>  A and B and C
  */
 extern loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten conjunctions.
  *
- * 1. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
+ * e1 and (e2 and e3)  =>  e1 and e2 and e3
  */
 extern loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten disjunctions.
  *
- * 10. A or (B or C)  =>  A or B or C
+ * A or (B or C)  =>  A or B or C
  */
 extern loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten existential quantifiers.
  *
- * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
+ * exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
  */
 extern loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten universal quantifiers.
  *
- * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
+ * forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
  */
 extern loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten conditional when
  *
- * 2. phi > (psi > e)    =>  (phi and psi) > e
+ * A > (B > e)    =>  (A and B) > e
  */
 extern loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki::PDDLFactories& pddl_factories);
+
+/**
+ * Flatten conditional forall
+ *
+ * forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
+ */
+extern loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
  * Return all free variables of a condition, i.e., variables that are not quantified.
