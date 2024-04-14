@@ -33,6 +33,13 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    /**
+     * (phi or psi) > e  => (phi > e) and (psi > e)
+     */
+    loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
+    /**
+     * Split Actions and actions at conditions
+     */
     loki::Domain translate_impl(const loki::DomainImpl& domain);
     loki::Problem translate_impl(const loki::ProblemImpl& problem);
 

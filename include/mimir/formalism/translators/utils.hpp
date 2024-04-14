@@ -58,6 +58,8 @@ extern loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& ty
  */
 extern loki::Condition flatten_conjunctions(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories);
 
+extern loki::Effect flatten_conjunctions(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories);
+
 /**
  * Flatten disjunctions.
  *

@@ -34,6 +34,7 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
         if (condition.has_value() && std::holds_alternative<loki::ConditionOrImpl>(*condition.value()))
         {
             const auto condition_or = std::get_if<loki::ConditionOrImpl>(condition.value());
+
             for (const auto& part : condition_or->get_conditions())
             {
                 split_actions.push_back(pddl_factories.get_or_create_action(action->get_name(), action->get_parameters(), part, action->get_effect()));
@@ -68,6 +69,27 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
         }
     }
     return uniquify_elements(split_axioms);
+}
+
+loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::EffectConditionalWhenImpl& effect)
+{
+    const auto& condition = effect.get_condition();
+    if (condition && std::holds_alternative<loki::ConditionOrImpl>(*condition))
+    {
+        const auto condition_or = std::get_if<loki::ConditionOrImpl>(condition);
+
+        auto split_effects = loki::EffectList {};
+        for (const auto& part : condition_or->get_conditions())
+        {
+            split_effects.push_back(
+                this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*part), this->translate(*effect.get_effect())));
+        }
+        return this->m_pddl_factories.get_or_create_effect_and(split_effects);
+    }
+    else
+    {
+        return this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+    }
 }
 
 loki::Domain SplitDisjunctiveConditionsTranslator::translate_impl(const loki::DomainImpl& domain)
@@ -114,5 +136,4 @@ SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki:
     BaseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_factories)
 {
 }
-
 }

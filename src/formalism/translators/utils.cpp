@@ -97,9 +97,9 @@ loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& type_list
 loki::Condition flatten_conjunctions(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories)
 {
     auto parts = loki::ConditionList {};
-    for (const auto& nested_condition : condition.get_conditions())
+    for (const auto& part : condition.get_conditions())
     {
-        if (const auto and_condition = std::get_if<loki::ConditionAndImpl>(nested_condition))
+        if (const auto and_condition = std::get_if<loki::ConditionAndImpl>(part))
         {
             const auto nested_parts = std::get_if<loki::ConditionAndImpl>(flatten_conjunctions(*and_condition, pddl_factories));
 
@@ -107,18 +107,37 @@ loki::Condition flatten_conjunctions(const loki::ConditionAndImpl& condition, lo
         }
         else
         {
-            parts.push_back(nested_condition);
+            parts.push_back(part);
         }
     }
     return pddl_factories.get_or_create_condition_and(uniquify_elements(parts));
 }
 
+loki::Effect flatten_conjunctions(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories)
+{
+    auto parts = loki::EffectList {};
+    for (const auto& part : effect.get_effects())
+    {
+        if (const auto and_effect = std::get_if<loki::EffectAndImpl>(part))
+        {
+            const auto nested_parts = std::get_if<loki::EffectAndImpl>(flatten_conjunctions(*and_effect, pddl_factories));
+
+            parts.insert(parts.end(), nested_parts->get_effects().begin(), nested_parts->get_effects().end());
+        }
+        else
+        {
+            parts.push_back(part);
+        }
+    }
+    return pddl_factories.get_or_create_effect_and(uniquify_elements(parts));
+}
+
 loki::Condition flatten_disjunctions(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories)
 {
     auto parts = loki::ConditionList {};
-    for (const auto& nested_condition : condition.get_conditions())
+    for (const auto& part : condition.get_conditions())
     {
-        if (const auto or_condition = std::get_if<loki::ConditionOrImpl>(nested_condition))
+        if (const auto or_condition = std::get_if<loki::ConditionOrImpl>(part))
         {
             const auto nested_parts = std::get_if<loki::ConditionOrImpl>(flatten_disjunctions(*or_condition, pddl_factories));
 
@@ -126,7 +145,7 @@ loki::Condition flatten_disjunctions(const loki::ConditionOrImpl& condition, lok
         }
         else
         {
-            parts.push_back(nested_condition);
+            parts.push_back(part);
         }
     }
     return pddl_factories.get_or_create_condition_or(uniquify_elements(parts));
