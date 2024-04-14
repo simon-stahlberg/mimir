@@ -26,28 +26,6 @@ namespace mimir
 {
 
 /**
- * Types
- */
-
-/// @brief Translate a type to a predicate of arity 1.
-extern loki::Predicate type_to_predicate(const loki::TypeImpl& type, loki::PDDLFactories& pddl_factories);
-
-/// @brief Translate an typed object to an untyped objects.
-extern loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories);
-
-/// @brief Translate an typed object to a list of ground literal for all its original types.
-extern loki::GroundLiteralList typed_object_to_ground_literals(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories);
-
-/// @brief Translate a typed parameter to an untyped parameter.
-extern loki::Parameter typed_parameter_to_untyped_parameter(const loki::ParameterImpl& parameter, loki::PDDLFactories& pddl_factories);
-
-/// @brief Translate an typed parameter to a list of condition literal for all its original types.
-extern loki::ConditionList typed_parameter_to_condition_literals(const loki::ParameterImpl& parameter, loki::PDDLFactories& pddl_factories);
-
-/// @brief Compute all types from a hierarchy of types.
-extern loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& type_list);
-
-/**
  * Conditions
  */
 
@@ -56,30 +34,42 @@ extern loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& ty
  *
  * 9. A and (B and C)  =>  A and B and C
  */
-extern loki::Condition flatten_conjunctions(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories);
 
-extern loki::Effect flatten_conjunctions(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories);
+/**
+ * Flatten conjunctions.
+ *
+ * 1. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
+ */
+extern loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten disjunctions.
  *
  * 10. A or (B or C)  =>  A or B or C
  */
-extern loki::Condition flatten_disjunctions(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten existential quantifiers.
  *
  * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
  */
-extern loki::Condition flatten_existential_quantifier(const loki::ConditionExistsImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten universal quantifiers.
  *
  * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
  */
-extern loki::Condition flatten_universal_quantifier(const loki::ConditionForallImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFactories& pddl_factories);
+
+/**
+ * Flatten conditional when
+ *
+ * 2. phi > (psi > e)    =>  (phi and psi) > e
+ */
+extern loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
  * Return all free variables of a condition, i.e., variables that are not quantified.

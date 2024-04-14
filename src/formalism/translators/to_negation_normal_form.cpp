@@ -47,78 +47,69 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
     }
     else if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition.get_condition()))
     {
-        const auto flattened_condition_and = std::get_if<loki::ConditionAndImpl>(flatten_conjunctions(*condition_and, this->m_pddl_factories));
+        const auto flattened_condition_and = std::get_if<loki::ConditionAndImpl>(flatten(*condition_and, this->m_pddl_factories));
         auto nested_parts = loki::ConditionList {};
         nested_parts.reserve(flattened_condition_and->get_conditions().size());
         for (const auto& nested_condition : flattened_condition_and->get_conditions())
         {
             nested_parts.push_back(this->translate(*this->m_pddl_factories.get_or_create_condition_not(nested_condition)));
         }
-        return flatten_disjunctions(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(nested_parts)),
-                                    this->m_pddl_factories);
+        return flatten(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(nested_parts)), this->m_pddl_factories);
     }
     else if (const auto condition_or = std::get_if<loki::ConditionOrImpl>(condition.get_condition()))
     {
-        const auto flattened_condition_or = std::get_if<loki::ConditionOrImpl>(flatten_disjunctions(*condition_or, this->m_pddl_factories));
+        const auto flattened_condition_or = std::get_if<loki::ConditionOrImpl>(flatten(*condition_or, this->m_pddl_factories));
         auto nested_parts = loki::ConditionList {};
         nested_parts.reserve(flattened_condition_or->get_conditions().size());
         for (const auto& nested_condition : flattened_condition_or->get_conditions())
         {
             nested_parts.push_back(this->translate(*this->m_pddl_factories.get_or_create_condition_not(nested_condition)));
         }
-        return flatten_conjunctions(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(nested_parts)),
-                                    this->m_pddl_factories);
+        return flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(nested_parts)), this->m_pddl_factories);
     }
     else if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.get_condition()))
     {
-        const auto flattened_condition_exists =
-            std::get_if<loki::ConditionExistsImpl>(flatten_existential_quantifier(*condition_exists, this->m_pddl_factories));
-        return flatten_universal_quantifier(
-            *std::get_if<loki::ConditionForallImpl>(this->m_pddl_factories.get_or_create_condition_forall(
-                flattened_condition_exists->get_parameters(),
-                this->translate(*this->m_pddl_factories.get_or_create_condition_not(flattened_condition_exists->get_condition())))),
-            this->m_pddl_factories);
+        const auto flattened_condition_exists = std::get_if<loki::ConditionExistsImpl>(flatten(*condition_exists, this->m_pddl_factories));
+        return flatten(*std::get_if<loki::ConditionForallImpl>(this->m_pddl_factories.get_or_create_condition_forall(
+                           flattened_condition_exists->get_parameters(),
+                           this->translate(*this->m_pddl_factories.get_or_create_condition_not(flattened_condition_exists->get_condition())))),
+                       this->m_pddl_factories);
     }
     else if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(condition.get_condition()))
     {
-        const auto flattened_condition_forall = std::get_if<loki::ConditionForallImpl>(flatten_universal_quantifier(*condition_forall, this->m_pddl_factories));
-        return flatten_existential_quantifier(
-            *std::get_if<loki::ConditionExistsImpl>(this->m_pddl_factories.get_or_create_condition_exists(
-                flattened_condition_forall->get_parameters(),
-                this->translate(*this->m_pddl_factories.get_or_create_condition_not(flattened_condition_forall->get_condition())))),
-            this->m_pddl_factories);
+        const auto flattened_condition_forall = std::get_if<loki::ConditionForallImpl>(flatten(*condition_forall, this->m_pddl_factories));
+        return flatten(*std::get_if<loki::ConditionExistsImpl>(this->m_pddl_factories.get_or_create_condition_exists(
+                           flattened_condition_forall->get_parameters(),
+                           this->translate(*this->m_pddl_factories.get_or_create_condition_not(flattened_condition_forall->get_condition())))),
+                       this->m_pddl_factories);
     }
     throw std::runtime_error("Missing implementation to push negations inwards.");
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
 {
-    return flatten_conjunctions(
-        *std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
-        this->m_pddl_factories);
+    return flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
+                   this->m_pddl_factories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionOrImpl& condition)
 {
-    return flatten_disjunctions(
-        *std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
-        this->m_pddl_factories);
+    return flatten(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
+                   this->m_pddl_factories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten_existential_quantifier(
-        *std::get_if<loki::ConditionExistsImpl>(
-            this->m_pddl_factories.get_or_create_condition_exists(condition.get_parameters(), this->translate(*condition.get_condition()))),
-        this->m_pddl_factories);
+    return flatten(*std::get_if<loki::ConditionExistsImpl>(
+                       this->m_pddl_factories.get_or_create_condition_exists(condition.get_parameters(), this->translate(*condition.get_condition()))),
+                   this->m_pddl_factories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionForallImpl& condition)
 {
-    return flatten_universal_quantifier(
-        *std::get_if<loki::ConditionForallImpl>(
-            this->m_pddl_factories.get_or_create_condition_forall(condition.get_parameters(), this->translate(*condition.get_condition()))),
-        this->m_pddl_factories);
+    return flatten(*std::get_if<loki::ConditionForallImpl>(
+                       this->m_pddl_factories.get_or_create_condition_forall(condition.get_parameters(), this->translate(*condition.get_condition()))),
+                   this->m_pddl_factories);
 }
 
 loki::Problem ToNNFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }

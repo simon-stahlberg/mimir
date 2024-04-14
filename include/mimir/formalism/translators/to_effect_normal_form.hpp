@@ -15,23 +15,36 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSLATORS_EFFECT_NORMAL_FORM_HPP_
-#define MIMIR_FORMALISM_TRANSLATORS_EFFECT_NORMAL_FORM_HPP_
+#ifndef MIMIR_FORMALISM_TRANSLATORS_TO_EFFECT_NORMAL_FORM_HPP_
+#define MIMIR_FORMALISM_TRANSLATORS_TO_EFFECT_NORMAL_FORM_HPP_
 
 #include "mimir/formalism/translators/base.hpp"
 
 namespace mimir
 {
 
-class EffectNormalFormTranslator : public BaseTranslator<EffectNormalFormTranslator>
+/**
+ * Translate to effect normal form:
+ * https://gki.informatik.uni-freiburg.de/teaching/ss05/aip/aip02.pdf
+ */
+class ToENFTranslator : public BaseTranslator<ToENFTranslator>
 {
 private:
     /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<EffectNormalFormTranslator>;
+    friend class BaseTranslator<ToENFTranslator>;
 
     // Provide default implementations
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
+
+    loki::Effect translate_impl(const loki::EffectAndImpl& effect);
+    loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect);
+    loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
+
+    loki::Problem run_impl(const loki::ProblemImpl& problem);
+
+public:
+    explicit ToENFTranslator(loki::PDDLFactories& pddl_factories);
 };
 }
 

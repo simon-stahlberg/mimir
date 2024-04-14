@@ -19,13 +19,13 @@
 #define MIMIR_FORMALISM_TRANSLATIONS_HPP_
 
 #include "mimir/formalism/translators/delete_relaxation.hpp"
-#include "mimir/formalism/translators/effect_normal_form.hpp"
 #include "mimir/formalism/translators/positive_normal_form.hpp"
 #include "mimir/formalism/translators/remove_types.hpp"
 #include "mimir/formalism/translators/remove_universal_quantifiers.hpp"
 #include "mimir/formalism/translators/simplify_goal.hpp"
 #include "mimir/formalism/translators/split_disjunctive_conditions.hpp"
 #include "mimir/formalism/translators/to_disjunctive_normal_form.hpp"
+#include "mimir/formalism/translators/to_effect_normal_form.hpp"
 #include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
 #endif
