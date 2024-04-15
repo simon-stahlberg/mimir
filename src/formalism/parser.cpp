@@ -35,13 +35,13 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_factories());
     problem = simplify_goal_translator.run(*problem);
 
-    // To disjunctive normal form
-    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_factories(), to_nnf_translator);
-    problem = to_dnf_translator.run(*problem);
-
     // To effect normal form
     auto to_enf_translator = ToENFTranslator(domain_parser.get_factories());
     problem = to_enf_translator.run(*problem);
+
+    // To disjunctive normal form
+    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_factories(), to_nnf_translator);
+    problem = to_dnf_translator.run(*problem);
 
     // Split disjunctive conditions
     auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_factories());

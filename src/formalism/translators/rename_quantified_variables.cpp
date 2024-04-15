@@ -5,14 +5,11 @@ namespace mimir
 
 void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::VariableImpl& variable) { m_variables.insert(&variable); }
 
-loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
-{
-    return m_scopes.get().get_renaming().at(&variable).renamed_variable;
-}
+loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable) { return m_scopes.get().get_renaming().at(&variable); }
 
 loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::ActionImpl& action)
 {
-    m_scopes.open_scope(action.get_parameters(), this->m_pddl_factories);
+    m_scopes.open_scope(action.get_parameters(), this->m_num_quantifications, this->m_pddl_factories);
 
     const auto translated_parameters = this->translate(action.get_parameters());
     const auto translated_conditions =
@@ -27,7 +24,7 @@ loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::Act
 
 loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    m_scopes.open_scope(condition.get_parameters(), this->m_pddl_factories);
+    m_scopes.open_scope(condition.get_parameters(), this->m_num_quantifications, this->m_pddl_factories);
 
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_nested_condition = this->translate(*condition.get_condition());
@@ -39,7 +36,7 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
 
 loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::ConditionForallImpl& condition)
 {
-    m_scopes.open_scope(condition.get_parameters(), this->m_pddl_factories);
+    m_scopes.open_scope(condition.get_parameters(), this->m_num_quantifications, this->m_pddl_factories);
 
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_nested_condition = this->translate(*condition.get_condition());
@@ -51,7 +48,7 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
 
 loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::EffectConditionalForallImpl& effect)
 {
-    m_scopes.open_scope(effect.get_parameters(), this->m_pddl_factories);
+    m_scopes.open_scope(effect.get_parameters(), this->m_num_quantifications, this->m_pddl_factories);
 
     const auto translated_parameters = this->translate(effect.get_parameters());
     const auto translated_nested_effect = this->translate(*effect.get_effect());
@@ -65,7 +62,7 @@ loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemI
 {
     this->prepare(problem);
 
-    m_scopes.open_scope(loki::VariableList(m_variables.begin(), m_variables.end()), this->m_pddl_factories);
+    m_scopes.open_scope(loki::VariableList(m_variables.begin(), m_variables.end()), this->m_num_quantifications, this->m_pddl_factories);
 
     auto translated_problem = this->translate(problem);
 

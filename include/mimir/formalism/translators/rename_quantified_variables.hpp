@@ -47,32 +47,26 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
-    // Collect all variables in preparation stage.
+    // Collect all variables in preparation phase.
     std::unordered_set<loki::Variable> m_variables;
-
-    // Store renamings depending on the current scope
-    struct RenamedVariableInfo
-    {
-        size_t identifier;
-        size_t num_quantifications;
-        loki::Variable renamed_variable;
-    };
+    // Keep track of the number of times that each variable was quantified during translation phase
+    std::unordered_map<loki::Variable, size_t> m_num_quantifications;
 
     class Scope
     {
     private:
-        std::unordered_map<loki::Variable, RenamedVariableInfo> m_renaming;
+        std::unordered_map<loki::Variable, loki::Variable> m_renaming;
 
         const Scope* m_parent_scope;
 
     public:
-        Scope(std::unordered_map<loki::Variable, RenamedVariableInfo> renaming, const Scope* parent_scope = nullptr) :
+        Scope(std::unordered_map<loki::Variable, loki::Variable> renaming, const Scope* parent_scope = nullptr) :
             m_renaming(std::move(renaming)),
             m_parent_scope(parent_scope)
         {
         }
 
-        const std::unordered_map<loki::Variable, RenamedVariableInfo>& get_renaming() const { return m_renaming; }
+        const std::unordered_map<loki::Variable, loki::Variable>& get_renaming() const { return m_renaming; }
     };
 
     class ScopeStack
@@ -84,18 +78,19 @@ private:
         /**
          * Open the first scope
          */
-        const Scope& open_scope(const loki::VariableList& variables, loki::PDDLFactories& pddl_factories)
+        const Scope&
+        open_scope(const loki::VariableList& variables, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories)
         {
             assert(m_stack.empty());
 
-            std::unordered_map<loki::Variable, RenamedVariableInfo> renamings;
+            std::unordered_map<loki::Variable, loki::Variable> renamings;
             for (const auto& variable : variables)
             {
-                size_t identifier = variable->get_identifier();
-                size_t num_quantifications = 0;
+                num_quantifications.emplace(variable, 0);
+
                 const auto renamed_variable =
-                    pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(identifier) + "_" + std::to_string(num_quantifications));
-                renamings.emplace(variable, RenamedVariableInfo { identifier, num_quantifications, renamed_variable });
+                    pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(variable->get_identifier()) + "_" + std::to_string(0));
+                renamings.emplace(variable, renamed_variable);
             }
 
             m_stack.push_back(std::make_unique<Scope>(std::move(renamings)));
@@ -106,24 +101,23 @@ private:
         /**
          * Open successive scope.
          */
-        const Scope& open_scope(const loki::ParameterList& parameters, loki::PDDLFactories& pddl_factories)
+        const Scope&
+        open_scope(const loki::ParameterList& parameters, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories)
         {
             assert(!m_stack.empty());
 
             const auto& parent_renamings = get().get_renaming();
 
-            std::unordered_map<loki::Variable, RenamedVariableInfo> renamings = parent_renamings;
+            std::unordered_map<loki::Variable, loki::Variable> renamings = parent_renamings;
 
             for (const auto& parameter : parameters)
             {
-                const auto& parent_renamed_variable_info = parent_renamings.at(parameter->get_variable());
+                // Increment number of quantifications of the variable.
+                const auto renamed_variable = pddl_factories.get_or_create_variable(parameter->get_variable()->get_name() + "_"
+                                                                                    + std::to_string(parameter->get_variable()->get_identifier()) + "_"
+                                                                                    + std::to_string(++num_quantifications.at(parameter->get_variable())));
 
-                size_t identifier = parent_renamed_variable_info.identifier;
-                size_t num_quantifications = parent_renamed_variable_info.num_quantifications + 1;
-                const auto renamed_variable = pddl_factories.get_or_create_variable(parameter->get_variable()->get_name() + "_" + std::to_string(identifier)
-                                                                                    + "_" + std::to_string(num_quantifications));
-
-                renamings[parameter->get_variable()] = RenamedVariableInfo { identifier, num_quantifications, renamed_variable };
+                renamings[parameter->get_variable()] = renamed_variable;
             }
 
             m_stack.push_back(std::make_unique<Scope>(std::move(renamings), &get()));
