@@ -1,5 +1,7 @@
 #include "mimir/formalism/translators/rename_quantified_variables.hpp"
 
+using namespace std::string_literals;
+
 namespace mimir
 {
 
@@ -10,6 +12,12 @@ RenameQuantifiedVariablesTranslator::Scope::Scope(std::unordered_map<loki::Varia
 }
 
 const std::unordered_map<loki::Variable, loki::Variable>& RenameQuantifiedVariablesTranslator::Scope::get_renaming() const { return m_renaming; }
+
+static loki::Variable create_renamed_variable(const loki::Variable& variable, size_t num_quantification, loki::PDDLFactories& pddl_factories)
+{
+    return pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(variable->get_identifier()) + "_"
+                                                 + std::to_string(num_quantification));
+}
 
 const RenameQuantifiedVariablesTranslator::Scope&
 RenameQuantifiedVariablesTranslator::ScopeStack::open_scope(const loki::VariableList& variables,
@@ -23,8 +31,8 @@ RenameQuantifiedVariablesTranslator::ScopeStack::open_scope(const loki::Variable
     {
         num_quantifications.emplace(variable, 0);
 
-        const auto renamed_variable =
-            pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(variable->get_identifier()) + "_" + std::to_string(0));
+        const auto renamed_variable = create_renamed_variable(variable, 0, pddl_factories);
+
         renamings.emplace(variable, renamed_variable);
     }
 
@@ -47,9 +55,7 @@ RenameQuantifiedVariablesTranslator::ScopeStack::open_scope(const loki::Paramete
     for (const auto& parameter : parameters)
     {
         // Increment number of quantifications of the variable.
-        const auto renamed_variable =
-            pddl_factories.get_or_create_variable(parameter->get_variable()->get_name() + "_" + std::to_string(parameter->get_variable()->get_identifier())
-                                                  + "_" + std::to_string(++num_quantifications.at(parameter->get_variable())));
+        const auto renamed_variable = create_renamed_variable(parameter->get_variable(), ++num_quantifications.at(parameter->get_variable()), pddl_factories);
 
         renamings[parameter->get_variable()] = renamed_variable;
     }
