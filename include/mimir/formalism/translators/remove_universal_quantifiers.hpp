@@ -44,32 +44,14 @@ private:
     class Scope
     {
     private:
-        const Scope* m_parent_scope;
-
         std::unordered_map<loki::Variable, loki::Parameter> m_variable_to_parameter;
 
+        const Scope* m_parent_scope;
+
     public:
-        explicit Scope(const Scope* parent_scope = nullptr) : m_parent_scope(parent_scope) {}
+        Scope(std::unordered_map<loki::Variable, loki::Parameter> variable_to_parameter, const Scope* parent_scope = nullptr);
 
-        std::optional<loki::Parameter> get_parameter(const loki::Variable& variable) const
-        {
-            auto it = m_variable_to_parameter.find(variable);
-            if (it != m_variable_to_parameter.end())
-            {
-                return it->second;
-            }
-            if (m_parent_scope)
-            {
-                return m_parent_scope->get_parameter(variable);
-            }
-            return std::nullopt;
-        }
-
-        void insert(const loki::Parameter& parameter)
-        {
-            assert(!m_variable_to_parameter.count(parameter->get_variable()));
-            m_variable_to_parameter.emplace(parameter->get_variable(), parameter);
-        }
+        std::optional<loki::Parameter> get_parameter(const loki::Variable& variable) const;
     };
 
     class ScopeStack
@@ -78,19 +60,11 @@ private:
         std::deque<std::unique_ptr<Scope>> m_stack;
 
     public:
-        Scope& open_scope()
-        {
-            m_stack.empty() ? m_stack.push_back(std::make_unique<Scope>()) : m_stack.push_back(std::make_unique<Scope>(&get()));
-            return get();
-        }
+        const Scope& open_scope(const loki::ParameterList& parameters);
 
-        void close_scope()
-        {
-            assert(!m_stack.empty());
-            m_stack.pop_back();
-        }
+        void close_scope();
 
-        Scope& get() { return *m_stack.back(); }
+        const Scope& get() const;
     };
 
     ScopeStack m_scopes;

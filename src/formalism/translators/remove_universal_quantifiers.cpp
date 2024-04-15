@@ -23,14 +23,50 @@ using namespace std::string_literals;
 
 namespace mimir
 {
+RemoveUniversalQuantifiersTranslator::Scope::Scope(std::unordered_map<loki::Variable, loki::Parameter> variable_to_parameter, const Scope* parent_scope) :
+    m_variable_to_parameter(std::move(variable_to_parameter)),
+    m_parent_scope(parent_scope)
+{
+}
+
+std::optional<loki::Parameter> RemoveUniversalQuantifiersTranslator::Scope::get_parameter(const loki::Variable& variable) const
+{
+    auto it = m_variable_to_parameter.find(variable);
+    if (it != m_variable_to_parameter.end())
+    {
+        return it->second;
+    }
+    if (m_parent_scope)
+    {
+        return m_parent_scope->get_parameter(variable);
+    }
+    return std::nullopt;
+}
+
+const RemoveUniversalQuantifiersTranslator::Scope& RemoveUniversalQuantifiersTranslator::ScopeStack::open_scope(const loki::ParameterList& parameters)
+{
+    auto variable_to_parameter = std::unordered_map<loki::Variable, loki::Parameter> {};
+    for (const auto& parameter : parameters)
+    {
+        variable_to_parameter.emplace(parameter->get_variable(), parameter);
+    }
+    m_stack.empty() ? m_stack.push_back(std::make_unique<Scope>(std::move(variable_to_parameter))) :
+                      m_stack.push_back(std::make_unique<Scope>(std::move(variable_to_parameter), &get()));
+    return get();
+}
+
+void RemoveUniversalQuantifiersTranslator::ScopeStack::close_scope()
+{
+    assert(!m_stack.empty());
+    m_stack.pop_back();
+}
+
+const RemoveUniversalQuantifiersTranslator::Scope& RemoveUniversalQuantifiersTranslator::ScopeStack::get() const { return *m_stack.back(); }
+
 loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    auto scope = m_scopes.open_scope();
+    m_scopes.open_scope(condition.get_parameters());
 
-    for (const auto& parameter : condition.get_parameters())
-    {
-        scope.insert(parameter);
-    }
     auto result = this->translate(*condition.get_condition());
 
     m_scopes.close_scope();
@@ -46,12 +82,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
         return it->second;
     }
 
-    auto scope = m_scopes.open_scope();
-
-    for (const auto& parameter : condition.get_parameters())
-    {
-        scope.insert(parameter);
-    }
+    const auto& scope = m_scopes.open_scope(condition.get_parameters());
 
     // Note: axiom_condition may contain conjunctions or disjunctions
     const auto axiom_condition = this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
@@ -90,12 +121,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
 
 loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)
 {
-    auto& scope = this->m_scopes.open_scope();
-
-    for (const auto& parameter : action.get_parameters())
-    {
-        scope.insert(parameter);
-    }
+    this->m_scopes.open_scope(action.get_parameters());
 
     auto translated_action = this->m_pddl_factories.get_or_create_action(
         action.get_name(),

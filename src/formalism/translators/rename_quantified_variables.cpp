@@ -3,6 +3,70 @@
 namespace mimir
 {
 
+RenameQuantifiedVariablesTranslator::Scope::Scope(std::unordered_map<loki::Variable, loki::Variable> renaming, const Scope* parent_scope) :
+    m_renaming(std::move(renaming)),
+    m_parent_scope(parent_scope)
+{
+}
+
+const std::unordered_map<loki::Variable, loki::Variable>& RenameQuantifiedVariablesTranslator::Scope::get_renaming() const { return m_renaming; }
+
+const RenameQuantifiedVariablesTranslator::Scope&
+RenameQuantifiedVariablesTranslator::ScopeStack::open_scope(const loki::VariableList& variables,
+                                                            std::unordered_map<loki::Variable, size_t>& num_quantifications,
+                                                            loki::PDDLFactories& pddl_factories)
+{
+    assert(m_stack.empty());
+
+    std::unordered_map<loki::Variable, loki::Variable> renamings;
+    for (const auto& variable : variables)
+    {
+        num_quantifications.emplace(variable, 0);
+
+        const auto renamed_variable =
+            pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(variable->get_identifier()) + "_" + std::to_string(0));
+        renamings.emplace(variable, renamed_variable);
+    }
+
+    m_stack.push_back(std::make_unique<Scope>(std::move(renamings)));
+
+    return get();
+}
+
+const RenameQuantifiedVariablesTranslator::Scope&
+RenameQuantifiedVariablesTranslator::ScopeStack::open_scope(const loki::ParameterList& parameters,
+                                                            std::unordered_map<loki::Variable, size_t>& num_quantifications,
+                                                            loki::PDDLFactories& pddl_factories)
+{
+    assert(!m_stack.empty());
+
+    const auto& parent_renamings = get().get_renaming();
+
+    std::unordered_map<loki::Variable, loki::Variable> renamings = parent_renamings;
+
+    for (const auto& parameter : parameters)
+    {
+        // Increment number of quantifications of the variable.
+        const auto renamed_variable =
+            pddl_factories.get_or_create_variable(parameter->get_variable()->get_name() + "_" + std::to_string(parameter->get_variable()->get_identifier())
+                                                  + "_" + std::to_string(++num_quantifications.at(parameter->get_variable())));
+
+        renamings[parameter->get_variable()] = renamed_variable;
+    }
+
+    m_stack.push_back(std::make_unique<Scope>(std::move(renamings), &get()));
+
+    return get();
+}
+
+void RenameQuantifiedVariablesTranslator::ScopeStack::close_scope()
+{
+    assert(!m_stack.empty());
+    m_stack.pop_back();
+}
+
+const RenameQuantifiedVariablesTranslator::Scope& RenameQuantifiedVariablesTranslator::ScopeStack::get() const { return *m_stack.back(); }
+
 void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::VariableImpl& variable) { m_variables.insert(&variable); }
 
 loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable) { return m_scopes.get().get_renaming().at(&variable); }

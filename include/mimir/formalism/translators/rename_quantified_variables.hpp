@@ -49,7 +49,8 @@ private:
 
     // Collect all variables in preparation phase.
     std::unordered_set<loki::Variable> m_variables;
-    // Keep track of the number of times that each variable was quantified during translation phase
+    // Track the number of times that each variable was quantified during the translation phase.
+    // Increment num_quantifications[var] when encountering a quantifier during the translation phase.
     std::unordered_map<loki::Variable, size_t> m_num_quantifications;
 
     class Scope
@@ -60,13 +61,9 @@ private:
         const Scope* m_parent_scope;
 
     public:
-        Scope(std::unordered_map<loki::Variable, loki::Variable> renaming, const Scope* parent_scope = nullptr) :
-            m_renaming(std::move(renaming)),
-            m_parent_scope(parent_scope)
-        {
-        }
+        Scope(std::unordered_map<loki::Variable, loki::Variable> renaming, const Scope* parent_scope = nullptr);
 
-        const std::unordered_map<loki::Variable, loki::Variable>& get_renaming() const { return m_renaming; }
+        const std::unordered_map<loki::Variable, loki::Variable>& get_renaming() const;
     };
 
     class ScopeStack
@@ -79,59 +76,16 @@ private:
          * Open the first scope
          */
         const Scope&
-        open_scope(const loki::VariableList& variables, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories)
-        {
-            assert(m_stack.empty());
-
-            std::unordered_map<loki::Variable, loki::Variable> renamings;
-            for (const auto& variable : variables)
-            {
-                num_quantifications.emplace(variable, 0);
-
-                const auto renamed_variable =
-                    pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(variable->get_identifier()) + "_" + std::to_string(0));
-                renamings.emplace(variable, renamed_variable);
-            }
-
-            m_stack.push_back(std::make_unique<Scope>(std::move(renamings)));
-
-            return get();
-        }
+        open_scope(const loki::VariableList& variables, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories);
 
         /**
          * Open successive scope.
          */
         const Scope&
-        open_scope(const loki::ParameterList& parameters, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories)
-        {
-            assert(!m_stack.empty());
+        open_scope(const loki::ParameterList& parameters, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories);
+        void close_scope();
 
-            const auto& parent_renamings = get().get_renaming();
-
-            std::unordered_map<loki::Variable, loki::Variable> renamings = parent_renamings;
-
-            for (const auto& parameter : parameters)
-            {
-                // Increment number of quantifications of the variable.
-                const auto renamed_variable = pddl_factories.get_or_create_variable(parameter->get_variable()->get_name() + "_"
-                                                                                    + std::to_string(parameter->get_variable()->get_identifier()) + "_"
-                                                                                    + std::to_string(++num_quantifications.at(parameter->get_variable())));
-
-                renamings[parameter->get_variable()] = renamed_variable;
-            }
-
-            m_stack.push_back(std::make_unique<Scope>(std::move(renamings), &get()));
-
-            return get();
-        }
-
-        void close_scope()
-        {
-            assert(!m_stack.empty());
-            m_stack.pop_back();
-        }
-
-        const Scope& get() const { return *m_stack.back(); }
+        const Scope& get() const;
     };
 
     ScopeStack m_scopes;
