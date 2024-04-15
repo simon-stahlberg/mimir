@@ -66,13 +66,13 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionAndImpl& co
         result_parts = loki::ConditionList {};
         const auto it = disjunctive_parts.begin();
         disjunctive_parts.erase(it);
-        const auto& current_parts = std::get_if<loki::ConditionOrImpl>(*it)->get_conditions();
+        const auto& current_parts = std::get<loki::ConditionOrImpl>(**it).get_conditions();
         for (const auto& part1 : previous_result_parts)
         {
             for (const auto& part2 : current_parts)
             {
                 result_parts.push_back(
-                    flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(loki::ConditionList { part1, part2 })),
+                    flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_factories.get_or_create_condition_and(loki::ConditionList { part1, part2 })),
                             this->m_pddl_factories));
             }
         }
@@ -83,7 +83,7 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionAndImpl& co
 
 loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionOrImpl& condition)
 {
-    return flatten(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
+    return flatten(std::get<loki::ConditionOrImpl>(*this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
                    this->m_pddl_factories);
 }
 
@@ -98,7 +98,7 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionExistsImpl&
         for (const auto& part : translated_disjunctive_condition->get_conditions())
         {
             result_parts.push_back(
-                flatten(*std::get_if<loki::ConditionExistsImpl>(this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, part)),
+                flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, part)),
                         this->m_pddl_factories));
         }
         return this->translate(*this->m_pddl_factories.get_or_create_condition_or(result_parts));
@@ -117,7 +117,7 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionForallImpl&
         for (const auto& part : translated_disjunctive_condition->get_conditions())
         {
             result_parts.push_back(
-                flatten(*std::get_if<loki::ConditionForallImpl>(this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, part)),
+                flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, part)),
                         this->m_pddl_factories));
         }
         return this->translate(*this->m_pddl_factories.get_or_create_condition_or(result_parts));

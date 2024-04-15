@@ -31,9 +31,9 @@ loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFacto
     {
         if (const auto and_condition = std::get_if<loki::ConditionAndImpl>(part))
         {
-            const auto nested_parts = std::get_if<loki::ConditionAndImpl>(flatten(*and_condition, pddl_factories));
+            const auto& nested_parts = std::get<loki::ConditionAndImpl>(*flatten(*and_condition, pddl_factories));
 
-            parts.insert(parts.end(), nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
+            parts.insert(parts.end(), nested_parts.get_conditions().begin(), nested_parts.get_conditions().end());
         }
         else
         {
@@ -50,9 +50,9 @@ loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pdd
     {
         if (const auto and_effect = std::get_if<loki::EffectAndImpl>(part))
         {
-            const auto nested_parts = std::get_if<loki::EffectAndImpl>(flatten(*and_effect, pddl_factories));
+            const auto& nested_parts = std::get<loki::EffectAndImpl>(*flatten(*and_effect, pddl_factories));
 
-            parts.insert(parts.end(), nested_parts->get_effects().begin(), nested_parts->get_effects().end());
+            parts.insert(parts.end(), nested_parts.get_effects().begin(), nested_parts.get_effects().end());
         }
         else
         {
@@ -69,9 +69,9 @@ loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLFactor
     {
         if (const auto or_condition = std::get_if<loki::ConditionOrImpl>(part))
         {
-            const auto nested_parts = std::get_if<loki::ConditionOrImpl>(flatten(*or_condition, pddl_factories));
+            const auto& nested_parts = std::get<loki::ConditionOrImpl>(*flatten(*or_condition, pddl_factories));
 
-            parts.insert(parts.end(), nested_parts->get_conditions().begin(), nested_parts->get_conditions().end());
+            parts.insert(parts.end(), nested_parts.get_conditions().begin(), nested_parts.get_conditions().end());
         }
         else
         {
@@ -85,11 +85,11 @@ loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLFa
 {
     if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.get_condition()))
     {
-        const auto nested_condition = std::get_if<loki::ConditionExistsImpl>(flatten(*condition_exists, pddl_factories));
+        const auto& nested_condition = std::get<loki::ConditionExistsImpl>(*flatten(*condition_exists, pddl_factories));
         auto parameters = condition.get_parameters();
-        const auto additional_parameters = nested_condition->get_parameters();
+        const auto additional_parameters = nested_condition.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_factories.get_or_create_condition_exists(parameters, nested_condition->get_condition());
+        return pddl_factories.get_or_create_condition_exists(parameters, nested_condition.get_condition());
     }
     return pddl_factories.get_or_create_condition_exists(condition.get_parameters(), condition.get_condition());
 }
@@ -98,11 +98,11 @@ loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFa
 {
     if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(condition.get_condition()))
     {
-        const auto nested_condition = std::get_if<loki::ConditionForallImpl>(flatten(*condition_forall, pddl_factories));
+        const auto& nested_condition = std::get<loki::ConditionForallImpl>(*flatten(*condition_forall, pddl_factories));
         auto parameters = condition.get_parameters();
-        const auto additional_parameters = nested_condition->get_parameters();
+        const auto additional_parameters = nested_condition.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_factories.get_or_create_condition_forall(parameters, nested_condition->get_condition());
+        return pddl_factories.get_or_create_condition_forall(parameters, nested_condition.get_condition());
     }
     return pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition());
 }
@@ -111,13 +111,13 @@ loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki::PDDLFa
 {
     if (const auto effect_when = std::get_if<loki::EffectConditionalWhenImpl>(effect.get_effect()))
     {
-        const auto nested_effect = std::get_if<loki::EffectConditionalWhenImpl>(flatten(*effect_when, pddl_factories));
+        const auto& nested_effect = std::get<loki::EffectConditionalWhenImpl>(*flatten(*effect_when, pddl_factories));
 
         return pddl_factories.get_or_create_effect_conditional_when(
             flatten(*std::get_if<loki::ConditionAndImpl>(pddl_factories.get_or_create_condition_and(
-                        uniquify_elements(loki::ConditionList { effect.get_condition(), nested_effect->get_condition() }))),
+                        uniquify_elements(loki::ConditionList { effect.get_condition(), nested_effect.get_condition() }))),
                     pddl_factories),
-            nested_effect->get_effect());
+            nested_effect.get_effect());
     }
     return pddl_factories.get_or_create_effect_conditional_when(effect.get_condition(), effect.get_effect());
 }
@@ -126,11 +126,11 @@ loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDL
 {
     if (const auto effect_forall = std::get_if<loki::EffectConditionalForallImpl>(effect.get_effect()))
     {
-        const auto nested_effect = std::get_if<loki::EffectConditionalForallImpl>(flatten(*effect_forall, pddl_factories));
+        const auto& nested_effect = std::get<loki::EffectConditionalForallImpl>(*flatten(*effect_forall, pddl_factories));
         auto parameters = effect.get_parameters();
-        const auto additional_parameters = nested_effect->get_parameters();
+        const auto additional_parameters = nested_effect.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_factories.get_or_create_effect_conditional_forall(parameters, nested_effect->get_effect());
+        return pddl_factories.get_or_create_effect_conditional_forall(parameters, nested_effect.get_effect());
     }
     return pddl_factories.get_or_create_effect_conditional_forall(effect.get_parameters(), effect.get_effect());
 }

@@ -36,7 +36,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
         {
             effect_literals.emplace(nested_translated_effect);
         }
-        if (const auto nested_translated_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(nested_translated_effect))
+        else if (const auto nested_translated_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(nested_translated_effect))
         {
             nested_effect_when_partitioning[nested_translated_effect_when->get_effect()].push_back(nested_translated_effect);
         }
@@ -53,14 +53,14 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
         assert(partitioning.size() > 0);
         if (partitioning.size() == 1)
         {
-            effect_when.push_back(nested_effect);
+            effect_when.push_back(partitioning.back());
         }
         else
         {
             auto parts = loki::ConditionList {};
             for (const auto& part : partitioning)
             {
-                parts.push_back(std::get_if<loki::EffectConditionalWhenImpl>(part)->get_condition());
+                parts.push_back(std::get<loki::EffectConditionalWhenImpl>(*part).get_condition());
             }
 
             effect_when.push_back(this->translate(
@@ -68,7 +68,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
         }
     }
 
-    // 2. e and (phi > e)          =>  e
+    // 2. e and (phi > e)  =>  e
     translated_effects = other_effects;
     // Effect literals always make it into the result.
     for (const auto& effect_literal : effect_literals)
@@ -76,16 +76,17 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
         translated_effects.push_back(effect_literal);
     }
     // Remove when effects that are dominated by literal effects
-    for (const auto& effect_when : effect_when)
+    for (const auto& part : effect_when)
     {
-        if (effect_literals.count(std::get_if<loki::EffectConditionalWhenImpl>(effect_when)->get_effect()) == 0)
+        assert(std::get_if<loki::EffectConditionalWhenImpl>(part));
+        if (effect_literals.count(std::get<loki::EffectConditionalWhenImpl>(*part).get_effect()) == 0)
         {
-            translated_effects.push_back(effect_when);
+            translated_effects.push_back(part);
         }
     }
 
-    // 3. e1 and (e2 and e3)     =>  e1 and e2 and e3
-    return flatten(*std::get_if<loki::EffectAndImpl>(this->m_pddl_factories.get_or_create_effect_and(translated_effects)), this->m_pddl_factories);
+    // 3. e1 and (e2 and e3)  =>  e1 and e2 and e3
+    return flatten(std::get<loki::EffectAndImpl>(*this->m_pddl_factories.get_or_create_effect_and(translated_effects)), this->m_pddl_factories);
 }
 
 loki::Effect ToENFTranslator::translate_impl(const loki::EffectConditionalForallImpl& effect)
@@ -95,7 +96,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectConditionalForall
 
     if (const auto translated_nested_effect_and = std::get_if<loki::EffectAndImpl>(translated_nested_effect))
     {
-        // 4. forall(vars, (e1 and e2))          => forall(vars, e1) and forall(vars, e2)
+        // 4. forall(vars, (e1 and e2))  => forall(vars, e1) and forall(vars, e2)
         auto result_parts = loki::EffectList {};
         for (const auto& part : translated_nested_effect_and->get_effects())
         {
@@ -103,9 +104,9 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectConditionalForall
         }
         return this->translate(*this->m_pddl_factories.get_or_create_effect_and(result_parts));
     }
-    // 5. forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
-    return flatten(*std::get_if<loki::EffectConditionalForallImpl>(
-                       this->m_pddl_factories.get_or_create_effect_conditional_forall(translated_parameters, translated_nested_effect)),
+    // 5. forall(vars1, forall(vars2, e))  =>  forall(vars1+vars2, e)
+    return flatten(std::get<loki::EffectConditionalForallImpl>(
+                       *this->m_pddl_factories.get_or_create_effect_conditional_forall(translated_parameters, translated_nested_effect)),
                    this->m_pddl_factories);
 }
 
@@ -116,7 +117,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectConditionalWhenIm
 
     if (const auto translated_nested_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(translated_effect))
     {
-        // 6. phi > (psi > e)    =>  (phi and psi) > e
+        // 6. phi > (psi > e)  =>  (phi and psi) > e
         return this->translate(*this->m_pddl_factories.get_or_create_effect_conditional_when(
             this->translate(*this->m_pddl_factories.get_or_create_condition_and(
                 loki::ConditionList { translated_condition, translated_nested_effect_when->get_condition() })),

@@ -33,9 +33,7 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
         auto condition = action->get_condition();
         if (condition.has_value() && std::holds_alternative<loki::ConditionOrImpl>(*condition.value()))
         {
-            const auto condition_or = std::get_if<loki::ConditionOrImpl>(condition.value());
-
-            for (const auto& part : condition_or->get_conditions())
+            for (const auto& part : std::get<loki::ConditionOrImpl>(*condition.value()).get_conditions())
             {
                 split_actions.push_back(pddl_factories.get_or_create_action(action->get_name(), action->get_parameters(), part, action->get_effect()));
             }
@@ -57,8 +55,7 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
         auto condition = axiom->get_condition();
         if (condition && std::holds_alternative<loki::ConditionOrImpl>(*condition))
         {
-            const auto condition_or = std::get_if<loki::ConditionOrImpl>(condition);
-            for (const auto& part : condition_or->get_conditions())
+            for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
             {
                 split_axioms.push_back(pddl_factories.get_or_create_axiom(axiom->get_literal(), part));
             }
@@ -76,10 +73,8 @@ loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::Ef
     const auto& condition = effect.get_condition();
     if (condition && std::holds_alternative<loki::ConditionOrImpl>(*condition))
     {
-        const auto condition_or = std::get_if<loki::ConditionOrImpl>(condition);
-
         auto split_effects = loki::EffectList {};
-        for (const auto& part : condition_or->get_conditions())
+        for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
         {
             split_effects.push_back(
                 this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*part), this->translate(*effect.get_effect())));

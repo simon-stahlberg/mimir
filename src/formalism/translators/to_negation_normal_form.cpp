@@ -84,27 +84,27 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
 {
-    return flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
+    return flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
                    this->m_pddl_factories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionOrImpl& condition)
 {
-    return flatten(*std::get_if<loki::ConditionOrImpl>(this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
+    return flatten(std::get<loki::ConditionOrImpl>(*this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
                    this->m_pddl_factories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten(*std::get_if<loki::ConditionExistsImpl>(this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                                                                 this->translate(*condition.get_condition()))),
+    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
+                                                                                                              this->translate(*condition.get_condition()))),
                    this->m_pddl_factories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionForallImpl& condition)
 {
-    return flatten(*std::get_if<loki::ConditionForallImpl>(this->m_pddl_factories.get_or_create_condition_forall(this->translate(condition.get_parameters()),
-                                                                                                                 this->translate(*condition.get_condition()))),
+    return flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_factories.get_or_create_condition_forall(this->translate(condition.get_parameters()),
+                                                                                                              this->translate(*condition.get_condition()))),
                    this->m_pddl_factories);
 }
 
