@@ -47,6 +47,10 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_factories());
     problem = split_disjunctive_conditions.run(*problem);
 
+    // Move existential quantifers
+    auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_factories());
+    problem = move_existential_quantifiers_translator.run(*problem);
+
     // Parse into mimir domain and problem structures
     m_domain = parse(problem->get_domain(), m_factories);
     m_problem = parse(problem, m_factories);

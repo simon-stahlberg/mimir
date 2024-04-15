@@ -83,6 +83,7 @@ private:
          */
         const Scope&
         open_scope(const loki::ParameterList& parameters, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories);
+
         void close_scope();
 
         const Scope& get() const;

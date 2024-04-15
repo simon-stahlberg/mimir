@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TRANSLATIONS_HPP_
 
 #include "mimir/formalism/translators/delete_relaxation.hpp"
+#include "mimir/formalism/translators/move_existential_quantifiers.hpp"
 #include "mimir/formalism/translators/positive_normal_form.hpp"
 #include "mimir/formalism/translators/remove_types.hpp"
 #include "mimir/formalism/translators/remove_universal_quantifiers.hpp"
