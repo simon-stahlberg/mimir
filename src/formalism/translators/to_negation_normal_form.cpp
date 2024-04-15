@@ -53,7 +53,7 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
         nested_parts.reserve(condition_and->get_conditions().size());
         for (const auto& nested_condition : condition_and->get_conditions())
         {
-            nested_parts.push_back(this->translate(*this->m_pddl_factories.get_or_create_condition_not(nested_condition)));
+            nested_parts.push_back(this->m_pddl_factories.get_or_create_condition_not(nested_condition));
         }
         return this->translate(*this->m_pddl_factories.get_or_create_condition_or(nested_parts));
     }
@@ -63,21 +63,21 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
         nested_parts.reserve(condition_or->get_conditions().size());
         for (const auto& nested_condition : condition_or->get_conditions())
         {
-            nested_parts.push_back(this->translate(*this->m_pddl_factories.get_or_create_condition_not(nested_condition)));
+            nested_parts.push_back(this->m_pddl_factories.get_or_create_condition_not(nested_condition));
         }
         return this->translate(*this->m_pddl_factories.get_or_create_condition_and(nested_parts));
     }
     else if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(translated_nested_condition))
     {
-        return this->translate(*this->m_pddl_factories.get_or_create_condition_forall(
-            condition_exists->get_parameters(),
-            this->translate(*this->m_pddl_factories.get_or_create_condition_not(condition_exists->get_condition()))));
+        return this->translate(
+            *this->m_pddl_factories.get_or_create_condition_forall(condition_exists->get_parameters(),
+                                                                   this->m_pddl_factories.get_or_create_condition_not(condition_exists->get_condition())));
     }
     else if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(translated_nested_condition))
     {
-        return this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
-            condition_forall->get_parameters(),
-            this->translate(*this->m_pddl_factories.get_or_create_condition_not(condition_forall->get_condition()))));
+        return this->translate(
+            *this->m_pddl_factories.get_or_create_condition_exists(condition_forall->get_parameters(),
+                                                                   this->m_pddl_factories.get_or_create_condition_not(condition_forall->get_condition())));
     }
     throw std::runtime_error("Missing implementation to push negations inwards.");
 }

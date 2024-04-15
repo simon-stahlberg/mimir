@@ -97,13 +97,12 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionExistsImpl&
         auto result_parts = loki::ConditionList {};
         for (const auto& part : translated_disjunctive_condition->get_conditions())
         {
-            result_parts.push_back(
-                flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, part)),
-                        this->m_pddl_factories));
+            result_parts.push_back(this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, part));
         }
         return this->translate(*this->m_pddl_factories.get_or_create_condition_or(result_parts));
     }
-    return this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, translated_condition);
+    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, translated_condition)),
+                   this->m_pddl_factories);
 }
 
 loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionForallImpl& condition)
@@ -116,13 +115,12 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionForallImpl&
         auto result_parts = loki::ConditionList {};
         for (const auto& part : translated_disjunctive_condition->get_conditions())
         {
-            result_parts.push_back(
-                flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, part)),
-                        this->m_pddl_factories));
+            result_parts.push_back(this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, part));
         }
         return this->translate(*this->m_pddl_factories.get_or_create_condition_or(result_parts));
     }
-    return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
+    return flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition)),
+                   this->m_pddl_factories);
 }
 
 loki::Problem ToDNFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(*m_to_nnf_translator.translate(problem)); }
