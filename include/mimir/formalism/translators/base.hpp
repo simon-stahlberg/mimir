@@ -102,7 +102,7 @@ protected:
 
     void prepare_impl(const loki::RequirementsImpl& requirements) {}
     void prepare_impl(const loki::TypeImpl& type) { this->prepare(type.get_bases()); }
-    void prepare_impl(const loki::ObjectImpl& object) {}
+    void prepare_impl(const loki::ObjectImpl& object) { this->prepare(object.get_bases()); }
     void prepare_impl(const loki::VariableImpl& variable) {}
     void prepare_impl(const loki::TermObjectImpl& term) { this->prepare(*term.get_object()); }
     void prepare_impl(const loki::TermVariableImpl& term) { this->prepare(*term.get_variable()); }
@@ -111,7 +111,7 @@ protected:
         std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
     }
     void prepare_impl(const loki::ParameterImpl& parameter) { this->prepare(*parameter.get_variable()); }
-    void prepare_impl(const loki::PredicateImpl& predicate) {}
+    void prepare_impl(const loki::PredicateImpl& predicate) { this->prepare(predicate.get_parameters()); }
     void prepare_impl(const loki::AtomImpl& atom)
     {
         this->prepare(*atom.get_predicate());
@@ -215,8 +215,10 @@ protected:
         this->prepare(domain.get_types());
         this->prepare(domain.get_constants());
         this->prepare(domain.get_predicates());
+        this->prepare(domain.get_derived_predicates());
         this->prepare(domain.get_functions());
         this->prepare(domain.get_actions());
+        this->prepare(domain.get_axioms());
     }
     void prepare_impl(const loki::OptimizationMetricImpl& metric) { this->prepare(*metric.get_function_expression()); }
     void prepare_impl(const loki::ProblemImpl& problem)
@@ -224,13 +226,18 @@ protected:
         this->prepare(*problem.get_domain());
         this->prepare(*problem.get_requirements());
         this->prepare(problem.get_objects());
+        this->prepare(problem.get_derived_predicates());
         this->prepare(problem.get_initial_literals());
         this->prepare(problem.get_numeric_fluents());
-        this->prepare(*problem.get_goal_condition());
+        if (problem.get_goal_condition().has_value())
+        {
+            this->prepare(*problem.get_goal_condition().value());
+        }
         if (problem.get_optimization_metric().has_value())
         {
             this->prepare(*problem.get_optimization_metric().value());
         }
+        this->prepare(problem.get_axioms());
     }
 
     /// @brief Apply problem translation.

@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
-#include "mimir/formalism/translators/scopes.hpp"
 
 namespace mimir
 {
