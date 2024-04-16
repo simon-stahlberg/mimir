@@ -17,8 +17,7 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
 
     // Remove types
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
-    // TODO: compiling away types results in segfault during planning in the successor generator
-    // problem = remove_types_translator.run(*problem);
+    problem = remove_types_translator.run(*problem);
 
     // Negation normal form translator
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());

@@ -39,7 +39,6 @@ private:
     std::unordered_map<Action, std::vector<std::vector<size_t>>> m_partitions;
     std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
-    std::unordered_map<Action, std::unordered_map<size_t, std::vector<int>>> m_objects_by_parameter_type;
 
     void ground_variables(const std::vector<ParameterIndexOrConstantId>& variables, const ObjectList& binding, ObjectList& out_terms) const
     {
@@ -151,11 +150,9 @@ private:
     {
         // There is only one parameter, try all bindings with the correct type.
 
-        const auto& objects_by_parameter_type = m_objects_by_parameter_type.at(flat_action.source);
-
-        for (const auto& object_id : objects_by_parameter_type.at(0))
+        for (const auto& object : m_problem->get_objects())
         {
-            auto grounded_action = ground_action(flat_action, { m_pddl_factories.get_object(object_id) });
+            auto grounded_action = ground_action(flat_action, { object });
 
             if (grounded_action.is_applicable(state))
             {
@@ -271,8 +268,7 @@ public:
         m_flat_actions(),
         m_partitions(),
         m_to_vertex_assignment(),
-        m_statically_consistent_assignments(),
-        m_objects_by_parameter_type()
+        m_statically_consistent_assignments()
     {
         // Type information is used by the unary and general cases.
 
@@ -288,27 +284,6 @@ public:
             std::vector<std::vector<size_t>> partitions;
             std::vector<Assignment> to_vertex_assignment;
             std::vector<AssignmentPair> statically_consistent_assignments;
-            std::unordered_map<size_t, std::vector<int>> objects_by_parameter_type;
-
-            if (flat_action.arity >= 1)
-            {
-                // Compatible objects by type
-
-                for (const auto& parameter : flat_action.get_parameters())
-                {
-                    std::vector<int> compatible_objects;
-
-                    for (const auto& object : problem->get_objects())
-                    {
-                        if (is_any_subtype_of(object->get_bases(), parameter->get_bases()))
-                        {
-                            compatible_objects.emplace_back(object->get_identifier());
-                        }
-                    }
-
-                    objects_by_parameter_type.emplace(flat_action.get_parameter_index(parameter), std::move(compatible_objects));
-                }
-            }
 
             // The following is used only by the general case.
 
@@ -318,13 +293,12 @@ public:
 
                 for (uint32_t parameter_index = 0; parameter_index < flat_action.arity; ++parameter_index)
                 {
-                    const auto& compatible_objects = objects_by_parameter_type.at(parameter_index);
                     std::vector<std::size_t> partition;
 
-                    for (const auto& object_id : compatible_objects)
+                    for (const auto& object : m_problem->get_objects())
                     {
                         partition.push_back(to_vertex_assignment.size());
-                        to_vertex_assignment.push_back(Assignment(parameter_index, object_id));
+                        to_vertex_assignment.push_back(Assignment(parameter_index, object->get_identifier()));
                     }
 
                     partitions.push_back(std::move(partition));
@@ -397,7 +371,6 @@ public:
 
             m_partitions.emplace(flat_action.source, std::move(partitions));
             m_to_vertex_assignment.emplace(flat_action.source, std::move(to_vertex_assignment));
-            m_objects_by_parameter_type.emplace(flat_action.source, std::move(objects_by_parameter_type));
             m_statically_consistent_assignments.emplace(flat_action.source, std::move(statically_consistent_assignments));
         }
     }
