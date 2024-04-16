@@ -29,9 +29,12 @@ namespace mimir
 class PDDLParser
 {
 private:
-    PDDLFactories m_factories;
+    // Parse the original domain and problem
+    loki::DomainParser m_loki_domain_parser;
+    loki::ProblemParser m_loki_problem_parser;
 
-    // Parsed result
+    // The translated representation
+    PDDLFactories m_factories;
     Domain m_domain;
     Problem m_problem;
 
@@ -41,10 +44,16 @@ public:
     /// @brief Get the factories to create additional PDDL objects.
     PDDLFactories& get_factories();
 
-    /// @brief Get the parsed domain.
+    /// @brief Get the original domain.
+    const loki::Domain get_original_domain() const;
+
+    /// @brief Get the original problem.
+    const loki::Problem get_original_problem() const;
+
+    /// @brief Get the translated domain.
     const Domain& get_domain() const;
 
-    /// @brief Get the parsed problem.
+    /// @brief Get the translated problem.
     const Problem& get_problem() const;
 };
 

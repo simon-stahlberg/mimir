@@ -8,9 +8,11 @@
 
 namespace mimir
 {
-PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem_file_path)
+PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem_file_path) :
+    m_loki_domain_parser(loki::DomainParser(domain_file_path)),
+    m_loki_problem_parser(loki::ProblemParser(problem_file_path, m_loki_domain_parser))
 {
-    // Parse the loki domain and problem structures
+    // Parse the loki domain and problem structures using a separate parser to free intermediate results after translation
     auto domain_parser = loki::DomainParser(domain_file_path);
     auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
     auto problem = problem_parser.get_problem();
@@ -56,6 +58,10 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
 }
 
 PDDLFactories& PDDLParser::get_factories() { return m_factories; }
+
+const loki::Domain PDDLParser::get_original_domain() const { return m_loki_domain_parser.get_domain(); }
+
+const loki::Problem PDDLParser::get_original_problem() const { return m_loki_problem_parser.get_problem(); }
 
 const Domain& PDDLParser::get_domain() const { return m_domain; }
 
