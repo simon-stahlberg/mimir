@@ -32,12 +32,12 @@ class ActionImpl : public loki::Base<ActionImpl>
 private:
     std::string m_name;
     ParameterList m_parameters;
-    std::optional<Condition> m_condition;
+    LiteralList m_condition;
     std::optional<Effect> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ActionImpl(int identifier, std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect);
+    ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, std::optional<Effect> effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ActionImpl, loki::Hash<ActionImpl*>, loki::EqualTo<ActionImpl*>>;
@@ -53,7 +53,7 @@ private:
 public:
     const std::string& get_name() const;
     const ParameterList& get_parameters() const;
-    const std::optional<Condition>& get_condition() const;
+    const LiteralList& get_condition() const;
     const std::optional<Effect>& get_effect() const;
     size_t get_arity() const;
 

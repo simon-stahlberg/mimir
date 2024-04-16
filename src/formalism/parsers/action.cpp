@@ -19,6 +19,7 @@
 
 #include "conditions.hpp"
 #include "effects.hpp"
+#include "literal.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "parameter.hpp"
 
@@ -26,10 +27,33 @@ namespace mimir
 {
 Action parse(loki::Action action, PDDLFactories& factories)
 {
+    auto preconditions = LiteralList {};
+    if (action->get_condition().has_value())
+    {
+        if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(action->get_condition().value()))
+        {
+            for (const auto& part : condition_and->get_conditions())
+            {
+                if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
+                {
+                    preconditions.push_back(parse(condition_literal->get_literal(), factories));
+                }
+                else
+                {
+                    throw std::logic_error("Expected literal in conjunctive precondition.");
+                }
+            }
+        }
+        else
+        {
+            throw std::logic_error("Expected conjunctive precondition.");
+        }
+    }
+
     return factories.get_or_create_action(
         action->get_name(),
         parse(action->get_parameters(), factories),
-        (action->get_condition().has_value() ? std::optional<Condition>(parse(action->get_condition().value(), factories)) : std::nullopt),
+        preconditions,
         (action->get_effect().has_value() ? std::optional<Effect>(parse(action->get_effect().value(), factories)) : std::nullopt));
 }
 

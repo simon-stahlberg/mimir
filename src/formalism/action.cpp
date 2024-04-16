@@ -28,7 +28,7 @@
 
 namespace mimir
 {
-ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect) :
+ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, std::optional<Effect> effect) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
@@ -40,10 +40,13 @@ ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameter
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
 {
     return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
-           && (*m_condition == *other.m_condition) && (*m_effect == *other.m_effect);
+           && (loki::get_sorted_vector(m_condition) == loki::get_sorted_vector(other.m_condition)) && (*m_effect == *other.m_effect);
 }
 
-size_t ActionImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters), *m_condition, *m_effect); }
+size_t ActionImpl::hash_impl() const
+{
+    return loki::hash_combine(m_name, loki::hash_container(m_parameters), loki::hash_container(loki::get_sorted_vector(m_condition)), *m_effect);
+}
 
 void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -55,15 +58,27 @@ void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
             out << " ";
         m_parameters[i]->str(out, options);
     }
-    out << ")";
-    out << "\n";
-    out << std::string(nested_options.indent, ' ') << ":conditions ";
-    if (m_condition.has_value())
-        std::visit(loki::StringifyVisitor(out, nested_options), *m_condition.value());
-    else
-        out << "()";
+    out << ")\n";
 
-    out << "\n";
+    out << std::string(nested_options.indent, ' ') << ":conditions ";
+    if (m_condition.empty())
+    {
+        out << "()\n";
+    }
+    else
+    {
+        out << "(and ";
+        for (size_t i = 0; i < m_condition.size(); ++i)
+        {
+            if (i != 0)
+            {
+                out << " ";
+            }
+            out << *m_condition[i];
+        }
+        out << ")\n";
+    }
+
     out << std::string(nested_options.indent, ' ') << ":effects ";
     if (m_effect.has_value())
         std::visit(loki::StringifyVisitor(out, nested_options), *m_effect.value());
@@ -77,7 +92,7 @@ const std::string& ActionImpl::get_name() const { return m_name; }
 
 const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 
-const std::optional<Condition>& ActionImpl::get_condition() const { return m_condition; }
+const LiteralList& ActionImpl::get_condition() const { return m_condition; }
 
 const std::optional<Effect>& ActionImpl::get_effect() const { return m_effect; }
 

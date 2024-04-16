@@ -336,7 +336,7 @@ public:
     /// @brief Get or create an action for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Action get_or_create_action(std::string name, ParameterList parameters, std::optional<Condition> condition, std::optional<Effect> effect)
+    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, std::optional<Effect> effect)
     {
         return actions.get_or_create<ActionImpl>(std::move(name), std::move(parameters), std::move(condition), std::move(effect));
     }

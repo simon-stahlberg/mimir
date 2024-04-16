@@ -288,26 +288,20 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
     }
 
     const auto& static_predicates = domain->get_static_predicates();
-    const auto& precondition = action_schema->get_condition();
+    const auto& precondition_literals = action_schema->get_condition();
     const auto& effect = action_schema->get_effect();
 
-    if (precondition.has_value())
+    for (const auto& literal : precondition_literals)
     {
-        LiteralList precondition_literals;
-        to_literals(precondition.value(), precondition_literals);
+        const auto& literal_predicate = literal->get_atom()->get_predicate();
 
-        for (const auto& literal : precondition_literals)
+        if (std::find(static_predicates.begin(), static_predicates.end(), literal_predicate) != static_predicates.end())
         {
-            const auto& literal_predicate = literal->get_atom()->get_predicate();
-
-            if (std::find(static_predicates.begin(), static_predicates.end(), literal_predicate) != static_predicates.end())
-            {
-                static_precondition.emplace_back(literal, to_index_, to_parameter_);
-            }
-            else
-            {
-                fluent_precondition.emplace_back(literal, to_index_, to_parameter_);
-            }
+            static_precondition.emplace_back(literal, to_index_, to_parameter_);
+        }
+        else
+        {
+            fluent_precondition.emplace_back(literal, to_index_, to_parameter_);
         }
     }
 
