@@ -20,12 +20,17 @@
 #include "conditions.hpp"
 #include "literal.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "parameter.hpp"
 
 namespace mimir
 {
 Axiom parse(loki::Axiom axiom, PDDLFactories& factories)
 {
-    return factories.get_or_create_axiom(parse(axiom->get_literal(), factories), parse(axiom->get_condition(), factories));
+    auto parameters = parse(axiom->get_literal()->get_atom()->get_predicate()->get_parameters(), factories);
+    const auto [additional_parameters, literals] = parse(axiom->get_condition(), factories);
+    parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+
+    return factories.get_or_create_axiom(parameters, parse(axiom->get_literal(), factories), literals);
 }
 
 extern AxiomList parse(loki::AxiomList axiom_list, PDDLFactories& factories)

@@ -344,7 +344,10 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(Literal literal, LiteralList condition) { return axioms.get_or_create<AxiomImpl>(std::move(literal), std::move(condition)); }
+    Axiom get_or_create_axiom(ParameterList parameters, Literal literal, LiteralList condition)
+    {
+        return axioms.get_or_create<AxiomImpl>(std::move(parameters), std::move(literal), std::move(condition));
+    }
 
     /// @brief Get or create an optimization metric for the given parameters.
     ///

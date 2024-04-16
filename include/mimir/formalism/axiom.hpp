@@ -28,10 +28,11 @@ namespace mimir
 class AxiomImpl : public loki::Base<AxiomImpl>
 {
 private:
+    ParameterList m_parameters;
     Literal m_literal;
     LiteralList m_condition;
 
-    AxiomImpl(int identifier, Literal literal, LiteralList condition);
+    AxiomImpl(int identifier, ParameterList parameters, Literal literal, LiteralList condition);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AxiomImpl, loki::Hash<AxiomImpl*>, loki::EqualTo<AxiomImpl*>>;
@@ -45,6 +46,7 @@ private:
     friend class loki::Base<AxiomImpl>;
 
 public:
+    const ParameterList& get_parameters() const;
     const Literal& get_literal() const;
     const LiteralList& get_condition() const;
 };

@@ -78,7 +78,7 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionAndImpl& co
         }
     }
 
-    return this->m_pddl_factories.get_or_create_condition_or(uniquify_elements(result_parts));
+    return this->translate(*this->m_pddl_factories.get_or_create_condition_or(uniquify_elements(result_parts)));
 }
 
 loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionOrImpl& condition)

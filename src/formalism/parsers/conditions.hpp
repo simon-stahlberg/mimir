@@ -26,8 +26,8 @@
 namespace mimir
 {
 
-/// @brief Parse condition into conjunction of literals.
-extern LiteralList parse(loki::Condition node, PDDLFactories& factories);
+/// @brief Parse condition into conjunction of literals and a list of parameters.
+extern std::pair<ParameterList, LiteralList> parse(loki::Condition condition, PDDLFactories& factories);
 
 }
 

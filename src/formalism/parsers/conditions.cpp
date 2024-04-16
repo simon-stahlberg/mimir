@@ -19,13 +19,22 @@
 
 #include "literal.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "parameter.hpp"
 
 namespace mimir
 {
 
-LiteralList parse(loki::Condition node, PDDLFactories& factories)
+std::pair<ParameterList, LiteralList> parse(loki::Condition condition, PDDLFactories& factories)
 {
-    if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(node))
+    auto parameters = ParameterList {};
+    if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition))
+    {
+        parameters = parse(condition_exists->get_parameters(), factories);
+
+        condition = condition_exists->get_condition();
+    }
+
+    if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition))
     {
         auto literals = LiteralList {};
         for (const auto& part : condition_and->get_conditions())
@@ -36,11 +45,19 @@ LiteralList parse(loki::Condition node, PDDLFactories& factories)
             }
             else
             {
+                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return literals;
+        return std::make_pair(parameters, literals);
     }
+    else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition))
+    {
+        return std::make_pair(parameters, LiteralList { parse(condition_literal->get_literal(), factories) });
+    }
+
+    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition) << std::endl;
 
     throw std::logic_error("Expected conjunctive condition.");
 }

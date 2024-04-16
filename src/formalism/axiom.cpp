@@ -25,8 +25,9 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(int identifier, Literal literal, LiteralList condition) :
+AxiomImpl::AxiomImpl(int identifier, ParameterList parameters, Literal literal, LiteralList condition) :
     Base(identifier),
+    m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
     m_condition(std::move(condition))
 {
@@ -54,6 +55,8 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
     }
     out << ")\n";
 }
+
+const ParameterList& AxiomImpl::get_parameters() const { return m_parameters; }
 
 const Literal& AxiomImpl::get_literal() const { return m_literal; }
 

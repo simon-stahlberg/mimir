@@ -27,10 +27,19 @@ namespace mimir
 {
 Action parse(loki::Action action, PDDLFactories& factories)
 {
+    auto parameters = parse(action->get_parameters(), factories);
+    auto literals = LiteralList {};
+    if (action->get_condition().has_value())
+    {
+        const auto [additional_parameters, parsed_literals] = parse(action->get_condition().value(), factories);
+        literals = parsed_literals;
+        parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+    }
+
     return factories.get_or_create_action(
         action->get_name(),
-        parse(action->get_parameters(), factories),
-        (action->get_condition().has_value() ? parse(action->get_condition().value(), factories) : LiteralList {}),
+        parameters,
+        literals,
         (action->get_effect().has_value() ? std::optional<Effect>(parse(action->get_effect().value(), factories)) : std::nullopt));
 }
 

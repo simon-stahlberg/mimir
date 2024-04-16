@@ -46,7 +46,14 @@ Effect EffectVisitor::operator()(const loki::EffectConditionalForallImpl& node)
 
 Effect EffectVisitor::operator()(const loki::EffectConditionalWhenImpl& node)
 {
-    return factories.get_or_create_effect_conditional_when(parse(node.get_condition(), factories), parse(node.get_effect(), factories));
+    const auto [parameters, literals] = parse(node.get_condition(), factories);
+
+    if (!parameters.empty())
+    {
+        throw std::logic_error("Expected parameters to be empty.");
+    }
+
+    return factories.get_or_create_effect_conditional_when(literals, parse(node.get_effect(), factories));
 }
 
 Effect parse(loki::Effect effect, PDDLFactories& factories) { return std::visit(EffectVisitor(factories), *effect); }

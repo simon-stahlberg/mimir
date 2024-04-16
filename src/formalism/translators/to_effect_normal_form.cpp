@@ -140,13 +140,20 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectConditionalWhenIm
             translated_nested_effect_forall->get_parameters(),
             this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_nested_effect_forall->get_effect())));
     }
+    else if (const auto translated_condition_exists = std::get_if<loki::ConditionExistsImpl>(translated_condition))
+    {
+        // 9. exists(vars, phi) > e  => forall(vars, phi > e)
+        return this->translate(*this->m_pddl_factories.get_or_create_effect_conditional_forall(
+            translated_condition_exists->get_parameters(),
+            this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition_exists->get_condition(), translated_effect)));
+    }
 
     return this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect);
 }
 
 loki::Condition ToENFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
 {
-    // 9. A and (B and C)  =>  A and B and C
+    // 10. A and (B and C)  =>  A and B and C
     return flatten(*std::get_if<loki::ConditionAndImpl>(this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
                    this->m_pddl_factories);
 }

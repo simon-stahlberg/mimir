@@ -52,12 +52,13 @@ private:
      * 6. phi > (psi > e)    =>  (phi and psi) > e
      * 7. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
      * 8. phi > forall(vars, e)  => forall(vars, phi > e)
+     * 9. exists(vars, phi) > e  => forall(vars, phi > e)
      */
     loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
     /**
      * Flatten conjunctions.
      *
-     * 9. A and (B and C)  =>  A and B and C
+     * 10. A and (B and C)  =>  A and B and C
      */
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
 
