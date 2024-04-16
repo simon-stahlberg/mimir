@@ -24,7 +24,6 @@
 #include "object.hpp"
 #include "predicate.hpp"
 #include "requirements.hpp"
-#include "type.hpp"
 
 namespace mimir
 {
@@ -32,7 +31,6 @@ Domain parse(loki::Domain domain, PDDLFactories& factories)
 {
     return factories.get_or_create_domain(domain->get_name(),
                                           parse(domain->get_requirements(), factories),
-                                          parse(domain->get_types(), factories),
                                           parse(domain->get_constants(), factories),
                                           parse(domain->get_predicates(), factories),
                                           parse(domain->get_derived_predicates(), factories),

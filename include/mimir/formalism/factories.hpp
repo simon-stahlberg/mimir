@@ -38,7 +38,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
-#include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
@@ -50,7 +49,6 @@ namespace mimir
 // The values are just educated guesses based on the knowledge
 // that cache line size is 64 Bytes.
 using RequirementFactory = loki::PDDLFactory<RequirementsImpl>;
-using TypeFactory = loki::PDDLFactory<TypeImpl>;
 using VariableFactory = loki::PDDLFactory<VariableImpl>;
 using TermFactory = loki::PDDLFactory<TermImpl>;
 using ObjectFactory = loki::PDDLFactory<ObjectImpl>;
@@ -77,7 +75,6 @@ class PDDLFactories
 {
 private:
     RequirementFactory requirements;
-    TypeFactory types;
     VariableFactory variables;
     TermFactory terms;
     ObjectFactory objects;
@@ -102,7 +99,6 @@ private:
 public:
     PDDLFactories() :
         requirements(RequirementFactory(100)),
-        types(TypeFactory(1000)),
         variables(VariableFactory(1000)),
         terms(TermFactory(1000)),
         objects(ObjectFactory(1000)),
@@ -140,11 +136,6 @@ public:
         return requirements.get_or_create<RequirementsImpl>(std::move(requirement_set));
     }
 
-    /// @brief Get or create a type for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Type get_or_create_type(std::string name, TypeList bases) { return types.get_or_create<TypeImpl>(std::move(name), std::move(bases)); }
-
     /// @brief Get or create a variable for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
@@ -163,7 +154,7 @@ public:
     /// @brief Get or create an object for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Object get_or_create_object(std::string name, TypeList types) { return objects.get_or_create<ObjectImpl>(std::move(name), std::move(types)); }
+    Object get_or_create_object(std::string name) { return objects.get_or_create<ObjectImpl>(std::move(name)); }
 
     /// @brief Get or create an atom for the given parameters.
     ///
@@ -194,10 +185,7 @@ public:
     /// @brief Get or create a parameter for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Parameter get_or_create_parameter(Variable variable, TypeList types)
-    {
-        return parameters.get_or_create<ParameterImpl>(std::move(variable), std::move(types));
-    }
+    Parameter get_or_create_parameter(Variable variable) { return parameters.get_or_create<ParameterImpl>(std::move(variable)); }
 
     /// @brief Get or create a predicate for the given parameters.
     ///
@@ -262,9 +250,9 @@ public:
     /// @brief Get or create a function skeleton for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    FunctionSkeleton get_or_create_function_skeleton(std::string name, ParameterList parameters, Type type)
+    FunctionSkeleton get_or_create_function_skeleton(std::string name, ParameterList parameters)
     {
-        return function_skeletons.get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters), std::move(type));
+        return function_skeletons.get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
     }
 
     /// @brief Get or create a literal condition for the given parameters.
@@ -379,7 +367,6 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     Domain get_or_create_domain(std::string name,
                                 Requirements requirements,
-                                TypeList types,
                                 ObjectList constants,
                                 PredicateList predicates,
                                 PredicateList derived_predicates,
@@ -389,7 +376,6 @@ public:
     {
         return domains.get_or_create<DomainImpl>(std::move(name),
                                                  std::move(requirements),
-                                                 std::move(types),
                                                  std::move(constants),
                                                  std::move(predicates),
                                                  std::move(derived_predicates),

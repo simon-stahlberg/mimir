@@ -19,15 +19,12 @@
 
 #include "mimir/formalism/factories.hpp"
 #include "parameter.hpp"
-#include "type.hpp"
 
 namespace mimir
 {
 FunctionSkeleton parse(loki::FunctionSkeleton function_skeleton, PDDLFactories& factories)
 {
-    return factories.get_or_create_function_skeleton(function_skeleton->get_name(),
-                                                     parse(function_skeleton->get_parameters(), factories),
-                                                     parse(function_skeleton->get_type(), factories));
+    return factories.get_or_create_function_skeleton(function_skeleton->get_name(), parse(function_skeleton->get_parameters(), factories));
 }
 
 FunctionSkeletonList parse(loki::FunctionSkeletonList function_skeleton_list, PDDLFactories& factories)

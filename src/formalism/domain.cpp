@@ -23,7 +23,6 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
-#include "mimir/formalism/type.hpp"
 
 #include <iostream>
 #include <loki/loki.hpp>
@@ -36,7 +35,6 @@ namespace mimir
 DomainImpl::DomainImpl(int identifier,
                        std::string name,
                        Requirements requirements,
-                       TypeList types,
                        ObjectList constants,
                        PredicateList predicates,
                        PredicateList derived_predicates,
@@ -46,7 +44,6 @@ DomainImpl::DomainImpl(int identifier,
     Base(identifier),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
-    m_types(std::move(types)),
     m_constants(std::move(constants)),
     m_predicates(std::move(predicates)),
     m_derived_predicates(std::move(derived_predicates)),
@@ -71,7 +68,7 @@ DomainImpl::DomainImpl(int identifier,
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const
 {
-    return (m_name == other.m_name) && (m_requirements == other.m_requirements) && (loki::get_sorted_vector(m_types) == loki::get_sorted_vector(other.m_types))
+    return (m_name == other.m_name) && (m_requirements == other.m_requirements)
            && (loki::get_sorted_vector(m_constants) == loki::get_sorted_vector(other.m_constants))
            && (loki::get_sorted_vector(m_predicates) == loki::get_sorted_vector(other.m_predicates))
            && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
@@ -84,7 +81,6 @@ size_t DomainImpl::hash_impl() const
 {
     return loki::hash_combine(m_name,
                               m_requirements,
-                              loki::hash_container(loki::get_sorted_vector(m_types)),
                               loki::hash_container(loki::get_sorted_vector(m_constants)),
                               loki::hash_container(loki::get_sorted_vector(m_predicates)),
                               loki::hash_container(loki::get_sorted_vector(m_derived_predicates)),
@@ -103,77 +99,14 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
         m_requirements->str(out, nested_options);
         out << "\n";
     }
-    if (!m_types.empty())
-    {
-        out << string(nested_options.indent, ' ') << "(:types ";
-        std::unordered_map<TypeList, TypeList, loki::hash_container_type<TypeList>> subtypes_by_parent_types;
-        for (const auto& type : m_types)
-        {
-            subtypes_by_parent_types[type->get_bases()].push_back(type);
-        }
-        size_t i = 0;
-        for (const auto& [types, sub_types] : subtypes_by_parent_types)
-        {
-            if (i != 0)
-                out << "\n" << string(nested_options.indent, ' ');
-            for (size_t i = 0; i < sub_types.size(); ++i)
-            {
-                if (i != 0)
-                    out << " ";
-                out << sub_types[i]->get_name();
-            }
-            out << " - ";
-            if (types.size() > 1)
-            {
-                out << "(either ";
-                for (size_t i = 0; i < types.size(); ++i)
-                {
-                    if (i != 0)
-                        out << " ";
-                    types[i]->get_name();
-                }
-                out << ")";
-            }
-            else if (types.size() == 1)
-            {
-                out << types.front()->get_name();
-            }
-            ++i;
-        }
-        out << ")\n";
-    }
     if (!m_constants.empty())
     {
         out << string(nested_options.indent, ' ') << "(:constants ";
-        std::unordered_map<TypeList, ObjectList, loki::hash_container_type<TypeList>> constants_by_types;
-        for (const auto& constant : m_constants)
-        {
-            constants_by_types[constant->get_bases()].push_back(constant);
-        }
-        size_t i = 0;
-        for (const auto& pair : constants_by_types)
+        for (size_t i = 0; i < m_constants.size(); ++i)
         {
             if (i != 0)
-                out << "\n" << string(nested_options.indent, ' ');
-            const auto& constants = pair.second;
-            for (size_t i = 0; i < constants.size(); ++i)
-            {
-                if (i != 0)
-                    out << " ";
-                constants[i]->str(out, nested_options);
-            }
-            if (m_requirements->test(loki::RequirementEnum::TYPING))
-            {
-                out << " - ";
-                const auto& types = pair.first;
-                for (size_t i = 0; i < types.size(); ++i)
-                {
-                    if (i != 0)
-                        out << " ";
-                    types[i]->str(out, nested_options);
-                }
-            }
-            ++i;
+                out << " ";
+            out << *m_constants[i];
         }
         out << ")\n";
     }
@@ -226,8 +159,6 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
 const std::string& DomainImpl::get_name() const { return m_name; }
 
 const Requirements& DomainImpl::get_requirements() const { return m_requirements; }
-
-const TypeList& DomainImpl::get_types() const { return m_types; }
 
 const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 

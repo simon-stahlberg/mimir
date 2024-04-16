@@ -29,11 +29,10 @@ class ObjectImpl : public loki::Base<ObjectImpl>
 {
 private:
     std::string m_name;
-    TypeList m_types;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ObjectImpl(int identifier, std::string name, TypeList types = {});
+    ObjectImpl(int identifier, std::string name);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ObjectImpl, loki::Hash<ObjectImpl*>, loki::EqualTo<ObjectImpl*>>;
@@ -48,7 +47,6 @@ private:
 
 public:
     const std::string& get_name() const;
-    const TypeList& get_bases() const;
 };
 }
 

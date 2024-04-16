@@ -209,7 +209,6 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
         .def("get_identifier", &DomainImpl::get_identifier)
         .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference)
-        .def("get_types", &DomainImpl::get_types, py::return_value_policy::reference)
         .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference)
         .def("get_predicates", &DomainImpl::get_predicates, py::return_value_policy::reference)
         .def("get_fluent_predicates", &DomainImpl::get_fluent_predicates, py::return_value_policy::reference)
@@ -297,8 +296,7 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionSkeletonImpl>::str, py::const_))
         .def("get_identifier", &FunctionSkeletonImpl::get_identifier)
         .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_type", &FunctionSkeletonImpl::get_type);
+        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::return_value_policy::reference);
 
     py::class_<FunctionImpl>(m_formalism, "Function")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionImpl>::str, py::const_))
@@ -340,14 +338,12 @@ void init_formalism(py::module_& m_formalism)
     py::class_<ObjectImpl>(m_formalism, "Object")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ObjectImpl>::str, py::const_))
         .def("get_identifier", &ObjectImpl::get_identifier)
-        .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference)
-        .def("get_bases", &ObjectImpl::get_bases, py::return_value_policy::reference);
+        .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference);
 
     py::class_<ParameterImpl>(m_formalism, "Parameter")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ParameterImpl>::str, py::const_))
         .def("get_identifier", &ParameterImpl::get_identifier, py::return_value_policy::reference)
-        .def("get_variable", &ParameterImpl::get_variable, py::return_value_policy::reference)
-        .def("get_bases", &ParameterImpl::get_bases, py::return_value_policy::reference);
+        .def("get_variable", &ParameterImpl::get_variable, py::return_value_policy::reference);
 
     py::class_<PDDLFactories>(m_formalism, "PDDLFactories");
 
@@ -392,12 +388,6 @@ void init_formalism(py::module_& m_formalism)
 
     py::class_<WrappedTerm>(m_formalism, "Term")  //
         .def("get", [](const WrappedTerm& wrappedTerm) -> py::object { return std::visit(CastVisitor(), *wrappedTerm.term); });
-
-    py::class_<TypeImpl>(m_formalism, "Type")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<TypeImpl>::str, py::const_))
-        .def("get_identifier", &TypeImpl::get_identifier)
-        .def("get_name", &TypeImpl::get_name, py::return_value_policy::reference)
-        .def("get_bases", &TypeImpl::get_bases, py::return_value_policy::reference);
 
     py::class_<VariableImpl>(m_formalism, "Variable")  //
         .def("__str__", py::overload_cast<>(&loki::Base<VariableImpl>::str, py::const_))

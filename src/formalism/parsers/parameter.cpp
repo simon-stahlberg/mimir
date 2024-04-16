@@ -18,14 +18,17 @@
 #include "parameter.hpp"
 
 #include "mimir/formalism/factories.hpp"
-#include "type.hpp"
 #include "variable.hpp"
 
 namespace mimir
 {
 Parameter parse(loki::Parameter parameter, PDDLFactories& factories)
 {
-    return factories.get_or_create_parameter(parse(parameter->get_variable(), factories), parse(parameter->get_bases(), factories));
+    if (!parameter->get_bases().empty())
+    {
+        throw std::logic_error("Expected types to be empty.");
+    }
+    return factories.get_or_create_parameter(parse(parameter->get_variable(), factories));
 }
 
 ParameterList parse(loki::ParameterList parameter_list, PDDLFactories& factories)

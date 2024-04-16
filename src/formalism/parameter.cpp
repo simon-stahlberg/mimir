@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/parameter.hpp"
 
-#include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
@@ -25,42 +24,13 @@
 
 namespace mimir
 {
-ParameterImpl::ParameterImpl(int identifier, Variable variable, TypeList types) : Base(identifier), m_variable(std::move(variable)), m_types(std::move(types))
-{
-}
+ParameterImpl::ParameterImpl(int identifier, Variable variable) : Base(identifier), m_variable(std::move(variable)) {}
 
-bool ParameterImpl::is_structurally_equivalent_to_impl(const ParameterImpl& other) const
-{
-    return (m_variable == other.m_variable) && (get_sorted_vector(m_types) == get_sorted_vector(other.m_types));
-}
+bool ParameterImpl::is_structurally_equivalent_to_impl(const ParameterImpl& other) const { return (m_variable == other.m_variable); }
 
-size_t ParameterImpl::hash_impl() const { return loki::hash_combine(m_variable, loki::hash_container(loki::get_sorted_vector(m_types))); }
+size_t ParameterImpl::hash_impl() const { return loki::hash_combine(m_variable); }
 
-void ParameterImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
-{
-    out << m_variable->get_name();
-    if (!m_types.empty())
-    {
-        out << " - ";
-        if (m_types.size() > 1)
-        {
-            out << "(either ";
-            for (size_t i = 0; i < m_types.size(); ++i)
-            {
-                if (i != 0)
-                    out << " ";
-                m_types[i]->get_name();
-            }
-            out << ")";
-        }
-        else if (m_types.size() == 1)
-        {
-            out << m_types.front()->get_name();
-        }
-    }
-}
+void ParameterImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_variable->get_name(); }
 
 const Variable& ParameterImpl::get_variable() const { return m_variable; }
-
-const TypeList& ParameterImpl::get_bases() const { return m_types; }
 }

@@ -23,20 +23,19 @@
 
 namespace mimir
 {
-FunctionSkeletonImpl::FunctionSkeletonImpl(int identifier, std::string name, ParameterList parameters, Type type) :
+FunctionSkeletonImpl::FunctionSkeletonImpl(int identifier, std::string name, ParameterList parameters) :
     Base(identifier),
     m_name(std::move(name)),
-    m_parameters(std::move(parameters)),
-    m_type(std::move(type))
+    m_parameters(std::move(parameters))
 {
 }
 
 bool FunctionSkeletonImpl::is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const
 {
-    return (m_name == other.m_name) && (m_parameters == other.m_parameters) && (m_type == other.m_type);
+    return (m_name == other.m_name) && (m_parameters == other.m_parameters);
 }
 
-size_t FunctionSkeletonImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters), m_type); }
+size_t FunctionSkeletonImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
 
 void FunctionSkeletonImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -52,6 +51,4 @@ void FunctionSkeletonImpl::str_impl(std::ostream& out, const loki::FormattingOpt
 const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }
 
 const ParameterList& FunctionSkeletonImpl::get_parameters() const { return m_parameters; }
-
-const Type& FunctionSkeletonImpl::get_type() const { return m_type; }
 }

@@ -18,13 +18,16 @@
 #include "object.hpp"
 
 #include "mimir/formalism/factories.hpp"
-#include "type.hpp"
 
 namespace mimir
 {
 Object parse(loki::Object object, PDDLFactories& factories)
 {
-    return factories.get_or_create_object(object->get_name(), parse(object->get_bases(), factories));
+    if (!object->get_bases().empty())
+    {
+        throw std::logic_error("Expected types to be empty.");
+    }
+    return factories.get_or_create_object(object->get_name());
 }
 
 ObjectList parse(loki::ObjectList object_list, PDDLFactories& factories)

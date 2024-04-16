@@ -18,7 +18,6 @@
 #include "mimir/formalism/predicate.hpp"
 
 #include "mimir/formalism/parameter.hpp"
-#include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>

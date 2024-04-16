@@ -33,7 +33,6 @@ class DomainImpl : public loki::Base<DomainImpl>
 private:
     std::string m_name;
     Requirements m_requirements;
-    TypeList m_types;
     ObjectList m_constants;
     PredicateList m_predicates;
     PredicateList m_derived_predicates;
@@ -48,7 +47,6 @@ private:
     DomainImpl(int identifier,
                std::string name,
                Requirements requirements,
-               TypeList types,
                ObjectList constants,
                PredicateList predicates,
                PredicateList derived_predicates,
@@ -70,7 +68,6 @@ private:
 public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
-    const TypeList& get_types() const;
     const ObjectList& get_constants() const;
     const PredicateList& get_predicates() const;
     const PredicateList& get_static_predicates() const;

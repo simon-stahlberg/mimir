@@ -26,7 +26,6 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
-#include "mimir/formalism/type.hpp"
 
 #include <iostream>
 #include <loki/loki.hpp>
@@ -99,42 +98,11 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
     if (!m_objects.empty())
     {
         out << string(nested_options.indent, ' ') << "(:objects ";
-        std::unordered_map<TypeList, ObjectList, loki::hash_container_type<TypeList>> objects_by_types;
-        for (const auto& object : m_objects)
-        {
-            objects_by_types[object->get_bases()].push_back(object);
-        }
-        size_t i = 0;
-        for (const auto& [types, objects] : objects_by_types)
+        for (size_t i = 0; i < m_objects.size(); ++i)
         {
             if (i != 0)
-                out << "\n" << string(nested_options.indent, ' ');
-            for (size_t i = 0; i < objects.size(); ++i)
-            {
-                if (i != 0)
-                    out << " ";
-                out << objects[i]->get_name();
-            }
-            if (m_requirements->test(loki::RequirementEnum::TYPING))
-            {
-                out << " - ";
-                if (types.size() > 1)
-                {
-                    out << "(either ";
-                    for (size_t i = 0; i < types.size(); ++i)
-                    {
-                        if (i != 0)
-                            out << " ";
-                        types[i]->get_name();
-                    }
-                    out << ")";
-                }
-                else if (types.size() == 1)
-                {
-                    out << types.front()->get_name();
-                }
-            }
-            ++i;
+                out << " ";
+            out << *m_objects[i];
         }
         out << ")\n";
     }

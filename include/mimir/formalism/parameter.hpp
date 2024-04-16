@@ -29,11 +29,10 @@ class ParameterImpl : public loki::Base<ParameterImpl>
 {
 private:
     Variable m_variable;
-    TypeList m_types;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ParameterImpl(int identifier, Variable variable, TypeList types);
+    ParameterImpl(int identifier, Variable variable);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ParameterImpl, loki::Hash<ParameterImpl*>, loki::EqualTo<ParameterImpl*>>;
@@ -48,7 +47,6 @@ private:
 
 public:
     const Variable& get_variable() const;
-    const TypeList& get_bases() const;
 };
 }
 

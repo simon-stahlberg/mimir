@@ -24,7 +24,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
-#include "mimir/formalism/type.hpp"
 #include "mimir/formalism/variable.hpp"
 
 /**
