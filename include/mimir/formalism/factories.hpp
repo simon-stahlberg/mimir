@@ -21,7 +21,6 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
@@ -61,7 +60,6 @@ using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
 using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
-using ConditionFactory = loki::PDDLFactory<ConditionImpl>;
 using EffectFactory = loki::PDDLFactory<EffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
 using AxiomFactory = loki::PDDLFactory<AxiomImpl>;
@@ -87,7 +85,6 @@ private:
     FunctionExpressionFactory function_expressions;
     FunctionFactory functions;
     FunctionSkeletonFactory function_skeletons;
-    ConditionFactory conditions;
     EffectFactory effects;
     ActionFactory actions;
     AxiomFactory axioms;
@@ -111,7 +108,6 @@ public:
         function_expressions(FunctionExpressionFactory(1000)),
         functions(FunctionFactory(1000)),
         function_skeletons(FunctionSkeletonFactory(1000)),
-        conditions(ConditionFactory(1000)),
         effects(EffectFactory(1000)),
         actions(ActionFactory(100)),
         axioms(AxiomFactory(100)),
@@ -253,50 +249,6 @@ public:
     FunctionSkeleton get_or_create_function_skeleton(std::string name, ParameterList parameters)
     {
         return function_skeletons.get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
-    }
-
-    /// @brief Get or create a literal condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_literal(Literal literal) { return conditions.get_or_create<ConditionLiteralImpl>(std::move(literal)); }
-
-    /// @brief Get or create a and condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_and(ConditionList conditions_) { return conditions.get_or_create<ConditionAndImpl>(std::move(conditions_)); }
-
-    /// @brief Get or create a or condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_or(ConditionList conditions_) { return conditions.get_or_create<ConditionOrImpl>(std::move(conditions_)); }
-
-    /// @brief Get or create a or condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_not(Condition condition) { return conditions.get_or_create<ConditionNotImpl>(std::move(condition)); }
-
-    /// @brief Get or create a imply condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_imply(Condition condition_left, Condition condition_right)
-    {
-        return conditions.get_or_create<ConditionImplyImpl>(std::move(condition_left), std::move(condition_right));
-    }
-
-    /// @brief Get or create an exists condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_exists(ParameterList parameters, Condition condition)
-    {
-        return conditions.get_or_create<ConditionExistsImpl>(std::move(parameters), std::move(condition));
-    }
-
-    /// @brief Get or create an exists condition for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Condition get_or_create_condition_forall(ParameterList parameters, Condition condition)
-    {
-        return conditions.get_or_create<ConditionForallImpl>(std::move(parameters), std::move(condition));
     }
 
     /// @brief Get or create an literal effect for the given parameters.

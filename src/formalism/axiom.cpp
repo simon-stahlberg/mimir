@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/axiom.hpp"
 
-#include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/literal.hpp"
 

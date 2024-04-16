@@ -18,7 +18,6 @@
 #include "mimir/formalism/problem.hpp"
 
 #include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"

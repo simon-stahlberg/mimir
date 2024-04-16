@@ -1,31 +1,11 @@
 #include "mimir/common/translations.hpp"
 
-#include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 
 namespace mimir
 {
-
-void to_literals(Condition precondition, LiteralList& ref_literals)
-{
-    if (const auto* precondition_literal = std::get_if<ConditionLiteralImpl>(precondition))
-    {
-        ref_literals.emplace_back(precondition_literal->get_literal());
-    }
-    else if (const auto* precondition_and = std::get_if<ConditionAndImpl>(precondition))
-    {
-        for (const auto& inner_precondition : precondition_and->get_conditions())
-        {
-            to_literals(inner_precondition, ref_literals);
-        }
-    }
-    else
-    {
-        throw std::runtime_error("only conjunctions are supported");
-    }
-}
 
 void to_literals(Effect effect, LiteralList& ref_literals)
 {

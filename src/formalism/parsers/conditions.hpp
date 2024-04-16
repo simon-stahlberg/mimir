@@ -18,9 +18,9 @@
 #ifndef MIMIR_FORMALISM_PARSER_CONDITIONS_HPP_
 #define MIMIR_FORMALISM_PARSER_CONDITIONS_HPP_
 
-#include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/declarations.hpp"
 
+#include <loki/loki.hpp>
 #include <variant>
 
 namespace mimir

@@ -11,9 +11,6 @@
 namespace mimir
 {
 
-/// @brief Translates a condition into a conjunction of literals if possible, otherwise throws an error.
-extern void to_literals(Condition precondition, LiteralList& out_literals);
-
 /// @brief Translates an effect into a list of literals if possible, otherwise throws an error.
 extern void to_literals(Effect effect, LiteralList& out_literals);
 

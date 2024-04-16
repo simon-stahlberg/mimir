@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/effects.hpp"
 
-#include "mimir/formalism/conditions.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"

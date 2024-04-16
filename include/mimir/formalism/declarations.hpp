@@ -37,10 +37,6 @@ using ElementsPerSegment = size_t;
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;
 
-class TypeImpl;
-using Type = const TypeImpl*;
-using TypeList = boost::container::small_vector<Type, 1>;  // often single type
-
 class ObjectImpl;
 using Object = const ObjectImpl*;
 using ObjectList = std::vector<Object>;
@@ -85,18 +81,6 @@ using GroundLiteralList = std::vector<GroundLiteral>;
 class NumericFluentImpl;
 using NumericFluent = const NumericFluentImpl*;
 using NumericFluentList = std::vector<NumericFluent>;
-
-class ConditionLiteralImpl;
-class ConditionAndImpl;
-class ConditionOrImpl;
-class ConditionNotImpl;
-class ConditionImplyImpl;
-class ConditionExistsImpl;
-class ConditionForallImpl;
-using ConditionImpl =
-    std::variant<ConditionLiteralImpl, ConditionAndImpl, ConditionOrImpl, ConditionNotImpl, ConditionImplyImpl, ConditionExistsImpl, ConditionForallImpl>;
-using Condition = const ConditionImpl*;
-using ConditionList = std::vector<Condition>;
 
 class EffectLiteralImpl;
 class EffectAndImpl;

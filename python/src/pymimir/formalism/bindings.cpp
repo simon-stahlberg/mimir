@@ -19,12 +19,6 @@ struct WrappedTerm
     explicit WrappedTerm(const Term& t) : term(t) {}
 };
 
-struct WrappedCondition
-{
-    Condition condition;
-    explicit WrappedCondition(const Condition& c) : condition(c) {}
-};
-
 struct WrappedEffect
 {
     Effect effect;
@@ -46,17 +40,6 @@ std::vector<WrappedTerm> wrap_terms(const TermList& terms)
         wrapped_terms.push_back(WrappedTerm(term));
     }
     return wrapped_terms;
-}
-
-std::vector<WrappedCondition> wrap_conditions(const ConditionList& conditions)
-{
-    std::vector<WrappedCondition> wrapped_conditions;
-    wrapped_conditions.reserve(conditions.size());
-    for (const auto& condition : conditions)
-    {
-        wrapped_conditions.push_back(WrappedCondition(condition));
-    }
-    return wrapped_conditions;
 }
 
 std::vector<WrappedEffect> wrap_effects(const EffectList& effects)
@@ -156,48 +139,6 @@ void init_formalism(py::module_& m_formalism)
         .def("get_identifier", &AtomImpl::get_identifier)
         .def("get_predicate", &AtomImpl::get_predicate, py::return_value_policy::reference)
         .def("get_terms", [](const AtomImpl& atom) { return wrap_terms(atom.get_terms()); });
-
-    py::class_<ConditionLiteralImpl>(m_formalism, "ConditionLiteral")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionLiteralImpl>::str, py::const_))
-        .def("get_identifier", &ConditionLiteralImpl::get_identifier)
-        .def("get_literal", &ConditionLiteralImpl::get_literal, py::return_value_policy::reference);
-
-    py::class_<ConditionAndImpl>(m_formalism, "ConditionAnd")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionAndImpl>::str, py::const_))
-        .def("get_identifier", &ConditionAndImpl::get_identifier)
-        .def("get_conditions", [](const ConditionAndImpl& condition) { return wrap_conditions(condition.get_conditions()); });
-
-    py::class_<ConditionOrImpl>(m_formalism, "ConditionOr")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionOrImpl>::str, py::const_))
-        .def("get_identifier", &ConditionOrImpl::get_identifier)
-        .def("get_conditions", [](const ConditionOrImpl& condition) { return wrap_conditions(condition.get_conditions()); });
-
-    py::class_<ConditionNotImpl>(m_formalism, "ConditionNot")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionNotImpl>::str, py::const_))
-        .def("get_identifier", &ConditionNotImpl::get_identifier)
-        .def("get_condition", [](const ConditionNotImpl& condition) { return WrappedCondition(condition.get_condition()); });
-
-    py::class_<ConditionImplyImpl>(m_formalism, "ConditionImply")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionImplyImpl>::str, py::const_))
-        .def("get_identifier", &ConditionImplyImpl::get_identifier)
-        .def("get_condition_left", [](const ConditionImplyImpl& condition) { return WrappedCondition(condition.get_condition_left()); })
-        .def("get_condition_right", [](const ConditionImplyImpl& condition) { return WrappedCondition(condition.get_condition_right()); });
-
-    py::class_<ConditionExistsImpl>(m_formalism, "ConditionExists")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionExistsImpl>::str, py::const_))
-        .def("get_identifier", &ConditionExistsImpl::get_identifier)
-        .def("get_parameters", &ConditionExistsImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_condition", [](const ConditionExistsImpl& condition) { return WrappedCondition(condition.get_condition()); });
-
-    py::class_<ConditionForallImpl>(m_formalism, "ConditionForall")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ConditionForallImpl>::str, py::const_))
-        .def("get_identifier", &ConditionForallImpl::get_identifier)
-        .def("get_parameters", &ConditionForallImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_condition", [](const ConditionForallImpl& condition) { return WrappedCondition(condition.get_condition()); });
-
-    py::class_<ConditionImpl>(m_formalism, "Condition")  //
-        .def("get", [](const WrappedCondition& wrappedCondition) -> py::object { return std::visit(CastVisitor(), *wrappedCondition.condition); });
-    ;
 
     py::class_<AxiomImpl>(m_formalism, "Axiom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
