@@ -27,6 +27,76 @@
 
 namespace mimir
 {
+SimpleEffectImpl::SimpleEffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect) :
+    Base(identifier),
+    m_quantified_variables(std::move(quantified_variables)),
+    m_conditions(std::move(conditions)),
+    m_effect(std::move(effect))
+{
+}
+
+bool SimpleEffectImpl::is_structurally_equivalent_to_impl(const SimpleEffectImpl& other) const
+{
+    if (this != &other)
+    {
+        return (m_quantified_variables == other.m_quantified_variables)
+               && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions)) && m_effect == other.m_effect;
+    }
+    return true;
+}
+size_t SimpleEffectImpl::hash_impl() const
+{
+    return loki::hash_combine(loki::hash_container(m_quantified_variables), loki::hash_container(loki::get_sorted_vector(m_conditions)), m_effect);
+}
+void SimpleEffectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+{
+    if (!m_quantified_variables.empty())
+    {
+        out << "(forall (";
+        for (size_t i = 0; i < m_quantified_variables.size(); ++i)
+        {
+            if (i != 0)
+            {
+                out << " ";
+            }
+            out << *m_quantified_variables[i];
+        }
+        out << ") ";
+    }
+
+    if (!m_conditions.empty())
+    {
+        out << "(when (and ";
+        for (size_t i = 0; i < m_conditions.size(); ++i)
+        {
+            if (i != 0)
+            {
+                out << " ";
+            }
+            out << *m_conditions[i];
+        }
+        out << ") ";
+    }
+
+    out << *m_effect;
+
+    if (!m_conditions.empty())
+    {
+        out << ")";
+    }
+
+    if (!m_quantified_variables.empty())
+    {
+        out << ")";
+    }
+}
+
+const ParameterList& SimpleEffectImpl::get_quantified_variables() const { return m_quantified_variables; }
+
+const LiteralList& SimpleEffectImpl::get_conditions() const { return m_conditions; }
+
+const Literal& SimpleEffectImpl::get_effect() const { return m_effect; }
+
 /* Literal */
 EffectLiteralImpl::EffectLiteralImpl(int identifier, Literal literal) : Base(identifier), m_literal(std::move(literal)) {}
 

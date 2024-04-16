@@ -25,6 +25,33 @@
 
 namespace mimir
 {
+class SimpleEffectImpl : public loki::Base<SimpleEffectImpl>
+{
+private:
+    ParameterList m_quantified_variables;
+    LiteralList m_conditions;
+    Literal m_effect;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    SimpleEffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect);
+
+    // Give access to the constructor.
+    friend class loki::PDDLFactory<SimpleEffectImpl, loki::Hash<SimpleEffectImpl*>, loki::EqualTo<SimpleEffectImpl*>>;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<SimpleEffectImpl>;
+
+    bool is_structurally_equivalent_to_impl(const SimpleEffectImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+
+public:
+    const ParameterList& get_quantified_variables() const;
+    const LiteralList& get_conditions() const;
+    const Literal& get_effect() const;
+};
+
 /* Literal */
 class EffectLiteralImpl : public loki::Base<EffectLiteralImpl>
 {

@@ -20,15 +20,27 @@
 #include "conditions.hpp"
 #include "literal.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/translators/utils.hpp"
 #include "parameter.hpp"
+#include "variable.hpp"
 
 namespace mimir
 {
 Axiom parse(loki::Axiom axiom, PDDLFactories& factories)
 {
+    // Turn predicate arguments into parameters
     auto parameters = parse(axiom->get_literal()->get_atom()->get_predicate()->get_parameters(), factories);
+
+    // Turn quantifier variables into parameters
     const auto [additional_parameters, literals] = parse(axiom->get_condition(), factories);
     parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+
+    // Turn free variables into parameters
+    for (const auto& free_variable : collect_free_variables(*axiom->get_condition()))
+    {
+        parameters.push_back(factories.get_or_create_parameter(parse(free_variable, factories)));
+    }
+    parameters.shrink_to_fit();
 
     return factories.get_or_create_axiom(parameters, parse(axiom->get_literal(), factories), literals);
 }
