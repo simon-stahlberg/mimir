@@ -93,13 +93,8 @@ public:
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        auto goal_literals = LiteralList {};
-        if (m_problem->get_goal_condition().has_value())
-        {
-            to_literals(m_problem->get_goal_condition().value(), goal_literals);
-        }
         auto goal_ground_literals = GroundLiteralList {};
-        m_pddl_factories.to_ground_literals(goal_literals, goal_ground_literals);
+        m_pddl_factories.to_ground_literals(m_problem->get_goal_condition(), goal_ground_literals);
 
         auto applicable_actions = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
 

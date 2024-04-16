@@ -29,9 +29,9 @@ class AxiomImpl : public loki::Base<AxiomImpl>
 {
 private:
     Literal m_literal;
-    Condition m_condition;
+    LiteralList m_condition;
 
-    AxiomImpl(int identifier, Literal literal, Condition condition);
+    AxiomImpl(int identifier, Literal literal, LiteralList condition);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AxiomImpl, loki::Hash<AxiomImpl*>, loki::EqualTo<AxiomImpl*>>;
@@ -46,7 +46,7 @@ private:
 
 public:
     const Literal& get_literal() const;
-    const Condition& get_condition() const;
+    const LiteralList& get_condition() const;
 };
 
 }

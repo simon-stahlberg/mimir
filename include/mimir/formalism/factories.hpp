@@ -328,7 +328,7 @@ public:
     /// @brief Get or create a conditional when effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_conditional_when(Condition condition, Effect effect)
+    Effect get_or_create_effect_conditional_when(LiteralList condition, Effect effect)
     {
         return effects.get_or_create<EffectConditionalWhenImpl>(std::move(condition), std::move(effect));
     }
@@ -344,7 +344,7 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(Literal literal, Condition condition) { return axioms.get_or_create<AxiomImpl>(std::move(literal), std::move(condition)); }
+    Axiom get_or_create_axiom(Literal literal, LiteralList condition) { return axioms.get_or_create<AxiomImpl>(std::move(literal), std::move(condition)); }
 
     /// @brief Get or create an optimization metric for the given parameters.
     ///
@@ -394,7 +394,7 @@ public:
                                   PredicateList derived_predicates,
                                   GroundLiteralList initial_literals,
                                   NumericFluentList numeric_fluents,
-                                  std::optional<Condition> goal_condition,
+                                  LiteralList goal_condition,
                                   std::optional<OptimizationMetric> optimization_metric,
                                   AxiomList axioms)
     {

@@ -25,28 +25,38 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(int identifier, Literal literal, Condition condition) : Base(identifier), m_literal(std::move(literal)), m_condition(std::move(condition))
+AxiomImpl::AxiomImpl(int identifier, Literal literal, LiteralList condition) :
+    Base(identifier),
+    m_literal(std::move(literal)),
+    m_condition(std::move(condition))
 {
 }
 
 bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
 {
-    return (m_literal == other.m_literal) && (m_condition == other.m_condition);
+    return (m_literal == other.m_literal) && (loki::get_sorted_vector(m_condition) == loki::get_sorted_vector(other.m_condition));
 }
 
-size_t AxiomImpl::hash_impl() const { return hash_combine(m_literal, m_condition); }
+size_t AxiomImpl::hash_impl() const { return hash_combine(m_literal, loki::hash_container(loki::get_sorted_vector(m_condition))); }
 
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
     out << std::string(options.indent, ' ') << "(:derived " << *m_literal << "\n";
-    out << std::string(nested_options.indent, ' ');
-    std::visit(loki::StringifyVisitor(out, nested_options), *m_condition);
+    out << std::string(nested_options.indent, ' ') << "(and ";
+    for (size_t i = 0; i < m_condition.size(); ++i)
+    {
+        if (i != 0)
+        {
+            out << " ";
+        }
+        out << *m_condition[i];
+    }
     out << ")\n";
 }
 
 const Literal& AxiomImpl::get_literal() const { return m_literal; }
 
-const Condition& AxiomImpl::get_condition() const { return m_condition; }
+const LiteralList& AxiomImpl::get_condition() const { return m_condition; }
 
 }

@@ -243,7 +243,7 @@ void init_formalism(py::module_& m_formalism)
     py::class_<EffectConditionalWhenImpl>(m_formalism, "EffectConditionalWhen")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalWhenImpl>::str, py::const_))
         .def("get_identifier", &EffectConditionalWhenImpl::get_identifier)
-        .def("get_condition", [](const EffectConditionalWhenImpl& effect) { return WrappedCondition(effect.get_condition()); })
+        .def("get_condition", &EffectConditionalWhenImpl::get_condition)
         .def("get_effect", [](const EffectConditionalWhenImpl& effect) { return WrappedEffect(effect.get_effect()); });
     ;
 

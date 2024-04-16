@@ -131,12 +131,12 @@ public:
 class EffectConditionalWhenImpl : public loki::Base<EffectConditionalWhenImpl>
 {
 private:
-    Condition m_condition;
+    LiteralList m_condition;
     Effect m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect);
+    EffectConditionalWhenImpl(int identifier, LiteralList condition, Effect effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
@@ -149,7 +149,7 @@ private:
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    const Condition& get_condition() const;
+    const LiteralList& get_condition() const;
     const Effect& get_effect() const;
 };
 }

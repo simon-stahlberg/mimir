@@ -145,7 +145,7 @@ const ParameterList& EffectConditionalForallImpl::get_parameters() const { retur
 
 const Effect& EffectConditionalForallImpl::get_effect() const { return m_effect; }
 
-EffectConditionalWhenImpl::EffectConditionalWhenImpl(int identifier, Condition condition, Effect effect) :
+EffectConditionalWhenImpl::EffectConditionalWhenImpl(int identifier, LiteralList condition, Effect effect) :
     Base(identifier),
     m_condition(std::move(condition)),
     m_effect(std::move(effect))
@@ -161,18 +161,29 @@ bool EffectConditionalWhenImpl::is_structurally_equivalent_to_impl(const EffectC
     return true;
 }
 
-size_t EffectConditionalWhenImpl::hash_impl() const { return hash_combine(m_condition, m_effect); }
+size_t EffectConditionalWhenImpl::hash_impl() const { return hash_combine(loki::hash_container(loki::get_sorted_vector(m_condition)), m_effect); }
 
 void EffectConditionalWhenImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(when ";
-    std::visit(loki::StringifyVisitor(out, options), *m_condition);
-    out << " ";
+
+    out << "(and ";
+    for (size_t i = 0; i < m_condition.size(); ++i)
+    {
+        if (i != 0)
+        {
+            out << " ";
+        }
+        out << *m_condition[i];
+    }
+    out << ") ";
+
     std::visit(loki::StringifyVisitor(out, options), *m_effect);
+
     out << ")";
 }
 
-const Condition& EffectConditionalWhenImpl::get_condition() const { return m_condition; }
+const LiteralList& EffectConditionalWhenImpl::get_condition() const { return m_condition; }
 
 const Effect& EffectConditionalWhenImpl::get_effect() const { return m_effect; }
 }

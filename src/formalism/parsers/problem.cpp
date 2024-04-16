@@ -45,7 +45,7 @@ Problem parse(loki::Problem problem, PDDLFactories& factories)
         parse(problem->get_derived_predicates(), factories),
         parse(problem->get_initial_literals(), factories),
         parse(problem->get_numeric_fluents(), factories),
-        (problem->get_goal_condition().has_value() ? std::optional<Condition>(parse(problem->get_goal_condition().value(), factories)) : std::nullopt),
+        (problem->get_goal_condition().has_value() ? parse(problem->get_goal_condition().value(), factories) : LiteralList {}),
         (problem->get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(parse(problem->get_optimization_metric().value(), factories)) :
                                                           std::nullopt),
         parse(problem->get_axioms(), factories));

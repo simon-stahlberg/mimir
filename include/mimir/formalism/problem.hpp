@@ -36,7 +36,7 @@ private:
     PredicateList m_derived_predicates;
     GroundLiteralList m_initial_literals;
     NumericFluentList m_numeric_fluents;
-    std::optional<Condition> m_goal_condition;
+    LiteralList m_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
 
@@ -50,7 +50,7 @@ private:
                 PredicateList derived_predicates,
                 GroundLiteralList initial_literals,
                 NumericFluentList numeric_fluents,
-                std::optional<Condition> goal_condition,
+                LiteralList goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms);
 
@@ -73,7 +73,7 @@ public:
     const PredicateList& get_derived_predicates() const;
     const GroundLiteralList& get_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
-    const std::optional<Condition>& get_goal_condition() const;
+    const LiteralList& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 };
