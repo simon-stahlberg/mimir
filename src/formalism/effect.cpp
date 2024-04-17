@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/effect.hpp"
 
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"

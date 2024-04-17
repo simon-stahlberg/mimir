@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/axiom.hpp"
 
-#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/effect.hpp"
 #include "mimir/formalism/literal.hpp"
 
 #include <loki/loki.hpp>

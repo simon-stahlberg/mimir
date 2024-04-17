@@ -1,6 +1,6 @@
 #include "mimir/common/translations.hpp"
 
-#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/effect.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 
