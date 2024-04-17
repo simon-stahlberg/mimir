@@ -41,11 +41,22 @@ static loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& ty
     return loki::TypeList(flat_type_set.begin(), flat_type_set.end());
 }
 
-static loki::Predicate type_to_predicate(const loki::TypeImpl& type, loki::PDDLFactories& pddl_factories)
+static loki::Predicate
+type_to_predicate(const loki::TypeImpl& type, loki::PDDLFactories& pddl_factories, std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
-    return pddl_factories.get_or_create_predicate(
+    auto it = type_to_predicate_mapper.find(&type);
+    if (it != type_to_predicate_mapper.end())
+    {
+        return it->second;
+    }
+
+    auto predicate = pddl_factories.get_or_create_predicate(
         type.get_name(),
         loki::ParameterList { pddl_factories.get_or_create_parameter(pddl_factories.get_or_create_variable("?arg"), loki::TypeList {}) });
+
+    type_to_predicate_mapper.emplace(&type, predicate);
+
+    return predicate;
 }
 
 static loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories)
@@ -53,7 +64,9 @@ static loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& objec
     return pddl_factories.get_or_create_object(object.get_name(), loki::TypeList {});
 }
 
-static loki::GroundLiteralList typed_object_to_ground_literals(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories)
+static loki::GroundLiteralList typed_object_to_ground_literals(const loki::ObjectImpl& object,
+                                                               loki::PDDLFactories& pddl_factories,
+                                                               std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
     auto additional_literals = loki::GroundLiteralList {};
     auto translated_object = typed_object_to_untyped_object(object, pddl_factories);
@@ -62,7 +75,8 @@ static loki::GroundLiteralList typed_object_to_ground_literals(const loki::Objec
     {
         auto additional_literal = pddl_factories.get_or_create_ground_literal(
             false,
-            pddl_factories.get_or_create_ground_atom(type_to_predicate(*type, pddl_factories), loki::ObjectList { translated_object }));
+            pddl_factories.get_or_create_ground_atom(type_to_predicate(*type, pddl_factories, type_to_predicate_mapper),
+                                                     loki::ObjectList { translated_object }));
         additional_literals.push_back(additional_literal);
     }
     return additional_literals;
@@ -74,7 +88,9 @@ static loki::Parameter typed_parameter_to_untyped_parameter(const loki::Paramete
     return translated_parameter;
 }
 
-static loki::ConditionList typed_parameter_to_condition_literals(const loki::ParameterImpl& parameter, loki::PDDLFactories& pddl_factories)
+static loki::ConditionList typed_parameter_to_condition_literals(const loki::ParameterImpl& parameter,
+                                                                 loki::PDDLFactories& pddl_factories,
+                                                                 std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
     auto conditions = loki::ConditionList {};
     auto types = collect_types_from_type_hierarchy(parameter.get_bases());
@@ -82,7 +98,7 @@ static loki::ConditionList typed_parameter_to_condition_literals(const loki::Par
     {
         auto condition = pddl_factories.get_or_create_condition_literal(pddl_factories.get_or_create_literal(
             false,
-            pddl_factories.get_or_create_atom(type_to_predicate(*type, pddl_factories),
+            pddl_factories.get_or_create_atom(type_to_predicate(*type, pddl_factories, type_to_predicate_mapper),
                                               loki::TermList { pddl_factories.get_or_create_term_variable(parameter.get_variable()) })));
         conditions.push_back(condition);
     }
@@ -105,7 +121,7 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionExist
     auto conditions = loki::ConditionList {};
     for (const auto& parameter : condition.get_parameters())
     {
-        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
+        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories, this->m_type_to_predicates);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     conditions.push_back(this->translate(*condition.get_condition()));
@@ -124,7 +140,7 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionForal
     auto conditions = loki::ConditionList {};
     for (const auto& parameter : condition.get_parameters())
     {
-        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
+        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories, this->m_type_to_predicates);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     conditions.push_back(this->translate(*condition.get_condition()));
@@ -143,7 +159,7 @@ loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectConditional
     auto conditions = loki::ConditionList {};
     for (const auto& parameter : effect.get_parameters())
     {
-        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
+        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories, this->m_type_to_predicates);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     auto translated_condition = this->m_pddl_factories.get_or_create_condition_and(conditions);
@@ -165,7 +181,7 @@ loki::Action RemoveTypesTranslator::translate_impl(const loki::ActionImpl& actio
     auto conditions = loki::ConditionList {};
     for (const auto& parameter : action.get_parameters())
     {
-        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories);
+        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories, this->m_type_to_predicates);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     if (action.get_condition().has_value())
@@ -197,9 +213,9 @@ loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domai
 
     // Add type predicates
     auto translated_predicates = this->translate(domain.get_predicates());
-    for (const auto type : collect_types_from_type_hierarchy(domain.get_types()))
+    for (const auto& [type, predicate] : m_type_to_predicates)
     {
-        translated_predicates.push_back(type_to_predicate(*type, this->m_pddl_factories));
+        translated_predicates.push_back(predicate);
     }
 
     auto translated_domain = this->m_pddl_factories.get_or_create_domain(domain.get_name(),
@@ -228,7 +244,7 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
     for (const auto& object : problem.get_objects())
     {
         auto translated_object = typed_object_to_untyped_object(*object, this->m_pddl_factories);
-        auto additional_literals = typed_object_to_ground_literals(*object, this->m_pddl_factories);
+        auto additional_literals = typed_object_to_ground_literals(*object, this->m_pddl_factories, this->m_type_to_predicates);
         translated_objects.push_back(translated_object);
         additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
     }
@@ -236,7 +252,7 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
     // Make constants untyped
     for (const auto& object : problem.get_domain()->get_constants())
     {
-        auto additional_literals = typed_object_to_ground_literals(*object, this->m_pddl_factories);
+        auto additional_literals = typed_object_to_ground_literals(*object, this->m_pddl_factories, this->m_type_to_predicates);
         additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
     }
 

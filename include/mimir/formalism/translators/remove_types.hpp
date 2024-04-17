@@ -35,6 +35,9 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    // Collect predicates that encode types
+    std::unordered_map<loki::Type, loki::Predicate> m_type_to_predicates;
+
     /**
      * Translate
      */
