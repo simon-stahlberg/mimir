@@ -13,7 +13,7 @@ add_library(mimir::core ALIAS core)
 
 target_link_libraries(core loki::parsers)
 target_link_libraries(core flatmemory::flatmemory)
-# target_link_options(core PRIVATE -static-libstdc++)
+target_link_options(core PRIVATE -static-libstdc++)
 
 # Use include depending on building or using from installed location
 target_include_directories(core
