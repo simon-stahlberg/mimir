@@ -27,7 +27,7 @@
 
 namespace mimir
 {
-ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, SimpleEffectList effect) :
+ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, EffectList effect) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
@@ -108,9 +108,9 @@ const std::string& ActionImpl::get_name() const { return m_name; }
 
 const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 
-const LiteralList& ActionImpl::get_condition() const { return m_condition; }
+const LiteralList& ActionImpl::get_conditions() const { return m_condition; }
 
-const SimpleEffectList& ActionImpl::get_effect() const { return m_effect; }
+const EffectList& ActionImpl::get_effect() const { return m_effect; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
 

@@ -27,7 +27,7 @@
 
 namespace mimir
 {
-SimpleEffectImpl::SimpleEffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect) :
+EffectImpl::EffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect) :
     Base(identifier),
     m_quantified_variables(std::move(quantified_variables)),
     m_conditions(std::move(conditions)),
@@ -35,7 +35,7 @@ SimpleEffectImpl::SimpleEffectImpl(int identifier, ParameterList quantified_vari
 {
 }
 
-bool SimpleEffectImpl::is_structurally_equivalent_to_impl(const SimpleEffectImpl& other) const
+bool EffectImpl::is_structurally_equivalent_to_impl(const EffectImpl& other) const
 {
     if (this != &other)
     {
@@ -44,11 +44,11 @@ bool SimpleEffectImpl::is_structurally_equivalent_to_impl(const SimpleEffectImpl
     }
     return true;
 }
-size_t SimpleEffectImpl::hash_impl() const
+size_t EffectImpl::hash_impl() const
 {
     return loki::hash_combine(loki::hash_container(m_quantified_variables), loki::hash_container(loki::get_sorted_vector(m_conditions)), m_effect);
 }
-void SimpleEffectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+void EffectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     if (!m_quantified_variables.empty())
     {
@@ -91,168 +91,10 @@ void SimpleEffectImpl::str_impl(std::ostream& out, const loki::FormattingOptions
     }
 }
 
-const ParameterList& SimpleEffectImpl::get_quantified_variables() const { return m_quantified_variables; }
+const ParameterList& EffectImpl::get_parameters() const { return m_quantified_variables; }
 
-const LiteralList& SimpleEffectImpl::get_conditions() const { return m_conditions; }
+const LiteralList& EffectImpl::get_conditions() const { return m_conditions; }
 
-const Literal& SimpleEffectImpl::get_effect() const { return m_effect; }
+const Literal& EffectImpl::get_effect() const { return m_effect; }
 
-/* Literal */
-EffectLiteralImpl::EffectLiteralImpl(int identifier, Literal literal) : Base(identifier), m_literal(std::move(literal)) {}
-
-bool EffectLiteralImpl::is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_literal == other.m_literal;
-    }
-    return true;
-}
-
-size_t EffectLiteralImpl::hash_impl() const { return std::hash<Literal>()(m_literal); }
-
-void EffectLiteralImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_literal->str(out, options); }
-
-const Literal& EffectLiteralImpl::get_literal() const { return m_literal; }
-
-EffectAndImpl::EffectAndImpl(int identifier, EffectList effects) : Base(identifier), m_effects(std::move(effects)) {}
-
-bool EffectAndImpl::is_structurally_equivalent_to_impl(const EffectAndImpl& other) const
-{
-    if (this != &other)
-    {
-        return get_sorted_vector(m_effects) == get_sorted_vector(other.m_effects);
-    }
-    return true;
-}
-
-size_t EffectAndImpl::hash_impl() const { return hash_container(get_sorted_vector(m_effects)); }
-
-void EffectAndImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(and ";
-    for (size_t i = 0; i < m_effects.size(); ++i)
-    {
-        if (i != 0)
-            out << " ";
-        std::visit(loki::StringifyVisitor(out, options), *m_effects[i]);
-    }
-    out << ")";
-}
-
-const EffectList& EffectAndImpl::get_effects() const { return m_effects; }
-
-/* EffectNumeric */
-EffectNumericImpl::EffectNumericImpl(int identifier, loki::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression) :
-    Base(identifier),
-    m_assign_operator(assign_operator),
-    m_function(std::move(function)),
-    m_function_expression(std::move(function_expression))
-{
-}
-
-bool EffectNumericImpl::is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_assign_operator == other.m_assign_operator) && (m_function == other.m_function) && (m_function_expression == other.m_function_expression);
-    }
-    return true;
-}
-
-size_t EffectNumericImpl::hash_impl() const { return hash_combine(m_assign_operator, m_function, m_function_expression); }
-
-void EffectNumericImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << to_string(m_assign_operator) << " ";
-    m_function->str(out, options);
-    out << " ";
-    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
-    out << ")";
-}
-
-loki::AssignOperatorEnum EffectNumericImpl::get_assign_operator() const { return m_assign_operator; }
-
-const Function& EffectNumericImpl::get_function() const { return m_function; }
-
-const FunctionExpression& EffectNumericImpl::get_function_expression() const { return m_function_expression; }
-
-/* ConditionalForall */
-EffectConditionalForallImpl::EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect) :
-    Base(identifier),
-    m_parameters(std::move(parameters)),
-    m_effect(std::move(effect))
-{
-}
-
-bool EffectConditionalForallImpl::is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_parameters == other.m_parameters) && (m_effect == other.m_effect);
-    }
-    return true;
-}
-
-size_t EffectConditionalForallImpl::hash_impl() const { return hash_combine(hash_container(m_parameters), m_effect); }
-
-void EffectConditionalForallImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(forall (";
-    for (size_t i = 0; i < m_parameters.size(); ++i)
-    {
-        if (i != 0)
-            out << " ";
-        m_parameters[i]->str(out, options);
-    }
-    out << ") ";
-    std::visit(loki::StringifyVisitor(out, options), *m_effect);
-    out << ")";
-}
-
-const ParameterList& EffectConditionalForallImpl::get_parameters() const { return m_parameters; }
-
-const Effect& EffectConditionalForallImpl::get_effect() const { return m_effect; }
-
-EffectConditionalWhenImpl::EffectConditionalWhenImpl(int identifier, LiteralList condition, Effect effect) :
-    Base(identifier),
-    m_condition(std::move(condition)),
-    m_effect(std::move(effect))
-{
-}
-
-bool EffectConditionalWhenImpl::is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_condition == other.m_condition) && (m_effect == other.m_effect);
-    }
-    return true;
-}
-
-size_t EffectConditionalWhenImpl::hash_impl() const { return hash_combine(loki::hash_container(loki::get_sorted_vector(m_condition)), m_effect); }
-
-void EffectConditionalWhenImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(when ";
-
-    out << "(and ";
-    for (size_t i = 0; i < m_condition.size(); ++i)
-    {
-        if (i != 0)
-        {
-            out << " ";
-        }
-        out << *m_condition[i];
-    }
-    out << ") ";
-
-    std::visit(loki::StringifyVisitor(out, options), *m_effect);
-
-    out << ")";
-}
-
-const LiteralList& EffectConditionalWhenImpl::get_condition() const { return m_condition; }
-
-const Effect& EffectConditionalWhenImpl::get_effect() const { return m_effect; }
 }

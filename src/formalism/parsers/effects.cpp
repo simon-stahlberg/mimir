@@ -27,12 +27,12 @@
 namespace mimir
 {
 
-SimpleEffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories)
+EffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories)
 {
     // 1. Parse conjunctive part
     if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect))
     {
-        auto result = SimpleEffectList {};
+        auto result = EffectList {};
         for (const auto& nested_effect : effect_and->get_effects())
         {
             auto tmp_effect = nested_effect;

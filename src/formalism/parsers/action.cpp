@@ -36,7 +36,7 @@ Action parse(loki::Action action, PDDLFactories& factories)
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
     }
 
-    auto effects = SimpleEffectList {};
+    auto effects = EffectList {};
     if (action->get_effect().has_value())
     {
         effects = parse_simple_effects(action->get_effect().value(), factories);

@@ -7,21 +7,21 @@
 namespace mimir
 {
 
-void to_literals(SimpleEffectList effect, LiteralList& ref_literals)
+void to_literals(EffectList effects, LiteralList& ref_literals)
 {
-    for (const auto& simple_effect : effect)
+    for (const auto& effect : effects)
     {
-        if (!simple_effect->get_quantified_variables().empty())
+        if (!effect->get_parameters().empty())
         {
             throw std::runtime_error("Universal quantified effects not supported");
         }
 
-        if (!simple_effect->get_conditions().empty())
+        if (!effect->get_conditions().empty())
         {
             throw std::runtime_error("Conditional effects not supported");
         }
 
-        ref_literals.push_back(simple_effect->get_effect());
+        ref_literals.push_back(effect->get_effect());
     }
 }
 

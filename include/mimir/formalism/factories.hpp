@@ -60,8 +60,7 @@ using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
 using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
-using EffectFactory = loki::PDDLFactory<EffectImpl>;
-using SimpleEffectFactory = loki::PDDLFactory<SimpleEffectImpl>;
+using SimpleEffectFactory = loki::PDDLFactory<EffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
 using AxiomFactory = loki::PDDLFactory<AxiomImpl>;
 using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
@@ -86,7 +85,6 @@ private:
     FunctionExpressionFactory function_expressions;
     FunctionFactory functions;
     FunctionSkeletonFactory function_skeletons;
-    EffectFactory effects;
     SimpleEffectFactory simple_effects;
     ActionFactory actions;
     AxiomFactory axioms;
@@ -110,7 +108,6 @@ public:
         function_expressions(FunctionExpressionFactory(1000)),
         functions(FunctionFactory(1000)),
         function_skeletons(FunctionSkeletonFactory(1000)),
-        effects(EffectFactory(1000)),
         simple_effects(SimpleEffectFactory(1000)),
         actions(ActionFactory(100)),
         axioms(AxiomFactory(100)),
@@ -254,52 +251,18 @@ public:
         return function_skeletons.get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
     }
 
-    /// @brief Get or create an literal effect for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_literal(Literal literal) { return effects.get_or_create<EffectLiteralImpl>(std::move(literal)); }
-
-    /// @brief Get or create an and effect for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_and(EffectList effects_) { return effects.get_or_create<EffectAndImpl>(std::move(effects_)); }
-
-    /// @brief Get or create an numeric effect for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_numeric(loki::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression)
-    {
-        return effects.get_or_create<EffectNumericImpl>(std::move(assign_operator), std::move(function), std::move(function_expression));
-    }
-
-    /// @brief Get or create a conditional forall effect for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_conditional_forall(ParameterList parameters, Effect effect)
-    {
-        return effects.get_or_create<EffectConditionalForallImpl>(std::move(parameters), std::move(effect));
-    }
-
-    /// @brief Get or create a conditional when effect for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_effect_conditional_when(LiteralList condition, Effect effect)
-    {
-        return effects.get_or_create<EffectConditionalWhenImpl>(std::move(condition), std::move(effect));
-    }
-
     /// @brief Get or create a simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    SimpleEffect get_or_create_simple_effect(ParameterList parameters, LiteralList condition, Literal effect)
+    Effect get_or_create_simple_effect(ParameterList parameters, LiteralList condition, Literal effect)
     {
-        return simple_effects.get_or_create<SimpleEffectImpl>(std::move(parameters), std::move(condition), std::move(effect));
+        return simple_effects.get_or_create<EffectImpl>(std::move(parameters), std::move(condition), std::move(effect));
     }
 
     /// @brief Get or create an action for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, SimpleEffectList effect)
+    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, EffectList effect)
     {
         return actions.get_or_create<ActionImpl>(std::move(name), std::move(parameters), std::move(condition), std::move(effect));
     }

@@ -25,7 +25,7 @@
 
 namespace mimir
 {
-class SimpleEffectImpl : public loki::Base<SimpleEffectImpl>
+class EffectImpl : public loki::Base<EffectImpl>
 {
 private:
     ParameterList m_quantified_variables;
@@ -34,151 +34,24 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    SimpleEffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<SimpleEffectImpl, loki::Hash<SimpleEffectImpl*>, loki::EqualTo<SimpleEffectImpl*>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<SimpleEffectImpl>;
-
-    bool is_structurally_equivalent_to_impl(const SimpleEffectImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-public:
-    const ParameterList& get_quantified_variables() const;
-    const LiteralList& get_conditions() const;
-    const Literal& get_effect() const;
-};
-
-/* Literal */
-class EffectLiteralImpl : public loki::Base<EffectLiteralImpl>
-{
-private:
-    Literal m_literal;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectLiteralImpl(int identifier, Literal literal);
+    EffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<EffectLiteralImpl>;
+    friend class loki::Base<EffectImpl>;
 
-    bool is_structurally_equivalent_to_impl(const EffectLiteralImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-public:
-    const Literal& get_literal() const;
-};
-
-/* And */
-class EffectAndImpl : public loki::Base<EffectAndImpl>
-{
-private:
-    EffectList m_effects;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectAndImpl(int identifier, EffectList effects);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectAndImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectAndImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-public:
-    const EffectList& get_effects() const;
-};
-
-/* EffectNumeric */
-class EffectNumericImpl : public loki::Base<EffectNumericImpl>
-{
-private:
-    loki::AssignOperatorEnum m_assign_operator;
-    Function m_function;
-    FunctionExpression m_function_expression;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectNumericImpl(int identifier, loki::AssignOperatorEnum assign_operator, Function function, FunctionExpression function_expression);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
-
-    // Give access to the private interface implementations.
-    friend class Base<EffectNumericImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectNumericImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-public:
-    loki::AssignOperatorEnum get_assign_operator() const;
-    const Function& get_function() const;
-    const FunctionExpression& get_function_expression() const;
-};
-
-/* ConditionalForall */
-class EffectConditionalForallImpl : public loki::Base<EffectConditionalForallImpl>
-{
-private:
-    ParameterList m_parameters;
-    Effect m_effect;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectConditionalForallImpl(int identifier, ParameterList parameters, Effect effect);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectConditionalForallImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectConditionalForallImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const EffectImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
     const ParameterList& get_parameters() const;
-    const Effect& get_effect() const;
+    const LiteralList& get_conditions() const;
+    const Literal& get_effect() const;
 };
 
-/* ConditionalWhen */
-class EffectConditionalWhenImpl : public loki::Base<EffectConditionalWhenImpl>
-{
-private:
-    LiteralList m_condition;
-    Effect m_effect;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectConditionalWhenImpl(int identifier, LiteralList condition, Effect effect);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectConditionalWhenImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectConditionalWhenImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-public:
-    const LiteralList& get_condition() const;
-    const Effect& get_effect() const;
-};
 }
 
 #endif

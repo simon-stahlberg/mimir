@@ -19,12 +19,6 @@ struct WrappedTerm
     explicit WrappedTerm(const Term& t) : term(t) {}
 };
 
-struct WrappedEffect
-{
-    Effect effect;
-    explicit WrappedEffect(const Effect& e) : effect(e) {}
-};
-
 struct WrappedFunctionExpression
 {
     FunctionExpression function_expression;
@@ -40,17 +34,6 @@ std::vector<WrappedTerm> wrap_terms(const TermList& terms)
         wrapped_terms.push_back(WrappedTerm(term));
     }
     return wrapped_terms;
-}
-
-std::vector<WrappedEffect> wrap_effects(const EffectList& effects)
-{
-    std::vector<WrappedEffect> wrapped_effects;
-    wrapped_effects.reserve(effects.size());
-    for (const auto& effect : effects)
-    {
-        wrapped_effects.push_back(WrappedEffect(effect));
-    }
-    return wrapped_effects;
 }
 
 std::vector<WrappedFunctionExpression> wrap_function_expressions(const FunctionExpressionList& function_expressions)
@@ -129,7 +112,7 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<ActionImpl>::str, py::const_))
         .def("get_identifier", &ActionImpl::get_identifier)
         .def("get_arity", &ActionImpl::get_arity)
-        .def("get_condition", &ActionImpl::get_condition, py::return_value_policy::reference)
+        .def("get_condition", &ActionImpl::get_conditions, py::return_value_policy::reference)
         .def("get_effect", &ActionImpl::get_effect, py::return_value_policy::reference)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
         .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference);
@@ -158,38 +141,12 @@ void init_formalism(py::module_& m_formalism)
         .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference)
         .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference);
 
-    py::class_<EffectLiteralImpl>(m_formalism, "EffectLiteral")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<EffectLiteralImpl>::str, py::const_))
-        .def("get_identifier", &EffectLiteralImpl::get_identifier)
-        .def("get_literal", &EffectLiteralImpl::get_literal, py::return_value_policy::reference);
-
-    py::class_<EffectAndImpl>(m_formalism, "EffectAnd")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<EffectAndImpl>::str, py::const_))
-        .def("get_identifier", &EffectAndImpl::get_identifier)
-        .def("get_effects", [](const EffectAndImpl& effect) { return wrap_effects(effect.get_effects()); });
-
-    py::class_<EffectNumericImpl>(m_formalism, "EffectNumeric")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<EffectNumericImpl>::str, py::const_))
-        .def("get_identifier", &EffectNumericImpl::get_identifier)
-        .def("get_assign_operator", &EffectNumericImpl::get_assign_operator)
-        .def("get_function", &EffectNumericImpl::get_function, py::return_value_policy::reference)
-        .def("get_function_expression", [](const EffectNumericImpl& effect) { return WrappedFunctionExpression(effect.get_function_expression()); });
-
-    py::class_<EffectConditionalForallImpl>(m_formalism, "EffectConditionalForall")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalForallImpl>::str, py::const_))
-        .def("get_identifier", &EffectConditionalForallImpl::get_identifier)
-        .def("get_parameters", &EffectConditionalForallImpl::get_parameters)
-        .def("get_effect", [](const EffectConditionalForallImpl& effect) { return WrappedEffect(effect.get_effect()); });
-
-    py::class_<EffectConditionalWhenImpl>(m_formalism, "EffectConditionalWhen")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalWhenImpl>::str, py::const_))
-        .def("get_identifier", &EffectConditionalWhenImpl::get_identifier)
-        .def("get_condition", &EffectConditionalWhenImpl::get_condition)
-        .def("get_effect", [](const EffectConditionalWhenImpl& effect) { return WrappedEffect(effect.get_effect()); });
-    ;
-
     py::class_<EffectImpl>(m_formalism, "Effect")  //
-        .def("get", [](const WrappedEffect& wrappedEffect) -> py::object { return std::visit(CastVisitor(), *wrappedEffect.effect); });
+        .def("__str__", py::overload_cast<>(&loki::Base<EffectImpl>::str, py::const_))
+        .def("get_identifier", &EffectImpl::get_identifier)
+        .def("get_parameters", &EffectImpl::get_parameters, py::return_value_policy::reference)
+        .def("get_conditions", &EffectImpl::get_conditions, py::return_value_policy::reference)
+        .def("get_effect", &EffectImpl::get_effect, py::return_value_policy::reference);
 
     py::class_<FunctionExpressionNumberImpl>(m_formalism, "FunctionExpressionNumber")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionNumberImpl>::str, py::const_))

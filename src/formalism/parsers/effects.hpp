@@ -26,7 +26,7 @@
 namespace mimir
 {
 /// @brief Parse effect into conjunctions of simple effects
-extern SimpleEffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories);
+extern EffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories);
 }
 
 #endif

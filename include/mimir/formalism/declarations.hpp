@@ -82,18 +82,9 @@ class NumericFluentImpl;
 using NumericFluent = const NumericFluentImpl*;
 using NumericFluentList = std::vector<NumericFluent>;
 
-class EffectLiteralImpl;
-class EffectAndImpl;
-class EffectNumericImpl;
-class EffectConditionalForallImpl;
-class EffectConditionalWhenImpl;
-using EffectImpl = std::variant<EffectLiteralImpl, EffectAndImpl, EffectNumericImpl, EffectConditionalForallImpl, EffectConditionalWhenImpl>;
+class EffectImpl;
 using Effect = const EffectImpl*;
 using EffectList = std::vector<Effect>;
-
-class SimpleEffectImpl;
-using SimpleEffect = const SimpleEffectImpl*;
-using SimpleEffectList = std::vector<SimpleEffect>;
 
 class FunctionExpressionNumberImpl;
 class FunctionExpressionBinaryOperatorImpl;
