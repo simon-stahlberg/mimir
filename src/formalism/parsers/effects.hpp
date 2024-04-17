@@ -25,23 +25,8 @@
 
 namespace mimir
 {
-class EffectVisitor
-{
-private:
-    PDDLFactories& factories;
-
-public:
-    EffectVisitor(PDDLFactories& factories_);
-
-    Effect operator()(const loki::EffectLiteralImpl& node);
-    Effect operator()(const loki::EffectAndImpl& node);
-    Effect operator()(const loki::EffectNumericImpl& node);
-    Effect operator()(const loki::EffectConditionalForallImpl& node);
-    Effect operator()(const loki::EffectConditionalWhenImpl& node);
-};
-
-extern Effect parse(loki::Effect effect, PDDLFactories& factories);
-extern EffectList parse(loki::EffectList effect_list, PDDLFactories& factories);
+/// @brief Parse effect into conjunctions of simple effects
+extern SimpleEffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories);
 }
 
 #endif

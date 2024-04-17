@@ -41,14 +41,14 @@ private:
 public:
     PDDLParser(const fs::path& domain_file_path, const fs::path& problem_file_path);
 
-    /// @brief Get the factories to create additional PDDL objects.
-    PDDLFactories& get_factories();
-
     /// @brief Get the original domain.
     const loki::Domain get_original_domain() const;
 
     /// @brief Get the original problem.
     const loki::Problem get_original_problem() const;
+
+    /// @brief Get the factories to create additional PDDL objects.
+    PDDLFactories& get_factories();
 
     /// @brief Get the translated domain.
     const Domain& get_domain() const;

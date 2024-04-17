@@ -91,6 +91,10 @@ using EffectImpl = std::variant<EffectLiteralImpl, EffectAndImpl, EffectNumericI
 using Effect = const EffectImpl*;
 using EffectList = std::vector<Effect>;
 
+class SimpleEffectImpl;
+using SimpleEffect = const SimpleEffectImpl*;
+using SimpleEffectList = std::vector<SimpleEffect>;
+
 class FunctionExpressionNumberImpl;
 class FunctionExpressionBinaryOperatorImpl;
 class FunctionExpressionMultiOperatorImpl;

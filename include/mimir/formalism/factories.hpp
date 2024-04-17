@@ -61,6 +61,7 @@ using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
 using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
 using EffectFactory = loki::PDDLFactory<EffectImpl>;
+using SimpleEffectFactory = loki::PDDLFactory<SimpleEffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
 using AxiomFactory = loki::PDDLFactory<AxiomImpl>;
 using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
@@ -86,6 +87,7 @@ private:
     FunctionFactory functions;
     FunctionSkeletonFactory function_skeletons;
     EffectFactory effects;
+    SimpleEffectFactory simple_effects;
     ActionFactory actions;
     AxiomFactory axioms;
     OptimizationMetricFactory optimization_metrics;
@@ -109,6 +111,7 @@ public:
         functions(FunctionFactory(1000)),
         function_skeletons(FunctionSkeletonFactory(1000)),
         effects(EffectFactory(1000)),
+        simple_effects(SimpleEffectFactory(1000)),
         actions(ActionFactory(100)),
         axioms(AxiomFactory(100)),
         optimization_metrics(OptimizationMetricFactory(10)),
@@ -285,10 +288,18 @@ public:
         return effects.get_or_create<EffectConditionalWhenImpl>(std::move(condition), std::move(effect));
     }
 
+    /// @brief Get or create a simple effect for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    SimpleEffect get_or_create_simple_effect(ParameterList parameters, LiteralList condition, Literal effect)
+    {
+        return simple_effects.get_or_create<SimpleEffectImpl>(std::move(parameters), std::move(condition), std::move(effect));
+    }
+
     /// @brief Get or create an action for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, std::optional<Effect> effect)
+    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, SimpleEffectList effect)
     {
         return actions.get_or_create<ActionImpl>(std::move(name), std::move(parameters), std::move(condition), std::move(effect));
     }

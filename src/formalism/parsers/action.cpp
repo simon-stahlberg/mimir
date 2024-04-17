@@ -36,11 +36,13 @@ Action parse(loki::Action action, PDDLFactories& factories)
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
     }
 
-    return factories.get_or_create_action(
-        action->get_name(),
-        parameters,
-        literals,
-        (action->get_effect().has_value() ? std::optional<Effect>(parse(action->get_effect().value(), factories)) : std::nullopt));
+    auto effects = SimpleEffectList {};
+    if (action->get_effect().has_value())
+    {
+        effects = parse_simple_effects(action->get_effect().value(), factories);
+    }
+
+    return factories.get_or_create_action(action->get_name(), parameters, literals, effects);
 }
 
 ActionList parse(loki::ActionList action_list, PDDLFactories& factories)

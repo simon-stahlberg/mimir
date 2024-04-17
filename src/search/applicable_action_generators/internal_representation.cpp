@@ -304,15 +304,12 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
         }
     }
 
-    if (effect.has_value())
-    {
-        LiteralList effect_literals;
-        to_literals(effect.value(), effect_literals);
+    LiteralList effect_literals;
+    to_literals(effect, effect_literals);
 
-        for (const auto& literal : effect_literals)
-        {
-            unconditional_effect.emplace_back(literal, to_index_, to_parameter_);
-        }
+    for (const auto& literal : effect_literals)
+    {
+        unconditional_effect.emplace_back(literal, to_index_, to_parameter_);
     }
 }
 

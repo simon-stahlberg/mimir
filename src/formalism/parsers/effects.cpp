@@ -26,45 +26,78 @@
 
 namespace mimir
 {
-EffectVisitor::EffectVisitor(PDDLFactories& factories_) : factories(factories_) {}
 
-Effect EffectVisitor::operator()(const loki::EffectLiteralImpl& node) { return factories.get_or_create_effect_literal(parse(node.get_literal(), factories)); }
-
-Effect EffectVisitor::operator()(const loki::EffectAndImpl& node) { return factories.get_or_create_effect_and(parse(node.get_effects(), factories)); }
-
-Effect EffectVisitor::operator()(const loki::EffectNumericImpl& node)
+SimpleEffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories)
 {
-    return factories.get_or_create_effect_numeric(node.get_assign_operator(),
-                                                  parse(node.get_function(), factories),
-                                                  parse(node.get_function_expression(), factories));
-}
-
-Effect EffectVisitor::operator()(const loki::EffectConditionalForallImpl& node)
-{
-    return factories.get_or_create_effect_conditional_forall(parse(node.get_parameters(), factories), parse(node.get_effect(), factories));
-}
-
-Effect EffectVisitor::operator()(const loki::EffectConditionalWhenImpl& node)
-{
-    const auto [parameters, literals] = parse(node.get_condition(), factories);
-
-    if (!parameters.empty())
+    // 1. Parse conjunctive part
+    if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect))
     {
-        throw std::logic_error("Expected parameters to be empty.");
+        auto result = SimpleEffectList {};
+        for (const auto& nested_effect : effect_and->get_effects())
+        {
+            auto tmp_effect = nested_effect;
+
+            // 2. Parse universal part
+            auto parameters = ParameterList {};
+            if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
+            {
+                parameters = parse(tmp_effect_forall->get_parameters(), factories);
+
+                tmp_effect = tmp_effect_forall->get_effect();
+            }
+
+            // 3. Parse conditional part
+            auto conditions = LiteralList {};
+            if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+            {
+                if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(tmp_effect_when->get_condition()))
+                {
+                    for (const auto& part : condition_and->get_conditions())
+                    {
+                        if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
+                        {
+                            conditions.push_back(parse(condition_literal->get_literal(), factories));
+                        }
+                        else
+                        {
+                            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
+                            throw std::logic_error("Expected literal in conjunctive condition.");
+                        }
+                    }
+                }
+                else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(tmp_effect_when->get_condition()))
+                {
+                    conditions = LiteralList { parse(condition_literal->get_literal(), factories) };
+                }
+
+                tmp_effect = tmp_effect_when->get_effect();
+            }
+
+            // 4. Parse simple effect
+            if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
+            {
+                result.push_back(factories.get_or_create_simple_effect(parameters, conditions, parse(effect_literal->get_literal(), factories)));
+            }
+            else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
+            {
+                // TODO: implement how we should handle numeric effect
+            }
+            else
+            {
+                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect) << std::endl;
+
+                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
+
+                throw std::logic_error("Expected simple effect.");
+            }
+        }
+
+        return result;
     }
 
-    return factories.get_or_create_effect_conditional_when(literals, parse(node.get_effect(), factories));
-}
+    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect) << std::endl;
 
-Effect parse(loki::Effect effect, PDDLFactories& factories) { return std::visit(EffectVisitor(factories), *effect); }
-
-EffectList parse(loki::EffectList effect_list, PDDLFactories& factories)
-{
-    auto result_effect_list = EffectList();
-    for (const auto& effect : effect_list)
-    {
-        result_effect_list.push_back(parse(effect, factories));
-    }
-    return result_effect_list;
+    throw std::logic_error("Expected conjunctive effect.");
 }
 }

@@ -27,7 +27,7 @@
 
 namespace mimir
 {
-ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, std::optional<Effect> effect) :
+ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, SimpleEffectList effect) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
@@ -39,12 +39,16 @@ ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameter
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
 {
     return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
-           && (loki::get_sorted_vector(m_condition) == loki::get_sorted_vector(other.m_condition)) && (*m_effect == *other.m_effect);
+           && (loki::get_sorted_vector(m_condition) == loki::get_sorted_vector(other.m_condition))
+           && (loki::get_sorted_vector(m_effect) == loki::get_sorted_vector(other.m_effect));
 }
 
 size_t ActionImpl::hash_impl() const
 {
-    return loki::hash_combine(m_name, loki::hash_container(m_parameters), loki::hash_container(loki::get_sorted_vector(m_condition)), *m_effect);
+    return loki::hash_combine(m_name,
+                              loki::hash_container(m_parameters),
+                              loki::hash_container(loki::get_sorted_vector(m_condition)),
+                              loki::hash_container(loki::get_sorted_vector(m_effect)));
 }
 
 void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -79,10 +83,23 @@ void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
     }
 
     out << std::string(nested_options.indent, ' ') << ":effects ";
-    if (m_effect.has_value())
-        std::visit(loki::StringifyVisitor(out, nested_options), *m_effect.value());
+    if (m_effect.empty())
+    {
+        out << "()\n";
+    }
     else
-        out << "()";
+    {
+        out << "(and ";
+        for (size_t i = 0; i < m_effect.size(); ++i)
+        {
+            if (i != 0)
+            {
+                out << " ";
+            }
+            out << *m_effect[i];
+        }
+        out << ")";
+    }
 
     out << ")\n";
 }
@@ -93,51 +110,19 @@ const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 
 const LiteralList& ActionImpl::get_condition() const { return m_condition; }
 
-const std::optional<Effect>& ActionImpl::get_effect() const { return m_effect; }
+const SimpleEffectList& ActionImpl::get_effect() const { return m_effect; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
-
-static bool effect_contains(Effect effect, Predicate predicate)
-{
-    if (const auto* effect_literal = std::get_if<EffectLiteralImpl>(effect))
-    {
-        const auto& literal_predicate = effect_literal->get_literal()->get_atom()->get_predicate();
-        return predicate == literal_predicate;
-    }
-    else if (const auto* effect_and = std::get_if<EffectAndImpl>(effect))
-    {
-        for (const auto& inner_effect : effect_and->get_effects())
-        {
-            if (effect_contains(inner_effect, predicate))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    else if (const auto* effect_numeric = std::get_if<EffectNumericImpl>(effect))
-    {
-        throw std::runtime_error("not implemented");
-    }
-    else if (const auto* effect_forall = std::get_if<EffectConditionalForallImpl>(effect))
-    {
-        return effect_contains(effect_forall->get_effect(), predicate);
-    }
-    else if (const auto* effect_when = std::get_if<EffectConditionalWhenImpl>(effect))
-    {
-        return effect_contains(effect_when->get_effect(), predicate);
-    }
-
-    throw std::runtime_error("internal error");
-}
 
 /// @brief Returns true if the predicate is present in the effect, otherwise false.
 bool ActionImpl::affects(Predicate predicate) const
 {
-    if (m_effect.has_value())
+    for (const auto& simple_effect : m_effect)
     {
-        return effect_contains(m_effect.value(), predicate);
+        if (simple_effect->get_effect()->get_atom()->get_predicate() == predicate)
+        {
+            return true;
+        }
     }
 
     return false;

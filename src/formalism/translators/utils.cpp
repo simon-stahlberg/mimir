@@ -45,11 +45,16 @@ loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFacto
 
 loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories)
 {
+    // std::cout << "flatten: " << effect << std::endl;
     auto parts = loki::EffectList {};
     for (const auto& part : effect.get_effects())
     {
+        // std::cout << "nested effect: " << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
         if (const auto and_effect = std::get_if<loki::EffectAndImpl>(part))
         {
+            // std::cout << "found nested and in flatten" << std::endl;
+
             const auto& nested_parts = std::get<loki::EffectAndImpl>(*flatten(*and_effect, pddl_factories));
 
             parts.insert(parts.end(), nested_parts.get_effects().begin(), nested_parts.get_effects().end());
