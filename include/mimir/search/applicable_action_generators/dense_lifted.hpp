@@ -7,7 +7,6 @@
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/internal_representation.hpp"
-#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/states.hpp"
 
 #include <boost/dynamic_bitset.hpp>

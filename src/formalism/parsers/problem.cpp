@@ -18,7 +18,7 @@
 #include "problem.hpp"
 
 #include "axiom.hpp"
-#include "conditions.hpp"
+#include "condition.hpp"
 #include "domain.hpp"
 #include "ground_literal.hpp"
 #include "metric.hpp"

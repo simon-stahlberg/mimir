@@ -17,7 +17,7 @@
 
 #include "effect.hpp"
 
-#include "conditions.hpp"
+#include "condition.hpp"
 #include "function.hpp"
 #include "function_expressions.hpp"
 #include "literal.hpp"

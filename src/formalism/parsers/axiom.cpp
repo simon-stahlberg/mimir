@@ -17,7 +17,7 @@
 
 #include "axiom.hpp"
 
-#include "conditions.hpp"
+#include "condition.hpp"
 #include "literal.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/translators/utils.hpp"

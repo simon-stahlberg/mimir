@@ -2,7 +2,6 @@
 #define MIMIR_SEARCH_STATES_INTERFACE_HPP_
 
 #include "mimir/search/builder.hpp"
-#include "mimir/search/planning_mode.hpp"
 #include "mimir/search/view_const.hpp"
 
 #include <cstdint>

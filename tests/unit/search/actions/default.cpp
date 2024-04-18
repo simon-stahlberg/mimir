@@ -5,11 +5,6 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchActionsDefaultTest)
-{
-    // Build a state.
-    // auto builder = Builder<ActionDispatcher<GroundedTag, DenseStateTag>>();
-    // builder.clear();
-}
+TEST(MimirTests, SearchActionsDefaultTest) {}
 
 }
