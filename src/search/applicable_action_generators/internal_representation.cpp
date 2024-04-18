@@ -288,7 +288,7 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
 
     const auto& static_predicates = domain->get_static_predicates();
     const auto& precondition_literals = action_schema->get_conditions();
-    const auto& effect = action_schema->get_effect();
+    const auto& effect = action_schema->get_effects();
 
     for (const auto& literal : precondition_literals)
     {

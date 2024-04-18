@@ -18,7 +18,7 @@
 #include "action.hpp"
 
 #include "conditions.hpp"
-#include "effects.hpp"
+#include "effect.hpp"
 #include "literal.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "parameter.hpp"

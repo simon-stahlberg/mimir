@@ -59,6 +59,6 @@ const ParameterList& AxiomImpl::get_parameters() const { return m_parameters; }
 
 const Literal& AxiomImpl::get_literal() const { return m_literal; }
 
-const LiteralList& AxiomImpl::get_condition() const { return m_condition; }
+const LiteralList& AxiomImpl::get_conditions() const { return m_condition; }
 
 }

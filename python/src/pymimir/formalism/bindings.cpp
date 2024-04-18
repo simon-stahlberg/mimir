@@ -111,11 +111,11 @@ void init_formalism(py::module_& m_formalism)
     py::class_<ActionImpl>(m_formalism, "Action")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ActionImpl>::str, py::const_))
         .def("get_identifier", &ActionImpl::get_identifier)
-        .def("get_arity", &ActionImpl::get_arity)
-        .def("get_condition", &ActionImpl::get_conditions, py::return_value_policy::reference)
-        .def("get_effect", &ActionImpl::get_effect, py::return_value_policy::reference)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference);
+        .def("get_arity", &ActionImpl::get_arity)
+        .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
+        .def("get_conditions", &ActionImpl::get_conditions, py::return_value_policy::reference)
+        .def("get_effects", &ActionImpl::get_effects, py::return_value_policy::reference);
 
     py::class_<AtomImpl>(m_formalism, "Atom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl>::str, py::const_))
@@ -127,7 +127,7 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
         .def("get_identifier", &AxiomImpl::get_identifier)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
-        .def("get_condition", &AxiomImpl::get_condition, py::return_value_policy::reference);
+        .def("get_conditions", &AxiomImpl::get_conditions, py::return_value_policy::reference);
 
     py::class_<DomainImpl>(m_formalism, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))

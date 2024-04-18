@@ -48,7 +48,7 @@ private:
 public:
     const ParameterList& get_parameters() const;
     const Literal& get_literal() const;
-    const LiteralList& get_condition() const;
+    const LiteralList& get_conditions() const;
 };
 
 }

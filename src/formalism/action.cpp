@@ -110,7 +110,7 @@ const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 
 const LiteralList& ActionImpl::get_conditions() const { return m_condition; }
 
-const EffectList& ActionImpl::get_effect() const { return m_effect; }
+const EffectList& ActionImpl::get_effects() const { return m_effect; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
 

@@ -26,6 +26,8 @@
 namespace mimir
 {
 /// @brief Parse effect into conjunctions of simple effects
+///
+///        Translated effects have the form 1. conjunctive > 2. universal > 3. conditional > 4. simple.
 extern EffectList parse_simple_effects(loki::Effect effect, PDDLFactories& factories);
 }
 

@@ -54,7 +54,7 @@ public:
     const std::string& get_name() const;
     const ParameterList& get_parameters() const;
     const LiteralList& get_conditions() const;
-    const EffectList& get_effect() const;
+    const EffectList& get_effects() const;
     size_t get_arity() const;
 
     bool affects(Predicate predicate) const;
