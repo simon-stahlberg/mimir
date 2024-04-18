@@ -29,7 +29,7 @@ namespace mimir
 class PDDLParser
 {
 private:
-    // Parse the original domain and problem
+    // Parsers that contain the original domain and problem
     loki::DomainParser m_loki_domain_parser;
     loki::ProblemParser m_loki_problem_parser;
 
