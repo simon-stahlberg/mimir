@@ -42,22 +42,11 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    /// @brief Collect information.
-    template<typename T>
-    void prepare(const std::vector<const T*>& vec)
+    /// @brief Prepare all elements in a container.
+    template<typename Container>
+    void prepare(const Container& input)
     {
-        for (const auto ptr : vec)
-        {
-            self().prepare(*ptr);
-        }
-    }
-    template<typename T, size_t N>
-    void prepare(const boost::container::small_vector<const T*, N>& vec)
-    {
-        for (const auto ptr : vec)
-        {
-            self().prepare(*ptr);
-        }
+        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare(*arg); });
     }
     void prepare(const loki::RequirementsImpl& requirements) { self().prepare_base(requirements); }
     void prepare(const loki::TypeImpl& type) { self().prepare_base(type); }
@@ -101,28 +90,14 @@ public:
     void prepare(const loki::OptimizationMetricImpl& metric) { self().prepare_base(metric); }
     void prepare(const loki::ProblemImpl& problem) { self().prepare_base(problem); }
 
-    /// @brief Apply problem translation.
-    template<typename T>
-    auto translate(const std::vector<const T*>& vec)
+    /// @brief Translate a container of elements into a container of elements.
+    template<typename Container>
+    auto translate(const Container& input)
     {
-        std::vector<const T*> result_vec;
-        result_vec.reserve(vec.size());
-        for (const auto ptr : vec)
-        {
-            result_vec.push_back(self().translate(*ptr));
-        }
-        return result_vec;
-    }
-    template<typename T, size_t N>
-    auto translate(const boost::container::small_vector<const T*, N>& vec)
-    {
-        boost::container::small_vector<const T*, N> result_vec;
-        result_vec.reserve(vec.size());
-        for (const auto ptr : vec)
-        {
-            result_vec.push_back(self().translate(*ptr));
-        }
-        return result_vec;
+        Container output;
+        output.reserve(input.size());
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
+        return output;
     }
     loki::Requirements translate(const loki::RequirementsImpl& requirements) { return self().translate_base(requirements); }
     loki::Type translate(const loki::TypeImpl& type) { return self().translate_base(type); }

@@ -95,6 +95,22 @@ extern std::vector<const T*> uniquify_elements(const std::vector<const T*>& vec)
     std::unordered_set<const T*> set(vec.begin(), vec.end());
     return std::vector<const T*>(set.begin(), set.end());
 }
+
+/**
+ * Transform
+ */
+// template<typename Container, typename Function>
+// auto transform(const Container& vec, const Function& function)
+//{
+//     using InputType = typename Container::value_type;
+//     using ReturnType = decltype(function(std::declval<InputType>()));
+//     using ResultContainer = typename std::template rebind<ReturnType>::other;
+//
+//     ResultContainer result;
+//     std::transform(std::begin(input), std::end(input), std::back_inserter(result), std::forward<Function>(function));
+//     return result;
+// }
+
 }
 
 #endif

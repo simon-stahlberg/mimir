@@ -28,6 +28,7 @@
 #include "mimir/formalism/translators/split_disjunctive_conditions.hpp"
 #include "mimir/formalism/translators/to_disjunctive_normal_form.hpp"
 #include "mimir/formalism/translators/to_effect_normal_form.hpp"
+#include "mimir/formalism/translators/to_mimir_structures.hpp"
 #include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
 #endif
