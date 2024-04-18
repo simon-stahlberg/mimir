@@ -1,5 +1,6 @@
 #include "mimir/formalism/parser.hpp"
 
+#include "mimir/formalism/transformers.hpp"
 #include "mimir/formalism/translators.hpp"
 
 #include <loki/loki.hpp>
@@ -54,6 +55,11 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto to_mimir_structures_translator = ToMimirStructures(m_factories);
     m_problem = to_mimir_structures_translator.translate(*problem);
     m_domain = m_problem->get_domain();
+
+    // TODO (Dominik): we can test some transformers here for now.
+    // auto delete_relax_transformer = DeleteRelaxTransformer(m_factories);
+    // m_problem = delete_relax_transformer.run(*m_problem);
+    // m_domain = m_problem->get_domain();
 }
 
 PDDLFactories& PDDLParser::get_factories() { return m_factories; }
