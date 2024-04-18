@@ -27,7 +27,8 @@ namespace mimir
 {
 
 /**
- * Compile away universal quantifiers by introducing axioms.
+ * Compile away universal quantifiers by introducing axioms using the equivalence
+ * forall(vars, phi) == not exists(vars, not phi)
  */
 class RemoveUniversalQuantifiersTranslator : public BaseTranslator<RemoveUniversalQuantifiersTranslator>
 {

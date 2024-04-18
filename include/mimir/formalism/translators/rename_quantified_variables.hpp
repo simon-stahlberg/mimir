@@ -24,18 +24,10 @@ namespace mimir
 {
 
 /**
- * Let V be the set of all variables and free(V) all free variables.
- * Let v in V be a quantified variables that occurs free in other parts,
- * e.g., forall(v, phi) and psi with v in free(psi).
- * Then do the following renaming:
- *       forall(v_i, phi) and psi with v_j in free(psi).
- *
- * First, rename variables v1,...,vk to v1_1,...,vk_k to make them all unique
- * Second, for quantified variable vi_i rename it to vi_i_j where j is
- * the amount of times that the variable is being quantified over.
- *
- * Implementation detail, when opening a new scope, we need to replace variable renamings
- *
+ * Rename all variables by adding suffixes _<i>_<j>
+ * where i is the variable identifier and j is the number
+ * of occurences of the variable in a quantification during
+ * depth-first traversal.
  */
 class RenameQuantifiedVariablesTranslator : public BaseTranslator<RenameQuantifiedVariablesTranslator>
 {

@@ -23,6 +23,9 @@
 namespace mimir
 {
 
+/**
+ * Introduce an axiom for complicated goals, i.e., goals that are not conjunctions of literals.
+ */
 class SimplifyGoalTranslator : public BaseTranslator<SimplifyGoalTranslator>
 {
 private:

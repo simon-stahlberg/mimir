@@ -24,6 +24,8 @@ namespace mimir
 {
 
 /**
+ * Move existential quantifiers to the root in bottom up manner using the following rules:
+ *
  * 1. and(phi, exists(vars, psi))       =>  exists(vars, and(phi, psi))
  * 2. exists(vars, exists(vars', phi))  =>  exists(vars + vars', phi)
  */

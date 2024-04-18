@@ -23,6 +23,13 @@
 namespace mimir
 {
 
+/**
+ * Split actions and axioms at the disjunction at the root of a condition
+ * and conditional effects using the following rules:
+ *
+ * 1. (phi or psi) > e  => (phi > e) and (psi > e)
+ * 2. <(phi or psi), e>  => <phi, e> and <psi, e>
+ */
 class SplitDisjunctiveConditionsTranslator : public BaseTranslator<SplitDisjunctiveConditionsTranslator>
 {
 private:
@@ -34,11 +41,15 @@ private:
     using BaseTranslator::translate_impl;
 
     /**
-     * (phi or psi) > e  => (phi > e) and (psi > e)
+     * Split conditional effects
+     *
+     * 1. (phi or psi) > e  => (phi > e) and (psi > e)
      */
     loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
     /**
-     * Split Actions and actions at conditions
+     * Split actions and actions at conditions
+     *
+     * 2. <(phi or psi), e>  => <phi, e> and <psi, e>
      */
     loki::Domain translate_impl(const loki::DomainImpl& domain);
     loki::Problem translate_impl(const loki::ProblemImpl& problem);
