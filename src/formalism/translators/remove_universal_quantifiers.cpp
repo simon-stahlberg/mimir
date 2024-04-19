@@ -63,6 +63,11 @@ void RemoveUniversalQuantifiersTranslator::ScopeStack::close_scope()
 
 const RemoveUniversalQuantifiersTranslator::Scope& RemoveUniversalQuantifiersTranslator::ScopeStack::get() const { return *m_stack.back(); }
 
+void RemoveUniversalQuantifiersTranslator::prepare_impl(const loki::PredicateImpl& predicate)
+{
+    m_simple_and_derived_predicate_names.insert(predicate.get_name());
+}
+
 loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
     m_scopes.open_scope(condition.get_parameters());
@@ -103,7 +108,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     }
     parameters.shrink_to_fit();
 
-    const auto axiom_name = "@axiom["s + condition.str() + "]";
+    const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_id, this->m_simple_and_derived_predicate_names);
     const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, parameters);
     m_derived_predicates.insert(predicate);
     const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
@@ -203,12 +208,14 @@ loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::P
 
 loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem)
 {
+    this->prepare(problem);
     return this->translate(*this->m_to_nnf_translator.run(problem));
 }
 
 RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseTranslator(pddl_factories),
-    m_to_nnf_translator(to_nnf_translator)
+    m_to_nnf_translator(to_nnf_translator),
+    m_next_axiom_id(0)
 {
 }
 }

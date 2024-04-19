@@ -39,6 +39,8 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     return this->m_pddl_factories.get_or_create_action(action.get_name(), parameters, conditions, effects);
 }
 
+Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
+
 DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories) : BaseTransformer<DeleteRelaxTransformer>(pddl_factories) {}
 
 }

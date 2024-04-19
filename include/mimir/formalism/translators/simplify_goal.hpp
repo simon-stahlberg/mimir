@@ -36,13 +36,18 @@ private:
     using BaseTranslator::prepare_impl;
     using BaseTranslator::translate_impl;
 
+    // Track simple and derived predicate names to give unique names
+    std::unordered_set<std::string> m_simple_and_derived_predicate_names;
+    uint64_t m_next_axiom_id;
+
     // Translation might introduce additional derived predicates and axioms.
     std::unordered_set<loki::Predicate> m_derived_predicates;
     std::unordered_set<loki::Axiom> m_axioms;
 
-    loki::Problem translate_impl(const loki::ProblemImpl& problem);
+    /// @brief Collect all existing simple and derived predicate names.
+    void prepare_impl(const loki::PredicateImpl& predicate);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem translate_impl(const loki::ProblemImpl& problem);
 
 public:
     explicit SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories);

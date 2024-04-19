@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg and Simon Stahlberg
  *
@@ -15,24 +16,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSLATORS_DELETE_RELAXATION_HPP_
-#define MIMIR_FORMALISM_TRANSLATORS_DELETE_RELAXATION_HPP_
+#ifndef MIMIR_FORMALISM_COMMON_RANDOM_HPP_
+#define MIMIR_FORMALISM_COMMON_RANDOM_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include <random>
 
-namespace mimir
+class Random
 {
+public:
+    static std::mt19937_64& get_rng()
+    {
+        static std::mt19937_64 rng(0);
+        return rng;
+    }
 
-class DeleteRelaxedTranslator : public BaseTranslator<DeleteRelaxedTranslator>
-{
-private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<DeleteRelaxedTranslator>;
-
-    // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    // Utility function to generate a random uint64_t
+    static uint64_t random_uint64()
+    {
+        std::uniform_int_distribution<uint64_t> dist(0, UINT64_MAX);
+        return dist(get_rng());
+    }
 };
-}
 
 #endif

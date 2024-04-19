@@ -70,11 +70,18 @@ private:
 
     ScopeStack m_scopes;
 
+    // Track simple and derived predicate names to give unique names
+    std::unordered_set<std::string> m_simple_and_derived_predicate_names;
+    uint64_t m_next_axiom_id;
+
     // Translation might introduce additional derived predicates and axioms.
     std::unordered_set<loki::Predicate> m_derived_predicates;
     std::unordered_set<loki::Axiom> m_axioms;
     // Cache translations
     std::unordered_map<const loki::ConditionForallImpl*, loki::Condition> m_condition_to_substituted_condition;
+
+    /// @brief Collect all existing simple and derived predicate names.
+    void prepare_impl(const loki::PredicateImpl& predicate);
 
     /// @brief Translate the condition while keeping track of scopes
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);

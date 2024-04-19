@@ -38,6 +38,8 @@ private:
 
     Action transform_impl(const ActionImpl& action);
 
+    Problem run_impl(const ProblemImpl& problem);
+
 public:
     explicit DeleteRelaxTransformer(PDDLFactories& pddl_factories);
 };

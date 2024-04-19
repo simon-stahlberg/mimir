@@ -17,6 +17,13 @@
 
 #include "mimir/formalism/translators/utils.hpp"
 
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <unordered_set>
+
+using namespace std::string_literals;
+
 namespace mimir
 {
 
@@ -198,6 +205,19 @@ void collect_free_variables_recursively(const loki::ConditionImpl& condition,
     }
 }
 
+std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set<std::string>& simple_and_derived_predicate_names)
+{
+    auto axiom_name = std::string {};
+
+    do
+    {
+        axiom_name = "axiom_"s + std::to_string(next_axiom_id++);
+    } while (simple_and_derived_predicate_names.count(axiom_name));
+    simple_and_derived_predicate_names.insert(axiom_name);
+
+    return axiom_name;
+}
+
 loki::VariableList collect_free_variables(const loki::ConditionImpl& condition)
 {
     auto quantified_variables = std::unordered_set<loki::Variable> {};
@@ -206,5 +226,16 @@ loki::VariableList collect_free_variables(const loki::ConditionImpl& condition)
     collect_free_variables_recursively(condition, quantified_variables, free_variables);
 
     return loki::VariableList(free_variables.begin(), free_variables.end());
+}
+
+std::string to_hex_string(uint64_t number)
+{
+    std::ostringstream stream;
+    // Set stream to output hexadecimal
+    stream << std::hex << std::setfill('0') << std::setw(16);
+    // Convert the number to a hexadecimal string with leading zeros
+    stream << number;
+    // Return the resulting string
+    return stream.str();
 }
 }

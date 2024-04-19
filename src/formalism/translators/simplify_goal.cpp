@@ -27,7 +27,9 @@ namespace mimir
 static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_condition,
                                                loki::PDDLFactories& pddl_factories,
                                                std::unordered_set<loki::Predicate>& derived_predicates,
-                                               std::unordered_set<loki::Axiom>& axioms)
+                                               std::unordered_set<loki::Axiom>& axioms,
+                                               uint64_t& next_axiom_id,
+                                               std::unordered_set<std::string>& simple_and_derived_predicates)
 {
     if (std::get_if<loki::ConditionLiteralImpl>(&goal_condition))
     {
@@ -39,12 +41,12 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
         parts.reserve(condition_and->get_conditions().size());
         for (const auto& part : condition_and->get_conditions())
         {
-            parts.push_back(simplify_goal_condition(*part, pddl_factories, derived_predicates, axioms));
+            parts.push_back(simplify_goal_condition(*part, pddl_factories, derived_predicates, axioms, next_axiom_id, simple_and_derived_predicates));
         }
         return pddl_factories.get_or_create_condition_and(parts);
     }
 
-    const auto axiom_name = "@axiom["s + std::visit([&](auto&& arg) { return arg.str(); }, goal_condition) + "]";
+    const auto axiom_name = create_unique_axiom_name(next_axiom_id, simple_and_derived_predicates);
     const auto predicate = pddl_factories.get_or_create_predicate(axiom_name, loki::ParameterList {});
     derived_predicates.insert(predicate);
     const auto atom = pddl_factories.get_or_create_atom(predicate, loki::TermList {});
@@ -56,6 +58,8 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
     return substituted_condition;
 }
 
+void SimplifyGoalTranslator::prepare_impl(const loki::PredicateImpl& predicate) { m_simple_and_derived_predicate_names.insert(predicate.get_name()); }
+
 loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& problem)
 {
     // Translate existing derived predicates and axioms.
@@ -64,8 +68,12 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
 
     // Translate the goal condition
     auto translated_goal =
-        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(
-             simplify_goal_condition(*problem.get_goal_condition().value(), this->m_pddl_factories, this->m_derived_predicates, this->m_axioms)) :
+        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(simplify_goal_condition(*problem.get_goal_condition().value(),
+                                                                                                           this->m_pddl_factories,
+                                                                                                           this->m_derived_predicates,
+                                                                                                           this->m_axioms,
+                                                                                                           this->m_next_axiom_id,
+                                                                                                           this->m_simple_and_derived_predicate_names)) :
                                                     std::nullopt);
 
     // Combine all derived predicates and axioms.
@@ -88,8 +96,8 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
         translated_axioms);
 }
 
-loki::Problem SimplifyGoalTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
-
-SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator<SimplifyGoalTranslator>(pddl_factories) {}
+SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator<SimplifyGoalTranslator>(pddl_factories), m_next_axiom_id(0)
+{
+}
 
 }
