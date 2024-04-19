@@ -89,8 +89,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 
-    int32_t action_id = m_actions.size();
-    m_action_builder.get_id() = action_id;
+    m_action_builder.get_id() = m_actions.size();
     // TODO: evaluate function expression to obtain the action cost.
     m_action_builder.get_cost() = 1;
     m_action_builder.get_action() = flat_action.source;
@@ -104,9 +103,9 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
     flatmemory_builder.finish();
 
-    auto result_action = ConstActionView(m_actions.insert(flatmemory_builder));
-    bool newly_inserted = (result_action.get_id() == action_id);
-    if (newly_inserted)
+    const auto [iter, inserted] = m_actions.insert(flatmemory_builder);
+    const auto result_action = ConstActionView(*iter);
+    if (inserted)
     {
         m_actions_by_index.push_back(result_action);
     }

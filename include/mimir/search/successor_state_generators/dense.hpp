@@ -62,7 +62,8 @@ private:
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
-        return ConstStateView(m_states.insert(flatmemory_builder));
+        const auto [iter, inserted] = m_states.insert(flatmemory_builder);
+        return ConstStateView(*iter);
     }
 
     [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action)
@@ -86,7 +87,8 @@ private:
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
-        return ConstStateView(m_states.insert(flatmemory_builder));
+        const auto [iter, inserted] = m_states.insert(flatmemory_builder);
+        return ConstStateView(*iter);
     }
 
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
