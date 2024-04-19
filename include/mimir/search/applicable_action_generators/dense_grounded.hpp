@@ -7,8 +7,38 @@
 namespace mimir
 {
 
+/**
+ * We use the same order of propositions as the order of ground atoms in the factory
+ * to forward iterate over the ground atoms that are true in a given state.
+ * Similarly, we create the MatchTree top down to forward traverse the nodes vector as well.
+ */
 class MatchTree
 {
+private:
+    using NodeID = size_t;
+
+    struct GroundAtomNode
+    {
+        size_t m_ground_atom_id;
+        NodeID m_true_successor;
+        NodeID m_false_successor;
+    };
+
+    struct SingleLeafNode
+    {
+        ConstDenseActionViewProxy action;
+    };
+
+    struct MultiLeafNode
+    {
+        std::vector<ConstDenseActionViewProxy> actions;
+    };
+
+    using Node = std::variant<GroundAtomNode, SingleLeafNode, MultiLeafNode>;
+
+    std::vector<Node> m_nodes;
+
+    void get_applicable_actions(const ConstDenseStateViewProxy& state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions);
 };
 
 /**
