@@ -15,6 +15,30 @@ using DenseActionBuilder = flatmemory::Builder<DenseActionLayout>;
 using ConstDenseActionView = flatmemory::ConstView<DenseActionLayout>;
 using DenseActionVector = flatmemory::VariableSizedTypeVector<DenseActionLayout>;
 
+struct ConstDenseActionViewHash
+{
+    size_t operator()(const ConstDenseActionView& view) const
+    {
+        const auto action = view.get<2>();
+        const auto objects = view.get<3>();
+        return loki::hash_combine(action, objects.hash());
+    }
+};
+
+struct ConstDenseActionViewEqual
+{
+    bool operator()(const ConstDenseActionView& view_left, const ConstDenseActionView& view_right) const
+    {
+        const auto action_left = view_left.get<2>();
+        const auto objects_left = view_left.get<3>();
+        const auto action_right = view_right.get<2>();
+        const auto objects_right = view_right.get<3>();
+        return (action_left == action_right) && (objects_left == objects_right);
+    }
+};
+
+using DenseActionSet = flatmemory::UnorderedSet<DenseActionLayout, ConstDenseActionViewHash, ConstDenseActionViewEqual>;
+
 /**
  * Implementation class
  */

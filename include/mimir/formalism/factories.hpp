@@ -339,6 +339,8 @@ public:
                                                    std::move(axioms));
     }
 
+    const AtomFactory& get_atoms() const { return atoms; }
+
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
 
     Object get_object(size_t object_id) const { return objects.get(object_id); }
