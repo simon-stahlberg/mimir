@@ -2,14 +2,14 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-// #include "mimir/formalism/transformers/delete_relax.hpp"
-// #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-// #include "mimir/search/event_handlers/minimal.hpp"
-// #include "mimir/search/successor_state_generators/dense.hpp"
 
 namespace mimir
 {
+
+class MatchTree
+{
+};
 
 /**
  * Fully specialized implementation class.
@@ -23,6 +23,8 @@ private:
 
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
+
+    Builder<StateDispatcher<DenseStateTag>> m_state_builder;
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<GroundedAAGDispatcher<DenseStateTag>>>;

@@ -10,7 +10,7 @@ namespace mimir
 /**
  * Flatmemory types
  */
-using DenseActionLayout = flatmemory::Tuple<int32_t, int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+using DenseActionLayout = flatmemory::Tuple<uint32_t, int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 using DenseActionBuilder = flatmemory::Builder<DenseActionLayout>;
 using ConstDenseActionView = flatmemory::ConstView<DenseActionLayout>;
 using DenseActionVector = flatmemory::VariableSizedTypeVector<DenseActionLayout>;
@@ -61,7 +61,7 @@ private:
 
 public:
     /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
-    [[nodiscard]] int32_t& get_id() { return m_builder.get<0>(); }
+    [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
     [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
     [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
     [[nodiscard]] ObjectListBuilder& get_objects() { return m_builder.get<3>(); }
@@ -102,7 +102,7 @@ public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(ConstDenseActionView view) : m_view(view) {}
 
-    [[nodiscard]] int32_t get_id() const { return m_view.get<0>(); }
+    [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
     [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
     [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
     [[nodiscard]] ConstObjectListView get_objects() const { return m_view.get<3>(); }

@@ -30,21 +30,51 @@ namespace mimir
 
 AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
 {
-    // Explore delete relaxed task.
-    // TODO: improve performance by doing fixed point iteration instead
+    // 1. Explore delete relaxed task.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
     const auto delete_relaxed_problem = delete_relax_transformer.run(*m_problem);
-    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(delete_relaxed_problem);
-    auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(delete_relaxed_problem, m_pddl_factories);
-    auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto grounded_brfs = BrFsAlgorithm(delete_relaxed_problem, m_pddl_factories, state_repository, successor_generator, event_handler);
-    auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
-    const auto search_status = grounded_brfs.find_solution(plan);
+    auto lifted_aag = AAG<LiftedAAGDispatcher<DenseStateTag>>(delete_relaxed_problem, m_pddl_factories);
+    auto ssg = SSG<SSGDispatcher<DenseStateTag>>(delete_relaxed_problem);
 
-    std::cout << "Total number of atoms reachable in delete-relaxed task: " << m_pddl_factories.get_atoms().size() << std::endl;
-    std::cout << "Total number of actions in delete-relaxed tasks: " << successor_generator->get_actions().size() << std::endl;
+    auto& state_bitset = m_state_builder.get_atoms_bitset();
+    state_bitset.unset_all();
 
-    // TODO: Build match tree
+    // Keep track of changes
+    size_t num_atoms = 0;
+    size_t num_actions = 0;
+    // Temporary variables
+    auto actions = std::vector<ConstDenseActionViewProxy> {};
+    do
+    {
+        num_atoms = pddl_factories.get_ground_atoms().size();
+        num_actions = lifted_aag.get_actions().size();
+
+        // Create a state where all ground atoms are true
+        for (const auto& atom : pddl_factories.get_ground_atoms())
+        {
+            state_bitset.set(atom.get_identifier());
+        }
+        m_state_builder.get_flatmemory_builder().finish();
+        const auto state = ConstDenseStateViewProxy(ConstDenseStateView(m_state_builder.get_flatmemory_builder().buffer().data()));
+
+        // Create all applicable actions and apply newly generated actions
+        actions.clear();
+        lifted_aag.generate_applicable_actions(state, actions);
+        for (const auto& action : actions)
+        {
+            const auto is_newly_generated = (action.get_id() >= num_actions);
+            if (is_newly_generated)
+            {
+                (void) ssg.get_or_create_successor_state(state, action);
+            }
+        }
+
+    } while (num_atoms != pddl_factories.get_ground_atoms().size());
+
+    std::cout << "Total number of ground atoms reachable in delete-relaxed task: " << m_pddl_factories.get_ground_atoms().size() << std::endl;
+    std::cout << "Total number of ground actions in delete-relaxed tasks: " << lifted_aag.get_actions().size() << std::endl;
+
+    // TODO: 2. Build match tree
 }
 
 }
