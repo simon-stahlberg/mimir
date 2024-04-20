@@ -30,23 +30,19 @@
 namespace mimir
 {
 
-MatchTree::NodeID MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+std::unique_ptr<MatchTree::INode>
+MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
 {
     // 1. Base cases:
-
     // 1.1. There are no more atoms to test or
     // 1.2. there are no actions.
     if ((atom_id == num_atoms) || (actions.empty()))
     {
-        const auto node_id = MatchTree::NodeID { m_nodes.size() };
-        m_nodes.push_back(MatchTree::GeneratorNode { m_actions.size(), m_actions.size() + actions.size() });
-        m_actions.insert(m_actions.end(), actions.begin(), actions.end());
-
-        return node_id;
+        ++m_num_nodes;
+        return std::make_unique<MatchTree::GeneratorNode>(actions);
     }
 
     // 2. Conquer
-
     // Partition actions into positive, negative and dontcare depending on how atom_id occurs in precondition
     auto positive_actions = std::vector<ConstDenseActionViewProxy> {};
     auto negative_actions = std::vector<ConstDenseActionViewProxy> {};
@@ -71,80 +67,67 @@ MatchTree::NodeID MatchTree::build_recursively(const size_t atom_id, const size_
         }
     }
 
-    // 2. Inductive cases:
+    // 3. Inductive cases:
     const bool must_split = (dontcare_actions.size() != actions.size());
     if (must_split)
     {
-        // Top-down creation of nodes, update information after recursion.
-        const auto node_id = MatchTree::NodeID { m_nodes.size() };
-        m_nodes.push_back(MatchTree::SelectorNode { atom_id, 0, 0, 0 });
-
-        const auto true_succ = build_recursively(atom_id + 1, num_atoms, positive_actions);
-        const auto false_succ = build_recursively(atom_id + 1, num_atoms, negative_actions);
-        const auto dontcare_succ = build_recursively(atom_id + 1, num_atoms, dontcare_actions);
-
-        assert(node_id < true_succ);
-        assert(node_id < false_succ);
-        assert(node_id < dontcare_succ);
-
-        // Update node with computed information
-        auto& node = std::get<MatchTree::SelectorNode>(m_nodes[node_id]);
-        node.true_succ = true_succ;
-        node.false_succ = false_succ;
-        node.dontcare_succ = dontcare_succ;
-
-        return node_id;
+        // 3.1 At least one action has a condition on atom_id
+        ++m_num_nodes;
+        return std::make_unique<MatchTree::SelectorNode>(atom_id,
+                                                         build_recursively(atom_id + 1, num_atoms, positive_actions),
+                                                         build_recursively(atom_id + 1, num_atoms, negative_actions),
+                                                         build_recursively(atom_id + 1, num_atoms, dontcare_actions));
     }
     else
     {
-        // All actions are dontcares, skip creating a node.
+        // 3.2 All actions are dontcares, skip creating a node.
         return build_recursively(atom_id + 1, num_atoms, dontcare_actions);
     }
 }
 
-size_t MatchTree::get_num_nodes() const { return m_nodes.size(); }
+MatchTree::GeneratorNode::GeneratorNode(std::vector<ConstDenseActionViewProxy> actions) : m_actions(std::move(actions)) {}
 
-MatchTree::MatchTree() { m_nodes.push_back(MatchTree::GeneratorNode { 0, 0 }); }
-
-MatchTree::MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+void MatchTree::GeneratorNode::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
 {
-    assert(m_nodes.size() == 0);
-    const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, actions);
-    assert(root_node_id == 0);
+    out_applicable_actions.insert(out_applicable_actions.end(), m_actions.begin(), m_actions.end());
 }
 
-void MatchTree::get_applicable_actions_recursively(size_t node_id,
-                                                   const ConstDenseStateViewProxy state,
-                                                   std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+MatchTree::SelectorNode::SelectorNode(size_t ground_atom_id,
+                                      std::unique_ptr<INode>&& true_succ,
+                                      std::unique_ptr<INode>&& false_succ,
+                                      std::unique_ptr<INode>&& dontcare_succ) :
+    m_atom_id(ground_atom_id),
+    m_true_succ(std::move(true_succ)),
+    m_false_succ(std::move(false_succ)),
+    m_dontcare_succ(std::move(dontcare_succ))
 {
-    auto& node = m_nodes[node_id];
+}
 
-    if (const auto generator_node = std::get_if<MatchTree::GeneratorNode>(&node))
+void MatchTree::SelectorNode::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+{
+    m_dontcare_succ->get_applicable_actions(state, out_applicable_actions);
+
+    if (state.get_atoms_bitset().get(m_atom_id))
     {
-        out_applicable_actions.insert(out_applicable_actions.end(), m_actions.begin() + generator_node->begin, m_actions.begin() + generator_node->end);
+        m_true_succ->get_applicable_actions(state, out_applicable_actions);
     }
-    else if (const auto selector_node = std::get_if<MatchTree::SelectorNode>(&node))
+    else
     {
-        get_applicable_actions_recursively(selector_node->dontcare_succ, state, out_applicable_actions);
-
-        if (state.get_atoms_bitset().get(selector_node->ground_atom_id))
-        {
-            get_applicable_actions_recursively(selector_node->true_succ, state, out_applicable_actions);
-        }
-        else
-        {
-            get_applicable_actions_recursively(selector_node->false_succ, state, out_applicable_actions);
-        }
+        m_false_succ->get_applicable_actions(state, out_applicable_actions);
     }
 }
+
+size_t MatchTree::get_num_nodes() const { return m_num_nodes; }
+
+MatchTree::MatchTree() : m_root_node(std::make_unique<MatchTree::GeneratorNode>(std::vector<ConstDenseActionViewProxy> {})) {}
+
+MatchTree::MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions) { m_root_node = build_recursively(0, num_atoms, actions); }
 
 void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
-    assert(!m_nodes.empty());
-
-    get_applicable_actions_recursively(0, state, out_applicable_actions);
+    m_root_node->get_applicable_actions(state, out_applicable_actions);
 }
 
 AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :

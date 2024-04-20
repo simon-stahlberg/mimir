@@ -9,39 +9,58 @@
 
 namespace mimir
 {
-
+/**
+ * Implementation of https://arxiv.org/pdf/1109.6051.pdf section 5
+ *
+ * Dominik (2024-04-20): I tried an implementation with std::variant
+ * which has similar performance so I switched the to implementation
+ * using virtual, which is simpler.
+ * It seems that whenever runtime polymorphism is needed virtual is the more elegant choice.
+ */
 class MatchTree
 {
 private:
-    using NodeID = size_t;
-    using ActionIter = size_t;
-
-    struct SelectorNode
+    class INode
     {
-        size_t ground_atom_id;
-        NodeID true_succ;
-        NodeID false_succ;
-        NodeID dontcare_succ;
+    public:
+        virtual ~INode() = default;
+        virtual void get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions) = 0;
     };
 
-    struct GeneratorNode
+    class SelectorNode : public INode
     {
-        ActionIter begin;
-        ActionIter end;
+    private:
+        size_t m_atom_id;
+        std::unique_ptr<INode> m_true_succ;
+        std::unique_ptr<INode> m_false_succ;
+        std::unique_ptr<INode> m_dontcare_succ;
+
+    public:
+        SelectorNode(size_t ground_atom_id, std::unique_ptr<INode>&& true_succ, std::unique_ptr<INode>&& false_succ, std::unique_ptr<INode>&& dontcare_succ);
+
+        void get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions) override;
+    };
+
+    class GeneratorNode : public INode
+    {
+    private:
+        std::vector<ConstDenseActionViewProxy> m_actions;
+
+    public:
+        explicit GeneratorNode(std::vector<ConstDenseActionViewProxy> actions);
+
+        void get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions) override;
     };
 
     using Node = std::variant<SelectorNode, GeneratorNode>;
 
-    std::vector<Node> m_nodes;
-    std::vector<ConstDenseActionViewProxy> m_actions;
+    size_t m_num_nodes;
+    std::unique_ptr<INode> m_root_node;
 
     using ConstDenseActionViewProxySet =
         std::unordered_set<ConstDenseActionViewProxy, loki::Hash<ConstDenseActionViewProxy>, loki::EqualTo<ConstDenseActionViewProxy>>;
 
-    NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
-
-    void
-    get_applicable_actions_recursively(size_t node_id, const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions);
+    std::unique_ptr<INode> build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
 
 public:
     MatchTree();
