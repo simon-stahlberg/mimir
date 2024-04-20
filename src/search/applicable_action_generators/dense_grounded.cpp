@@ -30,7 +30,7 @@
 namespace mimir
 {
 
-MatchTree::NodeID MatchTree::build_recursively(size_t atom_id, size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+MatchTree::NodeID MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
 {
     // 1. Base cases:
 
@@ -106,14 +106,14 @@ size_t MatchTree::get_num_nodes() const { return m_nodes.size(); }
 
 MatchTree::MatchTree() { m_nodes.push_back(MatchTree::GeneratorNode { 0, 0 }); }
 
-MatchTree::MatchTree(size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+MatchTree::MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
 {
     assert(m_nodes.size() == 0);
     const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, actions);
     assert(root_node_id == 0);
 }
 
-void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy& state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
@@ -182,11 +182,11 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         dr_lifted_aag.generate_applicable_actions(state, actions);
         for (const auto& action : actions)
         {
-            const auto is_newly_generated = (action.get_id() >= num_actions);
-            if (is_newly_generated)
-            {
-                (void) dr_ssg.get_or_create_successor_state(state, action);
-            }
+            // const auto is_newly_generated = (action.get_id() >= num_actions);
+            // if (is_newly_generated)
+            //{
+            (void) dr_ssg.get_or_create_successor_state(state, action);
+            //}
         }
 
     } while (num_atoms != pddl_factories.get_ground_atoms().size());
@@ -200,10 +200,15 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     std::cout << "Total number of ground actions in task: " << m_lifted_aag.get_actions().size() << std::endl;
 
-    // TODO: 3. Build match tree
+    // 3. Build match tree
     m_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), actions);
 
     std::cout << "Total number of nodes in match tree: " << m_match_tree.get_num_nodes() << std::endl;
+
+    for (const auto& action : actions)
+    {
+        std::cout << std::make_tuple(action, std::cref(m_pddl_factories)) << std::endl;
+    }
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)

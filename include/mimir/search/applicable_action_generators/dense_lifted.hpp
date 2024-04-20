@@ -59,7 +59,7 @@ private:
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void generate_applicable_actions_impl(const ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);

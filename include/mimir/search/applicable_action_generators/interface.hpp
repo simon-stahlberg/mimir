@@ -44,7 +44,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) override
+    void generate_applicable_actions(const ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) override
     {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }

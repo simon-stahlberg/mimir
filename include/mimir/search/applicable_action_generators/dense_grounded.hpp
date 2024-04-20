@@ -38,13 +38,13 @@ private:
     using ConstDenseActionViewProxySet =
         std::unordered_set<ConstDenseActionViewProxy, loki::Hash<ConstDenseActionViewProxy>, loki::EqualTo<ConstDenseActionViewProxy>>;
 
-    NodeID build_recursively(size_t atom_id, size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
+    NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
 
 public:
     MatchTree();
-    MatchTree(size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
+    MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
 
-    void get_applicable_actions(const ConstDenseStateViewProxy& state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions);
+    void get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions);
 
     [[nodiscard]] size_t get_num_nodes() const;
 };
@@ -71,7 +71,7 @@ private:
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<GroundedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void generate_applicable_actions_impl(const ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
