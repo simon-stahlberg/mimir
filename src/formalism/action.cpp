@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/effect.hpp"
+#include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -27,12 +28,18 @@
 
 namespace mimir
 {
-ActionImpl::ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, EffectList effect) :
+ActionImpl::ActionImpl(int identifier,
+                       std::string name,
+                       ParameterList parameters,
+                       LiteralList condition,
+                       EffectList effect,
+                       std::optional<FunctionExpression> function_expression) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
     m_condition(std::move(condition)),
-    m_effect(std::move(effect))
+    m_effect(std::move(effect)),
+    m_function_expression(std::move(function_expression))
 {
 }
 
@@ -40,7 +47,7 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
 {
     return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
            && (loki::get_sorted_vector(m_condition) == loki::get_sorted_vector(other.m_condition))
-           && (loki::get_sorted_vector(m_effect) == loki::get_sorted_vector(other.m_effect));
+           && (loki::get_sorted_vector(m_effect) == loki::get_sorted_vector(other.m_effect)) && (m_function_expression == other.m_function_expression);
 }
 
 size_t ActionImpl::hash_impl() const
@@ -48,7 +55,8 @@ size_t ActionImpl::hash_impl() const
     return loki::hash_combine(m_name,
                               loki::hash_container(m_parameters),
                               loki::hash_container(loki::get_sorted_vector(m_condition)),
-                              loki::hash_container(loki::get_sorted_vector(m_effect)));
+                              loki::hash_container(loki::get_sorted_vector(m_effect)),
+                              m_function_expression);
 }
 
 void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -111,6 +119,8 @@ const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 const LiteralList& ActionImpl::get_conditions() const { return m_condition; }
 
 const EffectList& ActionImpl::get_effects() const { return m_effect; }
+
+const std::optional<FunctionExpression>& ActionImpl::get_function_expression() const { return m_function_expression; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
 

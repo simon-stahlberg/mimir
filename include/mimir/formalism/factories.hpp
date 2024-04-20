@@ -262,9 +262,17 @@ public:
     /// @brief Get or create an action for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, EffectList effect)
+    Action get_or_create_action(std::string name,
+                                ParameterList parameters,
+                                LiteralList condition,
+                                EffectList effect,
+                                std::optional<FunctionExpression> function_expression)
     {
-        return actions.get_or_create<ActionImpl>(std::move(name), std::move(parameters), std::move(condition), std::move(effect));
+        return actions.get_or_create<ActionImpl>(std::move(name),
+                                                 std::move(parameters),
+                                                 std::move(condition),
+                                                 std::move(effect),
+                                                 std::move(function_expression));
     }
 
     /// @brief Get or create a derived predicate for the given parameters.
