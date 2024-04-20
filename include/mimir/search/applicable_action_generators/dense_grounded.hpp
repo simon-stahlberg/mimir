@@ -40,6 +40,9 @@ private:
 
     NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
 
+    void
+    get_applicable_actions_recursively(size_t node_id, const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions);
+
 public:
     MatchTree();
     MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);

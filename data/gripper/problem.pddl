@@ -19,7 +19,6 @@
 )
 (:goal
 (and
-(at ball1 roomb)
 (at ball2 roomb)
 )
 )

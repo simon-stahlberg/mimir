@@ -25,6 +25,11 @@ private:
     {
     }
 
+    void on_finish_g_layer_impl(uint64_t g_value, uint64_t num_states) const
+    {
+        std::cout << "Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl;
+    }
+
     void on_expand_state_impl(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) const {}
 
     void on_start_search_impl(ConstView<StateDispatcher<StateReprTag>> initial_state, const PDDLFactories& pddl_factories) const {}

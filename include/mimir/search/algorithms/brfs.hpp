@@ -99,6 +99,9 @@ public:
         auto applicable_actions = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
 
         m_queue.emplace_back(m_initial_state);
+
+        uint64_t g_value = 0;
+
         while (!m_queue.empty())
         {
             const auto state = m_queue.front();
@@ -116,6 +119,12 @@ public:
 
             auto search_node = CostSearchNodeViewProxy(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
+
+            if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
+            {
+                g_value = search_node.get_g_value();
+                m_event_handler->on_finish_g_layer(g_value, m_state_repository->get_state_count());
+            }
 
             m_event_handler->on_expand_state(state, m_pddl_factories);
 

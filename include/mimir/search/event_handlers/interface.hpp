@@ -24,6 +24,8 @@ public:
                                    ConstView<StateDispatcher<StateReprTag>> successor_state,
                                    const PDDLFactories& pddl_factories) = 0;
 
+    virtual void on_finish_g_layer(uint64_t g_value, uint64_t num_states) = 0;
+
     /// @brief React on expanding a state.
     virtual void on_expand_state(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) = 0;
 
@@ -67,6 +69,14 @@ public:
         m_statistics.increment_num_generated();
 
         self().on_generate_state_impl(action, successor_state, pddl_factories);
+    }
+
+    void on_finish_g_layer(uint64_t g_value, uint64_t num_states) override
+    {
+        m_statistics.set_g_value(g_value);
+        m_statistics.set_num_states_until_g_value(num_states);
+
+        self().on_finish_g_layer_impl(g_value, num_states);
     }
 
     void on_expand_state(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) override

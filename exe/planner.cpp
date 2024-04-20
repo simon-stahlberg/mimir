@@ -46,9 +46,9 @@ int main(int argc, char** argv)
     std::cout << "Initializing planner..." << std::endl;
 
     auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
-    auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    // auto successor_generator = std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto event_handler = std::make_shared<DebugEventHandler>();
+    // auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto successor_generator = std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+    auto event_handler = std::make_shared<MinimalEventHandler>();
     auto lifted_brfs = std::make_shared<BrFsAlgorithm>(parser.get_problem(),
                                                        parser.get_factories(),
                                                        std::move(state_repository),

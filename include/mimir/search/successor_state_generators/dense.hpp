@@ -76,33 +76,9 @@ private:
         auto& state_bitset = m_state_builder.get_atoms_bitset();
 
         // Assign values to members.
-
-        std::cout << "STATE_ID: " << state.get_id() << " " << state.get_atoms_bitset().get_blocks().size() << " {";
-        for (const auto& bit : state.get_atoms_bitset())
-        {
-            std::cout << bit << " ";
-        }
-        std::cout << "}" << std::endl;
-        flatmemory::printBits(state.get_atoms_bitset().get_blocks().buffer() + 8, state.get_atoms_bitset().get_blocks().buffer_size() - 8);
-
         state_id = next_state_id;
         state_bitset.unset_all();
-        std::cout << "NEXT_STATE_ID BEFORE |=: " << next_state_id << " " << state_bitset.get_blocks().size() << " {";
-        for (const auto& bit : state_bitset)
-        {
-            std::cout << bit << " ";
-        }
-        std::cout << "}" << std::endl;
-        flatmemory::printBits(reinterpret_cast<const uint8_t*>(state_bitset.get_blocks().data()), state_bitset.get_blocks().size() * 8);
         state_bitset |= state.get_atoms_bitset();
-        std::cout << "NEXT_STATE_ID AFTER |=: " << next_state_id << " " << state_bitset.get_blocks().size() << " {";
-        for (const auto& bit : state_bitset)
-        {
-            std::cout << bit << " ";
-        }
-        std::cout << "}" << std::endl;
-        flatmemory::printBits(reinterpret_cast<const uint8_t*>(state_bitset.get_blocks().data()), state_bitset.get_blocks().size() * 8);
-
         state_bitset -= action.get_unconditional_negative_effect_bitset();
         state_bitset |= action.get_unconditional_positive_effect_bitset();
         // Construct the state and store it.
