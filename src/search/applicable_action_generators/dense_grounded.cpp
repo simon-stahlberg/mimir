@@ -119,9 +119,13 @@ void MatchTree::SelectorNode::get_applicable_actions(const ConstDenseStateViewPr
 
 size_t MatchTree::get_num_nodes() const { return m_num_nodes; }
 
-MatchTree::MatchTree() : m_root_node(std::make_unique<MatchTree::GeneratorNode>(std::vector<ConstDenseActionViewProxy> {})) {}
+MatchTree::MatchTree() : m_num_nodes(1), m_root_node(std::make_unique<MatchTree::GeneratorNode>(std::vector<ConstDenseActionViewProxy> {})) {}
 
-MatchTree::MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions) { m_root_node = build_recursively(0, num_atoms, actions); }
+MatchTree::MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions) :
+    m_num_nodes(0),
+    m_root_node(build_recursively(0, num_atoms, actions))
+{
+}
 
 void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
 {
