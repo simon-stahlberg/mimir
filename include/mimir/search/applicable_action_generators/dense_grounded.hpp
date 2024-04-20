@@ -5,8 +5,6 @@
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 
-#include <loki/loki.hpp>
-
 namespace mimir
 {
 /**
@@ -52,13 +50,8 @@ private:
         void get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions) override;
     };
 
-    using Node = std::variant<SelectorNode, GeneratorNode>;
-
     size_t m_num_nodes;
     std::unique_ptr<INode> m_root_node;
-
-    using ConstDenseActionViewProxySet =
-        std::unordered_set<ConstDenseActionViewProxy, loki::Hash<ConstDenseActionViewProxy>, loki::EqualTo<ConstDenseActionViewProxy>>;
 
     std::unique_ptr<INode> build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
 
