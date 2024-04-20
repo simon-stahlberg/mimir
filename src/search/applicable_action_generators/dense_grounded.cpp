@@ -25,16 +25,137 @@
 #include "mimir/search/event_handlers/minimal.hpp"
 #include "mimir/search/successor_state_generators/dense.hpp"
 
+#include <deque>
+
 namespace mimir
 {
 
-AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
+MatchTree::NodeID MatchTree::build_recursively(size_t atom_id, size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+{
+    // 1. Base cases:
+
+    // 1.1. There are no more atoms to test or
+    // 1.2. there are no actions (special case for task without actions).
+    if ((atom_id == num_atoms) || (actions.empty()))
+    {
+        const auto node_id = MatchTree::NodeID { m_nodes.size() };
+        m_nodes.push_back(MatchTree::GeneratorNode { m_actions.size(), m_actions.size() + actions.size() });
+        m_actions.insert(m_actions.end(), actions.begin(), actions.end());
+
+        return node_id;
+    }
+
+    // 2. Conquer
+
+    // Partition actions into positive, negative and dontcare depending on how atom_id occurs in precondition
+    auto positive_actions = std::vector<ConstDenseActionViewProxy> {};
+    auto negative_actions = std::vector<ConstDenseActionViewProxy> {};
+    auto dontcare_actions = std::vector<ConstDenseActionViewProxy> {};
+    for (const auto& action : actions)
+    {
+        const bool positive_condition = action.get_applicability_positive_precondition_bitset().get(atom_id);
+        const bool negative_condition = action.get_applicability_negative_precondition_bitset().get(atom_id);
+        assert(!(positive_condition && negative_condition));
+
+        if (negative_condition)
+        {
+            negative_actions.push_back(action);
+        }
+        else if (positive_condition)
+        {
+            positive_actions.push_back(action);
+        }
+        else
+        {
+            dontcare_actions.push_back(action);
+        }
+    }
+
+    // 2. Inductive cases:
+    const bool must_split = (dontcare_actions.size() != actions.size());
+    if (must_split)
+    {
+        // Top-down creation of nodes, update information after recursion.
+        const auto node_id = MatchTree::NodeID { m_nodes.size() };
+        m_nodes.push_back(MatchTree::SelectorNode { atom_id, 0, 0, 0 });
+
+        const auto true_succ = build_recursively(atom_id + 1, num_atoms, positive_actions);
+        const auto false_succ = build_recursively(atom_id + 1, num_atoms, negative_actions);
+        const auto dontcare_succ = build_recursively(atom_id + 1, num_atoms, dontcare_actions);
+
+        assert(node_id < true_succ);
+        assert(node_id < false_succ);
+        assert(node_id < dontcare_succ);
+
+        // Update node with computed information
+        auto& node = std::get<MatchTree::SelectorNode>(m_nodes[node_id]);
+        node.true_succ = true_succ;
+        node.false_succ = false_succ;
+        node.dontcare_succ = dontcare_succ;
+
+        return node_id;
+    }
+    else
+    {
+        // All actions are dontcares, skip creating a node.
+        return build_recursively(atom_id + 1, num_atoms, dontcare_actions);
+    }
+}
+
+size_t MatchTree::get_num_nodes() const { return m_nodes.size(); }
+
+MatchTree::MatchTree() { m_nodes.push_back(MatchTree::GeneratorNode { 0, 0 }); }
+
+MatchTree::MatchTree(size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+{
+    assert(m_nodes.size() == 0);
+    const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, actions);
+    assert(root_node_id == 0);
+}
+
+void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy& state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+{
+    out_applicable_actions.clear();
+
+    assert(!m_nodes.empty());
+
+    // Run DFS from the root an collect all applicable actions
+    auto queue = std::deque<MatchTree::NodeID> { 0 };
+    while (!queue.empty())
+    {
+        const auto node_id = queue.back();
+        queue.pop_back();
+
+        const auto& node = m_nodes[node_id];
+        if (const auto generator_node = std::get_if<MatchTree::GeneratorNode>(&node))
+        {
+            out_applicable_actions.insert(out_applicable_actions.end(), m_actions.begin() + generator_node->begin, m_actions.begin() + generator_node->end);
+        }
+        else if (const auto selector_node = std::get_if<MatchTree::SelectorNode>(&node))
+        {
+            queue.push_back(selector_node->dontcare_succ);
+            if (state.get_atoms_bitset().get(selector_node->ground_atom_id))
+            {
+                queue.push_back(selector_node->true_succ);
+            }
+            else
+            {
+                queue.push_back(selector_node->false_succ);
+            }
+        }
+    }
+}
+
+AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
+    m_problem(problem),
+    m_pddl_factories(pddl_factories),
+    m_lifted_aag(problem, pddl_factories)
 {
     // 1. Explore delete relaxed task.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
-    const auto delete_relaxed_problem = delete_relax_transformer.run(*m_problem);
-    auto lifted_aag = AAG<LiftedAAGDispatcher<DenseStateTag>>(delete_relaxed_problem, m_pddl_factories);
-    auto ssg = SSG<SSGDispatcher<DenseStateTag>>(delete_relaxed_problem);
+    const auto dr_problem = delete_relax_transformer.run(*m_problem);
+    auto dr_lifted_aag = AAG<LiftedAAGDispatcher<DenseStateTag>>(dr_problem, m_pddl_factories);
+    auto dr_ssg = SSG<SSGDispatcher<DenseStateTag>>(dr_problem);
 
     auto& state_bitset = m_state_builder.get_atoms_bitset();
     state_bitset.unset_all();
@@ -47,7 +168,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     do
     {
         num_atoms = pddl_factories.get_ground_atoms().size();
-        num_actions = lifted_aag.get_actions().size();
+        num_actions = dr_lifted_aag.get_actions().size();
 
         // Create a state where all ground atoms are true
         for (const auto& atom : pddl_factories.get_ground_atoms())
@@ -58,23 +179,42 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         const auto state = ConstDenseStateViewProxy(ConstDenseStateView(m_state_builder.get_flatmemory_builder().buffer().data()));
 
         // Create all applicable actions and apply newly generated actions
-        actions.clear();
-        lifted_aag.generate_applicable_actions(state, actions);
+        dr_lifted_aag.generate_applicable_actions(state, actions);
         for (const auto& action : actions)
         {
             const auto is_newly_generated = (action.get_id() >= num_actions);
             if (is_newly_generated)
             {
-                (void) ssg.get_or_create_successor_state(state, action);
+                (void) dr_ssg.get_or_create_successor_state(state, action);
             }
         }
 
     } while (num_atoms != pddl_factories.get_ground_atoms().size());
 
     std::cout << "Total number of ground atoms reachable in delete-relaxed task: " << m_pddl_factories.get_ground_atoms().size() << std::endl;
-    std::cout << "Total number of ground actions in delete-relaxed tasks: " << lifted_aag.get_actions().size() << std::endl;
+    std::cout << "Total number of ground actions in delete-relaxed task: " << dr_lifted_aag.get_actions().size() << std::endl;
 
-    // TODO: 2. Build match tree
+    // 2. Create ground actions
+    const auto state = ConstDenseStateViewProxy(ConstDenseStateView(m_state_builder.get_flatmemory_builder().buffer().data()));
+    m_lifted_aag.generate_applicable_actions(state, actions);
+
+    std::cout << "Total number of ground actions in task: " << m_lifted_aag.get_actions().size() << std::endl;
+
+    // TODO: 3. Build match tree
+    m_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), actions);
+
+    std::cout << "Total number of nodes in match tree: " << m_match_tree.get_num_nodes() << std::endl;
 }
 
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
+{
+    out_applicable_actions.clear();
+
+    m_match_tree.get_applicable_actions(state, out_applicable_actions);
+}
+
+[[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<GroundedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
+{
+    return m_lifted_aag.get_action(action_id);
+}
 }

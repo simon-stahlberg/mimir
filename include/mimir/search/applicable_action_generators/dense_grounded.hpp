@@ -2,43 +2,51 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+
+#include <loki/loki.hpp>
 
 namespace mimir
 {
 
-/**
- * We use the same order of propositions as the order of ground atoms in the factory
- * to forward iterate over the ground atoms that are true in a given state.
- * Similarly, we create the MatchTree top down to forward traverse the nodes vector as well.
- */
 class MatchTree
 {
 private:
     using NodeID = size_t;
+    using ActionIter = size_t;
 
-    struct GroundAtomNode
+    struct SelectorNode
     {
-        size_t m_ground_atom_id;
-        NodeID m_true_successor;
-        NodeID m_false_successor;
+        size_t ground_atom_id;
+        NodeID true_succ;
+        NodeID false_succ;
+        NodeID dontcare_succ;
     };
 
-    struct SingleLeafNode
+    struct GeneratorNode
     {
-        ConstDenseActionViewProxy action;
+        ActionIter begin;
+        ActionIter end;
     };
 
-    struct MultiLeafNode
-    {
-        std::vector<ConstDenseActionViewProxy> actions;
-    };
-
-    using Node = std::variant<GroundAtomNode, SingleLeafNode, MultiLeafNode>;
+    using Node = std::variant<SelectorNode, GeneratorNode>;
 
     std::vector<Node> m_nodes;
+    std::vector<ConstDenseActionViewProxy> m_actions;
+
+    using ConstDenseActionViewProxySet =
+        std::unordered_set<ConstDenseActionViewProxy, loki::Hash<ConstDenseActionViewProxy>, loki::EqualTo<ConstDenseActionViewProxy>>;
+
+    NodeID build_recursively(size_t atom_id, size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
+
+public:
+    MatchTree();
+    MatchTree(size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions);
 
     void get_applicable_actions(const ConstDenseStateViewProxy& state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions);
+
+    [[nodiscard]] size_t get_num_nodes() const;
 };
 
 /**
@@ -54,18 +62,22 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
+    AAG<LiftedAAGDispatcher<DenseStateTag>> m_lifted_aag;
+
     Builder<StateDispatcher<DenseStateTag>> m_state_builder;
+
+    MatchTree m_match_tree;
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<GroundedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) {}
+    void generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] ConstActionView get_action(size_t action_id) const { throw std::runtime_error("not implemented"); }
+    [[nodiscard]] ConstActionView get_action(size_t action_id) const;
 };
 }
 
