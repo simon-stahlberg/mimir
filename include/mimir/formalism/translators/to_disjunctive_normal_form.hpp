@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TO_DISJUNCTIVE_NORMAL_FORM_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TO_DISJUNCTIVE_NORMAL_FORM_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 #include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
 namespace mimir
@@ -32,15 +32,15 @@ namespace mimir
  * 2. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
  * 3. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
  */
-class ToDNFTranslator : public BaseTranslator<ToDNFTranslator>
+class ToDNFTranslator : public BaseCachedRecurseTranslator<ToDNFTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<ToDNFTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<ToDNFTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     ToNNFTranslator& m_to_nnf_translator;
 

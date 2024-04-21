@@ -66,7 +66,6 @@ public:
     std::vector<FlatLiteral> static_precondition;
     std::vector<FlatLiteral> fluent_precondition;
     std::vector<FlatLiteral> unconditional_effect;
-    std::vector<ParameterIndexOrConstantId> cost_arguments;
     size_t arity;
 
     FlatAction(Domain domain, Action action_schema);

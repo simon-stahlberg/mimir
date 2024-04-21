@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_SPLIT_DISJUNCTIVE_CONDITIONS_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_SPLIT_DISJUNCTIVE_CONDITIONS_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 
 namespace mimir
 {
@@ -30,15 +30,15 @@ namespace mimir
  * 1. (phi or psi) > e  => (phi > e) and (psi > e)
  * 2. <(phi or psi), e>  => <phi, e> and <psi, e>
  */
-class SplitDisjunctiveConditionsTranslator : public BaseTranslator<SplitDisjunctiveConditionsTranslator>
+class SplitDisjunctiveConditionsTranslator : public BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<SplitDisjunctiveConditionsTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     /**
      * Split conditional effects

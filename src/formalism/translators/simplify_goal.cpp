@@ -96,7 +96,9 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
         translated_axioms);
 }
 
-SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator<SimplifyGoalTranslator>(pddl_factories), m_next_axiom_id(0)
+SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories) :
+    BaseCachedRecurseTranslator<SimplifyGoalTranslator>(pddl_factories),
+    m_next_axiom_id(0)
 {
 }
 

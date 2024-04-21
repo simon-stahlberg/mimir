@@ -27,6 +27,9 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_factories());
     problem = rename_quantifed_variables_translator.run(*problem);
 
+    // std::cout << *problem->get_domain() << std::endl;
+    // exit(1);
+
     // Remove universal quantifiers
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
     problem = remove_universal_quantifiers_translator.run(*problem);

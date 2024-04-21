@@ -276,7 +276,6 @@ FlatAction::FlatAction(Domain domain, Action action_schema) :
     static_precondition(),
     fluent_precondition(),
     unconditional_effect(),
-    cost_arguments(),
     arity(static_cast<uint32_t>(action_schema->get_arity()))
 {
     for (const auto& parameter : action_schema->get_parameters())

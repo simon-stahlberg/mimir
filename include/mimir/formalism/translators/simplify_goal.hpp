@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_SIMPLIFY_GOAL_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_SIMPLIFY_GOAL_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 
 namespace mimir
 {
@@ -26,15 +26,15 @@ namespace mimir
 /**
  * Introduce an axiom for complicated goals, i.e., goals that are not conjunctions of literals.
  */
-class SimplifyGoalTranslator : public BaseTranslator<SimplifyGoalTranslator>
+class SimplifyGoalTranslator : public BaseCachedRecurseTranslator<SimplifyGoalTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<SimplifyGoalTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<SimplifyGoalTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     // Track simple and derived predicate names to give unique names
     std::unordered_set<std::string> m_simple_and_derived_predicate_names;

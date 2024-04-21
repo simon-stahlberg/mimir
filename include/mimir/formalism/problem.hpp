@@ -42,6 +42,9 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
+    // m_number_by_numeric_fluent_id[numeric_fluent_id] is the number stored in the respective fluent
+    std::vector<double> m_number_by_numeric_fluent_id;
+
     ProblemImpl(int identifier,
                 Domain domain,
                 std::string name,
@@ -76,6 +79,8 @@ public:
     const LiteralList& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
+
+    const std::vector<double>& get_number_by_numeric_fluent_id() const;
 };
 }
 

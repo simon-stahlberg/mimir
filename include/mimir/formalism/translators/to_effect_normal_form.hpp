@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TO_EFFECT_NORMAL_FORM_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TO_EFFECT_NORMAL_FORM_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 
 namespace mimir
 {
@@ -38,15 +38,15 @@ namespace mimir
  *
  * We stabilize the result before returning it since applying a rule might allow for other rules.
  */
-class ToENFTranslator : public BaseTranslator<ToENFTranslator>
+class ToENFTranslator : public BaseCachedRecurseTranslator<ToENFTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<ToENFTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<ToENFTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     /**
      * 1. e and (phi > e)          =>  e

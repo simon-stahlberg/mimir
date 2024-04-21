@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_RENAME_QUANTIFIED_VARIABLES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_RENAME_QUANTIFIED_VARIABLES_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_recurse.hpp"
 
 namespace mimir
 {
@@ -29,59 +29,24 @@ namespace mimir
  * of occurences of the variable in a quantification during
  * depth-first traversal.
  */
-class RenameQuantifiedVariablesTranslator : public BaseTranslator<RenameQuantifiedVariablesTranslator>
+class RenameQuantifiedVariablesTranslator : public BaseRecurseTranslator<RenameQuantifiedVariablesTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<RenameQuantifiedVariablesTranslator>;
+    /* Implement BaseRecurseTranslator interface. */
+    friend class BaseRecurseTranslator<RenameQuantifiedVariablesTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseRecurseTranslator::prepare_impl;
+    using BaseRecurseTranslator::translate_impl;
 
     // Collect all variables in preparation phase.
     std::unordered_set<loki::Variable> m_variables;
     // Track the number of times that each variable was quantified during the translation phase.
     // Increment num_quantifications[var] when encountering a quantifier during the translation phase.
     std::unordered_map<loki::Variable, size_t> m_num_quantifications;
+    std::unordered_map<loki::Variable, loki::Variable> m_renamings;
 
-    class Scope
-    {
-    private:
-        std::unordered_map<loki::Variable, loki::Variable> m_renaming;
-
-        const Scope* m_parent_scope;
-
-    public:
-        Scope(std::unordered_map<loki::Variable, loki::Variable> renaming, const Scope* parent_scope = nullptr);
-
-        const std::unordered_map<loki::Variable, loki::Variable>& get_renaming() const;
-    };
-
-    class ScopeStack
-    {
-    private:
-        std::deque<std::unique_ptr<Scope>> m_stack;
-
-    public:
-        /**
-         * Open the first scope
-         */
-        const Scope&
-        open_scope(const loki::VariableList& variables, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories);
-
-        /**
-         * Open successive scope.
-         */
-        const Scope&
-        open_scope(const loki::ParameterList& parameters, std::unordered_map<loki::Variable, size_t>& num_quantifications, loki::PDDLFactories& pddl_factories);
-
-        void close_scope();
-
-        const Scope& get() const;
-    };
-
-    ScopeStack m_scopes;
+    void rename_variables(const loki::ParameterList& parameters);
 
     void prepare_impl(const loki::VariableImpl& variable);
 

@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_REMOVE_UNIVERSAL_QUANTIFIERS_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_REMOVE_UNIVERSAL_QUANTIFIERS_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 #include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
 #include <deque>
@@ -30,15 +30,15 @@ namespace mimir
  * Compile away universal quantifiers by introducing axioms using the equivalence
  * forall(vars, phi) == not exists(vars, not phi)
  */
-class RemoveUniversalQuantifiersTranslator : public BaseTranslator<RemoveUniversalQuantifiersTranslator>
+class RemoveUniversalQuantifiersTranslator : public BaseCachedRecurseTranslator<RemoveUniversalQuantifiersTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<RemoveUniversalQuantifiersTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<RemoveUniversalQuantifiersTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     ToNNFTranslator& m_to_nnf_translator;
 

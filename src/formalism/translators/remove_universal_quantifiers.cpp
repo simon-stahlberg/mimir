@@ -95,6 +95,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
         m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
 
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
+    // TODO: parameters of nested axioms must be propagated upwards.
     auto parameters = loki::ParameterList {};
     auto terms = loki::TermList {};
     for (const auto free_variable : collect_free_variables(*axiom_condition))
@@ -128,11 +129,16 @@ loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Ac
 {
     this->m_scopes.open_scope(action.get_parameters());
 
-    auto translated_action = this->m_pddl_factories.get_or_create_action(
-        action.get_name(),
-        action.get_parameters(),
-        (action.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*action.get_condition().value())) : std::nullopt),
-        action.get_effect());
+    // Translate condition and effect
+    auto translated_condition =
+        (action.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*action.get_condition().value())) : std::nullopt);
+    auto translated_effect = (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt);
+
+    // Turn free variables into parameters
+    // TODO: parameters of nested axioms must be propagated upwards.
+    auto translated_parameters = this->translate(action.get_parameters());
+
+    auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
 
     this->m_scopes.close_scope();
 
@@ -213,7 +219,7 @@ loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::Problem
 }
 
 RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
-    BaseTranslator(pddl_factories),
+    BaseCachedRecurseTranslator(pddl_factories),
     m_to_nnf_translator(to_nnf_translator),
     m_next_axiom_id(0)
 {

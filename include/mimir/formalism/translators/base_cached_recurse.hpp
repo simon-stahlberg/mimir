@@ -14,10 +14,10 @@ namespace mimir
  * Base implementation recursively calls translate and caches the results.
  */
 template<typename Derived>
-class BaseTranslator : public ITranslator<BaseTranslator<Derived>>
+class BaseCachedRecurseTranslator : public ITranslator<BaseCachedRecurseTranslator<Derived>>
 {
 private:
-    BaseTranslator() = default;
+    BaseCachedRecurseTranslator() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -50,11 +50,11 @@ private:
 protected:
     loki::PDDLFactories& m_pddl_factories;
 
-    explicit BaseTranslator(loki::PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseCachedRecurseTranslator(loki::PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */
-    friend class ITranslator<BaseTranslator<Derived>>;
+    friend class ITranslator<BaseCachedRecurseTranslator<Derived>>;
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.

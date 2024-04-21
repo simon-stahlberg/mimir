@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TO_NEGATION_NORMAL_FORM_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TO_NEGATION_NORMAL_FORM_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 
 namespace mimir
 {
@@ -40,15 +40,15 @@ namespace mimir
  * 11. exists(vars1, exists(vars2, A)) => exists(vars1+vars2, A)
  * 12. forall(vars1, forall(vars2, A)) => forall(vars1+vars2, A)
  */
-class ToNNFTranslator : public BaseTranslator<ToNNFTranslator>
+class ToNNFTranslator : public BaseCachedRecurseTranslator<ToNNFTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<ToNNFTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<ToNNFTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     /**
      * Translate

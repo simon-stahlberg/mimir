@@ -18,6 +18,7 @@
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
+#include "mimir/formalism/arithmetics.hpp"
 #include "mimir/search/actions/dense.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -52,6 +53,51 @@ GroundLiteral AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_literal(const Flat
     auto grounded_literal = m_pddl_factories.get_or_create_ground_literal(literal.source->is_negated(), grounded_atom);
     return grounded_literal;
 }
+
+class GroundAndEvaluateFunctionExpressionVisitor
+{
+private:
+    const std::vector<double>& m_number_by_numeric_fluent_id;
+    const ObjectList& m_binding;
+
+public:
+    GroundAndEvaluateFunctionExpressionVisitor(const std::vector<double>& number_by_numeric_fluent_id, const ObjectList& binding) :
+        m_number_by_numeric_fluent_id(number_by_numeric_fluent_id),
+        m_binding(binding)
+    {
+    }
+
+    double operator()(const FunctionExpressionNumberImpl& expr) const { return expr.get_number(); }
+
+    double operator()(const FunctionExpressionBinaryOperatorImpl& expr) const
+    {
+        return evaluate_binary(expr.get_binary_operator(),
+                               std::visit(*this, *expr.get_left_function_expression()),
+                               std::visit(*this, *expr.get_right_function_expression()));
+    }
+
+    double operator()(const FunctionExpressionMultiOperatorImpl& expr) const
+    {
+        assert(!expr.get_function_expressions().empty());
+
+        auto it = expr.get_function_expressions().begin();
+        auto result = std::visit(*this, **it);
+        for (; it != expr.get_function_expressions().end(); ++it)
+        {
+            result = evaluate_multi(expr.get_multi_operator(), result, std::visit(*this, **it));
+        }
+
+        return result;
+    }
+
+    double operator()(const FunctionExpressionMinusImpl& expr) const { return -std::visit(*this, *expr.get_function_expression()); }
+
+    double operator()(const FunctionExpressionFunctionImpl& expr) const
+    {
+        // TODO implement.
+        return 0;
+    }
+};
 
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const FlatAction& flat_action, ObjectList&& binding)
 {
@@ -91,6 +137,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     m_action_builder.get_id() = m_actions.size();
     // TODO: evaluate function expression to obtain the action cost.
+    // const auto cost =
+    //    std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_problem->get_numeric_fluents(), binding), *flat_action.source->get_function_expression());
     m_action_builder.get_cost() = 1;
     m_action_builder.get_action() = flat_action.source;
     auto& objects = m_action_builder.get_objects();

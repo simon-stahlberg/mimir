@@ -18,22 +18,22 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_REMOVE_TYPES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_REMOVE_TYPES_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 
 namespace mimir
 {
 /**
  * Compile away types.
  */
-class RemoveTypesTranslator : public BaseTranslator<RemoveTypesTranslator>
+class RemoveTypesTranslator : public BaseCachedRecurseTranslator<RemoveTypesTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<RemoveTypesTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<RemoveTypesTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     // Collect predicates that encode types
     std::unordered_map<loki::Type, loki::Predicate> m_type_to_predicates;

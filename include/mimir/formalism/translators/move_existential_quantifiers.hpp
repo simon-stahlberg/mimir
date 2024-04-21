@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_MOVE_EXISTENTIAL_QUANTIFIERS_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_MOVE_EXISTENTIAL_QUANTIFIERS_HPP_
 
-#include "mimir/formalism/translators/base.hpp"
+#include "mimir/formalism/translators/base_cached_recurse.hpp"
 
 namespace mimir
 {
@@ -29,15 +29,15 @@ namespace mimir
  * 1. and(phi, exists(vars, psi))       =>  exists(vars, and(phi, psi))
  * 2. exists(vars, exists(vars', phi))  =>  exists(vars + vars', phi)
  */
-class MoveExistentialQuantifiersTranslator : public BaseTranslator<MoveExistentialQuantifiersTranslator>
+class MoveExistentialQuantifiersTranslator : public BaseCachedRecurseTranslator<MoveExistentialQuantifiersTranslator>
 {
 private:
-    /* Implement BaseTranslator interface. */
-    friend class BaseTranslator<MoveExistentialQuantifiersTranslator>;
+    /* Implement BaseCachedRecurseTranslator interface. */
+    friend class BaseCachedRecurseTranslator<MoveExistentialQuantifiersTranslator>;
 
     // Provide default implementations
-    using BaseTranslator::prepare_impl;
-    using BaseTranslator::translate_impl;
+    using BaseCachedRecurseTranslator::prepare_impl;
+    using BaseCachedRecurseTranslator::translate_impl;
 
     /**
      * Push existential quantifiers to the root.

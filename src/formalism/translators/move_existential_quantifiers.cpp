@@ -63,6 +63,6 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
 
 loki::Problem MoveExistentialQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-MoveExistentialQuantifiersTranslator::MoveExistentialQuantifiersTranslator(loki::PDDLFactories& pddl_factories) : BaseTranslator(pddl_factories) {}
+MoveExistentialQuantifiersTranslator::MoveExistentialQuantifiersTranslator(loki::PDDLFactories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
 
 }

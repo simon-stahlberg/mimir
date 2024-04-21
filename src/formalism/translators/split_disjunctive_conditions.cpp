@@ -128,7 +128,7 @@ loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(const loki::P
 loki::Problem SplitDisjunctiveConditionsTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
 SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki::PDDLFactories& pddl_factories) :
-    BaseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_factories)
+    BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_factories)
 {
 }
 }
