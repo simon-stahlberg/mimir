@@ -54,6 +54,9 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_factories());
     problem = move_existential_quantifiers_translator.run(*problem);
 
+    std::cout << *problem->get_domain() << std::endl;
+    std::cout << *problem << std::endl;
+
     // To mimir structures
     auto to_mimir_structures_translator = ToMimirStructures(m_factories);
     m_problem = to_mimir_structures_translator.translate(*problem);

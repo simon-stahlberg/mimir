@@ -21,13 +21,26 @@
 
 namespace mimir
 {
-VariableImpl::VariableImpl(int identifier, std::string name) : Base(identifier), m_name(std::move(name)) {}
+VariableImpl::VariableImpl(int identifier, std::string name, size_t parameter_index) :
+    Base(identifier),
+    m_name(std::move(name)),
+    m_parameter_index(parameter_index)
+{
+}
 
-bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const { return (m_name == other.m_name); }
+bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const
+{
+    // (m_name == other.m_name) => (m_parameter_index == other.m_parameter_index)
+    assert(!(m_name == other.m_name) || (m_parameter_index == other.m_parameter_index));
+
+    return (m_name == other.m_name);
+}
 
 size_t VariableImpl::hash_impl() const { return loki::hash_combine(m_name); }
 
 void VariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }
+
+const size_t VariableImpl::get_parameter_index() const { return m_parameter_index; }
 }

@@ -29,7 +29,15 @@ Requirements ToMimirStructures::translate(const loki::RequirementsImpl& requirem
     return m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
 }
 
-Variable ToMimirStructures::translate(const loki::VariableImpl& variable) { return m_pddl_factories.get_or_create_variable(variable.get_name()); }
+Variable ToMimirStructures::translate(const loki::VariableImpl& variable)
+{
+    const auto parameter_index = m_variable_to_parameter_index.at(&variable);
+
+    // Encode parameter index in variable name for visibility
+    const auto variable_name = variable.get_name() + "_" + std::to_string(parameter_index);
+
+    return m_pddl_factories.get_or_create_variable(variable_name, parameter_index);
+}
 
 Object ToMimirStructures::translate(const loki::ObjectImpl& object)
 {
@@ -260,6 +268,7 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
 
 Action ToMimirStructures::translate(const loki::ActionImpl& action)
 {
+    // Remove existential quantifier at the root and collecting its parameters
     auto parameters = translate(action.get_parameters());
     auto literals = LiteralList {};
     if (action.get_condition().has_value())

@@ -135,7 +135,10 @@ public:
     /// @brief Get or create a variable for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Variable get_or_create_variable(std::string name) { return variables.get_or_create<VariableImpl>(std::move(name)); }
+    Variable get_or_create_variable(std::string name, size_t parameter_index)
+    {
+        return variables.get_or_create<VariableImpl>(std::move(name), std::move(parameter_index));
+    }
 
     /// @brief Get or create a variable term for the given parameters.
     ///

@@ -32,6 +32,8 @@ class ToMimirStructures
 private:
     PDDLFactories& m_pddl_factories;
 
+    std::unordered_map<loki::Variable, size_t> m_variable_to_parameter_index;
+
     /// @brief Translate a container of elements into a container of elements.
     template<typename T>
     auto translate(const std::vector<const T*>& input)
@@ -49,6 +51,18 @@ private:
         auto output = boost::container::small_vector<ReturnType, N> {};
         output.reserve(input.size());
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
+        return output;
+    }
+    auto translate(const loki::ParameterList& parameters)
+    {
+        // Map variables to parameter index
+        for (size_t i = 0; i < parameters.size(); ++i)
+        {
+            m_variable_to_parameter_index.emplace(parameters[i]->get_variable(), i);
+        }
+        auto output = ParameterList {};
+        output.reserve(parameters.size());
+        std::transform(std::begin(parameters), std::end(parameters), std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
         return output;
     }
     Requirements translate(const loki::RequirementsImpl& requirements);
