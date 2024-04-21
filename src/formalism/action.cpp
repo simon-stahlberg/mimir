@@ -33,7 +33,7 @@ ActionImpl::ActionImpl(int identifier,
                        ParameterList parameters,
                        LiteralList condition,
                        EffectList effect,
-                       std::optional<FunctionExpression> function_expression) :
+                       FunctionExpression function_expression) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
@@ -120,7 +120,7 @@ const LiteralList& ActionImpl::get_conditions() const { return m_condition; }
 
 const EffectList& ActionImpl::get_effects() const { return m_effect; }
 
-const std::optional<FunctionExpression>& ActionImpl::get_function_expression() const { return m_function_expression; }
+const FunctionExpression& ActionImpl::get_function_expression() const { return m_function_expression; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
 

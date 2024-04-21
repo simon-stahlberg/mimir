@@ -73,7 +73,7 @@ private:
     FunctionSkeleton translate(const loki::FunctionSkeletonImpl& function_skeleton);
     Function translate(const loki::FunctionImpl& function);
     std::pair<ParameterList, LiteralList> translate(const loki::ConditionImpl& condition);
-    std::pair<EffectList, std::optional<FunctionExpression>> translate(const loki::EffectImpl& effect);
+    std::pair<EffectList, FunctionExpression> translate(const loki::EffectImpl& effect);
     Action translate(const loki::ActionImpl& action);
     Axiom translate(const loki::AxiomImpl& axiom);
     OptimizationMetric translate(const loki::OptimizationMetricImpl& optimization_metric);

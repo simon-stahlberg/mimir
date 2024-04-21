@@ -169,7 +169,7 @@ std::pair<ParameterList, LiteralList> ToMimirStructures::translate(const loki::C
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-std::pair<EffectList, std::optional<FunctionExpression>> ToMimirStructures::translate(const loki::EffectImpl& effect)
+std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const loki::EffectImpl& effect)
 {
     auto effect_ptr = &effect;
 
@@ -177,7 +177,7 @@ std::pair<EffectList, std::optional<FunctionExpression>> ToMimirStructures::tran
     if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect_ptr))
     {
         auto result_effects = EffectList {};
-        auto result_function_expression = std::optional<FunctionExpression>();
+        auto result_function_expressions = FunctionExpressionList {};
         for (const auto& nested_effect : effect_and->get_effects())
         {
             auto tmp_effect = nested_effect;
@@ -226,22 +226,9 @@ std::pair<EffectList, std::optional<FunctionExpression>> ToMimirStructures::tran
             }
             else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
             {
-                // TODO: improve this error handling, potentially move it into loki to point to the exact location.
-                if (effect_numeric->get_assign_operator() != loki::AssignOperatorEnum::INCREASE)
-                {
-                    // Double check: this might already be correctly verified in Loki
-                    throw std::runtime_error("Expected \"increase\" in numeric effect.");
-                }
-                if (effect_numeric->get_function()->get_function_skeleton()->get_name() != "total-cost")
-                {
-                    // Double check: this might already be correctly verified in Loki
-                    throw std::runtime_error("Expected function name \"total-cost\".");
-                }
-                if (result_function_expression.has_value())
-                {
-                    throw std::runtime_error("Expected a single numeric effect.");
-                }
-                result_function_expression = this->translate(*effect_numeric->get_function_expression());
+                assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
+                assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
+                result_function_expressions.push_back(this->translate(*effect_numeric->get_function_expression()));
             }
             else
             {
@@ -251,7 +238,13 @@ std::pair<EffectList, std::optional<FunctionExpression>> ToMimirStructures::tran
             }
         }
 
-        return std::make_pair(result_effects, result_function_expression);
+        // If multiple action cost effects are given, we take their sum, otherwise, we take cost 1.
+        auto cost_function_expression =
+            (result_function_expressions.empty()) ?
+                this->m_pddl_factories.get_or_create_function_expression_number(1) :
+                this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions);
+
+        return std::make_pair(result_effects, cost_function_expression);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect_ptr) << std::endl;
@@ -270,8 +263,10 @@ Action ToMimirStructures::translate(const loki::ActionImpl& action)
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
     }
 
+    // Default effects
     auto effects = EffectList {};
-    auto function_expression = std::optional<FunctionExpression>();
+    auto function_expression = m_pddl_factories.get_or_create_function_expression_number(1);
+
     if (action.get_effect().has_value())
     {
         const auto [effects_, function_expression_] = translate(*action.get_effect().value());

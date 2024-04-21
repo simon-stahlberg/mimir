@@ -34,16 +34,11 @@ private:
     ParameterList m_parameters;
     LiteralList m_condition;
     EffectList m_effect;
-    std::optional<FunctionExpression> m_function_expression;
+    FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ActionImpl(int identifier,
-               std::string name,
-               ParameterList parameters,
-               LiteralList condition,
-               EffectList effect,
-               std::optional<FunctionExpression> function_expression);
+    ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, EffectList effect, FunctionExpression function_expression);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ActionImpl, loki::Hash<ActionImpl*>, loki::EqualTo<ActionImpl*>>;
@@ -61,7 +56,7 @@ public:
     const ParameterList& get_parameters() const;
     const LiteralList& get_conditions() const;
     const EffectList& get_effects() const;
-    const std::optional<FunctionExpression>& get_function_expression() const;
+    const FunctionExpression& get_function_expression() const;
     size_t get_arity() const;
 
     bool affects(Predicate predicate) const;

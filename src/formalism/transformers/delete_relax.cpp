@@ -36,9 +36,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     }
     effects.shrink_to_fit();
 
-    auto function_expression = std::optional<FunctionExpression>();
-
-    return this->m_pddl_factories.get_or_create_action(action.get_name(), parameters, conditions, effects, function_expression);
+    return this->m_pddl_factories.get_or_create_action(action.get_name(), parameters, conditions, effects, this->transform(*action.get_function_expression()));
 }
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
