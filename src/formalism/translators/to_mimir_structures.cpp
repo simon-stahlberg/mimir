@@ -238,11 +238,15 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
             }
         }
 
-        // If multiple action cost effects are given, we take their sum, otherwise, we take cost 1.
+        // If more than one action cost effects are given then we take their sum,
+        // If one action cost is given then we take it,
+        // and otherwise, we take cost 1.
         auto cost_function_expression =
             (result_function_expressions.empty()) ?
                 this->m_pddl_factories.get_or_create_function_expression_number(1) :
-                this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions);
+            result_function_expressions.size() > 1 ?
+                this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions) :
+                result_function_expressions.front();
 
         return std::make_pair(result_effects, cost_function_expression);
     }

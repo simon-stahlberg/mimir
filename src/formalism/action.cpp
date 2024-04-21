@@ -59,7 +59,9 @@ size_t ActionImpl::hash_impl() const
                               m_function_expression);
 }
 
-void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { return str(out, options, true); }
+
+void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool action_costs) const
 {
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
     out << std::string(options.indent, ' ') << "(:action " << m_name << "\n" << std::string(nested_options.indent, ' ') << ":parameters (";
@@ -105,6 +107,13 @@ void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
                 out << " ";
             }
             out << *m_effect[i];
+        }
+        if (action_costs)
+        {
+            out << " "
+                << "(increase total-cost ";
+            std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
+            out << ")";
         }
         out << ")";
     }

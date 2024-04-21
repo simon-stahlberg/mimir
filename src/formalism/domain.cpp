@@ -145,7 +145,7 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
 
     for (const auto& action : m_actions)
     {
-        action->str(out, nested_options);
+        action->str(out, nested_options, m_requirements->test(loki::RequirementEnum::ACTION_COSTS));
     }
 
     for (const auto& axiom : m_axioms)

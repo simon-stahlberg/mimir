@@ -57,6 +57,10 @@ public:
     const LiteralList& get_conditions() const;
     const EffectList& get_effects() const;
     const FunctionExpression& get_function_expression() const;
+
+    using loki::Base<ActionImpl>::str;
+    void str(std::ostream& out, const loki::FormattingOptions& options, bool action_costs) const;
+
     size_t get_arity() const;
 
     bool affects(Predicate predicate) const;
