@@ -141,31 +141,4 @@ const FunctionExpression& ActionImpl::get_function_expression() const { return m
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
 
-/// @brief Returns true if the predicate is present in the effect, otherwise false.
-bool ActionImpl::affects(Predicate predicate) const
-{
-    for (const auto& simple_effect : m_effect)
-    {
-        if (simple_effect->get_effect()->get_atom()->get_predicate() == predicate)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/// @brief Returns true if the predicate is present in the effect of any action, otherwise false.
-bool any_affects(const ActionList& actions, Predicate predicate)
-{
-    for (const auto& action : actions)
-    {
-        if (action->affects(predicate))
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
 }

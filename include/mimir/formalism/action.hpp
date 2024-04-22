@@ -73,11 +73,8 @@ public:
     void str(std::ostream& out, const loki::FormattingOptions& options, bool action_costs) const;
 
     size_t get_arity() const;
-
-    bool affects(Predicate predicate) const;
 };
 
-bool any_affects(const ActionList& actions, Predicate predicate);
 }
 
 #endif

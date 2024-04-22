@@ -55,17 +55,6 @@ DomainImpl::DomainImpl(int identifier,
     m_actions(std::move(actions)),
     m_axioms(std::move(axioms))
 {
-    for (const auto& predicate : m_predicates)
-    {
-        if (any_affects(m_actions, predicate))
-        {
-            m_fluent_predicates.emplace_back(predicate);
-        }
-        else
-        {
-            m_static_predicates.emplace_back(predicate);
-        }
-    }
 }
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const
