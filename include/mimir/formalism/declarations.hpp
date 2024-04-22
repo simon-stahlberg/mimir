@@ -113,6 +113,10 @@ class FunctionImpl;
 using Function = const FunctionImpl*;
 using FunctionList = std::vector<Function>;
 
+class GroundFunctionImpl;
+using GroundFunction = const GroundFunctionImpl*;
+using GroundFunctionList = std::vector<GroundFunction>;
+
 class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;

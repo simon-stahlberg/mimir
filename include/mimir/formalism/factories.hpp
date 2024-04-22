@@ -27,6 +27,7 @@
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -59,6 +60,7 @@ using ParameterFactory = loki::PDDLFactory<ParameterImpl>;
 using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
+using GroundFunctionFactory = loki::PDDLFactory<GroundFunctionImpl>;
 using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
 using SimpleEffectFactory = loki::PDDLFactory<EffectImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
@@ -84,6 +86,7 @@ private:
     PredicateFactory predicates;
     FunctionExpressionFactory function_expressions;
     FunctionFactory functions;
+    GroundFunctionFactory ground_functions;
     FunctionSkeletonFactory function_skeletons;
     SimpleEffectFactory simple_effects;
     ActionFactory actions;
@@ -107,6 +110,7 @@ public:
         predicates(PredicateFactory(1000)),
         function_expressions(FunctionExpressionFactory(1000)),
         functions(FunctionFactory(1000)),
+        ground_functions(GroundFunctionFactory(1000)),
         function_skeletons(FunctionSkeletonFactory(1000)),
         simple_effects(SimpleEffectFactory(1000)),
         actions(ActionFactory(100)),
@@ -244,6 +248,14 @@ public:
     Function get_or_create_function(FunctionSkeleton function_skeleton, TermList terms)
     {
         return functions.get_or_create<FunctionImpl>(std::move(function_skeleton), std::move(terms));
+    }
+
+    /// @brief Get or create a function for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundFunction get_or_create_ground_function(FunctionSkeleton function_skeleton, ObjectList objects)
+    {
+        return ground_functions.get_or_create<GroundFunctionImpl>(std::move(function_skeleton), std::move(objects));
     }
 
     /// @brief Get or create a function skeleton for the given parameters.

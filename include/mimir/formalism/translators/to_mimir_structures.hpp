@@ -138,7 +138,19 @@ private:
     Action translate(const loki::ActionImpl& action);
     Axiom translate(const loki::AxiomImpl& axiom);
     OptimizationMetric translate(const loki::OptimizationMetricImpl& optimization_metric);
+
+    /**
+     * Domain specific translation.
+     */
+
     Domain translate(const loki::DomainImpl& domain);
+
+    /**
+     * Problem specific translation
+     *
+     * Uses grounded structures.
+     */
+
     Problem translate(const loki::ProblemImpl& problem);
 
 public:
