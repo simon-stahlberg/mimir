@@ -50,7 +50,13 @@ private:
 
     void prepare_impl(const loki::VariableImpl& variable);
 
+    // Note: parameters of predicates and derived predicates in their
+    //       definition section are not renamed to keep them unique.
     loki::Variable translate_impl(const loki::VariableImpl& variable);
+    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
+    loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect);
+    loki::Action translate_impl(const loki::ActionImpl& action);
 
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
