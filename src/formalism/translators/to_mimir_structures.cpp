@@ -599,30 +599,13 @@ Problem ToMimirStructures::translate(const loki::ProblemImpl& problem)
         goal_literals = literals;
     }
 
-    /**
-     * For numeric fluents, we perform the following translation:
-     *
-     * ((distance a b) 5) and ((distance a b) 6) => ((distance a b) 11)
-     */
-    auto translated_numeric_fluents = NumericFluentList {};
-    auto function_to_cost_of_numeric_fluent = std::unordered_map<loki::Function, std::vector<double>> {};
-    for (const auto& numeric_fluent : problem.get_numeric_fluents())
-    {
-        function_to_cost_of_numeric_fluent[numeric_fluent->get_function()].push_back(numeric_fluent->get_number());
-    }
-    for (const auto& [function, numbers] : function_to_cost_of_numeric_fluent)
-    {
-        translated_numeric_fluents.push_back(
-            this->m_pddl_factories.get_or_create_numeric_fluent(this->translate(*function), std::accumulate(numbers.begin(), numbers.end(), 0.0)));
-    }
-
     return m_pddl_factories.get_or_create_problem(translate(*problem.get_domain()),
                                                   problem.get_name(),
                                                   translate(*problem.get_requirements()),
                                                   objects,
                                                   translate(problem.get_derived_predicates()),
                                                   translate(problem.get_initial_literals()),
-                                                  translated_numeric_fluents,
+                                                  translate(problem.get_numeric_fluents()),
                                                   goal_literals,
                                                   (problem.get_optimization_metric().has_value() ?
                                                        std::optional<OptimizationMetric>(translate(*problem.get_optimization_metric().value())) :
