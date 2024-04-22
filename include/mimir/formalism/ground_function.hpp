@@ -25,7 +25,7 @@
 
 namespace mimir
 {
-class GroundFunctionImpl : public loki::Base<FunctionImpl>
+class GroundFunctionImpl : public loki::Base<GroundFunctionImpl>
 {
 private:
     FunctionSkeleton m_function_skeleton;

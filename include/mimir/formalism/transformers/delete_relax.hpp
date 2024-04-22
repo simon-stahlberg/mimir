@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_DELETE_RELAX_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_DELETE_RELAX_HPP_
 
-#include "mimir/formalism/transformers/base.hpp"
+#include "mimir/formalism/transformers/base_cached_recurse.hpp"
 
 namespace mimir
 {
@@ -28,15 +28,15 @@ namespace mimir
  *
  * TODO: update static and fluent conditions because they might change on the delete relaxed problem.
  */
-class DeleteRelaxTransformer : public BaseTransformer<DeleteRelaxTransformer>
+class DeleteRelaxTransformer : public BaseCachedRecurseTransformer<DeleteRelaxTransformer>
 {
 private:
     /* Implement BaseTransformer interface. */
-    friend class BaseTransformer<DeleteRelaxTransformer>;
+    friend class BaseCachedRecurseTransformer<DeleteRelaxTransformer>;
 
     // Provide default implementations
-    using BaseTransformer::prepare_impl;
-    using BaseTransformer::transform_impl;
+    using BaseCachedRecurseTransformer::prepare_impl;
+    using BaseCachedRecurseTransformer::transform_impl;
 
     Action transform_impl(const ActionImpl& action);
 

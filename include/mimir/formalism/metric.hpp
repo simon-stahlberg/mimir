@@ -29,11 +29,11 @@ class OptimizationMetricImpl : public loki::Base<OptimizationMetricImpl>
 {
 private:
     loki::OptimizationMetricEnum m_optimization_metric;
-    FunctionExpression m_function_expression;
+    GroundFunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression);
+    OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<OptimizationMetricImpl, loki::Hash<OptimizationMetricImpl*>, loki::EqualTo<OptimizationMetricImpl*>>;
@@ -48,7 +48,7 @@ private:
 
 public:
     loki::OptimizationMetricEnum get_optimization_metric() const;
-    const FunctionExpression& get_function_expression() const;
+    const GroundFunctionExpression& get_function_expression() const;
 };
 }
 

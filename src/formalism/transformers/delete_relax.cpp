@@ -49,6 +49,6 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
 
-DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories) : BaseTransformer<DeleteRelaxTransformer>(pddl_factories) {}
+DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories) : BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories) {}
 
 }

@@ -107,8 +107,21 @@ public:
     FunctionExpression transform(const FunctionExpressionMinusImpl& function_expression) { return self().transform_base(function_expression); }
     FunctionExpression transform(const FunctionExpressionFunctionImpl& function_expression) { return self().transform_base(function_expression); }
     FunctionExpression transform(const FunctionExpressionImpl& function_expression) { return self().transform_base(function_expression); }
+    GroundFunctionExpression transform(const GroundFunctionExpressionNumberImpl& function_expression) { return self().transform_base(function_expression); }
+    GroundFunctionExpression transform(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+    {
+        return self().transform_base(function_expression);
+    }
+    GroundFunctionExpression transform(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
+    {
+        return self().transform_base(function_expression);
+    }
+    GroundFunctionExpression transform(const GroundFunctionExpressionMinusImpl& function_expression) { return self().transform_base(function_expression); }
+    GroundFunctionExpression transform(const GroundFunctionExpressionFunctionImpl& function_expression) { return self().transform_base(function_expression); }
+    GroundFunctionExpression transform(const GroundFunctionExpressionImpl& function_expression) { return self().transform_base(function_expression); }
     FunctionSkeleton transform(const FunctionSkeletonImpl& function_skeleton) { return self().transform_base(function_skeleton); }
     Function transform(const FunctionImpl& function) { return self().transform_base(function); }
+    GroundFunction transform(const GroundFunctionImpl& function) { return self().transform_base(function); }
     Action transform(const ActionImpl& action) { return self().transform_base(action); }
     Axiom transform(const AxiomImpl& axiom) { return self().transform_base(axiom); }
     Domain transform(const DomainImpl& domain) { return self().transform_base(domain); }

@@ -163,7 +163,7 @@ bool FunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(const Fu
     return true;
 }
 
-size_t FunctionExpressionFunctionImpl::hash_impl() const { return hash_combine(m_function); }
+size_t FunctionExpressionFunctionImpl::hash_impl() const { return loki::hash_combine(m_function); }
 
 void FunctionExpressionFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_function->str(out, options); }
 

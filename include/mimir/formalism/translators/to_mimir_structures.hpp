@@ -54,10 +54,8 @@ private:
     void prepare(const loki::ParameterImpl& parameter);
     void prepare(const loki::PredicateImpl& predicate);
     void prepare(const loki::AtomImpl& atom);
-    void prepare(const loki::GroundAtomImpl& atom);
     void prepare(const loki::LiteralImpl& literal);
     void prepare(const loki::NumericFluentImpl& numeric_fluent);
-    void prepare(const loki::GroundLiteralImpl& literal);
     void prepare(const loki::ConditionLiteralImpl& condition);
     void prepare(const loki::ConditionAndImpl& condition);
     void prepare(const loki::ConditionOrImpl& condition);
@@ -81,26 +79,30 @@ private:
     void prepare(const loki::OptimizationMetricImpl& metric);
     void prepare(const loki::ProblemImpl& problem);
 
+    /**
+     * Domain specific translation.
+     */
+
     /// @brief Translate a container of elements into a container of elements.
     template<typename T>
-    auto translate(const std::vector<const T*>& input)
+    auto translate_domain_specific(const std::vector<const T*>& input)
     {
-        using ReturnType = decltype(this->translate(std::declval<T>()));
+        using ReturnType = decltype(this->translate_domain_specific(std::declval<T>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_domain_specific(*arg); });
         return output;
     }
     template<typename T, size_t N>
-    auto translate(const boost::container::small_vector<const T*, N>& input)
+    auto translate_domain_specific(const boost::container::small_vector<const T*, N>& input)
     {
-        using ReturnType = decltype(this->translate(std::declval<T>()));
+        using ReturnType = decltype(this->translate_domain_specific(std::declval<T>()));
         auto output = boost::container::small_vector<ReturnType, N> {};
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_domain_specific(*arg); });
         return output;
     }
-    auto translate(const loki::ParameterList& parameters)
+    auto translate_domain_specific(const loki::ParameterList& parameters)
     {
         // Map variables to parameter index
         for (size_t i = 0; i < parameters.size(); ++i)
@@ -109,41 +111,35 @@ private:
         }
         auto output = ParameterList {};
         output.reserve(parameters.size());
-        std::transform(std::begin(parameters), std::end(parameters), std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
+        std::transform(std::begin(parameters),
+                       std::end(parameters),
+                       std::back_inserter(output),
+                       [this](auto&& arg) { return this->translate_domain_specific(*arg); });
         return output;
     }
-    Requirements translate(const loki::RequirementsImpl& requirements);
-    Variable translate(const loki::VariableImpl& variable);
-    Object translate(const loki::ObjectImpl& object);
-    Term translate(const loki::TermVariableImpl& term);
-    Term translate(const loki::TermObjectImpl& term);
-    Term translate(const loki::TermImpl& term);
-    Parameter translate(const loki::ParameterImpl& parameter);
-    Predicate translate(const loki::PredicateImpl& predicate);
-    Atom translate(const loki::AtomImpl& atom);
-    GroundAtom translate(const loki::GroundAtomImpl& atom);
-    Literal translate(const loki::LiteralImpl& literal);
-    GroundLiteral translate(const loki::GroundLiteralImpl& literal);
-    NumericFluent translate(const loki::NumericFluentImpl& numeric_fluent);
-    FunctionExpression translate(const loki::FunctionExpressionNumberImpl& function_expression);
-    FunctionExpression translate(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
-    FunctionExpression translate(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
-    FunctionExpression translate(const loki::FunctionExpressionMinusImpl& function_expression);
-    FunctionExpression translate(const loki::FunctionExpressionFunctionImpl& function_expression);
-    FunctionExpression translate(const loki::FunctionExpressionImpl& function_expression);
-    FunctionSkeleton translate(const loki::FunctionSkeletonImpl& function_skeleton);
-    Function translate(const loki::FunctionImpl& function);
-    std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> translate(const loki::ConditionImpl& condition);
-    std::pair<EffectList, FunctionExpression> translate(const loki::EffectImpl& effect);
-    Action translate(const loki::ActionImpl& action);
-    Axiom translate(const loki::AxiomImpl& axiom);
-    OptimizationMetric translate(const loki::OptimizationMetricImpl& optimization_metric);
-
-    /**
-     * Domain specific translation.
-     */
-
-    Domain translate(const loki::DomainImpl& domain);
+    Requirements translate_domain_specific(const loki::RequirementsImpl& requirements);
+    Variable translate_domain_specific(const loki::VariableImpl& variable);
+    Object translate_domain_specific(const loki::ObjectImpl& object);
+    Term translate_domain_specific(const loki::TermVariableImpl& term);
+    Term translate_domain_specific(const loki::TermObjectImpl& term);
+    Term translate_domain_specific(const loki::TermImpl& term);
+    Parameter translate_domain_specific(const loki::ParameterImpl& parameter);
+    Predicate translate_domain_specific(const loki::PredicateImpl& predicate);
+    Atom translate_domain_specific(const loki::AtomImpl& atom);
+    Literal translate_domain_specific(const loki::LiteralImpl& literal);
+    FunctionExpression translate_domain_specific(const loki::FunctionExpressionNumberImpl& function_expression);
+    FunctionExpression translate_domain_specific(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
+    FunctionExpression translate_domain_specific(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
+    FunctionExpression translate_domain_specific(const loki::FunctionExpressionMinusImpl& function_expression);
+    FunctionExpression translate_domain_specific(const loki::FunctionExpressionFunctionImpl& function_expression);
+    FunctionExpression translate_domain_specific(const loki::FunctionExpressionImpl& function_expression);
+    FunctionSkeleton translate_domain_specific(const loki::FunctionSkeletonImpl& function_skeleton);
+    Function translate_domain_specific(const loki::FunctionImpl& function);
+    std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> translate_domain_specific(const loki::ConditionImpl& condition);
+    std::pair<EffectList, FunctionExpression> translate_domain_specific(const loki::EffectImpl& effect);
+    Action translate_domain_specific(const loki::ActionImpl& action);
+    Axiom translate_domain_specific(const loki::AxiomImpl& axiom);
+    Domain translate_domain_specific(const loki::DomainImpl& domain);
 
     /**
      * Problem specific translation
@@ -151,7 +147,42 @@ private:
      * Uses grounded structures.
      */
 
-    Problem translate(const loki::ProblemImpl& problem);
+    template<typename T>
+    auto translate_problem_specific(const std::vector<const T*>& input)
+    {
+        using ReturnType = decltype(this->translate_problem_specific(std::declval<T>()));
+        auto output = std::vector<ReturnType> {};
+        output.reserve(input.size());
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_problem_specific(*arg); });
+        return output;
+    }
+    template<typename T, size_t N>
+    auto translate_problem_specific(const boost::container::small_vector<const T*, N>& input)
+    {
+        using ReturnType = decltype(this->translate_problem_specific(std::declval<T>()));
+        auto output = boost::container::small_vector<ReturnType, N> {};
+        output.reserve(input.size());
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_problem_specific(*arg); });
+        return output;
+    }
+    Requirements translate_problem_specific(const loki::RequirementsImpl& requirements);
+    Variable translate_problem_specific(const loki::VariableImpl& variable);
+    Object translate_problem_specific(const loki::ObjectImpl& object);
+    Parameter translate_problem_specific(const loki::ParameterImpl& parameter);
+    Predicate translate_problem_specific(const loki::PredicateImpl& predicate);
+    GroundAtom translate_problem_specific(const loki::AtomImpl& atom);
+    GroundLiteral translate_problem_specific(const loki::LiteralImpl& literal);
+    NumericFluent translate_problem_specific(const loki::NumericFluentImpl& numeric_fluent);
+    GroundFunctionExpression translate_problem_specific(const loki::FunctionExpressionNumberImpl& function_expression);
+    GroundFunctionExpression translate_problem_specific(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
+    GroundFunctionExpression translate_problem_specific(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
+    GroundFunctionExpression translate_problem_specific(const loki::FunctionExpressionMinusImpl& function_expression);
+    GroundFunctionExpression translate_problem_specific(const loki::FunctionExpressionFunctionImpl& function_expression);
+    GroundFunctionExpression translate_problem_specific(const loki::FunctionExpressionImpl& function_expression);
+    GroundFunction translate_problem_specific(const loki::FunctionImpl& function);
+    GroundLiteralList translate_problem_specific(const loki::ConditionImpl& condition);
+    OptimizationMetric translate_problem_specific(const loki::OptimizationMetricImpl& optimization_metric);
+    Problem translate_problem_specific(const loki::ProblemImpl& problem);
 
 public:
     explicit ToMimirStructures(PDDLFactories& pddl_factories);

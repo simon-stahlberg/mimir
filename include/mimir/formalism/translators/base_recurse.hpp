@@ -45,10 +45,8 @@ protected:
     void prepare_base(const loki::ParameterImpl& parameter) { self().prepare_impl(parameter); }
     void prepare_base(const loki::PredicateImpl& predicate) { self().prepare_impl(predicate); }
     void prepare_base(const loki::AtomImpl& atom) { self().prepare_impl(atom); }
-    void prepare_base(const loki::GroundAtomImpl& atom) { self().prepare_impl(atom); }
     void prepare_base(const loki::LiteralImpl& literal) { self().prepare_impl(literal); }
     void prepare_base(const loki::NumericFluentImpl& numeric_fluent) { self().prepare_impl(numeric_fluent); }
-    void prepare_base(const loki::GroundLiteralImpl& literal) { self().prepare_impl(literal); }
     void prepare_base(const loki::ConditionLiteralImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const loki::ConditionAndImpl& condition) { self().prepare_impl(condition); }
     void prepare_base(const loki::ConditionOrImpl& condition) { self().prepare_impl(condition); }
@@ -94,14 +92,8 @@ protected:
         this->prepare(*atom.get_predicate());
         this->prepare(atom.get_terms());
     }
-    void prepare_impl(const loki::GroundAtomImpl& atom)
-    {
-        this->prepare(*atom.get_predicate());
-        this->prepare(atom.get_objects());
-    }
     void prepare_impl(const loki::LiteralImpl& literal) { this->prepare(*literal.get_atom()); }
     void prepare_impl(const loki::NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
-    void prepare_impl(const loki::GroundLiteralImpl& literal) { this->prepare(*literal.get_atom()); }
     void prepare_impl(const loki::ConditionLiteralImpl& condition) { this->prepare(*condition.get_literal()); }
     void prepare_impl(const loki::ConditionAndImpl& condition) { this->prepare(condition.get_conditions()); }
     void prepare_impl(const loki::ConditionOrImpl& condition) { this->prepare(condition.get_conditions()); }
@@ -229,9 +221,7 @@ protected:
     loki::Parameter translate_base(const loki::ParameterImpl& parameter) { return this->self().translate_impl(parameter); }
     loki::Predicate translate_base(const loki::PredicateImpl& predicate) { return this->self().translate_impl(predicate); }
     loki::Atom translate_base(const loki::AtomImpl& atom) { return this->self().translate_impl(atom); }
-    loki::GroundAtom translate_base(const loki::GroundAtomImpl& atom) { return this->self().translate_impl(atom); }
     loki::Literal translate_base(const loki::LiteralImpl& literal) { return this->self().translate_impl(literal); }
-    loki::GroundLiteral translate_base(const loki::GroundLiteralImpl& literal) { return this->self().translate_impl(literal); }
     loki::NumericFluent translate_base(const loki::NumericFluentImpl& numeric_fluent) { return this->self().translate_impl(numeric_fluent); }
     loki::Condition translate_base(const loki::ConditionLiteralImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionAndImpl& condition) { return self().translate_impl(condition); }
@@ -313,17 +303,9 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_atom(this->translate(*atom.get_predicate()), this->translate(atom.get_terms()));
     }
-    loki::GroundAtom translate_impl(const loki::GroundAtomImpl& atom)
-    {
-        return this->m_pddl_factories.get_or_create_ground_atom(this->translate(*atom.get_predicate()), this->translate(atom.get_objects()));
-    }
     loki::Literal translate_impl(const loki::LiteralImpl& literal)
     {
         return this->m_pddl_factories.get_or_create_literal(literal.is_negated(), this->translate(*literal.get_atom()));
-    }
-    loki::GroundLiteral translate_impl(const loki::GroundLiteralImpl& literal)
-    {
-        return this->m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), this->translate(*literal.get_atom()));
     }
     loki::NumericFluent translate_impl(const loki::NumericFluentImpl& numeric_fluent)
     {

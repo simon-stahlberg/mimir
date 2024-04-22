@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/metric.hpp"
 
-#include "mimir/formalism/function_expressions.hpp"
+#include "mimir/formalism/ground_function_expressions.hpp"
 
 #include <cassert>
 #include <loki/loki.hpp>
@@ -26,7 +26,7 @@ using namespace std;
 
 namespace mimir
 {
-OptimizationMetricImpl::OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, FunctionExpression function_expression) :
+OptimizationMetricImpl::OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression) :
     Base(identifier),
     m_optimization_metric(optimization_metric),
     m_function_expression(std::move(function_expression))
@@ -49,6 +49,6 @@ void OptimizationMetricImpl::str_impl(std::ostream& out, const loki::FormattingO
 
 loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
 
-const FunctionExpression& OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
+const GroundFunctionExpression& OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
 
 }

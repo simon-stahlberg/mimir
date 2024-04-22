@@ -28,6 +28,7 @@
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
+#include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -59,6 +60,7 @@ using GroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl>;
 using ParameterFactory = loki::PDDLFactory<ParameterImpl>;
 using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
+using GroundFunctionExpressionFactory = loki::PDDLFactory<GroundFunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
 using GroundFunctionFactory = loki::PDDLFactory<GroundFunctionImpl>;
 using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
@@ -85,6 +87,7 @@ private:
     ParameterFactory parameters;
     PredicateFactory predicates;
     FunctionExpressionFactory function_expressions;
+    GroundFunctionExpressionFactory ground_function_expressions;
     FunctionFactory functions;
     GroundFunctionFactory ground_functions;
     FunctionSkeletonFactory function_skeletons;
@@ -109,6 +112,7 @@ public:
         parameters(ParameterFactory(1000)),
         predicates(PredicateFactory(1000)),
         function_expressions(FunctionExpressionFactory(1000)),
+        ground_function_expressions(GroundFunctionExpressionFactory(1000)),
         functions(FunctionFactory(1000)),
         ground_functions(GroundFunctionFactory(1000)),
         function_skeletons(FunctionSkeletonFactory(1000)),
@@ -242,6 +246,51 @@ public:
         return function_expressions.get_or_create<FunctionExpressionFunctionImpl>(std::move(function));
     }
 
+    /// @brief Get or create a number function expression for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundFunctionExpression get_or_create_ground_function_expression_number(double number)
+    {
+        return ground_function_expressions.get_or_create<GroundFunctionExpressionNumberImpl>(number);
+    }
+
+    /// @brief Get or create a binary operator function expression for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundFunctionExpression get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                      GroundFunctionExpression left_function_expression,
+                                                                                      GroundFunctionExpression right_function_expression)
+    {
+        return ground_function_expressions.get_or_create<GroundFunctionExpressionBinaryOperatorImpl>(binary_operator,
+                                                                                                     std::move(left_function_expression),
+                                                                                                     std::move(right_function_expression));
+    }
+
+    /// @brief Get or create a multi operator function expression for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundFunctionExpression get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                     GroundFunctionExpressionList function_expressions_)
+    {
+        return ground_function_expressions.get_or_create<GroundFunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions_));
+    }
+
+    /// @brief Get or create a minus function expression for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundFunctionExpression get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
+    {
+        return ground_function_expressions.get_or_create<GroundFunctionExpressionMinusImpl>(std::move(function_expression));
+    }
+
+    /// @brief Get or create a function function expression for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundFunctionExpression get_or_create_ground_function_expression_function(GroundFunction function)
+    {
+        return ground_function_expressions.get_or_create<GroundFunctionExpressionFunctionImpl>(std::move(function));
+    }
+
     /// @brief Get or create a function for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
@@ -314,7 +363,7 @@ public:
     /// @brief Get or create an optimization metric for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, FunctionExpression function_expression)
+    OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)
     {
         return optimization_metrics.get_or_create<OptimizationMetricImpl>(std::move(metric), std::move(function_expression));
     }
@@ -363,7 +412,7 @@ public:
                                   PredicateList derived_predicates,
                                   GroundLiteralList initial_literals,
                                   NumericFluentList numeric_fluents,
-                                  LiteralList goal_condition,
+                                  GroundLiteralList goal_condition,
                                   std::optional<OptimizationMetric> optimization_metric,
                                   AxiomList axioms)
     {

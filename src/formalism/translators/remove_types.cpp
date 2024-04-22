@@ -64,19 +64,18 @@ static loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& objec
     return pddl_factories.get_or_create_object(object.get_name(), loki::TypeList {});
 }
 
-static loki::GroundLiteralList typed_object_to_ground_literals(const loki::ObjectImpl& object,
-                                                               loki::PDDLFactories& pddl_factories,
-                                                               std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
+static loki::LiteralList typed_object_to_literals(const loki::ObjectImpl& object,
+                                                  loki::PDDLFactories& pddl_factories,
+                                                  std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
-    auto additional_literals = loki::GroundLiteralList {};
-    auto translated_object = typed_object_to_untyped_object(object, pddl_factories);
+    auto additional_literals = loki::LiteralList {};
+    auto translated_term = pddl_factories.get_or_create_term_object(typed_object_to_untyped_object(object, pddl_factories));
     auto types = collect_types_from_type_hierarchy(object.get_bases());
     for (const auto& type : types)
     {
-        auto additional_literal = pddl_factories.get_or_create_ground_literal(
+        auto additional_literal = pddl_factories.get_or_create_literal(
             false,
-            pddl_factories.get_or_create_ground_atom(type_to_predicate(*type, pddl_factories, type_to_predicate_mapper),
-                                                     loki::ObjectList { translated_object }));
+            pddl_factories.get_or_create_atom(type_to_predicate(*type, pddl_factories, type_to_predicate_mapper), loki::TermList { translated_term }));
         additional_literals.push_back(additional_literal);
     }
     return additional_literals;
@@ -240,11 +239,11 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
     // Make objects untyped
     auto translated_objects = loki::ObjectList {};
     translated_objects.reserve(problem.get_objects().size());
-    auto additional_initial_literals = loki::GroundLiteralList {};
+    auto additional_initial_literals = loki::LiteralList {};
     for (const auto& object : problem.get_objects())
     {
         auto translated_object = typed_object_to_untyped_object(*object, this->m_pddl_factories);
-        auto additional_literals = typed_object_to_ground_literals(*object, this->m_pddl_factories, this->m_type_to_predicates);
+        auto additional_literals = typed_object_to_literals(*object, this->m_pddl_factories, this->m_type_to_predicates);
         translated_objects.push_back(translated_object);
         additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
     }
@@ -252,7 +251,7 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
     // Make constants untyped
     for (const auto& object : problem.get_domain()->get_constants())
     {
-        auto additional_literals = typed_object_to_ground_literals(*object, this->m_pddl_factories, this->m_type_to_predicates);
+        auto additional_literals = typed_object_to_literals(*object, this->m_pddl_factories, this->m_type_to_predicates);
         additional_initial_literals.insert(additional_initial_literals.end(), additional_literals.begin(), additional_literals.end());
     }
 

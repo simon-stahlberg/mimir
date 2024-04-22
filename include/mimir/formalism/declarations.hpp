@@ -105,6 +105,23 @@ using FunctionExpressionImpl = std::variant<FunctionExpressionNumberImpl,
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
 
+class GroundFunctionExpressionNumberImpl;
+using GroundFunctionExpressionNumber = const GroundFunctionExpressionNumberImpl*;
+class GroundFunctionExpressionBinaryOperatorImpl;
+using GroundFunctionExpressionBinaryOperator = const GroundFunctionExpressionBinaryOperatorImpl*;
+class GroundFunctionExpressionMultiOperatorImpl;
+using GroundFunctionExpressionMultiOperator = const GroundFunctionExpressionMultiOperatorImpl*;
+class GroundFunctionExpressionMinusImpl;
+using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
+class GroundFunctionExpressionFunctionImpl;
+using GroundFunctionExpressionImpl = std::variant<GroundFunctionExpressionNumberImpl,
+                                                  GroundFunctionExpressionBinaryOperatorImpl,
+                                                  GroundFunctionExpressionMultiOperatorImpl,
+                                                  GroundFunctionExpressionMinusImpl,
+                                                  GroundFunctionExpressionFunctionImpl>;
+using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
+using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
+
 class FunctionSkeletonImpl;
 using FunctionSkeleton = const FunctionSkeletonImpl*;
 using FunctionSkeletonList = std::vector<FunctionSkeleton>;

@@ -40,14 +40,8 @@ void ToMimirStructures::prepare(const loki::AtomImpl& atom)
     prepare(*atom.get_predicate());
     prepare(atom.get_terms());
 }
-void ToMimirStructures::prepare(const loki::GroundAtomImpl& atom)
-{
-    prepare(*atom.get_predicate());
-    prepare(atom.get_objects());
-}
 void ToMimirStructures::prepare(const loki::LiteralImpl& literal) { prepare(*literal.get_atom()); }
 void ToMimirStructures::prepare(const loki::NumericFluentImpl& numeric_fluent) { prepare(*numeric_fluent.get_function()); }
-void ToMimirStructures::prepare(const loki::GroundLiteralImpl& literal) { prepare(*literal.get_atom()); }
 void ToMimirStructures::prepare(const loki::ConditionLiteralImpl& condition) { prepare(*condition.get_literal()); }
 void ToMimirStructures::prepare(const loki::ConditionAndImpl& condition) { prepare(condition.get_conditions()); }
 void ToMimirStructures::prepare(const loki::ConditionOrImpl& condition) { prepare(condition.get_conditions()); }
@@ -222,6 +216,7 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
     prepare(problem.get_axioms());
 }
 
+/*
 Requirements ToMimirStructures::translate(const loki::RequirementsImpl& requirements)
 {
     return m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
@@ -612,11 +607,107 @@ Problem ToMimirStructures::translate(const loki::ProblemImpl& problem)
                                                        std::nullopt),
                                                   translate(problem.get_axioms()));
 }
+*/
+
+Requirements ToMimirStructures::translate_problem_specific(const loki::RequirementsImpl& requirements) {}
+
+Variable ToMimirStructures::translate_problem_specific(const loki::VariableImpl& variable) {}
+
+Object ToMimirStructures::translate_problem_specific(const loki::ObjectImpl& object) {}
+
+Parameter ToMimirStructures::translate_problem_specific(const loki::ParameterImpl& parameter) {}
+
+Predicate ToMimirStructures::translate_problem_specific(const loki::PredicateImpl& predicate) {}
+
+GroundAtom ToMimirStructures::translate_problem_specific(const loki::AtomImpl& atom) {}
+
+GroundLiteral ToMimirStructures::translate_problem_specific(const loki::LiteralImpl& literal) {}
+
+NumericFluent ToMimirStructures::translate_problem_specific(const loki::NumericFluentImpl& numeric_fluent) {}
+
+GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionNumberImpl& function_expression) {}
+
+GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionBinaryOperatorImpl& function_expression) {}
+
+GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionMultiOperatorImpl& function_expression) {}
+
+GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionMinusImpl& function_expression) {}
+
+GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionFunctionImpl& function_expression) {}
+
+GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionImpl& function_expression) {}
+
+GroundFunction ToMimirStructures::translate_problem_specific(const loki::FunctionImpl& function) {}
+
+GroundLiteralList ToMimirStructures::translate_problem_specific(const loki::ConditionImpl& condition)
+{
+    auto condition_ptr = &condition;
+
+    if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition_ptr))
+    {
+        auto literals = GroundLiteralList {};
+        for (const auto& part : condition_and->get_conditions())
+        {
+            if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
+            {
+                literals.push_back(translate_problem_specific(*condition_literal->get_literal()));
+            }
+            else
+            {
+                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
+                throw std::logic_error("Expected literal in conjunctive condition.");
+            }
+        }
+        return literals;
+    }
+    else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
+    {
+        return GroundLiteralList { translate_problem_specific(*condition_literal->get_literal()) };
+    }
+
+    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
+
+    throw std::logic_error("Expected conjunctive condition.");
+}
+
+OptimizationMetric ToMimirStructures::translate_problem_specific(const loki::OptimizationMetricImpl& optimization_metric)
+{
+    return m_pddl_factories.get_or_create_optimization_metric(optimization_metric.get_optimization_metric(),
+                                                              translate_problem_specific(*optimization_metric.get_function_expression()));
+}
+
+Problem ToMimirStructures::translate_problem_specific(const loki::ProblemImpl& problem)
+{
+    // Add constants to objects in problem.
+    const auto constants = translate_problem_specific(problem.get_domain()->get_constants());
+    auto objects = translate_problem_specific(problem.get_objects());
+    objects.insert(objects.end(), constants.begin(), constants.end());
+
+    auto goal_literals = GroundLiteralList {};
+    if (problem.get_goal_condition().has_value())
+    {
+        goal_literals = translate_problem_specific(*problem.get_goal_condition().value());
+    }
+
+    return m_pddl_factories.get_or_create_problem(translate_domain_specific(*problem.get_domain()),
+                                                  problem.get_name(),
+                                                  translate_problem_specific(*problem.get_requirements()),
+                                                  objects,
+                                                  translate_problem_specific(problem.get_derived_predicates()),
+                                                  translate_problem_specific(problem.get_initial_literals()),
+                                                  translate_problem_specific(problem.get_numeric_fluents()),
+                                                  goal_literals,
+                                                  (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(
+                                                       translate_problem_specific(*problem.get_optimization_metric().value())) :
+                                                                                                   std::nullopt),
+                                                  translate_domain_specific(problem.get_axioms()));
+}
 
 Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
 {
     prepare(problem);
-    return translate(problem);
+    return translate_problem_specific(problem);
 }
 
 }

@@ -42,7 +42,7 @@ ProblemImpl::ProblemImpl(int identifier,
                          PredicateList derived_predicates,
                          GroundLiteralList initial_literals,
                          NumericFluentList numeric_fluents,
-                         LiteralList goal_condition,
+                         GroundLiteralList goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms) :
     Base(identifier),
@@ -180,7 +180,7 @@ const GroundLiteralList& ProblemImpl::get_initial_literals() const { return m_in
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
 
-const LiteralList& ProblemImpl::get_goal_condition() const { return m_goal_condition; }
+const GroundLiteralList& ProblemImpl::get_goal_condition() const { return m_goal_condition; }
 
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 

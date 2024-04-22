@@ -1,5 +1,5 @@
-#ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_HPP_
-#define MIMIR_FORMALISM_TRANSFORMERS_BASE_HPP_
+#ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
+#define MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
 
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
@@ -35,10 +35,10 @@ namespace mimir
  * Base implementation recursively calls transform and caches the results.
  */
 template<typename Derived>
-class BaseTransformer : public ITransformer<BaseTransformer<Derived>>
+class BaseCachedRecurseTransformer : public ITransformer<BaseCachedRecurseTransformer<Derived>>
 {
 private:
-    BaseTransformer() = default;
+    BaseCachedRecurseTransformer() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -61,19 +61,21 @@ protected:
     std::unordered_map<NumericFluent, NumericFluent> m_transformed_numeric_fluents;
     std::unordered_map<Effect, Effect> m_transformed_effects;
     std::unordered_map<FunctionExpression, FunctionExpression> m_transformed_function_expressions;
+    std::unordered_map<GroundFunctionExpression, GroundFunctionExpression> m_transformed_ground_function_expressions;
     std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_transformed_function_skeletons;
     std::unordered_map<Function, Function> m_transformed_functions;
+    std::unordered_map<GroundFunction, GroundFunction> m_transformed_ground_functions;
     std::unordered_map<Action, Action> m_transformed_actions;
     std::unordered_map<Axiom, Axiom> m_transformed_axioms;
     std::unordered_map<Domain, Domain> m_transformed_domains;
     std::unordered_map<OptimizationMetric, OptimizationMetric> m_transformed_optimization_metrics;
     std::unordered_map<Problem, Problem> m_transformed_problems;
 
-    explicit BaseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseCachedRecurseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */
-    friend class ITransformer<BaseTransformer<Derived>>;
+    friend class ITransformer<BaseCachedRecurseTransformer<Derived>>;
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
@@ -256,6 +258,29 @@ protected:
                                       m_transformed_function_expressions,
                                       [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
+    GroundFunctionExpression transform_base(const GroundFunctionExpressionNumberImpl& function_expression)
+    {
+        return self().transform_impl(function_expression);
+    }
+    GroundFunctionExpression transform_base(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+    {
+        return self().transform_impl(function_expression);
+    }
+    GroundFunctionExpression transform_base(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
+    {
+        return self().transform_impl(function_expression);
+    }
+    GroundFunctionExpression transform_base(const GroundFunctionExpressionMinusImpl& function_expression) { return self().transform_impl(function_expression); }
+    GroundFunctionExpression transform_base(const GroundFunctionExpressionFunctionImpl& function_expression)
+    {
+        return self().transform_impl(function_expression);
+    }
+    GroundFunctionExpression transform_base(const GroundFunctionExpressionImpl& function_expression)
+    {
+        return cached_transformd_impl(function_expression,
+                                      m_transformed_ground_function_expressions,
+                                      [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
     FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton)
     {
         return cached_transformd_impl(function_skeleton,
@@ -265,6 +290,10 @@ protected:
     Function transform_base(const FunctionImpl& function)
     {
         return cached_transformd_impl(function, m_transformed_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    GroundFunction transform_base(const GroundFunctionImpl& function)
+    {
+        return cached_transformd_impl(function, m_transformed_ground_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Action transform_base(const ActionImpl& action)
     {
@@ -384,6 +413,34 @@ protected:
     {
         return std::visit([this](auto&& arg) { return this->transform(arg); }, function_expression);
     }
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionNumberImpl& function_expression)
+    {
+        return this->m_pddl_factories.get_or_create_ground_function_expression_number(function_expression.get_number());
+    }
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+    {
+        return this->m_pddl_factories.get_or_create_ground_function_expression_binary_operator(
+            function_expression.get_binary_operator(),
+            this->transform(*function_expression.get_left_function_expression()),
+            this->transform(*function_expression.get_right_function_expression()));
+    }
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
+    {
+        return this->m_pddl_factories.get_or_create_ground_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                              this->transform(function_expression.get_function_expressions()));
+    }
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionMinusImpl& function_expression)
+    {
+        return this->m_pddl_factories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression()));
+    }
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
+    {
+        return this->m_pddl_factories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function()));
+    }
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionImpl& function_expression)
+    {
+        return std::visit([this](auto&& arg) { return this->transform(arg); }, function_expression);
+    }
     FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton)
     {
         return this->m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
@@ -391,6 +448,11 @@ protected:
     Function transform_impl(const FunctionImpl& function)
     {
         return this->m_pddl_factories.get_or_create_function(this->transform(*function.get_function_skeleton()), this->transform(function.get_terms()));
+    }
+    GroundFunction transform_impl(const GroundFunctionImpl& function)
+    {
+        return this->m_pddl_factories.get_or_create_ground_function(this->transform(*function.get_function_skeleton()),
+                                                                    this->transform(function.get_objects()));
     }
     Action transform_impl(const ActionImpl& action)
     {
