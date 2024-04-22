@@ -24,6 +24,8 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
     auto parameters = this->transform(action.get_parameters());
     auto conditions = this->transform(action.get_conditions());
+    auto static_conditions = this->transform(action.get_static_conditions());
+    auto fluent_conditions = this->transform(action.get_fluent_conditions());
 
     // Remove negative effects.
     auto effects = EffectList {};
@@ -36,7 +38,13 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     }
     effects.shrink_to_fit();
 
-    return this->m_pddl_factories.get_or_create_action(action.get_name(), parameters, conditions, effects, this->transform(*action.get_function_expression()));
+    return this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                       parameters,
+                                                       conditions,
+                                                       static_conditions,
+                                                       fluent_conditions,
+                                                       effects,
+                                                       this->transform(*action.get_function_expression()));
 }
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }

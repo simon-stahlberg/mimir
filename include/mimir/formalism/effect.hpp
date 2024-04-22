@@ -30,11 +30,18 @@ class EffectImpl : public loki::Base<EffectImpl>
 private:
     ParameterList m_quantified_variables;
     LiteralList m_conditions;
+    LiteralList m_static_condition;
+    LiteralList m_fluent_condition;
     Literal m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect);
+    EffectImpl(int identifier,
+               ParameterList quantified_variables,
+               LiteralList conditions,
+               LiteralList static_condition,
+               LiteralList fluent_condition,
+               Literal effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
@@ -49,6 +56,8 @@ private:
 public:
     const ParameterList& get_parameters() const;
     const LiteralList& get_conditions() const;
+    const LiteralList& get_static_conditions() const;
+    const LiteralList& get_fluent_conditions() const;
     const Literal& get_effect() const;
 };
 

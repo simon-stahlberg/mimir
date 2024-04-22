@@ -27,10 +27,17 @@
 
 namespace mimir
 {
-EffectImpl::EffectImpl(int identifier, ParameterList quantified_variables, LiteralList conditions, Literal effect) :
+EffectImpl::EffectImpl(int identifier,
+                       ParameterList quantified_variables,
+                       LiteralList conditions,
+                       LiteralList static_condition,
+                       LiteralList fluent_condition,
+                       Literal effect) :
     Base(identifier),
     m_quantified_variables(std::move(quantified_variables)),
     m_conditions(std::move(conditions)),
+    m_static_condition(std::move(static_condition)),
+    m_fluent_condition(std::move(fluent_condition)),
     m_effect(std::move(effect))
 {
 }
@@ -94,6 +101,10 @@ void EffectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
 const ParameterList& EffectImpl::get_parameters() const { return m_quantified_variables; }
 
 const LiteralList& EffectImpl::get_conditions() const { return m_conditions; }
+
+const LiteralList& EffectImpl::get_static_conditions() const { return m_static_condition; }
+
+const LiteralList& EffectImpl::get_fluent_conditions() const { return m_fluent_condition; }
 
 const Literal& EffectImpl::get_effect() const { return m_effect; }
 

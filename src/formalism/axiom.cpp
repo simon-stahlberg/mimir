@@ -24,11 +24,18 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(int identifier, ParameterList parameters, Literal literal, LiteralList condition) :
+AxiomImpl::AxiomImpl(int identifier,
+                     ParameterList parameters,
+                     Literal literal,
+                     LiteralList condition,
+                     LiteralList static_condition,
+                     LiteralList fluent_condition) :
     Base(identifier),
     m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
-    m_condition(std::move(condition))
+    m_condition(std::move(condition)),
+    m_static_condition(std::move(static_condition)),
+    m_fluent_condition(std::move(fluent_condition))
 {
 }
 
@@ -60,5 +67,9 @@ const ParameterList& AxiomImpl::get_parameters() const { return m_parameters; }
 const Literal& AxiomImpl::get_literal() const { return m_literal; }
 
 const LiteralList& AxiomImpl::get_conditions() const { return m_condition; }
+
+const LiteralList& AxiomImpl::get_static_conditions() const { return m_static_condition; }
+
+const LiteralList& AxiomImpl::get_fluent_conditions() const { return m_fluent_condition; }
 
 }

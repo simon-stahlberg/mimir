@@ -25,6 +25,8 @@ namespace mimir
 
 /**
  * Introduce an axiom for complicated goals, i.e., goals that are not conjunctions of literals.
+ *
+ * TODO: update static and fluent conditions because they might change on the delete relaxed problem.
  */
 class DeleteRelaxTransformer : public BaseTransformer<DeleteRelaxTransformer>
 {

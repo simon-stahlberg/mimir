@@ -49,6 +49,8 @@ private:
                Requirements requirements,
                ObjectList constants,
                PredicateList predicates,
+               PredicateList static_predicates,
+               PredicateList fluent_predicates,
                PredicateList derived_predicates,
                FunctionSkeletonList functions,
                ActionList actions,

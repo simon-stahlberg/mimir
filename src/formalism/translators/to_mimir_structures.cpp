@@ -23,6 +23,204 @@
 
 namespace mimir
 {
+void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) {}
+void ToMimirStructures::prepare(const loki::TypeImpl& type) { prepare(type.get_bases()); }
+void ToMimirStructures::prepare(const loki::ObjectImpl& object) { prepare(object.get_bases()); }
+void ToMimirStructures::prepare(const loki::VariableImpl& variable) {}
+void ToMimirStructures::prepare(const loki::TermObjectImpl& term) { prepare(*term.get_object()); }
+void ToMimirStructures::prepare(const loki::TermVariableImpl& term) { prepare(*term.get_variable()); }
+void ToMimirStructures::prepare(const loki::TermImpl& term)
+{
+    std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
+}
+void ToMimirStructures::prepare(const loki::ParameterImpl& parameter) { prepare(*parameter.get_variable()); }
+void ToMimirStructures::prepare(const loki::PredicateImpl& predicate) { prepare(predicate.get_parameters()); }
+void ToMimirStructures::prepare(const loki::AtomImpl& atom)
+{
+    prepare(*atom.get_predicate());
+    prepare(atom.get_terms());
+}
+void ToMimirStructures::prepare(const loki::GroundAtomImpl& atom)
+{
+    prepare(*atom.get_predicate());
+    prepare(atom.get_objects());
+}
+void ToMimirStructures::prepare(const loki::LiteralImpl& literal) { prepare(*literal.get_atom()); }
+void ToMimirStructures::prepare(const loki::NumericFluentImpl& numeric_fluent) { prepare(*numeric_fluent.get_function()); }
+void ToMimirStructures::prepare(const loki::GroundLiteralImpl& literal) { prepare(*literal.get_atom()); }
+void ToMimirStructures::prepare(const loki::ConditionLiteralImpl& condition) { prepare(*condition.get_literal()); }
+void ToMimirStructures::prepare(const loki::ConditionAndImpl& condition) { prepare(condition.get_conditions()); }
+void ToMimirStructures::prepare(const loki::ConditionOrImpl& condition) { prepare(condition.get_conditions()); }
+void ToMimirStructures::prepare(const loki::ConditionNotImpl& condition) { prepare(*condition.get_condition()); }
+void ToMimirStructures::prepare(const loki::ConditionImplyImpl& condition)
+{
+    prepare(*condition.get_condition_left());
+    prepare(*condition.get_condition_right());
+}
+void ToMimirStructures::prepare(const loki::ConditionExistsImpl& condition)
+{
+    prepare(condition.get_parameters());
+    prepare(*condition.get_condition());
+}
+void ToMimirStructures::prepare(const loki::ConditionForallImpl& condition)
+{
+    prepare(condition.get_parameters());
+    prepare(*condition.get_condition());
+}
+void ToMimirStructures::prepare(const loki::ConditionImpl& condition)
+{
+    std::visit([this](auto&& arg) { return this->prepare(arg); }, condition);
+}
+void ToMimirStructures::prepare(const loki::EffectImpl& effect)
+{
+    /**
+     * Find predicates affected by an effect.
+     */
+    auto effect_ptr = &effect;
+
+    // 1. Prepare conjunctive part
+    if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect_ptr))
+    {
+        for (const auto& nested_effect : effect_and->get_effects())
+        {
+            auto tmp_effect = nested_effect;
+
+            // 2. Prepare universal part
+            if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
+            {
+                prepare(tmp_effect_forall->get_parameters());
+
+                tmp_effect = tmp_effect_forall->get_effect();
+            }
+
+            // 3. Prepare conditional part
+            if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+            {
+                if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(tmp_effect_when->get_condition()))
+                {
+                    for (const auto& part : condition_and->get_conditions())
+                    {
+                        if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
+                        {
+                            prepare(*condition_literal->get_literal());
+                        }
+                        else
+                        {
+                            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
+                            throw std::logic_error("Expected literal in conjunctive condition.");
+                        }
+                    }
+                }
+                else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(tmp_effect_when->get_condition()))
+                {
+                    prepare(*condition_literal->get_literal());
+                }
+
+                tmp_effect = tmp_effect_when->get_effect();
+            }
+
+            // 4. Parse simple effect
+            if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
+            {
+                prepare(*effect_literal->get_literal());
+
+                // Found predicate affected by an effect
+                m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate());
+            }
+            else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
+            {
+                assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
+                assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
+                prepare(*effect_numeric->get_function_expression());
+            }
+            else
+            {
+                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
+
+                throw std::logic_error("Expected simple effect.");
+            }
+        }
+        return;
+    }
+
+    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect_ptr) << std::endl;
+
+    throw std::logic_error("Expected conjunctive effect.");
+}
+void ToMimirStructures::prepare(const loki::FunctionExpressionNumberImpl& function_expression) {}
+void ToMimirStructures::prepare(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
+{
+    prepare(*function_expression.get_left_function_expression());
+    prepare(*function_expression.get_right_function_expression());
+}
+void ToMimirStructures::prepare(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
+{
+    this->prepare(function_expression.get_function_expressions());
+}
+void ToMimirStructures::prepare(const loki::FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
+void ToMimirStructures::prepare(const loki::FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
+void ToMimirStructures::prepare(const loki::FunctionExpressionImpl& function_expression)
+{
+    std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
+}
+void ToMimirStructures::prepare(const loki::FunctionSkeletonImpl& function_skeleton)
+{
+    prepare(function_skeleton.get_parameters());
+    prepare(*function_skeleton.get_type());
+}
+void ToMimirStructures::prepare(const loki::FunctionImpl& function)
+{
+    prepare(*function.get_function_skeleton());
+    prepare(function.get_terms());
+}
+void ToMimirStructures::prepare(const loki::ActionImpl& action)
+{
+    prepare(action.get_parameters());
+    if (action.get_condition().has_value())
+    {
+        prepare(*action.get_condition().value());
+    }
+    if (action.get_effect().has_value())
+    {
+        prepare(*action.get_effect().value());
+    }
+}
+void ToMimirStructures::prepare(const loki::AxiomImpl& axiom)
+{
+    prepare(*axiom.get_condition());
+    prepare(*axiom.get_literal());
+}
+void ToMimirStructures::prepare(const loki::DomainImpl& domain)
+{
+    prepare(*domain.get_requirements());
+    prepare(domain.get_types());
+    prepare(domain.get_constants());
+    prepare(domain.get_predicates());
+    prepare(domain.get_derived_predicates());
+    prepare(domain.get_functions());
+    prepare(domain.get_actions());
+    prepare(domain.get_axioms());
+}
+void ToMimirStructures::prepare(const loki::OptimizationMetricImpl& metric) { prepare(*metric.get_function_expression()); }
+void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
+{
+    prepare(*problem.get_domain());
+    prepare(*problem.get_requirements());
+    prepare(problem.get_objects());
+    prepare(problem.get_derived_predicates());
+    prepare(problem.get_initial_literals());
+    prepare(problem.get_numeric_fluents());
+    if (problem.get_goal_condition().has_value())
+    {
+        prepare(*problem.get_goal_condition().value());
+    }
+    if (problem.get_optimization_metric().has_value())
+    {
+        prepare(*problem.get_optimization_metric().value());
+    }
+    prepare(problem.get_axioms());
+}
 
 Requirements ToMimirStructures::translate(const loki::RequirementsImpl& requirements)
 {
@@ -139,7 +337,7 @@ Function ToMimirStructures::translate(const loki::FunctionImpl& function)
     return m_pddl_factories.get_or_create_function(translate(*function.get_function_skeleton()), translate(function.get_terms()));
 }
 
-std::pair<ParameterList, LiteralList> ToMimirStructures::translate(const loki::ConditionImpl& condition)
+std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructures::translate(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
@@ -151,14 +349,36 @@ std::pair<ParameterList, LiteralList> ToMimirStructures::translate(const loki::C
         condition_ptr = condition_exists->get_condition();
     }
 
+    const auto func_insert_fluents = [](const loki::Literal literal,
+                                        const Literal& translated_literal,
+                                        const std::unordered_set<loki::Predicate>& fluent_predicates,
+                                        LiteralList& ref_literals,
+                                        LiteralList& ref_static_literals,
+                                        LiteralList& ref_fluent_literals)
+    {
+        ref_literals.push_back(translated_literal);
+        if (fluent_predicates.count(literal->get_atom()->get_predicate()))
+        {
+            ref_fluent_literals.push_back(translated_literal);
+        }
+        else
+        {
+            ref_static_literals.push_back(translated_literal);
+        }
+    };
+
     if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition_ptr))
     {
         auto literals = LiteralList {};
+        auto static_literals = LiteralList {};
+        auto fluent_literals = LiteralList {};
         for (const auto& part : condition_and->get_conditions())
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
             {
-                literals.push_back(translate(*condition_literal->get_literal()));
+                const auto translated_literal = translate(*condition_literal->get_literal());
+
+                func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
             }
             else
             {
@@ -167,11 +387,19 @@ std::pair<ParameterList, LiteralList> ToMimirStructures::translate(const loki::C
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_pair(parameters, literals);
+        return std::make_tuple(parameters, literals, static_literals, fluent_literals);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
     {
-        return std::make_pair(parameters, LiteralList { translate(*condition_literal->get_literal()) });
+        auto literals = LiteralList {};
+        auto static_literals = LiteralList {};
+        auto fluent_literals = LiteralList {};
+
+        const auto translated_literal = translate(*condition_literal->get_literal());
+
+        func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
+
+        return std::make_tuple(parameters, literals, static_literals, fluent_literals);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -202,28 +430,16 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
             }
 
             // 3. Parse conditional part
-            auto conditions = LiteralList {};
+            auto literals = LiteralList {};
+            auto static_literals = LiteralList {};
+            auto fluent_literals = LiteralList {};
             if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
             {
-                if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(tmp_effect_when->get_condition()))
-                {
-                    for (const auto& part : condition_and->get_conditions())
-                    {
-                        if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
-                        {
-                            conditions.push_back(translate(*condition_literal->get_literal()));
-                        }
-                        else
-                        {
-                            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+                const auto [parameters_, literals_, static_literals, fluent_literals_] = translate(*tmp_effect_when->get_condition());
 
-                            throw std::logic_error("Expected literal in conjunctive condition.");
-                        }
-                    }
-                }
-                else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(tmp_effect_when->get_condition()))
+                if (!parameters_.empty())
                 {
-                    conditions = LiteralList { translate(*condition_literal->get_literal()) };
+                    throw std::logic_error("Unexpected parameter in effect condition.");
                 }
 
                 tmp_effect = tmp_effect_when->get_effect();
@@ -232,12 +448,16 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
             // 4. Parse simple effect
             if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
             {
-                result_effects.push_back(m_pddl_factories.get_or_create_simple_effect(parameters, conditions, translate(*effect_literal->get_literal())));
+                const auto translated_effect = translate(*effect_literal->get_literal());
+
+                result_effects.push_back(
+                    m_pddl_factories.get_or_create_simple_effect(parameters, literals, static_literals, fluent_literals, translated_effect));
             }
             else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
             {
                 assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
                 assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
+
                 result_function_expressions.push_back(this->translate(*effect_numeric->get_function_expression()));
             }
             else
@@ -271,11 +491,15 @@ Action ToMimirStructures::translate(const loki::ActionImpl& action)
     // Remove existential quantifier at the root and collecting its parameters
     auto parameters = translate(action.get_parameters());
     auto literals = LiteralList {};
+    auto static_literals = LiteralList {};
+    auto fluent_literals = LiteralList {};
     if (action.get_condition().has_value())
     {
-        const auto [additional_parameters, parsed_literals] = translate(*action.get_condition().value());
-        literals = parsed_literals;
-        parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
+        const auto [parameters_, literals_, static_literals_, fluent_literals_] = translate(*action.get_condition().value());
+        literals = literals_;
+        static_literals = static_literals_;
+        fluent_literals = fluent_literals_;
+        parameters.insert(parameters.end(), parameters_.begin(), parameters_.end());
     }
 
     // Default effects
@@ -289,7 +513,7 @@ Action ToMimirStructures::translate(const loki::ActionImpl& action)
         function_expression = function_expression_;
     }
 
-    return m_pddl_factories.get_or_create_action(action.get_name(), parameters, literals, effects, function_expression);
+    return m_pddl_factories.get_or_create_action(action.get_name(), parameters, literals, static_literals, fluent_literals, effects, function_expression);
 }
 
 Axiom ToMimirStructures::translate(const loki::AxiomImpl& axiom)
@@ -298,7 +522,7 @@ Axiom ToMimirStructures::translate(const loki::AxiomImpl& axiom)
     auto parameters = translate(axiom.get_literal()->get_atom()->get_predicate()->get_parameters());
 
     // Turn quantifier variables into parameters
-    const auto [additional_parameters, literals] = translate(*axiom.get_condition());
+    const auto [additional_parameters, literals, static_literals, fluent_literals] = translate(*axiom.get_condition());
     parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
 
     // Turn free variables into parameters
@@ -308,7 +532,7 @@ Axiom ToMimirStructures::translate(const loki::AxiomImpl& axiom)
     }
     parameters.shrink_to_fit();
 
-    return m_pddl_factories.get_or_create_axiom(parameters, translate(*axiom.get_literal()), literals);
+    return m_pddl_factories.get_or_create_axiom(parameters, translate(*axiom.get_literal()), literals, static_literals, fluent_literals);
 }
 
 OptimizationMetric ToMimirStructures::translate(const loki::OptimizationMetricImpl& optimization_metric)
@@ -319,10 +543,34 @@ OptimizationMetric ToMimirStructures::translate(const loki::OptimizationMetricIm
 
 Domain ToMimirStructures::translate(const loki::DomainImpl& domain)
 {
+    const auto predicates = translate(domain.get_predicates());
+    auto static_predicates = PredicateList {};
+    for (const auto& predicate : domain.get_predicates())
+    {
+        if (!m_fluent_predicates.count(predicate))
+        {
+            static_predicates.push_back(translate(*predicate));
+        }
+    }
+    auto fluent_predicates = translate(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
+
+    std::cout << "Detected static predicates: " << std::endl;
+    for (const auto& predicate : static_predicates)
+    {
+        std::cout << *predicate << std::endl;
+    }
+    std::cout << "Detected fluent predicates: " << std::endl;
+    for (const auto& predicate : fluent_predicates)
+    {
+        std::cout << *predicate << std::endl;
+    }
+
     return m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                  translate(*domain.get_requirements()),
                                                  translate(domain.get_constants()),
-                                                 translate(domain.get_predicates()),
+                                                 predicates,
+                                                 static_predicates,
+                                                 fluent_predicates,
                                                  translate(domain.get_derived_predicates()),
                                                  translate(domain.get_functions()),
                                                  translate(domain.get_actions()),
@@ -341,7 +589,7 @@ Problem ToMimirStructures::translate(const loki::ProblemImpl& problem)
     auto goal_literals = LiteralList {};
     if (problem.get_goal_condition().has_value())
     {
-        const auto [parameters, literals] = translate(*problem.get_goal_condition().value());
+        const auto [parameters, literals, _static_literals, _fluent_literals] = translate(*problem.get_goal_condition().value());
 
         if (!parameters.empty())
         {
@@ -380,6 +628,12 @@ Problem ToMimirStructures::translate(const loki::ProblemImpl& problem)
                                                        std::optional<OptimizationMetric>(translate(*problem.get_optimization_metric().value())) :
                                                        std::nullopt),
                                                   translate(problem.get_axioms()));
+}
+
+Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
+{
+    prepare(problem);
+    return translate(problem);
 }
 
 }

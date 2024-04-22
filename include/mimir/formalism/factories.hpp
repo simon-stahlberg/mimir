@@ -257,19 +257,32 @@ public:
     /// @brief Get or create a simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Effect get_or_create_simple_effect(ParameterList parameters, LiteralList condition, Literal effect)
+    Effect
+    get_or_create_simple_effect(ParameterList parameters, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
     {
-        return simple_effects.get_or_create<EffectImpl>(std::move(parameters), std::move(condition), std::move(effect));
+        return simple_effects.get_or_create<EffectImpl>(std::move(parameters),
+                                                        std::move(condition),
+                                                        std::move(static_condition),
+                                                        std::move(fluent_condition),
+                                                        std::move(effect));
     }
 
     /// @brief Get or create an action for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Action get_or_create_action(std::string name, ParameterList parameters, LiteralList condition, EffectList effect, FunctionExpression function_expression)
+    Action get_or_create_action(std::string name,
+                                ParameterList parameters,
+                                LiteralList condition,
+                                LiteralList static_condition,
+                                LiteralList fluent_condition,
+                                EffectList effect,
+                                FunctionExpression function_expression)
     {
         return actions.get_or_create<ActionImpl>(std::move(name),
                                                  std::move(parameters),
                                                  std::move(condition),
+                                                 std::move(static_condition),
+                                                 std::move(fluent_condition),
                                                  std::move(effect),
                                                  std::move(function_expression));
     }
@@ -277,9 +290,13 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(ParameterList parameters, Literal literal, LiteralList condition)
+    Axiom get_or_create_axiom(ParameterList parameters, Literal literal, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition)
     {
-        return axioms.get_or_create<AxiomImpl>(std::move(parameters), std::move(literal), std::move(condition));
+        return axioms.get_or_create<AxiomImpl>(std::move(parameters),
+                                               std::move(literal),
+                                               std::move(condition),
+                                               std::move(static_condition),
+                                               std::move(fluent_condition));
     }
 
     /// @brief Get or create an optimization metric for the given parameters.
@@ -305,6 +322,8 @@ public:
                                 Requirements requirements,
                                 ObjectList constants,
                                 PredicateList predicates,
+                                PredicateList static_predicates,
+                                PredicateList fluent_predicates,
                                 PredicateList derived_predicates,
                                 FunctionSkeletonList functions,
                                 ActionList actions,
@@ -314,6 +333,8 @@ public:
                                                  std::move(requirements),
                                                  std::move(constants),
                                                  std::move(predicates),
+                                                 std::move(static_predicates),
+                                                 std::move(fluent_predicates),
                                                  std::move(derived_predicates),
                                                  std::move(functions),
                                                  std::move(actions),

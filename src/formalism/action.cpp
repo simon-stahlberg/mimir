@@ -32,12 +32,16 @@ ActionImpl::ActionImpl(int identifier,
                        std::string name,
                        ParameterList parameters,
                        LiteralList condition,
+                       LiteralList static_condition,
+                       LiteralList fluent_condition,
                        EffectList effect,
                        FunctionExpression function_expression) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
     m_condition(std::move(condition)),
+    m_static_condition(std::move(static_condition)),
+    m_fluent_condition(std::move(fluent_condition)),
     m_effect(std::move(effect)),
     m_function_expression(std::move(function_expression))
 {
@@ -126,6 +130,10 @@ const std::string& ActionImpl::get_name() const { return m_name; }
 const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 
 const LiteralList& ActionImpl::get_conditions() const { return m_condition; }
+
+const LiteralList& ActionImpl::get_static_conditions() const { return m_static_condition; }
+
+const LiteralList& ActionImpl::get_fluent_conditions() const { return m_fluent_condition; }
 
 const EffectList& ActionImpl::get_effects() const { return m_effect; }
 

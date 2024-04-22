@@ -353,6 +353,8 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_simple_effect(this->transform(effect.get_parameters()),
                                                                   this->transform(effect.get_conditions()),
+                                                                  this->transform(effect.get_static_conditions()),
+                                                                  this->transform(effect.get_static_conditions()),
                                                                   this->transform(*effect.get_effect()));
     }
     FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
@@ -395,13 +397,17 @@ protected:
         return this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                            this->transform(action.get_parameters()),
                                                            this->transform(action.get_conditions()),
+                                                           this->transform(action.get_static_conditions()),
+                                                           this->transform(action.get_fluent_conditions()),
                                                            this->transform(action.get_effects()));
     }
     Axiom transform_impl(const AxiomImpl& axiom)
     {
         return this->m_pddl_factories.get_or_create_axiom(this->transform(axiom.get_parameters()),
                                                           this->transform(*axiom.get_literal()),
-                                                          this->transform(axiom.get_conditions()));
+                                                          this->transform(axiom.get_conditions()),
+                                                          this->transform(axiom.get_static_conditions()),
+                                                          this->transform(axiom.get_fluent_conditions()));
     }
     Domain transform_impl(const DomainImpl& domain)
     {
@@ -409,6 +415,8 @@ protected:
                                                            this->transform(*domain.get_requirements()),
                                                            this->transform(domain.get_constants()),
                                                            this->transform(domain.get_predicates()),
+                                                           this->transform(domain.get_static_predicates()),
+                                                           this->transform(domain.get_fluent_predicates()),
                                                            this->transform(domain.get_derived_predicates()),
                                                            this->transform(domain.get_functions()),
                                                            this->transform(domain.get_actions()),

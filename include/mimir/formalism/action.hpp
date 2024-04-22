@@ -33,12 +33,21 @@ private:
     std::string m_name;
     ParameterList m_parameters;
     LiteralList m_condition;
+    LiteralList m_static_condition;
+    LiteralList m_fluent_condition;
     EffectList m_effect;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ActionImpl(int identifier, std::string name, ParameterList parameters, LiteralList condition, EffectList effect, FunctionExpression function_expression);
+    ActionImpl(int identifier,
+               std::string name,
+               ParameterList parameters,
+               LiteralList condition,
+               LiteralList static_condition,
+               LiteralList fluent_condition,
+               EffectList effect,
+               FunctionExpression function_expression);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<ActionImpl, loki::Hash<ActionImpl*>, loki::EqualTo<ActionImpl*>>;
@@ -55,6 +64,8 @@ public:
     const std::string& get_name() const;
     const ParameterList& get_parameters() const;
     const LiteralList& get_conditions() const;
+    const LiteralList& get_static_conditions() const;
+    const LiteralList& get_fluent_conditions() const;
     const EffectList& get_effects() const;
     const FunctionExpression& get_function_expression() const;
 

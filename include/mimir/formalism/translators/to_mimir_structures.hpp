@@ -32,7 +32,54 @@ class ToMimirStructures
 private:
     PDDLFactories& m_pddl_factories;
 
+    // Predicate with an action effect
+    std::unordered_set<loki::Predicate> m_fluent_predicates;
+
+    // Encode parameter index into variables for grounding
     std::unordered_map<loki::Variable, size_t> m_variable_to_parameter_index;
+
+    /// @brief Prepare all elements in a container.
+    template<typename Container>
+    void prepare(const Container& input)
+    {
+        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare(*arg); });
+    }
+    void prepare(const loki::RequirementsImpl& requirements);
+    void prepare(const loki::TypeImpl& type);
+    void prepare(const loki::ObjectImpl& object);
+    void prepare(const loki::VariableImpl& variable);
+    void prepare(const loki::TermObjectImpl& term);
+    void prepare(const loki::TermVariableImpl& term);
+    void prepare(const loki::TermImpl& term);
+    void prepare(const loki::ParameterImpl& parameter);
+    void prepare(const loki::PredicateImpl& predicate);
+    void prepare(const loki::AtomImpl& atom);
+    void prepare(const loki::GroundAtomImpl& atom);
+    void prepare(const loki::LiteralImpl& literal);
+    void prepare(const loki::NumericFluentImpl& numeric_fluent);
+    void prepare(const loki::GroundLiteralImpl& literal);
+    void prepare(const loki::ConditionLiteralImpl& condition);
+    void prepare(const loki::ConditionAndImpl& condition);
+    void prepare(const loki::ConditionOrImpl& condition);
+    void prepare(const loki::ConditionNotImpl& condition);
+    void prepare(const loki::ConditionImplyImpl& condition);
+    void prepare(const loki::ConditionExistsImpl& condition);
+    void prepare(const loki::ConditionForallImpl& condition);
+    void prepare(const loki::ConditionImpl& condition);
+    void prepare(const loki::EffectImpl& effect);
+    void prepare(const loki::FunctionExpressionNumberImpl& function_expression);
+    void prepare(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
+    void prepare(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
+    void prepare(const loki::FunctionExpressionMinusImpl& function_expression);
+    void prepare(const loki::FunctionExpressionFunctionImpl& function_expression);
+    void prepare(const loki::FunctionExpressionImpl& function_expression);
+    void prepare(const loki::FunctionSkeletonImpl& function_skeleton);
+    void prepare(const loki::FunctionImpl& function);
+    void prepare(const loki::ActionImpl& action);
+    void prepare(const loki::AxiomImpl& axiom);
+    void prepare(const loki::DomainImpl& domain);
+    void prepare(const loki::OptimizationMetricImpl& metric);
+    void prepare(const loki::ProblemImpl& problem);
 
     /// @brief Translate a container of elements into a container of elements.
     template<typename T>
@@ -86,17 +133,18 @@ private:
     FunctionExpression translate(const loki::FunctionExpressionImpl& function_expression);
     FunctionSkeleton translate(const loki::FunctionSkeletonImpl& function_skeleton);
     Function translate(const loki::FunctionImpl& function);
-    std::pair<ParameterList, LiteralList> translate(const loki::ConditionImpl& condition);
+    std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> translate(const loki::ConditionImpl& condition);
     std::pair<EffectList, FunctionExpression> translate(const loki::EffectImpl& effect);
     Action translate(const loki::ActionImpl& action);
     Axiom translate(const loki::AxiomImpl& axiom);
     OptimizationMetric translate(const loki::OptimizationMetricImpl& optimization_metric);
     Domain translate(const loki::DomainImpl& domain);
+    Problem translate(const loki::ProblemImpl& problem);
 
 public:
     explicit ToMimirStructures(PDDLFactories& pddl_factories);
 
-    Problem translate(const loki::ProblemImpl& problem);
+    Problem run(const loki::ProblemImpl& problem);
 };
 
 }

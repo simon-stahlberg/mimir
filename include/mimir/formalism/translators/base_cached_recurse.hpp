@@ -56,8 +56,10 @@ protected:
     /* Implement ITranslator interface */
     friend class ITranslator<BaseCachedRecurseTranslator<Derived>>;
 
-    /// @brief Collect information.
-    ///        Default implementation recursively calls prepare.
+    /**
+     * Collect information.
+     * Default implementation recursively calls prepare.
+     */
     void prepare_base(const loki::RequirementsImpl& requirements) { self().prepare_impl(requirements); }
     void prepare_base(const loki::TypeImpl& type) { self().prepare_impl(type); }
     void prepare_base(const loki::ObjectImpl& object) { self().prepare_impl(object); }
@@ -240,8 +242,30 @@ protected:
         this->prepare(problem.get_axioms());
     }
 
-    /// @brief Apply problem translation.
-    ///        Default behavior reparses it into the pddl_factories.
+    /**
+     * Apply problem translation.
+     * Default behavior reparses it into the pddl_factories.
+     */
+
+    /// @brief Retrieve or create cache entry of translation to avoid recomputations.
+    template<typename Impl, typename TranslateFunc>
+    auto cached_translated_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
+    {
+        // Access from cache
+        auto it = cache.find(&impl);
+        if (it != cache.end())
+        {
+            return it->second;
+        }
+
+        // Translate
+        auto translated = translateFunc(impl);
+
+        // Insert into cache
+        cache.emplace(&impl, translated);
+
+        return translated;
+    }
     loki::Requirements translate_base(const loki::RequirementsImpl& requirements)
     {
         return cached_translated_impl(requirements, m_translated_requirements, [this](const auto& arg) { return this->self().translate_impl(arg); });
@@ -364,25 +388,6 @@ protected:
         return cached_translated_impl(problem, m_translated_problems, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
 
-    /// @brief Retrieve or create cache entry of translation to avoid recomputations.
-    template<typename Impl, typename TranslateFunc>
-    auto cached_translated_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
-    {
-        // Access from cache
-        auto it = cache.find(&impl);
-        if (it != cache.end())
-        {
-            return it->second;
-        }
-
-        // Translate
-        auto translated = translateFunc(impl);
-
-        // Insert into cache
-        cache.emplace(&impl, translated);
-
-        return translated;
-    }
     loki::Requirements translate_impl(const loki::RequirementsImpl& requirements)
     {
         return this->m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
