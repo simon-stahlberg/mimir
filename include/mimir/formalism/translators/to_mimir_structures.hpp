@@ -93,15 +93,6 @@ private:
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_domain_specific(*arg); });
         return output;
     }
-    template<typename T, size_t N>
-    auto translate_domain_specific(const boost::container::small_vector<const T*, N>& input)
-    {
-        using ReturnType = decltype(this->translate_domain_specific(std::declval<T>()));
-        auto output = boost::container::small_vector<ReturnType, N> {};
-        output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_domain_specific(*arg); });
-        return output;
-    }
     auto translate_domain_specific(const loki::ParameterList& parameters)
     {
         // Map variables to parameter index
@@ -156,18 +147,10 @@ private:
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_problem_specific(*arg); });
         return output;
     }
-    template<typename T, size_t N>
-    auto translate_problem_specific(const boost::container::small_vector<const T*, N>& input)
-    {
-        using ReturnType = decltype(this->translate_problem_specific(std::declval<T>()));
-        auto output = boost::container::small_vector<ReturnType, N> {};
-        output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_problem_specific(*arg); });
-        return output;
-    }
     Requirements translate_problem_specific(const loki::RequirementsImpl& requirements);
     Variable translate_problem_specific(const loki::VariableImpl& variable);
     Object translate_problem_specific(const loki::ObjectImpl& object);
+    Object translate_problem_specific(const loki::TermImpl& term);
     Parameter translate_problem_specific(const loki::ParameterImpl& parameter);
     Predicate translate_problem_specific(const loki::PredicateImpl& predicate);
     GroundAtom translate_problem_specific(const loki::AtomImpl& atom);

@@ -18,7 +18,6 @@
 #ifndef MIMIR_FORMALISM_DECLARATIONS_HPP_
 #define MIMIR_FORMALISM_DECLARATIONS_HPP_
 
-#include <boost/container/small_vector.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
@@ -53,11 +52,11 @@ class TermVariableImpl;
 using TermVariable = const TermVariableImpl*;
 using TermImpl = std::variant<TermObjectImpl, TermVariableImpl>;
 using Term = const TermImpl*;
-using TermList = boost::container::small_vector<Term, 2>;  // often unary and binary predicates
+using TermList = std::vector<Term>;
 
 class ParameterImpl;
 using Parameter = const ParameterImpl*;
-using ParameterList = boost::container::small_vector<Parameter, 10>;  // often actions, quantifiers with few parameters
+using ParameterList = std::vector<Parameter>;
 using ParameterAssignment = std::unordered_map<Parameter, Object>;
 
 class PredicateImpl;

@@ -199,53 +199,53 @@ protected:
     ///        Default behavior reparses it into the pddl_factories.
     Requirements transform_base(const RequirementsImpl& requirements)
     {
-        return cached_transformd_impl(requirements, m_transformed_requirements, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(requirements, m_transformed_requirements, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Object transform_base(const ObjectImpl& object)
     {
-        return cached_transformd_impl(object, m_transformed_objects, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(object, m_transformed_objects, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Variable transform_base(const VariableImpl& variable)
     {
-        return cached_transformd_impl(variable, m_transformed_variables, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(variable, m_transformed_variables, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Term transform_base(const TermObjectImpl& term) { return self().transform_impl(term); }
     Term transform_base(const TermVariableImpl& term) { return self().transform_impl(term); }
     Term transform_base(const TermImpl& term)
     {
-        return cached_transformd_impl(term, m_transformed_terms, [this, &term](const auto& arg) { return this->self().transform_impl(term); });
+        return cached_transform_impl(term, m_transformed_terms, [this, &term](const auto& arg) { return this->self().transform_impl(term); });
     }
     Parameter transform_base(const ParameterImpl& parameter)
     {
-        return cached_transformd_impl(parameter, m_transformed_parameters, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(parameter, m_transformed_parameters, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Predicate transform_base(const PredicateImpl& predicate)
     {
-        return cached_transformd_impl(predicate, m_transformed_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(predicate, m_transformed_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Atom transform_base(const AtomImpl& atom)
     {
-        return cached_transformd_impl(atom, m_transformed_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(atom, m_transformed_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     GroundAtom transform_base(const GroundAtomImpl& atom)
     {
-        return cached_transformd_impl(atom, m_transformed_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(atom, m_transformed_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Literal transform_base(const LiteralImpl& literal)
     {
-        return cached_transformd_impl(literal, m_transformed_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(literal, m_transformed_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     GroundLiteral transform_base(const GroundLiteralImpl& literal)
     {
-        return cached_transformd_impl(literal, m_transformed_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(literal, m_transformed_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     NumericFluent transform_base(const NumericFluentImpl& numeric_fluent)
     {
-        return cached_transformd_impl(numeric_fluent, m_transformed_numeric_fluents, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(numeric_fluent, m_transformed_numeric_fluents, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Effect transform_base(const EffectImpl& effect)
     {
-        return cached_transformd_impl(effect, m_transformed_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(effect, m_transformed_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     FunctionExpression transform_base(const FunctionExpressionNumberImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
@@ -254,9 +254,9 @@ protected:
     FunctionExpression transform_base(const FunctionExpressionFunctionImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionImpl& function_expression)
     {
-        return cached_transformd_impl(function_expression,
-                                      m_transformed_function_expressions,
-                                      [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(function_expression,
+                                     m_transformed_function_expressions,
+                                     [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     GroundFunctionExpression transform_base(const GroundFunctionExpressionNumberImpl& function_expression)
     {
@@ -277,48 +277,46 @@ protected:
     }
     GroundFunctionExpression transform_base(const GroundFunctionExpressionImpl& function_expression)
     {
-        return cached_transformd_impl(function_expression,
-                                      m_transformed_ground_function_expressions,
-                                      [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(function_expression,
+                                     m_transformed_ground_function_expressions,
+                                     [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton)
     {
-        return cached_transformd_impl(function_skeleton,
-                                      m_transformed_function_skeletons,
-                                      [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(function_skeleton, m_transformed_function_skeletons, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Function transform_base(const FunctionImpl& function)
     {
-        return cached_transformd_impl(function, m_transformed_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(function, m_transformed_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     GroundFunction transform_base(const GroundFunctionImpl& function)
     {
-        return cached_transformd_impl(function, m_transformed_ground_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(function, m_transformed_ground_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Action transform_base(const ActionImpl& action)
     {
-        return cached_transformd_impl(action, m_transformed_actions, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(action, m_transformed_actions, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Axiom transform_base(const AxiomImpl& axiom)
     {
-        return cached_transformd_impl(axiom, m_transformed_axioms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(axiom, m_transformed_axioms, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Domain transform_base(const DomainImpl& domain)
     {
-        return cached_transformd_impl(domain, m_transformed_domains, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(domain, m_transformed_domains, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     OptimizationMetric transform_base(const OptimizationMetricImpl& metric)
     {
-        return cached_transformd_impl(metric, m_transformed_optimization_metrics, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(metric, m_transformed_optimization_metrics, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Problem transform_base(const ProblemImpl& problem)
     {
-        return cached_transformd_impl(problem, m_transformed_problems, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(problem, m_transformed_problems, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
 
     /// @brief Retrieve or create cache entry of translation to avoid recomputations.
     template<typename Impl, typename TranslateFunc>
-    auto cached_transformd_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& transformFunc)
+    auto cached_transform_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& transformFunc)
     {
         // Access from cache
         auto it = cache.find(&impl);

@@ -239,7 +239,7 @@ protected:
 
     /// @brief Retrieve or create cache entry of translation to avoid recomputations.
     template<typename Impl, typename TranslateFunc>
-    auto cached_translated_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
+    auto cached_translate_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
     {
         // Access from cache
         auto it = cache.find(&impl);
@@ -258,45 +258,45 @@ protected:
     }
     loki::Requirements translate_base(const loki::RequirementsImpl& requirements)
     {
-        return cached_translated_impl(requirements, m_translated_requirements, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(requirements, m_translated_requirements, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Type translate_base(const loki::TypeImpl& type)
     {
-        return cached_translated_impl(type, m_translated_types, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(type, m_translated_types, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Object translate_base(const loki::ObjectImpl& object)
     {
-        return cached_translated_impl(object, m_translated_objects, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(object, m_translated_objects, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Variable translate_base(const loki::VariableImpl& variable)
     {
-        return cached_translated_impl(variable, m_translated_variables, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(variable, m_translated_variables, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Term translate_base(const loki::TermObjectImpl& term) { return self().translate_impl(term); }
     loki::Term translate_base(const loki::TermVariableImpl& term) { return self().translate_impl(term); }
     loki::Term translate_base(const loki::TermImpl& term)
     {
-        return cached_translated_impl(term, m_translated_terms, [this, &term](const auto& arg) { return this->self().translate_impl(term); });
+        return cached_translate_impl(term, m_translated_terms, [this, &term](const auto& arg) { return this->self().translate_impl(term); });
     }
     loki::Parameter translate_base(const loki::ParameterImpl& parameter)
     {
-        return cached_translated_impl(parameter, m_translated_parameters, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(parameter, m_translated_parameters, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Predicate translate_base(const loki::PredicateImpl& predicate)
     {
-        return cached_translated_impl(predicate, m_translated_predicates, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(predicate, m_translated_predicates, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Atom translate_base(const loki::AtomImpl& atom)
     {
-        return cached_translated_impl(atom, m_translated_atoms, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(atom, m_translated_atoms, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Literal translate_base(const loki::LiteralImpl& literal)
     {
-        return cached_translated_impl(literal, m_translated_literals, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(literal, m_translated_literals, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::NumericFluent translate_base(const loki::NumericFluentImpl& numeric_fluent)
     {
-        return cached_translated_impl(numeric_fluent, m_translated_numeric_fluents, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(numeric_fluent, m_translated_numeric_fluents, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Condition translate_base(const loki::ConditionLiteralImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionAndImpl& condition) { return self().translate_impl(condition); }
@@ -307,7 +307,7 @@ protected:
     loki::Condition translate_base(const loki::ConditionForallImpl& condition) { return self().translate_impl(condition); }
     loki::Condition translate_base(const loki::ConditionImpl& condition)
     {
-        return cached_translated_impl(condition, m_translated_conditions, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(condition, m_translated_conditions, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Effect translate_base(const loki::EffectLiteralImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectAndImpl& effect) { return self().translate_impl(effect); }
@@ -316,7 +316,7 @@ protected:
     loki::Effect translate_base(const loki::EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectImpl& effect)
     {
-        return cached_translated_impl(effect, m_translated_effects, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(effect, m_translated_effects, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::FunctionExpression translate_base(const loki::FunctionExpressionNumberImpl& function_expression)
     {
@@ -337,37 +337,37 @@ protected:
     }
     loki::FunctionExpression translate_base(const loki::FunctionExpressionImpl& function_expression)
     {
-        return cached_translated_impl(function_expression,
-                                      m_translated_function_expressions,
-                                      [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(function_expression,
+                                     m_translated_function_expressions,
+                                     [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::FunctionSkeleton translate_base(const loki::FunctionSkeletonImpl& function_skeleton)
     {
-        return cached_translated_impl(function_skeleton, m_translated_function_skeletons, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(function_skeleton, m_translated_function_skeletons, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Function translate_base(const loki::FunctionImpl& function)
     {
-        return cached_translated_impl(function, m_translated_functions, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(function, m_translated_functions, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Action translate_base(const loki::ActionImpl& action)
     {
-        return cached_translated_impl(action, m_translated_actions, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(action, m_translated_actions, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Axiom translate_base(const loki::AxiomImpl& axiom)
     {
-        return cached_translated_impl(axiom, m_translated_axioms, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(axiom, m_translated_axioms, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Domain translate_base(const loki::DomainImpl& domain)
     {
-        return cached_translated_impl(domain, m_translated_domains, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(domain, m_translated_domains, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::OptimizationMetric translate_base(const loki::OptimizationMetricImpl& metric)
     {
-        return cached_translated_impl(metric, m_translated_optimization_metrics, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(metric, m_translated_optimization_metrics, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
     loki::Problem translate_base(const loki::ProblemImpl& problem)
     {
-        return cached_translated_impl(problem, m_translated_problems, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(problem, m_translated_problems, [this](const auto& arg) { return this->self().translate_impl(arg); });
     }
 
     loki::Requirements translate_impl(const loki::RequirementsImpl& requirements)

@@ -615,6 +615,8 @@ Variable ToMimirStructures::translate_problem_specific(const loki::VariableImpl&
 
 Object ToMimirStructures::translate_problem_specific(const loki::ObjectImpl& object) {}
 
+Object ToMimirStructures::translate_problem_specific(const loki::TermImpl& term) {}
+
 Parameter ToMimirStructures::translate_problem_specific(const loki::ParameterImpl& parameter) {}
 
 Predicate ToMimirStructures::translate_problem_specific(const loki::PredicateImpl& predicate) {}
@@ -637,7 +639,11 @@ GroundFunctionExpression ToMimirStructures::translate_problem_specific(const lok
 
 GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionImpl& function_expression) {}
 
-GroundFunction ToMimirStructures::translate_problem_specific(const loki::FunctionImpl& function) {}
+GroundFunction ToMimirStructures::translate_problem_specific(const loki::FunctionImpl& function)
+{
+    return m_pddl_factories.get_or_create_ground_function(translate_domain_specific(*function.get_function_skeleton()),
+                                                          translate_problem_specific(function.get_terms()));
+}
 
 GroundLiteralList ToMimirStructures::translate_problem_specific(const loki::ConditionImpl& condition)
 {
