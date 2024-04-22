@@ -18,14 +18,54 @@
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
-#include "mimir/formalism/arithmetics.hpp"
 #include "mimir/search/actions/dense.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <stdexcept>
 
+using namespace std::string_literals;
+
 namespace mimir
 {
+/// @brief Grounding function for pddl structures.
+static void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
+{
+    out_terms.clear();
+
+    for (const auto& term : terms)
+    {
+        if (const auto term_object = std::get_if<TermObjectImpl>(term))
+        {
+            out_terms.emplace_back(term_object->get_object());
+        }
+        else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+        {
+            out_terms.emplace_back(binding[term_variable->get_variable()->get_parameter_index()]);
+        }
+    }
+}
+
+/// @brief Grounding function for pddl structures.
+///
+/// Note: this function can go if we provide grounded structures for each relevant pddl type.
+static void ground_variables(const TermList& terms, const ObjectList& binding, TermList& out_terms, PDDLFactories& pddl_factories)
+{
+    out_terms.clear();
+
+    for (const auto& term : terms)
+    {
+        if (const auto term_object = std::get_if<TermObjectImpl>(term))
+        {
+            out_terms.emplace_back(pddl_factories.get_or_create_term_object(term_object->get_object()));
+        }
+        else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+        {
+            out_terms.emplace_back(pddl_factories.get_or_create_term_object(binding[term_variable->get_variable()->get_parameter_index()]));
+        }
+    }
+}
+
+/// @brief Grounding function for flat structures.
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_variables(const std::vector<ParameterIndexOrConstantId>& variables,
                                                                const ObjectList& binding,
                                                                ObjectList& out_terms) const
@@ -57,26 +97,38 @@ GroundLiteral AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_literal(const Flat
 class GroundAndEvaluateFunctionExpressionVisitor
 {
 private:
-    const std::vector<double>& m_number_by_numeric_fluent_id;
+    const std::map<Function, double>& m_initial_ground_function_values;
     const ObjectList& m_binding;
+    PDDLFactories& m_pddl_factories;
+
+    Function ground_function(const Function& function)
+    {
+        auto grounded_terms = TermList {};
+        ground_variables(function->get_terms(), m_binding, grounded_terms, m_pddl_factories);
+        return m_pddl_factories.get_or_create_function(function->get_function_skeleton(), grounded_terms);
+    }
 
 public:
-    GroundAndEvaluateFunctionExpressionVisitor(const std::vector<double>& number_by_numeric_fluent_id, const ObjectList& binding) :
-        m_number_by_numeric_fluent_id(number_by_numeric_fluent_id),
-        m_binding(binding)
+    GroundAndEvaluateFunctionExpressionVisitor(const std::map<Function, double>& initial_ground_function_values,
+                                               const ObjectList& binding,
+                                               PDDLFactories& pddl_factories) :
+
+        m_initial_ground_function_values(initial_ground_function_values),
+        m_binding(binding),
+        m_pddl_factories(pddl_factories)
     {
     }
 
-    double operator()(const FunctionExpressionNumberImpl& expr) const { return expr.get_number(); }
+    double operator()(const FunctionExpressionNumberImpl& expr) { return expr.get_number(); }
 
-    double operator()(const FunctionExpressionBinaryOperatorImpl& expr) const
+    double operator()(const FunctionExpressionBinaryOperatorImpl& expr)
     {
         return evaluate_binary(expr.get_binary_operator(),
                                std::visit(*this, *expr.get_left_function_expression()),
                                std::visit(*this, *expr.get_right_function_expression()));
     }
 
-    double operator()(const FunctionExpressionMultiOperatorImpl& expr) const
+    double operator()(const FunctionExpressionMultiOperatorImpl& expr)
     {
         assert(!expr.get_function_expressions().empty());
 
@@ -90,12 +142,20 @@ public:
         return result;
     }
 
-    double operator()(const FunctionExpressionMinusImpl& expr) const { return -std::visit(*this, *expr.get_function_expression()); }
+    double operator()(const FunctionExpressionMinusImpl& expr) { return -std::visit(*this, *expr.get_function_expression()); }
 
-    double operator()(const FunctionExpressionFunctionImpl& expr) const
+    double operator()(const FunctionExpressionFunctionImpl& expr)
     {
-        // TODO implement.
-        return 0;
+        auto grounded_function = ground_function(expr.get_function());
+
+        auto it = m_initial_ground_function_values.find(grounded_function);
+        if (it == m_initial_ground_function_values.end())
+        {
+            throw std::runtime_error("No numeric fluent available to determine cost for ground function "s + grounded_function->str());
+        }
+        const auto cost = it->second;
+
+        return cost;
     }
 };
 
@@ -136,10 +196,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     fill_bitsets(flat_action.unconditional_effect, positive_effect, negative_effect);
 
     m_action_builder.get_id() = m_actions.size();
-    // TODO: evaluate function expression to obtain the action cost.
-    // const auto cost =
-    //    std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_problem->get_numeric_fluents(), binding), *flat_action.source->get_function_expression());
-    m_action_builder.get_cost() = 1;
+    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_initial_ground_function_values, binding, this->m_pddl_factories),
+                                             *flat_action.source->get_function_expression());
     m_action_builder.get_action() = flat_action.source;
     auto& objects = m_action_builder.get_objects();
     objects.clear();
@@ -305,13 +363,17 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(C
 
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
     m_problem(problem),
+    m_initial_ground_function_values(),
     m_pddl_factories(pddl_factories),
     m_flat_actions(),
     m_partitions(),
     m_to_vertex_assignment(),
     m_statically_consistent_assignments()
 {
-    // Type information is used by the unary and general cases.
+    for (const auto numeric_fluent : problem->get_numeric_fluents())
+    {
+        m_initial_ground_function_values.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
+    }
 
     const auto& domain = problem->get_domain();
 

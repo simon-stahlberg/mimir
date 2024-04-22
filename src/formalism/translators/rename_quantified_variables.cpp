@@ -30,9 +30,12 @@ static loki::Variable create_renamed_variable(const loki::Variable& variable, si
 
 void RenameQuantifiedVariablesTranslator::rename_variables(const loki::ParameterList& parameters)
 {
+    // Allow renaming nested variables
+    m_renaming_enabled = true;
+
     for (const auto& parameter : parameters)
     {
-        // Increment number of quantifications of the variable.
+        // Increment number of quantifications of the variable and rename it.
         const auto renamed_variable =
             create_renamed_variable(parameter->get_variable(), ++m_num_quantifications.at(parameter->get_variable()), this->m_pddl_factories);
 
@@ -42,7 +45,38 @@ void RenameQuantifiedVariablesTranslator::rename_variables(const loki::Parameter
 
 void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::VariableImpl& variable) { m_variables.insert(&variable); }
 
-loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable) { return m_renamings.at(&variable); }
+loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
+{
+    return (m_renaming_enabled) ? m_renamings[&variable] : m_pddl_factories.get_or_create_variable(variable.get_name());
+}
+
+loki::Predicate RenameQuantifiedVariablesTranslator::translate_impl(const loki::PredicateImpl& predicate)
+{
+    // Disallow renaming of nested variables
+    m_renaming_enabled = false;
+
+    auto result = this->m_pddl_factories.get_or_create_predicate(predicate.get_name(), this->translate(predicate.get_parameters()));
+
+    // Allow renaming again
+    m_renaming_enabled = true;
+
+    return result;
+}
+
+loki::FunctionSkeleton RenameQuantifiedVariablesTranslator::translate_impl(const loki::FunctionSkeletonImpl& function_skeleton)
+{
+    // Disallow renaming of nested variables
+    m_renaming_enabled = false;
+
+    auto result = this->m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(),
+                                                                         this->translate(function_skeleton.get_parameters()),
+                                                                         this->translate(*function_skeleton.get_type()));
+
+    // Allow renaming again
+    m_renaming_enabled = true;
+
+    return result;
+}
 
 loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::ActionImpl& action)
 {
@@ -103,6 +137,10 @@ loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemI
     return this->translate(problem);
 }
 
-RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLFactories& pddl_factories) : BaseRecurseTranslator(pddl_factories) {}
+RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLFactories& pddl_factories) :
+    BaseRecurseTranslator(pddl_factories),
+    m_renaming_enabled(true)
+{
+}
 
 }

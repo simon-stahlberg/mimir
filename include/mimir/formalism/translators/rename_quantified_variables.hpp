@@ -46,13 +46,25 @@ private:
     std::unordered_map<loki::Variable, size_t> m_num_quantifications;
     std::unordered_map<loki::Variable, loki::Variable> m_renamings;
 
-    void rename_variables(const loki::ParameterList& parameters);
+    bool m_renaming_enabled;
 
+    /// @brief Collect all existing variables.
     void prepare_impl(const loki::VariableImpl& variable);
 
-    // Note: parameters of predicates and derived predicates in their
-    //       definition section are not renamed to keep them unique.
+    /// @brief Renames variables during translation.
+    void rename_variables(const loki::ParameterList& parameters);
+
     loki::Variable translate_impl(const loki::VariableImpl& variable);
+
+    /**
+     * Keep variable names of parameters in these constructs, i.e., turn off renaming
+     */
+    loki::Predicate translate_impl(const loki::PredicateImpl& predicate);
+    loki::FunctionSkeleton translate_impl(const loki::FunctionSkeletonImpl& function_skeleton);
+
+    /**
+     * Rename variables names of parameters in these constructs, i.e., turn on renaming
+     */
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
     loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
     loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect);

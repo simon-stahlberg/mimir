@@ -57,11 +57,6 @@ ProblemImpl::ProblemImpl(int identifier,
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms))
 {
-    m_number_by_numeric_fluent_id.resize(m_numeric_fluents.size());
-    for (const auto& numeric_fluent : m_numeric_fluents)
-    {
-        m_number_by_numeric_fluent_id.at(numeric_fluent->get_identifier()) = numeric_fluent->get_number();
-    }
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
@@ -190,7 +185,5 @@ const LiteralList& ProblemImpl::get_goal_condition() const { return m_goal_condi
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
-
-const std::vector<double>& ProblemImpl::get_number_by_numeric_fluent_id() const { return m_number_by_numeric_fluent_id; }
 
 }
