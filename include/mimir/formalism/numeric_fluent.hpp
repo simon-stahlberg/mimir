@@ -28,12 +28,12 @@ namespace mimir
 class NumericFluentImpl : public loki::Base<NumericFluentImpl>
 {
 private:
-    Function m_function;
+    GroundFunction m_function;
     double m_number;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    NumericFluentImpl(int identifier, Function function, double number);
+    NumericFluentImpl(int identifier, GroundFunction function, double number);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<NumericFluentImpl, loki::Hash<NumericFluentImpl*>, loki::EqualTo<NumericFluentImpl*>>;
@@ -47,7 +47,7 @@ private:
     friend class loki::Base<NumericFluentImpl>;
 
 public:
-    const Function& get_function() const;
+    const GroundFunction& get_function() const;
     double get_number() const;
 };
 }

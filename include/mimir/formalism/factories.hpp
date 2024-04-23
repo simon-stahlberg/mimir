@@ -371,7 +371,7 @@ public:
     /// @brief Get or create an optimization metric for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    NumericFluent get_or_create_numeric_fluent(Function function, double number)
+    NumericFluent get_or_create_numeric_fluent(GroundFunction function, double number)
     {
         return numeric_fluents.get_or_create<NumericFluentImpl>(std::move(function), std::move(number));
     }

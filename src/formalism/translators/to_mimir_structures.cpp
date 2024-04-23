@@ -216,13 +216,16 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
     prepare(problem.get_axioms());
 }
 
-/*
-Requirements ToMimirStructures::translate(const loki::RequirementsImpl& requirements)
+/**
+ * Common
+ */
+
+Requirements ToMimirStructures::translate_common(const loki::RequirementsImpl& requirements)
 {
     return m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
 }
 
-Variable ToMimirStructures::translate(const loki::VariableImpl& variable)
+Variable ToMimirStructures::translate_common(const loki::VariableImpl& variable)
 {
     const auto parameter_index = m_variable_to_parameter_index.at(&variable);
 
@@ -232,7 +235,7 @@ Variable ToMimirStructures::translate(const loki::VariableImpl& variable)
     return m_pddl_factories.get_or_create_variable(variable_name, parameter_index);
 }
 
-Object ToMimirStructures::translate(const loki::ObjectImpl& object)
+Object ToMimirStructures::translate_common(const loki::ObjectImpl& object)
 {
     if (!object.get_bases().empty())
     {
@@ -241,105 +244,100 @@ Object ToMimirStructures::translate(const loki::ObjectImpl& object)
     return m_pddl_factories.get_or_create_object(object.get_name());
 }
 
-Term ToMimirStructures::translate(const loki::TermVariableImpl& term) { return m_pddl_factories.get_or_create_term_variable(translate(*term.get_variable())); }
-
-Term ToMimirStructures::translate(const loki::TermObjectImpl& term) { return m_pddl_factories.get_or_create_term_object(translate(*term.get_object())); }
-
-Term ToMimirStructures::translate(const loki::TermImpl& term)
-{
-    return std::visit([this](auto&& arg) { return this->translate(arg); }, term);
-}
-
-Parameter ToMimirStructures::translate(const loki::ParameterImpl& parameter)
+Parameter ToMimirStructures::translate_common(const loki::ParameterImpl& parameter)
 {
     if (!parameter.get_bases().empty())
     {
         throw std::logic_error("Expected types to be empty.");
     }
-    return m_pddl_factories.get_or_create_parameter(translate(*parameter.get_variable()));
+    return m_pddl_factories.get_or_create_parameter(translate_common(*parameter.get_variable()));
 }
 
-Predicate ToMimirStructures::translate(const loki::PredicateImpl& predicate)
+Predicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
 {
-    return m_pddl_factories.get_or_create_predicate(predicate.get_name(), translate(predicate.get_parameters()));
+    return m_pddl_factories.get_or_create_predicate(predicate.get_name(), translate_common(predicate.get_parameters()));
 }
 
-Atom ToMimirStructures::translate(const loki::AtomImpl& atom)
+/**
+ * Lifted
+ */
+
+Term ToMimirStructures::translate_lifted(const loki::TermVariableImpl& term)
 {
-    return m_pddl_factories.get_or_create_atom(translate(*atom.get_predicate()), translate(atom.get_terms()));
+    return m_pddl_factories.get_or_create_term_variable(translate_common(*term.get_variable()));
 }
 
-GroundAtom ToMimirStructures::translate(const loki::GroundAtomImpl& atom)
+Term ToMimirStructures::translate_lifted(const loki::TermObjectImpl& term)
 {
-    return m_pddl_factories.get_or_create_ground_atom(translate(*atom.get_predicate()), translate(atom.get_objects()));
+    return m_pddl_factories.get_or_create_term_object(translate_common(*term.get_object()));
 }
 
-Literal ToMimirStructures::translate(const loki::LiteralImpl& literal)
+Term ToMimirStructures::translate_lifted(const loki::TermImpl& term)
 {
-    return m_pddl_factories.get_or_create_literal(literal.is_negated(), translate(*literal.get_atom()));
+    return std::visit([this](auto&& arg) { return this->translate_lifted(arg); }, term);
 }
 
-GroundLiteral ToMimirStructures::translate(const loki::GroundLiteralImpl& literal)
+Atom ToMimirStructures::translate_lifted(const loki::AtomImpl& atom)
 {
-    return m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), translate(*literal.get_atom()));
+    return m_pddl_factories.get_or_create_atom(translate_common(*atom.get_predicate()), translate_lifted(atom.get_terms()));
 }
 
-NumericFluent ToMimirStructures::translate(const loki::NumericFluentImpl& numeric_fluent)
+Literal ToMimirStructures::translate_lifted(const loki::LiteralImpl& literal)
 {
-    return m_pddl_factories.get_or_create_numeric_fluent(translate(*numeric_fluent.get_function()), numeric_fluent.get_number());
+    return m_pddl_factories.get_or_create_literal(literal.is_negated(), translate_lifted(*literal.get_atom()));
 }
 
-FunctionExpression ToMimirStructures::translate(const loki::FunctionExpressionNumberImpl& function_expression)
+FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionNumberImpl& function_expression)
 {
     return m_pddl_factories.get_or_create_function_expression_number(function_expression.get_number());
 }
 
-FunctionExpression ToMimirStructures::translate(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
+FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
 {
     return m_pddl_factories.get_or_create_function_expression_binary_operator(function_expression.get_binary_operator(),
-                                                                              translate(*function_expression.get_left_function_expression()),
-                                                                              translate(*function_expression.get_right_function_expression()));
+                                                                              translate_lifted(*function_expression.get_left_function_expression()),
+                                                                              translate_lifted(*function_expression.get_right_function_expression()));
 }
 
-FunctionExpression ToMimirStructures::translate(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
+FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
 {
     return m_pddl_factories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                             translate(function_expression.get_function_expressions()));
+                                                                             translate_lifted(function_expression.get_function_expressions()));
 }
 
-FunctionExpression ToMimirStructures::translate(const loki::FunctionExpressionMinusImpl& function_expression)
+FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionMinusImpl& function_expression)
 {
-    return m_pddl_factories.get_or_create_function_expression_minus(translate(*function_expression.get_function_expression()));
+    return m_pddl_factories.get_or_create_function_expression_minus(translate_lifted(*function_expression.get_function_expression()));
 }
 
-FunctionExpression ToMimirStructures::translate(const loki::FunctionExpressionFunctionImpl& function_expression)
+FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionFunctionImpl& function_expression)
 {
-    return m_pddl_factories.get_or_create_function_expression_function(translate(*function_expression.get_function()));
+    return m_pddl_factories.get_or_create_function_expression_function(translate_lifted(*function_expression.get_function()));
 }
 
-FunctionExpression ToMimirStructures::translate(const loki::FunctionExpressionImpl& function_expression)
+FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionImpl& function_expression)
 {
-    return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression);
+    return std::visit([this](auto&& arg) { return this->translate_lifted(arg); }, function_expression);
 }
 
-FunctionSkeleton ToMimirStructures::translate(const loki::FunctionSkeletonImpl& function_skeleton)
+FunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    return m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), translate(function_skeleton.get_parameters()));
+    return m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), translate_common(function_skeleton.get_parameters()));
 }
 
-Function ToMimirStructures::translate(const loki::FunctionImpl& function)
+Function ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
 {
-    return m_pddl_factories.get_or_create_function(translate(*function.get_function_skeleton()), translate(function.get_terms()));
+    return m_pddl_factories.get_or_create_function(translate_lifted(*function.get_function_skeleton()), translate_lifted(function.get_terms()));
 }
 
-std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructures::translate(const loki::ConditionImpl& condition)
+std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
     auto parameters = ParameterList {};
     if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition_ptr))
     {
-        parameters = translate(condition_exists->get_parameters());
+        parameters = translate_common(condition_exists->get_parameters());
 
         condition_ptr = condition_exists->get_condition();
     }
@@ -371,7 +369,7 @@ std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructur
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
             {
-                const auto translated_literal = translate(*condition_literal->get_literal());
+                const auto translated_literal = translate_lifted(*condition_literal->get_literal());
 
                 func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
             }
@@ -390,7 +388,7 @@ std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructur
         auto static_literals = LiteralList {};
         auto fluent_literals = LiteralList {};
 
-        const auto translated_literal = translate(*condition_literal->get_literal());
+        const auto translated_literal = translate_lifted(*condition_literal->get_literal());
 
         func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
 
@@ -402,7 +400,7 @@ std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructur
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const loki::EffectImpl& effect)
+std::pair<EffectList, FunctionExpression> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
     auto effect_ptr = &effect;
 
@@ -419,7 +417,7 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
             auto parameters = ParameterList {};
             if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
             {
-                parameters = translate(tmp_effect_forall->get_parameters());
+                parameters = translate_common(tmp_effect_forall->get_parameters());
 
                 tmp_effect = tmp_effect_forall->get_effect();
             }
@@ -430,7 +428,7 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
             auto fluent_literals = LiteralList {};
             if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
             {
-                const auto [parameters_, literals_, static_literals, fluent_literals_] = translate(*tmp_effect_when->get_condition());
+                const auto [parameters_, literals_, static_literals, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
 
                 if (!parameters_.empty())
                 {
@@ -443,7 +441,7 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
             // 4. Parse simple effect
             if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
             {
-                const auto translated_effect = translate(*effect_literal->get_literal());
+                const auto translated_effect = translate_lifted(*effect_literal->get_literal());
 
                 result_effects.push_back(
                     m_pddl_factories.get_or_create_simple_effect(parameters, literals, static_literals, fluent_literals, translated_effect));
@@ -453,7 +451,7 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
                 assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
                 assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
 
-                result_function_expressions.push_back(this->translate(*effect_numeric->get_function_expression()));
+                result_function_expressions.push_back(this->translate_lifted(*effect_numeric->get_function_expression()));
             }
             else
             {
@@ -481,16 +479,16 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate(const lok
     throw std::logic_error("Expected conjunctive effect.");
 }
 
-Action ToMimirStructures::translate(const loki::ActionImpl& action)
+Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 {
     // Remove existential quantifier at the root and collecting its parameters
-    auto parameters = translate(action.get_parameters());
+    auto parameters = translate_common(action.get_parameters());
     auto literals = LiteralList {};
     auto static_literals = LiteralList {};
     auto fluent_literals = LiteralList {};
     if (action.get_condition().has_value())
     {
-        const auto [parameters_, literals_, static_literals_, fluent_literals_] = translate(*action.get_condition().value());
+        const auto [parameters_, literals_, static_literals_, fluent_literals_] = translate_lifted(*action.get_condition().value());
         literals = literals_;
         static_literals = static_literals_;
         fluent_literals = fluent_literals_;
@@ -503,7 +501,7 @@ Action ToMimirStructures::translate(const loki::ActionImpl& action)
 
     if (action.get_effect().has_value())
     {
-        const auto [effects_, function_expression_] = translate(*action.get_effect().value());
+        const auto [effects_, function_expression_] = translate_lifted(*action.get_effect().value());
         effects = effects_;
         function_expression = function_expression_;
     }
@@ -511,43 +509,37 @@ Action ToMimirStructures::translate(const loki::ActionImpl& action)
     return m_pddl_factories.get_or_create_action(action.get_name(), parameters, literals, static_literals, fluent_literals, effects, function_expression);
 }
 
-Axiom ToMimirStructures::translate(const loki::AxiomImpl& axiom)
+Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
     // Turn predicate arguments into parameters
-    auto parameters = translate(axiom.get_literal()->get_atom()->get_predicate()->get_parameters());
+    auto parameters = translate_common(axiom.get_literal()->get_atom()->get_predicate()->get_parameters());
 
     // Turn quantifier variables into parameters
-    const auto [additional_parameters, literals, static_literals, fluent_literals] = translate(*axiom.get_condition());
+    const auto [additional_parameters, literals, static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
     parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
 
     // Turn free variables into parameters
     for (const auto& free_variable : collect_free_variables(*axiom.get_condition()))
     {
-        parameters.push_back(m_pddl_factories.get_or_create_parameter(translate(*free_variable)));
+        parameters.push_back(m_pddl_factories.get_or_create_parameter(translate_common(*free_variable)));
     }
     parameters.shrink_to_fit();
 
-    return m_pddl_factories.get_or_create_axiom(parameters, translate(*axiom.get_literal()), literals, static_literals, fluent_literals);
+    return m_pddl_factories.get_or_create_axiom(parameters, translate_lifted(*axiom.get_literal()), literals, static_literals, fluent_literals);
 }
 
-OptimizationMetric ToMimirStructures::translate(const loki::OptimizationMetricImpl& optimization_metric)
+Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
 {
-    return m_pddl_factories.get_or_create_optimization_metric(optimization_metric.get_optimization_metric(),
-                                                              translate(*optimization_metric.get_function_expression()));
-}
-
-Domain ToMimirStructures::translate(const loki::DomainImpl& domain)
-{
-    const auto predicates = translate(domain.get_predicates());
+    const auto predicates = translate_common(domain.get_predicates());
     auto static_predicates = PredicateList {};
     for (const auto& predicate : domain.get_predicates())
     {
         if (!m_fluent_predicates.count(predicate))
         {
-            static_predicates.push_back(translate(*predicate));
+            static_predicates.push_back(translate_common(*predicate));
         }
     }
-    auto fluent_predicates = translate(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
+    auto fluent_predicates = translate_common(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
 
     std::cout << "Detected static predicates: " << std::endl;
     for (const auto& predicate : static_predicates)
@@ -561,91 +553,85 @@ Domain ToMimirStructures::translate(const loki::DomainImpl& domain)
     }
 
     return m_pddl_factories.get_or_create_domain(domain.get_name(),
-                                                 translate(*domain.get_requirements()),
-                                                 translate(domain.get_constants()),
+                                                 translate_common(*domain.get_requirements()),
+                                                 translate_common(domain.get_constants()),
                                                  predicates,
                                                  static_predicates,
                                                  fluent_predicates,
-                                                 translate(domain.get_derived_predicates()),
-                                                 translate(domain.get_functions()),
-                                                 translate(domain.get_actions()),
-                                                 translate(domain.get_axioms()));
+                                                 translate_common(domain.get_derived_predicates()),
+                                                 translate_lifted(domain.get_functions()),
+                                                 translate_lifted(domain.get_actions()),
+                                                 translate_lifted(domain.get_axioms()));
 }
 
-ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+/**
+ * Grounded
+ */
 
-Problem ToMimirStructures::translate(const loki::ProblemImpl& problem)
+Object ToMimirStructures::translate_grounded(const loki::TermImpl& term)
 {
-    // Add constants to objects in problem.
-    const auto constants = translate(problem.get_domain()->get_constants());
-    auto objects = translate(problem.get_objects());
-    objects.insert(objects.end(), constants.begin(), constants.end());
-
-    auto goal_literals = LiteralList {};
-    if (problem.get_goal_condition().has_value())
+    if (const auto term_object = std::get_if<loki::TermObjectImpl>(&term))
     {
-        const auto [parameters, literals, _static_literals, _fluent_literals] = translate(*problem.get_goal_condition().value());
-
-        if (!parameters.empty())
-        {
-            throw std::logic_error("Expected parameters to be empty.");
-        }
-
-        goal_literals = literals;
+        return translate_common(*term_object->get_object());
     }
 
-    return m_pddl_factories.get_or_create_problem(translate(*problem.get_domain()),
-                                                  problem.get_name(),
-                                                  translate(*problem.get_requirements()),
-                                                  objects,
-                                                  translate(problem.get_derived_predicates()),
-                                                  translate(problem.get_initial_literals()),
-                                                  translate(problem.get_numeric_fluents()),
-                                                  goal_literals,
-                                                  (problem.get_optimization_metric().has_value() ?
-                                                       std::optional<OptimizationMetric>(translate(*problem.get_optimization_metric().value())) :
-                                                       std::nullopt),
-                                                  translate(problem.get_axioms()));
+    throw std::logic_error("Expected ground term.");
 }
-*/
 
-Requirements ToMimirStructures::translate_problem_specific(const loki::RequirementsImpl& requirements) {}
-
-Variable ToMimirStructures::translate_problem_specific(const loki::VariableImpl& variable) {}
-
-Object ToMimirStructures::translate_problem_specific(const loki::ObjectImpl& object) {}
-
-Object ToMimirStructures::translate_problem_specific(const loki::TermImpl& term) {}
-
-Parameter ToMimirStructures::translate_problem_specific(const loki::ParameterImpl& parameter) {}
-
-Predicate ToMimirStructures::translate_problem_specific(const loki::PredicateImpl& predicate) {}
-
-GroundAtom ToMimirStructures::translate_problem_specific(const loki::AtomImpl& atom) {}
-
-GroundLiteral ToMimirStructures::translate_problem_specific(const loki::LiteralImpl& literal) {}
-
-NumericFluent ToMimirStructures::translate_problem_specific(const loki::NumericFluentImpl& numeric_fluent) {}
-
-GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionNumberImpl& function_expression) {}
-
-GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionBinaryOperatorImpl& function_expression) {}
-
-GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionMultiOperatorImpl& function_expression) {}
-
-GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionMinusImpl& function_expression) {}
-
-GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionFunctionImpl& function_expression) {}
-
-GroundFunctionExpression ToMimirStructures::translate_problem_specific(const loki::FunctionExpressionImpl& function_expression) {}
-
-GroundFunction ToMimirStructures::translate_problem_specific(const loki::FunctionImpl& function)
+GroundAtom ToMimirStructures::translate_grounded(const loki::AtomImpl& atom)
 {
-    return m_pddl_factories.get_or_create_ground_function(translate_domain_specific(*function.get_function_skeleton()),
-                                                          translate_problem_specific(function.get_terms()));
+    return m_pddl_factories.get_or_create_ground_atom(translate_common(*atom.get_predicate()), translate_grounded(atom.get_terms()));
 }
 
-GroundLiteralList ToMimirStructures::translate_problem_specific(const loki::ConditionImpl& condition)
+GroundLiteral ToMimirStructures::translate_grounded(const loki::LiteralImpl& literal)
+{
+    return m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), translate_grounded(*literal.get_atom()));
+}
+
+NumericFluent ToMimirStructures::translate_grounded(const loki::NumericFluentImpl& numeric_fluent)
+{
+    return m_pddl_factories.get_or_create_numeric_fluent(translate_grounded(*numeric_fluent.get_function()), numeric_fluent.get_number());
+}
+
+GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression)
+{
+    return m_pddl_factories.get_or_create_ground_function_expression_number(function_expression.get_number());
+}
+
+GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
+{
+    return m_pddl_factories.get_or_create_ground_function_expression_binary_operator(function_expression.get_binary_operator(),
+                                                                                     translate_grounded(*function_expression.get_left_function_expression()),
+                                                                                     translate_grounded(*function_expression.get_right_function_expression()));
+}
+
+GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
+{
+    return m_pddl_factories.get_or_create_ground_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                    translate_grounded(function_expression.get_function_expressions()));
+}
+
+GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionMinusImpl& function_expression)
+{
+    return m_pddl_factories.get_or_create_ground_function_expression_minus(translate_grounded(*function_expression.get_function_expression()));
+}
+
+GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionFunctionImpl& function_expression)
+{
+    return m_pddl_factories.get_or_create_ground_function_expression_function(translate_grounded(*function_expression.get_function()));
+}
+
+GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionImpl& function_expression)
+{
+    return std::visit([this](auto&& arg) { return this->translate_grounded(arg); }, function_expression);
+}
+
+GroundFunction ToMimirStructures::translate_grounded(const loki::FunctionImpl& function)
+{
+    return m_pddl_factories.get_or_create_ground_function(translate_lifted(*function.get_function_skeleton()), translate_grounded(function.get_terms()));
+}
+
+GroundLiteralList ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
@@ -656,7 +642,7 @@ GroundLiteralList ToMimirStructures::translate_problem_specific(const loki::Cond
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
             {
-                literals.push_back(translate_problem_specific(*condition_literal->get_literal()));
+                literals.push_back(translate_grounded(*condition_literal->get_literal()));
             }
             else
             {
@@ -669,7 +655,7 @@ GroundLiteralList ToMimirStructures::translate_problem_specific(const loki::Cond
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
     {
-        return GroundLiteralList { translate_problem_specific(*condition_literal->get_literal()) };
+        return GroundLiteralList { translate_grounded(*condition_literal->get_literal()) };
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -677,43 +663,45 @@ GroundLiteralList ToMimirStructures::translate_problem_specific(const loki::Cond
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-OptimizationMetric ToMimirStructures::translate_problem_specific(const loki::OptimizationMetricImpl& optimization_metric)
+OptimizationMetric ToMimirStructures::translate_grounded(const loki::OptimizationMetricImpl& optimization_metric)
 {
     return m_pddl_factories.get_or_create_optimization_metric(optimization_metric.get_optimization_metric(),
-                                                              translate_problem_specific(*optimization_metric.get_function_expression()));
+                                                              translate_grounded(*optimization_metric.get_function_expression()));
 }
 
-Problem ToMimirStructures::translate_problem_specific(const loki::ProblemImpl& problem)
+Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 {
     // Add constants to objects in problem.
-    const auto constants = translate_problem_specific(problem.get_domain()->get_constants());
-    auto objects = translate_problem_specific(problem.get_objects());
+    const auto constants = translate_common(problem.get_domain()->get_constants());
+    auto objects = translate_common(problem.get_objects());
     objects.insert(objects.end(), constants.begin(), constants.end());
 
     auto goal_literals = GroundLiteralList {};
     if (problem.get_goal_condition().has_value())
     {
-        goal_literals = translate_problem_specific(*problem.get_goal_condition().value());
+        goal_literals = translate_grounded(*problem.get_goal_condition().value());
     }
 
-    return m_pddl_factories.get_or_create_problem(translate_domain_specific(*problem.get_domain()),
+    return m_pddl_factories.get_or_create_problem(translate_lifted(*problem.get_domain()),
                                                   problem.get_name(),
-                                                  translate_problem_specific(*problem.get_requirements()),
+                                                  translate_common(*problem.get_requirements()),
                                                   objects,
-                                                  translate_problem_specific(problem.get_derived_predicates()),
-                                                  translate_problem_specific(problem.get_initial_literals()),
-                                                  translate_problem_specific(problem.get_numeric_fluents()),
+                                                  translate_common(problem.get_derived_predicates()),
+                                                  translate_grounded(problem.get_initial_literals()),
+                                                  translate_grounded(problem.get_numeric_fluents()),
                                                   goal_literals,
-                                                  (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(
-                                                       translate_problem_specific(*problem.get_optimization_metric().value())) :
-                                                                                                   std::nullopt),
-                                                  translate_domain_specific(problem.get_axioms()));
+                                                  (problem.get_optimization_metric().has_value() ?
+                                                       std::optional<OptimizationMetric>(translate_grounded(*problem.get_optimization_metric().value())) :
+                                                       std::nullopt),
+                                                  translate_lifted(problem.get_axioms()));
 }
 
 Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
 {
     prepare(problem);
-    return translate_problem_specific(problem);
+    return translate_grounded(problem);
 }
+
+ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 }

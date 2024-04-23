@@ -33,7 +33,7 @@ private:
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
     // TODO: If we separate Function from GroundFunction, then we can turn this into a vector
-    std::map<Function, double> m_initial_ground_function_values;
+    std::map<GroundFunction, double> m_initial_ground_function_values;
 
     PDDLFactories& m_pddl_factories;
     std::vector<FlatAction> m_flat_actions;

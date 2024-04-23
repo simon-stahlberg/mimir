@@ -224,7 +224,7 @@ void init_formalism(py::module_& m_formalism)
     py::class_<OptimizationMetricImpl>(m_formalism, "OptimizationMetric")  //
         .def("__str__", py::overload_cast<>(&loki::Base<OptimizationMetricImpl>::str, py::const_))
         .def("get_identifier", &OptimizationMetricImpl::get_identifier)
-        .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return WrappedFunctionExpression(metric.get_function_expression()); })
+        // .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return WrappedFunctionExpression(metric.get_function_expression()); })
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference);
 
     py::class_<NumericFluentImpl>(m_formalism, "NumericFluent")  //

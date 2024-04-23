@@ -45,26 +45,6 @@ static void ground_variables(const TermList& terms, const ObjectList& binding, O
     }
 }
 
-/// @brief Grounding function for pddl structures.
-///
-/// Note: this function can go if we provide grounded structures for each relevant pddl type.
-static void ground_variables(const TermList& terms, const ObjectList& binding, TermList& out_terms, PDDLFactories& pddl_factories)
-{
-    out_terms.clear();
-
-    for (const auto& term : terms)
-    {
-        if (const auto term_object = std::get_if<TermObjectImpl>(term))
-        {
-            out_terms.emplace_back(pddl_factories.get_or_create_term_object(term_object->get_object()));
-        }
-        else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
-        {
-            out_terms.emplace_back(pddl_factories.get_or_create_term_object(binding[term_variable->get_variable()->get_parameter_index()]));
-        }
-    }
-}
-
 /// @brief Grounding function for flat structures.
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_variables(const std::vector<ParameterIndexOrConstantId>& variables,
                                                                const ObjectList& binding,
@@ -97,19 +77,19 @@ GroundLiteral AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_literal(const Flat
 class GroundAndEvaluateFunctionExpressionVisitor
 {
 private:
-    const std::map<Function, double>& m_initial_ground_function_values;
+    const std::map<GroundFunction, double>& m_initial_ground_function_values;
     const ObjectList& m_binding;
     PDDLFactories& m_pddl_factories;
 
-    Function ground_function(const Function& function)
+    GroundFunction ground_function(const Function& function)
     {
-        auto grounded_terms = TermList {};
-        ground_variables(function->get_terms(), m_binding, grounded_terms, m_pddl_factories);
-        return m_pddl_factories.get_or_create_function(function->get_function_skeleton(), grounded_terms);
+        auto grounded_terms = ObjectList {};
+        ground_variables(function->get_terms(), m_binding, grounded_terms);
+        return m_pddl_factories.get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
     }
 
 public:
-    GroundAndEvaluateFunctionExpressionVisitor(const std::map<Function, double>& initial_ground_function_values,
+    GroundAndEvaluateFunctionExpressionVisitor(const std::map<GroundFunction, double>& initial_ground_function_values,
                                                const ObjectList& binding,
                                                PDDLFactories& pddl_factories) :
 

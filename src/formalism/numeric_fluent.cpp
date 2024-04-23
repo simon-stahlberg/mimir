@@ -17,13 +17,18 @@
 
 #include "mimir/formalism/numeric_fluent.hpp"
 
-#include "mimir/formalism/function.hpp"
+#include "mimir/formalism/ground_function.hpp"
 
 #include <loki/loki.hpp>
 
 namespace mimir
 {
-NumericFluentImpl::NumericFluentImpl(int identifier, Function function, double number) : Base(identifier), m_function(std::move(function)), m_number(number) {}
+NumericFluentImpl::NumericFluentImpl(int identifier, GroundFunction function, double number) :
+    Base(identifier),
+    m_function(std::move(function)),
+    m_number(number)
+{
+}
 
 bool NumericFluentImpl::is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const
 {
@@ -39,7 +44,7 @@ void NumericFluentImpl::str_impl(std::ostream& out, const loki::FormattingOption
     out << " " << m_number << ")";
 }
 
-const Function& NumericFluentImpl::get_function() const { return m_function; }
+const GroundFunction& NumericFluentImpl::get_function() const { return m_function; }
 
 double NumericFluentImpl::get_number() const { return m_number; }
 
