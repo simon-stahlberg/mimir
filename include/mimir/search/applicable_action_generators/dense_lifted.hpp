@@ -36,26 +36,24 @@ private:
     std::map<GroundFunction, double> m_initial_ground_function_values;
 
     PDDLFactories& m_pddl_factories;
-    std::vector<FlatAction> m_flat_actions;
+
     std::unordered_map<Action, std::vector<std::vector<size_t>>> m_partitions;
     std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
 
-    void ground_variables(const std::vector<ParameterIndexOrConstantId>& variables, const ObjectList& binding, ObjectList& out_terms) const;
+    GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
 
-    GroundLiteral ground_literal(const FlatLiteral& literal, const ObjectList& binding) const;
-
-    ConstActionView ground_action(const FlatAction& flat_action, ObjectList&& binding);
+    ConstActionView ground_action(const Action& flat_action, ObjectList&& binding);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const FlatAction& flat_action, ConstStateView state) const;
+    bool nullary_preconditions_hold(const Action& flat_action, ConstStateView state) const;
 
-    void nullary_case(const FlatAction& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void nullary_case(const Action& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
-    void unary_case(const FlatAction& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void unary_case(const Action& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
     void general_case(const std::vector<std::vector<bool>>& assignment_sets,
-                      const FlatAction& flat_action,
+                      const Action& flat_action,
                       ConstStateView state,
                       std::vector<ConstActionView>& out_applicable_actions);
 

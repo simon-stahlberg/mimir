@@ -24,18 +24,18 @@ private:
                                 const PDDLFactories& pddl_factories) const
     {
         std::cout << "Action: " << std::make_tuple(action, std::cref(pddl_factories)) << std::endl;
-        std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(pddl_factories)) << std::endl;
+        std::cout << "Successor: " << std::make_tuple(successor_state, std::cref(pddl_factories)) << std::endl << std::endl;
     }
 
     void on_finish_g_layer_impl(uint64_t g_value, uint64_t num_states) const
     {
-        std::cout << "Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl;
+        std::cout << "Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl << std::endl;
     }
 
     void on_expand_state_impl(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) const
     {
         std::cout << "---" << std::endl;
-        std::cout << "State: " << std::make_tuple(state, std::cref(pddl_factories)) << std::endl;
+        std::cout << "State: " << std::make_tuple(state, std::cref(pddl_factories)) << std::endl << std::endl;
     }
 
     void on_start_search_impl(ConstView<StateDispatcher<StateReprTag>> initial_state, const PDDLFactories& pddl_factories) const

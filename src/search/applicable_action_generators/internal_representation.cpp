@@ -102,7 +102,7 @@ std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std:
 }
 
 bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
-                            const std::vector<FlatLiteral>& literals,
+                            const std::vector<Literal>& literals,
                             const Assignment& first_assignment,
                             const Assignment& second_assignment,
                             Problem problem)
@@ -115,35 +115,37 @@ bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_set
         int32_t second_object_id = -1;
         bool empty_assignment = true;
 
-        for (std::size_t index = 0; index < literal.arity; ++index)
-        {
-            const auto& term = literal.arguments[index];
+        const auto arity = literal->get_atom()->get_predicate()->get_arity();
 
-            if (term.is_constant())
+        for (std::size_t index = 0; index < literal->get_atom()->get_predicate()->get_arity(); ++index)
+        {
+            const auto& term = literal->get_atom()->get_terms()[index];
+
+            if (const auto term_object = std::get_if<TermObjectImpl>(term))
             {
-                if (literal.arity <= 2)
+                if (arity <= 2)
                 {
-                    const auto term_id = term.get_value();
+                    const auto object_id = term_object->get_object()->get_identifier();
 
                     if (first_position < 0)
                     {
                         first_position = index;
-                        first_object_id = static_cast<int32_t>(term_id);
+                        first_object_id = static_cast<int32_t>(object_id);
                     }
                     else
                     {
                         second_position = index;
-                        second_object_id = static_cast<int32_t>(term_id);
+                        second_object_id = static_cast<int32_t>(object_id);
                     }
 
                     empty_assignment = false;
                 }
             }
-            else
+            else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
             {
-                const auto term_index = term.get_value();
+                const auto parameter_index = term_variable->get_variable()->get_parameter_index();
 
-                if (first_assignment.parameter_index == term_index)
+                if (first_assignment.parameter_index == parameter_index)
                 {
                     if (first_position < 0)
                     {
@@ -159,7 +161,7 @@ bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_set
 
                     empty_assignment = false;
                 }
-                else if (second_assignment.parameter_index == term_index)
+                else if (second_assignment.parameter_index == parameter_index)
                 {
                     if (first_position < 0)
                     {
@@ -180,21 +182,21 @@ bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_set
 
         if (!empty_assignment)
         {
-            const auto& assignment_set = assignment_sets[literal.predicate_id];
+            const auto& assignment_set = assignment_sets[literal->get_atom()->get_predicate()->get_identifier()];
             const auto assignment_rank = get_assignment_position(first_position,
                                                                  first_object_id,
                                                                  second_position,
                                                                  second_object_id,
-                                                                 static_cast<int32_t>(literal.arity),
+                                                                 static_cast<int32_t>(arity),
                                                                  static_cast<int32_t>(problem->get_objects().size()));
 
             const auto consistent_with_state = assignment_set[assignment_rank];
 
-            if (!literal.negated && !consistent_with_state)
+            if (!literal->is_negated() && !consistent_with_state)
             {
                 return false;
             }
-            else if (literal.negated && consistent_with_state && ((literal.arity == 1) || ((literal.arity == 2) && (second_position >= 0))))
+            else if (literal->is_negated() && consistent_with_state && ((arity == 1) || ((arity == 2) && (second_position >= 0))))
             {
                 return false;
             }
@@ -234,86 +236,5 @@ bool ParameterIndexOrConstantId::is_constant() const
 bool ParameterIndexOrConstantId::is_variable() const { return !is_constant(); }
 
 size_t ParameterIndexOrConstantId::get_value() const { return is_constant() ? ~value : value; }
-
-/*
- * Class FlatLiteral
- */
-
-FlatLiteral::FlatLiteral(Literal literal, const std::map<Parameter, size_t>& to_index, const std::map<Variable, Parameter>& to_parameter) :
-    source(literal),
-    arguments(),
-    predicate_id(literal->get_atom()->get_predicate()->get_identifier()),
-    arity(literal->get_atom()->get_predicate()->get_arity()),
-    negated(literal->is_negated())
-{
-    const auto literal_terms = literal->get_atom()->get_terms();
-
-    arguments.reserve(literal_terms.size());
-
-    for (const auto& term : literal_terms)
-    {
-        if (const auto* object = std::get_if<TermObjectImpl>(term))
-        {
-            const auto constant_identifier = object->get_identifier();
-            arguments.push_back(ParameterIndexOrConstantId(constant_identifier, true));
-        }
-        else if (const auto* variable = std::get_if<TermVariableImpl>(term))
-        {
-            const auto parameter_index = to_index.at(to_parameter.at(variable->get_variable()));
-            arguments.push_back(ParameterIndexOrConstantId(parameter_index, false));
-        }
-        else
-        {
-            throw std::runtime_error("internal error");
-        }
-    }
-}
-
-FlatAction::FlatAction(Domain domain, Action action_schema) :
-    to_index_(),
-    index_parameters_(),
-    source(action_schema),
-    static_precondition(),
-    fluent_precondition(),
-    unconditional_effect(),
-    arity(static_cast<uint32_t>(action_schema->get_arity()))
-{
-    for (const auto& parameter : action_schema->get_parameters())
-    {
-        to_index_.emplace(parameter, static_cast<uint32_t>(to_index_.size()));
-        to_parameter_.emplace(parameter->get_variable(), parameter);
-        index_parameters_.emplace_back(parameter);
-    }
-
-    const auto& static_predicates = domain->get_static_predicates();
-    const auto& precondition_literals = action_schema->get_conditions();
-    const auto& effect = action_schema->get_effects();
-
-    for (const auto& literal : precondition_literals)
-    {
-        const auto& literal_predicate = literal->get_atom()->get_predicate();
-
-        if (std::find(static_predicates.begin(), static_predicates.end(), literal_predicate) != static_predicates.end())
-        {
-            static_precondition.emplace_back(literal, to_index_, to_parameter_);
-        }
-        else
-        {
-            fluent_precondition.emplace_back(literal, to_index_, to_parameter_);
-        }
-    }
-
-    LiteralList effect_literals;
-    to_literals(effect, effect_literals);
-
-    for (const auto& literal : effect_literals)
-    {
-        unconditional_effect.emplace_back(literal, to_index_, to_parameter_);
-    }
-}
-
-const std::vector<Parameter>& FlatAction::get_parameters() const { return index_parameters_; }
-
-size_t FlatAction::get_parameter_index(Parameter parameter) const { return to_index_.at(parameter); }
 
 }

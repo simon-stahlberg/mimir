@@ -67,6 +67,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     precondition.insert(precondition.end(), negative_precondition.begin(), negative_precondition.end());
 
     os << "Action("
+       << "name=" << action.get_action()->get_name() << ", "
        << "precondition=" << precondition << ", "
        << "delete=" << negative_effect << ", "
        << "add=" << positive_effect << ")";

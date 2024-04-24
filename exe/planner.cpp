@@ -23,7 +23,7 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc < 4)
+    if (argc < 5)
     {
         std::cout << "Usage: planner <domain:str> <problem:str> <grounded:bool>" << std::endl;
         return 1;
@@ -32,6 +32,7 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
     const auto grounded = bool { std::atoi(argv[3]) };
+    const auto debug = bool { std::atoi(argv[4]) };
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -52,7 +53,8 @@ int main(int argc, char** argv)
         (grounded) ?
             std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) } :
             std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) };
-    auto event_handler = std::make_shared<MinimalEventHandler>();
+    auto event_handler = (debug) ? std::shared_ptr<IEventHandler> { std::make_shared<DebugEventHandler>() } :
+                                   std::shared_ptr<IEventHandler> { std::make_shared<MinimalEventHandler>() };
     auto lifted_brfs = std::make_shared<BrFsAlgorithm>(parser.get_problem(),
                                                        parser.get_factories(),
                                                        std::move(state_repository),
