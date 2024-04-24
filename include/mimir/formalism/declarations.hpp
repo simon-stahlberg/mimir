@@ -62,6 +62,7 @@ using ParameterAssignment = std::unordered_map<Parameter, Object>;
 class PredicateImpl;
 using Predicate = const PredicateImpl*;
 using PredicateList = std::vector<Predicate>;
+using PredicateSet = std::unordered_set<Predicate>;
 
 class AtomImpl;
 using Atom = const AtomImpl*;

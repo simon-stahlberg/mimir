@@ -35,6 +35,8 @@ private:
     ObjectList m_objects;
     PredicateList m_derived_predicates;
     GroundLiteralList m_initial_literals;
+    GroundLiteralList m_static_initial_literals;
+    GroundLiteralList m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
     GroundLiteralList m_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
@@ -49,6 +51,8 @@ private:
                 ObjectList objects,
                 PredicateList derived_predicates,
                 GroundLiteralList initial_literals,
+                GroundLiteralList static_initial_literals,
+                GroundLiteralList fluent_initial_literals,
                 NumericFluentList numeric_fluents,
                 GroundLiteralList goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
@@ -72,6 +76,8 @@ public:
     const ObjectList& get_objects() const;
     const PredicateList& get_derived_predicates() const;
     const GroundLiteralList& get_initial_literals() const;
+    const GroundLiteralList& get_static_initial_literals() const;
+    const GroundLiteralList& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     const GroundLiteralList& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;

@@ -682,12 +682,32 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
         goal_literals = translate_grounded(*problem.get_goal_condition().value());
     }
 
-    return m_pddl_factories.get_or_create_problem(translate_lifted(*problem.get_domain()),
+    const auto translated_domain = translate_lifted(*problem.get_domain());
+
+    auto initial_literals = translate_grounded(problem.get_initial_literals());
+    auto static_initial_literals = GroundLiteralList {};
+    auto fluent_initial_literals = GroundLiteralList {};
+    const auto static_predicates = PredicateSet(translated_domain->get_static_predicates().begin(), translated_domain->get_static_predicates().end());
+    for (const auto& literal : initial_literals)
+    {
+        if (static_predicates.count(literal->get_atom()->get_predicate()))
+        {
+            static_initial_literals.push_back(literal);
+        }
+        else
+        {
+            fluent_initial_literals.push_back(literal);
+        }
+    }
+
+    return m_pddl_factories.get_or_create_problem(translated_domain,
                                                   problem.get_name(),
                                                   translate_common(*problem.get_requirements()),
                                                   objects,
                                                   translate_common(problem.get_derived_predicates()),
-                                                  translate_grounded(problem.get_initial_literals()),
+                                                  initial_literals,
+                                                  static_initial_literals,
+                                                  fluent_initial_literals,
                                                   translate_grounded(problem.get_numeric_fluents()),
                                                   goal_literals,
                                                   (problem.get_optimization_metric().has_value() ?

@@ -496,6 +496,8 @@ protected:
             this->transform(problem.get_objects()),
             this->transform(problem.get_derived_predicates()),
             this->transform(problem.get_initial_literals()),
+            this->transform(problem.get_static_initial_literals()),
+            this->transform(problem.get_fluent_initial_literals()),
             this->transform(problem.get_numeric_fluents()),
             this->transform(problem.get_goal_condition()),
             (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->transform(*problem.get_optimization_metric().value())) :

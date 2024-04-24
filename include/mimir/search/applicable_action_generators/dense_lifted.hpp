@@ -16,6 +16,8 @@
 namespace mimir
 {
 
+using GroundFunctionValueCosts = std::unordered_map<GroundFunction, double>;
+
 /**
  * Fully specialized implementation class.
  */
@@ -32,8 +34,7 @@ private:
     std::vector<ConstActionView> m_actions_by_index;
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
-    // TODO: If we separate Function from GroundFunction, then we can turn this into a vector
-    std::map<GroundFunction, double> m_initial_ground_function_values;
+    GroundFunctionValueCosts m_ground_function_value_costs;
 
     PDDLFactories& m_pddl_factories;
 

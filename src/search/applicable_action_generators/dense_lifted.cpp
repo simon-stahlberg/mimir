@@ -57,7 +57,7 @@ GroundLiteral AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_literal(const Lite
 class GroundAndEvaluateFunctionExpressionVisitor
 {
 private:
-    const std::map<GroundFunction, double>& m_initial_ground_function_values;
+    const GroundFunctionValueCosts& m_ground_function_value_costs;
     const ObjectList& m_binding;
     PDDLFactories& m_pddl_factories;
 
@@ -69,11 +69,11 @@ private:
     }
 
 public:
-    GroundAndEvaluateFunctionExpressionVisitor(const std::map<GroundFunction, double>& initial_ground_function_values,
+    GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionValueCosts& ground_function_value_costs,
                                                const ObjectList& binding,
                                                PDDLFactories& pddl_factories) :
 
-        m_initial_ground_function_values(initial_ground_function_values),
+        m_ground_function_value_costs(ground_function_value_costs),
         m_binding(binding),
         m_pddl_factories(pddl_factories)
     {
@@ -108,8 +108,8 @@ public:
     {
         auto grounded_function = ground_function(expr.get_function());
 
-        auto it = m_initial_ground_function_values.find(grounded_function);
-        if (it == m_initial_ground_function_values.end())
+        auto it = m_ground_function_value_costs.find(grounded_function);
+        if (it == m_ground_function_value_costs.end())
         {
             throw std::runtime_error("No numeric fluent available to determine cost for ground function "s + grounded_function->str());
         }
@@ -121,12 +121,6 @@ public:
 
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const Action& action, ObjectList&& binding)
 {
-    std::cout << "Ground action: " << action->get_name() << "(";
-    for (const auto& object : binding)
-    {
-        std::cout << object->get_name() << " ";
-    }
-    std::cout << ")" << std::endl;
     const auto fill_bitsets = [this, &binding](const std::vector<Literal>& literals, BitsetBuilder& ref_positive_bitset, BitsetBuilder& ref_negative_bitset)
     {
         for (const auto& literal : literals)
@@ -167,7 +161,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     fill_bitsets(effect_literals, positive_effect, negative_effect);
 
     m_action_builder.get_id() = m_actions.size();
-    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_initial_ground_function_values, binding, this->m_pddl_factories),
+    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, this->m_pddl_factories),
                                              *action->get_function_expression());
     m_action_builder.get_action() = action;
     auto& objects = m_action_builder.get_objects();
@@ -236,8 +230,6 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const std::vector<std
                                                            ConstStateView state,
                                                            std::vector<ConstActionView>& out_applicable_actions)
 {
-    std::cout << "General case: " << action->get_name() << std::endl;
-
     const auto& to_vertex_assignment = m_to_vertex_assignment.at(action);
     const auto& statically_consistent_assignments = m_statically_consistent_assignments.at(action);
     const auto num_vertices = to_vertex_assignment.size();
@@ -332,19 +324,36 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(C
 
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
     m_problem(problem),
-    m_initial_ground_function_values(),
+    m_ground_function_value_costs(),
     m_pddl_factories(pddl_factories),
     m_partitions(),
     m_to_vertex_assignment(),
     m_statically_consistent_assignments()
 {
-    for (const auto numeric_fluent : problem->get_numeric_fluents())
+    // 1. Error checking
+    for (const auto& literal : problem->get_initial_literals())
     {
-        m_initial_ground_function_values.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("negative literals in the initial state is not supported");
+        }
     }
 
-    const auto& domain = problem->get_domain();
+    // 2. Initialize ground function costs
+    for (const auto numeric_fluent : problem->get_numeric_fluents())
+    {
+        m_ground_function_value_costs.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
+    }
 
+    // 3. Initialize assignments
+
+    // Filter assignment based on static atoms.
+    auto static_atom_ids = std::vector<size_t> {};
+    for (const auto& literal : problem->get_static_initial_literals())
+    {
+        static_atom_ids.emplace_back(literal->get_atom()->get_identifier());
+    }
+    const auto& domain = problem->get_domain();
     for (const auto& action : domain->get_actions())
     {
         std::vector<std::vector<size_t>> partitions;
@@ -368,26 +377,6 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
                 }
 
                 partitions.push_back(std::move(partition));
-            }
-
-            // Filter assignment based on static atoms.
-
-            const auto& static_predicates = problem->get_domain()->get_static_predicates();
-            std::vector<size_t> static_atom_ids;
-
-            for (const auto& literal : problem->get_initial_literals())
-            {
-                if (literal->is_negated())
-                {
-                    throw std::runtime_error("negative literals in the initial state is not supported");
-                }
-
-                const auto& atom = literal->get_atom();
-
-                if (std::count(static_predicates.begin(), static_predicates.end(), atom->get_predicate()))
-                {
-                    static_atom_ids.emplace_back(atom->get_identifier());
-                }
             }
 
             const auto assignment_sets = build_assignment_sets(problem, static_atom_ids, pddl_factories);
@@ -445,12 +434,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
 
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {
-    if (action_id < m_actions.size())
-    {
-        return m_actions_by_index[action_id];
-    }
-
-    throw std::invalid_argument("invalid identifier");
+    return m_actions_by_index.at(action_id);
 }
 
 }

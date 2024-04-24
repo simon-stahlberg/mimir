@@ -41,6 +41,8 @@ ProblemImpl::ProblemImpl(int identifier,
                          ObjectList objects,
                          PredicateList derived_predicates,
                          GroundLiteralList initial_literals,
+                         GroundLiteralList static_initial_literals,
+                         GroundLiteralList fluent_initial_literals,
                          NumericFluentList numeric_fluents,
                          GroundLiteralList goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
@@ -52,6 +54,8 @@ ProblemImpl::ProblemImpl(int identifier,
     m_objects(std::move(objects)),
     m_derived_predicates(std::move(derived_predicates)),
     m_initial_literals(std::move(initial_literals)),
+    m_static_initial_literals(std::move(static_initial_literals)),
+    m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_numeric_fluents(std::move(numeric_fluents)),
     m_goal_condition(std::move(goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
@@ -177,6 +181,10 @@ const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 const PredicateList& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
 
 const GroundLiteralList& ProblemImpl::get_initial_literals() const { return m_initial_literals; }
+
+const GroundLiteralList& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
+
+const GroundLiteralList& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
 
