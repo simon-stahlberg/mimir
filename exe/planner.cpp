@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 {
     if (argc < 5)
     {
-        std::cout << "Usage: planner <domain:str> <problem:str> <grounded:bool>" << std::endl;
+        std::cout << "Usage: planner <domain:str> <problem:str> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 

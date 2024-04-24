@@ -189,7 +189,6 @@ bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_set
                                                                  second_object_id,
                                                                  static_cast<int32_t>(arity),
                                                                  static_cast<int32_t>(problem->get_objects().size()));
-
             const auto consistent_with_state = assignment_set[assignment_rank];
 
             if (!literal->is_negated() && !consistent_with_state)

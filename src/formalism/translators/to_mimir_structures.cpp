@@ -255,7 +255,12 @@ Parameter ToMimirStructures::translate_common(const loki::ParameterImpl& paramet
 
 Predicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
 {
-    return m_pddl_factories.get_or_create_predicate(predicate.get_name(), translate_common(predicate.get_parameters()));
+    auto result = m_pddl_factories.get_or_create_predicate(predicate.get_name(), translate_common(predicate.get_parameters()));
+    if (result->get_name() == "=")
+    {
+        m_equal_predicate = result;
+    }
+    return result;
 }
 
 /**
@@ -530,7 +535,9 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 
 Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
 {
-    const auto predicates = translate_common(domain.get_predicates());
+    const auto requirements = translate_common(*domain.get_requirements());
+    const auto constants = translate_common(domain.get_constants());
+    auto predicates = translate_common(domain.get_predicates());
     auto static_predicates = PredicateList {};
     for (const auto& predicate : domain.get_predicates())
     {
@@ -539,18 +546,29 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
             static_predicates.push_back(translate_common(*predicate));
         }
     }
-    auto fluent_predicates = translate_common(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
+    const auto fluent_predicates = translate_common(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
+    const auto derived_predicates = translate_common(domain.get_derived_predicates());
+    const auto functions = translate_lifted(domain.get_functions());
+    const auto actions = translate_lifted(domain.get_actions());
+    const auto axioms = translate_lifted(domain.get_axioms());
+
+    // Add equal predicate that was hidden from predicate section
+    if (m_equal_predicate)
+    {
+        predicates.push_back(m_equal_predicate);
+        static_predicates.push_back(m_equal_predicate);
+    }
 
     return m_pddl_factories.get_or_create_domain(domain.get_name(),
-                                                 translate_common(*domain.get_requirements()),
-                                                 translate_common(domain.get_constants()),
+                                                 requirements,
+                                                 constants,
                                                  predicates,
                                                  static_predicates,
                                                  fluent_predicates,
-                                                 translate_common(domain.get_derived_predicates()),
-                                                 translate_lifted(domain.get_functions()),
-                                                 translate_lifted(domain.get_actions()),
-                                                 translate_lifted(domain.get_axioms()));
+                                                 derived_predicates,
+                                                 functions,
+                                                 actions,
+                                                 axioms);
 }
 
 /**
@@ -711,6 +729,12 @@ Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
     return translate_grounded(problem);
 }
 
-ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) :
+    m_pddl_factories(pddl_factories),
+    m_fluent_predicates(),
+    m_equal_predicate(nullptr),
+    m_variable_to_parameter_index()
+{
+}
 
 }

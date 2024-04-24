@@ -137,7 +137,7 @@ void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy state, std
 AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
     m_problem(problem),
     m_pddl_factories(pddl_factories),
-    m_lifted_aag(problem, pddl_factories)
+    m_lifted_aag(m_problem, m_pddl_factories)
 {
     // 1. Explore delete relaxed task.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
@@ -147,6 +147,10 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     auto& state_bitset = m_state_builder.get_atoms_bitset();
     state_bitset.unset_all();
+    for (const auto& atom_id : dr_ssg.get_or_create_initial_state(m_problem).get_atoms_bitset())
+    {
+        state_bitset.set(atom_id);
+    }
 
     // Keep track of changes
     size_t num_atoms = 0;
@@ -158,22 +162,21 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         num_atoms = pddl_factories.get_ground_atoms().size();
         num_actions = dr_lifted_aag.get_actions().size();
 
-        // Create a state where all ground atoms are true
-        for (const auto& atom : pddl_factories.get_ground_atoms())
-        {
-            state_bitset.set(atom.get_identifier());
-        }
         m_state_builder.get_flatmemory_builder().finish();
         const auto state = ConstDenseStateViewProxy(ConstDenseStateView(m_state_builder.get_flatmemory_builder().buffer().data()));
 
         // Create all applicable actions and apply newly generated actions
-        dr_lifted_aag.generate_applicable_actions(state, actions);
+        m_lifted_aag.generate_applicable_actions(state, actions);
         for (const auto& action : actions)
         {
             const auto is_newly_generated = (action.get_id() >= num_actions);
             if (is_newly_generated)
             {
-                (void) dr_ssg.get_or_create_successor_state(state, action);
+                const auto succ_state = dr_ssg.get_or_create_successor_state(state, action);
+                for (const auto atom_id : succ_state.get_atoms_bitset())
+                {
+                    state_bitset.set(atom_id);
+                }
             }
         }
 
@@ -186,11 +189,22 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     const auto state = ConstDenseStateViewProxy(ConstDenseStateView(m_state_builder.get_flatmemory_builder().buffer().data()));
     m_lifted_aag.generate_applicable_actions(state, actions);
 
-    std::cout << "Total number of ground actions in task: " << m_lifted_aag.get_actions().size() << std::endl;
+    /*
+    for (const auto atom_id : state.get_atoms_bitset())
+    {
+        std::cout << *m_pddl_factories.get_ground_atom(atom_id) << std::endl;
+    }
+
+    for (const auto& action : m_lifted_aag.get_actions())
+    {
+        std::cout << std::make_tuple(ConstDenseActionViewProxy(action), std::cref(m_pddl_factories)) << std::endl;
+    }
+    */
 
     // 3. Build match tree
     m_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), actions);
 
+    std::cout << "Total number of ground actions in task: " << m_lifted_aag.get_actions().size() << std::endl;
     std::cout << "Total number of nodes in match tree: " << m_match_tree.get_num_nodes() << std::endl;
 }
 

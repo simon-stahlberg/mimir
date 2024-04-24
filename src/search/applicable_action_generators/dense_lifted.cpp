@@ -189,7 +189,7 @@ bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const A
 {
     for (const auto& literal : action->get_fluent_conditions())
     {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0 && state.literal_holds(ground_literal(literal, {})))
+        if (literal->get_atom()->get_predicate()->get_arity() == 0 && !state.literal_holds(ground_literal(literal, {})))
         {
             return false;
         }
