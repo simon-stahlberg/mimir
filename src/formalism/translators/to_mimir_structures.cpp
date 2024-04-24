@@ -553,6 +553,7 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
     const auto axioms = translate_lifted(domain.get_axioms());
 
     // Add equal predicate that was hidden from predicate section
+    // This must occur after translating all domain contents
     if (m_equal_predicate)
     {
         predicates.push_back(m_equal_predicate);
@@ -692,6 +693,18 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     const auto translated_domain = translate_lifted(*problem.get_domain());
 
     auto initial_literals = translate_grounded(problem.get_initial_literals());
+    // Add equal atoms, e.g., (= object1 object1)
+    // This must occur after parsing the domain
+    if (m_equal_predicate)
+    {
+        for (const auto& object : objects)
+        {
+            initial_literals.push_back(
+                m_pddl_factories.get_or_create_ground_literal(false,
+                                                              m_pddl_factories.get_or_create_ground_atom(m_equal_predicate, ObjectList { object, object })));
+        }
+    }
+    // Derive static and fluent initial literals
     auto static_initial_literals = GroundLiteralList {};
     auto fluent_initial_literals = GroundLiteralList {};
     const auto static_predicates = PredicateSet(translated_domain->get_static_predicates().begin(), translated_domain->get_static_predicates().end());
