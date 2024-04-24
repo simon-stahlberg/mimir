@@ -36,6 +36,9 @@ private:
     LiteralList m_static_condition;
     LiteralList m_fluent_condition;
     EffectList m_effect;
+    // More expressive than the definition of action costs:
+    // We allow arithmetic functions of ground functions
+    // and not just a single ground function (<numeric-term>).
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor

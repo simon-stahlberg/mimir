@@ -23,14 +23,15 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc < 3)
+    if (argc < 4)
     {
-        std::cout << "Usage: planner <domain:str> <problem:str>" << std::endl;
+        std::cout << "Usage: planner <domain:str> <problem:str> <grounded:bool>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
+    const auto grounded = bool { std::atoi(argv[3]) };
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -46,8 +47,11 @@ int main(int argc, char** argv)
     std::cout << "Initializing planner..." << std::endl;
 
     auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
-    // auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto successor_generator = std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
+
+    auto successor_generator =
+        (grounded) ?
+            std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) } :
+            std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) };
     auto event_handler = std::make_shared<MinimalEventHandler>();
     auto lifted_brfs = std::make_shared<BrFsAlgorithm>(parser.get_problem(),
                                                        parser.get_factories(),
