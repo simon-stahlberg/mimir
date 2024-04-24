@@ -27,9 +27,6 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_factories());
     problem = rename_quantifed_variables_translator.run(*problem);
 
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl;
-
     // Remove universal quantifiers
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
     problem = remove_universal_quantifiers_translator.run(*problem);
@@ -53,9 +50,6 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     // Move existential quantifers
     auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_factories());
     problem = move_existential_quantifiers_translator.run(*problem);
-
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl;
 
     // To mimir structures
     auto to_mimir_structures_translator = ToMimirStructures(m_factories);

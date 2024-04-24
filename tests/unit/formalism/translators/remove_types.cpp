@@ -10,7 +10,7 @@ namespace mimir::tests
 TEST(MimirTests, FormalismTranslatorsRemoveTypes)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic/problem.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl");
 
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
@@ -18,9 +18,9 @@ TEST(MimirTests, FormalismTranslatorsRemoveTypes)
     auto domain = domain_parser.get_domain();
     auto problem = problem_parser.get_problem();
 
-    std::cout << "\nInput domain and problem" << std::endl;
-    std::cout << *domain << std::endl;
-    std::cout << *problem << std::endl;
+    // std::cout << "\nInput domain and problem" << std::endl;
+    // std::cout << *domain << std::endl;
+    // std::cout << *problem << std::endl;
 
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
     auto translated_problem = remove_types_translator.run(*problem);
@@ -30,9 +30,9 @@ TEST(MimirTests, FormalismTranslatorsRemoveTypes)
     translated_problem = to_nnf_translator.run(*translated_problem);
     translated_domain = translated_problem->get_domain();
 
-    std::cout << "\nTranslated domain and problem" << std::endl;
-    std::cout << *translated_problem->get_domain() << std::endl;
-    std::cout << *translated_problem << std::endl;
+    // std::cout << "\nTranslated domain and problem" << std::endl;
+    // std::cout << *translated_problem->get_domain() << std::endl;
+    // std::cout << *translated_problem << std::endl;
 }
 
 }

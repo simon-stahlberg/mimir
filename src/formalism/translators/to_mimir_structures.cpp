@@ -541,17 +541,6 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
     }
     auto fluent_predicates = translate_common(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
 
-    std::cout << "Detected static predicates: " << std::endl;
-    for (const auto& predicate : static_predicates)
-    {
-        std::cout << *predicate << std::endl;
-    }
-    std::cout << "Detected fluent predicates: " << std::endl;
-    for (const auto& predicate : fluent_predicates)
-    {
-        std::cout << *predicate << std::endl;
-    }
-
     return m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                  translate_common(*domain.get_requirements()),
                                                  translate_common(domain.get_constants()),

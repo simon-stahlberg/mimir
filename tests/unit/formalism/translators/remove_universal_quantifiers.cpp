@@ -18,9 +18,9 @@ TEST(MimirTests, FormalismTranslatorsRemoveUniversalQuantifiers)
     auto domain = domain_parser.get_domain();
     auto problem = problem_parser.get_problem();
 
-    std::cout << "\nInput domain and problem" << std::endl;
-    std::cout << *domain << std::endl;
-    std::cout << *problem << std::endl;
+    // std::cout << "\nInput domain and problem" << std::endl;
+    // std::cout << *domain << std::endl;
+    // std::cout << *problem << std::endl;
 
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
     auto translated_problem = remove_types_translator.run(*problem);
@@ -34,9 +34,9 @@ TEST(MimirTests, FormalismTranslatorsRemoveUniversalQuantifiers)
     translated_problem = remove_universal_quantifiers_translator.run(*translated_problem);
     translated_domain = translated_problem->get_domain();
 
-    std::cout << "\nTranslated domain and problem" << std::endl;
-    std::cout << *translated_problem->get_domain() << std::endl;
-    std::cout << *translated_problem << std::endl;
+    // std::cout << "\nTranslated domain and problem" << std::endl;
+    // std::cout << *translated_problem->get_domain() << std::endl;
+    // std::cout << *translated_problem << std::endl;
 }
 
 }

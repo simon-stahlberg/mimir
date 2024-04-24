@@ -8,40 +8,72 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchAlgorithmsBrFSGroundedTest)
+/// @brief Instantiate a BrFs
+class BrFsPlanner
 {
-    // Instantiate grounded version
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
-    PDDLParser parser(domain_file, problem_file);
-    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
-    auto successor_generator = std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto grounded_brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), state_repository, successor_generator, event_handler);
-    auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
-    const auto search_status = grounded_brfs.find_solution(plan);
+private:
+    PDDLParser m_parser;
+
+    std::unique_ptr<IAlgorithm> m_algorithm;
+
+public:
+    BrFsPlanner(const fs::path& domain_file, const fs::path& problem_file, bool grounded) :
+        m_parser(PDDLParser(domain_file, problem_file)),
+        m_algorithm(nullptr)
+    {
+        auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(m_parser.get_problem());
+        auto successor_generator =
+            (grounded) ?
+                std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) } :
+                std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) };
+        auto event_handler = std::make_shared<MinimalEventHandler>();
+        m_algorithm = std::make_unique<BrFsAlgorithm>(m_parser.get_problem(), m_parser.get_factories(), state_repository, successor_generator, event_handler);
+    }
+
+    std::tuple<SearchStatus, Plan> find_solution()
+    {
+        auto action_view_list = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
+        const auto status = m_algorithm->find_solution(action_view_list);
+        return std::make_tuple(status, to_plan(action_view_list));
+    }
+};
+
+/**
+ * Gripper
+ */
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 3);
 }
 
-TEST(MimirTests, SearchAlgorithmsBrFSLiftedTest)
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedGripperTest)
 {
-    // Instantiate lifted version
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/problem.pddl");
-    PDDLParser parser(domain_file, problem_file);
-    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem());
-    auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto lifted_brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), state_repository, successor_generator, event_handler);
-    auto plan = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
-    const auto search_status = lifted_brfs.find_solution(plan);
-
-    std::cout << "SearchStatus: " << search_status << std::endl;
-    std::cout << "Plan cost: " << plan.size() << std::endl;
-
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.size(), 5);
-    EXPECT_EQ(event_handler->get_statistics().get_num_expanded(), 24);
-    EXPECT_EQ(event_handler->get_statistics().get_num_generated(), 90);
+    EXPECT_EQ(plan.get_actions().size(), 3);
+}
+
+/**
+ * Miconic
+ */
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic/domain.pddl"), fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 5);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic/domain.pddl"), fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 5);
 }
 
 }
