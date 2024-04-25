@@ -324,8 +324,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(C
 
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
     m_problem(problem),
-    m_ground_function_value_costs(),
     m_pddl_factories(pddl_factories),
+    m_ground_function_value_costs(),
     m_partitions(),
     m_to_vertex_assignment(),
     m_statically_consistent_assignments()

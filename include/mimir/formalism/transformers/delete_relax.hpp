@@ -38,12 +38,16 @@ private:
     using BaseCachedRecurseTransformer::prepare_impl;
     using BaseCachedRecurseTransformer::transform_impl;
 
+    std::unordered_map<Action, Action> m_delete_to_normal_action;
+
     Action transform_impl(const ActionImpl& action);
 
     Problem run_impl(const ProblemImpl& problem);
 
 public:
     explicit DeleteRelaxTransformer(PDDLFactories& pddl_factories);
+
+    Action get_unrelaxed_action(Action action) const;
 };
 }
 

@@ -29,6 +29,7 @@ private:
     using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
 
     Problem m_problem;
+    PDDLFactories& m_pddl_factories;
 
     DenseActionSet m_actions;
     std::vector<ConstActionView> m_actions_by_index;
@@ -36,25 +37,21 @@ private:
 
     GroundFunctionValueCosts m_ground_function_value_costs;
 
-    PDDLFactories& m_pddl_factories;
-
     std::unordered_map<Action, std::vector<std::vector<size_t>>> m_partitions;
     std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
 
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
 
-    ConstActionView ground_action(const Action& flat_action, ObjectList&& binding);
-
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const Action& flat_action, ConstStateView state) const;
+    bool nullary_preconditions_hold(const Action& action, ConstStateView state) const;
 
-    void nullary_case(const Action& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void nullary_case(const Action& action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
-    void unary_case(const Action& flat_action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void unary_case(const Action& action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
 
     void general_case(const std::vector<std::vector<bool>>& assignment_sets,
-                      const Action& flat_action,
+                      const Action& action,
                       ConstStateView state,
                       std::vector<ConstActionView>& out_applicable_actions);
 
@@ -65,6 +62,9 @@ private:
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
+
+    // Ground an action
+    ConstActionView ground_action(const Action& action, ObjectList&& binding);
 
     /// @brief Return all actions.
     [[nodiscard]] const DenseActionSet& get_actions() const;

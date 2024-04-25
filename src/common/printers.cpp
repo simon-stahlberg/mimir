@@ -62,13 +62,10 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     to_ground_atoms(positive_effect_bitset, pddl_factories, positive_effect);
     to_ground_atoms(negative_effect_bitset, pddl_factories, negative_effect);
 
-    auto precondition = GroundAtomList {};
-    precondition.insert(precondition.end(), positive_precondition.begin(), positive_precondition.end());
-    precondition.insert(precondition.end(), negative_precondition.begin(), negative_precondition.end());
-
     os << "Action("
        << "name=" << action.get_action()->get_name() << ", "
-       << "precondition=" << precondition << ", "
+       << "positive precondition=" << positive_precondition << ", "
+       << "negative precondition=" << negative_precondition << ", "
        << "delete=" << negative_effect << ", "
        << "add=" << positive_effect << ")";
 

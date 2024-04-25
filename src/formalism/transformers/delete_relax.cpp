@@ -20,12 +20,25 @@
 namespace mimir
 {
 
+static LiteralList filter_positive_literals(const LiteralList& literals)
+{
+    auto positive_literals = LiteralList {};
+    for (const auto& literal : literals)
+    {
+        if (!literal->is_negated())
+        {
+            positive_literals.push_back(literal);
+        }
+    }
+    return positive_literals;
+}
+
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
     auto parameters = this->transform(action.get_parameters());
-    auto conditions = this->transform(action.get_conditions());
-    auto static_conditions = this->transform(action.get_static_conditions());
-    auto fluent_conditions = this->transform(action.get_fluent_conditions());
+    auto conditions = filter_positive_literals(this->transform(action.get_conditions()));
+    auto static_conditions = filter_positive_literals(this->transform(action.get_static_conditions()));
+    auto fluent_conditions = filter_positive_literals(this->transform(action.get_fluent_conditions()));
 
     // Remove negative effects.
     auto effects = EffectList {};
@@ -38,17 +51,23 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     }
     effects.shrink_to_fit();
 
-    return this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                       parameters,
-                                                       conditions,
-                                                       static_conditions,
-                                                       fluent_conditions,
-                                                       effects,
-                                                       this->transform(*action.get_function_expression()));
+    auto delete_relaxed_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                                             parameters,
+                                                                             conditions,
+                                                                             static_conditions,
+                                                                             fluent_conditions,
+                                                                             effects,
+                                                                             this->transform(*action.get_function_expression()));
+
+    m_delete_to_normal_action.emplace(delete_relaxed_action, &action);
+
+    return delete_relaxed_action;
 }
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
 
 DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories) : BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories) {}
+
+Action DeleteRelaxTransformer::get_unrelaxed_action(Action action) const { return m_delete_to_normal_action.at(action); }
 
 }
