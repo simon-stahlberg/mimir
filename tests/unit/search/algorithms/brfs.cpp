@@ -310,6 +310,46 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedRewardTest)
 }
 
 /**
+ * Rovers
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "rovers/domain.pddl"), fs::path(std::string(DATA_DIR) + "rovers/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedRoversTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "rovers/domain.pddl"), fs::path(std::string(DATA_DIR) + "rovers/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+/**
+ * Satellite
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "satellite/domain.pddl"), fs::path(std::string(DATA_DIR) + "satellite/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedSatelliteTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "satellite/domain.pddl"), fs::path(std::string(DATA_DIR) + "satellite/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+}
+
+/**
  * Schedule
  */
 
@@ -351,6 +391,26 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTransportTest)
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 5);
+}
+
+/**
+ * Visitall
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedVisitallTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "visitall/domain.pddl"), fs::path(std::string(DATA_DIR) + "visitall/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 8);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedVisitallTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "visitall/domain.pddl"), fs::path(std::string(DATA_DIR) + "visitall/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 8);
 }
 
 /**

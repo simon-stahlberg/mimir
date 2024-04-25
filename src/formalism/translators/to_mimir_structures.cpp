@@ -137,10 +137,15 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         }
         return;
     }
+    else if (const auto effect_literal = std::get_if<loki::EffectLiteralImpl>(effect_ptr))
+    {
+        prepare(*effect_literal->get_literal());
+        return;
+    }
 
-    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect_ptr) << std::endl;
+    std::cout << std::visit([](auto&& arg) { return arg.str(); }, effect) << std::endl;
 
-    throw std::logic_error("Expected conjunctive effect.");
+    throw std::logic_error("Expected conjunctive or literal effect.");
 }
 void ToMimirStructures::prepare(const loki::FunctionExpressionNumberImpl& function_expression) {}
 void ToMimirStructures::prepare(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
@@ -492,10 +497,17 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
 
         return std::make_tuple(simple_effects, conditional_effects, universal_effects, cost_function_expression);
     }
+    else if (const auto effect_literal = std::get_if<loki::EffectLiteralImpl>(effect_ptr))
+    {
+        return std::make_tuple(EffectSimpleList { this->m_pddl_factories.get_or_create_simple_effect(this->translate_lifted(*effect_literal->get_literal())) },
+                               EffectConditionalList {},
+                               EffectUniversalList {},
+                               this->m_pddl_factories.get_or_create_function_expression_number(1));
+    }
 
-    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect_ptr) << std::endl;
+    std::cout << std::visit([](auto&& arg) { return arg.str(); }, effect) << std::endl;
 
-    throw std::logic_error("Expected conjunctive effect.");
+    throw std::logic_error("Expected conjunctive or literal effect.");
 }
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
