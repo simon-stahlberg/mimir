@@ -246,6 +246,26 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedHikingTest)
 }
 
 /**
+ * Logistics
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "logistics/domain.pddl"), fs::path(std::string(DATA_DIR) + "logistics/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedLogisticsTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "logistics/domain.pddl"), fs::path(std::string(DATA_DIR) + "logistics/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+/**
  * Miconic
  */
 
@@ -268,6 +288,26 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
 /**
  * Miconic-fulladl
  */
+
+/**
+ * Reward
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedRewardTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "reward/domain.pddl"), fs::path(std::string(DATA_DIR) + "reward/test_problem.pddl"), true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedRewardTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "reward/domain.pddl"), fs::path(std::string(DATA_DIR) + "reward/test_problem.pddl"), false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
 
 /**
  * Schedule

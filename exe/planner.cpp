@@ -31,8 +31,8 @@ int main(int argc, char** argv)
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
-    const auto grounded = bool { std::atoi(argv[3]) };
-    const auto debug = bool { std::atoi(argv[4]) };
+    const auto grounded = static_cast<bool>(std::atoi(argv[3]));
+    const auto debug = static_cast<bool>(std::atoi(argv[4]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
