@@ -216,6 +216,8 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
     m_match_tree.get_applicable_actions(state, out_applicable_actions);
 }
 
+[[nodiscard]] const DenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
+
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<GroundedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {
     return m_lifted_aag.get_action(action_id);

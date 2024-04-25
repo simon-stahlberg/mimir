@@ -13,7 +13,6 @@ namespace mimir
  * Dominik (2024-04-20): I tried an implementation with std::variant
  * which has similar performance so I switched the to implementation
  * using virtual, which is simpler.
- * It seems that whenever runtime polymorphism is needed virtual is the more elegant choice.
  */
 class MatchTree
 {
@@ -90,6 +89,9 @@ private:
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
+
+    /// @brief Return all actions.
+    [[nodiscard]] const DenseActionSet& get_actions() const;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] ConstActionView get_action(size_t action_id) const;

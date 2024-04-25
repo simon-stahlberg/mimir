@@ -46,6 +46,8 @@ public:
 
 /**
  * Base class
+ *
+ * Collect statistics and call implementation of derived class.
  */
 template<typename Derived>
 class EventHandlerBase : public IEventHandler

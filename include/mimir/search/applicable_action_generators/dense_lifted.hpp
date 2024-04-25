@@ -16,7 +16,45 @@
 namespace mimir
 {
 
-using GroundFunctionValueCosts = std::unordered_map<GroundFunction, double>;
+using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
+
+/// @brief The StaticConsistencyGraph encodes the part of the consisteny graph
+///        that is static for each state.
+class StaticConsistencyGraph
+{
+private:
+    Problem m_problem;
+
+    /// @brief The ActionExtension provides additional accessors to action information
+    class ActionExtension
+    {
+    private:
+    public:
+        // Define getters here
+    };
+
+    class Vertex
+    {
+    private:
+        size_t param_index;
+        size_t object_index;
+
+    public:
+        Vertex(size_t param_index, size_t object_index);
+
+        size_t get_param_index() const;
+        size_t get_object_index() const;
+    };
+
+    struct Edge
+    {
+    };
+
+    std::unordered_map<Action, ActionExtension> action_extensions;
+
+public:
+    explicit StaticConsistencyGraph(Problem problem);
+};
 
 /**
  * Fully specialized implementation class.
@@ -35,7 +73,7 @@ private:
     std::vector<ConstActionView> m_actions_by_index;
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
-    GroundFunctionValueCosts m_ground_function_value_costs;
+    GroundFunctionToValue m_ground_function_value_costs;
 
     std::unordered_map<Action, std::vector<std::vector<size_t>>> m_partitions;
     std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
@@ -63,7 +101,7 @@ private:
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
 
-    // Ground an action
+    /// @brief Ground an action and return a view onto it.
     ConstActionView ground_action(const Action& action, ObjectList&& binding);
 
     /// @brief Return all actions.

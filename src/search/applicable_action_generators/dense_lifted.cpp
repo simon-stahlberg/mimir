@@ -57,7 +57,7 @@ GroundLiteral AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_literal(const Lite
 class GroundAndEvaluateFunctionExpressionVisitor
 {
 private:
-    const GroundFunctionValueCosts& m_ground_function_value_costs;
+    const GroundFunctionToValue& m_ground_function_value_costs;
     const ObjectList& m_binding;
     PDDLFactories& m_pddl_factories;
 
@@ -69,7 +69,7 @@ private:
     }
 
 public:
-    GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionValueCosts& ground_function_value_costs,
+    GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionToValue& ground_function_value_costs,
                                                const ObjectList& binding,
                                                PDDLFactories& pddl_factories) :
 
@@ -377,16 +377,20 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
         {
             // Create a mapping between indices and parameter-object mappings.
 
+            // D: Create nodes for all x in params(A)
             for (uint32_t parameter_index = 0; parameter_index < action->get_arity(); ++parameter_index)
             {
                 std::vector<std::size_t> partition;
 
                 for (const auto& object : m_problem->get_objects())
                 {
+                    // D: Attach vertex index to [x/o]
                     partition.push_back(to_vertex_assignment.size());
+                    // D: Create nodes [x/o]
                     to_vertex_assignment.push_back(Assignment(parameter_index, object->get_identifier()));
                 }
 
+                // D: Partition vertex indices by x
                 partitions.push_back(std::move(partition));
             }
 

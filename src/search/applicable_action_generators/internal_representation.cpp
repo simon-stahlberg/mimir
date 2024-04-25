@@ -56,20 +56,35 @@ size_t num_assignments(int32_t arity, int32_t num_objects)
     return (size_t) (max + 1);
 }
 
+/// @brief Compute an assignment set.
+///
+/// An assignment set is a function
+/// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where
+///   1. f(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j)
+///   2. f(p,i,o,-1,-1) = true iff there exists an atom p(...,o_i,...)
+/// with respective meanings
+///   1. the assignment [i/o], [j/o'] is consistent
+///   2. the assignment [i/o] is consistent
+///
+/// We say that an assignment set is static if all atoms it considers are static.
+///
+/// It is implemented as a perfect hash function to efficiently test
+/// whether one or two assignments are consistent.
 std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std::vector<size_t>& atom_identifiers, const PDDLFactories& factories)
 {
     const auto num_objects = problem->get_objects().size();
     const auto& predicates = problem->get_domain()->get_predicates();
 
+    // D: Create assignment set for each predicate
     std::vector<std::vector<bool>> assignment_sets;
     assignment_sets.resize(predicates.size());
-
     for (const auto& predicate : predicates)
     {
         auto& assignment_set = assignment_sets[predicate->get_identifier()];
         assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
     }
 
+    // D: Fill assignments of static atoms
     for (const auto& identifier : atom_identifiers)
     {
         const auto& ground_atom = factories.get_ground_atom(identifier);
