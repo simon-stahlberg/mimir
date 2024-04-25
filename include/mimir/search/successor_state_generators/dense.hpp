@@ -22,8 +22,6 @@ private:
     using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
     using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
 
-    Problem m_problem;
-
     DenseStateSet m_states;
     Builder<StateDispatcher<DenseStateTag>> m_state_builder;
 
@@ -92,7 +90,7 @@ private:
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
-    explicit SSG(Problem problem) : m_problem(problem) {}
+    explicit SSG(Problem /*problem*/) {}
 };
 
 }

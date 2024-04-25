@@ -5,7 +5,7 @@
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/effect.hpp"
+#include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
@@ -59,7 +59,9 @@ protected:
     std::unordered_map<Literal, Literal> m_transformed_literals;
     std::unordered_map<GroundLiteral, GroundLiteral> m_transformed_ground_literals;
     std::unordered_map<NumericFluent, NumericFluent> m_transformed_numeric_fluents;
-    std::unordered_map<Effect, Effect> m_transformed_effects;
+    std::unordered_map<EffectSimple, EffectSimple> m_transformed_simple_effects;
+    std::unordered_map<EffectConditional, EffectConditional> m_transformed_conditional_effects;
+    std::unordered_map<EffectUniversal, EffectUniversal> m_transformed_universal_effects;
     std::unordered_map<FunctionExpression, FunctionExpression> m_transformed_function_expressions;
     std::unordered_map<GroundFunctionExpression, GroundFunctionExpression> m_transformed_ground_function_expressions;
     std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_transformed_function_skeletons;
@@ -92,7 +94,9 @@ protected:
     void prepare_base(const LiteralImpl& literal) { self().prepare_impl(literal); }
     void prepare_base(const NumericFluentImpl& numeric_fluent) { self().prepare_impl(numeric_fluent); }
     void prepare_base(const GroundLiteralImpl& literal) { self().prepare_impl(literal); }
-    void prepare_base(const EffectImpl& effect) { self().prepare_impl(effect); }
+    void prepare_base(const EffectSimpleImpl& effect) { self().prepare_impl(effect); }
+    void prepare_base(const EffectConditionalImpl& effect) { self().prepare_impl(effect); }
+    void prepare_base(const EffectUniversalImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
@@ -131,10 +135,20 @@ protected:
     void prepare_impl(const LiteralImpl& literal) { this->prepare(*literal.get_atom()); }
     void prepare_impl(const NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
     void prepare_impl(const GroundLiteralImpl& literal) { this->prepare(*literal.get_atom()); }
-    void prepare_impl(const EffectImpl& effect)
+    void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(*effect.get_effect()); }
+    void prepare_impl(const EffectConditionalImpl& effect)
+    {
+        this->prepare(effect.get_conditions());
+        this->prepare(effect.get_static_conditions());
+        this->prepare(effect.get_fluent_conditions());
+        this->prepare(*effect.get_effect());
+    }
+    void prepare_impl(const EffectUniversalImpl& effect)
     {
         this->prepare(effect.get_parameters());
         this->prepare(effect.get_conditions());
+        this->prepare(effect.get_static_conditions());
+        this->prepare(effect.get_fluent_conditions());
         this->prepare(*effect.get_effect());
     }
     void prepare_impl(const FunctionExpressionNumberImpl& function_expression) {}
@@ -160,7 +174,9 @@ protected:
     {
         this->prepare(action.get_parameters());
         this->prepare(action.get_conditions());
-        this->prepare(action.get_effects());
+        this->prepare(action.get_simple_effects());
+        this->prepare(action.get_conditional_effects());
+        this->prepare(action.get_universal_effects());
     }
     void prepare_impl(const AxiomImpl& axiom)
     {
@@ -243,9 +259,17 @@ protected:
     {
         return cached_transform_impl(numeric_fluent, m_transformed_numeric_fluents, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
-    Effect transform_base(const EffectImpl& effect)
+    EffectSimple transform_base(const EffectSimpleImpl& effect)
     {
-        return cached_transform_impl(effect, m_transformed_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(effect, m_transformed_simple_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    EffectConditional transform_base(const EffectConditionalImpl& effect)
+    {
+        return cached_transform_impl(effect, m_transformed_conditional_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    EffectUniversal transform_base(const EffectUniversalImpl& effect)
+    {
+        return cached_transform_impl(effect, m_transformed_universal_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     FunctionExpression transform_base(const FunctionExpressionNumberImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
@@ -376,13 +400,24 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_numeric_fluent(this->transform(*numeric_fluent.get_function()), numeric_fluent.get_number());
     }
-    Effect transform_impl(const EffectImpl& effect)
+    EffectSimple transform_impl(const EffectSimpleImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_simple_effect(this->transform(effect.get_parameters()),
-                                                                  this->transform(effect.get_conditions()),
-                                                                  this->transform(effect.get_static_conditions()),
-                                                                  this->transform(effect.get_static_conditions()),
-                                                                  this->transform(*effect.get_effect()));
+        return this->m_pddl_factories.get_or_create_simple_effect(this->transform(*effect.get_effect()));
+    }
+    EffectConditional transform_impl(const EffectConditionalImpl& effect)
+    {
+        return this->m_pddl_factories.get_or_create_conditional_effect(this->transform(effect.get_conditions()),
+                                                                       this->transform(effect.get_static_conditions()),
+                                                                       this->transform(effect.get_static_conditions()),
+                                                                       this->transform(*effect.get_effect()));
+    }
+    EffectUniversal transform_impl(const EffectUniversalImpl& effect)
+    {
+        return this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
+                                                                     this->transform(effect.get_conditions()),
+                                                                     this->transform(effect.get_static_conditions()),
+                                                                     this->transform(effect.get_static_conditions()),
+                                                                     this->transform(*effect.get_effect()));
     }
     FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {
@@ -459,7 +494,9 @@ protected:
                                                            this->transform(action.get_conditions()),
                                                            this->transform(action.get_static_conditions()),
                                                            this->transform(action.get_fluent_conditions()),
-                                                           this->transform(action.get_effects()));
+                                                           this->transform(action.get_simple_effects()),
+                                                           this->transform(action.get_conditional_effects()),
+                                                           this->transform(action.get_universal_effects()));
     }
     Axiom transform_impl(const AxiomImpl& axiom)
     {

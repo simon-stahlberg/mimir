@@ -7,7 +7,7 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/effect.hpp"
+#include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"

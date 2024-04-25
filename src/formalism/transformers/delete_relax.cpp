@@ -41,22 +41,39 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto fluent_conditions = filter_positive_literals(this->transform(action.get_fluent_conditions()));
 
     // Remove negative effects.
-    auto effects = EffectList {};
-    for (const auto& effect : this->transform(action.get_effects()))
+    auto simple_effects = EffectSimpleList {};
+    for (const auto& effect : this->transform(action.get_simple_effects()))
     {
         if (!effect->get_effect()->is_negated())
         {
-            effects.push_back(effect);
+            simple_effects.push_back(effect);
         }
     }
-    effects.shrink_to_fit();
+    auto conditional_effects = EffectConditionalList {};
+    for (const auto& effect : this->transform(action.get_conditional_effects()))
+    {
+        if (!effect->get_effect()->is_negated())
+        {
+            conditional_effects.push_back(effect);
+        }
+    }
+    auto universal_effects = EffectUniversalList {};
+    for (const auto& effect : this->transform(action.get_universal_effects()))
+    {
+        if (!effect->get_effect()->is_negated())
+        {
+            universal_effects.push_back(effect);
+        }
+    }
 
     auto delete_relaxed_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                                              parameters,
                                                                              conditions,
                                                                              static_conditions,
                                                                              fluent_conditions,
-                                                                             effects,
+                                                                             simple_effects,
+                                                                             conditional_effects,
+                                                                             universal_effects,
                                                                              this->transform(*action.get_function_expression()));
 
     m_delete_to_normal_action.emplace(delete_relaxed_action, &action);

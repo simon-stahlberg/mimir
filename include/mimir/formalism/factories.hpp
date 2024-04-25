@@ -22,7 +22,7 @@
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/effect.hpp"
+#include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -64,7 +64,9 @@ using GroundFunctionExpressionFactory = loki::PDDLFactory<GroundFunctionExpressi
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
 using GroundFunctionFactory = loki::PDDLFactory<GroundFunctionImpl>;
 using FunctionSkeletonFactory = loki::PDDLFactory<FunctionSkeletonImpl>;
-using SimpleEffectFactory = loki::PDDLFactory<EffectImpl>;
+using EffectSimpleFactory = loki::PDDLFactory<EffectSimpleImpl>;
+using EffectConditionalSimpleFactory = loki::PDDLFactory<EffectConditionalImpl>;
+using EffectUniversalConditionalSimpleFactory = loki::PDDLFactory<EffectUniversalImpl>;
 using ActionFactory = loki::PDDLFactory<ActionImpl>;
 using AxiomFactory = loki::PDDLFactory<AxiomImpl>;
 using OptimizationMetricFactory = loki::PDDLFactory<OptimizationMetricImpl>;
@@ -91,7 +93,9 @@ private:
     FunctionFactory functions;
     GroundFunctionFactory ground_functions;
     FunctionSkeletonFactory function_skeletons;
-    SimpleEffectFactory simple_effects;
+    EffectSimpleFactory simple_effects;
+    EffectConditionalSimpleFactory conditional_effects;
+    EffectUniversalConditionalSimpleFactory universal_effects;
     ActionFactory actions;
     AxiomFactory axioms;
     OptimizationMetricFactory optimization_metrics;
@@ -116,7 +120,9 @@ public:
         functions(FunctionFactory(1000)),
         ground_functions(GroundFunctionFactory(1000)),
         function_skeletons(FunctionSkeletonFactory(1000)),
-        simple_effects(SimpleEffectFactory(1000)),
+        simple_effects(EffectSimpleFactory(1000)),
+        conditional_effects(EffectConditionalSimpleFactory(1000)),
+        universal_effects(EffectUniversalConditionalSimpleFactory(1000)),
         actions(ActionFactory(100)),
         axioms(AxiomFactory(100)),
         optimization_metrics(OptimizationMetricFactory(10)),
@@ -318,14 +324,30 @@ public:
     /// @brief Get or create a simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Effect
-    get_or_create_simple_effect(ParameterList parameters, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    EffectSimple get_or_create_simple_effect(Literal effect) { return simple_effects.get_or_create<EffectSimpleImpl>(std::move(effect)); }
+
+    /// @brief Get or create a conditional simple effect for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    EffectConditional get_or_create_conditional_effect(LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
     {
-        return simple_effects.get_or_create<EffectImpl>(std::move(parameters),
-                                                        std::move(condition),
-                                                        std::move(static_condition),
-                                                        std::move(fluent_condition),
-                                                        std::move(effect));
+        return conditional_effects.get_or_create<EffectConditionalImpl>(std::move(condition),
+                                                                        std::move(static_condition),
+                                                                        std::move(fluent_condition),
+                                                                        std::move(effect));
+    }
+
+    /// @brief Get or create a universal conditional simple effect for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    EffectUniversal
+    get_or_create_universal_effect(ParameterList parameters, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    {
+        return universal_effects.get_or_create<EffectUniversalImpl>(std::move(parameters),
+                                                                    std::move(condition),
+                                                                    std::move(static_condition),
+                                                                    std::move(fluent_condition),
+                                                                    std::move(effect));
     }
 
     /// @brief Get or create an action for the given parameters.
@@ -333,18 +355,22 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     Action get_or_create_action(std::string name,
                                 ParameterList parameters,
-                                LiteralList condition,
-                                LiteralList static_condition,
-                                LiteralList fluent_condition,
-                                EffectList effect,
+                                LiteralList conditions,
+                                LiteralList static_conditions,
+                                LiteralList fluent_conditions,
+                                EffectSimpleList simple_effects,
+                                EffectConditionalList conditional_effects,
+                                EffectUniversalList universal_effects,
                                 FunctionExpression function_expression)
     {
         return actions.get_or_create<ActionImpl>(std::move(name),
                                                  std::move(parameters),
-                                                 std::move(condition),
-                                                 std::move(static_condition),
-                                                 std::move(fluent_condition),
-                                                 std::move(effect),
+                                                 std::move(conditions),
+                                                 std::move(static_conditions),
+                                                 std::move(fluent_conditions),
+                                                 std::move(simple_effects),
+                                                 std::move(conditional_effects),
+                                                 std::move(universal_effects),
                                                  std::move(function_expression));
     }
 

@@ -27,7 +27,7 @@ namespace mimir
 {
 
 /* Forward declarations */
-struct PDDLFactories;
+class PDDLFactories;
 
 /* Data types*/
 using ElementsPerSegment = size_t;
@@ -84,22 +84,17 @@ class NumericFluentImpl;
 using NumericFluent = const NumericFluentImpl*;
 using NumericFluentList = std::vector<NumericFluent>;
 
-// TODO remove this
-class EffectImpl;
-using Effect = const EffectImpl*;
-using EffectList = std::vector<Effect>;
-
 class EffectSimpleImpl;
 using EffectSimple = const EffectSimpleImpl*;
 using EffectSimpleList = std::vector<EffectSimple>;
 
-class EffectConditionalSimpleImpl;
-using EffectConditionalSimple = const EffectConditionalSimpleImpl*;
-using EffectConditionalSimpleList = std::vector<EffectConditionalSimple>;
+class EffectConditionalImpl;
+using EffectConditional = const EffectConditionalImpl*;
+using EffectConditionalList = std::vector<EffectConditional>;
 
-class EffectUniversalConditionalSimpleImpl;
-using EffectUniversalConditionalSimple = const EffectUniversalConditionalSimpleImpl*;
-using EffectUniversalConditionalSimpleList = std::vector<EffectUniversalConditionalSimple>;
+class EffectUniversalImpl;
+using EffectUniversal = const EffectUniversalImpl*;
+using EffectUniversalList = std::vector<EffectUniversal>;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;

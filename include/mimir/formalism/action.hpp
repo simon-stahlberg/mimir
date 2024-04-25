@@ -35,7 +35,9 @@ private:
     LiteralList m_conditions;
     LiteralList m_static_conditions;
     LiteralList m_fluent_conditions;
-    EffectList m_effects;
+    EffectSimpleList m_simple_effects;
+    EffectConditionalList m_conditional_effects;
+    EffectUniversalList m_universal_effects;
     // More expressive than the definition of action costs:
     // We allow arithmetic functions of ground functions
     // and not just a single ground function (<numeric-term>).
@@ -49,7 +51,9 @@ private:
                LiteralList conditions,
                LiteralList static_conditions,
                LiteralList fluent_conditions,
-               EffectList effecst,
+               EffectSimpleList simple_effects,
+               EffectConditionalList conditional_effects,
+               EffectUniversalList universal_effects,
                FunctionExpression function_expression);
 
     // Give access to the constructor.
@@ -69,7 +73,9 @@ public:
     const LiteralList& get_conditions() const;
     const LiteralList& get_static_conditions() const;
     const LiteralList& get_fluent_conditions() const;
-    const EffectList& get_effects() const;
+    const EffectSimpleList& get_simple_effects() const;
+    const EffectConditionalList& get_conditional_effects() const;
+    const EffectUniversalList& get_universal_effects() const;
     const FunctionExpression& get_function_expression() const;
 
     using loki::Base<ActionImpl>::str;

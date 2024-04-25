@@ -115,7 +115,11 @@ void init_formalism(py::module_& m_formalism)
         .def("get_arity", &ActionImpl::get_arity)
         .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
         .def("get_conditions", &ActionImpl::get_conditions, py::return_value_policy::reference)
-        .def("get_effects", &ActionImpl::get_effects, py::return_value_policy::reference);
+        .def("get_static_conditions", &ActionImpl::get_static_conditions, py::return_value_policy::reference)
+        .def("get_fluent_conditions", &ActionImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference)
+        .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference)
+        .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference);
 
     py::class_<AtomImpl>(m_formalism, "Atom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl>::str, py::const_))
@@ -127,7 +131,9 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
         .def("get_identifier", &AxiomImpl::get_identifier)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
-        .def("get_conditions", &AxiomImpl::get_conditions, py::return_value_policy::reference);
+        .def("get_conditions", &AxiomImpl::get_conditions, py::return_value_policy::reference)
+        .def("get_static_conditions", &AxiomImpl::get_static_conditions, py::return_value_policy::reference)
+        .def("get_fluent_conditions", &AxiomImpl::get_fluent_conditions, py::return_value_policy::reference);
 
     py::class_<DomainImpl>(m_formalism, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
@@ -141,12 +147,27 @@ void init_formalism(py::module_& m_formalism)
         .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference)
         .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference);
 
-    py::class_<EffectImpl>(m_formalism, "Effect")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<EffectImpl>::str, py::const_))
-        .def("get_identifier", &EffectImpl::get_identifier)
-        .def("get_parameters", &EffectImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_conditions", &EffectImpl::get_conditions, py::return_value_policy::reference)
-        .def("get_effect", &EffectImpl::get_effect, py::return_value_policy::reference);
+    py::class_<EffectSimpleImpl>(m_formalism, "SimpleEffect")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<EffectSimpleImpl>::str, py::const_))
+        .def("get_identifier", &EffectSimpleImpl::get_identifier)
+        .def("get_effect", &EffectSimpleImpl::get_effect, py::return_value_policy::reference);
+
+    py::class_<EffectConditionalImpl>(m_formalism, "ConditionalEffect")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalImpl>::str, py::const_))
+        .def("get_identifier", &EffectConditionalImpl::get_identifier)
+        .def("get_conditions", &EffectConditionalImpl::get_conditions, py::return_value_policy::reference)
+        .def("get_static_conditions", &EffectConditionalImpl::get_static_conditions, py::return_value_policy::reference)
+        .def("get_fluent_conditions", &EffectConditionalImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference);
+
+    py::class_<EffectUniversalImpl>(m_formalism, "UniversalEffect")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<EffectUniversalImpl>::str, py::const_))
+        .def("get_identifier", &EffectUniversalImpl::get_identifier)
+        .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference)
+        .def("get_conditions", &EffectUniversalImpl::get_conditions, py::return_value_policy::reference)
+        .def("get_static_conditions", &EffectUniversalImpl::get_static_conditions, py::return_value_policy::reference)
+        .def("get_fluent_conditions", &EffectUniversalImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference);
 
     py::class_<FunctionExpressionNumberImpl>(m_formalism, "FunctionExpressionNumber")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionNumberImpl>::str, py::const_))

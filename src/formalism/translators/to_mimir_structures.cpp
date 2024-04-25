@@ -405,14 +405,16 @@ std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructur
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-std::pair<EffectList, FunctionExpression> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
+std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, FunctionExpression> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
     auto effect_ptr = &effect;
 
     // 1. Parse conjunctive part
     if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect_ptr))
     {
-        auto result_effects = EffectList {};
+        auto simple_effects = EffectSimpleList {};
+        auto conditional_effects = EffectConditionalList {};
+        auto universal_effects = EffectUniversalList {};
         auto result_function_expressions = FunctionExpressionList {};
         for (const auto& nested_effect : effect_and->get_effects())
         {
@@ -448,8 +450,20 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate_lifted(co
             {
                 const auto translated_effect = translate_lifted(*effect_literal->get_literal());
 
-                result_effects.push_back(
-                    m_pddl_factories.get_or_create_simple_effect(parameters, literals, static_literals, fluent_literals, translated_effect));
+                if (!parameters.empty())
+                {
+                    universal_effects.push_back(
+                        m_pddl_factories.get_or_create_universal_effect(parameters, literals, static_literals, fluent_literals, translated_effect));
+                }
+                else if (!literals.empty())
+                {
+                    conditional_effects.push_back(
+                        m_pddl_factories.get_or_create_conditional_effect(literals, static_literals, fluent_literals, translated_effect));
+                }
+                else
+                {
+                    simple_effects.push_back(m_pddl_factories.get_or_create_simple_effect(translated_effect));
+                }
             }
             else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
             {
@@ -476,7 +490,7 @@ std::pair<EffectList, FunctionExpression> ToMimirStructures::translate_lifted(co
                 this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions) :
                 result_function_expressions.front();
 
-        return std::make_pair(result_effects, cost_function_expression);
+        return std::make_tuple(simple_effects, conditional_effects, universal_effects, cost_function_expression);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *effect_ptr) << std::endl;
@@ -501,17 +515,29 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     }
 
     // Default effects
-    auto effects = EffectList {};
+    auto simple_effects = EffectSimpleList {};
+    auto conditional_effects = EffectConditionalList {};
+    auto universal_effects = EffectUniversalList {};
     auto function_expression = m_pddl_factories.get_or_create_function_expression_number(1);
 
     if (action.get_effect().has_value())
     {
-        const auto [effects_, function_expression_] = translate_lifted(*action.get_effect().value());
-        effects = effects_;
+        const auto [simple_effects_, conditional_effects_, universal_effects_, function_expression_] = translate_lifted(*action.get_effect().value());
+        simple_effects = simple_effects_;
+        conditional_effects = conditional_effects_;
+        universal_effects = universal_effects_;
         function_expression = function_expression_;
     }
 
-    return m_pddl_factories.get_or_create_action(action.get_name(), parameters, literals, static_literals, fluent_literals, effects, function_expression);
+    return m_pddl_factories.get_or_create_action(action.get_name(),
+                                                 parameters,
+                                                 literals,
+                                                 static_literals,
+                                                 fluent_literals,
+                                                 simple_effects,
+                                                 conditional_effects,
+                                                 universal_effects,
+                                                 function_expression);
 }
 
 Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)

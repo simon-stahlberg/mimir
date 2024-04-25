@@ -25,46 +25,11 @@
 
 namespace mimir
 {
-class EffectImpl : public loki::Base<EffectImpl>
-{
-private:
-    ParameterList m_quantified_variables;
-    LiteralList m_conditions;
-    LiteralList m_static_conditions;
-    LiteralList m_fluent_conditions;
-    Literal m_effect;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectImpl(int identifier,
-               ParameterList quantified_variables,
-               LiteralList conditions,
-               LiteralList static_conditions,
-               LiteralList fluent_conditions,
-               Literal effect);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectImpl, loki::Hash<EffectImpl*>, loki::EqualTo<EffectImpl*>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-public:
-    const ParameterList& get_parameters() const;
-    const LiteralList& get_conditions() const;
-    const LiteralList& get_static_conditions() const;
-    const LiteralList& get_fluent_conditions() const;
-    const Literal& get_effect() const;
-};
 
 /**
  * Type 1 effects
  */
-class EffectSimpleImpl
+class EffectSimpleImpl : public loki::Base<EffectSimpleImpl>
 {
 private:
     Literal m_effect;
@@ -90,7 +55,7 @@ public:
 /**
  * Type 2 effects
  */
-class EffectConditionalSimpleImpl
+class EffectConditionalImpl : public loki::Base<EffectConditionalImpl>
 {
 private:
     LiteralList m_conditions;
@@ -100,15 +65,15 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalSimpleImpl(int identifier, LiteralList conditions, LiteralList static_conditions, LiteralList fluent_conditions, Literal effect);
+    EffectConditionalImpl(int identifier, LiteralList conditions, LiteralList static_conditions, LiteralList fluent_conditions, Literal effect);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectConditionalSimpleImpl, loki::Hash<EffectConditionalSimpleImpl*>, loki::EqualTo<EffectConditionalSimpleImpl*>>;
+    friend class loki::PDDLFactory<EffectConditionalImpl, loki::Hash<EffectConditionalImpl*>, loki::EqualTo<EffectConditionalImpl*>>;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<EffectConditionalSimpleImpl>;
+    friend class loki::Base<EffectConditionalImpl>;
 
-    bool is_structurally_equivalent_to_impl(const EffectConditionalSimpleImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const EffectConditionalImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
@@ -122,7 +87,7 @@ public:
 /**
  * Type 3 effects
  */
-class EffectUniversalConditionalSimpleImpl
+class EffectUniversalImpl : public loki::Base<EffectUniversalImpl>
 {
 private:
     ParameterList m_quantified_variables;
@@ -133,22 +98,20 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectUniversalConditionalSimpleImpl(int identifier,
-                                         ParameterList quantified_variables,
-                                         LiteralList conditions,
-                                         LiteralList static_conditions,
-                                         LiteralList fluent_conditions,
-                                         Literal effect);
+    EffectUniversalImpl(int identifier,
+                        ParameterList quantified_variables,
+                        LiteralList conditions,
+                        LiteralList static_conditions,
+                        LiteralList fluent_conditions,
+                        Literal effect);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectUniversalConditionalSimpleImpl,
-                                   loki::Hash<EffectUniversalConditionalSimpleImpl*>,
-                                   loki::EqualTo<EffectUniversalConditionalSimpleImpl*>>;
+    friend class loki::PDDLFactory<EffectUniversalImpl, loki::Hash<EffectUniversalImpl*>, loki::EqualTo<EffectUniversalImpl*>>;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<EffectUniversalConditionalSimpleImpl>;
+    friend class loki::Base<EffectUniversalImpl>;
 
-    bool is_structurally_equivalent_to_impl(const EffectUniversalConditionalSimpleImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const EffectUniversalImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 

@@ -19,7 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/effect.hpp"
+#include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/parameter.hpp"
@@ -36,7 +36,9 @@ ActionImpl::ActionImpl(int identifier,
                        LiteralList conditions,
                        LiteralList static_conditions,
                        LiteralList fluent_conditions,
-                       EffectList effects,
+                       EffectSimpleList simple_effects,
+                       EffectConditionalList conditional_effects,
+                       EffectUniversalList universal_effects,
                        FunctionExpression function_expression) :
     Base(identifier),
     m_name(std::move(name)),
@@ -44,7 +46,9 @@ ActionImpl::ActionImpl(int identifier,
     m_conditions(std::move(conditions)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
-    m_effects(std::move(effects)),
+    m_simple_effects(std::move(simple_effects)),
+    m_conditional_effects(std::move(conditional_effects)),
+    m_universal_effects(std::move(universal_effects)),
     m_function_expression(std::move(function_expression))
 {
     assert(is_subseteq(m_static_conditions, m_conditions));
@@ -55,7 +59,10 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
 {
     return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
            && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions))
-           && (loki::get_sorted_vector(m_effects) == loki::get_sorted_vector(other.m_effects)) && (m_function_expression == other.m_function_expression);
+           && (loki::get_sorted_vector(m_simple_effects) == loki::get_sorted_vector(other.m_simple_effects))
+           && (loki::get_sorted_vector(m_conditional_effects) == loki::get_sorted_vector(other.m_conditional_effects))
+           && (loki::get_sorted_vector(m_universal_effects) == loki::get_sorted_vector(other.m_universal_effects))
+           && (m_function_expression == other.m_function_expression);
 }
 
 size_t ActionImpl::hash_impl() const
@@ -63,7 +70,9 @@ size_t ActionImpl::hash_impl() const
     return loki::hash_combine(m_name,
                               loki::hash_container(m_parameters),
                               loki::hash_container(loki::get_sorted_vector(m_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_effects)),
+                              loki::hash_container(loki::get_sorted_vector(m_simple_effects)),
+                              loki::hash_container(loki::get_sorted_vector(m_conditional_effects)),
+                              loki::hash_container(loki::get_sorted_vector(m_universal_effects)),
                               m_function_expression);
 }
 
@@ -101,20 +110,24 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
     }
 
     out << std::string(nested_options.indent, ' ') << ":effects ";
-    if (m_effects.empty())
+    if (m_simple_effects.empty() && m_conditional_effects.empty() && m_universal_effects.empty())
     {
         out << "()\n";
     }
     else
     {
-        out << "(and ";
-        for (size_t i = 0; i < m_effects.size(); ++i)
+        out << "(and";
+        for (const auto& effect : m_simple_effects)
         {
-            if (i != 0)
-            {
-                out << " ";
-            }
-            out << *m_effects[i];
+            out << " " << *effect;
+        }
+        for (const auto& effect : m_conditional_effects)
+        {
+            out << " " << *effect;
+        }
+        for (const auto& effect : m_universal_effects)
+        {
+            out << " " << *effect;
         }
         if (action_costs)
         {
@@ -123,10 +136,10 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
             std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
             out << ")";
         }
-        out << ")";
+        out << ")";  // end and
     }
 
-    out << ")\n";
+    out << ")\n";  // end action
 }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
@@ -139,7 +152,11 @@ const LiteralList& ActionImpl::get_static_conditions() const { return m_static_c
 
 const LiteralList& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
-const EffectList& ActionImpl::get_effects() const { return m_effects; }
+const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
+
+const EffectConditionalList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
+
+const EffectUniversalList& ActionImpl::get_universal_effects() const { return m_universal_effects; }
 
 const FunctionExpression& ActionImpl::get_function_expression() const { return m_function_expression; }
 

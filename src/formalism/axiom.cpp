@@ -18,7 +18,6 @@
 #include "mimir/formalism/axiom.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/formalism/effect.hpp"
 #include "mimir/formalism/literal.hpp"
 
 #include <cassert>

@@ -153,12 +153,23 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     positive_effect.unset_all();
     negative_effect.unset_all();
 
+    // Handle simple effects
     auto effect_literals = LiteralList {};
-    for (const auto& effect : action->get_effects())
+    for (const auto& effect : action->get_simple_effects())
     {
         effect_literals.push_back(effect->get_effect());
     }
     fill_bitsets(effect_literals, positive_effect, negative_effect);
+    // TODO: Handle conditional effects
+    if (!action->get_conditional_effects().empty())
+    {
+        throw std::runtime_error("Conditional effects are not implemented.");
+    }
+    // TODO: Handle universal effects
+    if (!action->get_universal_effects().empty())
+    {
+        throw std::runtime_error("Universal effects are not implemented.");
+    }
 
     m_action_builder.get_id() = m_actions.size();
     m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, this->m_pddl_factories),
