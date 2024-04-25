@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/action.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/effect.hpp"
 #include "mimir/formalism/function_expressions.hpp"
@@ -24,6 +25,7 @@
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
 
+#include <cassert>
 #include <loki/loki.hpp>
 
 namespace mimir
@@ -31,35 +33,37 @@ namespace mimir
 ActionImpl::ActionImpl(int identifier,
                        std::string name,
                        ParameterList parameters,
-                       LiteralList condition,
-                       LiteralList static_condition,
-                       LiteralList fluent_condition,
-                       EffectList effect,
+                       LiteralList conditions,
+                       LiteralList static_conditions,
+                       LiteralList fluent_conditions,
+                       EffectList effects,
                        FunctionExpression function_expression) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters)),
-    m_condition(std::move(condition)),
-    m_static_condition(std::move(static_condition)),
-    m_fluent_condition(std::move(fluent_condition)),
-    m_effect(std::move(effect)),
+    m_conditions(std::move(conditions)),
+    m_static_conditions(std::move(static_conditions)),
+    m_fluent_conditions(std::move(fluent_conditions)),
+    m_effects(std::move(effects)),
     m_function_expression(std::move(function_expression))
 {
+    assert(is_subseteq(m_static_conditions, m_conditions));
+    assert(is_subseteq(m_fluent_conditions, m_conditions));
 }
 
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
 {
     return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
-           && (loki::get_sorted_vector(m_condition) == loki::get_sorted_vector(other.m_condition))
-           && (loki::get_sorted_vector(m_effect) == loki::get_sorted_vector(other.m_effect)) && (m_function_expression == other.m_function_expression);
+           && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions))
+           && (loki::get_sorted_vector(m_effects) == loki::get_sorted_vector(other.m_effects)) && (m_function_expression == other.m_function_expression);
 }
 
 size_t ActionImpl::hash_impl() const
 {
     return loki::hash_combine(m_name,
                               loki::hash_container(m_parameters),
-                              loki::hash_container(loki::get_sorted_vector(m_condition)),
-                              loki::hash_container(loki::get_sorted_vector(m_effect)),
+                              loki::hash_container(loki::get_sorted_vector(m_conditions)),
+                              loki::hash_container(loki::get_sorted_vector(m_effects)),
                               m_function_expression);
 }
 
@@ -78,39 +82,39 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
     out << ")\n";
 
     out << std::string(nested_options.indent, ' ') << ":conditions ";
-    if (m_condition.empty())
+    if (m_conditions.empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and ";
-        for (size_t i = 0; i < m_condition.size(); ++i)
+        for (size_t i = 0; i < m_conditions.size(); ++i)
         {
             if (i != 0)
             {
                 out << " ";
             }
-            out << *m_condition[i];
+            out << *m_conditions[i];
         }
         out << ")\n";
     }
 
     out << std::string(nested_options.indent, ' ') << ":effects ";
-    if (m_effect.empty())
+    if (m_effects.empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and ";
-        for (size_t i = 0; i < m_effect.size(); ++i)
+        for (size_t i = 0; i < m_effects.size(); ++i)
         {
             if (i != 0)
             {
                 out << " ";
             }
-            out << *m_effect[i];
+            out << *m_effects[i];
         }
         if (action_costs)
         {
@@ -129,13 +133,13 @@ const std::string& ActionImpl::get_name() const { return m_name; }
 
 const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
 
-const LiteralList& ActionImpl::get_conditions() const { return m_condition; }
+const LiteralList& ActionImpl::get_conditions() const { return m_conditions; }
 
-const LiteralList& ActionImpl::get_static_conditions() const { return m_static_condition; }
+const LiteralList& ActionImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList& ActionImpl::get_fluent_conditions() const { return m_fluent_condition; }
+const LiteralList& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
-const EffectList& ActionImpl::get_effects() const { return m_effect; }
+const EffectList& ActionImpl::get_effects() const { return m_effects; }
 
 const FunctionExpression& ActionImpl::get_function_expression() const { return m_function_expression; }
 

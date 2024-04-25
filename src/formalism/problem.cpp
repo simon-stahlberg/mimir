@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/problem.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_literal.hpp"
@@ -61,6 +62,8 @@ ProblemImpl::ProblemImpl(int identifier,
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms))
 {
+    assert(is_subseteq(m_static_initial_literals, m_initial_literals));
+    assert(is_subseteq(m_fluent_initial_literals, m_initial_literals));
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const

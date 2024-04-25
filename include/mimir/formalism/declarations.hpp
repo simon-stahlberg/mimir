@@ -84,9 +84,22 @@ class NumericFluentImpl;
 using NumericFluent = const NumericFluentImpl*;
 using NumericFluentList = std::vector<NumericFluent>;
 
+// TODO remove this
 class EffectImpl;
 using Effect = const EffectImpl*;
 using EffectList = std::vector<Effect>;
+
+class EffectSimpleImpl;
+using EffectSimple = const EffectSimpleImpl*;
+using EffectSimpleList = std::vector<EffectSimple>;
+
+class EffectConditionalSimpleImpl;
+using EffectConditionalSimple = const EffectConditionalSimpleImpl*;
+using EffectConditionalSimpleList = std::vector<EffectConditionalSimple>;
+
+class EffectUniversalConditionalSimpleImpl;
+using EffectUniversalConditionalSimple = const EffectUniversalConditionalSimpleImpl*;
+using EffectUniversalConditionalSimpleList = std::vector<EffectUniversalConditionalSimple>;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;

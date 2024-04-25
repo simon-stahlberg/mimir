@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/effect.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -30,16 +31,18 @@ namespace mimir
 EffectImpl::EffectImpl(int identifier,
                        ParameterList quantified_variables,
                        LiteralList conditions,
-                       LiteralList static_condition,
-                       LiteralList fluent_condition,
+                       LiteralList static_conditions,
+                       LiteralList fluent_conditions,
                        Literal effect) :
     Base(identifier),
     m_quantified_variables(std::move(quantified_variables)),
     m_conditions(std::move(conditions)),
-    m_static_condition(std::move(static_condition)),
-    m_fluent_condition(std::move(fluent_condition)),
+    m_static_conditions(std::move(static_conditions)),
+    m_fluent_conditions(std::move(fluent_conditions)),
     m_effect(std::move(effect))
 {
+    assert(is_subseteq(m_static_conditions, m_conditions));
+    assert(is_subseteq(m_fluent_conditions, m_conditions));
 }
 
 bool EffectImpl::is_structurally_equivalent_to_impl(const EffectImpl& other) const
@@ -102,9 +105,9 @@ const ParameterList& EffectImpl::get_parameters() const { return m_quantified_va
 
 const LiteralList& EffectImpl::get_conditions() const { return m_conditions; }
 
-const LiteralList& EffectImpl::get_static_conditions() const { return m_static_condition; }
+const LiteralList& EffectImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList& EffectImpl::get_fluent_conditions() const { return m_fluent_condition; }
+const LiteralList& EffectImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
 const Literal& EffectImpl::get_effect() const { return m_effect; }
 

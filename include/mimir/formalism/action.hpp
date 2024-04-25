@@ -32,10 +32,10 @@ class ActionImpl : public loki::Base<ActionImpl>
 private:
     std::string m_name;
     ParameterList m_parameters;
-    LiteralList m_condition;
-    LiteralList m_static_condition;
-    LiteralList m_fluent_condition;
-    EffectList m_effect;
+    LiteralList m_conditions;
+    LiteralList m_static_conditions;
+    LiteralList m_fluent_conditions;
+    EffectList m_effects;
     // More expressive than the definition of action costs:
     // We allow arithmetic functions of ground functions
     // and not just a single ground function (<numeric-term>).
@@ -46,10 +46,10 @@ private:
     ActionImpl(int identifier,
                std::string name,
                ParameterList parameters,
-               LiteralList condition,
-               LiteralList static_condition,
-               LiteralList fluent_condition,
-               EffectList effect,
+               LiteralList conditions,
+               LiteralList static_conditions,
+               LiteralList fluent_conditions,
+               EffectList effecst,
                FunctionExpression function_expression);
 
     // Give access to the constructor.

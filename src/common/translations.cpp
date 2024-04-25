@@ -7,24 +7,6 @@
 namespace mimir
 {
 
-void to_literals(EffectList effects, LiteralList& ref_literals)
-{
-    for (const auto& effect : effects)
-    {
-        if (!effect->get_parameters().empty())
-        {
-            throw std::runtime_error("Universal quantified effects not supported");
-        }
-
-        if (!effect->get_conditions().empty())
-        {
-            throw std::runtime_error("Conditional effects not supported");
-        }
-
-        ref_literals.push_back(effect->get_effect());
-    }
-}
-
 void to_ground_atoms(const ConstBitsetView& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
 {
     out_ground_atoms.clear();

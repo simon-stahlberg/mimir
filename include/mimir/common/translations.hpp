@@ -29,9 +29,6 @@
 namespace mimir
 {
 
-/// @brief Translates an effect into a list of literals if possible, otherwise throws an error.
-extern void to_literals(EffectList effects, LiteralList& out_literals);
-
 /// @brief Translates a bitset into a list of ground atoms
 extern void to_ground_atoms(const ConstBitsetView& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms);
 

@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/domain.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -24,6 +25,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
 
+#include <cassert>
 #include <iostream>
 #include <loki/loki.hpp>
 #include <unordered_map>
@@ -55,6 +57,8 @@ DomainImpl::DomainImpl(int identifier,
     m_actions(std::move(actions)),
     m_axioms(std::move(axioms))
 {
+    assert(is_subseteq(m_static_predicates, m_predicates));
+    assert(is_subseteq(m_fluent_predicates, m_predicates));
 }
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const
