@@ -11,6 +11,7 @@
 namespace mimir
 {
 
+// D: [x/o]
 struct Assignment
 {
     size_t parameter_index;
@@ -19,6 +20,7 @@ struct Assignment
     Assignment(size_t parameter_index, size_t object_id);
 };
 
+// D: ([x/o], [x'/o'])
 struct AssignmentPair
 {
     size_t first_position;
@@ -49,6 +51,13 @@ size_t num_assignments(int32_t arity, int32_t num_objects);
 
 std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std::vector<size_t>& atom_identifiers, const PDDLFactories& factories);
 
+/// @brief
+/// @param assignment_sets
+/// @param literals
+/// @param first_assignment [x/o]
+/// @param second_assignment [x'/o']
+/// @param problem
+/// @return
 bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
                             const std::vector<Literal>& literals,
                             const Assignment& first_assignment,

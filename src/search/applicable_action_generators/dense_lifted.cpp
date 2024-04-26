@@ -247,6 +247,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const std::vector<std
 
     std::vector<boost::dynamic_bitset<>> adjacency_matrix(num_vertices, boost::dynamic_bitset<>(num_vertices));
 
+    // D: Restrict statically consistent assignments based on the assignments in the current state
+    //    and build the consistency graph as an adjacency matrix
     for (const auto& assignment : statically_consistent_assignments)
     {
         const auto& first_assignment = assignment.first_assignment;
@@ -364,6 +366,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     {
         static_atom_ids.emplace_back(literal->get_atom()->get_identifier());
     }
+    const auto assignment_sets = build_assignment_sets(problem, static_atom_ids, pddl_factories);
     const auto& domain = problem->get_domain();
     for (const auto& action : domain->get_actions())
     {
@@ -393,8 +396,6 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
                 // D: Partition vertex indices by x
                 partitions.push_back(std::move(partition));
             }
-
-            const auto assignment_sets = build_assignment_sets(problem, static_atom_ids, pddl_factories);
 
             for (size_t first_id = 0; first_id < to_vertex_assignment.size(); ++first_id)
             {
