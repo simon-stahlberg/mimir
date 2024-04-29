@@ -42,58 +42,22 @@ using NumObjects = size_t;
 using VertexID = size_t;
 using VertexIDs = std::vector<VertexID>;
 
-/// @brief Perfect hash value h for vertex [param/object]
-///
-/// E.g. for num_parameters = 5, num_objects = 4, param = 3, object = 2, we get h = 3 * 4 + 2 = 14
-///
-/// That keep hash values with same parameter adjacent.
-class PerfectVertexHashFunction
-{
-private:
-    NumVertices m_num_vertices;
-
-public:
-    explicit PerfectVertexHashFunction(NumParameters num_parameters, NumObjects num_objects);
-
-    VertexID compute_hash_value(ParameterID param, ObjectID object);
-
-    NumVertices get_preimage_size() const;
-};
-
 /// @brief An undirected edge {src,dst} in the consistency graph.
 class Edge
 {
 private:
-    VertexID m_src;
-    VertexID m_dst;
+    Vertex m_src;
+    Vertex m_dst;
 
 public:
-    Edge(VertexID src, VertexID dst) : m_src(src), m_dst(dst) {}
+    Edge(Vertex src, Vertex dst) : m_src(src), m_dst(dst) {}
 
-    VertexID get_src() const { return m_src; }
-    VertexID get_dst() const { return m_dst; }
+    Vertex get_src() const { return m_src; }
+    Vertex get_dst() const { return m_dst; }
 };
 
 using NumEdges = size_t;
 using EdgeID = size_t;
-
-/// @brief Perfect hash value h for edge {src,dst}
-///
-/// E.g. for num_vertices = 10, src = 4, dst = 2, we get h = 4 * 10 + 2 = 42
-//
-// That means we keep hash values with same src adjacent.
-class PerfectEdgeHashFunction
-{
-private:
-    NumVertices m_num_vertices;
-
-public:
-    explicit PerfectEdgeHashFunction(NumVertices num_vertices);
-
-    EdgeID compute_hash_value(VertexID src, VertexID dst);
-
-    NumEdges get_preimage_size() const;
-};
 
 using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
@@ -138,22 +102,18 @@ private:
     // TODO: maybe we dont need this after construction.
     Problem m_problem;
 
-    // For mapping m_f to the vertices/edges in the consistency graph.
-    PerfectVertexHashFunction m_vertex_hasher;
-    PerfectEdgeHashFunction m_edge_hasher;
-
     // The underlying function
     std::vector<std::vector<bool>> m_f;
 
 public:
     /// @brief Construct from a given set of ground atoms.
-    AssignmentSet(Problem problem, const PerfectVertexHashFunction& vertex_hasher, const PerfectEdgeHashFunction& edge_hasher, const GroundAtomList& atoms);
+    AssignmentSet(Problem problem, const GroundAtomList& atoms);
 
     /// @brief Return true iff all literals are consistent with
-    /// 1. the assignment set, and 2. the given assignment pair.
+    /// 1. the assignment set, and 2. the edge of the consistency graph.
     ///
     /// The meaning of the result being true is that the edge remains consistent.
-    bool literal_all_consistent(const std::vector<Literal>& literals, const Edge& consistent_edge);
+    bool literal_all_consistent(const std::vector<Literal>& literals, const Edge& consistent_edge) const;
 };
 
 }

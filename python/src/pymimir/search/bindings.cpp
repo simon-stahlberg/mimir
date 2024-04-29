@@ -32,6 +32,10 @@ void init_search(py::module_& m_search)
     py::class_<ConstView<StateDispatcher<StateReprTag>>>(m_search, "State")  //
         .def("__hash__", &ConstView<StateDispatcher<StateReprTag>>::hash)
         .def("__eq__", &ConstView<StateDispatcher<StateReprTag>>::operator==)
+        .def(
+            "__iter__",
+            [](ConstView<StateDispatcher<StateReprTag>>& state) { return py::make_iterator(state.begin(), state.end()); },
+            py::keep_alive<0, 1>())
         .def("to_string",
              [](ConstView<StateDispatcher<StateReprTag>> self, PDDLFactories& pddl_factories)
              {

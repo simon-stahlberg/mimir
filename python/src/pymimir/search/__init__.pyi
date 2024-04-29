@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union, List, MutableSet, Tuple
+from typing import Union, List, MutableSet, Tuple, Iterator
 
 from pymimir.formalism import Problem, PDDLFactories
 
@@ -21,6 +21,7 @@ class SearchStatus(Enum):
 class State:
     def __hash__(self) -> int: ...
     def __eq__(self, other : "State") -> bool: ...
+    def __iter__(self) -> Iterator[int]: ...
     def to_string(self, pddl_factories: PDDLFactories) -> str: ...
 
 class GroundAction:

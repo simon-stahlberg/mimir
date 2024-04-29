@@ -159,6 +159,7 @@ bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_set
             {
                 const auto parameter_index = term_variable->get_variable()->get_parameter_index();
 
+                // D: [parameter_index]
                 if (first_assignment.parameter_index == parameter_index)
                 {
                     if (first_position < 0)
@@ -196,6 +197,8 @@ bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_set
 
         if (!empty_assignment)
         {
+            // D: Check the assignment ([first_positon/first_object_id],[second_positio/second_object_id])
+            // is consistent with the assignment set.
             const auto& assignment_set = assignment_sets[literal->get_atom()->get_predicate()->get_identifier()];
             const auto assignment_rank = get_assignment_position(first_position,
                                                                  first_object_id,
@@ -232,22 +235,5 @@ AssignmentPair::AssignmentPair(size_t first_position, const Assignment& first_as
     second_assignment(second_assignment)
 {
 }
-
-/*
- * Class ParameterIndexOrConstantId
- */
-
-ParameterIndexOrConstantId::ParameterIndexOrConstantId(size_t value, bool is_constant) : value(is_constant ? ~value : value) {};
-
-bool ParameterIndexOrConstantId::is_constant() const
-{
-    const size_t shift = sizeof(size_t) * 8 - 1;
-    const size_t mask = 1UL << shift;
-    return value & mask;
-}
-
-bool ParameterIndexOrConstantId::is_variable() const { return !is_constant(); }
-
-size_t ParameterIndexOrConstantId::get_value() const { return is_constant() ? ~value : value; }
 
 }

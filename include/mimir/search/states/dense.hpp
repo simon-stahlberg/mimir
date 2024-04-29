@@ -99,6 +99,9 @@ private:
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 
+    [[nodiscard]] auto begin_impl() const { return get_atoms_bitset().begin(); }
+    [[nodiscard]] auto end_impl() const { return get_atoms_bitset().end(); }
+
 public:
     explicit ConstView(ConstDenseStateView view) : m_view(view) {}
 

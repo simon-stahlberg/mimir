@@ -54,7 +54,18 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
+    /**
+     * Accessors
+     */
+
     [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }
+
+    /**
+     * Iterators
+     */
+
+    [[nodiscard]] auto begin() const { return self().begin_impl(); }
+    [[nodiscard]] auto end() const { return self().end_impl(); }
 };
 
 /**

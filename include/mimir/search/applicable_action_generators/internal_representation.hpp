@@ -12,6 +12,7 @@ namespace mimir
 {
 
 // D: [x/o]
+// D:
 struct Assignment
 {
     size_t parameter_index;
@@ -29,19 +30,6 @@ struct AssignmentPair
     Assignment second_assignment;
 
     AssignmentPair(size_t first_position, const Assignment& first_assignment, size_t second_position, const Assignment& second_assignment);
-};
-
-class ParameterIndexOrConstantId
-{
-private:
-    size_t value;
-
-public:
-    ParameterIndexOrConstantId(size_t value, bool is_constant);
-
-    bool is_constant() const;
-    bool is_variable() const;
-    size_t get_value() const;
 };
 
 size_t

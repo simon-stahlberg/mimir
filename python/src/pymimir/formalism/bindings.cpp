@@ -10,41 +10,58 @@ using namespace mimir;
 namespace py = pybind11;
 
 /**
- * Wrap variants to not expose them to the bindings.
+ * We cannot expose the variant types directly because they are not default constructible.
  */
 
-struct WrappedTerm
+struct TermVariant
 {
     Term term;
-    explicit WrappedTerm(const Term& t) : term(t) {}
+    explicit TermVariant(const Term& t) : term(t) {}
 };
 
-struct WrappedFunctionExpression
+struct FunctionExpressionVariant
 {
     FunctionExpression function_expression;
-    explicit WrappedFunctionExpression(const FunctionExpression& e) : function_expression(e) {}
+    explicit FunctionExpressionVariant(const FunctionExpression& e) : function_expression(e) {}
 };
 
-std::vector<WrappedTerm> wrap_terms(const TermList& terms)
+struct GroundFunctionExpressionVariant
 {
-    std::vector<WrappedTerm> wrapped_terms;
-    wrapped_terms.reserve(terms.size());
+    GroundFunctionExpression function_expression;
+    explicit GroundFunctionExpressionVariant(const GroundFunctionExpression& e) : function_expression(e) {}
+};
+
+std::vector<TermVariant> to_term_variant_list(const TermList& terms)
+{
+    auto result = std::vector<TermVariant> {};
+    result.reserve(terms.size());
     for (const auto& term : terms)
     {
-        wrapped_terms.push_back(WrappedTerm(term));
+        result.push_back(TermVariant(term));
     }
-    return wrapped_terms;
+    return result;
 }
 
-std::vector<WrappedFunctionExpression> wrap_function_expressions(const FunctionExpressionList& function_expressions)
+std::vector<FunctionExpressionVariant> to_function_expression_variant_list(const FunctionExpressionList& function_expressions)
 {
-    std::vector<WrappedFunctionExpression> wrapped_function_expressions;
-    wrapped_function_expressions.reserve(function_expressions.size());
+    auto result = std::vector<FunctionExpressionVariant> {};
+    result.reserve(function_expressions.size());
     for (const auto& function_expression : function_expressions)
     {
-        wrapped_function_expressions.push_back(WrappedFunctionExpression(function_expression));
+        result.push_back(FunctionExpressionVariant(function_expression));
     }
-    return wrapped_function_expressions;
+    return result;
+}
+
+std::vector<GroundFunctionExpressionVariant> to_ground_function_expression_variant_list(const GroundFunctionExpressionList& ground_function_expressions)
+{
+    auto result = std::vector<GroundFunctionExpressionVariant> {};
+    result.reserve(ground_function_expressions.size());
+    for (const auto& function_expression : ground_function_expressions)
+    {
+        result.push_back(GroundFunctionExpressionVariant(function_expression));
+    }
+    return result;
 }
 
 struct CastVisitor
@@ -125,7 +142,7 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl>::str, py::const_))
         .def("get_identifier", &AtomImpl::get_identifier)
         .def("get_predicate", &AtomImpl::get_predicate, py::return_value_policy::reference)
-        .def("get_terms", [](const AtomImpl& atom) { return wrap_terms(atom.get_terms()); });
+        .def("get_terms", [](const AtomImpl& atom) { return to_term_variant_list(atom.get_terms()); });
 
     py::class_<AxiomImpl>(m_formalism, "Axiom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
@@ -180,10 +197,10 @@ void init_formalism(py::module_& m_formalism)
         .def("get_binary_operator", &FunctionExpressionBinaryOperatorImpl::get_binary_operator)
         .def("get_left_function_expression",
              [](const FunctionExpressionBinaryOperatorImpl& function_expression)
-             { return WrappedFunctionExpression(function_expression.get_left_function_expression()); })
+             { return FunctionExpressionVariant(function_expression.get_left_function_expression()); })
         .def("get_right_function_expression",
              [](const FunctionExpressionBinaryOperatorImpl& function_expression)
-             { return WrappedFunctionExpression(function_expression.get_right_function_expression()); });
+             { return FunctionExpressionVariant(function_expression.get_right_function_expression()); });
 
     py::class_<FunctionExpressionMultiOperatorImpl>(m_formalism, "FunctionExpressionMultiOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMultiOperatorImpl>::str, py::const_))
@@ -191,13 +208,13 @@ void init_formalism(py::module_& m_formalism)
         .def("get_multi_operator", &FunctionExpressionMultiOperatorImpl::get_multi_operator)
         .def("get_function_expressions",
              [](const FunctionExpressionMultiOperatorImpl& function_expression)
-             { return wrap_function_expressions(function_expression.get_function_expressions()); });
+             { return to_function_expression_variant_list(function_expression.get_function_expressions()); });
 
     py::class_<FunctionExpressionMinusImpl>(m_formalism, "FunctionExpressionMinus")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMinusImpl>::str, py::const_))
         .def("get_identifier", &FunctionExpressionMinusImpl::get_identifier)
         .def("get_function_expression",
-             [](const FunctionExpressionMinusImpl& function_expression) { return WrappedFunctionExpression(function_expression.get_function_expression()); });
+             [](const FunctionExpressionMinusImpl& function_expression) { return FunctionExpressionVariant(function_expression.get_function_expression()); });
     ;
 
     py::class_<FunctionExpressionFunctionImpl>(m_formalism, "FunctionExpressionFunction")  //
@@ -205,10 +222,49 @@ void init_formalism(py::module_& m_formalism)
         .def("get_identifier", &FunctionExpressionFunctionImpl::get_identifier)
         .def("get_function", &FunctionExpressionFunctionImpl::get_function);
 
-    py::class_<FunctionExpressionImpl>(m_formalism, "FunctionExpression")  //
-        .def("get",
-             [](const WrappedFunctionExpression& wrappedFunctionExpression) -> py::object
-             { return std::visit(CastVisitor(), *wrappedFunctionExpression.function_expression); });
+    py::class_<FunctionExpressionVariant>(m_formalism, "FunctionExpression")  //
+        .def("get", [](const FunctionExpressionVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.function_expression); });
+    ;
+
+    py::class_<GroundFunctionExpressionNumberImpl>(m_formalism, "GroundFunctionExpressionNumber")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionNumberImpl>::str, py::const_))
+        .def("get_identifier", &GroundFunctionExpressionNumberImpl::get_identifier)
+        .def("get_number", &GroundFunctionExpressionNumberImpl::get_number);
+
+    py::class_<GroundFunctionExpressionBinaryOperatorImpl>(m_formalism, "GroundFunctionExpressionBinaryOperator")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionBinaryOperatorImpl>::str, py::const_))
+        .def("get_identifier", &GroundFunctionExpressionBinaryOperatorImpl::get_identifier)
+        .def("get_binary_operator", &GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator)
+        .def("get_left_function_expression",
+             [](const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+             { return GroundFunctionExpressionVariant(function_expression.get_left_function_expression()); })
+        .def("get_right_function_expression",
+             [](const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+             { return GroundFunctionExpressionVariant(function_expression.get_right_function_expression()); });
+
+    py::class_<GroundFunctionExpressionMultiOperatorImpl>(m_formalism, "GroundFunctionExpressionMultiOperator")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionMultiOperatorImpl>::str, py::const_))
+        .def("get_identifier", &GroundFunctionExpressionMultiOperatorImpl::get_identifier)
+        .def("get_multi_operator", &GroundFunctionExpressionMultiOperatorImpl::get_multi_operator)
+        .def("get_function_expressions",
+             [](const GroundFunctionExpressionMultiOperatorImpl& function_expression)
+             { return to_ground_function_expression_variant_list(function_expression.get_function_expressions()); });
+
+    py::class_<GroundFunctionExpressionMinusImpl>(m_formalism, "GroundFunctionExpressionMinus")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionMinusImpl>::str, py::const_))
+        .def("get_identifier", &GroundFunctionExpressionMinusImpl::get_identifier)
+        .def("get_function_expression",
+             [](const GroundFunctionExpressionMinusImpl& function_expression)
+             { return GroundFunctionExpressionVariant(function_expression.get_function_expression()); });
+    ;
+
+    py::class_<GroundFunctionExpressionFunctionImpl>(m_formalism, "GroundFunctionExpressionFunction")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionFunctionImpl>::str, py::const_))
+        .def("get_identifier", &GroundFunctionExpressionFunctionImpl::get_identifier)
+        .def("get_function", &GroundFunctionExpressionFunctionImpl::get_function);
+
+    py::class_<GroundFunctionExpressionVariant>(m_formalism, "GroundFunctionExpression")  //
+        .def("get", [](const GroundFunctionExpressionVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.function_expression); });
     ;
 
     py::class_<FunctionSkeletonImpl>(m_formalism, "FunctionSkeleton")  //
@@ -221,7 +277,13 @@ void init_formalism(py::module_& m_formalism)
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionImpl>::str, py::const_))
         .def("get_identifier", &FunctionImpl::get_identifier)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference)
-        .def("get_terms", [](const FunctionImpl& function) { return wrap_terms(function.get_terms()); });
+        .def("get_terms", [](const FunctionImpl& function) { return to_term_variant_list(function.get_terms()); });
+
+    py::class_<GroundFunctionImpl>(m_formalism, "GroundFunction")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionImpl>::str, py::const_))
+        .def("get_identifier", &GroundFunctionImpl::get_identifier)
+        .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference)
+        .def("get_objects", &GroundFunctionImpl::get_objects, py::return_value_policy::reference);
 
     py::class_<GroundAtomImpl>(m_formalism, "GroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl>::str, py::const_))
@@ -245,7 +307,7 @@ void init_formalism(py::module_& m_formalism)
     py::class_<OptimizationMetricImpl>(m_formalism, "OptimizationMetric")  //
         .def("__str__", py::overload_cast<>(&loki::Base<OptimizationMetricImpl>::str, py::const_))
         .def("get_identifier", &OptimizationMetricImpl::get_identifier)
-        // .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return WrappedFunctionExpression(metric.get_function_expression()); })
+        .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return GroundFunctionExpressionVariant(metric.get_function_expression()); })
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference);
 
     py::class_<NumericFluentImpl>(m_formalism, "NumericFluent")  //
@@ -305,8 +367,8 @@ void init_formalism(py::module_& m_formalism)
         .def("get_identifier", &TermVariableImpl::get_identifier)
         .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference);
 
-    py::class_<WrappedTerm>(m_formalism, "Term")  //
-        .def("get", [](const WrappedTerm& wrappedTerm) -> py::object { return std::visit(CastVisitor(), *wrappedTerm.term); });
+    py::class_<TermVariant>(m_formalism, "Term")  //
+        .def("get", [](const TermVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.term); });
 
     py::class_<VariableImpl>(m_formalism, "Variable")  //
         .def("__str__", py::overload_cast<>(&loki::Base<VariableImpl>::str, py::const_))
