@@ -73,15 +73,18 @@ size_t num_assignments(int32_t arity, int32_t num_objects)
 std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std::vector<size_t>& atom_identifiers, const PDDLFactories& factories)
 {
     const auto num_objects = problem->get_objects().size();
-    const auto& predicates = problem->get_domain()->get_predicates();
+    // Note: this uses all predicates from the factory to ensure that we can use vector.
+    const auto& predicates = factories.get_predicates();
 
     // D: Create assignment set for each predicate
     std::vector<std::vector<bool>> assignment_sets;
     assignment_sets.resize(predicates.size());
     for (const auto& predicate : predicates)
     {
-        auto& assignment_set = assignment_sets[predicate->get_identifier()];
-        assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
+        assert(predicate.get_identifier() < static_cast<int>(predicates.size()));
+
+        auto& assignment_set = assignment_sets[predicate.get_identifier()];
+        assignment_set.resize(num_assignments(predicate.get_arity(), num_objects));
     }
 
     // D: Fill assignments of static atoms

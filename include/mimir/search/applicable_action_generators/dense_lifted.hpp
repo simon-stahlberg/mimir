@@ -91,7 +91,7 @@ public:
     std::string to_dot() const;
 };
 
-/// @brief AssignmentSet is a helper class representing a functions
+/// @brief AssignmentSet is a helper class representing a set of functions
 /// f_Predicate : Params(Predicate) x Object x Params(Predicate) x Object -> {true, false} where
 /// f_Predicate(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j).
 ///
@@ -145,6 +145,8 @@ private:
     std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
     // D: will be substituted by StaticConsistencyGraph::edges
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
+    // D: map action parameter indices to literal parameter indices or -1
+    std::unordered_map<Action, std::vector<int32_t>> m_action_parameter_index_to_literal_parameter_index;
 
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
 

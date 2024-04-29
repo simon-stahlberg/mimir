@@ -458,6 +458,10 @@ public:
                                                    std::move(axioms));
     }
 
+    const LiteralFactory& get_literals() const { return literals; }
+
+    const PredicateFactory& get_predicates() const { return predicates; }
+
     const GroundAtomFactory& get_ground_atoms() const { return ground_atoms; }
 
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
