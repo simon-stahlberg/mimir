@@ -26,15 +26,13 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
 {
     const auto& translated_nested_conditions = this->translate(condition.get_conditions());
 
-    auto parameters = loki::ParameterList {};
+    auto parameters = std::unordered_set<loki::Parameter> {};
     auto parts = loki::ConditionList {};
     for (const auto translated_nested_condition : translated_nested_conditions)
     {
         if (const auto translated_nested_condition_exists = std::get_if<loki::ConditionExistsImpl>(translated_nested_condition))
         {
-            parameters.insert(parameters.end(),
-                              translated_nested_condition_exists->get_parameters().begin(),
-                              translated_nested_condition_exists->get_parameters().end());
+            parameters.insert(translated_nested_condition_exists->get_parameters().begin(), translated_nested_condition_exists->get_parameters().end());
 
             parts.push_back(translated_nested_condition_exists->get_condition());
         }
@@ -51,7 +49,8 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
         return parts_conjunction;
     }
 
-    return this->translate(*this->m_pddl_factories.get_or_create_condition_exists(parameters, parts_conjunction));
+    return this->translate(
+        *this->m_pddl_factories.get_or_create_condition_exists(loki::ParameterList { parameters.begin(), parameters.end() }, parts_conjunction));
 }
 
 loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)

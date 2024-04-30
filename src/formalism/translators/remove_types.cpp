@@ -125,9 +125,7 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionExist
     }
     conditions.push_back(this->translate(*condition.get_condition()));
 
-    auto translated_condition = this->m_pddl_factories.get_or_create_condition_and(conditions);
-
-    return translated_condition;
+    return this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, this->m_pddl_factories.get_or_create_condition_and(conditions));
 }
 
 loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionForallImpl& condition)

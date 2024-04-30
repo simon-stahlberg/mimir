@@ -90,36 +90,41 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
 
     const auto& scope = m_scopes.open_scope(condition.get_parameters());
 
-    // not forall(vars, phi)  = exists(vars, not phi)
-    const auto axiom_condition = this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
-        condition.get_parameters(),
-        m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
-
-    std::cout << std::visit([this](auto&& arg) { return arg.str(); }, *axiom_condition) << std::endl;
-
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
-    // TODO: parameters of nested axioms must be propagated upwards.
-    auto parameters = loki::ParameterList {};
+    auto axiom_parameters = loki::ParameterList {};
+    // Parameters that are passed downwards into the existential
+    auto inner_parameters = condition.get_parameters();
+    // Parameters that are passed upwards through an existential
     auto terms = loki::TermList {};
-    for (const auto free_variable : collect_free_variables(*axiom_condition))
+    for (const auto free_variable :
+         collect_free_variables(*this->m_pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition())))
     {
         const auto optional_parameter = scope.get_parameter(free_variable);
         assert(optional_parameter.has_value());
-        const auto parameter = optional_parameter.value();
-
-        parameters.push_back(this->m_pddl_factories.get_or_create_parameter(free_variable, parameter->get_bases()));
+        const auto parameter = this->m_pddl_factories.get_or_create_parameter(free_variable, optional_parameter.value()->get_bases());
+        inner_parameters.push_back(parameter);
+        axiom_parameters.push_back(parameter);
         terms.push_back(this->m_pddl_factories.get_or_create_term_variable(free_variable));
     }
-    parameters.shrink_to_fit();
+    axiom_parameters.shrink_to_fit();
+    inner_parameters.shrink_to_fit();
+
+    const auto axiom_condition = this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
+        inner_parameters,
+        m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
 
     const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_id, this->m_simple_and_derived_predicate_names);
-    const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, parameters);
+    const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, axiom_parameters);
     m_derived_predicates.insert(predicate);
     const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
     const auto literal = this->m_pddl_factories.get_or_create_literal(false, atom);
-    // We wrap this into exists to easier move variables into parameters
-    const auto substituted_condition = this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom));
-    const auto axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, axiom_condition);
+    // Pass parameters upwards through an existential
+    const auto substituted_condition =
+        axiom_parameters.empty() ? this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)) :
+                                   this->m_pddl_factories.get_or_create_condition_exists(
+                                       axiom_parameters,
+                                       this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)));
+    const auto axiom = this->m_pddl_factories.get_or_create_axiom(inner_parameters, literal, axiom_condition);
     m_axioms.insert(axiom);
 
     m_condition_to_substituted_condition.emplace(&condition, substituted_condition);
@@ -139,7 +144,6 @@ loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Ac
     auto translated_effect = (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt);
 
     // Turn free variables into parameters
-    // TODO: parameters of nested axioms must be propagated upwards.
     auto translated_parameters = this->translate(action.get_parameters());
 
     auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
