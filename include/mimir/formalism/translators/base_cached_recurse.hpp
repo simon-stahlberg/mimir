@@ -198,6 +198,7 @@ protected:
     }
     void prepare_impl(const loki::AxiomImpl& axiom)
     {
+        this->prepare(axiom.get_parameters());
         this->prepare(*axiom.get_condition());
         this->prepare(*axiom.get_literal());
     }
@@ -521,7 +522,9 @@ protected:
     }
     loki::Axiom translate_impl(const loki::AxiomImpl& axiom)
     {
-        return this->m_pddl_factories.get_or_create_axiom(this->translate(*axiom.get_literal()), this->translate(*axiom.get_condition()));
+        return this->m_pddl_factories.get_or_create_axiom(this->translate(axiom.get_parameters()),
+                                                          this->translate(*axiom.get_literal()),
+                                                          this->translate(*axiom.get_condition()));
     }
     loki::Domain translate_impl(const loki::DomainImpl& domain)
     {

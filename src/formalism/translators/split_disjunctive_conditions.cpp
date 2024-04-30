@@ -57,7 +57,7 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
         {
             for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
             {
-                split_axioms.push_back(pddl_factories.get_or_create_axiom(axiom->get_literal(), part));
+                split_axioms.push_back(pddl_factories.get_or_create_axiom(axiom->get_parameters(), axiom->get_literal(), part));
             }
         }
         else

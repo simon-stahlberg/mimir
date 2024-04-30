@@ -123,7 +123,6 @@ EffectUniversalImpl::EffectUniversalImpl(int identifier,
     m_effect(std::move(effect))
 {
     assert(!m_quantified_variables.empty());
-    assert(!m_conditions.empty());
     assert(is_subseteq(m_static_conditions, m_conditions));
     assert(is_subseteq(m_fluent_conditions, m_conditions));
 }

@@ -80,11 +80,6 @@ extern loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki:
 extern loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
- * Return all free variables of a condition, i.e., variables that are not quantified.
- */
-extern loki::VariableList collect_free_variables(const loki::ConditionImpl& condition);
-
-/**
  * Axioms
  */
 

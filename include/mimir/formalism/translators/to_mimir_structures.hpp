@@ -93,16 +93,15 @@ private:
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg); });
         return output;
     }
-    auto translate_common(const loki::ParameterList& parameters)
+    auto translate_common(const loki::ParameterList& input)
     {
-        // Map variables to parameter index
-        for (size_t i = 0; i < parameters.size(); ++i)
-        {
-            m_variable_to_parameter_index.emplace(parameters[i]->get_variable(), i);
-        }
         auto output = ParameterList {};
-        output.reserve(parameters.size());
-        std::transform(std::begin(parameters), std::end(parameters), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg); });
+        for (size_t i = 0; i < input.size(); ++i)
+        {
+            m_variable_to_parameter_index[input[i]->get_variable()] = i;
+        }
+        output.reserve(input.size());
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg); });
         return output;
     }
     Requirements translate_common(const loki::RequirementsImpl& requirements);

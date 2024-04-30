@@ -147,64 +147,6 @@ loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDL
     return pddl_factories.get_or_create_effect_conditional_forall(effect.get_parameters(), effect.get_effect());
 }
 
-void collect_free_variables_recursively(const loki::ConditionImpl& condition,
-                                        std::unordered_set<loki::Variable>& ref_quantified_variables,
-                                        std::unordered_set<loki::Variable>& ref_free_variables)
-{
-    if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(&condition))
-    {
-        for (const auto& term : condition_literal->get_literal()->get_atom()->get_terms())
-        {
-            if (const auto term_variable = std::get_if<loki::TermVariableImpl>(term))
-            {
-                if (!ref_free_variables.count(term_variable->get_variable()))
-                {
-                    ref_free_variables.insert(term_variable->get_variable());
-                }
-            }
-        }
-    }
-    else if (const auto condition_imply = std::get_if<loki::ConditionImplyImpl>(&condition))
-    {
-        collect_free_variables_recursively(*condition_imply->get_condition_left(), ref_quantified_variables, ref_free_variables);
-        collect_free_variables_recursively(*condition_imply->get_condition_right(), ref_quantified_variables, ref_free_variables);
-    }
-    else if (const auto condition_not = std::get_if<loki::ConditionNotImpl>(&condition))
-    {
-        collect_free_variables_recursively(*condition_not->get_condition(), ref_quantified_variables, ref_free_variables);
-    }
-    else if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(&condition))
-    {
-        for (const auto& part : condition_and->get_conditions())
-        {
-            collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
-        }
-    }
-    else if (const auto condition_or = std::get_if<loki::ConditionOrImpl>(&condition))
-    {
-        for (const auto& part : condition_or->get_conditions())
-        {
-            collect_free_variables_recursively(*part, ref_quantified_variables, ref_free_variables);
-        }
-    }
-    else if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(&condition))
-    {
-        for (const auto& parameter : condition_exists->get_parameters())
-        {
-            ref_quantified_variables.insert(parameter->get_variable());
-        }
-        collect_free_variables_recursively(*condition_exists->get_condition(), ref_quantified_variables, ref_free_variables);
-    }
-    else if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(&condition))
-    {
-        for (const auto& parameter : condition_forall->get_parameters())
-        {
-            ref_quantified_variables.insert(parameter->get_variable());
-        }
-        collect_free_variables_recursively(*condition_forall->get_condition(), ref_quantified_variables, ref_free_variables);
-    }
-}
-
 std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set<std::string>& simple_and_derived_predicate_names)
 {
     auto axiom_name = std::string {};
@@ -216,16 +158,6 @@ std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set
     simple_and_derived_predicate_names.insert(axiom_name);
 
     return axiom_name;
-}
-
-loki::VariableList collect_free_variables(const loki::ConditionImpl& condition)
-{
-    auto quantified_variables = std::unordered_set<loki::Variable> {};
-    auto free_variables = std::unordered_set<loki::Variable> {};
-
-    collect_free_variables_recursively(condition, quantified_variables, free_variables);
-
-    return loki::VariableList(free_variables.begin(), free_variables.end());
 }
 
 std::string to_hex_string(uint64_t number)

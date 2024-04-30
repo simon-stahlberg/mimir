@@ -512,8 +512,10 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 {
-    // Remove existential quantifier at the root and collecting its parameters
+    // 1. Prepare variables for renaming with parameter index
     auto parameters = translate_common(action.get_parameters());
+
+    // 2. Translate conditions
     auto literals = LiteralList {};
     auto static_literals = LiteralList {};
     auto fluent_literals = LiteralList {};
@@ -523,15 +525,13 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
         literals = literals_;
         static_literals = static_literals_;
         fluent_literals = fluent_literals_;
-        parameters.insert(parameters.end(), parameters_.begin(), parameters_.end());
     }
 
-    // Default effects
+    // 3. Translate effects
     auto simple_effects = EffectSimpleList {};
     auto conditional_effects = EffectConditionalList {};
     auto universal_effects = EffectUniversalList {};
     auto function_expression = m_pddl_factories.get_or_create_function_expression_number(1);
-
     if (action.get_effect().has_value())
     {
         const auto [simple_effects_, conditional_effects_, universal_effects_, function_expression_] = translate_lifted(*action.get_effect().value());
@@ -554,19 +554,10 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 
 Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
-    // Turn predicate arguments into parameters
-    auto parameters = translate_common(axiom.get_literal()->get_atom()->get_predicate()->get_parameters());
+    // 1. Prepare variables for renaming with parameter index
+    auto parameters = translate_common(axiom.get_parameters());
 
-    // Turn quantifier variables into parameters
-    const auto [additional_parameters, literals, static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
-    parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-
-    // Turn free variables into parameters
-    for (const auto& free_variable : collect_free_variables(*axiom.get_condition()))
-    {
-        parameters.push_back(m_pddl_factories.get_or_create_parameter(translate_common(*free_variable)));
-    }
-    parameters.shrink_to_fit();
+    const auto [parameters_, literals, static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
 
     return m_pddl_factories.get_or_create_axiom(parameters, translate_lifted(*axiom.get_literal()), literals, static_literals, fluent_literals);
 }
@@ -717,6 +708,9 @@ OptimizationMetric ToMimirStructures::translate_grounded(const loki::Optimizatio
 
 Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 {
+    // Translate derived predicates to fetch parameter indices
+    const auto derived_predicates = translate_common(problem.get_derived_predicates());
+
     // Add constants to objects in problem.
     const auto constants = translate_common(problem.get_domain()->get_constants());
     auto objects = translate_common(problem.get_objects());
@@ -762,7 +756,7 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                   problem.get_name(),
                                                   translate_common(*problem.get_requirements()),
                                                   objects,
-                                                  translate_common(problem.get_derived_predicates()),
+                                                  derived_predicates,
                                                   initial_literals,
                                                   static_initial_literals,
                                                   fluent_initial_literals,

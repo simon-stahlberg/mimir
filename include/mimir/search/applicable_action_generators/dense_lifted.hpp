@@ -145,8 +145,6 @@ private:
     std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
     // D: will be substituted by StaticConsistencyGraph::edges
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
-    // D: map action parameter indices to literal parameter indices or -1
-    std::unordered_map<Action, std::vector<int32_t>> m_action_parameter_index_to_literal_parameter_index;
 
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
 
