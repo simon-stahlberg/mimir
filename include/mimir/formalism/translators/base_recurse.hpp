@@ -11,7 +11,7 @@ namespace mimir
 {
 
 /**
- * Base implementation recursively calls translate and caches the results.
+ * Base implementation recursively calls translate.
  */
 template<typename Derived>
 class BaseRecurseTranslator : public ITranslator<BaseRecurseTranslator<Derived>>

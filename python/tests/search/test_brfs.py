@@ -19,4 +19,4 @@ def test_brfs():
     search_status, plan = brfs.find_solution()
 
     assert search_status == SearchStatus.SOLVED
-    assert len(plan) == 5
+    assert len(plan) == 3

@@ -36,7 +36,6 @@ private:
     std::unordered_set<loki::Predicate> m_fluent_predicates;
     // Equality predicate that does not occur in predicates section
     Predicate m_equal_predicate;
-
     // Encode parameter index into variables for grounding
     std::unordered_map<loki::Variable, size_t> m_variable_to_parameter_index;
 
