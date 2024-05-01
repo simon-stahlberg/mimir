@@ -42,7 +42,8 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
         }
     }
 
-    const auto parts_conjunction = this->m_pddl_factories.get_or_create_condition_and(parts);
+    const auto parts_conjunction =
+        flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_factories.get_or_create_condition_and(parts)), this->m_pddl_factories);
 
     if (parameters.empty())
     {
