@@ -52,6 +52,16 @@ private:
      */
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
 
+    /**
+     * Remove existential from the the root into the action parameters
+     */
+    loki::Action translate_impl(const loki::ActionImpl& action);
+
+    /**
+     * Remove existential from the the root into the action parameters
+     */
+    loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
+
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:

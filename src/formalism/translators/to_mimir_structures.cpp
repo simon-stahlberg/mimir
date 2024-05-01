@@ -440,7 +440,10 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             auto fluent_literals = LiteralList {};
             if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
             {
-                const auto [parameters_, literals_, static_literals, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
+                const auto [parameters_, literals_, static_literals_, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
+                literals = literals_;
+                static_literals = static_literals_;
+                fluent_literals = fluent_literals_;
 
                 if (!parameters_.empty())
                 {

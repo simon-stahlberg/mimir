@@ -154,20 +154,26 @@ void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOpti
     }
     out << ") ";  // end quantifiers
 
-    out << "(when (and ";
-    for (size_t i = 0; i < m_conditions.size(); ++i)
+    if (!m_conditions.empty())
     {
-        if (i != 0)
+        out << "(when (and ";
+        for (size_t i = 0; i < m_conditions.size(); ++i)
         {
-            out << " ";
+            if (i != 0)
+            {
+                out << " ";
+            }
+            out << *m_conditions[i];
         }
-        out << *m_conditions[i];
+        out << ") ";  // end and
     }
-    out << ") ";  // end and
 
     out << *m_effect;
 
-    out << ")";  // end when
+    if (!m_conditions.empty())
+    {
+        out << ")";  // end when
+    }
 
     out << ")";  // end forall
 }

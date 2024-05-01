@@ -19,6 +19,8 @@
 
 #include "mimir/formalism/translators/utils.hpp"
 
+#include <algorithm>
+
 namespace mimir
 {
 
@@ -59,6 +61,57 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
     return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
                                                                                                               this->translate(*condition.get_condition()))),
                    this->m_pddl_factories);
+}
+
+loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)
+{
+    auto parameters = this->translate(action.get_parameters());
+
+    auto condition = (action.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*action.get_condition().value())) : std::nullopt);
+
+    if (condition.has_value())
+    {
+        if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.value()))
+        {
+            for (const auto& parameter : condition_exists->get_parameters())
+            {
+                if (std::find(std::begin(parameters), std::end(parameters), parameter) == parameters.end())
+                {
+                    parameters.push_back(parameter);
+                }
+            }
+
+            condition = condition_exists->get_condition();
+        }
+    }
+
+    return this->m_pddl_factories.get_or_create_action(
+        action.get_name(),
+        parameters,
+        condition,
+        (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt));
+}
+
+loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(const loki::AxiomImpl& axiom)
+{
+    auto parameters = this->translate(axiom.get_parameters());
+
+    auto condition = this->translate(*axiom.get_condition());
+
+    if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition))
+    {
+        for (const auto& parameter : condition_exists->get_parameters())
+        {
+            if (std::find(std::begin(parameters), std::end(parameters), parameter) == parameters.end())
+            {
+                parameters.push_back(parameter);
+            }
+        }
+
+        condition = condition_exists->get_condition();
+    }
+
+    return this->m_pddl_factories.get_or_create_axiom(parameters, this->translate(*axiom.get_literal()), condition);
 }
 
 loki::Problem MoveExistentialQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
