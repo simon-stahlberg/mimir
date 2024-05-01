@@ -340,17 +340,9 @@ Function ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
     return m_pddl_factories.get_or_create_function(translate_lifted(*function.get_function_skeleton()), translate_lifted(function.get_terms()));
 }
 
-std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
+std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
-
-    auto parameters = ParameterList {};
-    if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition_ptr))
-    {
-        parameters = translate_common(condition_exists->get_parameters());
-
-        condition_ptr = condition_exists->get_condition();
-    }
 
     const auto func_insert_fluents = [](const loki::Literal literal,
                                         const Literal& translated_literal,
@@ -390,7 +382,7 @@ std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructur
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(parameters, literals, static_literals, fluent_literals);
+        return std::make_tuple(literals, static_literals, fluent_literals);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
     {
@@ -402,7 +394,7 @@ std::tuple<ParameterList, LiteralList, LiteralList, LiteralList> ToMimirStructur
 
         func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
 
-        return std::make_tuple(parameters, literals, static_literals, fluent_literals);
+        return std::make_tuple(literals, static_literals, fluent_literals);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -440,15 +432,10 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             auto fluent_literals = LiteralList {};
             if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
             {
-                const auto [parameters_, literals_, static_literals_, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
+                const auto [literals_, static_literals_, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
                 literals = literals_;
                 static_literals = static_literals_;
                 fluent_literals = fluent_literals_;
-
-                if (!parameters_.empty())
-                {
-                    throw std::logic_error("Unexpected parameter in effect condition.");
-                }
 
                 tmp_effect = tmp_effect_when->get_effect();
             }
@@ -524,7 +511,7 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     auto fluent_literals = LiteralList {};
     if (action.get_condition().has_value())
     {
-        const auto [parameters_, literals_, static_literals_, fluent_literals_] = translate_lifted(*action.get_condition().value());
+        const auto [literals_, static_literals_, fluent_literals_] = translate_lifted(*action.get_condition().value());
         literals = literals_;
         static_literals = static_literals_;
         fluent_literals = fluent_literals_;
@@ -560,7 +547,7 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
     // 1. Prepare variables for renaming with parameter index
     auto parameters = translate_common(axiom.get_parameters());
 
-    const auto [parameters_, literals, static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
+    const auto [literals, static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
 
     return m_pddl_factories.get_or_create_axiom(parameters, translate_lifted(*axiom.get_literal()), literals, static_literals, fluent_literals);
 }

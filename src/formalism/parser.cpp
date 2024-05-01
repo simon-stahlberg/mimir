@@ -16,40 +16,20 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
     auto problem = problem_parser.get_problem();
 
-    std::cout << "Input" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl << std::endl << std::endl << std::endl;
-
     // Remove types
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
     problem = remove_types_translator.run(*problem);
 
-    std::cout << "Remove types" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl << std::endl << std::endl << std::endl;
-
     // Negation normal form translator
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
-
-    std::cout << "Negation normal form translator" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl << std::endl << std::endl << std::endl;
 
     // Rename quantified variables
     auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_factories());
     problem = rename_quantifed_variables_translator.run(*problem);
 
-    std::cout << "Rename quantified variables" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl << std::endl << std::endl << std::endl;
-
     // Remove universal quantifiers
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
     problem = remove_universal_quantifiers_translator.run(*problem);
-
-    std::cout << "Remove universal quantifiers" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl << std::endl << std::endl << std::endl;
 
     // Simplify goal
     auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_factories());
@@ -70,10 +50,6 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     // Move existential quantifers
     auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_factories());
     problem = move_existential_quantifiers_translator.run(*problem);
-
-    std::cout << "Move existential quantifers" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-    std::cout << *problem << std::endl << std::endl << std::endl << std::endl;
 
     // To mimir structures
     auto to_mimir_structures_translator = ToMimirStructures(m_factories);
