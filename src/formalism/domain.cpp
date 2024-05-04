@@ -59,6 +59,14 @@ DomainImpl::DomainImpl(int identifier,
 {
     assert(is_subseteq(m_static_predicates, m_predicates));
     assert(is_subseteq(m_fluent_predicates, m_predicates));
+    assert(is_all_unique(m_constants));
+    assert(is_all_unique(m_predicates));
+    assert(is_all_unique(m_derived_predicates));
+    assert(is_all_unique(m_static_predicates));
+    assert(is_all_unique(m_fluent_predicates));
+    assert(is_all_unique(m_functions));
+    assert(is_all_unique(m_actions));
+    assert(is_all_unique(m_axioms));
 }
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const

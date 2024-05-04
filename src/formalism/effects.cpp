@@ -67,6 +67,9 @@ EffectConditionalImpl::EffectConditionalImpl(int identifier,
     assert(!m_conditions.empty());
     assert(is_subseteq(m_static_conditions, m_conditions));
     assert(is_subseteq(m_fluent_conditions, m_conditions));
+    assert(is_all_unique(m_conditions));
+    assert(is_all_unique(m_static_conditions));
+    assert(is_all_unique(m_fluent_conditions));
 }
 
 bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectConditionalImpl& other) const
@@ -125,6 +128,10 @@ EffectUniversalImpl::EffectUniversalImpl(int identifier,
     assert(!m_quantified_variables.empty());
     assert(is_subseteq(m_static_conditions, m_conditions));
     assert(is_subseteq(m_fluent_conditions, m_conditions));
+    assert(is_all_unique(m_quantified_variables));
+    assert(is_all_unique(m_conditions));
+    assert(is_all_unique(m_static_conditions));
+    assert(is_all_unique(m_fluent_conditions));
 }
 
 bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUniversalImpl& other) const

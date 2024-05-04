@@ -17,9 +17,11 @@
 
 #include "mimir/formalism/predicate.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/variable.hpp"
 
+#include <cassert>
 #include <loki/loki.hpp>
 #include <memory>
 
@@ -30,6 +32,7 @@ PredicateImpl::PredicateImpl(int identifier, std::string name, ParameterList par
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {
+    assert(is_all_unique(m_parameters));
 }
 
 bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& other) const

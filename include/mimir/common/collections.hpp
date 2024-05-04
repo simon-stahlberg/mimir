@@ -40,6 +40,14 @@ bool is_subseteq(const std::vector<T>& left, const std::vector<T>& right)
     return true;
 }
 
+/// @brief Return true iff all elements in the vector are unique.
+template<typename T>
+bool is_all_unique(const std::vector<T>& vec)
+{
+    auto set = std::unordered_set<T>(vec.begin(), vec.end());
+    return vec.size() == set.size();
+}
+
 }
 
 #endif

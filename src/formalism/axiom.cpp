@@ -40,6 +40,10 @@ AxiomImpl::AxiomImpl(int identifier,
 {
     assert(is_subseteq(m_static_conditions, m_conditions));
     assert(is_subseteq(m_fluent_conditions, m_conditions));
+    assert(is_all_unique(m_parameters));
+    assert(is_all_unique(m_conditions));
+    assert(is_all_unique(m_static_conditions));
+    assert(is_all_unique(m_fluent_conditions));
 }
 
 bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const

@@ -28,6 +28,7 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
 
+#include <cassert>
 #include <iostream>
 #include <loki/loki.hpp>
 
@@ -64,6 +65,14 @@ ProblemImpl::ProblemImpl(int identifier,
 {
     assert(is_subseteq(m_static_initial_literals, m_initial_literals));
     assert(is_subseteq(m_fluent_initial_literals, m_initial_literals));
+    assert(is_all_unique(m_objects));
+    assert(is_all_unique(m_derived_predicates));
+    assert(is_all_unique(m_initial_literals));
+    assert(is_all_unique(m_static_initial_literals));
+    assert(is_all_unique(m_fluent_initial_literals));
+    assert(is_all_unique(m_numeric_fluents));
+    assert(is_all_unique(m_goal_condition));
+    assert(is_all_unique(m_axioms));
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const

@@ -53,6 +53,13 @@ ActionImpl::ActionImpl(int identifier,
 {
     assert(is_subseteq(m_static_conditions, m_conditions));
     assert(is_subseteq(m_fluent_conditions, m_conditions));
+    assert(is_all_unique(m_parameters));
+    assert(is_all_unique(m_conditions));
+    assert(is_all_unique(m_static_conditions));
+    assert(is_all_unique(m_fluent_conditions));
+    assert(is_all_unique(m_simple_effects));
+    assert(is_all_unique(m_conditional_effects));
+    assert(is_all_unique(m_universal_effects));
 }
 
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
