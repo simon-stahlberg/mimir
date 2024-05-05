@@ -121,6 +121,8 @@ public:
     const LiteralList& get_static_conditions() const;
     const LiteralList& get_fluent_conditions() const;
     const Literal& get_effect() const;
+
+    size_t get_arity() const;
 };
 
 }

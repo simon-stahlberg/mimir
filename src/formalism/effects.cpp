@@ -195,4 +195,6 @@ const LiteralList& EffectUniversalImpl::get_fluent_conditions() const { return m
 
 const Literal& EffectUniversalImpl::get_effect() const { return m_effect; }
 
+size_t EffectUniversalImpl::get_arity() const { return m_quantified_variables.size(); }
+
 }

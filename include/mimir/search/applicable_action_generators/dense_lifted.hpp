@@ -5,6 +5,8 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions/dense.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/states.hpp"
 
@@ -14,118 +16,6 @@
 
 namespace mimir
 {
-
-namespace consistency_graph
-{
-
-using VertexID = size_t;
-using ParameterID = size_t;
-using ObjectID = size_t;
-
-/// @brief A vertex [param/object] in the consistency graph.
-class Vertex
-{
-private:
-    VertexID m_id;
-    ParameterID m_param;
-    ObjectID m_object;
-
-public:
-    Vertex(VertexID id, ParameterID param, ObjectID object) : m_id(id), m_param(param), m_object(object) {}
-
-    VertexID get_id() const { return m_id; }
-    ParameterID get_param_index() const { return m_param; }
-    ObjectID get_object_index() const { return m_object; }
-
-    friend std::ostream& operator<<(std::ostream& out, const Vertex& vertex)
-    {
-        out << "Vertex(id=" << vertex.get_id() << " param=" << vertex.get_param_index() << " object=" << vertex.get_object_index() << ")";
-        return out;
-    }
-};
-
-using EdgeID = size_t;
-
-/// @brief An undirected edge {src,dst} in the consistency graph.
-class Edge
-{
-private:
-    Vertex m_src;
-    Vertex m_dst;
-
-public:
-    Edge(Vertex src, Vertex dst) : m_src(src), m_dst(dst) {}
-
-    const Vertex& get_src() const { return m_src; }
-    const Vertex& get_dst() const { return m_dst; }
-
-    friend std::ostream& operator<<(std::ostream& out, const Edge& edge)
-    {
-        out << "Edge(src=" << edge.get_src() << " dst=" << edge.get_dst() << ")";
-        return out;
-    }
-};
-
-using Vertices = std::vector<Vertex>;
-using Edges = std::vector<Edge>;
-using VertexIDs = std::vector<VertexID>;
-
-/// @brief AssignmentSet is a helper class representing a set of functions
-/// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where
-///   1. f(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j)
-///   2. f(p,i,o,-1,-1) = true iff there exists an atom p(...,o_i,...)
-/// with respective meanings
-///   1. the assignment [i/o], [j/o'] is consistent
-///   2. the assignment [i/o] is consistent
-///
-/// We say that an assignment set is static if all atoms it considers are static.
-class AssignmentSet
-{
-private:
-    Problem m_problem;
-
-    // The underlying function
-    std::vector<std::vector<bool>> m_f;
-
-public:
-    /// @brief Construct from a given set of ground atoms.
-    AssignmentSet(Problem problem, const GroundAtomList& atoms);
-
-    /// @brief Return true iff all literals are consistent with
-    /// 1. the assignment set, and 2. the edge of the consistency graph.
-    ///
-    /// The meaning of the result being true is that the edge remains consistent.
-    bool literal_all_consistent(const std::vector<Literal>& literals, const Edge& consistent_edge) const;
-};
-
-/// @brief The StaticConsistencyGraph encodes the part of the consisteny graph
-///        that is static for each state for a single action.
-class StaticConsistencyGraph
-{
-private:
-    Problem m_problem;
-
-    /* The data member of the consistency graph. */
-    Vertices m_vertices;
-    Edges m_edges;
-    std::vector<VertexIDs> m_vertices_by_parameter_index;
-
-public:
-    StaticConsistencyGraph(Problem problem, Action action, const PDDLFactories& factories);
-
-    /// @brief Get the vertices.
-    const Vertices& get_vertices() const { return m_vertices; }
-
-    /// @brief Get the edges.
-    const Edges& get_edges() const { return m_edges; }
-
-    /// @brief Get the vertices partitioned by the parameter index.
-    const std::vector<VertexIDs> get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
-
-    friend std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph);
-};
-
-}
 
 using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
 
@@ -145,9 +35,13 @@ private:
 
     GroundFunctionToValue m_ground_function_value_costs;
 
-    std::unordered_map<Action, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
+    std::unordered_map<Action, consistency_graph::Graphs> m_static_consistency_graphs;
 
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
+
+    /**
+     * Precondition
+     */
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_preconditions_hold(const Action& action, DenseState state) const;
@@ -156,10 +50,7 @@ private:
 
     void unary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
 
-    void general_case(const consistency_graph::AssignmentSet& assignment_sets,
-                      const Action& action,
-                      DenseState state,
-                      std::vector<DenseAction>& out_applicable_actions);
+    void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;
