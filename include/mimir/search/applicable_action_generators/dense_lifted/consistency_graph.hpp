@@ -36,8 +36,6 @@ public:
     }
 };
 
-using EdgeID = size_t;
-
 /// @brief An undirected edge {src,dst} in the consistency graph.
 class Edge
 {
@@ -46,7 +44,7 @@ private:
     Vertex m_dst;
 
 public:
-    Edge(Vertex src, Vertex dst) : m_src(src), m_dst(dst) {}
+    Edge(Vertex src, Vertex dst) : m_src(std::move(src)), m_dst(std::move(dst)) {}
 
     const Vertex& get_src() const { return m_src; }
     const Vertex& get_dst() const { return m_dst; }

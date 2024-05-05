@@ -10,7 +10,20 @@ namespace flat
 /**
  * Flatmemory types
  */
-using DenseActionLayout = flatmemory::Tuple<uint32_t, int32_t, mimir::Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+using DenseActionLayout = flatmemory::Tuple<uint32_t,
+                                            int32_t,
+                                            mimir::Action,
+                                            ObjectListLayout,
+                                            BitsetLayout,
+                                            BitsetLayout,
+                                            BitsetLayout,
+                                            BitsetLayout,
+                                            BitsetVectorLayout,
+                                            BitsetVectorLayout,
+                                            Int32tVectorLayout,
+                                            BitsetVectorLayout,
+                                            BitsetVectorLayout,
+                                            Int32tVectorLayout>;
 using DenseActionBuilder = flatmemory::Builder<DenseActionLayout>;
 using DenseAction = flatmemory::ConstView<DenseActionLayout>;
 using DenseActionVector = flatmemory::VariableSizedTypeVector<DenseActionLayout>;
@@ -69,10 +82,22 @@ public:
     [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
     [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
     [[nodiscard]] flat::ObjectListBuilder& get_objects() { return m_builder.get<3>(); }
+    /* Precondition */
     [[nodiscard]] flat::BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
     [[nodiscard]] flat::BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
+    /* Simple effects */
     [[nodiscard]] flat::BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
     [[nodiscard]] flat::BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
+    /* Conditional effects */
+    [[nodiscard]] flat::BitsetVectorBuilder& get_conditional_positive_precondition_bitset() { return m_builder.get<8>(); }
+    [[nodiscard]] flat::BitsetVectorBuilder& get_conditional_negative_precondition_bitset() { return m_builder.get<9>(); }
+    // We use positive numbers for add and negative numbers for delete effects
+    [[nodiscard]] flat::Int32tVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
+    /* Universal effects */
+    [[nodiscard]] flat::BitsetVectorBuilder& get_universal_positive_precondition_bitset() { return m_builder.get<11>(); }
+    [[nodiscard]] flat::BitsetVectorBuilder& get_universal_negative_precondition_bitset() { return m_builder.get<12>(); }
+    // We use positive numbers for add and negative numbers for delete effects
+    [[nodiscard]] flat::Int32tVectorBuilder& get_universal_effects() { return m_builder.get<13>(); }
 };
 
 /**
@@ -110,10 +135,20 @@ public:
     [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
     [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
     [[nodiscard]] flat::ObjectList get_objects() const { return m_view.get<3>(); }
+    /* Precondition */
     [[nodiscard]] flat::Bitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
     [[nodiscard]] flat::Bitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
+    /* Simple effects */
     [[nodiscard]] flat::Bitset get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
     [[nodiscard]] flat::Bitset get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
+    /* Conditional effects */
+    [[nodiscard]] flat::BitsetVector get_conditional_positive_precondition_bitset() { return m_view.get<8>(); }
+    [[nodiscard]] flat::BitsetVector get_conditional_negative_precondition_bitset() { return m_view.get<9>(); }
+    [[nodiscard]] flat::Int32tVector get_conditional_effects() { return m_view.get<10>(); }
+    /* Universal effects */
+    [[nodiscard]] flat::BitsetVector get_universal_positive_precondition_bitset() { return m_view.get<11>(); }
+    [[nodiscard]] flat::BitsetVector get_universal_negative_precondition_bitset() { return m_view.get<12>(); }
+    [[nodiscard]] flat::Int32tVector get_universal_effects() { return m_view.get<13>(); }
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
