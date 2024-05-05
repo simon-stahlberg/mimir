@@ -26,6 +26,7 @@
 
 #include <ostream>
 #include <tuple>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
@@ -38,6 +39,36 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<StateDispa
 std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDispatcher<DenseStateTag>>, const PDDLFactories&>& data);
 
 std::ostream& operator<<(std::ostream& os, const DenseAction& action);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
+{
+    os << "[";
+    for (size_t i = 0; i < vec.size(); ++i)
+    {
+        if (i != 0)
+            os << ", ";
+        os << vec[i];
+    }
+    os << "]";
+    return os;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set)
+{
+    os << "{";
+    size_t i = 0;
+    for (const auto& element : set)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "}";
+    return os;
+}
 
 }
 

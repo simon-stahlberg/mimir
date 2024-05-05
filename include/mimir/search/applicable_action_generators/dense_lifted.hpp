@@ -6,7 +6,6 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/applicable_action_generators/internal_representation.hpp"
 #include "mimir/search/states.hpp"
 
 #include <flatmemory/details/view_const.hpp>
@@ -19,6 +18,7 @@ namespace mimir
 namespace consistency_graph
 {
 
+using VertexID = size_t;
 using ParameterID = size_t;
 using ObjectID = size_t;
 
@@ -26,21 +26,25 @@ using ObjectID = size_t;
 class Vertex
 {
 private:
+    VertexID m_id;
     ParameterID m_param;
     ObjectID m_object;
 
 public:
-    Vertex(ParameterID param, ObjectID object) : m_param(param), m_object(object) {}
+    Vertex(VertexID id, ParameterID param, ObjectID object) : m_id(id), m_param(param), m_object(object) {}
 
+    VertexID get_id() const { return m_id; }
     ParameterID get_param_index() const { return m_param; }
     ObjectID get_object_index() const { return m_object; }
+
+    friend std::ostream& operator<<(std::ostream& out, const Vertex& vertex)
+    {
+        out << "Vertex(id=" << vertex.get_id() << " param=" << vertex.get_param_index() << " object=" << vertex.get_object_index() << ")";
+        return out;
+    }
 };
 
-using NumVertices = size_t;
-using NumParameters = size_t;
-using NumObjects = size_t;
-using VertexID = size_t;
-using VertexIDs = std::vector<VertexID>;
+using EdgeID = size_t;
 
 /// @brief An undirected edge {src,dst} in the consistency graph.
 class Edge
@@ -52,15 +56,19 @@ private:
 public:
     Edge(Vertex src, Vertex dst) : m_src(src), m_dst(dst) {}
 
-    Vertex get_src() const { return m_src; }
-    Vertex get_dst() const { return m_dst; }
-};
+    const Vertex& get_src() const { return m_src; }
+    const Vertex& get_dst() const { return m_dst; }
 
-using NumEdges = size_t;
-using EdgeID = size_t;
+    friend std::ostream& operator<<(std::ostream& out, const Edge& edge)
+    {
+        out << "Edge(src=" << edge.get_src() << " dst=" << edge.get_dst() << ")";
+        return out;
+    }
+};
 
 using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
+using VertexIDs = std::vector<VertexID>;
 
 /// @brief AssignmentSet is a helper class representing a set of functions
 /// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where
@@ -114,8 +122,7 @@ public:
     /// @brief Get the vertices partitioned by the parameter index.
     const std::vector<VertexIDs> get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
 
-    /// @brief Return a dot string representation of the graph.
-    std::string to_dot() const;
+    friend std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph);
 };
 
 }
@@ -137,13 +144,6 @@ private:
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
     GroundFunctionToValue m_ground_function_value_costs;
-
-    // D: will be substituted by StaticConsistencyGraph::vertices_by_parameter_index
-    std::unordered_map<Action, std::vector<std::vector<size_t>>> m_partitions;
-    // D: will be substituted by StaticConsistencyGraph::vertices
-    std::unordered_map<Action, std::vector<Assignment>> m_to_vertex_assignment;
-    // D: will be substituted by StaticConsistencyGraph::edges
-    std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
 
     std::unordered_map<Action, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
 

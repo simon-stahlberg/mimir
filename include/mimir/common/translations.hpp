@@ -30,6 +30,9 @@ namespace mimir
 {
 
 /// @brief Translates a bitset into a list of ground atoms
+extern void to_ground_atoms(const GroundLiteralList& literals, GroundAtomList& out_ground_atoms);
+
+/// @brief Translates a bitset into a list of ground atoms
 extern void to_ground_atoms(const flat::Bitset& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms);
 
 /// @brief Translates a state into a list of ground atoms
