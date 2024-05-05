@@ -9,6 +9,37 @@
 
 #include <flatmemory/flatmemory.hpp>
 
+/**
+ * Flatmemory types
+ */
+namespace flat
+{
+using DenseStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
+using DenseStateBuilder = flatmemory::Builder<DenseStateLayout>;
+using DenseState = flatmemory::ConstView<DenseStateLayout>;
+
+struct DenseStateHash
+{
+    size_t operator()(const DenseState& view) const
+    {
+        const auto bitset_view = view.get<1>();
+        return bitset_view.hash();
+    }
+};
+
+struct DenseStateEqual
+{
+    bool operator()(const DenseState& view_left, const DenseState& view_right) const
+    {
+        const auto bitset_view_left = view_left.get<1>();
+        const auto bitset_view_right = view_right.get<1>();
+        return bitset_view_left == bitset_view_right;
+    }
+};
+
+using DenseStateSet = flatmemory::UnorderedSet<DenseStateLayout, DenseStateHash, DenseStateEqual>;
+}
+
 namespace mimir
 {
 /**
@@ -21,34 +52,6 @@ class DenseStateTag : public StateTag
 };
 
 /**
- * Flatmemory types
- */
-using DenseStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
-using DenseStateBuilder = flatmemory::Builder<DenseStateLayout>;
-using ConstDenseStateView = flatmemory::ConstView<DenseStateLayout>;
-
-struct ConstDenseStateViewHash
-{
-    size_t operator()(const ConstDenseStateView& view) const
-    {
-        const auto bitset_view = view.get<1>();
-        return bitset_view.hash();
-    }
-};
-
-struct ConstDenseStateViewEqual
-{
-    bool operator()(const ConstDenseStateView& view_left, const ConstDenseStateView& view_right) const
-    {
-        const auto bitset_view_left = view_left.get<1>();
-        const auto bitset_view_right = view_right.get<1>();
-        return bitset_view_left == bitset_view_right;
-    }
-};
-
-using DenseStateSet = flatmemory::UnorderedSet<DenseStateLayout, ConstDenseStateViewHash, ConstDenseStateViewEqual>;
-
-/**
  * Implementation class
  */
 template<>
@@ -57,13 +60,13 @@ class Builder<StateDispatcher<DenseStateTag>> :
     public IStateBuilder<Builder<StateDispatcher<DenseStateTag>>>
 {
 private:
-    DenseStateBuilder m_builder;
+    flat::DenseStateBuilder m_builder;
 
     /* Implement IBuilder interface */
     friend class IBuilder<Builder<StateDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] DenseStateBuilder& get_flatmemory_builder_impl() { return m_builder; }
-    [[nodiscard]] const DenseStateBuilder& get_flatmemory_builder_impl() const { return m_builder; }
+    [[nodiscard]] flat::DenseStateBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const flat::DenseStateBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IStateBuilder interface */
     friend class IStateBuilder<Builder<StateDispatcher<DenseStateTag>>>;
@@ -71,7 +74,7 @@ private:
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
 public:
-    [[nodiscard]] BitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
+    [[nodiscard]] flat::BitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
 };
 
 /**
@@ -85,7 +88,7 @@ class ConstView<StateDispatcher<DenseStateTag>> :
     public IStateView<ConstView<StateDispatcher<DenseStateTag>>>
 {
 private:
-    ConstDenseStateView m_view;
+    flat::DenseState m_view;
 
     /* Implement IView interface */
     friend class IConstView<ConstView<StateDispatcher<DenseStateTag>>>;
@@ -103,9 +106,9 @@ private:
     [[nodiscard]] auto end_impl() const { return get_atoms_bitset().end(); }
 
 public:
-    explicit ConstView(ConstDenseStateView view) : m_view(view) {}
+    explicit ConstView(flat::DenseState view) : m_view(view) {}
 
-    [[nodiscard]] ConstBitsetView get_atoms_bitset() const { return m_view.get<1>(); }
+    [[nodiscard]] flat::Bitset get_atoms_bitset() const { return m_view.get<1>(); }
 
     bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
@@ -128,9 +131,8 @@ public:
 /**
  * Mimir types
  */
-using DenseStateBuilderProxy = Builder<StateDispatcher<DenseStateTag>>;
-
-using ConstDenseStateViewProxy = ConstView<StateDispatcher<DenseStateTag>>;
+using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
+using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 
 }
 

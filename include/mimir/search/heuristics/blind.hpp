@@ -23,12 +23,10 @@ template<>
 class Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>> : public IStaticHeuristic<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
-
     /* Implement IStaticHeuristic interface. */
     friend class IStaticHeuristic<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>;
 
-    double compute_heuristic_impl(const ConstStateView& state) { return 0.; }
+    double compute_heuristic_impl(const DenseState& state) { return 0.; }
 };
 
 }  // namespace mimir

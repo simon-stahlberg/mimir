@@ -30,10 +30,10 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
     std::shared_ptr<IDynamicSSG> m_state_repository;
-    ConstView<StateDispatcher<StateReprTag>> m_initial_state;
+    State m_initial_state;
     std::shared_ptr<IDynamicAAG> m_successor_generator;
-    std::deque<ConstView<StateDispatcher<StateReprTag>>> m_queue;
-    CostSearchNodeVector m_search_nodes;
+    std::deque<State> m_queue;
+    flat::CostSearchNodeVector m_search_nodes;
     std::shared_ptr<IEventHandler> m_event_handler;
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions
@@ -42,7 +42,7 @@ private:
     ///             satisfied.
     /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
     ///                      the to the state underlying the search node.
-    void set_plan(const CostSearchNodeConstViewProxy& view, std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) const
+    void set_plan(const ConstCostSearchNode& view, std::vector<GroundAction>& out_plan) const
     {
         out_plan.clear();
         auto cur_view = view;
@@ -51,7 +51,7 @@ private:
         {
             out_plan.push_back(m_successor_generator->get_action(cur_view.get_creating_action_id()));
 
-            cur_view = CostSearchNodeConstViewProxy(this->m_search_nodes[cur_view.get_parent_state_id()]);
+            cur_view = ConstCostSearchNode(this->m_search_nodes[cur_view.get_parent_state_id()]);
         }
 
         std::reverse(out_plan.begin(), out_plan.end());
@@ -60,7 +60,7 @@ private:
     /// @brief Creates a CostSearchNodeBuilderProxy whose attributes are default initialized.
     static auto create_default_search_node_builder()
     {
-        auto builder = CostSearchNodeBuilderProxy(CostSearchNodeBuilder());
+        auto builder = CostSearchNodeBuilder();
         builder.set_status(SearchNodeStatus::CLOSED);
         builder.set_g_value(-1);
         builder.set_parent_state_id(-1);
@@ -80,26 +80,26 @@ public:
         m_state_repository(std::move(state_repository)),
         m_initial_state(m_state_repository->get_or_create_initial_state(problem)),
         m_successor_generator(std::move(successor_generator)),
-        m_search_nodes(flatmemory::FixedSizedTypeVector(create_default_search_node_builder())),
+        m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
         m_event_handler(std::move(event_handler))
     {
     }
 
-    SearchStatus find_solution(std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) override
+    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override
     {
         m_event_handler->on_start_search(this->m_initial_state, m_pddl_factories);
 
-        auto initial_search_node = CostSearchNodeViewProxy(this->m_search_nodes[this->m_initial_state.get_id()]);
+        auto initial_search_node = CostSearchNode(this->m_search_nodes[this->m_initial_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
         const auto& goal_ground_literals = m_problem->get_goal_condition();
 
-        auto applicable_actions = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
+        auto applicable_actions = std::vector<GroundAction> {};
 
         m_queue.emplace_back(m_initial_state);
 
-        uint64_t g_value = 0;
+        auto g_value = uint64_t { 0 };
 
         while (!m_queue.empty())
         {
@@ -108,7 +108,7 @@ public:
 
             if (state.literals_hold(goal_ground_literals))
             {
-                set_plan(CostSearchNodeConstViewProxy(this->m_search_nodes[state.get_id()]), out_plan);
+                set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 
                 m_event_handler->on_end_search();
                 m_event_handler->on_solved(out_plan);
@@ -116,7 +116,7 @@ public:
                 return SearchStatus::SOLVED;
             }
 
-            auto search_node = CostSearchNodeViewProxy(this->m_search_nodes[state.get_id()]);
+            auto search_node = CostSearchNode(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
 
             if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
@@ -136,7 +136,7 @@ public:
 
                 if (state_count != m_state_repository->get_state_count())
                 {
-                    auto successor_search_node = CostSearchNodeViewProxy(this->m_search_nodes[successor_state.get_id()]);
+                    auto successor_search_node = CostSearchNode(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
                     successor_search_node.get_g_value() = search_node.get_g_value() + 1;
                     successor_search_node.get_parent_state_id() = state.get_id();

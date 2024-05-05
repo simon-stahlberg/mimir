@@ -85,6 +85,10 @@ struct TypeTraits<ConstView<ActionDispatcher<S>>>
     using StateTag = S;
 };
 
+/**
+ * Types
+ */
+
 }
 
 #endif

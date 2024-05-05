@@ -19,16 +19,13 @@ template<>
 class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
-    using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
-
-    DenseStateSet m_states;
-    Builder<StateDispatcher<DenseStateTag>> m_state_builder;
+    flat::DenseStateSet m_states;
+    DenseStateBuilder m_state_builder;
 
     /* Implement IStaticSSG interface */
     friend class IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] ConstStateView get_or_create_initial_state_impl(Problem problem)
+    [[nodiscard]] DenseState get_or_create_initial_state_impl(Problem problem)
     {
         int next_state_id = m_states.size();
 
@@ -61,10 +58,10 @@ private:
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
-        return ConstStateView(*iter);
+        return DenseState(*iter);
     }
 
-    [[nodiscard]] ConstStateView get_or_create_successor_state_impl(ConstStateView state, ConstActionView action)
+    [[nodiscard]] DenseState get_or_create_successor_state_impl(DenseState state, DenseAction action)
     {
         int next_state_id = m_states.size();
 
@@ -84,7 +81,7 @@ private:
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
-        return ConstStateView(*iter);
+        return DenseState(*iter);
     }
 
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }

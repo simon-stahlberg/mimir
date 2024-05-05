@@ -6,7 +6,7 @@
 namespace mimir
 {
 
-void to_ground_atoms(const ConstBitsetView& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
+void to_ground_atoms(const flat::Bitset& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
 {
     out_ground_atoms.clear();
 

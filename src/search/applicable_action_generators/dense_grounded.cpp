@@ -30,8 +30,7 @@
 namespace mimir
 {
 
-std::unique_ptr<MatchTree::INode>
-MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions)
+std::unique_ptr<MatchTree::INode> MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<DenseAction>& actions)
 {
     // 1. Base cases:
     // 1.1. There are no more atoms to test or
@@ -44,9 +43,9 @@ MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const
 
     // 2. Conquer
     // Partition actions into positive, negative and dontcare depending on how atom_id occurs in precondition
-    auto positive_actions = std::vector<ConstDenseActionViewProxy> {};
-    auto negative_actions = std::vector<ConstDenseActionViewProxy> {};
-    auto dontcare_actions = std::vector<ConstDenseActionViewProxy> {};
+    auto positive_actions = std::vector<DenseAction> {};
+    auto negative_actions = std::vector<DenseAction> {};
+    auto dontcare_actions = std::vector<DenseAction> {};
     for (const auto& action : actions)
     {
         const bool positive_condition = action.get_applicability_positive_precondition_bitset().get(atom_id);
@@ -91,9 +90,9 @@ MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const
     }
 }
 
-MatchTree::GeneratorNode::GeneratorNode(std::vector<ConstDenseActionViewProxy> actions) : m_actions(std::move(actions)) {}
+MatchTree::GeneratorNode::GeneratorNode(std::vector<DenseAction> actions) : m_actions(std::move(actions)) {}
 
-void MatchTree::GeneratorNode::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+void MatchTree::GeneratorNode::get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     out_applicable_actions.insert(out_applicable_actions.end(), m_actions.begin(), m_actions.end());
 }
@@ -109,7 +108,7 @@ MatchTree::SelectorNode::SelectorNode(size_t ground_atom_id,
 {
 }
 
-void MatchTree::SelectorNode::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+void MatchTree::SelectorNode::get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     m_dontcare_succ->get_applicable_actions(state, out_applicable_actions);
 
@@ -125,15 +124,11 @@ void MatchTree::SelectorNode::get_applicable_actions(const ConstDenseStateViewPr
 
 size_t MatchTree::get_num_nodes() const { return m_num_nodes; }
 
-MatchTree::MatchTree() : m_num_nodes(1), m_root_node(std::make_unique<MatchTree::GeneratorNode>(std::vector<ConstDenseActionViewProxy> {})) {}
+MatchTree::MatchTree() : m_num_nodes(1), m_root_node(std::make_unique<MatchTree::GeneratorNode>(std::vector<DenseAction> {})) {}
 
-MatchTree::MatchTree(const size_t num_atoms, const std::vector<ConstDenseActionViewProxy>& actions) :
-    m_num_nodes(0),
-    m_root_node(build_recursively(0, num_atoms, actions))
-{
-}
+MatchTree::MatchTree(const size_t num_atoms, const std::vector<DenseAction>& actions) : m_num_nodes(0), m_root_node(build_recursively(0, num_atoms, actions)) {}
 
-void MatchTree::get_applicable_actions(const ConstDenseStateViewProxy state, std::vector<ConstDenseActionViewProxy>& out_applicable_actions)
+void MatchTree::get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
@@ -145,7 +140,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_pddl_factories(pddl_factories),
     m_lifted_aag(m_problem, m_pddl_factories)
 {
-    // 1. Explore delete relaxed task.s
+    // 1. Explore delete relaxed task.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
     const auto dr_problem = delete_relax_transformer.run(*m_problem);
     auto dr_lifted_aag = AAG<LiftedAAGDispatcher<DenseStateTag>>(dr_problem, m_pddl_factories);
@@ -162,14 +157,14 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     size_t num_atoms = 0;
     size_t num_actions = 0;
     // Temporary variables
-    auto actions = std::vector<ConstDenseActionViewProxy> {};
+    auto actions = std::vector<DenseAction> {};
     do
     {
         num_atoms = m_pddl_factories.get_ground_atoms().size();
         num_actions = dr_lifted_aag.get_actions().size();
 
         m_state_builder.get_flatmemory_builder().finish();
-        const auto state = ConstDenseStateViewProxy(ConstDenseStateView(m_state_builder.get_flatmemory_builder().buffer().data()));
+        const auto state = DenseState(flat::DenseState(m_state_builder.get_flatmemory_builder().buffer().data()));
 
         // Create all applicable actions and apply newly generated actions
         dr_lifted_aag.generate_applicable_actions(state, actions);
@@ -192,11 +187,11 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     std::cout << "Total number of ground actions in delete-relaxed task: " << dr_lifted_aag.get_actions().size() << std::endl;
 
     // 2. Create ground actions
-    auto ground_actions = std::vector<ConstDenseActionViewProxy> {};
+    auto ground_actions = std::vector<DenseAction> {};
     for (const auto& action : dr_lifted_aag.get_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        const auto action_proxy = ConstDenseActionViewProxy(action);
+        const auto action_proxy = DenseAction(action);
         const auto& unrelaxed_action = delete_relax_transformer.get_unrelaxed_action(action_proxy.get_action());
         auto action_arguments = ObjectList(action_proxy.get_objects().begin(), action_proxy.get_objects().end());
         ground_actions.push_back(m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments)));
@@ -209,14 +204,14 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     std::cout << "Total number of nodes in match tree: " << m_match_tree.get_num_nodes() << std::endl;
 }
 
-void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
     m_match_tree.get_applicable_actions(state, out_applicable_actions);
 }
 
-[[nodiscard]] const DenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
+[[nodiscard]] const flat::DenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
 
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<GroundedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {

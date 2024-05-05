@@ -16,11 +16,10 @@ public:
     virtual ~IDynamicAAG() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual void generate_applicable_actions(ConstView<StateDispatcher<StateReprTag>> state,
-                                             std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_applicable_actions) = 0;
+    virtual void generate_applicable_actions(State state, std::vector<GroundAction>& out_applicable_actions) = 0;
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] virtual ConstView<ActionDispatcher<StateReprTag>> get_action(size_t action_id) const = 0;
+    [[nodiscard]] virtual GroundAction get_action(size_t action_id) const = 0;
 };
 
 /**
@@ -31,9 +30,8 @@ class IStaticAAG : public IDynamicAAG
 {
 private:
     using S = typename TypeTraits<Derived>::StateTag;
-
-    using ConstStateView = ConstView<StateDispatcher<S>>;
-    using ConstActionView = ConstView<ActionDispatcher<S>>;
+    using StateRepr = ConstView<StateDispatcher<S>>;
+    using GroundActionRepr = ConstView<ActionDispatcher<S>>;
 
     IStaticAAG() = default;
     friend Derived;
@@ -44,7 +42,7 @@ private:
 
 public:
     /// @brief Generate all applicable actions for a given state.
-    void generate_applicable_actions(const ConstStateView state, std::vector<ConstActionView>& out_applicable_actions) override
+    void generate_applicable_actions(const StateRepr state, std::vector<GroundActionRepr>& out_applicable_actions) override
     {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }

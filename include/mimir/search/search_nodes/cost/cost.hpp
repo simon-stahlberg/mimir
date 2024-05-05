@@ -20,32 +20,39 @@ enum SearchNodeStatus
     CLOSED = 2,
     DEAD_END = 3
 };
+}
 
+namespace flat
+{
 /**
  * Flatmemory types
  */
-using CostSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t, int32_t>;
+using CostSearchNodeLayout = flatmemory::Tuple<mimir::SearchNodeStatus, int32_t, int32_t, int32_t>;
 
 using CostSearchNodeBuilder = flatmemory::Builder<CostSearchNodeLayout>;
-using CostSearchNodeView = flatmemory::View<CostSearchNodeLayout>;
-using CostSearchNodeConstView = flatmemory::ConstView<CostSearchNodeLayout>;
+using CostSearchNode = flatmemory::View<CostSearchNodeLayout>;
+using ConstCostSearchNode = flatmemory::ConstView<CostSearchNodeLayout>;
 using CostSearchNodeVector = flatmemory::FixedSizedTypeVector<CostSearchNodeLayout>;
+}
 
+namespace mimir
+{
 /**
  * Proxy for more meaningful access
  */
-class CostSearchNodeBuilderProxy
+class CostSearchNodeBuilder
 {
 private:
-    CostSearchNodeBuilder m_builder;
+    flat::CostSearchNodeBuilder m_builder;
 
 public:
-    CostSearchNodeBuilderProxy(CostSearchNodeBuilder builder) : m_builder(std::move(builder)) {}
+    CostSearchNodeBuilder() : m_builder() {}
+    CostSearchNodeBuilder(flat::CostSearchNodeBuilder builder) : m_builder(std::move(builder)) {}
 
     void finish() { m_builder.finish(); }
     uint8_t* get_data() { return m_builder.buffer().data(); }
     size_t get_size() { return m_builder.buffer().size(); }
-    const CostSearchNodeBuilder& get_flatmemory_builder() { return m_builder; }
+    const flat::CostSearchNodeBuilder& get_flatmemory_builder() { return m_builder; }
 
     void set_status(SearchNodeStatus status) { m_builder.get<0>() = status; }
     void set_g_value(int32_t g_value) { m_builder.get<1>() = g_value; }
@@ -53,13 +60,13 @@ public:
     void set_creating_action_id(int32_t creating_action_id) { m_builder.get<3>() = creating_action_id; }
 };
 
-class CostSearchNodeViewProxy
+class CostSearchNode
 {
 private:
-    CostSearchNodeView m_view;
+    flat::CostSearchNode m_view;
 
 public:
-    CostSearchNodeViewProxy(CostSearchNodeView view) : m_view(view) {}
+    CostSearchNode(flat::CostSearchNode view) : m_view(view) {}
 
     SearchNodeStatus& get_status() { return m_view.get<0>(); }
     int32_t& get_g_value() { return m_view.get<1>(); }
@@ -67,13 +74,13 @@ public:
     int32_t& get_creating_action_id() { return m_view.get<3>(); }
 };
 
-class CostSearchNodeConstViewProxy
+class ConstCostSearchNode
 {
 private:
-    CostSearchNodeConstView m_view;
+    flat::ConstCostSearchNode m_view;
 
 public:
-    CostSearchNodeConstViewProxy(CostSearchNodeConstView view) : m_view(view) {}
+    ConstCostSearchNode(flat::ConstCostSearchNode view) : m_view(view) {}
 
     SearchNodeStatus get_status() const { return m_view.get<0>(); }
     int32_t get_g_value() const { return m_view.get<1>(); }

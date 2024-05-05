@@ -20,7 +20,7 @@ class AStarAlgorithm : public IAlgorithm
 private:
     Problem m_problem;
     std::shared_ptr<IDynamicSSG> m_state_repository;
-    ConstView<StateDispatcher<StateReprTag>> m_initial_state;
+    State m_initial_state;
     std::shared_ptr<IDynamicAAG> m_successor_generator;
     std::shared_ptr<IDynamicHeuristic> m_heuristic;
     std::shared_ptr<IEventHandler> m_event_handler;
@@ -41,7 +41,7 @@ public:
     {
     }
 
-    SearchStatus find_solution(std::vector<ConstView<ActionDispatcher<StateReprTag>>>& out_plan) override
+    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override
     {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;

@@ -5,19 +5,19 @@
 #include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
 
-namespace mimir
+namespace flat
 {
 /**
  * Flatmemory types
  */
-using DenseActionLayout = flatmemory::Tuple<uint32_t, int32_t, Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
+using DenseActionLayout = flatmemory::Tuple<uint32_t, int32_t, mimir::Action, ObjectListLayout, BitsetLayout, BitsetLayout, BitsetLayout, BitsetLayout>;
 using DenseActionBuilder = flatmemory::Builder<DenseActionLayout>;
-using ConstDenseActionView = flatmemory::ConstView<DenseActionLayout>;
+using DenseAction = flatmemory::ConstView<DenseActionLayout>;
 using DenseActionVector = flatmemory::VariableSizedTypeVector<DenseActionLayout>;
 
-struct ConstDenseActionViewHash
+struct DenseActionHash
 {
-    size_t operator()(const ConstDenseActionView& view) const
+    size_t operator()(const DenseAction& view) const
     {
         const auto action = view.get<2>();
         const auto objects = view.get<3>();
@@ -25,9 +25,9 @@ struct ConstDenseActionViewHash
     }
 };
 
-struct ConstDenseActionViewEqual
+struct DenseActionEqual
 {
-    bool operator()(const ConstDenseActionView& view_left, const ConstDenseActionView& view_right) const
+    bool operator()(const DenseAction& view_left, const DenseAction& view_right) const
     {
         const auto action_left = view_left.get<2>();
         const auto objects_left = view_left.get<3>();
@@ -37,7 +37,11 @@ struct ConstDenseActionViewEqual
     }
 };
 
-using DenseActionSet = flatmemory::UnorderedSet<DenseActionLayout, ConstDenseActionViewHash, ConstDenseActionViewEqual>;
+using DenseActionSet = flatmemory::UnorderedSet<DenseActionLayout, DenseActionHash, DenseActionEqual>;
+}
+
+namespace mimir
+{
 
 /**
  * Implementation class
@@ -48,13 +52,13 @@ class Builder<ActionDispatcher<DenseStateTag>> :
     public IActionBuilder<Builder<ActionDispatcher<DenseStateTag>>>
 {
 private:
-    DenseActionBuilder m_builder;
+    flat::DenseActionBuilder m_builder;
 
     /* Implement IBuilder interface */
     friend class IBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] DenseActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
-    [[nodiscard]] const DenseActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
+    [[nodiscard]] flat::DenseActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const flat::DenseActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IActionBuilder interface */
     friend class IActionBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
@@ -64,11 +68,11 @@ public:
     [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
     [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
     [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
-    [[nodiscard]] ObjectListBuilder& get_objects() { return m_builder.get<3>(); }
-    [[nodiscard]] BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
-    [[nodiscard]] BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
-    [[nodiscard]] BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
-    [[nodiscard]] BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
+    [[nodiscard]] flat::ObjectListBuilder& get_objects() { return m_builder.get<3>(); }
+    [[nodiscard]] flat::BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] flat::BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
+    [[nodiscard]] flat::BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
+    [[nodiscard]] flat::BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
 };
 
 /**
@@ -82,9 +86,9 @@ class ConstView<ActionDispatcher<DenseStateTag>> :
     public IActionView<ConstView<ActionDispatcher<DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
+    using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 
-    ConstDenseActionView m_view;
+    flat::DenseAction m_view;
 
     /* Implement IView interface: */
     friend class IConstView<ConstView<ActionDispatcher<DenseStateTag>>>;
@@ -100,18 +104,18 @@ private:
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit ConstView(ConstDenseActionView view) : m_view(view) {}
+    explicit ConstView(flat::DenseAction view) : m_view(view) {}
 
     [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
     [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
     [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
-    [[nodiscard]] ConstObjectListView get_objects() const { return m_view.get<3>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
-    [[nodiscard]] ConstBitsetView get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
-    [[nodiscard]] ConstBitsetView get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
-    [[nodiscard]] ConstBitsetView get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
+    [[nodiscard]] flat::ObjectList get_objects() const { return m_view.get<3>(); }
+    [[nodiscard]] flat::Bitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] flat::Bitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
+    [[nodiscard]] flat::Bitset get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
+    [[nodiscard]] flat::Bitset get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
 
-    [[nodiscard]] bool is_applicable(ConstStateView state) const
+    [[nodiscard]] bool is_applicable(DenseState state) const
     {
         const auto state_bitset = state.get_atoms_bitset();
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
@@ -122,9 +126,8 @@ public:
 /**
  * Mimir types
  */
-using DenseActionBuilderProxy = Builder<ActionDispatcher<DenseStateTag>>;
-
-using ConstDenseActionViewProxy = ConstView<ActionDispatcher<DenseStateTag>>;
+using DenseActionBuilder = Builder<ActionDispatcher<DenseStateTag>>;
+using DenseAction = ConstView<ActionDispatcher<DenseStateTag>>;
 
 }
 

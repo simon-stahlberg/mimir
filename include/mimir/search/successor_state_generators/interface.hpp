@@ -14,10 +14,9 @@ class IDynamicSSG
 public:
     virtual ~IDynamicSSG() = default;
 
-    [[nodiscard]] virtual ConstView<StateDispatcher<StateReprTag>> get_or_create_initial_state(Problem problem) = 0;
+    [[nodiscard]] virtual State get_or_create_initial_state(Problem problem) = 0;
 
-    [[nodiscard]] virtual ConstView<StateDispatcher<StateReprTag>> get_or_create_successor_state(ConstView<StateDispatcher<StateReprTag>> state,
-                                                                                                 ConstView<ActionDispatcher<StateReprTag>> action) = 0;
+    [[nodiscard]] virtual State get_or_create_successor_state(State state, GroundAction action) = 0;
 
     [[nodiscard]] virtual size_t get_state_count() const = 0;
 };
@@ -30,8 +29,8 @@ class IStaticSSG : public IDynamicSSG
 {
 private:
     using S = typename TypeTraits<Derived>::StateTag;
-    using ConstStateView = ConstView<StateDispatcher<S>>;
-    using ConstActionView = ConstView<ActionDispatcher<S>>;
+    using StateRepr = ConstView<StateDispatcher<S>>;
+    using GroundActionRepr = ConstView<ActionDispatcher<S>>;
 
     IStaticSSG() = default;
     friend Derived;
@@ -41,9 +40,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] ConstStateView get_or_create_initial_state(Problem problem) override { return self().get_or_create_initial_state_impl(problem); }
+    [[nodiscard]] StateRepr get_or_create_initial_state(Problem problem) override { return self().get_or_create_initial_state_impl(problem); }
 
-    [[nodiscard]] ConstStateView get_or_create_successor_state(ConstStateView state, ConstActionView action) override
+    [[nodiscard]] StateRepr get_or_create_successor_state(StateRepr state, GroundActionRepr action) override
     {
         return self().get_or_create_successor_state_impl(state, action);
     }

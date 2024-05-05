@@ -4,8 +4,6 @@
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
 
-#include <vector>
-
 namespace mimir
 {
 
@@ -13,6 +11,8 @@ namespace mimir
 #ifdef FALSE
 #else
 using StateReprTag = DenseStateTag;
+using State = ConstView<StateDispatcher<StateReprTag>>;
+using GroundAction = ConstView<ActionDispatcher<StateReprTag>>;
 #endif
 
 }

@@ -72,7 +72,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const ConstDenseActionViewProxy& action)
+std::ostream& operator<<(std::ostream& os, const DenseAction& action)
 {
     os << "(" << action.get_action()->get_name();
     for (const auto& obj : action.get_objects())

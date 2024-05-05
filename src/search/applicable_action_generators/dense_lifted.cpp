@@ -292,7 +292,8 @@ public:
 
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const Action& action, ObjectList&& binding)
 {
-    const auto fill_bitsets = [this, &binding](const std::vector<Literal>& literals, BitsetBuilder& ref_positive_bitset, BitsetBuilder& ref_negative_bitset)
+    const auto fill_bitsets =
+        [this, &binding](const std::vector<Literal>& literals, flat::BitsetBuilder& ref_positive_bitset, flat::BitsetBuilder& ref_negative_bitset)
     {
         for (const auto& literal : literals)
         {
@@ -357,7 +358,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     flatmemory_builder.finish();
 
     const auto [iter, inserted] = m_actions.insert(flatmemory_builder);
-    const auto result_action = ConstActionView(*iter);
+    const auto result_action = DenseAction(*iter);
     if (inserted)
     {
         m_actions_by_index.push_back(result_action);
@@ -367,7 +368,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 }
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Action& action, ConstStateView state) const
+bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Action& action, DenseState state) const
 {
     for (const auto& literal : action->get_fluent_conditions())
     {
@@ -380,7 +381,7 @@ bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const A
     return true;
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
 
@@ -392,7 +393,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     // There is only one parameter, try all bindings with the correct type.
 
@@ -409,8 +410,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, C
 
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const std::vector<std::vector<bool>>& assignment_sets,
                                                            const Action& action,
-                                                           ConstStateView state,
-                                                           std::vector<ConstActionView>& out_applicable_actions)
+                                                           DenseState state,
+                                                           std::vector<DenseAction>& out_applicable_actions)
 {
     const auto& to_vertex_assignment = m_to_vertex_assignment.at(action);
     const auto& statically_consistent_assignments = m_statically_consistent_assignments.at(action);
@@ -469,7 +470,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const std::vector<std
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(ConstStateView state, std::vector<ConstActionView>& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, std::vector<DenseAction>& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
@@ -618,7 +619,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     }
 }
 
-[[nodiscard]] const DenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
+[[nodiscard]] const flat::DenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
 
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {

@@ -127,14 +127,11 @@ template<>
 class AAG<LiftedAAGDispatcher<DenseStateTag>> : public IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>
 {
 private:
-    using ConstStateView = ConstView<StateDispatcher<DenseStateTag>>;
-    using ConstActionView = ConstView<ActionDispatcher<DenseStateTag>>;
-
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
-    DenseActionSet m_actions;
-    std::vector<ConstActionView> m_actions_by_index;
+    flat::DenseActionSet m_actions;
+    std::vector<DenseAction> m_actions_by_index;
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
     GroundFunctionToValue m_ground_function_value_costs;
@@ -149,33 +146,33 @@ private:
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const Action& action, ConstStateView state) const;
+    bool nullary_preconditions_hold(const Action& action, DenseState state) const;
 
-    void nullary_case(const Action& action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void nullary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
 
-    void unary_case(const Action& action, ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void unary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
 
     void general_case(const std::vector<std::vector<bool>>& assignment_sets,
                       const Action& action,
-                      ConstStateView state,
-                      std::vector<ConstActionView>& out_applicable_actions);
+                      DenseState state,
+                      std::vector<DenseAction>& out_applicable_actions);
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(const ConstStateView state, std::vector<ConstActionView>& out_applicable_actions);
+    void generate_applicable_actions_impl(const DenseState state, std::vector<DenseAction>& out_applicable_actions);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
 
     /// @brief Ground an action and return a view onto it.
-    ConstActionView ground_action(const Action& action, ObjectList&& binding);
+    DenseAction ground_action(const Action& action, ObjectList&& binding);
 
     /// @brief Return all actions.
-    [[nodiscard]] const DenseActionSet& get_actions() const;
+    [[nodiscard]] const flat::DenseActionSet& get_actions() const;
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] ConstActionView get_action(size_t action_id) const;
+    [[nodiscard]] DenseAction get_action(size_t action_id) const;
 };
 
 }  // namespace mimir

@@ -14,7 +14,7 @@ using SearchNodeVector = flatmemory::FixedSizedTypeVector<SearchNodeLayout>;
 TEST(MimirTests, SearchSearchNodesCostBuilderTest)
 {
     // Build a search node.
-    auto search_node_builder = CostSearchNodeBuilderProxy(SearchNodeBuilder());
+    auto search_node_builder = CostSearchNodeBuilder(SearchNodeBuilder());
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
     search_node_builder.set_parent_state_id(100);
@@ -24,7 +24,7 @@ TEST(MimirTests, SearchSearchNodesCostBuilderTest)
     EXPECT_EQ(search_node_builder.get_size(), 20);
 
     // View the data generated in the builder.
-    auto search_node_view = CostSearchNodeViewProxy(SearchNodeView(search_node_builder.get_data()));
+    auto search_node_view = CostSearchNode(flat::CostSearchNode(search_node_builder.get_data()));
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
     EXPECT_EQ(search_node_view.get_parent_state_id(), 100);
@@ -52,7 +52,7 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest)
     auto vector = SearchNodeVector(std::move(builder));
 
     // Test default initialization a search node
-    auto search_node_0 = CostSearchNodeViewProxy(vector[0]);
+    auto search_node_0 = CostSearchNode(vector[0]);
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
     EXPECT_EQ(search_node_0.get_parent_state_id(), -1);
@@ -64,7 +64,7 @@ TEST(MimirTests, SearchSearchNodesCostVectorTest)
     EXPECT_EQ(search_node_0.get_g_value(), 41);
 
     // Test default initialization of a second search node
-    auto search_node_1 = CostSearchNodeViewProxy(vector[1]);
+    auto search_node_1 = CostSearchNode(vector[1]);
     EXPECT_EQ(search_node_1.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_1.get_g_value(), 42);
 }

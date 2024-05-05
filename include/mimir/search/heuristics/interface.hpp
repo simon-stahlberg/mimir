@@ -15,7 +15,7 @@ class IDynamicHeuristic
 public:
     virtual ~IDynamicHeuristic() = default;
 
-    [[nodiscard]] virtual double compute_heuristic(ConstView<StateDispatcher<StateReprTag>> state) = 0;
+    [[nodiscard]] virtual double compute_heuristic(State state) = 0;
 };
 
 /**
@@ -26,7 +26,7 @@ class IStaticHeuristic : public IDynamicHeuristic
 {
 private:
     using S = typename TypeTraits<Derived>::StateTag;
-    using ConstStateView = ConstView<StateDispatcher<S>>;
+    using StateRepr = ConstView<StateDispatcher<S>>;
 
     IStaticHeuristic() = default;
     friend Derived;
@@ -36,7 +36,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] double compute_heuristic(ConstStateView state) override { return self().compute_heuristic_impl(state); }
+    [[nodiscard]] double compute_heuristic(StateRepr state) override { return self().compute_heuristic_impl(state); }
 };
 
 /**

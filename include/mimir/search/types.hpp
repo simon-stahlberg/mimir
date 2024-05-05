@@ -5,17 +5,17 @@
 
 #include <flatmemory/flatmemory.hpp>
 
-namespace mimir
+namespace flat
 {
 /* Bitset */
 using BitsetLayout = flatmemory::Bitset<uint64_t>;
 using BitsetBuilder = flatmemory::Builder<BitsetLayout>;
-using ConstBitsetView = flatmemory::ConstView<BitsetLayout>;
+using Bitset = flatmemory::ConstView<BitsetLayout>;
 
 /* ObjectList */
-using ObjectListLayout = flatmemory::Vector<Object>;
+using ObjectListLayout = flatmemory::Vector<mimir::Object>;
 using ObjectListBuilder = flatmemory::Builder<ObjectListLayout>;
-using ConstObjectListView = flatmemory::ConstView<ObjectListLayout>;
+using ObjectList = flatmemory::ConstView<ObjectListLayout>;
 }
 
 #endif
