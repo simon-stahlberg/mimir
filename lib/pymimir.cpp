@@ -1,3 +1,4 @@
+#include "../include/mimir/formalism/action.hpp"
 #include "../include/mimir/formalism/declarations.hpp"
 #include "../include/mimir/generators/complete_state_space.hpp"
 #include "../include/mimir/generators/goal_matcher.hpp"
@@ -305,6 +306,7 @@ PYBIND11_MODULE(pymimir, m)
         },
         "atom_list"_a, "Gets all instantiations (and bindings) of the atom list that matches the state.");
 
+    action.def_static("new", &mimir::formalism::instantiate_action, "problem"_a, "schema"_a, "arguments"_a);
     action.def_readonly("problem", &mimir::formalism::ActionImpl::problem, "Gets the problem associated with the action.");
     action.def_readonly("schema", &mimir::formalism::ActionImpl::schema, "Gets the action schema associated with the action.");
     action.def_readonly("cost", &mimir::formalism::ActionImpl::cost, "Gets the cost of the action.");

@@ -49,7 +49,7 @@ namespace mimir::formalism
         ActionImpl(const mimir::formalism::ProblemDescription& problem,
                    const mimir::formalism::ActionSchema& schema,
                    mimir::formalism::ObjectList&& arguments,
-                   int32_t cost = 1);
+                   double cost = 1);
 
         ActionImpl(const mimir::formalism::ProblemDescription& problem,
                    const mimir::formalism::ActionSchema& schema,
@@ -66,6 +66,9 @@ namespace mimir::formalism
         const mimir::formalism::LiteralList& get_unconditional_effect() const;
 
         const mimir::formalism::ImplicationList& get_conditional_effect() const;
+
+        friend Action
+        instantiate_action(const mimir::formalism::ProblemDescription&, const mimir::formalism::ActionSchema&, mimir::formalism::ObjectList&&);
     };
 
     Action create_action(const mimir::formalism::ProblemDescription& problem,
@@ -86,11 +89,15 @@ namespace mimir::formalism
                          const mimir::formalism::ParameterAssignment& assignment,
                          double cost);
 
+    Action instantiate_action(const mimir::formalism::ProblemDescription& problem,
+                              const mimir::formalism::ActionSchema& schema,
+                              mimir::formalism::ObjectList&& arguments);
+
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionImpl& action);
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::Action& action);
 
-}  // namespace formalism
+}  // namespace mimir::formalism
 
 namespace std
 {

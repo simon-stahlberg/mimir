@@ -155,7 +155,7 @@ namespace mimir::formalism
     ActionImpl::ActionImpl(const mimir::formalism::ProblemDescription& problem,
                            const mimir::formalism::ActionSchema& schema,
                            mimir::formalism::ObjectList&& arguments,
-                           int32_t cost) :
+                           double cost) :
         ActionImpl(problem,
                    schema,
                    std::move(arguments),
@@ -212,6 +212,13 @@ namespace mimir::formalism
                          double cost)
     {
         return std::make_shared<mimir::formalism::ActionImpl>(problem, schema, assignment);
+    }
+
+    Action instantiate_action(const mimir::formalism::ProblemDescription& problem,
+                              const mimir::formalism::ActionSchema& schema,
+                              mimir::formalism::ObjectList&& arguments)
+    {
+        return std::make_shared<mimir::formalism::ActionImpl>(problem, schema, std::move(arguments));
     }
 
     std::ostream& operator<<(std::ostream& os, const mimir::formalism::ActionImpl& action)
