@@ -146,33 +146,53 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
+    const auto fill_int32 = [this, &binding](const Literal& literal, int32_t& ref_effect)
+    {
+        const auto grounded_literal = ground_literal(literal, binding);
+        if (grounded_literal->is_negated())
+        {
+            ref_effect = -grounded_literal->get_atom()->get_identifier();
+        }
+        else
+        {
+            ref_effect = grounded_literal->get_atom()->get_identifier();
+        }
+    };
+
+    /* Precondition */
     auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
     auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
-
     positive_precondition.unset_all();
     negative_precondition.unset_all();
+    fill_bitsets(action->get_conditions(), positive_precondition, negative_precondition);
 
-    fill_bitsets(action->get_static_conditions(), positive_precondition, negative_precondition);
-    fill_bitsets(action->get_fluent_conditions(), positive_precondition, negative_precondition);
-
+    /* Simple effects */
     auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
     auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
-
     positive_effect.unset_all();
     negative_effect.unset_all();
-
-    // Handle simple effects
     auto effect_literals = LiteralList {};
     for (const auto& effect : action->get_simple_effects())
     {
         effect_literals.push_back(effect->get_effect());
     }
     fill_bitsets(effect_literals, positive_effect, negative_effect);
-    // TODO: Handle conditional effects
-    if (!action->get_conditional_effects().empty())
+
+    /* Conditional effects */
+    auto& positive_conditional_preconditions = m_action_builder.get_conditional_positive_precondition_bitsets();
+    auto& negative_conditional_preconditions = m_action_builder.get_conditional_negative_precondition_bitsets();
+    auto& conditional_effects = m_action_builder.get_conditional_effects();
+    // TODO: this might cause reallocation, we probably want to set "actual" size to 0 and keep its size.
+    const auto num_conditional_effects = action->get_conditional_effects().size();
+    positive_conditional_preconditions.resize(num_conditional_effects);
+    negative_conditional_preconditions.resize(num_conditional_effects);
+    conditional_effects.resize(num_conditional_effects);
+    for (size_t i = 0; i < num_conditional_effects; ++i)
     {
-        throw std::runtime_error("Conditional effects are not implemented.");
+        fill_bitsets(action->get_conditional_effects()[i]->get_conditions(), positive_conditional_preconditions[i], negative_conditional_preconditions[i]);
+        fill_int32(action->get_conditional_effects()[i]->get_effect(), conditional_effects[i]);
     }
+
     // TODO: Handle universal effects
     if (!action->get_universal_effects().empty())
     {

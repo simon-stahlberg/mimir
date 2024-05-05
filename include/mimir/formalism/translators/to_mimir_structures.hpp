@@ -37,6 +37,7 @@ private:
     // Equality predicate that does not occur in predicates section
     Predicate m_equal_predicate;
     // Encode parameter index into variables for grounding
+    size_t m_cur_parameter_index;
     std::unordered_map<loki::Variable, size_t> m_variable_to_parameter_index;
 
     /// @brief Prepare all elements in a container.
@@ -97,16 +98,16 @@ private:
         auto output = ParameterList {};
         for (size_t i = 0; i < input.size(); ++i)
         {
-            m_variable_to_parameter_index[input[i]->get_variable()] = i;
+            m_variable_to_parameter_index[input[i]->get_variable()] = m_cur_parameter_index + i;
         }
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg); });
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg, true); });
         return output;
     }
     Requirements translate_common(const loki::RequirementsImpl& requirements);
     Object translate_common(const loki::ObjectImpl& object);
-    Variable translate_common(const loki::VariableImpl& variable);
-    Parameter translate_common(const loki::ParameterImpl& parameter);
+    Variable translate_common(const loki::VariableImpl& variable, bool encode_parameter_index);
+    Parameter translate_common(const loki::ParameterImpl& parameter, bool encode_parameter_index);
     Predicate translate_common(const loki::PredicateImpl& predicate);
 
     /**

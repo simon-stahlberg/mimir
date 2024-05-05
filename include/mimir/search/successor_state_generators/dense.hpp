@@ -74,10 +74,32 @@ private:
         state_id = next_state_id;
         state_bitset.unset_all();
         state_bitset |= state.get_atoms_bitset();
+
+        /* Simple effects*/
         state_bitset -= action.get_unconditional_negative_effect_bitset();
         state_bitset |= action.get_unconditional_positive_effect_bitset();
-        // Construct the state and store it.
 
+        /* Conditional effects */
+        const auto num_conditional_effects = action.get_conditional_effects().size();
+        for (size_t i = 0; i < num_conditional_effects; ++i)
+        {
+            if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
+                && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i]))
+            {
+                // Delete effects are encoded with negative integers
+                const auto effect_atom_id = action.get_conditional_effects()[i];
+                if (effect_atom_id < 0)
+                {
+                    state_bitset.unset(std::abs(effect_atom_id));
+                }
+                else
+                {
+                    state_bitset.set(effect_atom_id);
+                }
+            }
+        }
+
+        // Construct the state and store it.
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);

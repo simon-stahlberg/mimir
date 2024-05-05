@@ -60,8 +60,8 @@ using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
 using VertexIDs = std::vector<VertexID>;
 
-/// @brief The StaticConsistencyGraph encodes the part of the consisteny graph
-///        that is static for each state for a single action.
+/// @brief The StaticConsistencyGraph encodes the assignments to static conditions,
+/// and hence, it is an overapproximation of the actual consistency graph.
 class StaticConsistencyGraph
 {
 private:
@@ -87,11 +87,14 @@ public:
     const Edges& get_edges() const { return m_edges; }
 
     /// @brief Get the vertices partitioned by the parameter index.
-    const std::vector<VertexIDs> get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+    const std::vector<VertexIDs>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
 
     friend std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph);
 };
 
+/// @brief The Graphs is a collection of StaticConsistenctGraphs:
+/// 1) one for the action precondition, and
+/// 2) one for each condition of a universally quantified conditional effect
 class Graphs
 {
 private:
