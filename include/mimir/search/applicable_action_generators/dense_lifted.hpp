@@ -62,44 +62,18 @@ using EdgeID = size_t;
 using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
 
-/// @brief The StaticConsistencyGraph encodes the part of the consisteny graph
-///        that is static for each state for a single action.
-class StaticConsistencyGraph
-{
-private:
-    // TODO: maybe we dont need this after construction.
-    Problem m_problem;
-
-    /* The data member of the consistency graph. */
-    Vertices m_vertices;
-    Edges m_edges;
-    std::vector<VertexIDs> m_vertices_by_parameter_index;
-
-public:
-    StaticConsistencyGraph(Problem problem, Action action, const GroundAtomList& static_atoms, const PDDLFactories& factories) {}
-
-    /// @brief Get the vertices.
-    const Vertices& get_vertices() const { return m_vertices; }
-
-    /// @brief Get the edges.
-    const Edges& get_edges() const { return m_edges; }
-
-    /// @brief Get the vertices partitioned by the parameter index.
-    const std::vector<VertexIDs> get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
-
-    /// @brief Return a dot string representation of the graph.
-    std::string to_dot() const;
-};
-
 /// @brief AssignmentSet is a helper class representing a set of functions
-/// f_Predicate : Params(Predicate) x Object x Params(Predicate) x Object -> {true, false} where
-/// f_Predicate(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j).
+/// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where
+///   1. f(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j)
+///   2. f(p,i,o,-1,-1) = true iff there exists an atom p(...,o_i,...)
+/// with respective meanings
+///   1. the assignment [i/o], [j/o'] is consistent
+///   2. the assignment [i/o] is consistent
 ///
 /// We say that an assignment set is static if all atoms it considers are static.
 class AssignmentSet
 {
 private:
-    // TODO: maybe we dont need this after construction.
     Problem m_problem;
 
     // The underlying function
@@ -114,6 +88,34 @@ public:
     ///
     /// The meaning of the result being true is that the edge remains consistent.
     bool literal_all_consistent(const std::vector<Literal>& literals, const Edge& consistent_edge) const;
+};
+
+/// @brief The StaticConsistencyGraph encodes the part of the consisteny graph
+///        that is static for each state for a single action.
+class StaticConsistencyGraph
+{
+private:
+    Problem m_problem;
+
+    /* The data member of the consistency graph. */
+    Vertices m_vertices;
+    Edges m_edges;
+    std::vector<VertexIDs> m_vertices_by_parameter_index;
+
+public:
+    StaticConsistencyGraph(Problem problem, Action action, const PDDLFactories& factories);
+
+    /// @brief Get the vertices.
+    const Vertices& get_vertices() const { return m_vertices; }
+
+    /// @brief Get the edges.
+    const Edges& get_edges() const { return m_edges; }
+
+    /// @brief Get the vertices partitioned by the parameter index.
+    const std::vector<VertexIDs> get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+
+    /// @brief Return a dot string representation of the graph.
+    std::string to_dot() const;
 };
 
 }
@@ -143,6 +145,8 @@ private:
     // D: will be substituted by StaticConsistencyGraph::edges
     std::unordered_map<Action, std::vector<AssignmentPair>> m_statically_consistent_assignments;
 
+    std::unordered_map<Action, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
+
     GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
@@ -152,7 +156,7 @@ private:
 
     void unary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
 
-    void general_case(const std::vector<std::vector<bool>>& assignment_sets,
+    void general_case(const consistency_graph::AssignmentSet& assignment_sets,
                       const Action& action,
                       DenseState state,
                       std::vector<DenseAction>& out_applicable_actions);

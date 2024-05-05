@@ -32,26 +32,6 @@ struct AssignmentPair
     AssignmentPair(size_t first_position, const Assignment& first_assignment, size_t second_position, const Assignment& second_assignment);
 };
 
-size_t
-get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects);
-
-size_t num_assignments(int32_t arity, int32_t num_objects);
-
-std::vector<std::vector<bool>> build_assignment_sets(Problem problem, const std::vector<size_t>& atom_identifiers, const PDDLFactories& factories);
-
-/// @brief
-/// @param assignment_sets
-/// @param literals
-/// @param first_assignment [x/o]
-/// @param second_assignment [x'/o']
-/// @param problem
-/// @return
-bool literal_all_consistent(const std::vector<std::vector<bool>>& assignment_sets,
-                            const std::vector<Literal>& literals,
-                            const Assignment& first_assignment,
-                            const Assignment& second_assignment,
-                            Problem problem);
-
 }
 
 #endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERNAL_REPRESENTATION_HPP_

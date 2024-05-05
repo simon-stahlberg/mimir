@@ -29,6 +29,100 @@ namespace mimir
 {
 namespace consistency_graph
 {
+
+StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, Action action, const PDDLFactories& factories) : m_problem(problem)
+{
+    /* 1. Error checking */
+
+    for (const auto& literal : problem->get_initial_literals())
+    {
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("negative literals in the initial state is not supported");
+        }
+    }
+
+    /* 2. Compute vertices */
+
+    auto static_initial_atoms = GroundAtomList {};
+    for (const auto& literal : m_problem->get_static_initial_literals())
+    {
+        if (!literal->is_negated())
+        {
+            static_initial_atoms.push_back(literal->get_atom());
+        }
+    }
+    const auto static_assignment_set = consistency_graph::AssignmentSet(m_problem, static_initial_atoms);
+
+    // Only [x/o] that satisfy static precondition are relevant here.
+    auto unary_groundings = std::unordered_map<Predicate, std::unordered_set<Object>> {};
+    for (const auto& literal : problem->get_static_initial_literals())
+    {
+        const auto& atom = literal->get_atom();
+        const auto& predicate = atom->get_predicate();
+        if (predicate->get_arity() == 1)
+        {
+            const auto& object = atom->get_objects().front();
+
+            unary_groundings[predicate].insert(object);
+        }
+    }
+
+    for (uint32_t parameter_index = 0; parameter_index < action->get_arity(); ++parameter_index)
+    {
+        VertexIDs partition;
+
+        for (const auto& object : m_problem->get_objects())
+        {
+            // We must check whether all static literals grounded by object are contained
+            // in the static literals of the problem.
+            for (const auto& literal : action->get_static_conditions())
+            {
+                if (literal->get_atom()->get_predicate()->get_arity() == 1)
+                {
+                    if (const auto term_variable = std::get_if<TermVariableImpl>(literal->get_atom()->get_terms().front()))
+                    {
+                        if (term_variable->get_variable()->get_parameter_index() == parameter_index)
+                        {
+                            // Check whether the unary ground atom is true in the initial state
+                            if (unary_groundings[literal->get_atom()->get_predicate()].count(object))
+                            {
+                                // D: Partition [x/o] by x
+                                partition.push_back(m_vertices.size());
+                                // D: Create nodes [x/o]
+                                m_vertices.push_back(Vertex(parameter_index, object->get_identifier()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        m_vertices_by_parameter_index.push_back(std::move(partition));
+    }
+
+    /* 3. Compute edges */
+
+    for (size_t first_id = 0; first_id < m_vertices.size(); ++first_id)
+    {
+        for (size_t second_id = (first_id + 1); second_id < m_vertices.size(); ++second_id)
+        {
+            const auto& first_vertex = m_vertices.at(first_id);
+            const auto& second_vertex = m_vertices.at(second_id);
+
+            if (first_vertex.get_param_index() != second_vertex.get_param_index())
+            {
+                const auto edge = consistency_graph::Edge(consistency_graph::Vertex(first_vertex.get_param_index(), first_vertex.get_object_index()),
+                                                          consistency_graph::Vertex(second_vertex.get_param_index(), second_vertex.get_object_index()));
+
+                if (static_assignment_set.literal_all_consistent(action->get_static_conditions(), edge))
+                {
+                    m_edges.push_back(edge);
+                }
+            }
+        }
+    }
+}
+
 static size_t
 get_assignment_position(int32_t first_position, int32_t first_object, int32_t second_position, int32_t second_object, int32_t arity, int32_t num_objects)
 {
@@ -50,7 +144,7 @@ static size_t num_assignments(int32_t arity, int32_t num_objects)
     return (size_t) (max + 1);
 }
 
-AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms)
+AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms) : m_problem(problem)
 {
     const auto num_objects = problem->get_objects().size();
     const auto& predicates = problem->get_domain()->get_predicates();
@@ -408,7 +502,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, D
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const std::vector<std::vector<bool>>& assignment_sets,
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const consistency_graph::AssignmentSet& assignment_sets,
                                                            const Action& action,
                                                            DenseState state,
                                                            std::vector<DenseAction>& out_applicable_actions)
@@ -426,7 +520,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const std::vector<std
         const auto& first_assignment = assignment.first_assignment;
         const auto& second_assignment = assignment.second_assignment;
 
-        if (literal_all_consistent(assignment_sets, action->get_fluent_conditions(), first_assignment, second_assignment, m_problem))
+        const auto edge = consistency_graph::Edge(consistency_graph::Vertex(first_assignment.parameter_index, first_assignment.object_id),
+                                                  consistency_graph::Vertex(second_assignment.parameter_index, second_assignment.object_id));
+
+        if (assignment_sets.literal_all_consistent(action->get_fluent_conditions(), edge))
         {
             const auto first_id = assignment.first_position;
             const auto second_id = assignment.second_position;
@@ -476,14 +573,13 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
 
     // Create the assignment sets that are shared by all action schemas.
 
-    std::vector<size_t> atom_ids;
-
+    auto ground_atoms = GroundAtomList {};
     for (const auto& atom_id : state.get_atoms_bitset())
     {
-        atom_ids.emplace_back(atom_id);
+        ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
     }
 
-    const auto assignment_sets = build_assignment_sets(m_problem, atom_ids, m_pddl_factories);
+    const auto assignment_sets = consistency_graph::AssignmentSet(m_problem, ground_atoms);
 
     // Get the applicable ground actions for each action schema.
 
@@ -538,10 +634,22 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     {
         static_atom_ids.emplace_back(literal->get_atom()->get_identifier());
     }
-    const auto assignment_sets = build_assignment_sets(problem, static_atom_ids, pddl_factories);
+    auto static_initial_atoms = GroundAtomList {};
+    for (const auto& literal : m_problem->get_static_initial_literals())
+    {
+        if (!literal->is_negated())
+        {
+            static_initial_atoms.push_back(literal->get_atom());
+        }
+    }
+    const auto assignment_sets = consistency_graph::AssignmentSet(m_problem, static_initial_atoms);
+
     const auto& domain = problem->get_domain();
+
     for (const auto& action : domain->get_actions())
     {
+        m_static_consistency_graphs.emplace(action, consistency_graph::StaticConsistencyGraph(m_problem, action, m_pddl_factories));
+
         std::vector<std::vector<size_t>> partitions;
         std::vector<Assignment> to_vertex_assignment;
         std::vector<AssignmentPair> statically_consistent_assignments;
@@ -577,9 +685,12 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
                     const auto& first_assignment = to_vertex_assignment.at(first_id);
                     const auto& second_assignment = to_vertex_assignment.at(second_id);
 
+                    const auto edge = consistency_graph::Edge(consistency_graph::Vertex(first_assignment.parameter_index, first_assignment.object_id),
+                                                              consistency_graph::Vertex(second_assignment.parameter_index, second_assignment.object_id));
+
                     if (first_assignment.parameter_index != second_assignment.parameter_index)
                     {
-                        if (literal_all_consistent(assignment_sets, action->get_static_conditions(), first_assignment, second_assignment, problem))
+                        if (assignment_sets.literal_all_consistent(action->get_static_conditions(), edge))
                         {
                             statically_consistent_assignments.push_back(AssignmentPair(first_id, first_assignment, second_id, second_assignment));
                         }
@@ -587,6 +698,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
                 }
             }
 
+            // filter inapplicable actions?
             for (const auto& literal : action->get_static_conditions())
             {
                 if (literal->get_atom()->get_predicate()->get_arity() == 0)
