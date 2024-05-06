@@ -290,6 +290,30 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
  */
 
 /**
+ * Miconic-simpleadl
+ */
+
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleadlTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
+                            fs::path(std::string(DATA_DIR) + "miconic-simpleadl/test_problem.pddl"),
+                            true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicSimpleadlTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
+                            fs::path(std::string(DATA_DIR) + "miconic-simpleadl/test_problem.pddl"),
+                            false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 4);
+}
+
+/**
  * Reward
  */
 
