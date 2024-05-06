@@ -89,6 +89,8 @@ namespace mimir::formalism
                          const mimir::formalism::ParameterAssignment& assignment,
                          double cost);
 
+    // this is almost the exact same as create_action but def_static cannot distinguish
+    // between the multiple create_action functions as def_static does not check types
     Action instantiate_action(const mimir::formalism::ProblemDescription& problem,
                               const mimir::formalism::ActionSchema& schema,
                               mimir::formalism::ObjectList&& arguments);
