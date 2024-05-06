@@ -291,6 +291,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
 
     const auto grounded_action = ground_action(action, {});
 
+    // TODO: this also unnecessarily grounds universal effects
     if (grounded_action.is_applicable(state))
     {
         out_applicable_actions.emplace_back(grounded_action);
@@ -305,6 +306,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, D
     {
         auto grounded_action = ground_action(action, { object });
 
+        // TODO: this also unnecessarily grounds universal effects
         if (grounded_action.is_applicable(state))
         {
             out_applicable_actions.emplace_back(grounded_action);
@@ -365,6 +367,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
         // TODO: We do not need to check applicability if action consists of at most binary predicates in the precondition.
         // Add this information to the FlatAction struct.
 
+        // TODO: this also unnecessarily grounds universal effects
         if (grounded_action.is_applicable(state))
         {
             out_applicable_actions.push_back(grounded_action);
