@@ -160,6 +160,19 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
+    /* Header */
+
+    m_action_builder.get_id() = m_actions.size();
+    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, this->m_pddl_factories),
+                                             *action->get_function_expression());
+    m_action_builder.get_action() = action;
+    auto& objects = m_action_builder.get_objects();
+    objects.clear();
+    for (const auto& obj : binding)
+    {
+        objects.push_back(obj);
+    }
+
     /* Precondition */
     auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
     auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
@@ -188,12 +201,11 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     // Resize builders.
     // TODO: this might cause reallocation, we probably want to set "actual" size to 0 and keep its size.
     const auto num_conditional_effects = action->get_conditional_effects().size();
+    positive_conditional_preconditions.resize(num_conditional_effects);
+    negative_conditional_preconditions.resize(num_conditional_effects);
+    conditional_effects.resize(num_conditional_effects);
     if (num_conditional_effects > 0)
     {
-        positive_conditional_preconditions.resize(num_conditional_effects);
-        negative_conditional_preconditions.resize(num_conditional_effects);
-        conditional_effects.resize(num_conditional_effects);
-
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
             // Ground conditions and effect
@@ -244,17 +256,6 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 }
             }
         }
-    }
-
-    m_action_builder.get_id() = m_actions.size();
-    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, this->m_pddl_factories),
-                                             *action->get_function_expression());
-    m_action_builder.get_action() = action;
-    auto& objects = m_action_builder.get_objects();
-    objects.clear();
-    for (const auto& obj : binding)
-    {
-        objects.push_back(obj);
     }
 
     auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();

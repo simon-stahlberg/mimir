@@ -2,6 +2,7 @@
 
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/action.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/search/actions.hpp"
@@ -53,7 +54,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     auto negative_effect_bitset = action.get_unconditional_negative_effect_bitset();
     auto positive_conditional_condition_bitsets = action.get_conditional_positive_precondition_bitsets();
     auto negative_conditional_condition_bitsets = action.get_conditional_negative_precondition_bitsets();
-    // auto conditional_effects = action.get_conditional_effects();
+    auto conditional_effects = action.get_conditional_effects();
 
     auto positive_precondition = GroundAtomList {};
     auto negative_precondition = GroundAtomList {};
@@ -61,7 +62,6 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     auto negative_simple_effects = GroundAtomList {};
     auto positive_conditional_preconditions = std::vector<GroundAtomList> {};
     auto negative_conditional_preconditions = std::vector<GroundAtomList> {};
-    auto conditional_effects = GroundAtomList {};
 
     to_ground_atoms(positive_precondition_bitset, pddl_factories, positive_precondition);
     to_ground_atoms(negative_precondition_bitset, pddl_factories, negative_precondition);
@@ -87,7 +87,14 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     for (size_t i = 0; i < num_conditional_effects; ++i)
     {
         os << "[positive precondition=" << positive_conditional_preconditions[i] << ", "
-           << "negative precondition=" << negative_conditional_preconditions[i] << "], ";
+           << "negative precondition=" << negative_conditional_preconditions[i] << ", "
+           << "effect=" <<
+            [&]()
+        {
+            return conditional_effects[i] < 0 ? "not " + pddl_factories.get_ground_atom(std::abs(conditional_effects[i] + 1))->str() :
+                                                pddl_factories.get_ground_atom(conditional_effects[i])->str();
+        }();
+        os << "], ";
     }
     os << "])";
 
