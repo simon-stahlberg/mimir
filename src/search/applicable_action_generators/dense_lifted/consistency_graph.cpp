@@ -18,19 +18,17 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, size_t arity, co
     const auto static_assignment_set = AssignmentSet(m_problem, static_initial_atoms);
 
     // Bookkeeping to test whether [x/o] satisfies static preconditions.
-    // We use this data structure to avoid explicit grounding.
-    auto unary_groundings = std::unordered_map<Predicate, std::unordered_set<Object>> {};
+    auto ground_atom_factory = GroundAtomFactory(100);
     for (const auto& literal : problem->get_static_initial_literals())
     {
         const auto& atom = literal->get_atom();
         const auto& predicate = atom->get_predicate();
         if (predicate->get_arity() == 1)
         {
-            const auto& object = atom->get_objects().front();
-
-            unary_groundings[predicate].insert(object);
+            (void) ground_atom_factory.get_or_create<GroundAtomImpl>(atom->get_predicate(), atom->get_objects());
         }
     }
+    const auto num_static_unary_initial_atoms = ground_atom_factory.size();
 
     for (uint32_t parameter_index = 0; parameter_index < arity; ++parameter_index)
     {
@@ -50,8 +48,11 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, size_t arity, co
                     {
                         if (term_variable->get_variable()->get_parameter_index() == parameter_index)
                         {
+                            const auto ground_atom =
+                                ground_atom_factory.get_or_create<GroundAtomImpl>(literal->get_atom()->get_predicate(), ObjectList { object });
                             // Check whether the unary ground atom is true in the initial state
-                            if (!unary_groundings[literal->get_atom()->get_predicate()].count(object))
+                            const bool is_new = ground_atom->get_identifier() > static_cast<int>(num_static_unary_initial_atoms);
+                            if (is_new)
                             {
                                 all_static_unary_preconditions_satisfied = false;
                             }

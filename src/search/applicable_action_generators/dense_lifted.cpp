@@ -193,7 +193,9 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         fill_int32(action->get_conditional_effects()[i]->get_effect(), conditional_effects[i]);
     }
 
+    /* Universal effects */
     // TODO: Handle universal effects
+    // For all combinations of objects to the parameters, introduce a ground effect
     if (!action->get_universal_effects().empty())
     {
         throw std::runtime_error("Universal effects are not implemented.");
