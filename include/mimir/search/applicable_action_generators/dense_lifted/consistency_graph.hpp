@@ -82,9 +82,17 @@ private:
 
 public:
     /// @brief Construct a static consistency graph
-    /// @param problem The problem
-    /// @param arity The number of variables that occur in static_preconditions
+    /// @param problem The problem context.
+    /// @param begin_parameter_index The first parameter index for which consistent assignments are represented.
+    /// @param end_parameter_index The last parameter index plus one for which consistent assignments are represented.
     /// @param static_conditions The static literals for which a bindings must be found.
+    /// @param static_assignment_set The assignment set of static initial literals.
+    ///
+    /// For universal effects, we can set first and last parameter indices respectively
+    /// to find consistent assignments irrespective of the action parameter bindings.
+    /// More specifically:
+    ///  1. for action parameters, we set first to 0 and last to 0 + arity(action)
+    ///  2. for universal effects, we set first to arity(action) and last to arity(action) + arity(effect)
     StaticConsistencyGraph(Problem problem,
                            size_t begin_parameter_index,
                            size_t end_parameter_index,
