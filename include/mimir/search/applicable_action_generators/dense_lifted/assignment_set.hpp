@@ -2,12 +2,16 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_ASSIGNMENT_SET_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 
 #include <vector>
 
 namespace mimir
 {
+namespace consistency_graph
+{
+class Vertex;
+class Edge;
+}
 
 /// @brief AssignmentSet is a helper class representing a set of functions
 /// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where

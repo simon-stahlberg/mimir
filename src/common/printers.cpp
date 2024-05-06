@@ -51,23 +51,45 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
     auto negative_precondition_bitset = action.get_applicability_negative_precondition_bitset();
     auto positive_effect_bitset = action.get_unconditional_positive_effect_bitset();
     auto negative_effect_bitset = action.get_unconditional_negative_effect_bitset();
+    auto positive_conditional_condition_bitsets = action.get_conditional_positive_precondition_bitsets();
+    auto negative_conditional_condition_bitsets = action.get_conditional_negative_precondition_bitsets();
+    // auto conditional_effects = action.get_conditional_effects();
 
     auto positive_precondition = GroundAtomList {};
     auto negative_precondition = GroundAtomList {};
-    auto positive_effect = GroundAtomList {};
-    auto negative_effect = GroundAtomList {};
+    auto positive_simple_effects = GroundAtomList {};
+    auto negative_simple_effects = GroundAtomList {};
+    auto positive_conditional_preconditions = std::vector<GroundAtomList> {};
+    auto negative_conditional_preconditions = std::vector<GroundAtomList> {};
+    auto conditional_effects = GroundAtomList {};
 
     to_ground_atoms(positive_precondition_bitset, pddl_factories, positive_precondition);
     to_ground_atoms(negative_precondition_bitset, pddl_factories, negative_precondition);
-    to_ground_atoms(positive_effect_bitset, pddl_factories, positive_effect);
-    to_ground_atoms(negative_effect_bitset, pddl_factories, negative_effect);
+    to_ground_atoms(positive_effect_bitset, pddl_factories, positive_simple_effects);
+    to_ground_atoms(negative_effect_bitset, pddl_factories, negative_simple_effects);
+
+    const auto num_conditional_effects = action.get_conditional_effects().size();
+    positive_conditional_preconditions.resize(num_conditional_effects);
+    negative_conditional_preconditions.resize(num_conditional_effects);
+    for (size_t i = 0; i < num_conditional_effects; ++i)
+    {
+        to_ground_atoms(positive_conditional_condition_bitsets[i], pddl_factories, positive_conditional_preconditions[i]);
+        to_ground_atoms(negative_conditional_condition_bitsets[i], pddl_factories, negative_conditional_preconditions[i]);
+    }
 
     os << "Action("
        << "name=" << action.get_action()->get_name() << ", "
        << "positive precondition=" << positive_precondition << ", "
        << "negative precondition=" << negative_precondition << ", "
-       << "delete=" << negative_effect << ", "
-       << "add=" << positive_effect << ")";
+       << "simple_delete=" << negative_simple_effects << ", "
+       << "simple_add=" << positive_simple_effects << ", "
+       << "conditional_effects=[";
+    for (size_t i = 0; i < num_conditional_effects; ++i)
+    {
+        os << "[positive precondition=" << positive_conditional_preconditions[i] << ", "
+           << "negative precondition=" << negative_conditional_preconditions[i] << "], ";
+    }
+    os << "])";
 
     return os;
 }

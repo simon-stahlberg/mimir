@@ -18,6 +18,7 @@
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
+#include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/search/actions/dense.hpp"
 
@@ -129,7 +130,7 @@ public:
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const Action& action, ObjectList&& binding)
 {
     const auto fill_bitsets =
-        [this, &binding](const std::vector<Literal>& literals, flat::BitsetBuilder& ref_positive_bitset, flat::BitsetBuilder& ref_negative_bitset)
+        [this](const std::vector<Literal>& literals, flat::BitsetBuilder& ref_positive_bitset, flat::BitsetBuilder& ref_negative_bitset, const auto& binding)
     {
         for (const auto& literal : literals)
         {
@@ -146,12 +147,12 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
-    const auto fill_int32 = [this, &binding](const Literal& literal, int32_t& ref_effect)
+    const auto fill_int32 = [this](const Literal& literal, int32_t& ref_effect, const auto& binding)
     {
         const auto grounded_literal = ground_literal(literal, binding);
         if (grounded_literal->is_negated())
         {
-            ref_effect = -grounded_literal->get_atom()->get_identifier();
+            ref_effect = std::abs(grounded_literal->get_atom()->get_identifier() + 1);
         }
         else
         {
@@ -164,7 +165,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
     positive_precondition.unset_all();
     negative_precondition.unset_all();
-    fill_bitsets(action->get_conditions(), positive_precondition, negative_precondition);
+    fill_bitsets(action->get_conditions(), positive_precondition, negative_precondition, binding);
 
     /* Simple effects */
     auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
@@ -176,29 +177,73 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     {
         effect_literals.push_back(effect->get_effect());
     }
-    fill_bitsets(effect_literals, positive_effect, negative_effect);
+    fill_bitsets(effect_literals, positive_effect, negative_effect, binding);
 
     /* Conditional effects */
+    // Fetch data
     auto& positive_conditional_preconditions = m_action_builder.get_conditional_positive_precondition_bitsets();
     auto& negative_conditional_preconditions = m_action_builder.get_conditional_negative_precondition_bitsets();
     auto& conditional_effects = m_action_builder.get_conditional_effects();
+
+    // Resize builders.
     // TODO: this might cause reallocation, we probably want to set "actual" size to 0 and keep its size.
     const auto num_conditional_effects = action->get_conditional_effects().size();
-    positive_conditional_preconditions.resize(num_conditional_effects);
-    negative_conditional_preconditions.resize(num_conditional_effects);
-    conditional_effects.resize(num_conditional_effects);
-    for (size_t i = 0; i < num_conditional_effects; ++i)
+    if (num_conditional_effects > 0)
     {
-        fill_bitsets(action->get_conditional_effects()[i]->get_conditions(), positive_conditional_preconditions[i], negative_conditional_preconditions[i]);
-        fill_int32(action->get_conditional_effects()[i]->get_effect(), conditional_effects[i]);
+        positive_conditional_preconditions.resize(num_conditional_effects);
+        negative_conditional_preconditions.resize(num_conditional_effects);
+        conditional_effects.resize(num_conditional_effects);
+
+        for (size_t i = 0; i < num_conditional_effects; ++i)
+        {
+            // Ground conditions and effect
+            fill_bitsets(action->get_conditional_effects().at(i)->get_conditions(),
+                         positive_conditional_preconditions[i],
+                         negative_conditional_preconditions[i],
+                         binding);
+            fill_int32(action->get_conditional_effects().at(i)->get_effect(), conditional_effects[i], binding);
+        }
     }
 
     /* Universal effects */
-    // TODO: Handle universal effects
-    // For all combinations of objects to the parameters, introduce a ground effect
-    if (!action->get_universal_effects().empty())
+    const auto num_universal_effects = action->get_universal_effects().size();
+    if (num_universal_effects > 0)
     {
-        throw std::runtime_error("Universal effects are not implemented.");
+        const auto& graphs = m_static_consistency_graphs.at(action);
+        const auto binding_size = binding.size();
+        for (size_t i = 0; i < num_universal_effects; ++i)
+        {
+            // Fetch data
+            const auto& universal_effect = action->get_universal_effects().at(i);
+            const auto& consistency_graph = graphs.get_universal_effect_graphs().at(i);
+            const auto& objects_by_parameter_index = consistency_graph.get_objects_by_parameter_index();
+
+            // Resize builders.
+            const auto num_conditional_effects = Combinations(objects_by_parameter_index).num_combinations();
+            const auto old_size = positive_conditional_preconditions.size();
+            positive_conditional_preconditions.resize(old_size + num_conditional_effects);
+            negative_conditional_preconditions.resize(old_size + num_conditional_effects);
+            conditional_effects.resize(old_size + num_conditional_effects);
+
+            // Create binding and ground conditions and effect
+            binding.resize(binding_size + universal_effect->get_arity());
+            for (const auto& combination : Combinations(objects_by_parameter_index))
+            {
+                // Create binding
+                for (size_t pos = 0; pos < universal_effect->get_arity(); ++pos)
+                {
+                    const auto object_id = *combination[pos];
+                    binding[binding_size + pos] = m_pddl_factories.get_object(object_id);
+                }
+
+                // Ground conditions and effect
+                for (size_t j = old_size; j < old_size + num_conditional_effects; ++j)
+                {
+                    fill_bitsets(universal_effect->get_conditions(), positive_conditional_preconditions[j], negative_conditional_preconditions[j], binding);
+                    fill_int32(universal_effect->get_effect(), conditional_effects[j], binding);
+                }
+            }
+        }
     }
 
     m_action_builder.get_id() = m_actions.size();
@@ -368,7 +413,8 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     m_ground_function_value_costs(),
     m_static_consistency_graphs()
 {
-    // 1. Error checking
+    /* 1. Error checking */
+
     for (const auto& literal : problem->get_initial_literals())
     {
         if (literal->is_negated())
@@ -377,52 +423,22 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
         }
     }
 
-    // 2. Initialize ground function costs
+    /* 2. Initialize ground function costs */
+
     for (const auto numeric_fluent : problem->get_numeric_fluents())
     {
         m_ground_function_value_costs.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
     }
 
-    // 3. Initialize static consistency graph
+    /* 3. Initialize static consistency graph */
+
+    auto static_initial_atoms = GroundAtomList {};
+    to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
+    const auto static_assignment_set = AssignmentSet(m_problem, static_initial_atoms);
 
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
-        // The following is used only by the general case.
-
-        if (action->get_arity() >= 2)
-        {
-            bool skip = false;
-            for (const auto& literal : action->get_static_conditions())
-            {
-                if (literal->get_atom()->get_predicate()->get_arity() == 0)
-                {
-                    const auto negated = literal->is_negated();
-                    const auto& atom = literal->get_atom();
-                    auto contains = false;
-
-                    for (const auto& initial_literal : problem->get_initial_literals())
-                    {
-                        if (atom->get_predicate() == initial_literal->get_atom()->get_predicate())
-                        {
-                            contains = true;
-                            break;
-                        }
-                    }
-
-                    if (contains == negated)
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
-            }
-            if (skip)
-            {
-                continue;
-            }
-
-            m_static_consistency_graphs.emplace(action, consistency_graph::Graphs(m_problem, action));
-        }
+        m_static_consistency_graphs.emplace(action, consistency_graph::Graphs(m_problem, action, static_assignment_set));
     }
 }
 

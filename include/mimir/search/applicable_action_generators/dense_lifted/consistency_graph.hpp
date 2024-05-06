@@ -7,6 +7,11 @@
 #include <sstream>
 #include <vector>
 
+namespace mimir
+{
+class AssignmentSet;
+}
+
 namespace mimir::consistency_graph
 {
 
@@ -59,6 +64,7 @@ public:
 using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
 using VertexIDs = std::vector<VertexID>;
+using ObjectIDs = std::vector<ObjectID>;
 
 /// @brief The StaticConsistencyGraph encodes the assignments to static conditions,
 /// and hence, it is an overapproximation of the actual consistency graph.
@@ -66,20 +72,24 @@ class StaticConsistencyGraph
 {
 private:
     Problem m_problem;
-    size_t m_arity;
 
     /* The data member of the consistency graph. */
     Vertices m_vertices;
     Edges m_edges;
-    // Useful to determine the set of possible objects assignable to a parameter
+
     std::vector<VertexIDs> m_vertices_by_parameter_index;
+    std::vector<ObjectIDs> m_objects_by_parameter_index;
 
 public:
     /// @brief Construct a static consistency graph
     /// @param problem The problem
     /// @param arity The number of variables that occur in static_preconditions
     /// @param static_conditions The static literals for which a bindings must be found.
-    StaticConsistencyGraph(Problem problem, size_t arity, const LiteralList& static_conditions);
+    StaticConsistencyGraph(Problem problem,
+                           size_t begin_parameter_index,
+                           size_t end_parameter_index,
+                           const LiteralList& static_conditions,
+                           const AssignmentSet& static_assignment_set);
 
     /// @brief Get the vertices.
     const Vertices& get_vertices() const { return m_vertices; }
@@ -87,8 +97,11 @@ public:
     /// @brief Get the edges.
     const Edges& get_edges() const { return m_edges; }
 
-    /// @brief Get the vertices partitioned by the parameter index.
+    /// @brief Get the vertex indices partitioned by the parameter index.
     const std::vector<VertexIDs>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+
+    /// @brief Get the object indices partitioned by the parameter index.
+    const std::vector<ObjectIDs>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
 
     friend std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph);
 };
@@ -101,13 +114,13 @@ class Graphs
 private:
     // Store graphs only if arity >= 2.
     std::optional<StaticConsistencyGraph> m_precondition;
-    std::vector<std::optional<StaticConsistencyGraph>> m_universal_effects;
+    std::vector<StaticConsistencyGraph> m_universal_effects;
 
 public:
-    Graphs(Problem problem, Action action);
+    Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set);
 
     const std::optional<StaticConsistencyGraph>& get_precondition_graph() const;
-    const std::vector<std::optional<StaticConsistencyGraph>>& get_universal_effect_graphs() const;
+    const std::vector<StaticConsistencyGraph>& get_universal_effect_graphs() const;
 };
 
 }

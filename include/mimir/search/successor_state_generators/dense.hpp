@@ -90,7 +90,7 @@ private:
                 const auto effect_atom_id = action.get_conditional_effects()[i];
                 if (effect_atom_id < 0)
                 {
-                    state_bitset.unset(std::abs(effect_atom_id));
+                    state_bitset.unset(std::abs(effect_atom_id + 1));
                 }
                 else
                 {
