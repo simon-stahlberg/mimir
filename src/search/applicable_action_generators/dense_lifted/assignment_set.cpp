@@ -212,6 +212,7 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
             const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
             const auto assignment_rank =
                 get_assignment_position(position, object_id, -1, -1, static_cast<int32_t>(arity), static_cast<int32_t>(m_problem->get_objects().size()));
+
             const auto consistent_with_state = assignment_set[assignment_rank];
 
             if (!literal->is_negated() && !consistent_with_state)

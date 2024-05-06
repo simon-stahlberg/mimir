@@ -713,6 +713,9 @@ OptimizationMetric ToMimirStructures::translate_grounded(const loki::Optimizatio
 
 Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 {
+    // Translate domain first, to get predicate indices 0,1,2,...
+    const auto translated_domain = translate_lifted(*problem.get_domain());
+
     // Translate derived predicates to fetch parameter indices
     const auto derived_predicates = translate_common(problem.get_derived_predicates());
 
@@ -726,8 +729,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     {
         goal_literals = translate_grounded(*problem.get_goal_condition().value());
     }
-
-    const auto translated_domain = translate_lifted(*problem.get_domain());
 
     auto initial_literals = translate_grounded(problem.get_initial_literals());
     // Add equal atoms, e.g., (= object1 object1)

@@ -122,6 +122,7 @@ class Graphs
 private:
     // Store graphs only if arity >= 2.
     std::optional<StaticConsistencyGraph> m_precondition;
+    // TODO: For universal effects, we do not need edges, lets keep it for simplicity now.
     std::vector<StaticConsistencyGraph> m_universal_effects;
 
 public:
