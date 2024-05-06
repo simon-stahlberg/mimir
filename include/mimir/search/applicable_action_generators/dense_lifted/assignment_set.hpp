@@ -35,6 +35,16 @@ public:
     ///
     /// The meaning of the result being true is that the edge remains consistent.
     bool literal_all_consistent(const std::vector<Literal>& literals, const consistency_graph::Edge& consistent_edge) const;
+
+    /// @brief Return true iff all literals are consistent with
+    /// 1. the assignment set, and 2. the vertex of the consistency graph.
+    ///
+    /// The meaning is that the assignment [x/o] is a legal assignment,
+    /// and therefore the vertex must be part of the consistency graph.
+    /// @param literals
+    /// @param consistent_vertex
+    /// @return
+    bool literal_all_consistent(const std::vector<Literal>& literals, const consistency_graph::Vertex& consistent_vertex) const;
 };
 
 }

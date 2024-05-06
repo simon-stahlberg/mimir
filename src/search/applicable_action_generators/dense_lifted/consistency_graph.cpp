@@ -11,24 +11,13 @@ using mimir::operator<<;
 
 StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, size_t arity, const LiteralList& static_conditions) : m_problem(problem), m_arity(arity)
 {
-    /* 1. Compute vertices */
+    /* 1. Compute static assignment set. */
 
     auto static_initial_atoms = GroundAtomList {};
     to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
     const auto static_assignment_set = AssignmentSet(m_problem, static_initial_atoms);
 
-    // Bookkeeping to test whether [x/o] satisfies static preconditions.
-    auto ground_atom_factory = GroundAtomFactory(100);
-    for (const auto& literal : problem->get_static_initial_literals())
-    {
-        const auto& atom = literal->get_atom();
-        const auto& predicate = atom->get_predicate();
-        if (predicate->get_arity() == 1)
-        {
-            (void) ground_atom_factory.get_or_create<GroundAtomImpl>(atom->get_predicate(), atom->get_objects());
-        }
-    }
-    const auto num_static_unary_initial_atoms = ground_atom_factory.size();
+    /* 2. Compute vertices */
 
     for (uint32_t parameter_index = 0; parameter_index < arity; ++parameter_index)
     {
@@ -36,43 +25,19 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, size_t arity, co
 
         for (const auto& object : m_problem->get_objects())
         {
-            // Check whether [x/o] satisfies static preconditions
-            // Adding this test results in a smaller consistency graph
-            // and resulted in 20% performance increase on the tests.
-            bool all_static_unary_preconditions_satisfied = true;
-            for (const auto& literal : static_conditions)
+            auto vertex_id = VertexID { m_vertices.size() };
+            auto vertex = Vertex(vertex_id, parameter_index, object->get_identifier());
+
+            if (static_assignment_set.literal_all_consistent(static_conditions, vertex))
             {
-                if (literal->get_atom()->get_predicate()->get_arity() == 1)
-                {
-                    if (const auto term_variable = std::get_if<TermVariableImpl>(literal->get_atom()->get_terms().front()))
-                    {
-                        if (term_variable->get_variable()->get_parameter_index() == parameter_index)
-                        {
-                            const auto ground_atom =
-                                ground_atom_factory.get_or_create<GroundAtomImpl>(literal->get_atom()->get_predicate(), ObjectList { object });
-                            // Check whether the unary ground atom is true in the initial state
-                            const bool is_new = ground_atom->get_identifier() > static_cast<int>(num_static_unary_initial_atoms);
-                            if (is_new)
-                            {
-                                all_static_unary_preconditions_satisfied = false;
-                            }
-                        }
-                    }
-                }
-            }
-            if (all_static_unary_preconditions_satisfied)
-            {
-                // D: Partition [x/o] by x
-                auto vertex_id = VertexID { m_vertices.size() };
                 partition.push_back(vertex_id);
-                // D: Create nodes [x/o]
-                m_vertices.push_back(Vertex(vertex_id, parameter_index, object->get_identifier()));
+                m_vertices.push_back(vertex);
             }
         }
         m_vertices_by_parameter_index.push_back(std::move(partition));
     }
 
-    /* 2. Compute edges */
+    /* 3. Compute edges */
 
     for (size_t first_id = 0; first_id < m_vertices.size(); ++first_id)
     {

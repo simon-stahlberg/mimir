@@ -172,4 +172,60 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
 
     return true;
 }
+
+bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals, const consistency_graph::Vertex& consistent_vertex) const
+{
+    for (const auto& literal : literals)
+    {
+        int32_t position = -1;
+        int32_t object_id = -1;
+        bool empty_assignment = true;
+
+        const auto arity = literal->get_atom()->get_predicate()->get_arity();
+
+        for (std::size_t index = 0; index < literal->get_atom()->get_predicate()->get_arity(); ++index)
+        {
+            const auto& term = literal->get_atom()->get_terms()[index];
+
+            if (const auto term_object = std::get_if<TermObjectImpl>(term))
+            {
+                continue;
+            }
+            else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+            {
+                const auto parameter_index = term_variable->get_variable()->get_parameter_index();
+
+                // D: [parameter_index]
+                if (consistent_vertex.get_param_index() == parameter_index)
+                {
+                    position = index;
+                    object_id = static_cast<int32_t>(consistent_vertex.get_object_index());
+
+                    empty_assignment = false;
+                    break;
+                }
+            }
+        }
+
+        if (!empty_assignment)
+        {
+            const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
+            const auto assignment_rank =
+                get_assignment_position(position, object_id, -1, -1, static_cast<int32_t>(arity), static_cast<int32_t>(m_problem->get_objects().size()));
+            const auto consistent_with_state = assignment_set[assignment_rank];
+
+            if (!literal->is_negated() && !consistent_with_state)
+            {
+                return false;
+            }
+            else if (literal->is_negated() && consistent_with_state && ((arity == 1)))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 }
