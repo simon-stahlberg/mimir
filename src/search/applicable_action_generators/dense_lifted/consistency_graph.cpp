@@ -31,7 +31,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, size_t arity, co
             if (static_assignment_set.literal_all_consistent(static_conditions, vertex))
             {
                 partition.push_back(vertex_id);
-                m_vertices.push_back(vertex);
+                m_vertices.push_back(std::move(vertex));
             }
         }
         m_vertices_by_parameter_index.push_back(std::move(partition));
@@ -39,21 +39,21 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem, size_t arity, co
 
     /* 3. Compute edges */
 
-    for (size_t first_id = 0; first_id < m_vertices.size(); ++first_id)
+    for (size_t first_vertex_id = 0; first_vertex_id < m_vertices.size(); ++first_vertex_id)
     {
-        for (size_t second_id = (first_id + 1); second_id < m_vertices.size(); ++second_id)
+        for (size_t second_vertex_id = (first_vertex_id + 1); second_vertex_id < m_vertices.size(); ++second_vertex_id)
         {
-            const auto& first_vertex = m_vertices.at(first_id);
-            const auto& second_vertex = m_vertices.at(second_id);
+            const auto& first_vertex = m_vertices.at(first_vertex_id);
+            const auto& second_vertex = m_vertices.at(second_vertex_id);
 
             if (first_vertex.get_param_index() != second_vertex.get_param_index())
             {
-                const auto edge = Edge(Vertex(first_id, first_vertex.get_param_index(), first_vertex.get_object_index()),
-                                       Vertex(second_id, second_vertex.get_param_index(), second_vertex.get_object_index()));
+                auto edge = Edge(Vertex(first_vertex_id, first_vertex.get_param_index(), first_vertex.get_object_index()),
+                                 Vertex(second_vertex_id, second_vertex.get_param_index(), second_vertex.get_object_index()));
 
                 if (static_assignment_set.literal_all_consistent(static_conditions, edge))
                 {
-                    m_edges.push_back(edge);
+                    m_edges.push_back(std::move(edge));
                 }
             }
         }

@@ -71,6 +71,7 @@ private:
     /* The data member of the consistency graph. */
     Vertices m_vertices;
     Edges m_edges;
+    // Useful to determine the set of possible objects assignable to a parameter
     std::vector<VertexIDs> m_vertices_by_parameter_index;
 
 public:
