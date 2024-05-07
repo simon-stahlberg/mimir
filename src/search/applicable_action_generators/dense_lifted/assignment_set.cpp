@@ -22,7 +22,6 @@ UnaryAssignmentSet::UnaryAssignmentSet(Problem problem, const GroundAtomList& at
     const auto num_objects = problem->get_objects().size();
     const auto& predicates = problem->get_domain()->get_predicates();
 
-    // D: Create assignment set for each predicate
     m_f.resize(predicates.size());
     for (const auto& predicate : predicates)
     {
@@ -35,7 +34,7 @@ UnaryAssignmentSet::UnaryAssignmentSet(Problem problem, const GroundAtomList& at
 
         assignment_set.resize(UnaryAssignmentSet::get_num_assignments(arity, num_objects));
     }
-    // D: Initialize m_f
+
     for (const auto& ground_atom : atoms)
     {
         const auto arity = ground_atom->get_arity();
@@ -54,9 +53,20 @@ UnaryAssignmentSet::UnaryAssignmentSet(Problem problem, const GroundAtomList& at
 
 bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& literals, const consistency_graph::Vertex& consistent_vertex) const
 {
+    /*
+        For given vertex in consistency graph, check whether there exists either
+        I^+) p1 in positive literals such that p1/v (partial assignment) does not match any p2 in assignment set, or
+        I^-) p1 in negative literals such that p1/v (complete assignment) is in assignment set.
+    */
     for (const auto& literal : literals)
     {
         const auto arity = literal->get_atom()->get_predicate()->get_arity();
+
+        if (literal->is_negated() && arity != 1)
+        {
+            // No complete unary assignment is possible
+            continue;
+        }
 
         for (std::size_t index = 0; index < literal->get_atom()->get_predicate()->get_arity(); ++index)
         {
@@ -81,25 +91,23 @@ bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lite
                 }
             }
 
-            bool is_incomplete_assignment = (position == -1);
+            bool is_incomplete_unary_assignment = (object_id == -1);
 
-            if (!is_incomplete_assignment)
+            if (is_incomplete_unary_assignment)
             {
-                const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-                const auto assignment_rank = UnaryAssignmentSet::get_assignment_position(UnaryAssignment { position, object_id },
-                                                                                         static_cast<int32_t>(arity),
-                                                                                         static_cast<int32_t>(m_problem->get_objects().size()));
-                assert(assignment_rank < assignment_set.size());
-                const auto consistent_with_state = assignment_set[assignment_rank];
+                break;
+            }
 
-                if (!literal->is_negated() && !consistent_with_state)
-                {
-                    return false;
-                }
-                else if (literal->is_negated() && consistent_with_state && (arity == 1))
-                {
-                    return false;
-                }
+            const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
+            const auto assignment_rank = UnaryAssignmentSet::get_assignment_position(UnaryAssignment { position, object_id },
+                                                                                     static_cast<int32_t>(arity),
+                                                                                     static_cast<int32_t>(m_problem->get_objects().size()));
+            assert(assignment_rank < assignment_set.size());
+            const auto consistent_with_state = assignment_set[assignment_rank];
+
+            if (literal->is_negated() == consistent_with_state)
+            {
+                return false;
             }
         }
     }
@@ -124,32 +132,19 @@ BinaryAssignmentSet::BinaryAssignmentSet(Problem problem, const GroundAtomList& 
     const auto num_objects = problem->get_objects().size();
     const auto& predicates = problem->get_domain()->get_predicates();
 
-    // D: Create assignment set for each predicate
     m_f.resize(predicates.size());
     for (const auto& predicate : predicates)
     {
         // Predicates must have indexing 0,1,2,... for this implementation
         assert(predicate->get_identifier() < static_cast<int>(predicates.size()));
 
-        const auto arity = predicate->get_arity();
-
-        if (arity != 2)
-        {
-            continue;
-        }
-
         auto& assignment_set = m_f[predicate->get_identifier()];
         assignment_set.resize(BinaryAssignmentSet::get_num_assignments(predicate->get_arity(), num_objects));
     }
-    // D: Initialize m_f
+
     for (const auto& ground_atom : atoms)
     {
         const auto& arity = ground_atom->get_arity();
-
-        if (arity != 2)
-        {
-            continue;
-        }
 
         const auto& predicate = ground_atom->get_predicate();
         const auto& arguments = ground_atom->get_objects();
@@ -173,20 +168,25 @@ BinaryAssignmentSet::BinaryAssignmentSet(Problem problem, const GroundAtomList& 
 
 bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& literals, const consistency_graph::Edge& consistent_edge) const
 {
+    /*
+        For given vertex in consistency graph, check whether there exists either
+        I^+) p1 in positive literals such that p1/{v1,v2} (partial assignment) does not match any p2 in assignment set, or
+        I^-) p1 in negative literals such that p1/{v1,v2} (complete assignment) is in assignment set.
+    */
     for (const auto& literal : literals)
     {
-        const auto arity = literal->get_atom()->get_predicate()->get_arity();
+        const auto arity = (int32_t) literal->get_atom()->get_predicate()->get_arity();
 
-        if (arity != 2)
+        if (literal->is_negated() && arity != 2)
         {
+            // No complete binary assignment is possiblee
             continue;
         }
 
-        // TODO: we only take a single pair here:
-        // but what about an atom p(?v_1,?v_2,?v_3,?v_4) where v_1,v_2 take value from parameter 0 and v_3,v_4 take value from parameter 1
-        const auto fetch_assignment = [](int32_t& index, const TermList& terms, const consistency_graph::Edge& edge)
+        // Helper function to find a next matching assignment for a given vertex, if it exists.
+        const auto find_assignment = [arity](int32_t& index, const TermList& terms, const consistency_graph::Edge& edge)
         {
-            for (; index < static_cast<int32_t>(terms.size()); ++index)
+            for (; index < arity; ++index)
             {
                 const auto& term = terms[index];
 
@@ -194,7 +194,7 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
                 {
                     const auto object_id = term_object->get_object()->get_identifier();
 
-                    return std::make_pair(index, (int32_t) object_id);
+                    return object_id;
                 }
                 else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
                 {
@@ -202,40 +202,53 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
 
                     if (edge.get_src().get_param_index() == parameter_index)
                     {
-                        return std::make_pair(index, (int32_t) edge.get_src().get_object_index());
+                        return (int32_t) edge.get_src().get_object_index();
                     }
                     else if (edge.get_dst().get_param_index() == parameter_index)
                     {
-                        return std::make_pair(index, (int32_t) edge.get_dst().get_object_index());
+                        return (int32_t) edge.get_dst().get_object_index();
                     }
                 }
             }
-            return std::make_pair(-1, -1);
+            return -1;
         };
 
-        auto begin = int32_t { 0 };
-        const auto [first_position, first_object_id] = fetch_assignment(begin, literal->get_atom()->get_terms(), consistent_edge);
-        ++begin;
-        const auto [second_position, second_object_id] = fetch_assignment(begin, literal->get_atom()->get_terms(), consistent_edge);
-
-        bool is_incomplete_assignment = (second_position == -1);
-
-        if (!is_incomplete_assignment)
+        // Iterate all assignment pairs
+        // Dominik: This was wrong in the old implementation and should be correct now (double check please)
+        auto index = int32_t { 0 };
+        while (index < arity)
         {
+            // Find assignment from current index
+            const auto first_object_id = find_assignment(index, literal->get_atom()->get_terms(), consistent_edge);
+            const auto first_position = index;
+
+            // jump to next position and backup starting position for next iteration
+            const auto next = ++index;
+
+            // Find assignment from next index
+            const auto second_object_id = find_assignment(index, literal->get_atom()->get_terms(), consistent_edge);
+            const auto second_position = index;
+
+            // set position for next iteration
+            index = next;
+
+            bool is_incomplete_binary_assignment = (second_object_id == -1);
+
+            if (is_incomplete_binary_assignment)
+            {
+                break;
+            }
+
             assert(first_position < second_position);
 
             const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
             const auto assignment_rank = get_assignment_position(BinaryAssignment { first_position, first_object_id, second_position, second_object_id },
-                                                                 static_cast<int32_t>(arity),
+                                                                 arity,
                                                                  static_cast<int32_t>(m_problem->get_objects().size()));
             assert(assignment_rank < assignment_set.size());
             const auto consistent_with_state = assignment_set[assignment_rank];
 
-            if (!literal->is_negated() && !consistent_with_state)
-            {
-                return false;
-            }
-            else if (literal->is_negated() && consistent_with_state && (arity == 2))
+            if (literal->is_negated() == consistent_with_state)
             {
                 return false;
             }
