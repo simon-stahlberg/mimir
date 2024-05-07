@@ -8,14 +8,14 @@
 namespace mimir
 {
 
-size_t UnaryAssignmentSet::get_assignment_position(const UnaryAssignment& assignment, int32_t arity, int32_t num_objects)
+size_t UnaryAssignmentSet::get_assignment_position(const UnaryAssignment& assignment, size_t arity, size_t num_objects)
 {
     const auto position_factor = 1;
     const auto object_factor = position_factor * arity;
     return assignment.position * position_factor + assignment.object * object_factor;
 }
 
-size_t UnaryAssignmentSet::get_num_assignments(int32_t arity, int32_t num_objects) { return (size_t) arity * num_objects; }
+size_t UnaryAssignmentSet::get_num_assignments(size_t arity, size_t num_objects) { return arity * num_objects; }
 
 UnaryAssignmentSet::UnaryAssignmentSet(Problem problem, const GroundAtomList& atoms) : m_problem(problem), m_f()
 {
@@ -26,7 +26,7 @@ UnaryAssignmentSet::UnaryAssignmentSet(Problem problem, const GroundAtomList& at
     for (const auto& predicate : predicates)
     {
         // Predicates must have indexing 0,1,2,... for this implementation
-        assert(predicate->get_identifier() < static_cast<int>(predicates.size()));
+        assert(predicate->get_identifier() < predicates.size());
 
         const auto arity = predicate->get_arity();
 
@@ -43,7 +43,7 @@ UnaryAssignmentSet::UnaryAssignmentSet(Problem problem, const GroundAtomList& at
         const auto& arguments = ground_atom->get_objects();
         auto& assignment_set = m_f[predicate->get_identifier()];
 
-        for (int32_t position = 0; position < static_cast<int32_t>(arity); ++position)
+        for (size_t position = 0; position < arity; ++position)
         {
             const auto& first_object = arguments[position];
             assignment_set[get_assignment_position(UnaryAssignment { position, first_object->get_identifier() }, arity, num_objects)] = true;
@@ -68,10 +68,10 @@ bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lite
             continue;
         }
 
-        for (std::size_t index = 0; index < literal->get_atom()->get_predicate()->get_arity(); ++index)
+        for (size_t index = 0; index < literal->get_atom()->get_predicate()->get_arity(); ++index)
         {
-            int32_t position = -1;
-            int32_t object_id = -1;
+            size_t position = -1;
+            size_t object_id = -1;
 
             const auto& term = literal->get_atom()->get_terms()[index];
 
@@ -91,7 +91,7 @@ bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lite
                 }
             }
 
-            bool is_incomplete_unary_assignment = (object_id == -1);
+            bool is_incomplete_unary_assignment = (object_id == (size_t) -1);
 
             if (is_incomplete_unary_assignment)
             {
@@ -99,9 +99,8 @@ bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lite
             }
 
             const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-            const auto assignment_rank = UnaryAssignmentSet::get_assignment_position(UnaryAssignment { position, object_id },
-                                                                                     static_cast<int32_t>(arity),
-                                                                                     static_cast<int32_t>(m_problem->get_objects().size()));
+            const auto assignment_rank =
+                UnaryAssignmentSet::get_assignment_position(UnaryAssignment { position, object_id }, arity, m_problem->get_objects().size());
             assert(assignment_rank < assignment_set.size());
             const auto consistent_with_state = assignment_set[assignment_rank];
 
@@ -115,17 +114,17 @@ bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lite
     return true;
 }
 
-size_t BinaryAssignmentSet::get_assignment_position(const BinaryAssignment& assignment, int32_t arity, int32_t num_objects)
+size_t BinaryAssignmentSet::get_assignment_position(const BinaryAssignment& assignment, size_t arity, size_t num_objects)
 {
     const auto first_position_factor = 1;
     const auto second_position_factor = first_position_factor * arity;
     const auto first_object_factor = second_position_factor * arity;
     const auto second_object_factor = first_object_factor * num_objects;
-    return (size_t) assignment.first_position * first_position_factor + assignment.second_position * second_position_factor
+    return assignment.first_position * first_position_factor + assignment.second_position * second_position_factor
            + assignment.first_object * first_object_factor + assignment.second_object * second_object_factor;
 }
 
-size_t BinaryAssignmentSet::get_num_assignments(int32_t arity, int32_t num_objects) { return (size_t) arity * arity * num_objects * num_objects; }
+size_t BinaryAssignmentSet::get_num_assignments(size_t arity, size_t num_objects) { return arity * arity * num_objects * num_objects; }
 
 BinaryAssignmentSet::BinaryAssignmentSet(Problem problem, const GroundAtomList& atoms) : m_problem(problem), m_f()
 {
@@ -136,7 +135,7 @@ BinaryAssignmentSet::BinaryAssignmentSet(Problem problem, const GroundAtomList& 
     for (const auto& predicate : predicates)
     {
         // Predicates must have indexing 0,1,2,... for this implementation
-        assert(predicate->get_identifier() < static_cast<int>(predicates.size()));
+        assert(predicate->get_identifier() < predicates.size());
 
         auto& assignment_set = m_f[predicate->get_identifier()];
         assignment_set.resize(BinaryAssignmentSet::get_num_assignments(predicate->get_arity(), num_objects));
@@ -150,11 +149,11 @@ BinaryAssignmentSet::BinaryAssignmentSet(Problem problem, const GroundAtomList& 
         const auto& arguments = ground_atom->get_objects();
         auto& assignment_set = m_f[predicate->get_identifier()];
 
-        for (int32_t first_position = 0; first_position < static_cast<int32_t>(arity); ++first_position)
+        for (size_t first_position = 0; first_position < arity; ++first_position)
         {
             const auto& first_object = arguments[first_position];
 
-            for (int32_t second_position = first_position + 1; second_position < static_cast<int32_t>(arity); ++second_position)
+            for (size_t second_position = first_position + 1; second_position < arity; ++second_position)
             {
                 const auto& second_object = arguments[second_position];
                 assignment_set[BinaryAssignmentSet::get_assignment_position(
@@ -175,7 +174,7 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
     */
     for (const auto& literal : literals)
     {
-        const auto arity = (int32_t) literal->get_atom()->get_predicate()->get_arity();
+        const auto arity = literal->get_atom()->get_predicate()->get_arity();
 
         if (literal->is_negated() && arity != 2)
         {
@@ -184,7 +183,7 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
         }
 
         // Helper function to find a next matching assignment for a given vertex, if it exists.
-        const auto find_assignment = [arity](int32_t& index, const TermList& terms, const consistency_graph::Edge& edge)
+        const auto find_assignment = [arity](size_t& index, const TermList& terms, const consistency_graph::Edge& edge)
         {
             for (; index < arity; ++index)
             {
@@ -202,20 +201,20 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
 
                     if (edge.get_src().get_param_index() == parameter_index)
                     {
-                        return (int32_t) edge.get_src().get_object_index();
+                        return edge.get_src().get_object_index();
                     }
                     else if (edge.get_dst().get_param_index() == parameter_index)
                     {
-                        return (int32_t) edge.get_dst().get_object_index();
+                        return edge.get_dst().get_object_index();
                     }
                 }
             }
-            return -1;
+            return (size_t) -1;
         };
 
         // Iterate all assignment pairs
         // Dominik: This was wrong in the old implementation and should be correct now (double check please)
-        auto index = int32_t { 0 };
+        auto index = size_t { 0 };
         while (index < arity)
         {
             // Find assignment from current index
@@ -232,7 +231,7 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
             // set position for next iteration
             index = next;
 
-            bool is_incomplete_binary_assignment = (second_object_id == -1);
+            bool is_incomplete_binary_assignment = (second_object_id == (size_t) -1);
 
             if (is_incomplete_binary_assignment)
             {
@@ -244,7 +243,7 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
             const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
             const auto assignment_rank = get_assignment_position(BinaryAssignment { first_position, first_object_id, second_position, second_object_id },
                                                                  arity,
-                                                                 static_cast<int32_t>(m_problem->get_objects().size()));
+                                                                 m_problem->get_objects().size());
             assert(assignment_rank < assignment_set.size());
             const auto consistent_with_state = assignment_set[assignment_rank];
 

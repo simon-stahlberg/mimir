@@ -152,7 +152,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         const auto grounded_literal = ground_literal(literal, binding);
         if (grounded_literal->is_negated())
         {
-            ref_effect = std::abs(grounded_literal->get_atom()->get_identifier() + 1);
+            ref_effect = -(grounded_literal->get_atom()->get_identifier() + 1);
         }
         else
         {

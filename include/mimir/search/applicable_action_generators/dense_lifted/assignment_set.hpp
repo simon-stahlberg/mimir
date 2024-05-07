@@ -24,13 +24,13 @@ private:
 
     struct UnaryAssignment
     {
-        int32_t position;
-        int32_t object;
+        size_t position;
+        size_t object;
     };
 
-    static size_t get_assignment_position(const UnaryAssignment& assignment, int32_t arity, int32_t num_objects);
+    static size_t get_assignment_position(const UnaryAssignment& assignment, size_t arity, size_t num_objects);
 
-    static size_t get_num_assignments(int32_t arity, int32_t num_objects);
+    static size_t get_num_assignments(size_t arity, size_t num_objects);
 
 public:
     /// @brief Construct from a given set of ground atoms.
@@ -52,15 +52,15 @@ private:
 
     struct BinaryAssignment
     {
-        int32_t first_position;
-        int32_t first_object;
-        int32_t second_position;
-        int32_t second_object;
+        size_t first_position;
+        size_t first_object;
+        size_t second_position;
+        size_t second_object;
     };
 
-    static size_t get_assignment_position(const BinaryAssignment& assignment, int32_t arity, int32_t num_objects);
+    static size_t get_assignment_position(const BinaryAssignment& assignment, size_t arity, size_t num_objects);
 
-    static size_t get_num_assignments(int32_t arity, int32_t num_objects);
+    static size_t get_num_assignments(size_t arity, size_t num_objects);
 
 public:
     /// @brief Construct from a given set of ground atoms.
