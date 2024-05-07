@@ -24,13 +24,13 @@ private:
 
     struct UnaryAssignment
     {
-        uint32_t position;
-        uint32_t object;
+        int32_t position;
+        int32_t object;
     };
 
-    static size_t get_assignment_position(const UnaryAssignment& assignment, uint32_t arity, uint32_t num_objects);
+    static size_t get_assignment_position(const UnaryAssignment& assignment, int32_t arity, int32_t num_objects);
 
-    static size_t get_num_assignments(uint32_t arity, uint32_t num_objects);
+    static size_t get_num_assignments(int32_t arity, int32_t num_objects);
 
 public:
     /// @brief Construct from a given set of ground atoms.
@@ -52,15 +52,15 @@ private:
 
     struct BinaryAssignment
     {
-        uint32_t first_position;
-        uint32_t first_object;
-        uint32_t second_position;
-        uint32_t second_object;
+        int32_t first_position;
+        int32_t first_object;
+        int32_t second_position;
+        int32_t second_object;
     };
 
-    static size_t get_assignment_position(const BinaryAssignment& assignment, uint32_t arity, uint32_t num_objects);
+    static size_t get_assignment_position(const BinaryAssignment& assignment, int32_t arity, int32_t num_objects);
 
-    static size_t get_num_assignments(uint32_t arity, uint32_t num_objects);
+    static size_t get_num_assignments(int32_t arity, int32_t num_objects);
 
 public:
     /// @brief Construct from a given set of ground atoms.
@@ -87,8 +87,8 @@ class AssignmentSet
 private:
     Problem m_problem;
 
-    // The underlying function
-    std::vector<std::vector<bool>> m_f;
+    UnaryAssignmentSet m_unary_assignment_set;
+    BinaryAssignmentSet m_binary_assignment_set;
 
 public:
     /// @brief Construct from a given set of ground atoms.
