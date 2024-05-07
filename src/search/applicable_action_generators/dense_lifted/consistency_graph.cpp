@@ -49,6 +49,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
             const auto& first_vertex = m_vertices.at(first_vertex_id);
             const auto& second_vertex = m_vertices.at(second_vertex_id);
 
+            // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
             if (first_vertex.get_param_index() != second_vertex.get_param_index())
             {
                 auto edge = Edge(Vertex(first_vertex_id, first_vertex.get_param_index(), first_vertex.get_object_index()),
