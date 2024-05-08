@@ -21,6 +21,9 @@ using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
 
 /**
  * Fully specialized implementation class.
+ *
+ * Implements successor generation using maximum clique enumeration by stahlberg-ecai2023
+ * Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
  */
 template<>
 class AAG<LiftedAAGDispatcher<DenseStateTag>> : public IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>
@@ -30,7 +33,7 @@ private:
     PDDLFactories& m_pddl_factories;
 
     flat::DenseActionSet m_actions;
-    std::vector<DenseAction> m_actions_by_index;
+    DenseActionList m_actions_by_index;
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
     GroundFunctionToValue m_ground_function_value_costs;
@@ -46,16 +49,16 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_preconditions_hold(const Action& action, DenseState state) const;
 
-    void nullary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
+    void nullary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions);
 
-    void unary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
+    void unary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions);
 
-    void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions);
+    void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, DenseActionList& out_applicable_actions);
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(const DenseState state, std::vector<DenseAction>& out_applicable_actions);
+    void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);

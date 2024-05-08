@@ -21,7 +21,7 @@ private:
     {
     public:
         virtual ~INode() = default;
-        virtual void get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions) = 0;
+        virtual void get_applicable_actions(const DenseState state, DenseActionList& out_applicable_actions) = 0;
     };
 
     class SelectorNode : public INode
@@ -35,30 +35,30 @@ private:
     public:
         SelectorNode(size_t ground_atom_id, std::unique_ptr<INode>&& true_succ, std::unique_ptr<INode>&& false_succ, std::unique_ptr<INode>&& dontcare_succ);
 
-        void get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions) override;
+        void get_applicable_actions(const DenseState state, DenseActionList& out_applicable_actions) override;
     };
 
     class GeneratorNode : public INode
     {
     private:
-        std::vector<DenseAction> m_actions;
+        DenseActionList m_actions;
 
     public:
-        explicit GeneratorNode(std::vector<DenseAction> actions);
+        explicit GeneratorNode(DenseActionList actions);
 
-        void get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions) override;
+        void get_applicable_actions(const DenseState state, DenseActionList& out_applicable_actions) override;
     };
 
     size_t m_num_nodes;
     std::unique_ptr<INode> m_root_node;
 
-    std::unique_ptr<INode> build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<DenseAction>& actions);
+    std::unique_ptr<INode> build_recursively(const size_t atom_id, size_t const num_atoms, const DenseActionList& actions);
 
 public:
     MatchTree();
-    MatchTree(const size_t num_atoms, const std::vector<DenseAction>& actions);
+    MatchTree(const size_t num_atoms, const DenseActionList& actions);
 
-    void get_applicable_actions(const DenseState state, std::vector<DenseAction>& out_applicable_actions);
+    void get_applicable_actions(const DenseState state, DenseActionList& out_applicable_actions);
 
     [[nodiscard]] size_t get_num_nodes() const;
 };
@@ -82,7 +82,7 @@ private:
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<GroundedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(const DenseState state, std::vector<DenseAction>& out_applicable_actions);
+    void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);

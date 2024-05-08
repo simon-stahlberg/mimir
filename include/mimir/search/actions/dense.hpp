@@ -151,6 +151,7 @@ public:
  */
 using DenseActionBuilder = Builder<ActionDispatcher<DenseStateTag>>;
 using DenseAction = ConstView<ActionDispatcher<DenseStateTag>>;
+using DenseActionList = std::vector<DenseAction>;
 
 }
 

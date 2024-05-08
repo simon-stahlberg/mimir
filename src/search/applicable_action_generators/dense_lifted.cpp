@@ -285,7 +285,7 @@ bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const A
     return true;
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
 
@@ -298,7 +298,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, DenseState state, std::vector<DenseAction>& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions)
 {
     // There is only one parameter, try all bindings with the correct type.
 
@@ -317,7 +317,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, D
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignment_sets,
                                                            const Action& action,
                                                            DenseState state,
-                                                           std::vector<DenseAction>& out_applicable_actions)
+                                                           DenseActionList& out_applicable_actions)
 {
     const auto& graphs = m_static_consistency_graphs.at(action);
     assert(graphs.get_precondition_graph().has_value());
@@ -375,7 +375,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, std::vector<DenseAction>& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseActionList& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
