@@ -68,46 +68,49 @@ bool UnaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lite
             continue;
         }
 
-        for (size_t index = 0; index < literal->get_atom()->get_predicate()->get_arity(); ++index)
+        // Helper function to find a next matching assignment for a given vertex, if it exists.
+        const auto find_assignment = [arity](size_t& index, const TermList& terms, const consistency_graph::Vertex& vertex)
         {
-            size_t position = -1;
-            size_t object_id = -1;
-
-            const auto& term = literal->get_atom()->get_terms()[index];
-
-            if (const auto term_object = std::get_if<TermObjectImpl>(term))
+            for (; index < arity; ++index)
             {
-                position = index;
-                object_id = term_object->get_object()->get_identifier();
-            }
-            else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
-            {
-                const auto parameter_index = term_variable->get_variable()->get_parameter_index();
+                const auto& term = terms[index];
 
-                if (consistent_vertex.get_param_index() == parameter_index)
+                if (const auto term_object = std::get_if<TermObjectImpl>(term))
                 {
-                    position = index;
-                    object_id = consistent_vertex.get_object_index();
+                    const auto object_id = term_object->get_object()->get_identifier();
+
+                    return object_id;
+                }
+                else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+                {
+                    const auto parameter_index = term_variable->get_variable()->get_parameter_index();
+
+                    if (vertex.get_param_index() == parameter_index)
+                    {
+                        return vertex.get_object_index();
+                    }
                 }
             }
+            return (size_t) -1;
+        };
 
-            bool is_incomplete_unary_assignment = (object_id == (size_t) -1);
+        auto index = (size_t) 0;
+        const auto object_id = find_assignment(index, literal->get_atom()->get_terms(), consistent_vertex);
+        const auto position = index;
+        bool is_incomplete_unary_assignment = (object_id == (size_t) -1);
+        if (is_incomplete_unary_assignment)
+        {
+            continue;
+        }
 
-            if (is_incomplete_unary_assignment)
-            {
-                break;
-            }
-
-            const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-            const auto assignment_rank =
-                UnaryAssignmentSet::get_assignment_position(UnaryAssignment { position, object_id }, arity, m_problem->get_objects().size());
-            assert(assignment_rank < assignment_set.size());
-            const auto consistent_with_state = assignment_set[assignment_rank];
-
-            if (literal->is_negated() == consistent_with_state)
-            {
-                return false;
-            }
+        const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
+        const auto assignment_rank =
+            UnaryAssignmentSet::get_assignment_position(UnaryAssignment { position, object_id }, arity, m_problem->get_objects().size());
+        assert(assignment_rank < assignment_set.size());
+        const auto consistent_with_state = assignment_set[assignment_rank];
+        if (literal->is_negated() == consistent_with_state)
+        {
+            return false;
         }
     }
 
@@ -212,45 +215,28 @@ bool BinaryAssignmentSet::literal_all_consistent(const std::vector<Literal>& lit
             return (size_t) -1;
         };
 
-        // Iterate all assignment pairs
-        // Dominik: This was wrong in the old implementation and should be correct now (double check please)
         auto index = size_t { 0 };
-        while (index < arity)
+        // Find assignment from current index
+        const auto first_object_id = find_assignment(index, literal->get_atom()->get_terms(), consistent_edge);
+        const auto first_position = index;
+        // Find assignment from next index
+        const auto second_object_id = find_assignment(++index, literal->get_atom()->get_terms(), consistent_edge);
+        const auto second_position = index;
+        bool is_incomplete_binary_assignment = (second_object_id == (size_t) -1);
+        if (is_incomplete_binary_assignment)
         {
-            // Find assignment from current index
-            const auto first_object_id = find_assignment(index, literal->get_atom()->get_terms(), consistent_edge);
-            const auto first_position = index;
+            continue;
+        }
 
-            // jump to next position and backup starting position for next iteration
-            const auto next = ++index;
-
-            // Find assignment from next index
-            const auto second_object_id = find_assignment(index, literal->get_atom()->get_terms(), consistent_edge);
-            const auto second_position = index;
-
-            // set position for next iteration
-            index = next;
-
-            bool is_incomplete_binary_assignment = (second_object_id == (size_t) -1);
-
-            if (is_incomplete_binary_assignment)
-            {
-                break;
-            }
-
-            assert(first_position < second_position);
-
-            const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-            const auto assignment_rank = get_assignment_position(BinaryAssignment { first_position, first_object_id, second_position, second_object_id },
-                                                                 arity,
-                                                                 m_problem->get_objects().size());
-            assert(assignment_rank < assignment_set.size());
-            const auto consistent_with_state = assignment_set[assignment_rank];
-
-            if (literal->is_negated() == consistent_with_state)
-            {
-                return false;
-            }
+        const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
+        const auto assignment_rank = get_assignment_position(BinaryAssignment { first_position, first_object_id, second_position, second_object_id },
+                                                             arity,
+                                                             m_problem->get_objects().size());
+        assert(assignment_rank < assignment_set.size());
+        const auto consistent_with_state = assignment_set[assignment_rank];
+        if (literal->is_negated() == consistent_with_state)
+        {
+            return false;
         }
     }
 
@@ -275,5 +261,4 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
 {
     return m_unary_assignment_set.literal_all_consistent(literals, consistent_vertex);
 }
-
 }
