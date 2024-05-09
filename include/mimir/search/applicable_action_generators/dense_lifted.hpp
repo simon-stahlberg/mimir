@@ -8,6 +8,7 @@
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/axioms/dense.hpp"
 #include "mimir/search/states.hpp"
 
 #include <flatmemory/details/view_const.hpp>
@@ -54,6 +55,12 @@ private:
     void unary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions);
 
     void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, DenseActionList& out_applicable_actions);
+
+    void nullary_case(const Axiom& axiom, DenseState state, DenseAxiomList& out_applicable_axioms);
+
+    void unary_case(const Axiom& axiom, DenseState state, DenseAxiomList& out_applicable_axioms);
+
+    void general_case(const AssignmentSet& assignment_sets, const Axiom& axiom, DenseState state, DenseAxiomList& out_applicable_axioms);
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;

@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_AXIOMS_INTERFACE_HPP_
+#define MIMIR_SEARCH_AXIOMS_INTERFACE_HPP_
 
 #include "mimir/search/builder.hpp"
 #include "mimir/search/states.hpp"
@@ -12,10 +12,10 @@ namespace mimir
  * Interface class
  */
 template<typename Derived>
-class IActionBuilder
+class IAxiomBuilder
 {
 private:
-    IActionBuilder() = default;
+    IAxiomBuilder() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -29,10 +29,10 @@ public:
  * Interface class
  */
 template<typename Derived>
-class IActionView
+class IAxiomView
 {
 private:
-    IActionView() = default;
+    IAxiomView() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -53,34 +53,34 @@ public:
  * Do not add your specialized arguments here, add them to your derived tag instead.
  */
 template<IsStateTag S>
-struct ActionDispatcher
+struct AxiomDispatcher
 {
 };
 
 template<typename T>
-struct is_action_dispatcher : std::false_type
+struct is_axiom_dispatcher : std::false_type
 {
 };
 
 template<IsStateTag S>
-struct is_action_dispatcher<ActionDispatcher<S>> : std::true_type
+struct is_axiom_dispatcher<AxiomDispatcher<S>> : std::true_type
 {
 };
 
 template<typename T>
-concept IsActionDispatcher = is_action_dispatcher<T>::value;
+concept IsAxiomDispatcher = is_axiom_dispatcher<T>::value;
 
 /**
  * Type traits.
  */
 template<IsStateTag S>
-struct TypeTraits<Builder<ActionDispatcher<S>>>
+struct TypeTraits<Builder<AxiomDispatcher<S>>>
 {
     using StateTag = S;
 };
 
 template<IsStateTag S>
-struct TypeTraits<ConstView<ActionDispatcher<S>>>
+struct TypeTraits<ConstView<AxiomDispatcher<S>>>
 {
     using StateTag = S;
 };
