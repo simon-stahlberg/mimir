@@ -22,7 +22,6 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/actions.hpp"
-#include "mimir/search/compile_flags.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/states.hpp"
 
@@ -33,13 +32,13 @@ namespace mimir
 extern void to_ground_atoms(const GroundLiteralList& literals, GroundAtomList& out_ground_atoms);
 
 /// @brief Translates a bitset into a list of ground atoms
-extern void to_ground_atoms(const flat::Bitset& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms);
+extern void to_ground_atoms(const FlatBitset& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms);
 
 /// @brief Translates a state into a list of ground atoms
-extern void to_ground_atoms(ConstView<StateDispatcher<DenseStateTag>> state, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms);
+extern void to_ground_atoms(DenseState state, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms);
 
 /// @brief Translates a ground action list to a plan
-extern Plan to_plan(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& action_view_list);
+extern Plan to_plan(const GroundActionList& action_view_list);
 
 }
 

@@ -16,7 +16,7 @@ void to_ground_atoms(const GroundLiteralList& literals, GroundAtomList& out_grou
     }
 }
 
-void to_ground_atoms(const flat::Bitset& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
+void to_ground_atoms(const FlatBitset& bitset, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
 {
     out_ground_atoms.clear();
 
@@ -26,13 +26,13 @@ void to_ground_atoms(const flat::Bitset& bitset, const PDDLFactories& pddl_facto
     }
 }
 
-void to_ground_atoms(ConstView<StateDispatcher<DenseStateTag>> state, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
+void to_ground_atoms(DenseState state, const PDDLFactories& pddl_factories, GroundAtomList& out_ground_atoms)
 {
     const auto& bitset = state.get_atoms_bitset();
     to_ground_atoms(bitset, pddl_factories, out_ground_atoms);
 }
 
-Plan to_plan(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& action_view_list)
+Plan to_plan(const GroundActionList& action_view_list)
 {
     std::vector<std::string> actions;
     auto cost = 0;

@@ -84,15 +84,24 @@ private:
 
     void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms);
+
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
 
     /// @brief Return all actions.
-    [[nodiscard]] const flat::DenseActionSet& get_actions() const;
+    [[nodiscard]] const FlatDenseActionSet& get_actions() const;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] DenseAction get_action(size_t action_id) const;
 };
+
+/**
+ * Types
+ */
+
+using GroundedDenseAAG = AAG<GroundedAAGDispatcher<DenseStateTag>>;
+
 }
 
 #endif

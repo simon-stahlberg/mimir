@@ -47,12 +47,33 @@ AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms
 {
     const auto num_objects = problem->get_objects().size();
     const auto& predicates = problem->get_domain()->get_predicates();
+    const auto& domain_derived_predicates = problem->get_domain()->get_derived_predicates();
+    const auto& problem_derived_predicates = problem->get_derived_predicates();
 
-    m_f.resize(predicates.size());
+    // TODO: Make this nicer. Perhaps we can introduce some ListProxy class
+    // that maps from fragmented to nonfragmented storage through an additional vector.
+    const auto num_total_predicates = predicates.size() + domain_derived_predicates.size() + problem_derived_predicates.size();
+    m_f.resize(num_total_predicates);
     for (const auto& predicate : predicates)
     {
         // Predicates must have indexing 0,1,2,... for this implementation
-        assert(predicate->get_identifier() < predicates.size());
+        assert(predicate->get_identifier() < num_total_predicates);
+
+        auto& assignment_set = m_f[predicate->get_identifier()];
+        assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
+    }
+    for (const auto& predicate : domain_derived_predicates)
+    {
+        // Predicates must have indexing 0,1,2,... for this implementation
+        assert(predicate->get_identifier() < num_total_predicates);
+
+        auto& assignment_set = m_f[predicate->get_identifier()];
+        assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
+    }
+    for (const auto& predicate : problem_derived_predicates)
+    {
+        // Predicates must have indexing 0,1,2,... for this implementation
+        assert(predicate->get_identifier() < num_total_predicates);
 
         auto& assignment_set = m_f[predicate->get_identifier()];
         assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));

@@ -1,23 +1,30 @@
 #ifndef MIMIR_SEARCH_AXIOMS_DENSE_HPP_
 #define MIMIR_SEARCH_AXIOMS_DENSE_HPP_
 
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axioms/interface.hpp"
+#include "mimir/search/states.hpp"
 #include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
 
-namespace flat
+namespace mimir
 {
 /**
  * Flatmemory types
  */
-using DenseAxiomLayout = flatmemory::Tuple<uint32_t, mimir::Axiom, ObjectListLayout, BitsetLayout, BitsetLayout, int32_t>;
-using DenseAxiomBuilder = flatmemory::Builder<DenseAxiomLayout>;
-using DenseAxiom = flatmemory::ConstView<DenseAxiomLayout>;
-using DenseAxiomVector = flatmemory::VariableSizedTypeVector<DenseAxiomLayout>;
+using FlatDenseAxiomLayout = flatmemory::Tuple<uint32_t,  //
+                                               Axiom,
+                                               FlatObjectListLayout,
+                                               FlatBitsetLayout,
+                                               FlatBitsetLayout,
+                                               int32_t>;
+using FlatDenseAxiomBuilder = flatmemory::Builder<FlatDenseAxiomLayout>;
+using FlatDenseAxiom = flatmemory::ConstView<FlatDenseAxiomLayout>;
+using FlatDenseAxiomVector = flatmemory::VariableSizedTypeVector<FlatDenseAxiomLayout>;
 
-struct DenseAxiomHash
+struct FlatDenseAxiomHash
 {
-    size_t operator()(const DenseAxiom& view) const
+    size_t operator()(const FlatDenseAxiom& view) const
     {
         const auto axiom = view.get<1>();
         const auto objects = view.get<2>();
@@ -25,9 +32,9 @@ struct DenseAxiomHash
     }
 };
 
-struct DenseAxiomEqual
+struct FlatDenseAxiomEqual
 {
-    bool operator()(const DenseAxiom& view_left, const DenseAxiom& view_right) const
+    bool operator()(const FlatDenseAxiom& view_left, const FlatDenseAxiom& view_right) const
     {
         const auto axiom_left = view_left.get<1>();
         const auto objects_left = view_left.get<2>();
@@ -37,11 +44,7 @@ struct DenseAxiomEqual
     }
 };
 
-using DenseAxiomSet = flatmemory::UnorderedSet<DenseAxiomLayout, DenseAxiomHash, DenseAxiomEqual>;
-}
-
-namespace mimir
-{
+using FlatDenseAxiomSet = flatmemory::UnorderedSet<FlatDenseAxiomLayout, FlatDenseAxiomHash, FlatDenseAxiomEqual>;
 
 /**
  * Implementation class
@@ -52,13 +55,13 @@ class Builder<AxiomDispatcher<DenseStateTag>> :
     public IAxiomBuilder<Builder<AxiomDispatcher<DenseStateTag>>>
 {
 private:
-    flat::DenseAxiomBuilder m_builder;
+    FlatDenseAxiomBuilder m_builder;
 
     /* Implement IBuilder interface */
     friend class IBuilder<Builder<AxiomDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] flat::DenseAxiomBuilder& get_flatmemory_builder_impl() { return m_builder; }
-    [[nodiscard]] const flat::DenseAxiomBuilder& get_flatmemory_builder_impl() const { return m_builder; }
+    [[nodiscard]] FlatDenseAxiomBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const FlatDenseAxiomBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IAxiomBuilder interface */
     friend class IAxiomBuilder<Builder<AxiomDispatcher<DenseStateTag>>>;
@@ -67,10 +70,10 @@ public:
     /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
     [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
     [[nodiscard]] Axiom& get_axiom() { return m_builder.get<1>(); }
-    [[nodiscard]] flat::ObjectListBuilder& get_objects() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<2>(); }
     /* Precondition */
-    [[nodiscard]] flat::BitsetBuilder& get_positive_precondition_bitset() { return m_builder.get<3>(); }
-    [[nodiscard]] flat::BitsetBuilder& get_negative_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_positive_precondition_bitset() { return m_builder.get<3>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_precondition_bitset() { return m_builder.get<4>(); }
     /* Simple effect */
     // We use positive numbers for add and negative numbers for delete effects
     [[nodiscard]] int32_t& get_simple_effect() { return m_builder.get<5>(); }
@@ -89,7 +92,7 @@ class ConstView<AxiomDispatcher<DenseStateTag>> :
 private:
     using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 
-    flat::DenseAxiom m_view;
+    FlatDenseAxiom m_view;
 
     /* Implement IView interface: */
     friend class IConstView<ConstView<AxiomDispatcher<DenseStateTag>>>;
@@ -105,14 +108,14 @@ private:
 
 public:
     /// @brief Create a view on a Axiom.
-    explicit ConstView(flat::DenseAxiom view) : m_view(view) {}
+    explicit ConstView(FlatDenseAxiom view) : m_view(view) {}
 
     [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
     [[nodiscard]] Axiom get_axiom() const { return m_view.get<1>(); }
-    [[nodiscard]] flat::ObjectList get_objects() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<2>(); }
     /* Precondition */
-    [[nodiscard]] flat::Bitset get_positive_precondition_bitset() const { return m_view.get<3>(); }
-    [[nodiscard]] flat::Bitset get_negative_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] FlatBitset get_positive_precondition_bitset() const { return m_view.get<3>(); }
+    [[nodiscard]] FlatBitset get_negative_precondition_bitset() const { return m_view.get<4>(); }
     /* Effect*/
     [[nodiscard]] int32_t get_simple_effect() const { return m_view.get<5>(); }
 
@@ -129,7 +132,6 @@ public:
 using DenseAxiomBuilder = Builder<AxiomDispatcher<DenseStateTag>>;
 using DenseAxiom = ConstView<AxiomDispatcher<DenseStateTag>>;
 using DenseAxiomList = std::vector<DenseAxiom>;
-
 }
 
 #endif

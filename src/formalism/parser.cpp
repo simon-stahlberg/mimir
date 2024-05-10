@@ -16,10 +16,6 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
     auto problem = problem_parser.get_problem();
 
-    // Remove types
-    auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
-    problem = remove_types_translator.run(*problem);
-
     // Negation normal form translator
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
 
@@ -27,13 +23,13 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_factories());
     problem = rename_quantifed_variables_translator.run(*problem);
 
-    // Remove universal quantifiers
-    auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
-    problem = remove_universal_quantifiers_translator.run(*problem);
-
     // Simplify goal
     auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_factories());
     problem = simplify_goal_translator.run(*problem);
+
+    // Remove universal quantifiers
+    auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
+    problem = remove_universal_quantifiers_translator.run(*problem);
 
     // To disjunctive normal form
     auto to_dnf_translator = ToDNFTranslator(domain_parser.get_factories(), to_nnf_translator);
@@ -42,6 +38,10 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     // Split disjunctive conditions
     auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_factories());
     problem = split_disjunctive_conditions.run(*problem);
+
+    // Remove types
+    auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
+    problem = remove_types_translator.run(*problem);
 
     // To effect normal form
     auto to_enf_translator = ToENFTranslator(domain_parser.get_factories());

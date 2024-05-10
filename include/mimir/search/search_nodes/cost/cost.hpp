@@ -20,23 +20,20 @@ enum SearchNodeStatus
     CLOSED = 2,
     DEAD_END = 3
 };
-}
 
 namespace flat
 {
 /**
  * Flatmemory types
  */
-using CostSearchNodeLayout = flatmemory::Tuple<mimir::SearchNodeStatus, int32_t, int32_t, int32_t>;
+using CostSearchNodeLayout = ::flatmemory::Tuple<SearchNodeStatus, int32_t, int32_t, int32_t>;
 
-using CostSearchNodeBuilder = flatmemory::Builder<CostSearchNodeLayout>;
-using CostSearchNode = flatmemory::View<CostSearchNodeLayout>;
-using ConstCostSearchNode = flatmemory::ConstView<CostSearchNodeLayout>;
-using CostSearchNodeVector = flatmemory::FixedSizedTypeVector<CostSearchNodeLayout>;
+using CostSearchNodeBuilder = ::flatmemory::Builder<CostSearchNodeLayout>;
+using CostSearchNode = ::flatmemory::View<CostSearchNodeLayout>;
+using ConstCostSearchNode = ::flatmemory::ConstView<CostSearchNodeLayout>;
+using CostSearchNodeVector = ::flatmemory::FixedSizedTypeVector<CostSearchNodeLayout>;
 }
 
-namespace mimir
-{
 /**
  * Proxy for more meaningful access
  */

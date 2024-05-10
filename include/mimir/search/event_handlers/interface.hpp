@@ -2,7 +2,8 @@
 #define MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/factories.hpp"
-#include "mimir/search/compile_flags.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/states.hpp"
 #include "mimir/search/statistics.hpp"
 
 #include <chrono>
@@ -20,23 +21,21 @@ public:
     virtual ~IEventHandler() = default;
 
     /// @brief React on generating a successor_state by applying an action.
-    virtual void on_generate_state(ConstView<ActionDispatcher<StateReprTag>> action,
-                                   ConstView<StateDispatcher<StateReprTag>> successor_state,
-                                   const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
 
     virtual void on_finish_g_layer(uint64_t g_value, uint64_t num_states) = 0;
 
     /// @brief React on expanding a state.
-    virtual void on_expand_state(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_expand_state(State state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(ConstView<StateDispatcher<StateReprTag>> initial_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(State initial_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& ground_action_plan) = 0;
+    virtual void on_solved(const GroundActionList& ground_action_plan) = 0;
 
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
@@ -64,9 +63,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void on_generate_state(ConstView<ActionDispatcher<StateReprTag>> action,
-                           ConstView<StateDispatcher<StateReprTag>> successor_state,
-                           const PDDLFactories& pddl_factories) override
+    void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
@@ -81,14 +78,14 @@ public:
         self().on_finish_g_layer_impl(g_value, num_states);
     }
 
-    void on_expand_state(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
         self().on_expand_state_impl(state, pddl_factories);
     }
 
-    void on_start_search(ConstView<StateDispatcher<StateReprTag>> initial_state, const PDDLFactories& pddl_factories) override
+    void on_start_search(State initial_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
@@ -102,7 +99,7 @@ public:
         self().on_end_search_impl();
     }
 
-    void on_solved(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& ground_action_plan) override { self().on_solved_impl(ground_action_plan); }
+    void on_solved(const GroundActionList& ground_action_plan) override { self().on_solved_impl(ground_action_plan); }
 
     void on_exhausted() override { self().on_exhausted_impl(); }
 

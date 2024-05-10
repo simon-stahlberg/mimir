@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_AXIOMS_INTERFACE_HPP_
 #define MIMIR_SEARCH_AXIOMS_INTERFACE_HPP_
 
+#include "mimir/search/axioms/tags.hpp"
 #include "mimir/search/builder.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/view_const.hpp"
@@ -40,49 +41,21 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    /* Mutable getters. */
-
-    /* Immutable getters. */
-    [[nodiscard]] std::string str() const { return self().str_impl(); }
 };
 
 /**
- * Dispatcher class.
+ * General implementation class.
  *
- * The template parameters are arguments that all specializations have in common.
- * Do not add your specialized arguments here, add them to your derived tag instead.
+ * Specialize the wrapped tag to provide your own implementation of a state representation.
  */
-template<IsStateTag S>
-struct AxiomDispatcher
+template<IsAxiomDispatcher A>
+class Builder<A> : public IBuilder<Builder<A>>, public IAxiomBuilder<Builder<A>>
 {
 };
 
-template<typename T>
-struct is_axiom_dispatcher : std::false_type
+template<IsAxiomDispatcher A>
+class ConstView<A> : public IConstView<ConstView<A>>, public IAxiomView<ConstView<A>>
 {
-};
-
-template<IsStateTag S>
-struct is_axiom_dispatcher<AxiomDispatcher<S>> : std::true_type
-{
-};
-
-template<typename T>
-concept IsAxiomDispatcher = is_axiom_dispatcher<T>::value;
-
-/**
- * Type traits.
- */
-template<IsStateTag S>
-struct TypeTraits<Builder<AxiomDispatcher<S>>>
-{
-    using StateTag = S;
-};
-
-template<IsStateTag S>
-struct TypeTraits<ConstView<AxiomDispatcher<S>>>
-{
-    using StateTag = S;
 };
 
 }

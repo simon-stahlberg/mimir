@@ -42,7 +42,7 @@ private:
     ///             satisfied.
     /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
     ///                      the to the state underlying the search node.
-    void set_plan(const ConstCostSearchNode& view, std::vector<GroundAction>& out_plan) const
+    void set_plan(const ConstCostSearchNode& view, GroundActionList& out_plan) const
     {
         out_plan.clear();
         auto cur_view = view;
@@ -85,7 +85,7 @@ public:
     {
     }
 
-    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override
+    SearchStatus find_solution(GroundActionList& out_plan) override
     {
         m_event_handler->on_start_search(this->m_initial_state, m_pddl_factories);
 
@@ -95,7 +95,7 @@ public:
 
         const auto& goal_ground_literals = m_problem->get_goal_condition();
 
-        auto applicable_actions = std::vector<GroundAction> {};
+        auto applicable_actions = GroundActionList {};
 
         m_queue.emplace_back(m_initial_state);
 

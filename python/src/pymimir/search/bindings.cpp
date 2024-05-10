@@ -29,58 +29,55 @@ void init_search(py::module_& m_search)
         .export_values();
 
     /* State */
-    py::class_<ConstView<StateDispatcher<StateReprTag>>>(m_search, "State")  //
-        .def("__hash__", &ConstView<StateDispatcher<StateReprTag>>::hash)
-        .def("__eq__", &ConstView<StateDispatcher<StateReprTag>>::operator==)
+    py::class_<State>(m_search, "State")  //
+        .def("__hash__", &State::hash)
+        .def("__eq__", &State::operator==)
         .def(
             "__iter__",
-            [](ConstView<StateDispatcher<StateReprTag>>& state) { return py::make_iterator(state.begin(), state.end()); },
+            [](State& state) { return py::make_iterator(state.begin(), state.end()); },
             py::keep_alive<0, 1>())
         .def("to_string",
-             [](ConstView<StateDispatcher<StateReprTag>> self, PDDLFactories& pddl_factories)
+             [](State self, PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(self, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("get_id", &ConstView<StateDispatcher<StateReprTag>>::get_id);
+        .def("get_id", &State::get_id);
 
     /* Action */
-    py::class_<ConstView<ActionDispatcher<StateReprTag>>>(m_search, "GroundAction")  //
-        .def("__hash__", &ConstView<ActionDispatcher<StateReprTag>>::hash)
-        .def("__eq__", &ConstView<ActionDispatcher<StateReprTag>>::operator==)
+    py::class_<GroundAction>(m_search, "GroundAction")  //
+        .def("__hash__", &GroundAction::hash)
+        .def("__eq__", &GroundAction::operator==)
         .def("to_string",
-             [](ConstView<ActionDispatcher<StateReprTag>> self, PDDLFactories& pddl_factories)
+             [](GroundAction self, PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(self, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("get_id", &ConstView<ActionDispatcher<StateReprTag>>::get_id);
+        .def("get_id", &GroundAction::get_id);
+
+    /* AAGs */
+    py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m_search, "IAAG")  //
+        .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
+        .def("get_action", &IDynamicAAG::get_action);
+    py::class_<LiftedAAG, IDynamicAAG, std::shared_ptr<LiftedAAG>>(m_search, "LiftedAAG")  //
+        .def(py::init<Problem, PDDLFactories&>());
+    py::class_<GroundedAAG, IDynamicAAG, std::shared_ptr<GroundedAAG>>(m_search, "GroundedAAG")  //
+        .def(py::init<Problem, PDDLFactories&>());
 
     /* SSGs */
     py::class_<IDynamicSSG, std::shared_ptr<IDynamicSSG>>(m_search, "ISSG")  //
         .def("get_or_create_initial_state", &IDynamicSSG::get_or_create_initial_state)
         .def("get_or_create_successor_state", &IDynamicSSG::get_or_create_successor_state)
         .def("get_state_count", &IDynamicSSG::get_state_count);
-    py::class_<SSG<SSGDispatcher<StateReprTag>>, IDynamicSSG, std::shared_ptr<SSG<SSGDispatcher<StateReprTag>>>>(m_search, "SSG")  //
-        .def(py::init<Problem>());
-
-    /* AAGs */
-    py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m_search, "IAAG")  //
-        .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
-        .def("get_action", &IDynamicAAG::get_action);
-    py::class_<AAG<LiftedAAGDispatcher<StateReprTag>>, IDynamicAAG, std::shared_ptr<AAG<LiftedAAGDispatcher<StateReprTag>>>>(m_search, "LiftedAAG")  //
-        .def(py::init<Problem, PDDLFactories&>());
-    py::class_<AAG<GroundedAAGDispatcher<StateReprTag>>, IDynamicAAG, std::shared_ptr<AAG<GroundedAAGDispatcher<StateReprTag>>>>(m_search, "GroundedAAG")  //
-        .def(py::init<Problem, PDDLFactories&>());
+    py::class_<SuccessorStateGenerator, IDynamicSSG, std::shared_ptr<SuccessorStateGenerator>>(m_search, "SSG")  //
+        .def(py::init<Problem, std::shared_ptr<IDynamicAAG>>());
 
     /* Heuristics */
     py::class_<IDynamicHeuristic, std::shared_ptr<IDynamicHeuristic>>(m_search, "IHeuristic");
-    py::class_<Heuristic<HeuristicDispatcher<BlindTag, StateReprTag>>,
-               IDynamicHeuristic,
-               std::shared_ptr<Heuristic<HeuristicDispatcher<BlindTag, StateReprTag>>>>(m_search, "BlindHeuristic")
-        .def(py::init<>());
+    py::class_<BlindHeuristic, IDynamicHeuristic, std::shared_ptr<BlindHeuristic>>(m_search, "BlindHeuristic").def(py::init<>());
 
     /* Event Handlers */
     py::class_<IEventHandler, std::shared_ptr<IEventHandler>>(m_search, "IEventHandler");
@@ -94,7 +91,7 @@ void init_search(py::module_& m_search)
         .def("find_solution",
              [](IAlgorithm& algorithm)
              {
-                 auto out_actions = std::vector<ConstView<ActionDispatcher<StateReprTag>>>();
+                 auto out_actions = GroundActionList {};
                  auto search_status = algorithm.find_solution(out_actions);
                  return std::make_tuple(search_status, out_actions);
              });

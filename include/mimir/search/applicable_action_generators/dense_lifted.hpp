@@ -1,15 +1,15 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/axiom_evaluators/dense.hpp"
 #include "mimir/search/axioms/dense.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/states/dense.hpp"
 
 #include <flatmemory/details/view_const.hpp>
 #include <unordered_map>
@@ -33,7 +33,9 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
-    flat::DenseActionSet m_actions;
+    DenseAE m_axiom_evaluator;
+
+    FlatDenseActionSet m_actions;
     DenseActionList m_actions_by_index;
     Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
 
@@ -56,16 +58,12 @@ private:
 
     void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, DenseActionList& out_applicable_actions);
 
-    void nullary_case(const Axiom& axiom, DenseState state, DenseAxiomList& out_applicable_axioms);
-
-    void unary_case(const Axiom& axiom, DenseState state, DenseAxiomList& out_applicable_axioms);
-
-    void general_case(const AssignmentSet& assignment_sets, const Axiom& axiom, DenseState state, DenseAxiomList& out_applicable_axioms);
-
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;
 
     void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
+
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
@@ -74,11 +72,17 @@ public:
     DenseAction ground_action(const Action& action, ObjectList&& binding);
 
     /// @brief Return all actions.
-    [[nodiscard]] const flat::DenseActionSet& get_actions() const;
+    [[nodiscard]] const FlatDenseActionSet& get_actions() const;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] DenseAction get_action(size_t action_id) const;
 };
+
+/**
+ * Types
+ */
+
+using LiftedDenseAAG = AAG<LiftedAAGDispatcher<DenseStateTag>>;
 
 }  // namespace mimir
 

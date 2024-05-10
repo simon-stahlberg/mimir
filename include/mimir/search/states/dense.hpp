@@ -9,27 +9,27 @@
 
 #include <flatmemory/flatmemory.hpp>
 
+namespace mimir
+{
 /**
  * Flatmemory types
  */
-namespace flat
-{
-using DenseStateLayout = flatmemory::Tuple<uint32_t, BitsetLayout>;
-using DenseStateBuilder = flatmemory::Builder<DenseStateLayout>;
-using DenseState = flatmemory::ConstView<DenseStateLayout>;
+using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout>;
+using FlatDenseStateBuilder = flatmemory::Builder<FlatDenseStateLayout>;
+using FlatDenseState = flatmemory::ConstView<FlatDenseStateLayout>;
 
-struct DenseStateHash
+struct FlatDenseStateHash
 {
-    size_t operator()(const DenseState& view) const
+    size_t operator()(const FlatDenseState& view) const
     {
         const auto bitset_view = view.get<1>();
         return bitset_view.hash();
     }
 };
 
-struct DenseStateEqual
+struct FlatDenseStateEqual
 {
-    bool operator()(const DenseState& view_left, const DenseState& view_right) const
+    bool operator()(const FlatDenseState& view_left, const FlatDenseState& view_right) const
     {
         const auto bitset_view_left = view_left.get<1>();
         const auto bitset_view_right = view_right.get<1>();
@@ -37,19 +37,7 @@ struct DenseStateEqual
     }
 };
 
-using DenseStateSet = flatmemory::UnorderedSet<DenseStateLayout, DenseStateHash, DenseStateEqual>;
-}
-
-namespace mimir
-{
-/**
- * Derived ID class.
- *
- * Define name and template parameters of your own implementation.
- */
-class DenseStateTag : public StateTag
-{
-};
+using FlatDenseStateSet = flatmemory::UnorderedSet<FlatDenseStateLayout, FlatDenseStateHash, FlatDenseStateEqual>;
 
 /**
  * Implementation class
@@ -60,13 +48,13 @@ class Builder<StateDispatcher<DenseStateTag>> :
     public IStateBuilder<Builder<StateDispatcher<DenseStateTag>>>
 {
 private:
-    flat::DenseStateBuilder m_builder;
+    FlatDenseStateBuilder m_builder;
 
     /* Implement IBuilder interface */
     friend class IBuilder<Builder<StateDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] flat::DenseStateBuilder& get_flatmemory_builder_impl() { return m_builder; }
-    [[nodiscard]] const flat::DenseStateBuilder& get_flatmemory_builder_impl() const { return m_builder; }
+    [[nodiscard]] FlatDenseStateBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const FlatDenseStateBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IStateBuilder interface */
     friend class IStateBuilder<Builder<StateDispatcher<DenseStateTag>>>;
@@ -74,7 +62,7 @@ private:
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
 public:
-    [[nodiscard]] flat::BitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
 };
 
 /**
@@ -88,7 +76,7 @@ class ConstView<StateDispatcher<DenseStateTag>> :
     public IStateView<ConstView<StateDispatcher<DenseStateTag>>>
 {
 private:
-    flat::DenseState m_view;
+    FlatDenseState m_view;
 
     /* Implement IView interface */
     friend class IConstView<ConstView<StateDispatcher<DenseStateTag>>>;
@@ -106,9 +94,9 @@ private:
     [[nodiscard]] auto end_impl() const { return get_atoms_bitset().end(); }
 
 public:
-    explicit ConstView(flat::DenseState view) : m_view(view) {}
+    explicit ConstView(FlatDenseState view) : m_view(view) {}
 
-    [[nodiscard]] flat::Bitset get_atoms_bitset() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatBitset get_atoms_bitset() const { return m_view.get<1>(); }
 
     bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
@@ -133,7 +121,6 @@ public:
  */
 using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
 using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
-
 }
 
 #endif

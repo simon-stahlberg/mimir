@@ -2,7 +2,8 @@
 #define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/compile_flags.hpp"
+#include "mimir/search/heuristics/tags.hpp"
+#include "mimir/search/states.hpp"
 
 namespace mimir
 {
@@ -38,46 +39,6 @@ private:
 public:
     [[nodiscard]] double compute_heuristic(StateRepr state) override { return self().compute_heuristic_impl(state); }
 };
-
-/**
- * ID base class.
- *
- * Derive from it to provide your own implementation.
- *
- * Define new template parameters to your derived tag
- * in the declaration file of your derived class.
- */
-struct HeuristicTag
-{
-};
-
-template<class DerivedTag>
-concept IsHeuristicTag = std::derived_from<DerivedTag, HeuristicTag>;
-
-/**
- * Dispatcher class.
- *
- * Wrap the tag to dispatch the correct overload.
- * The template parameters are arguments that all specializations have in common.
- * Do not add your specialized arguments here, add them to your derived tag instead.
- */
-template<IsHeuristicTag H, IsStateTag S>
-struct HeuristicDispatcher
-{
-};
-
-template<typename T>
-struct is_heuristic_dispatcher : std::false_type
-{
-};
-
-template<IsHeuristicTag H, IsStateTag S>
-struct is_heuristic_dispatcher<HeuristicDispatcher<H, S>> : std::true_type
-{
-};
-
-template<typename T>
-concept IsHeuristicDispatcher = is_heuristic_dispatcher<T>::value;
 
 /**
  * General implementation class.

@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/compile_flags.hpp"
+#include "mimir/search/actions.hpp"
 
 namespace mimir
 {
@@ -25,7 +25,7 @@ class IAlgorithm
 public:
     virtual ~IAlgorithm() = default;
 
-    virtual SearchStatus find_solution(std::vector<GroundAction>& out_plan) = 0;
+    virtual SearchStatus find_solution(GroundActionList& out_plan) = 0;
 };
 
 }

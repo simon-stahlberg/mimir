@@ -130,7 +130,7 @@ public:
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const Action& action, ObjectList&& binding)
 {
     const auto fill_bitsets =
-        [this](const std::vector<Literal>& literals, flat::BitsetBuilder& ref_positive_bitset, flat::BitsetBuilder& ref_negative_bitset, const auto& binding)
+        [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
     {
         for (const auto& literal : literals)
         {
@@ -411,9 +411,16 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     }
 }
 
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms)
+{
+    // In the lifted case, we use the axiom evaluator.
+    m_axiom_evaluator.generate_and_apply_axioms(ref_ground_atoms);
+}
+
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
     m_problem(problem),
     m_pddl_factories(pddl_factories),
+    m_axiom_evaluator(problem, pddl_factories),
     m_ground_function_value_costs(),
     m_static_consistency_graphs()
 {
@@ -446,7 +453,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     }
 }
 
-[[nodiscard]] const flat::DenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
+[[nodiscard]] const FlatDenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
 
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {

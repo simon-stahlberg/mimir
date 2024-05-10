@@ -2,32 +2,35 @@
 #define MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 
 #include "mimir/search/actions/interface.hpp"
+#include "mimir/search/builder.hpp"
+#include "mimir/search/states/dense.hpp"
 #include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
+#include "mimir/search/view_const.hpp"
 
-namespace flat
+namespace mimir
 {
 /**
  * Flatmemory types
  */
-using DenseActionLayout = flatmemory::Tuple<uint32_t,
-                                            int32_t,
-                                            mimir::Action,
-                                            ObjectListLayout,
-                                            BitsetLayout,
-                                            BitsetLayout,
-                                            BitsetLayout,
-                                            BitsetLayout,
-                                            BitsetVectorLayout,
-                                            BitsetVectorLayout,
-                                            Int32tVectorLayout>;
-using DenseActionBuilder = flatmemory::Builder<DenseActionLayout>;
-using DenseAction = flatmemory::ConstView<DenseActionLayout>;
-using DenseActionVector = flatmemory::VariableSizedTypeVector<DenseActionLayout>;
+using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,
+                                                int32_t,
+                                                Action,
+                                                FlatObjectListLayout,
+                                                FlatBitsetLayout,
+                                                FlatBitsetLayout,
+                                                FlatBitsetLayout,
+                                                FlatBitsetLayout,
+                                                FlatBitsetVectorLayout,
+                                                FlatBitsetVectorLayout,
+                                                FlatInt32tVectorLayout>;
+using FlatDenseActionBuilder = flatmemory::Builder<FlatDenseActionLayout>;
+using FlatDenseAction = flatmemory::ConstView<FlatDenseActionLayout>;
+using FlatDenseActionVector = flatmemory::VariableSizedTypeVector<FlatDenseActionLayout>;
 
-struct DenseActionHash
+struct FlatDenseActionHash
 {
-    size_t operator()(const DenseAction& view) const
+    size_t operator()(const FlatDenseAction& view) const
     {
         const auto action = view.get<2>();
         const auto objects = view.get<3>();
@@ -35,9 +38,9 @@ struct DenseActionHash
     }
 };
 
-struct DenseActionEqual
+struct FlatDenseActionEqual
 {
-    bool operator()(const DenseAction& view_left, const DenseAction& view_right) const
+    bool operator()(const FlatDenseAction& view_left, const FlatDenseAction& view_right) const
     {
         const auto action_left = view_left.get<2>();
         const auto objects_left = view_left.get<3>();
@@ -47,11 +50,7 @@ struct DenseActionEqual
     }
 };
 
-using DenseActionSet = flatmemory::UnorderedSet<DenseActionLayout, DenseActionHash, DenseActionEqual>;
-}
-
-namespace mimir
-{
+using FlatDenseActionSet = flatmemory::UnorderedSet<FlatDenseActionLayout, FlatDenseActionHash, FlatDenseActionEqual>;
 
 /**
  * Implementation class
@@ -62,13 +61,13 @@ class Builder<ActionDispatcher<DenseStateTag>> :
     public IActionBuilder<Builder<ActionDispatcher<DenseStateTag>>>
 {
 private:
-    flat::DenseActionBuilder m_builder;
+    FlatDenseActionBuilder m_builder;
 
     /* Implement IBuilder interface */
     friend class IBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] flat::DenseActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
-    [[nodiscard]] const flat::DenseActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
+    [[nodiscard]] FlatDenseActionBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const FlatDenseActionBuilder& get_flatmemory_builder_impl() const { return m_builder; }
 
     /* Implement IActionBuilder interface */
     friend class IActionBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
@@ -78,18 +77,18 @@ public:
     [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
     [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
     [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
-    [[nodiscard]] flat::ObjectListBuilder& get_objects() { return m_builder.get<3>(); }
+    [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<3>(); }
     /* Precondition */
-    [[nodiscard]] flat::BitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
-    [[nodiscard]] flat::BitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
     /* Simple effects */
-    [[nodiscard]] flat::BitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
-    [[nodiscard]] flat::BitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
     /* Conditional effects */
-    [[nodiscard]] flat::BitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<8>(); }
-    [[nodiscard]] flat::BitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<9>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<8>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<9>(); }
     // We use positive numbers for add and negative numbers for delete effects
-    [[nodiscard]] flat::Int32tVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
+    [[nodiscard]] FlatInt32tVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
 };
 
 /**
@@ -105,7 +104,7 @@ class ConstView<ActionDispatcher<DenseStateTag>> :
 private:
     using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 
-    flat::DenseAction m_view;
+    FlatDenseAction m_view;
 
     /* Implement IView interface: */
     friend class IConstView<ConstView<ActionDispatcher<DenseStateTag>>>;
@@ -121,22 +120,22 @@ private:
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit ConstView(flat::DenseAction view) : m_view(view) {}
+    explicit ConstView(FlatDenseAction view) : m_view(view) {}
 
     [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
     [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
     [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
-    [[nodiscard]] flat::ObjectList get_objects() const { return m_view.get<3>(); }
+    [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<3>(); }
     /* Precondition */
-    [[nodiscard]] flat::Bitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
-    [[nodiscard]] flat::Bitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
+    [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
     /* Simple effects */
-    [[nodiscard]] flat::Bitset get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
-    [[nodiscard]] flat::Bitset get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
+    [[nodiscard]] FlatBitset get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
+    [[nodiscard]] FlatBitset get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
     /* Conditional effects */
-    [[nodiscard]] flat::BitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<8>(); }
-    [[nodiscard]] flat::BitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<9>(); }
-    [[nodiscard]] flat::Int32tVector get_conditional_effects() const { return m_view.get<10>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<8>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<9>(); }
+    [[nodiscard]] FlatInt32tVector get_conditional_effects() const { return m_view.get<10>(); }
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {

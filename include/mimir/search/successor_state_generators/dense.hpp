@@ -3,6 +3,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/states/dense.hpp"
 #include "mimir/search/successor_state_generators/interface.hpp"
 
 #include <cstddef>
@@ -19,7 +21,9 @@ template<>
 class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>
 {
 private:
-    flat::DenseStateSet m_states;
+    std::shared_ptr<IDynamicAAG> m_aag;
+
+    FlatDenseStateSet m_states;
     DenseStateBuilder m_state_builder;
 
     /* Implement IStaticSSG interface */
@@ -53,8 +57,10 @@ private:
             }
         }
 
-        // Construct the state and store it.
+        /* Axioms */
+        m_aag->generate_and_apply_axioms(state_bitset);
 
+        /* Construct the state and store it. */
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
@@ -99,7 +105,10 @@ private:
             }
         }
 
-        // Construct the state and store it.
+        /* Axioms */
+        m_aag->generate_and_apply_axioms(state_bitset);
+
+        /* Construct the state and store it. */
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
@@ -109,8 +118,14 @@ private:
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
-    explicit SSG(Problem /*problem*/) {}
+    explicit SSG(Problem /*problem*/, std::shared_ptr<IDynamicAAG> aag) : m_aag(std::move(aag)) {}
 };
+
+/**
+ * Types
+ */
+
+using DenseSSG = SSG<SSGDispatcher<DenseStateTag>>;
 
 }
 

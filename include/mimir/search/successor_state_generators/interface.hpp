@@ -2,7 +2,9 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/compile_flags.hpp"
+#include "mimir/search/actions.hpp"
+#include "mimir/search/states.hpp"
+#include "mimir/search/successor_state_generators/tags.hpp"
 
 namespace mimir
 {
@@ -51,31 +53,6 @@ public:
 };
 
 /**
- * Dispatcher class.
- *
- * Wrap the tag to dispatch the correct overload.
- * The template parameters are arguments that all specializations have in common.
- * Do not add your specialized arguments here, add them to your derived tag instead.
- */
-template<IsStateTag S>
-struct SSGDispatcher
-{
-};
-
-template<typename T>
-struct is_ssg_dispatcher : std::false_type
-{
-};
-
-template<IsStateTag S>
-struct is_ssg_dispatcher<SSGDispatcher<S>> : std::true_type
-{
-};
-
-template<typename T>
-concept IsSSGDispatcher = is_ssg_dispatcher<T>::value;
-
-/**
  * General implementation class.
  *
  * Specialize the wrapped tag to provide your own implementation of a successor state generator.
@@ -93,6 +70,7 @@ struct TypeTraits<SSG<SSGDispatcher<S>>>
 {
     using StateTag = S;
 };
+
 }
 
 #endif

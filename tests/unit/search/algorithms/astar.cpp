@@ -22,11 +22,11 @@ public:
         m_parser(PDDLParser(domain_file, problem_file)),
         m_algorithm(nullptr)
     {
-        auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(m_parser.get_problem());
         auto successor_generator =
             (grounded) ?
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) } :
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) };
+        auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(m_parser.get_problem(), successor_generator);
         auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
         auto event_handler = std::make_shared<MinimalEventHandler>();
         m_algorithm = std::make_unique<AStarAlgorithm>(m_parser.get_problem(),
@@ -39,7 +39,7 @@ public:
 
     std::tuple<SearchStatus, Plan> find_solution()
     {
-        auto action_view_list = std::vector<ConstView<ActionDispatcher<StateReprTag>>> {};
+        auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
         return std::make_tuple(status, to_plan(action_view_list));
     }

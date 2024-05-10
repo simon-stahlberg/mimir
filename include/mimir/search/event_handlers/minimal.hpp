@@ -19,20 +19,16 @@ private:
     /* Implement EventHandlerBase interface */
     friend class EventHandlerBase<MinimalEventHandler>;
 
-    void on_generate_state_impl(ConstView<ActionDispatcher<StateReprTag>> action,
-                                ConstView<StateDispatcher<StateReprTag>> successor_state,
-                                const PDDLFactories& pddl_factories) const
-    {
-    }
+    void on_generate_state_impl(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) const {}
 
     void on_finish_g_layer_impl(uint64_t g_value, uint64_t num_states) const
     {
         std::cout << "Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl;
     }
 
-    void on_expand_state_impl(ConstView<StateDispatcher<StateReprTag>> state, const PDDLFactories& pddl_factories) const {}
+    void on_expand_state_impl(State state, const PDDLFactories& pddl_factories) const {}
 
-    void on_start_search_impl(ConstView<StateDispatcher<StateReprTag>> initial_state, const PDDLFactories& pddl_factories) const {}
+    void on_start_search_impl(State initial_state, const PDDLFactories& pddl_factories) const {}
 
     void on_end_search_impl() const
     {
@@ -41,7 +37,7 @@ private:
                   << "Search time: " << this->m_statistics.get_search_time_ms().count() << "ms" << std::endl;
     }
 
-    void on_solved_impl(const std::vector<ConstView<ActionDispatcher<StateReprTag>>>& ground_action_plan) const
+    void on_solved_impl(const GroundActionList& ground_action_plan) const
     {
         auto plan = to_plan(ground_action_plan);
         std::cout << "Plan found with cost: " << plan.get_cost() << std::endl;

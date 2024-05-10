@@ -143,8 +143,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     // 1. Explore delete relaxed task.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
     const auto dr_problem = delete_relax_transformer.run(*m_problem);
-    auto dr_lifted_aag = AAG<LiftedAAGDispatcher<DenseStateTag>>(dr_problem, m_pddl_factories);
-    auto dr_ssg = SSG<SSGDispatcher<DenseStateTag>>(dr_problem);
+    auto dr_lifted_aag = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(dr_problem, m_pddl_factories);
+    auto dr_ssg = SSG<SSGDispatcher<DenseStateTag>>(dr_problem, dr_lifted_aag);
 
     auto& state_bitset = m_state_builder.get_atoms_bitset();
     state_bitset.unset_all();
@@ -161,13 +161,13 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     do
     {
         num_atoms = m_pddl_factories.get_ground_atoms().size();
-        num_actions = dr_lifted_aag.get_actions().size();
+        num_actions = dr_lifted_aag->get_actions().size();
 
         m_state_builder.get_flatmemory_builder().finish();
-        const auto state = DenseState(flat::DenseState(m_state_builder.get_flatmemory_builder().buffer().data()));
+        const auto state = DenseState(FlatDenseState(m_state_builder.get_flatmemory_builder().buffer().data()));
 
         // Create all applicable actions and apply newly generated actions
-        dr_lifted_aag.generate_applicable_actions(state, actions);
+        dr_lifted_aag->generate_applicable_actions(state, actions);
         for (const auto& action : actions)
         {
             const auto is_newly_generated = (action.get_id() >= num_actions);
@@ -184,11 +184,11 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     } while (num_atoms != m_pddl_factories.get_ground_atoms().size());
 
     std::cout << "Total number of ground atoms reachable in delete-relaxed task: " << m_pddl_factories.get_ground_atoms().size() << std::endl;
-    std::cout << "Total number of ground actions in delete-relaxed task: " << dr_lifted_aag.get_actions().size() << std::endl;
+    std::cout << "Total number of ground actions in delete-relaxed task: " << dr_lifted_aag->get_actions().size() << std::endl;
 
     // 2. Create ground actions
     auto ground_actions = DenseActionList {};
-    for (const auto& action : dr_lifted_aag.get_actions())
+    for (const auto& action : dr_lifted_aag->get_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         const auto action_proxy = DenseAction(action);
@@ -211,7 +211,12 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
     m_match_tree.get_applicable_actions(state, out_applicable_actions);
 }
 
-[[nodiscard]] const flat::DenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms)
+{
+    // In the grounded case, we traverse a match tree, apply axioms, and repeat until fixed point.
+}
+
+[[nodiscard]] const FlatDenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
 
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<GroundedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {

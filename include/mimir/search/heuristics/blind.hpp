@@ -8,15 +8,6 @@ namespace mimir
 {
 
 /**
- * Derived ID class.
- *
- * Define name and template parameters of your own implementation.
- */
-struct BlindTag : public HeuristicTag
-{
-};
-
-/**
  * Specialized implementation class.
  */
 template<>
