@@ -4,7 +4,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axioms/interface.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
 
 namespace mimir

@@ -30,11 +30,6 @@ template<typename Derived>
 class IStaticAE : public IDynamicAE
 {
 private:
-    using S = typename TypeTraits<Derived>::StateTag;
-    using StateRepr = ConstView<StateDispatcher<S>>;
-    using GroundActionRepr = ConstView<ActionDispatcher<S>>;
-    using GroundAxiomRepr = ConstView<AxiomDispatcher<S>>;
-
     IStaticAE() = default;
     friend Derived;
 
@@ -57,15 +52,6 @@ public:
 template<IsAEDispatcher A>
 class AE : public IStaticAE<AE<A>>
 {
-};
-
-/**
- * Type traits.
- */
-template<IsStateTag S>
-struct TypeTraits<AE<AEDispatcher<S>>>
-{
-    using StateTag = S;
 };
 
 }

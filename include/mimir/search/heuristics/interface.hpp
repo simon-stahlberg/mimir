@@ -26,9 +26,6 @@ template<typename Derived>
 class IStaticHeuristic : public IDynamicHeuristic
 {
 private:
-    using S = typename TypeTraits<Derived>::StateTag;
-    using StateRepr = ConstView<StateDispatcher<S>>;
-
     IStaticHeuristic() = default;
     friend Derived;
 
@@ -37,7 +34,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] double compute_heuristic(StateRepr state) override { return self().compute_heuristic_impl(state); }
+    [[nodiscard]] double compute_heuristic(State state) override { return self().compute_heuristic_impl(state); }
 };
 
 /**
@@ -48,15 +45,6 @@ public:
 template<IsHeuristicDispatcher T>
 class Heuristic : public IStaticHeuristic<Heuristic<T>>
 {
-};
-
-/**
- * Type traits.
- */
-template<IsHeuristicTag H>
-struct TypeTraits<Heuristic<HeuristicDispatcher<H, DenseStateTag>>>
-{
-    using StateTag = DenseStateTag;
 };
 
 }

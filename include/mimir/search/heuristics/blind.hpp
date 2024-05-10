@@ -2,7 +2,6 @@
 #define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 
 #include "mimir/search/heuristics/interface.hpp"
-#include "mimir/search/type_traits.hpp"
 
 namespace mimir
 {

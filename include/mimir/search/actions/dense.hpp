@@ -4,7 +4,6 @@
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/builder.hpp"
 #include "mimir/search/states/dense.hpp"
-#include "mimir/search/type_traits.hpp"
 #include "mimir/search/types.hpp"
 #include "mimir/search/view_const.hpp"
 

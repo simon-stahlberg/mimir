@@ -43,15 +43,6 @@ private:
     std::size_t size_impl() { return priority_queue_.size(); }
 };
 
-/**
- * Type traits
- */
-template<typename T>
-struct TypeTraits<OpenList<OpenListDispatcher<PriorityQueueTag<T>>>>
-{
-    using ValueType = T;
-};
-
 }  // namespace mimir
 
 #endif  // MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_

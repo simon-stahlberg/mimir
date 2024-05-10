@@ -45,21 +45,6 @@ public:
     [[nodiscard]] std::string str() const { return self().str_impl(); }
 };
 
-/**
- * Type traits.
- */
-template<IsStateTag S>
-struct TypeTraits<Builder<ActionDispatcher<S>>>
-{
-    using StateTag = S;
-};
-
-template<IsStateTag S>
-struct TypeTraits<ConstView<ActionDispatcher<S>>>
-{
-    using StateTag = S;
-};
-
 }
 
 #endif

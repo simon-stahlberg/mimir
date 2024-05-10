@@ -30,10 +30,6 @@ template<typename Derived>
 class IStaticSSG : public IDynamicSSG
 {
 private:
-    using S = typename TypeTraits<Derived>::StateTag;
-    using StateRepr = ConstView<StateDispatcher<S>>;
-    using GroundActionRepr = ConstView<ActionDispatcher<S>>;
-
     IStaticSSG() = default;
     friend Derived;
 
@@ -42,9 +38,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] StateRepr get_or_create_initial_state(Problem problem) override { return self().get_or_create_initial_state_impl(problem); }
+    [[nodiscard]] State get_or_create_initial_state(Problem problem) override { return self().get_or_create_initial_state_impl(problem); }
 
-    [[nodiscard]] StateRepr get_or_create_successor_state(StateRepr state, GroundActionRepr action) override
+    [[nodiscard]] State get_or_create_successor_state(State state, GroundAction action) override
     {
         return self().get_or_create_successor_state_impl(state, action);
     }
@@ -60,15 +56,6 @@ public:
 template<IsSSGDispatcher S>
 class SSG : public IStaticSSG<SSG<S>>
 {
-};
-
-/**
- * Type traits.
- */
-template<IsStateTag S>
-struct TypeTraits<SSG<SSGDispatcher<S>>>
-{
-    using StateTag = S;
 };
 
 }

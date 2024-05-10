@@ -6,7 +6,6 @@
 #include "mimir/search/applicable_action_generators/tags.hpp"
 #include "mimir/search/axioms.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/type_traits.hpp"
 
 namespace mimir
 {
@@ -36,11 +35,6 @@ template<typename Derived>
 class IStaticAAG : public IDynamicAAG
 {
 private:
-    using S = typename TypeTraits<Derived>::StateTag;
-    using StateRepr = ConstView<StateDispatcher<S>>;
-    using GroundActionRepr = ConstView<ActionDispatcher<S>>;
-    using GroundAxiomRepr = ConstView<AxiomDispatcher<S>>;
-
     IStaticAAG() = default;
     friend Derived;
 
@@ -49,7 +43,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void generate_applicable_actions(const StateRepr state, std::vector<GroundActionRepr>& out_applicable_actions) override
+    void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) override
     {
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
@@ -68,21 +62,6 @@ public:
 template<IsAAGDispatcher A>
 class AAG : public IStaticAAG<AAG<A>>
 {
-};
-
-/**
- * Type traits.
- */
-template<IsStateTag S>
-struct TypeTraits<AAG<LiftedAAGDispatcher<S>>>
-{
-    using StateTag = S;
-};
-
-template<IsStateTag S>
-struct TypeTraits<AAG<GroundedAAGDispatcher<S>>>
-{
-    using StateTag = S;
 };
 
 }
