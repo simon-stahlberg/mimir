@@ -430,7 +430,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     {
         if (literal->is_negated())
         {
-            throw std::runtime_error("negative literals in the initial state is not supported");
+            throw std::runtime_error("Negative literals in the initial state is not supported.");
         }
     }
 

@@ -27,6 +27,8 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
+    std::vector<AxiomList> m_partitioning;
+
     void nullary_case(const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms);
 
     void unary_case(const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms);

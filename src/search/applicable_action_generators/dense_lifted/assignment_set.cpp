@@ -39,7 +39,10 @@ static size_t num_assignments(size_t arity, size_t num_objects)
     const auto second = first * (arity + 1);
     const auto third = second * (arity + 1);
     const auto fourth = third * (num_objects + 1);
-    const auto max = (first * arity) + (second * arity) + (third * num_objects) + (fourth * num_objects);
+    const auto max = (first * arity)          //
+                     + (second * arity)       //
+                     + (third * num_objects)  //
+                     + (fourth * num_objects);
     return max + 1;
 }
 
@@ -50,7 +53,7 @@ AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms
     const auto& domain_derived_predicates = problem->get_domain()->get_derived_predicates();
     const auto& problem_derived_predicates = problem->get_derived_predicates();
 
-    // TODO: Make this nicer. Perhaps we can introduce some ListProxy class
+    // TODO: Make this robust to framented indexing. Perhaps we can introduce some ListProxy class
     // that maps from fragmented to nonfragmented storage through an additional vector.
     const auto num_total_predicates = predicates.size() + domain_derived_predicates.size() + problem_derived_predicates.size();
     m_f.resize(num_total_predicates);
