@@ -19,6 +19,11 @@ private:
     double compute_heuristic_impl(const DenseState& state) { return 0.; }
 };
 
+/**
+ * Types
+ */
+using BlindDenseHeuristic = Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>;
+
 }  // namespace mimir
 
 #endif  // MIMIR_SEARCH_HEURISTICS_BLIND_HPP_

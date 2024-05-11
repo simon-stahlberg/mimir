@@ -3,8 +3,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axioms/interface.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/types.hpp"
 
 namespace mimir
 {
@@ -65,11 +65,11 @@ private:
     /* Implement IAxiomBuilder interface */
     friend class IAxiomBuilder<Builder<AxiomDispatcher<DenseStateTag>>>;
 
+    [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
+    [[nodiscard]] Axiom& get_axiom_impl() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatObjectListBuilder& get_objects_impl() { return m_builder.get<2>(); }
+
 public:
-    /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
-    [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] Axiom& get_axiom() { return m_builder.get<1>(); }
-    [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<2>(); }
     /* Precondition */
     [[nodiscard]] FlatBitsetBuilder& get_positive_precondition_bitset() { return m_builder.get<3>(); }
     [[nodiscard]] FlatBitsetBuilder& get_negative_precondition_bitset() { return m_builder.get<4>(); }
@@ -105,13 +105,14 @@ private:
     /* Implement IAxiomView interface */
     friend class IAxiomView<ConstView<AxiomDispatcher<DenseStateTag>>>;
 
+    [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
+    [[nodiscard]] Axiom get_axiom_impl() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatObjectList get_objects_impl() const { return m_view.get<2>(); }
+
 public:
     /// @brief Create a view on a Axiom.
     explicit ConstView(FlatDenseAxiom view) : m_view(view) {}
 
-    [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] Axiom get_axiom() const { return m_view.get<1>(); }
-    [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<2>(); }
     /* Precondition */
     [[nodiscard]] FlatBitset get_positive_precondition_bitset() const { return m_view.get<3>(); }
     [[nodiscard]] FlatBitset get_negative_precondition_bitset() const { return m_view.get<4>(); }

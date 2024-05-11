@@ -11,7 +11,7 @@
 
 namespace mimir
 {
-using AxiomEvaluator = AE<AEDispatcher<DenseStateTag>>;
+using AxiomEvaluator = DenseAE;
 }
 
 #else

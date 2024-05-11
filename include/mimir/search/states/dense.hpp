@@ -3,8 +3,8 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/states/interface.hpp"
-#include "mimir/search/types.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 

@@ -73,9 +73,9 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
-    AAG<LiftedAAGDispatcher<DenseStateTag>> m_lifted_aag;
+    LiftedDenseAAG m_lifted_aag;
 
-    Builder<StateDispatcher<DenseStateTag>> m_state_builder;
+    DenseStateBuilder m_state_builder;
 
     MatchTree m_match_tree;
 

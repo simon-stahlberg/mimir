@@ -13,7 +13,8 @@
 
 namespace mimir
 {
-using GroundAction = ConstView<ActionDispatcher<DenseStateTag>>;
+using GroundActionBuilder = DenseActionBuilder;
+using GroundAction = DenseAction;
 using GroundActionList = std::vector<GroundAction>;
 }
 

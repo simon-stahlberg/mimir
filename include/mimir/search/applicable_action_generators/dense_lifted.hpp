@@ -37,7 +37,7 @@ private:
 
     FlatDenseActionSet m_actions;
     DenseActionList m_actions_by_index;
-    Builder<ActionDispatcher<DenseStateTag>> m_action_builder;
+    DenseActionBuilder m_action_builder;
 
     GroundFunctionToValue m_ground_function_value_costs;
 

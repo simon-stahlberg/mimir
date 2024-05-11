@@ -12,7 +12,8 @@
 
 namespace mimir
 {
-using GroundAxiom = ConstView<AxiomDispatcher<DenseStateTag>>;
+using GroundAxiomBuilder = DenseAxiomBuilder;
+using GroundAxiom = DenseAxiom;
 using GroundAxiomList = std::vector<GroundAxiom>;
 }
 

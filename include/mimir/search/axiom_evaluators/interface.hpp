@@ -5,8 +5,8 @@
 #include "mimir/search/actions.hpp"
 #include "mimir/search/axiom_evaluators/tags.hpp"
 #include "mimir/search/axioms.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/types.hpp"
 
 namespace mimir
 {

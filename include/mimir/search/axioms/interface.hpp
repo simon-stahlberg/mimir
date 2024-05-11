@@ -2,9 +2,8 @@
 #define MIMIR_SEARCH_AXIOMS_INTERFACE_HPP_
 
 #include "mimir/search/axioms/tags.hpp"
-#include "mimir/search/builder.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/view_const.hpp"
 
 namespace mimir
 {
@@ -24,6 +23,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
+    [[nodiscard]] uint32_t& get_id() { return self().get_id_impl(); }
+    [[nodiscard]] Axiom& get_axiom() { return self().get_axiom_impl(); }
+    [[nodiscard]] FlatObjectListBuilder& get_objects() { return self().get_objects_impl(); }
 };
 
 /**
@@ -41,21 +43,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-};
-
-/**
- * General implementation class.
- *
- * Specialize the wrapped tag to provide your own implementation of a state representation.
- */
-template<IsAxiomDispatcher A>
-class Builder<A> : public IBuilder<Builder<A>>, public IAxiomBuilder<Builder<A>>
-{
-};
-
-template<IsAxiomDispatcher A>
-class ConstView<A> : public IConstView<ConstView<A>>, public IAxiomView<ConstView<A>>
-{
+    [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }
+    [[nodiscard]] Axiom get_axiom() const { return self().get_axiom_impl(); }
+    [[nodiscard]] FlatObjectList get_objects() const { return self().get_objects_impl(); }
 };
 
 }

@@ -12,8 +12,8 @@
 
 namespace mimir
 {
-using LiftedAAG = AAG<LiftedAAGDispatcher<DenseStateTag>>;
-using GroundedAAG = AAG<GroundedAAGDispatcher<DenseStateTag>>;
+using LiftedAAG = LiftedDenseAAG;
+using GroundedAAG = GroundedDenseAAG;
 }
 
 #else

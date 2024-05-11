@@ -3,8 +3,8 @@
 
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/builder.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/states/dense.hpp"
-#include "mimir/search/types.hpp"
 #include "mimir/search/view_const.hpp"
 
 namespace mimir
@@ -71,12 +71,12 @@ private:
     /* Implement IActionBuilder interface */
     friend class IActionBuilder<Builder<ActionDispatcher<DenseStateTag>>>;
 
+    [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
+    [[nodiscard]] int32_t& get_cost_impl() { return m_builder.get<1>(); }
+    [[nodiscard]] Action& get_action_impl() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatObjectListBuilder& get_objects_impl() { return m_builder.get<3>(); }
+
 public:
-    /// @brief Modify the data, call finish, then copy the buffer to a container and use its returned view.
-    [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
-    [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
-    [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<3>(); }
     /* Precondition */
     [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
     [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
@@ -117,14 +117,15 @@ private:
     /* Implement IActionView interface */
     friend class IActionView<ConstView<ActionDispatcher<DenseStateTag>>>;
 
+    [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
+    [[nodiscard]] int32_t get_cost_impl() const { return m_view.get<1>(); }
+    [[nodiscard]] Action get_action_impl() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatObjectList get_objects_impl() const { return m_view.get<3>(); }
+
 public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(FlatDenseAction view) : m_view(view) {}
 
-    [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
-    [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
-    [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<3>(); }
     /* Precondition */
     [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
     [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }

@@ -13,7 +13,8 @@
 
 namespace mimir
 {
-using State = ConstView<StateDispatcher<DenseStateTag>>;
+using StateBuilder = DenseStateBuilder;
+using State = DenseState;
 using StateList = std::vector<State>;
 }
 

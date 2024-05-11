@@ -12,7 +12,7 @@
 
 namespace mimir
 {
-using BlindHeuristic = Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>;
+using BlindHeuristic = BlindDenseHeuristic;
 }
 
 #else

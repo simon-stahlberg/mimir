@@ -11,7 +11,7 @@
 
 namespace mimir
 {
-using SuccessorStateGenerator = SSG<SSGDispatcher<DenseStateTag>>;
+using SuccessorStateGenerator = DenseSSG;
 }
 
 #else

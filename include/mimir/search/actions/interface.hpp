@@ -2,7 +2,7 @@
 #define MIMIR_SEARCH_ACTIONS_INTERFACE_HPP_
 
 #include "mimir/search/actions/tags.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/flat_types.hpp"
 
 namespace mimir
 {
@@ -22,6 +22,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
+    [[nodiscard]] uint32_t& get_id() { return self().get_id_impl(); }
+    [[nodiscard]] int32_t& get_cost() { return self().get_cost_impl(); }
+    [[nodiscard]] Action& get_action() { return self().get_action_impl(); }
+    [[nodiscard]] FlatObjectListBuilder& get_objects() { return self().get_objects_impl(); }
 };
 
 /**
@@ -39,10 +43,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    /* Mutable getters. */
-
-    /* Immutable getters. */
-    [[nodiscard]] std::string str() const { return self().str_impl(); }
+    [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }
+    [[nodiscard]] int32_t get_cost() const { return self().get_cost_impl(); }
+    [[nodiscard]] Action get_action() const { return self().get_action_impl(); }
+    [[nodiscard]] FlatObjectList get_objects() const { return self().get_objects_impl(); }
 };
 
 }

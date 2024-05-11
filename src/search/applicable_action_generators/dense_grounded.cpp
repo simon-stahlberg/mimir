@@ -143,8 +143,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     // 1. Explore delete relaxed task.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
     const auto dr_problem = delete_relax_transformer.run(*m_problem);
-    auto dr_lifted_aag = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(dr_problem, m_pddl_factories);
-    auto dr_ssg = SSG<SSGDispatcher<DenseStateTag>>(dr_problem, dr_lifted_aag);
+    auto dr_lifted_aag = std::make_shared<LiftedDenseAAG>(dr_problem, m_pddl_factories);
+    auto dr_ssg = DenseSSG(dr_problem, dr_lifted_aag);
 
     auto& state_bitset = m_state_builder.get_atoms_bitset();
     state_bitset.unset_all();

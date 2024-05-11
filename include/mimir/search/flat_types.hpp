@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_TYPES_HPP_
-#define MIMIR_SEARCH_TYPES_HPP_
+#ifndef MIMIR_SEARCH_FLAT_TYPES_HPP_
+#define MIMIR_SEARCH_FLAT_TYPES_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
