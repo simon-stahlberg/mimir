@@ -83,6 +83,25 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     return delete_relaxed_action;
 }
 
+Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
+{
+    auto parameters = this->transform(axiom.get_parameters());
+    auto conditions = filter_positive_literals(this->transform(axiom.get_conditions()));
+    auto static_conditions = filter_positive_literals(this->transform(axiom.get_static_conditions()));
+    auto fluent_conditions = filter_positive_literals(this->transform(axiom.get_fluent_conditions()));
+
+    // Remove negative effects.
+    auto simple_effects = EffectSimpleList {};
+    assert(!axiom.get_literal()->is_negated());
+    const auto literal = this->transform(*axiom.get_literal());
+
+    auto delete_relaxed_axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, conditions, static_conditions, fluent_conditions);
+
+    m_delete_to_normal_axiom.emplace(delete_relaxed_axiom, &axiom);
+
+    return delete_relaxed_axiom;
+}
+
 Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
 {
     // TODO: remove axioms with negated literal, although we currently do not support such axioms anyways.
@@ -103,5 +122,7 @@ Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return th
 DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories) : BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories) {}
 
 Action DeleteRelaxTransformer::get_unrelaxed_action(Action action) const { return m_delete_to_normal_action.at(action); }
+
+Axiom DeleteRelaxTransformer::get_unrelaxed_axiom(Axiom axiom) const { return m_delete_to_normal_axiom.at(axiom); }
 
 }

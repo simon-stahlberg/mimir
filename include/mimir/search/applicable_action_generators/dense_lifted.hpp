@@ -57,13 +57,22 @@ private:
 
     void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
 
+    /// @brief Return the axiom partitioning.
+    [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
+
+    /// @brief Ground an axiom and return a view onto it.
+    [[nodiscard]] GroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
+
     /// @brief Ground an action and return a view onto it.
-    DenseAction ground_action(const Action& action, ObjectList&& binding);
+    [[nodiscard]] DenseAction ground_action(const Action& action, ObjectList&& binding);
+
+    /// @brief Return all axioms.
+    [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
 
     /// @brief Return all actions.
     [[nodiscard]] const FlatDenseActionSet& get_actions() const;

@@ -20,7 +20,7 @@ public:
     virtual ~IDynamicAE() = default;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset) = 0;
+    virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms) = 0;
 };
 
 /**
@@ -38,9 +38,9 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void generate_and_apply_axioms(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset) override
+    void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms) override
     {  //
-        self().generate_and_apply_axioms_impl(ref_ground_atoms, ref_derived_atoms_bitset);
+        self().generate_and_apply_axioms_impl(ref_state_atoms, ref_derived_atoms);
     }
 };
 

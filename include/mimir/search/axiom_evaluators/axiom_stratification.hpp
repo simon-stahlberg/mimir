@@ -17,7 +17,7 @@ public:
     explicit AxiomPartition(AxiomSet axioms);
 
     /// @brief Retrieve all axioms that have an atom with the same predicate in the body.
-    void on_generate_derived_ground_atom(GroundAtom derived_atom, AxiomSet& ref_axioms) const;
+    void retrieve_axioms_with_same_body_predicate(GroundAtom derived_atom, AxiomSet& ref_axioms) const;
 
     const AxiomSet& get_axioms() const;
 };

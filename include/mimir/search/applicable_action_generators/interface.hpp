@@ -22,7 +22,7 @@ public:
     virtual void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) = 0;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset) = 0;
+    virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms) = 0;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] virtual GroundAction get_action(size_t action_id) const = 0;
@@ -48,9 +48,9 @@ public:
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 
-    void generate_and_apply_axioms(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset) override
+    void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms) override
     {  //
-        self().generate_and_apply_axioms_impl(ref_ground_atoms, ref_derived_atoms_bitset);
+        self().generate_and_apply_axioms_impl(ref_state_atoms, ref_derived_atoms);
     }
 };
 

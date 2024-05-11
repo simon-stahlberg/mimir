@@ -97,6 +97,16 @@ public:
     }
 };
 
+const std::vector<AxiomPartition>& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axiom_partitioning() const
+{
+    return m_axiom_evaluator.get_axiom_partitioning();
+}
+
+GroundAxiom AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
+{
+    return m_axiom_evaluator.ground_axiom(axiom, std::move(binding));
+}
+
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const Action& action, ObjectList&& binding)
 {
     const auto fill_bitsets =
@@ -390,10 +400,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms)
 {
     // In the lifted case, we use the axiom evaluator.
-    m_axiom_evaluator.generate_and_apply_axioms(ref_ground_atoms, ref_derived_atoms_bitset);
+    m_axiom_evaluator.generate_and_apply_axioms(ref_state_atoms, ref_derived_atoms);
 }
 
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
@@ -432,9 +442,11 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     }
 }
 
-[[nodiscard]] const FlatDenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
+const FlatDenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axioms() const { return m_axiom_evaluator.get_axioms(); }
 
-[[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
+const FlatDenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
+
+ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {
     return m_actions_by_index.at(action_id);
 }

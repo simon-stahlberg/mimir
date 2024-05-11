@@ -71,8 +71,8 @@ private:
 
 public:
     /* Precondition */
-    [[nodiscard]] FlatBitsetBuilder& get_positive_precondition_bitset() { return m_builder.get<3>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_negative_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<3>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<4>(); }
     /* Simple effect */
     // We use positive numbers for add and negative numbers for delete effects
     [[nodiscard]] int32_t& get_simple_effect() { return m_builder.get<5>(); }
@@ -114,15 +114,15 @@ public:
     explicit ConstView(FlatDenseAxiom view) : m_view(view) {}
 
     /* Precondition */
-    [[nodiscard]] FlatBitset get_positive_precondition_bitset() const { return m_view.get<3>(); }
-    [[nodiscard]] FlatBitset get_negative_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<3>(); }
+    [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<4>(); }
     /* Effect*/
     [[nodiscard]] int32_t get_simple_effect() const { return m_view.get<5>(); }
 
-    [[nodiscard]] bool is_applicable(DenseState state) const
+    [[nodiscard]] bool is_applicable(const FlatBitsetBuilder& state_bitset) const
     {
-        const auto state_bitset = state.get_atoms_bitset();
-        return state_bitset.is_superseteq(get_positive_precondition_bitset()) && state_bitset.are_disjoint(get_negative_precondition_bitset());
+        return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
+               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
     }
 };
 

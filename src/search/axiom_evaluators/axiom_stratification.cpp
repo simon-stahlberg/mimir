@@ -22,7 +22,7 @@ AxiomPartition::AxiomPartition(AxiomSet axioms) : m_axioms(std::move(axioms)), m
     }
 }
 
-void AxiomPartition::on_generate_derived_ground_atom(GroundAtom derived_atom, AxiomSet& ref_axioms) const
+void AxiomPartition::retrieve_axioms_with_same_body_predicate(GroundAtom derived_atom, AxiomSet& ref_axioms) const
 {
     auto it = m_axioms_by_body_predicates.find(derived_atom->get_predicate());
     if (it != m_axioms_by_body_predicates.end())

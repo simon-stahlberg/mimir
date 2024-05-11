@@ -48,13 +48,19 @@ private:
     /* Implement IStaticAE interface */
     friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms);
 
 public:
     AE(Problem problem, PDDLFactories& pddl_factories);
 
+    /// @brief Return the axiom partitioning.
+    [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
+
     /// @brief Ground an axiom and return a view onto it.
-    GroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
+    [[nodiscard]] GroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
+
+    /// @brief Return all axioms.
+    [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
 };
 
 /**

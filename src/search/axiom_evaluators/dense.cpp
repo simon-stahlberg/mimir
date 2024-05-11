@@ -8,12 +8,6 @@
 namespace mimir
 {
 
-static bool is_applicable(const FlatBitsetBuilder& state_atoms, GroundAxiom axiom)
-{
-    return state_atoms.is_superseteq(axiom.get_positive_precondition_bitset())  //
-           && state_atoms.are_disjoint(axiom.get_negative_precondition_bitset());
-}
-
 bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms) const
 {
     for (const auto& literal : axiom->get_fluent_conditions())
@@ -33,7 +27,7 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
 
     const auto grounded_axiom = ground_axiom(axiom, {});
 
-    if (is_applicable(state_atoms, grounded_axiom))
+    if (grounded_axiom.is_applicable(state_atoms))
     {
         out_applicable_axioms.emplace_back(grounded_axiom);
     }
@@ -47,7 +41,7 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatB
     {
         auto grounded_axiom = ground_axiom(axiom, { object });
 
-        if (is_applicable(state_atoms, grounded_axiom))
+        if (grounded_axiom.is_applicable(state_atoms))
         {
             out_applicable_axioms.emplace_back(grounded_axiom);
         }
@@ -105,19 +99,19 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
         // TODO: We do not need to check applicability if axiom consists of at most binary predicates in the precondition.
         // Add this information to the FlatAction struct.
 
-        if (is_applicable(state_atoms, grounded_axiom))
+        if (grounded_axiom.is_applicable(state_atoms))
         {
             out_applicable_axioms.push_back(grounded_axiom);
         }
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset)
+void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms)
 {
     /* 1. Initialize assignment set */
 
     auto ground_atoms = GroundAtomList {};
-    for (const auto& atom_id : ref_ground_atoms)
+    for (const auto& atom_id : ref_state_atoms)
     {
         ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
     }
@@ -137,11 +131,10 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
     {
         bool reached_partition_fixed_point;
 
+        // Optimization 1: Track new ground atoms to simplify the clique enumeration graph in the next iteration.
         auto new_ground_atoms = ground_atoms;
 
-        auto num_iterations = 0;
-
-        // Track axioms that might trigger in next iteration.
+        // Optimization 2: Track axioms that might trigger in next iteration.
         // Note: this gives a good speedup.
         auto relevant_axioms = partition.get_axioms();
 
@@ -151,19 +144,19 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
             for (const auto& axiom : relevant_axioms)
             {
-                if (nullary_preconditions_hold(axiom, ref_ground_atoms))
+                if (nullary_preconditions_hold(axiom, ref_state_atoms))
                 {
                     if (axiom->get_arity() == 0)
                     {
-                        nullary_case(axiom, ref_ground_atoms, applicable_axioms);
+                        nullary_case(axiom, ref_state_atoms, applicable_axioms);
                     }
                     else if (axiom->get_arity() == 1)
                     {
-                        unary_case(axiom, ref_ground_atoms, applicable_axioms);
+                        unary_case(axiom, ref_state_atoms, applicable_axioms);
                     }
                     else
                     {
-                        general_case(assignment_sets, axiom, ref_ground_atoms, applicable_axioms);
+                        general_case(assignment_sets, axiom, ref_state_atoms, applicable_axioms);
                     }
                 }
             }
@@ -174,10 +167,12 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
             for (const auto& grounded_axiom : applicable_axioms)
             {
                 const auto grounded_atom_id = grounded_axiom.get_simple_effect();
-                if (!ref_ground_atoms.get(grounded_atom_id))
+
+                if (!ref_state_atoms.get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     const auto new_ground_atom = m_pddl_factories.get_ground_atom(grounded_atom_id);
+                    reached_partition_fixed_point = false;
 
                     // Update new ground atoms to speed up successive iterations, i.e.,
                     // only cliques that takes these new atoms into account must be computed.
@@ -187,13 +182,12 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
                     // Update the assignment set
                     assignment_sets.insert_ground_atom(new_ground_atom);
 
-                    // Update relevant axioms
-                    partition.on_generate_derived_ground_atom(new_ground_atom, relevant_axioms);
-
-                    reached_partition_fixed_point = false;
+                    // Retrieve relevant axioms
+                    partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
                 }
-                ref_ground_atoms.set(grounded_atom_id);
-                ref_derived_atoms_bitset.set(grounded_atom_id);
+
+                ref_state_atoms.set(grounded_atom_id);
+                ref_derived_atoms.set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);
@@ -202,7 +196,17 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
 AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
 {
-    /* 1. Initialize axiom partitioning using stratification */
+    /* 1. Error checking */
+
+    for (const auto& literal : problem->get_initial_literals())
+    {
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("Negative literals in the initial state is not supported.");
+        }
+    }
+
+    /* 2. Initialize axiom partitioning using stratification */
     auto axioms = m_problem->get_domain()->get_axioms();
     axioms.insert(axioms.end(), m_problem->get_axioms().begin(), m_problem->get_axioms().end());
 
@@ -219,7 +223,7 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
 
     m_partitioning = compute_axiom_partitioning(axioms, derived_predicates);
 
-    /* 2. Initialize static consistency graph */
+    /* 3. Initialize static consistency graph */
 
     auto static_initial_atoms = GroundAtomList {};
     to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
@@ -232,6 +236,8 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
             consistency_graph::StaticConsistencyGraph(m_problem, 0, axiom->get_arity(), axiom->get_static_conditions(), static_assignment_set));
     }
 }
+
+const std::vector<AxiomPartition>& AE<AEDispatcher<DenseStateTag>>::get_axiom_partitioning() const { return m_partitioning; }
 
 GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
 {
@@ -265,8 +271,8 @@ GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, Ob
     }
 
     /* Precondition */
-    auto& positive_precondition = m_axiom_builder.get_positive_precondition_bitset();
-    auto& negative_precondition = m_axiom_builder.get_negative_precondition_bitset();
+    auto& positive_precondition = m_axiom_builder.get_applicability_positive_precondition_bitset();
+    auto& negative_precondition = m_axiom_builder.get_applicability_negative_precondition_bitset();
     positive_precondition.unset_all();
     negative_precondition.unset_all();
     fill_bitsets(axiom->get_conditions(), positive_precondition, negative_precondition, binding);
@@ -288,4 +294,6 @@ GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, Ob
 
     return result_axiom;
 }
+
+const FlatDenseAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_axioms() const { return m_axioms; }
 }

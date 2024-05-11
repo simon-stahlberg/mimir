@@ -39,8 +39,10 @@ private:
     using BaseCachedRecurseTransformer::transform_impl;
 
     std::unordered_map<Action, Action> m_delete_to_normal_action;
+    std::unordered_map<Axiom, Axiom> m_delete_to_normal_axiom;
 
     Action transform_impl(const ActionImpl& action);
+    Axiom transform_impl(const AxiomImpl& axiom);
     Domain transform_impl(const DomainImpl& domain);
 
     Problem run_impl(const ProblemImpl& problem);
@@ -49,6 +51,8 @@ public:
     explicit DeleteRelaxTransformer(PDDLFactories& pddl_factories);
 
     Action get_unrelaxed_action(Action action) const;
+
+    Axiom get_unrelaxed_axiom(Axiom axiom) const;
 };
 }
 
