@@ -11,6 +11,30 @@
 namespace mimir
 {
 
+AxiomPartition::AxiomPartition(AxiomSet axioms) : m_axioms(std::move(axioms)), m_axioms_by_body_predicates()
+{
+    for (const auto& axiom : m_axioms)
+    {
+        for (const auto& literal : axiom->get_fluent_conditions())
+        {
+            m_axioms_by_body_predicates[literal->get_atom()->get_predicate()].insert(axiom);
+        }
+    }
+}
+
+void AxiomPartition::on_generate_derived_ground_atom(GroundAtom derived_atom, AxiomSet& ref_axioms) const
+{
+    auto it = m_axioms_by_body_predicates.find(derived_atom->get_predicate());
+    if (it != m_axioms_by_body_predicates.end())
+    {
+        const auto& relevant_axioms = it->second;
+
+        ref_axioms.insert(relevant_axioms.begin(), relevant_axioms.end());
+    }
+}
+
+const AxiomSet& AxiomPartition::get_axioms() const { return m_axioms; }
+
 /// @brief Compute occurrences of predicates in axiom heads
 /// @param axioms a set of axioms
 /// @param predicates the set of all predicates occuring in axioms
@@ -156,28 +180,30 @@ static std::vector<PredicateSet> compute_stratification(const AxiomList& axioms,
     return stratification;
 }
 
-std::vector<AxiomList> compute_axiom_partitioning(const AxiomList& axioms, const PredicateList& derived_predicates)
+std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, const PredicateList& derived_predicates)
 {
     const auto stratification = compute_stratification(axioms, derived_predicates);
 
-    auto axiom_partitioning = std::vector<AxiomList> {};
+    const auto derived_predicate_set = PredicateSet(derived_predicates.begin(), derived_predicates.end());
+
+    auto axiom_partitioning = std::vector<AxiomPartition> {};
 
     auto remaining_axioms = AxiomSet(axioms.begin(), axioms.end());
     for (const auto& stratum : stratification)
     {
-        auto partition = AxiomList {};
+        auto partition = AxiomSet {};
         for (const auto& axiom : remaining_axioms)
         {
             if (stratum.count(axiom->get_literal()->get_atom()->get_predicate()))
             {
-                partition.push_back(axiom);
+                partition.insert(axiom);
             }
         }
         for (const auto& axiom : partition)
         {
             remaining_axioms.erase(axiom);
         }
-        axiom_partitioning.push_back(std::move(partition));
+        axiom_partitioning.push_back(AxiomPartition(std::move(partition)));
     }
 
     return axiom_partitioning;

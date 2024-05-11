@@ -2,7 +2,6 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/grounding_utils.hpp"
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 
@@ -140,11 +139,17 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
         auto new_ground_atoms = ground_atoms;
 
+        auto num_iterations = 0;
+
+        // Track axioms that might trigger in next iteration.
+        // Note: this gives a good speedup.
+        auto relevant_axioms = partition.get_axioms();
+
         do
         {
             reached_partition_fixed_point = true;
 
-            for (const auto& axiom : partition)
+            for (const auto& axiom : relevant_axioms)
             {
                 if (nullary_preconditions_hold(axiom, ref_ground_atoms))
                 {
@@ -164,6 +169,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
             }
 
             new_ground_atoms.clear();
+            relevant_axioms.clear();
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
@@ -180,6 +186,9 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
                     // Update the assignment set
                     assignment_sets.insert_ground_atom(new_ground_atom);
+
+                    // Update relevant axioms
+                    partition.on_generate_derived_ground_atom(new_ground_atom, relevant_axioms);
 
                     reached_partition_fixed_point = false;
                 }

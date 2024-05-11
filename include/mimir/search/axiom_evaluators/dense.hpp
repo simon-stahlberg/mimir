@@ -6,6 +6,7 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
+#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/axioms.hpp"
 #include "mimir/search/states.hpp"
@@ -27,7 +28,7 @@ private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
 
-    std::vector<AxiomList> m_partitioning;
+    std::vector<AxiomPartition> m_partitioning;
 
     FlatDenseAxiomSet m_axioms;
     DenseAxiomList m_axioms_by_index;
