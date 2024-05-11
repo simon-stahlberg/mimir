@@ -29,16 +29,25 @@ private:
 
     std::vector<AxiomList> m_partitioning;
 
-    void nullary_case(const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms);
+    FlatDenseAxiomSet m_axioms;
+    DenseAxiomList m_axioms_by_index;
+    DenseAxiomBuilder m_axiom_builder;
 
-    void unary_case(const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms);
+    std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
 
-    void general_case(const AssignmentSet& assignment_sets, const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms);
+    /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
+    bool nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms) const;
+
+    void nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms);
+
+    void unary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms);
+
+    void general_case(const AssignmentSet& assignment_sets, const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms);
 
     /* Implement IStaticAE interface */
     friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset);
 
 public:
     AE(Problem problem, PDDLFactories& pddl_factories);

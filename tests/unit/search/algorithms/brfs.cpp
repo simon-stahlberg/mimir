@@ -289,6 +289,28 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
  * Miconic-fulladl
  */
 
+/*
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFulladlTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+                            fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
+                            true);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+}
+*/
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFulladlTest)
+{
+    auto brfs = BrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+                            fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
+                            false);
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+}
+
 /**
  * Miconic-simpleadl
  */

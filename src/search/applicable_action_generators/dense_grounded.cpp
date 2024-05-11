@@ -211,7 +211,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
     m_match_tree.get_applicable_actions(state, out_applicable_actions);
 }
 
-void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms)
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset)
 {
     // In the grounded case, we traverse a match tree, apply axioms, and repeat until fixed point.
 }

@@ -79,4 +79,6 @@ const LiteralList& AxiomImpl::get_static_conditions() const { return m_static_co
 
 const LiteralList& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
+size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
+
 }

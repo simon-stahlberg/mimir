@@ -602,8 +602,8 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
                                                  fluent_predicates,
                                                  derived_predicates,
                                                  functions,
-                                                 actions,
-                                                 axioms);
+                                                 uniquify_elements(actions),
+                                                 uniquify_elements(axioms));
 }
 
 /**

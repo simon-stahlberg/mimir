@@ -26,6 +26,9 @@ private:
     FlatDenseStateSet m_states;
     DenseStateBuilder m_state_builder;
 
+    // We need to unset all derived atoms before fixed point iteration
+    FlatBitsetBuilder m_derived_atoms_bitset;
+
     /* Implement IStaticSSG interface */
     friend class IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>;
 
@@ -58,7 +61,8 @@ private:
         }
 
         /* Axioms */
-        m_aag->generate_and_apply_axioms(state_bitset);
+        state_bitset -= m_derived_atoms_bitset;
+        m_aag->generate_and_apply_axioms(state_bitset, m_derived_atoms_bitset);
 
         /* Construct the state and store it. */
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
@@ -106,7 +110,8 @@ private:
         }
 
         /* Axioms */
-        m_aag->generate_and_apply_axioms(state_bitset);
+        state_bitset -= m_derived_atoms_bitset;
+        m_aag->generate_and_apply_axioms(state_bitset, m_derived_atoms_bitset);
 
         /* Construct the state and store it. */
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();

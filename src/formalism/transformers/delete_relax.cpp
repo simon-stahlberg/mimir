@@ -17,6 +17,8 @@
 
 #include "mimir/formalism/transformers/delete_relax.hpp"
 
+#include "mimir/formalism/translators/utils.hpp"
+
 namespace mimir
 {
 
@@ -79,6 +81,21 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     m_delete_to_normal_action.emplace(delete_relaxed_action, &action);
 
     return delete_relaxed_action;
+}
+
+Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
+{
+    // TODO: remove axioms with negated literal, although we currently do not support such axioms anyways.
+    return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+                                                       this->transform(*domain.get_requirements()),
+                                                       this->transform(domain.get_constants()),
+                                                       this->transform(domain.get_predicates()),
+                                                       this->transform(domain.get_static_predicates()),
+                                                       this->transform(domain.get_fluent_predicates()),
+                                                       this->transform(domain.get_derived_predicates()),
+                                                       this->transform(domain.get_functions()),
+                                                       uniquify_elements(this->transform(domain.get_actions())),
+                                                       uniquify_elements(this->transform(domain.get_axioms())));
 }
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }

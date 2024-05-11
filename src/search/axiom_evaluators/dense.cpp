@@ -1,21 +1,119 @@
 #include "mimir/search/axiom_evaluators/dense.hpp"
 
+#include "mimir/algorithms/kpkc.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted/grounding_utils.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
+
+#include <boost/dynamic_bitset.hpp>
 
 namespace mimir
 {
-void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms) {}
 
-void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, DenseState state, GroundAxiomList& out_applicable_axioms) {}
+static bool is_applicable(const FlatBitsetBuilder& state_atoms, GroundAxiom axiom)
+{
+    return state_atoms.is_superseteq(axiom.get_positive_precondition_bitset())  //
+           && state_atoms.are_disjoint(axiom.get_negative_precondition_bitset());
+}
+
+bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms) const
+{
+    for (const auto& literal : axiom->get_fluent_conditions())
+    {
+        if (literal->get_atom()->get_predicate()->get_arity() == 0
+            && !state_atoms.get(ground_literal(literal, {}, m_pddl_factories)->get_atom()->get_identifier()))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms)
+{
+    // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
+
+    const auto grounded_axiom = ground_axiom(axiom, {});
+
+    if (is_applicable(state_atoms, grounded_axiom))
+    {
+        out_applicable_axioms.emplace_back(grounded_axiom);
+    }
+}
+
+void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms)
+{
+    // There is only one parameter, try all bindings with the correct type.
+
+    for (const auto& object : m_problem->get_objects())
+    {
+        auto grounded_axiom = ground_axiom(axiom, { object });
+
+        if (is_applicable(state_atoms, grounded_axiom))
+        {
+            out_applicable_axioms.emplace_back(grounded_axiom);
+        }
+    }
+}
 
 void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignment_sets,
                                                    const Axiom& axiom,
-                                                   DenseState state,
+                                                   const FlatBitsetBuilder& state_atoms,
                                                    GroundAxiomList& out_applicable_axioms)
 {
+    const auto& precondition_graph = m_static_consistency_graphs.at(axiom);
+    const auto num_vertices = precondition_graph.get_vertices().size();
+
+    std::vector<boost::dynamic_bitset<>> adjacency_matrix(num_vertices, boost::dynamic_bitset<>(num_vertices));
+
+    // D: Restrict statically consistent assignments based on the assignments in the current state
+    //    and build the consistency graph as an adjacency matrix
+    for (const auto& edge : precondition_graph.get_edges())
+    {
+        if (assignment_sets.literal_all_consistent(axiom->get_fluent_conditions(), edge))
+        {
+            const auto first_id = edge.get_src().get_id();
+            const auto second_id = edge.get_dst().get_id();
+            auto& first_row = adjacency_matrix[first_id];
+            auto& second_row = adjacency_matrix[second_id];
+            first_row[second_id] = 1;
+            second_row[first_id] = 1;
+        }
+    }
+
+    // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
+    // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
+    // parameters) tends to be very small.
+
+    const auto& partitions = precondition_graph.get_vertices_by_parameter_index();
+    std::vector<std::vector<std::size_t>> cliques;
+    find_all_k_cliques_in_k_partite_graph(adjacency_matrix, partitions, cliques);
+
+    for (const auto& clique : cliques)
+    {
+        auto terms = ObjectList(axiom->get_arity());
+
+        for (std::size_t vertex_index = 0; vertex_index < axiom->get_arity(); ++vertex_index)
+        {
+            const auto vertex_id = clique[vertex_index];
+            const auto& vertex = precondition_graph.get_vertices()[vertex_id];
+            const auto parameter_index = vertex.get_param_index();
+            const auto object_id = vertex.get_object_index();
+            terms[parameter_index] = m_pddl_factories.get_object(object_id);
+        }
+
+        const auto grounded_axiom = ground_axiom(axiom, std::move(terms));
+
+        // TODO: We do not need to check applicability if axiom consists of at most binary predicates in the precondition.
+        // Add this information to the FlatAction struct.
+
+        if (is_applicable(state_atoms, grounded_axiom))
+        {
+            out_applicable_axioms.push_back(grounded_axiom);
+        }
+    }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms)
+void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset)
 {
     // The more ground atoms we add, the more positions in the assignment set are being set to true.
     // Hence, one can probably do better bookkeeping for edge removal in the consistency graph
@@ -23,7 +121,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
     // Lets start with a naive implementation where we compute an overapproximation of the ground axioms
     // to ensure that the translation yields correct axioms.
 
-    std::cout << "generate_and_apply_axioms_impl" << std::endl;
+    // std::cout << "generate_and_apply_axioms_impl" << std::endl;
 
     auto ground_atoms = GroundAtomList {};
     for (const auto& atom_id : ref_ground_atoms)
@@ -31,7 +129,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
         ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
     }
 
-    const auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
+    auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
 
     // Bookkeeping to avoid grounding identical bindings
     auto instantiated_groundings = std::unordered_map<Axiom, std::unordered_set<ObjectList, loki::hash_container_type<ObjectList>>> {};
@@ -41,6 +139,8 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
     /* Fixed point computation */
     auto added_ground_atoms = GroundAtomList {};
+
+    auto applicable_axioms = GroundAxiomList {};
 
     // Compute fixed point for partitioning
     do
@@ -55,36 +155,50 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
             {
                 before_processing_partition = added_ground_atoms.size();
 
+                // TODO: instead of reinstatiation, we can simply add the newly added atoms
+                assignment_sets = AssignmentSet(m_problem, ground_atoms);
+
                 for (const auto& axiom : partition)
                 {
                     // TODO: Compute applicable axioms, apply them, update bookkeeping
+                    if (nullary_preconditions_hold(axiom, ref_ground_atoms))
+                    {
+                        if (axiom->get_arity() == 0)
+                        {
+                            nullary_case(axiom, ref_ground_atoms, applicable_axioms);
+                        }
+                        else if (axiom->get_arity() == 1)
+                        {
+                            unary_case(axiom, ref_ground_atoms, applicable_axioms);
+                        }
+                        else
+                        {
+                            general_case(assignment_sets, axiom, ref_ground_atoms, applicable_axioms);
+                        }
+                    }
+                }
+                for (const auto& grounded_axiom : applicable_axioms)
+                {
+                    const auto grounded_atom_id = grounded_axiom.get_simple_effect();
+                    if (!ref_ground_atoms.get(grounded_atom_id))
+                    {
+                        const auto added_ground_atom = m_pddl_factories.get_ground_atom(grounded_atom_id);
+                        ground_atoms.push_back(added_ground_atom);
+                        added_ground_atoms.push_back(added_ground_atom);
+                    }
+                    ref_ground_atoms.set(grounded_atom_id);
+                    ref_derived_atoms_bitset.set(grounded_atom_id);
                 }
 
             } while (before_processing_partition != added_ground_atoms.size());
         }
 
     } while (!added_ground_atoms.empty());
-
-    for (const auto& axiom : m_problem->get_axioms())
-    {
-        std::cout << "axiom: " << *axiom->get_literal() << std::endl;
-        std::cout << "parameters: [";
-        for (const auto& parameter : axiom->get_parameters())
-        {
-            std::cout << *parameter << " ,";
-        }
-        std::cout << "]" << std::endl;
-        std::cout << "conditions: [";
-        for (const auto& literal : axiom->get_conditions())
-        {
-            std::cout << *literal << " ,";
-        }
-        std::cout << "]" << std::endl;
-    }
 }
 
 AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
 {
+    /* 1. Initialize axiom partitioning using stratification */
     auto axioms = m_problem->get_domain()->get_axioms();
     axioms.insert(axioms.end(), m_problem->get_axioms().begin(), m_problem->get_axioms().end());
 
@@ -100,6 +214,75 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
     derived_predicates.insert(derived_predicates.end(), m_problem->get_derived_predicates().begin(), m_problem->get_derived_predicates().end());
 
     m_partitioning = compute_axiom_partitioning(axioms, derived_predicates);
+
+    /* 2. Initialize static consistency graph */
+
+    auto static_initial_atoms = GroundAtomList {};
+    to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
+    const auto static_assignment_set = AssignmentSet(m_problem, static_initial_atoms);
+
+    for (const auto& axiom : axioms)
+    {
+        m_static_consistency_graphs.emplace(
+            axiom,
+            consistency_graph::StaticConsistencyGraph(m_problem, 0, axiom->get_arity(), axiom->get_static_conditions(), static_assignment_set));
+    }
+}
+
+GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
+{
+    const auto fill_bitsets =
+        [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = ground_literal(literal, binding, m_pddl_factories);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    };
+
+    /* Header */
+
+    m_axiom_builder.get_id() = m_axioms.size();
+    m_axiom_builder.get_axiom() = axiom;
+    auto& objects = m_axiom_builder.get_objects();
+    objects.clear();
+    for (const auto& obj : binding)
+    {
+        objects.push_back(obj);
+    }
+
+    /* Precondition */
+    auto& positive_precondition = m_axiom_builder.get_positive_precondition_bitset();
+    auto& negative_precondition = m_axiom_builder.get_negative_precondition_bitset();
+    positive_precondition.unset_all();
+    negative_precondition.unset_all();
+    fill_bitsets(axiom->get_conditions(), positive_precondition, negative_precondition, binding);
+
+    /* Effect */
+    const auto grounded_literal = ground_literal(axiom->get_literal(), binding, m_pddl_factories);
+    assert(!grounded_literal->is_negated());
+    m_axiom_builder.get_simple_effect() = grounded_literal->get_atom()->get_identifier();
+
+    auto& flatmemory_builder = m_axiom_builder.get_flatmemory_builder();
+    flatmemory_builder.finish();
+
+    const auto [iter, inserted] = m_axioms.insert(flatmemory_builder);
+    const auto result_axiom = DenseAxiom(*iter);
+    if (inserted)
+    {
+        m_axioms_by_index.push_back(result_axiom);
+    }
+
+    return result_axiom;
 }
 
 }

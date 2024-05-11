@@ -137,8 +137,8 @@ static std::vector<PredicateSet> compute_stratification(const AxiomList& axioms,
         auto stratum = PredicateSet {};
         for (const auto& predicate_1 : remaining)
         {
-            if (std::any_of(derived_predicates.begin(),
-                            derived_predicates.end(),
+            if (std::all_of(remaining.begin(),
+                            remaining.end(),
                             [&R, &predicate_1](const auto& predicate_2) { return R.at(predicate_2).at(predicate_1) != StratumStatus::STRICTLY_LOWER; }))
             {
                 stratum.insert(predicate_1);

@@ -91,10 +91,10 @@ extern std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unorde
 
 /// @brief Uniquify elements in a vector of elements.
 template<typename T>
-extern std::vector<const T*> uniquify_elements(const std::vector<const T*>& vec)
+extern std::vector<T> uniquify_elements(const std::vector<T>& vec)
 {
-    std::unordered_set<const T*> set(vec.begin(), vec.end());
-    return std::vector<const T*>(set.begin(), set.end());
+    std::unordered_set<T> set(vec.begin(), vec.end());
+    return std::vector<T>(set.begin(), set.end());
 }
 
 /// @brief Convert a number to a hex string

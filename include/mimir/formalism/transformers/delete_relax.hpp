@@ -41,6 +41,7 @@ private:
     std::unordered_map<Action, Action> m_delete_to_normal_action;
 
     Action transform_impl(const ActionImpl& action);
+    Domain transform_impl(const DomainImpl& domain);
 
     Problem run_impl(const ProblemImpl& problem);
 

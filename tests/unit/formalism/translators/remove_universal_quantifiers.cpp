@@ -10,7 +10,7 @@ namespace mimir::tests
 TEST(MimirTests, FormalismTranslatorsRemoveUniversalQuantifiers)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/problem.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
 
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);

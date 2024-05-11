@@ -43,12 +43,6 @@ private:
 
     std::unordered_map<Action, consistency_graph::Graphs> m_static_consistency_graphs;
 
-    GroundLiteral ground_literal(const Literal& literal, const ObjectList& binding) const;
-
-    /**
-     * Precondition
-     */
-
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_preconditions_hold(const Action& action, DenseState state) const;
 
@@ -63,7 +57,7 @@ private:
 
     void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
