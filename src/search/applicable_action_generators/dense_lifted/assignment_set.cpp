@@ -9,7 +9,7 @@
 namespace mimir
 {
 // We use this as special value and when adding 1 we obtain 0.
-static const size_t SIZE_T_MAX = std::numeric_limits<size_t>::max();
+static const size_t MAX_VALUE = std::numeric_limits<size_t>::max();
 
 /// @brief Encapsulate assignment of objects to variables of atoms.
 struct Assignment
@@ -89,13 +89,13 @@ AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms
         for (size_t first_position = 0; first_position < arity; ++first_position)
         {
             const auto& first_object = arguments[first_position];
-            assignment_set[get_assignment_position(Assignment { first_position, first_object->get_identifier(), SIZE_T_MAX, SIZE_T_MAX }, arity, num_objects)] =
+            assignment_set[get_assignment_position(Assignment { first_position, first_object->get_identifier(), MAX_VALUE, MAX_VALUE }, arity, num_objects)] =
                 true;
 
             for (size_t second_position = first_position + 1; second_position < arity; ++second_position)
             {
                 const auto& second_object = arguments[second_position];
-                assignment_set[get_assignment_position(Assignment { second_position, second_object->get_identifier(), SIZE_T_MAX, SIZE_T_MAX },
+                assignment_set[get_assignment_position(Assignment { second_position, second_object->get_identifier(), MAX_VALUE, MAX_VALUE },
                                                        arity,
                                                        num_objects)] = true;
                 assignment_set[get_assignment_position(
@@ -142,12 +142,12 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
                     }
                 }
             }
-            return std::make_pair(SIZE_T_MAX, SIZE_T_MAX);
+            return std::make_pair(MAX_VALUE, MAX_VALUE);
         };
 
         // Find nonempty assignment
         const auto [first_position, first_object_id] = find_assignment(0, literal->get_atom()->get_terms(), consistent_edge);
-        bool is_empty_assignment = (first_object_id == SIZE_T_MAX);
+        bool is_empty_assignment = (first_object_id == MAX_VALUE);
         if (is_empty_assignment)
         {
             continue;
@@ -204,12 +204,12 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
                     }
                 }
             }
-            return std::make_pair(SIZE_T_MAX, SIZE_T_MAX);
+            return std::make_pair(MAX_VALUE, MAX_VALUE);
         };
 
         // Find nonempty assignment
         const auto [position, object_id] = find_assignment(0, literal->get_atom()->get_terms(), consistent_vertex);
-        bool is_empty_assignment = (object_id == SIZE_T_MAX);
+        bool is_empty_assignment = (object_id == MAX_VALUE);
         if (is_empty_assignment)
         {
             continue;
@@ -217,8 +217,7 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
 
         // Test assignment
         const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-        const auto assignment_rank =
-            get_assignment_position(Assignment { position, object_id, SIZE_T_MAX, SIZE_T_MAX }, arity, m_problem->get_objects().size());
+        const auto assignment_rank = get_assignment_position(Assignment { position, object_id, MAX_VALUE, MAX_VALUE }, arity, m_problem->get_objects().size());
         assert(assignment_rank < assignment_set.size());
         const auto consistent_with_state = assignment_set[assignment_rank];
         if (literal->is_negated() == consistent_with_state)
