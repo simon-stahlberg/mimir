@@ -115,85 +115,80 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
 
 void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_ground_atoms, FlatBitsetBuilder& ref_derived_atoms_bitset)
 {
-    // The more ground atoms we add, the more positions in the assignment set are being set to true.
-    // Hence, one can probably do better bookkeeping for edge removal in the consistency graph
-    // And iteratively add back previously removed edges
-    // Lets start with a naive implementation where we compute an overapproximation of the ground axioms
-    // to ensure that the translation yields correct axioms.
-
-    // std::cout << "generate_and_apply_axioms_impl" << std::endl;
+    /* 1. Initialize assignment set */
 
     auto ground_atoms = GroundAtomList {};
     for (const auto& atom_id : ref_ground_atoms)
     {
         ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
     }
-
     auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
 
-    // Bookkeeping to avoid grounding identical bindings
-    auto instantiated_groundings = std::unordered_map<Axiom, std::unordered_set<ObjectList, loki::hash_container_type<ObjectList>>> {};
+    /* 2. Initialize bookkeeping */
+
     // Bookkeeping to readd removed statically consistent edges
     auto removed_statically_consistant_edges = std::unordered_map<Axiom, std::vector<consistency_graph::Edges>> {};
     // Note: when adding back edges, only strongly connected components readded edges must be considered for clique enumeration
 
-    /* Fixed point computation */
-    auto added_ground_atoms = GroundAtomList {};
+    /* 3. Fixed point computation */
 
     auto applicable_axioms = GroundAxiomList {};
 
-    // Compute fixed point for partitioning
-    do
+    for (const auto& partition : m_partitioning)
     {
-        added_ground_atoms.clear();
+        bool reached_partition_fixed_point;
 
-        for (const auto& partition : m_partitioning)
+        auto new_ground_atoms = ground_atoms;
+
+        do
         {
-            // Compute fixed point for partition
-            auto before_processing_partition = added_ground_atoms.size();
-            do
+            reached_partition_fixed_point = true;
+
+            for (const auto& axiom : partition)
             {
-                before_processing_partition = added_ground_atoms.size();
-
-                // TODO: instead of reinstatiation, we can simply add the newly added atoms
-                assignment_sets = AssignmentSet(m_problem, ground_atoms);
-
-                for (const auto& axiom : partition)
+                if (nullary_preconditions_hold(axiom, ref_ground_atoms))
                 {
-                    // TODO: Compute applicable axioms, apply them, update bookkeeping
-                    if (nullary_preconditions_hold(axiom, ref_ground_atoms))
+                    if (axiom->get_arity() == 0)
                     {
-                        if (axiom->get_arity() == 0)
-                        {
-                            nullary_case(axiom, ref_ground_atoms, applicable_axioms);
-                        }
-                        else if (axiom->get_arity() == 1)
-                        {
-                            unary_case(axiom, ref_ground_atoms, applicable_axioms);
-                        }
-                        else
-                        {
-                            general_case(assignment_sets, axiom, ref_ground_atoms, applicable_axioms);
-                        }
+                        nullary_case(axiom, ref_ground_atoms, applicable_axioms);
+                    }
+                    else if (axiom->get_arity() == 1)
+                    {
+                        unary_case(axiom, ref_ground_atoms, applicable_axioms);
+                    }
+                    else
+                    {
+                        general_case(assignment_sets, axiom, ref_ground_atoms, applicable_axioms);
                     }
                 }
-                for (const auto& grounded_axiom : applicable_axioms)
+            }
+
+            new_ground_atoms.clear();
+
+            for (const auto& grounded_axiom : applicable_axioms)
+            {
+                const auto grounded_atom_id = grounded_axiom.get_simple_effect();
+                if (!ref_ground_atoms.get(grounded_atom_id))
                 {
-                    const auto grounded_atom_id = grounded_axiom.get_simple_effect();
-                    if (!ref_ground_atoms.get(grounded_atom_id))
-                    {
-                        const auto added_ground_atom = m_pddl_factories.get_ground_atom(grounded_atom_id);
-                        ground_atoms.push_back(added_ground_atom);
-                        added_ground_atoms.push_back(added_ground_atom);
-                    }
-                    ref_ground_atoms.set(grounded_atom_id);
-                    ref_derived_atoms_bitset.set(grounded_atom_id);
+                    // GENERATED NEW DERIVED ATOM!
+                    const auto new_ground_atom = m_pddl_factories.get_ground_atom(grounded_atom_id);
+
+                    // Update new ground atoms to speed up successive iterations, i.e.,
+                    // only cliques that takes these new atoms into account must be computed.
+                    // TODO: exploit this!
+                    new_ground_atoms.push_back(new_ground_atom);
+
+                    // Update the assignment set
+                    assignment_sets.insert_ground_atom(new_ground_atom);
+
+                    reached_partition_fixed_point = false;
                 }
+                ref_ground_atoms.set(grounded_atom_id);
+                ref_derived_atoms_bitset.set(grounded_atom_id);
+            }
 
-            } while (before_processing_partition != added_ground_atoms.size());
-        }
-
-    } while (!added_ground_atoms.empty());
+        } while (!reached_partition_fixed_point);
+    }
 }
 
 AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
@@ -284,5 +279,4 @@ GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, Ob
 
     return result_axiom;
 }
-
 }

@@ -32,7 +32,10 @@ private:
 
 public:
     /// @brief Construct from a given set of ground atoms.
-    AssignmentSet(Problem problem, const GroundAtomList& atoms);
+    AssignmentSet(Problem problem, const GroundAtomList& ground_atoms);
+
+    /// @brief Insert ground atoms into the assignment set.
+    void insert_ground_atom(GroundAtom ground_atom);
 
     /// @brief Return true iff all literals are consistent with
     /// 1. the assignment set, and 2. the edge of the consistency graph.

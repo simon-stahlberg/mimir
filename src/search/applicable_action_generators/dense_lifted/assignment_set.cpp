@@ -110,6 +110,33 @@ AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms
     }
 }
 
+void AssignmentSet::insert_ground_atom(GroundAtom ground_atom)
+{
+    const auto num_objects = m_problem->get_objects().size();
+
+    const auto& arity = ground_atom->get_arity();
+    const auto& predicate = ground_atom->get_predicate();
+    const auto& arguments = ground_atom->get_objects();
+    auto& assignment_set = m_f[predicate->get_identifier()];
+
+    for (size_t first_position = 0; first_position < arity; ++first_position)
+    {
+        const auto& first_object = arguments[first_position];
+        assignment_set[get_assignment_position(Assignment { first_position, first_object->get_identifier(), MAX_VALUE, MAX_VALUE }, arity, num_objects)] = true;
+
+        for (size_t second_position = first_position + 1; second_position < arity; ++second_position)
+        {
+            const auto& second_object = arguments[second_position];
+            assignment_set[get_assignment_position(Assignment { second_position, second_object->get_identifier(), MAX_VALUE, MAX_VALUE }, arity, num_objects)] =
+                true;
+            assignment_set[get_assignment_position(
+                Assignment { first_position, first_object->get_identifier(), second_position, second_object->get_identifier() },
+                arity,
+                num_objects)] = true;
+        }
+    }
+}
+
 bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals, const consistency_graph::Edge& consistent_edge) const
 {
     for (const auto& literal : literals)
