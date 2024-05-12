@@ -23,8 +23,6 @@ private:
 
     LiftedDenseAAG m_lifted_aag;
 
-    DenseStateBuilder m_state_builder;
-
     MatchTree<DenseAction> m_action_match_tree;
     MatchTree<DenseAxiom> m_axiom_match_tree;
 

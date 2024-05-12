@@ -40,63 +40,61 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 {
     // 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects.
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, false);
-    const auto dr_problem = delete_relax_transformer.run(*m_problem);
-    auto dr_lifted_aag = std::make_shared<LiftedDenseAAG>(dr_problem, m_pddl_factories);
-    auto dr_ssg = DenseSSG(dr_problem, dr_lifted_aag);
+    const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
+    auto delete_free_lifted_aag = std::make_shared<LiftedDenseAAG>(delete_free_problem, m_pddl_factories);
+    auto delete_free_ssg = DenseSSG(delete_free_problem, delete_free_lifted_aag);
 
-    // TODO provide conversion from view to builder in flatmemory
-    auto& state_bitset = m_state_builder.get_atoms_bitset();
-    state_bitset.unset_all();
-    for (const auto& atom_id : dr_ssg.get_or_create_initial_state(m_problem).get_atoms_bitset())
+    auto state_builder = StateBuilder();
+    auto& state_atoms = state_builder.get_atoms_bitset();
+    auto derived_atoms = FlatBitsetBuilder();
+
+    for (const auto& atom_id : delete_free_ssg.get_or_create_initial_state(m_problem).get_atoms_bitset())
     {
-        state_bitset.set(atom_id);
+        state_atoms.set(atom_id);
     }
 
-    std::cout << *dr_problem->get_domain() << std::endl;
-    std::cout << *dr_problem << std::endl;
+    std::cout << *delete_free_problem->get_domain() << std::endl;
+    std::cout << *delete_free_problem << std::endl;
 
     // Keep track of changes
     size_t num_atoms = 0;
     size_t num_actions = 0;
     // Temporary variables
-    auto state_atoms = FlatBitsetBuilder();
-    auto derived_atoms = FlatBitsetBuilder();
     auto actions = DenseActionList {};
     do
     {
         num_atoms = m_pddl_factories.get_ground_atoms().size();
-        num_actions = dr_lifted_aag->get_actions().size();
+        num_actions = delete_free_lifted_aag->get_actions().size();
 
-        m_state_builder.get_flatmemory_builder().finish();
-        const auto state = DenseState(FlatDenseState(m_state_builder.get_flatmemory_builder().buffer().data()));
+        state_builder.get_flatmemory_builder().finish();
+        const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
 
         // Create and all applicable actions and apply them
-        dr_lifted_aag->generate_applicable_actions(state, actions);
+        delete_free_lifted_aag->generate_applicable_actions(state, actions);
         for (const auto& action : actions)
         {
             const auto is_newly_generated = (action.get_id() >= num_actions);
             if (is_newly_generated)
             {
-                const auto succ_state = dr_ssg.get_or_create_successor_state(state, action);
+                const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
                 for (const auto atom_id : succ_state.get_atoms_bitset())
                 {
-                    state_bitset.set(atom_id);
+                    state_atoms.set(atom_id);
                 }
             }
         }
 
         // Create and all applicable axioms and apply them
-        state_atoms |= state_bitset;
-        dr_lifted_aag->generate_and_apply_axioms(state_atoms, derived_atoms);
+        delete_free_lifted_aag->generate_and_apply_axioms(state_atoms, derived_atoms);
 
     } while (num_atoms != m_pddl_factories.get_ground_atoms().size());
 
     std::cout << "Total number of ground atoms reachable in delete-relaxed task: " << m_pddl_factories.get_ground_atoms().size() << std::endl;
-    std::cout << "Total number of ground actions in delete-relaxed task: " << dr_lifted_aag->get_actions().size() << std::endl;
+    std::cout << "Total number of ground actions in delete-relaxed task: " << delete_free_lifted_aag->get_actions().size() << std::endl;
 
     // 2. Create ground actions
     auto ground_actions = DenseActionList {};
-    for (const auto& action : dr_lifted_aag->get_actions())
+    for (const auto& action : delete_free_lifted_aag->get_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         const auto action_proxy = DenseAction(action);
@@ -115,7 +113,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // ERROR here: some ground axioms are not being generated
     /*
-    for (const auto& axiom : dr_lifted_aag->get_axioms())
+    for (const auto& axiom : delete_free_lifted_aag->get_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         const auto axiom_proxy = DenseAxiom(axiom);

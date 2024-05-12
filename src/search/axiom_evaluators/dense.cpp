@@ -23,7 +23,7 @@ bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& ax
 
 void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms)
 {
-    // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
+    // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground axiom is applicable.
 
     const auto grounded_axiom = ground_axiom(axiom, {});
 
