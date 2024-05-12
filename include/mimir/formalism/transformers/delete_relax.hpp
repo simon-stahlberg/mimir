@@ -31,15 +31,18 @@ namespace mimir
 class DeleteRelaxTransformer : public BaseCachedRecurseTransformer<DeleteRelaxTransformer>
 {
 private:
+    bool m_keep_useless_actions_and_axioms;
+
+    // There can be a one to many relationship between relaxed and unrelaxed.
+    std::unordered_map<Action, ActionList> m_delete_to_normal_actions;
+    std::unordered_map<Axiom, AxiomList> m_delete_to_normal_axioms;
+
     /* Implement BaseTransformer interface. */
     friend class BaseCachedRecurseTransformer<DeleteRelaxTransformer>;
 
     // Provide default implementations
     using BaseCachedRecurseTransformer::prepare_impl;
     using BaseCachedRecurseTransformer::transform_impl;
-
-    std::unordered_map<Action, Action> m_delete_to_normal_action;
-    std::unordered_map<Axiom, Axiom> m_delete_to_normal_axiom;
 
     LiteralList transform_impl(const LiteralList& literals);
     EffectSimpleList transform_impl(const EffectSimpleList& effects);
@@ -59,11 +62,17 @@ private:
     Problem run_impl(const ProblemImpl& problem);
 
 public:
-    explicit DeleteRelaxTransformer(PDDLFactories& pddl_factories);
+    /// @brief
+    /// @param pddl_factories
+    /// @param keep_useless_actions_and_axioms flag to indicate whether actions
+    /// and axioms with empty effects should be kept.
+    /// We need those in the grounded successor generator.
+    /// However, we do not need them when computing relaxed plans.
+    DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool keep_useless_actions_and_axioms = false);
 
-    Action get_unrelaxed_action(Action action) const;
+    const ActionList& get_unrelaxed_actions(Action action) const;
 
-    Axiom get_unrelaxed_axiom(Axiom axiom) const;
+    const AxiomList& get_unrelaxed_axioms(Axiom axiom) const;
 };
 }
 

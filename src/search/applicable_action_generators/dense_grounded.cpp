@@ -36,8 +36,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_pddl_factories(pddl_factories),
     m_lifted_aag(m_problem, m_pddl_factories)
 {
-    // 1. Explore delete relaxed task.
-    auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories);
+    // 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects.
+    auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, true);
     const auto dr_problem = delete_relax_transformer.run(*m_problem);
     auto dr_lifted_aag = std::make_shared<LiftedDenseAAG>(dr_problem, m_pddl_factories);
     auto dr_ssg = DenseSSG(dr_problem, dr_lifted_aag);
@@ -97,9 +97,11 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         const auto action_proxy = DenseAction(action);
-        const auto& unrelaxed_action = delete_relax_transformer.get_unrelaxed_action(action_proxy.get_action());
-        auto action_arguments = ObjectList(action_proxy.get_objects().begin(), action_proxy.get_objects().end());
-        ground_actions.push_back(m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments)));
+        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(action_proxy.get_action()))
+        {
+            auto action_arguments = ObjectList(action_proxy.get_objects().begin(), action_proxy.get_objects().end());
+            ground_actions.push_back(m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments)));
+        }
     }
 
     // 3. Build match tree
@@ -111,9 +113,11 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         const auto axiom_proxy = DenseAxiom(axiom);
-        const auto& unrelaxed_axiom = delete_relax_transformer.get_unrelaxed_axiom(axiom_proxy.get_axiom());
-        auto axiom_arguments = ObjectList(axiom_proxy.get_objects().begin(), axiom_proxy.get_objects().end());
-        ground_axioms.push_back(m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments)));
+        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(axiom_proxy.get_axiom()))
+        {
+            auto axiom_arguments = ObjectList(axiom_proxy.get_objects().begin(), axiom_proxy.get_objects().end());
+            ground_axioms.push_back(m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments)));
+        }
     }
 
     // 3. Build match tree
@@ -121,7 +125,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     std::cout << "Total number of ground actions in task: " << ground_actions.size() << std::endl;
     std::cout << "Total number of ground axioms in task: " << ground_axioms.size() << std::endl;
-    std::cout << "Total number of nodes in match tree: " << m_action_match_tree.get_num_nodes() << std::endl;
+    std::cout << "Total number of nodes in action match tree: " << m_action_match_tree.get_num_nodes() << std::endl;
+    std::cout << "Total number of nodes in axiom match tree: " << m_axiom_match_tree.get_num_nodes() << std::endl;
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseActionList& out_applicable_actions)

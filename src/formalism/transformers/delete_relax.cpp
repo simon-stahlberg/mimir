@@ -178,8 +178,9 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto simple_effects = this->transform(action.get_simple_effects());
     auto conditional_effects = this->transform(action.get_conditional_effects());
     auto universal_effects = this->transform(action.get_universal_effects());
-    if (simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
+    if (!m_keep_useless_actions_and_axioms && simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
     {
+        throw std::runtime_error("We do not want to enter this branch for now.");
         return nullptr;
     }
 
@@ -199,7 +200,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                              universal_effects,
                                                                              cost_expression);
 
-    m_delete_to_normal_action.emplace(delete_relaxed_action, &action);
+    m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
 
     return delete_relaxed_action;
 }
@@ -207,9 +208,9 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 {
     const auto literal = this->transform(*axiom.get_literal());
-    if (!literal)
+    if (!m_keep_useless_actions_and_axioms && !literal)
     {
-        return nullptr;
+        throw std::runtime_error("Axioms with negative effect are not supported.");
     }
 
     auto parameters = this->transform(axiom.get_parameters());
@@ -219,7 +220,7 @@ Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 
     auto delete_relaxed_axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, conditions, static_conditions, fluent_conditions);
 
-    m_delete_to_normal_axiom.emplace(delete_relaxed_axiom, &axiom);
+    m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(&axiom);
 
     return delete_relaxed_axiom;
 }
@@ -240,10 +241,14 @@ Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
 
-DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories) : BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories) {}
+DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool keep_useless_actions_and_axioms) :
+    BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories),
+    m_keep_useless_actions_and_axioms(keep_useless_actions_and_axioms)
+{
+}
 
-Action DeleteRelaxTransformer::get_unrelaxed_action(Action action) const { return m_delete_to_normal_action.at(action); }
+const ActionList& DeleteRelaxTransformer::get_unrelaxed_actions(Action action) const { return m_delete_to_normal_actions.at(action); }
 
-Axiom DeleteRelaxTransformer::get_unrelaxed_axiom(Axiom axiom) const { return m_delete_to_normal_axiom.at(axiom); }
+const AxiomList& DeleteRelaxTransformer::get_unrelaxed_axioms(Axiom axiom) const { return m_delete_to_normal_axioms.at(axiom); }
 
 }
