@@ -96,15 +96,14 @@ private:
             if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
                 && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i]))
             {
-                // Delete effects are encoded with negative integers
-                const auto effect_atom_id = action.get_conditional_effects()[i];
-                if (effect_atom_id < 0)
+                const auto simple_effect = action.get_conditional_effects()[i];
+                if (simple_effect.is_negated)
                 {
-                    state_bitset.unset(std::abs(effect_atom_id + 1));
+                    state_bitset.unset(simple_effect.atom_id);
                 }
                 else
                 {
-                    state_bitset.set(effect_atom_id);
+                    state_bitset.set(simple_effect.atom_id);
                 }
             }
         }

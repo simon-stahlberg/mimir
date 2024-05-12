@@ -178,7 +178,9 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
             {
                 if (grounded_axiom.is_applicable(ref_state_atoms))
                 {
-                    const auto grounded_atom_id = grounded_axiom.get_simple_effect();
+                    assert(!grounded_axiom.get_simple_effect().is_negated);
+
+                    const auto grounded_atom_id = grounded_axiom.get_simple_effect().atom_id;
 
                     if (!ref_state_atoms.get(grounded_atom_id))
                     {

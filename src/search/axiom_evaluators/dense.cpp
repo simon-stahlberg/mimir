@@ -166,7 +166,9 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                const auto grounded_atom_id = grounded_axiom.get_simple_effect();
+                assert(!grounded_axiom.get_simple_effect().is_negated);
+
+                const auto grounded_atom_id = grounded_axiom.get_simple_effect().atom_id;
 
                 if (!ref_state_atoms.get(grounded_atom_id))
                 {
@@ -280,7 +282,8 @@ GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, Ob
     /* Effect */
     const auto grounded_literal = ground_literal(axiom->get_literal(), binding, m_pddl_factories);
     assert(!grounded_literal->is_negated());
-    m_axiom_builder.get_simple_effect() = grounded_literal->get_atom()->get_identifier();
+    m_axiom_builder.get_simple_effect().is_negated = false;
+    m_axiom_builder.get_simple_effect().atom_id = grounded_literal->get_atom()->get_identifier();
 
     auto& flatmemory_builder = m_axiom_builder.get_flatmemory_builder();
     flatmemory_builder.finish();

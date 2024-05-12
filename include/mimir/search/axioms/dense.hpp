@@ -16,7 +16,7 @@ using FlatDenseAxiomLayout = flatmemory::Tuple<uint32_t,  //
                                                FlatObjectListLayout,
                                                FlatBitsetLayout,
                                                FlatBitsetLayout,
-                                               int32_t>;
+                                               FlatSimpleEffect>;
 using FlatDenseAxiomBuilder = flatmemory::Builder<FlatDenseAxiomLayout>;
 using FlatDenseAxiom = flatmemory::ConstView<FlatDenseAxiomLayout>;
 using FlatDenseAxiomVector = flatmemory::VariableSizedTypeVector<FlatDenseAxiomLayout>;
@@ -74,8 +74,7 @@ public:
     [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<3>(); }
     [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<4>(); }
     /* Simple effect */
-    // We use positive numbers for add and negative numbers for delete effects
-    [[nodiscard]] int32_t& get_simple_effect() { return m_builder.get<5>(); }
+    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<5>(); }
 };
 
 /**
@@ -117,7 +116,7 @@ public:
     [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<3>(); }
     [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<4>(); }
     /* Effect*/
-    [[nodiscard]] int32_t get_simple_effect() const { return m_view.get<5>(); }
+    [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<5>(); }
 
     [[nodiscard]] bool is_applicable(const FlatBitsetBuilder& state_bitset) const
     {

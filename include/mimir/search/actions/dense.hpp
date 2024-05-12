@@ -12,6 +12,17 @@ namespace mimir
 /**
  * Flatmemory types
  */
+
+struct FlatSimpleEffect
+{
+    bool is_negated;
+    size_t atom_id;
+};
+
+using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
+using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
+using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
+
 using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,
                                                 int32_t,
                                                 Action,
@@ -22,7 +33,7 @@ using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,
                                                 FlatBitsetLayout,
                                                 FlatBitsetVectorLayout,
                                                 FlatBitsetVectorLayout,
-                                                FlatInt32tVectorLayout>;
+                                                FlatSimpleEffectVectorLayout>;
 using FlatDenseActionBuilder = flatmemory::Builder<FlatDenseActionLayout>;
 using FlatDenseAction = flatmemory::ConstView<FlatDenseActionLayout>;
 using FlatDenseActionVector = flatmemory::VariableSizedTypeVector<FlatDenseActionLayout>;
@@ -83,11 +94,11 @@ public:
     /* Simple effects */
     [[nodiscard]] FlatBitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
     [[nodiscard]] FlatBitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
-    /* Conditional effects */
+    /* Conditional preconditions */
     [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<8>(); }
     [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<9>(); }
-    // We use positive numbers for add and negative numbers for delete effects
-    [[nodiscard]] FlatInt32tVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
+    /* Conditional simple effects */
+    [[nodiscard]] FlatSimpleEffectVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
 };
 
 /**
@@ -135,7 +146,7 @@ public:
     /* Conditional effects */
     [[nodiscard]] FlatBitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<8>(); }
     [[nodiscard]] FlatBitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<9>(); }
-    [[nodiscard]] FlatInt32tVector get_conditional_effects() const { return m_view.get<10>(); }
+    [[nodiscard]] FlatSimpleEffectVector get_conditional_effects() const { return m_view.get<10>(); }
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {

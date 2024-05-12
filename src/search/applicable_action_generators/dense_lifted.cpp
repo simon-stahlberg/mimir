@@ -127,17 +127,11 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
-    const auto fill_int32 = [this](const Literal& literal, int32_t& ref_effect, const auto& binding)
+    const auto fill_effect = [this](const Literal& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
         const auto grounded_literal = ground_literal(literal, binding, m_pddl_factories);
-        if (grounded_literal->is_negated())
-        {
-            ref_effect = -(grounded_literal->get_atom()->get_identifier() + 1);
-        }
-        else
-        {
-            ref_effect = grounded_literal->get_atom()->get_identifier();
-        }
+        ref_effect.is_negated = grounded_literal->is_negated();
+        ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
     };
 
     /* Header */
@@ -197,7 +191,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                          negative_conditional_preconditions[i],
                          binding);
 
-            fill_int32(action->get_conditional_effects().at(i)->get_effect(), conditional_effects[i], binding);
+            fill_effect(action->get_conditional_effects().at(i)->get_effect(), conditional_effects[i], binding);
         }
     }
 
@@ -240,7 +234,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 negative_conditional_preconditions[j].unset_all();
 
                 fill_bitsets(universal_effect->get_conditions(), positive_conditional_preconditions[j], negative_conditional_preconditions[j], binding);
-                fill_int32(universal_effect->get_effect(), conditional_effects[j], binding);
+                fill_effect(universal_effect->get_effect(), conditional_effects[j], binding);
 
                 ++j;
             }

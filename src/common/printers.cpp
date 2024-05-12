@@ -24,7 +24,27 @@ std::ostream& operator<<(std::ostream& os, const std::vector<const T*>& vec)
     return os;
 }
 
-/// @brief Prints a State to the output stream.
+std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data)
+{
+    const auto [simple_effect, pddl_factories] = data;
+
+    const auto& ground_atom = pddl_factories.get_ground_atom(simple_effect.atom_id);
+
+    if (simple_effect.is_negated)
+    {
+        os << "(not ";
+    }
+
+    os << *ground_atom;
+
+    if (simple_effect.is_negated)
+    {
+        os << ")";
+    }
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data)
 {
     const auto [state, pddl_factories] = data;
@@ -38,7 +58,6 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PD
     return os;
 }
 
-/// @brief Prints an Action to the output stream.
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const PDDLFactories&>& data)
 {
     const auto [action, pddl_factories] = data;
@@ -83,13 +102,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const P
     {
         os << "[positive precondition=" << positive_conditional_preconditions[i] << ", "
            << "negative precondition=" << negative_conditional_preconditions[i] << ", "
-           << "effect=" <<
-            [&]()
-        {
-            return conditional_effects[i] < 0 ? "not " + pddl_factories.get_ground_atom(std::abs(conditional_effects[i] + 1))->str() :
-                                                pddl_factories.get_ground_atom(conditional_effects[i])->str();
-        }();
-        os << "], ";
+           << "effect=" << std::make_tuple(conditional_effects[i], std::cref(pddl_factories)) << "], ";
     }
     os << "])";
 
@@ -113,14 +126,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PD
        << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "
        << "positive precondition=" << positive_precondition << ", "
        << "negative precondition=" << negative_precondition << ", "
-       << "effect=" <<
-        [&]()
-    {
-        return axiom.get_simple_effect() < 0 ? "not " + pddl_factories.get_ground_atom(std::abs(axiom.get_simple_effect() + 1))->str() :
-                                               pddl_factories.get_ground_atom(axiom.get_simple_effect())->str();
-    }();
-
-    os << ")";
+       << "effect=" << std::make_tuple(axiom.get_simple_effect(), std::cref(pddl_factories)) << ")";
 
     return os;
 }

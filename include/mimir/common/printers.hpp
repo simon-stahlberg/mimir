@@ -33,6 +33,9 @@
 namespace mimir
 {
 
+/// @brief Prints a simple effect to the output stream.
+std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data);
+
 /// @brief Prints a State to the output stream.
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data);
 
