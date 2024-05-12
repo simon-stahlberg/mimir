@@ -60,6 +60,8 @@ public:
     void get_applicable_elements(const FlatBitset state, std::vector<T>& out_applicable_elements);
 
     [[nodiscard]] size_t get_num_nodes() const;
+
+    void print() const;
 };
 
 template<typename T>
@@ -165,6 +167,32 @@ template<typename T>
 size_t MatchTree<T>::get_num_nodes() const
 {
     return m_nodes.size();
+}
+
+template<typename T>
+void MatchTree<T>::print() const
+{
+    for (size_t i = 0; i < m_nodes.size(); ++i)
+    {
+        const auto& node = m_nodes[i];
+        if (const auto& node_generator = std::get_if<GeneratorNode>(&node))
+        {
+            std::cout << i << " GeneratorNode(elements=[";
+            for (auto it = m_elements.begin() + node_generator->begin; it < m_elements.begin() + node_generator->end; ++it)
+            {
+                std::cout << it->get_id() << ", ";
+            }
+            std::cout << "]" << std::endl;
+        }
+        else if (const auto& node_selector = std::get_if<SelectorNode>(&node))
+        {
+            std::cout << i << " SelectorNode("
+                      << "ground_atom_id: " << node_selector->ground_atom_id << " "
+                      << "true_succ: " << node_selector->true_succ << " "
+                      << "false_succ: " << node_selector->false_succ << " "
+                      << "dontcare_succ: " << node_selector->dontcare_succ << ")" << std::endl;
+        }
+    }
 }
 
 template<typename T>

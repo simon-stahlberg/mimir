@@ -220,6 +220,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
             // The position to place the conditional precondition + effect
             auto j = old_size;
+            assert(!objects_by_parameter_index.empty());
             for (const auto& combination : Combinations(objects_by_parameter_index))
             {
                 // Create binding

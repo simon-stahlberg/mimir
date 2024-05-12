@@ -31,7 +31,7 @@ namespace mimir
 class DeleteRelaxTransformer : public BaseCachedRecurseTransformer<DeleteRelaxTransformer>
 {
 private:
-    bool m_keep_useless_actions_and_axioms;
+    bool m_remove_useless_actions_and_axioms;
 
     // There can be a one to many relationship between relaxed and unrelaxed.
     std::unordered_map<Action, ActionList> m_delete_to_normal_actions;
@@ -68,7 +68,7 @@ public:
     /// and axioms with empty effects should be kept.
     /// We need those in the grounded successor generator.
     /// However, we do not need them when computing relaxed plans.
-    DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool keep_useless_actions_and_axioms = false);
+    DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool remove_useless_actions_and_axioms = true);
 
     const ActionList& get_unrelaxed_actions(Action action) const;
 

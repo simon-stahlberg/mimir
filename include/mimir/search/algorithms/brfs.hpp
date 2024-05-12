@@ -108,6 +108,9 @@ public:
 
             if (state.literals_hold(goal_ground_literals))
             {
+                std::cout << "@@@ GOAL STATE @@@ " << std::endl;
+                std::cout << std::make_tuple(state, std::cref(m_pddl_factories)) << std::endl;
+
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 
                 m_event_handler->on_end_search();
@@ -116,6 +119,13 @@ public:
                 return SearchStatus::SOLVED;
             }
 
+            // if (state.get_id() == 36)
+            //{
+            //     std::cout << "@@@ FAILED GOAL TEST @@@ " << std::endl;
+            //     std::cout << std::make_tuple(state, std::cref(m_pddl_factories)) << std::endl;
+            //     return SearchStatus::FAILED;
+            // }
+
             auto search_node = CostSearchNode(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
 
@@ -123,6 +133,10 @@ public:
             {
                 g_value = search_node.get_g_value();
                 m_event_handler->on_finish_g_layer(g_value, m_state_repository->get_state_count());
+                // if (g_value == 3)
+                //{
+                //     return SearchStatus::FAILED;
+                // }
             }
 
             m_event_handler->on_expand_state(state, m_pddl_factories);
@@ -132,6 +146,12 @@ public:
             {
                 const auto state_count = m_state_repository->get_state_count();
                 const auto& successor_state = this->m_state_repository->get_or_create_successor_state(state, action);
+                // if (successor_state.get_id() == 36)
+                //{
+                //     std::cout << "@@@ CREATED GOAL STATE @@@ " << std::endl;
+                //     std::cout << std::make_tuple(successor_state, std::cref(m_pddl_factories)) << std::endl;
+                //     return SearchStatus::FAILED;
+                // }
                 m_event_handler->on_generate_state(action, successor_state, m_pddl_factories);
 
                 if (state_count != m_state_repository->get_state_count())

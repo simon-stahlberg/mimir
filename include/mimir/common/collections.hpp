@@ -48,6 +48,13 @@ bool is_all_unique(const std::vector<T>& vec)
     return vec.size() == set.size();
 }
 
+/// @brief Return a set representation
+template<typename T>
+std::unordered_set<T> to_set(const std::vector<T>& vec)
+{
+    return std::unordered_set<T>(vec.begin(), vec.end());
+}
+
 }
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DENSE_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DENSE_HPP_
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -21,6 +22,7 @@ template<>
 class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>
 {
 private:
+    Problem m_problem;
     std::shared_ptr<IDynamicAAG> m_aag;
 
     FlatDenseStateSet m_states;
@@ -110,6 +112,7 @@ private:
 
         /* Axioms */
         state_bitset -= m_derived_atoms_bitset;
+
         m_aag->generate_and_apply_axioms(state_bitset, m_derived_atoms_bitset);
 
         /* Construct the state and store it. */
@@ -122,7 +125,7 @@ private:
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
-    explicit SSG(Problem /*problem*/, std::shared_ptr<IDynamicAAG> aag) : m_aag(std::move(aag)) {}
+    explicit SSG(Problem problem, std::shared_ptr<IDynamicAAG> aag) : m_problem(problem), m_aag(std::move(aag)) {}
 };
 
 /**

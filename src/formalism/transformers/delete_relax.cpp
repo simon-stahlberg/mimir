@@ -178,7 +178,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto simple_effects = this->transform(action.get_simple_effects());
     auto conditional_effects = this->transform(action.get_conditional_effects());
     auto universal_effects = this->transform(action.get_universal_effects());
-    if (!m_keep_useless_actions_and_axioms && simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
+    if (m_remove_useless_actions_and_axioms && simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
     {
         throw std::runtime_error("We do not want to enter this branch for now.");
         return nullptr;
@@ -208,7 +208,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 {
     const auto literal = this->transform(*axiom.get_literal());
-    if (!m_keep_useless_actions_and_axioms && !literal)
+    if (m_remove_useless_actions_and_axioms && !literal)
     {
         throw std::runtime_error("Axioms with negative effect are not supported.");
     }
@@ -241,9 +241,9 @@ Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
 
-DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool keep_useless_actions_and_axioms) :
+DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool remove_useless_actions_and_axioms) :
     BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories),
-    m_keep_useless_actions_and_axioms(keep_useless_actions_and_axioms)
+    m_remove_useless_actions_and_axioms(remove_useless_actions_and_axioms)
 {
 }
 

@@ -17,6 +17,8 @@
 
 #include "mimir/search/applicable_action_generators/dense_grounded.hpp"
 
+#include "mimir/common/collections.hpp"
+#include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
@@ -37,11 +39,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_lifted_aag(m_problem, m_pddl_factories)
 {
     // 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects.
-    auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, true);
+    auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, false);
     const auto dr_problem = delete_relax_transformer.run(*m_problem);
     auto dr_lifted_aag = std::make_shared<LiftedDenseAAG>(dr_problem, m_pddl_factories);
     auto dr_ssg = DenseSSG(dr_problem, dr_lifted_aag);
 
+    // TODO provide conversion from view to builder in flatmemory
     auto& state_bitset = m_state_builder.get_atoms_bitset();
     state_bitset.unset_all();
     for (const auto& atom_id : dr_ssg.get_or_create_initial_state(m_problem).get_atoms_bitset())
@@ -56,9 +59,9 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     size_t num_atoms = 0;
     size_t num_actions = 0;
     // Temporary variables
-    auto actions = DenseActionList {};
     auto state_atoms = FlatBitsetBuilder();
     auto derived_atoms = FlatBitsetBuilder();
+    auto actions = DenseActionList {};
     do
     {
         num_atoms = m_pddl_factories.get_ground_atoms().size();
@@ -109,6 +112,9 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // 2. Create ground axioms
     auto ground_axioms = DenseAxiomList {};
+
+    // ERROR here: some ground axioms are not being generated
+    /*
     for (const auto& axiom : dr_lifted_aag->get_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
@@ -117,6 +123,33 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto axiom_arguments = ObjectList(axiom_proxy.get_objects().begin(), axiom_proxy.get_objects().end());
             ground_axioms.push_back(m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments)));
+        }
+    }
+    */
+
+    // Current solution that works: exhaustively generate ground axioms for testing
+    auto axioms = m_problem->get_axioms();
+    auto add_axioms = m_problem->get_domain()->get_axioms();
+    axioms.insert(axioms.end(), add_axioms.begin(), add_axioms.end());
+
+    for (const auto& axiom : axioms)
+    {
+        if (axiom->get_arity() == 0)
+        {
+            ground_axioms.push_back(m_lifted_aag.ground_axiom(axiom, ObjectList {}));
+        }
+        else
+        {
+            auto vecs = std::vector<ObjectList>(axiom->get_arity(), m_problem->get_objects());
+            for (const auto& combination_it : Combinations(vecs))
+            {
+                auto binding = ObjectList {};
+                for (const auto& object_it : combination_it)
+                {
+                    binding.push_back(*object_it);
+                }
+                ground_axioms.push_back(m_lifted_aag.ground_axiom(axiom, std::move(binding)));
+            }
         }
     }
 
@@ -138,59 +171,53 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms)
 {
-    // In the grounded case, we traverse a match tree, apply axioms, and repeat until fixed point.
-    // We have to partition axioms first
+    // Lifted works so there must be an issue with generating applicable axioms and applying them in grounded setting.
+    // m_lifted_aag.generate_and_apply_axioms(ref_state_atoms, ref_derived_atoms);
+    // return;
 
-    /* 1. Compute applicable axioms. */
-    auto applicable_axioms = GroundAxiomList {};
-    ref_state_atoms.finish();
-    auto state_bitset = FlatBitset(ref_state_atoms.buffer().data());
-    m_axiom_match_tree.get_applicable_elements(state_bitset, applicable_axioms);
-
-    /* 2. Group ground axioms by lifted axiom */
-    auto ground_axioms_by_lifted_axiom = std::unordered_map<Axiom, GroundAxiomList> {};
-    for (const auto& ground_axiom : applicable_axioms)
-    {
-        ground_axioms_by_lifted_axiom[ground_axiom.get_axiom()].push_back(ground_axiom);
-    }
-
-    /* 3. Partition ground axioms. */
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {
-        auto grounded_axiom_partition = GroundAxiomList {};
-        for (const auto& lifted_axiom : lifted_partition.get_axioms())
-        {
-            const auto it = ground_axioms_by_lifted_axiom.find(lifted_axiom);
-            if (it != ground_axioms_by_lifted_axiom.end())
-            {
-                const auto& grounded_axioms = it->second;
-                grounded_axiom_partition.insert(grounded_axiom_partition.end(), grounded_axioms.begin(), grounded_axioms.end());
-            }
-        }
-
         bool reached_partition_fixed_point;
 
         do
         {
             reached_partition_fixed_point = true;
 
-            for (const auto& grounded_axiom : grounded_axiom_partition)
+            /* Compute applicable axioms. */
+
+            auto applicable_axioms = GroundAxiomList {};
+            auto tmp_builder = FlatBitsetBuilder();
+            tmp_builder.unset_all();
+            tmp_builder |= ref_state_atoms;
+            tmp_builder.finish();
+            auto state_bitset = FlatBitset(tmp_builder.buffer().data());
+            m_axiom_match_tree.get_applicable_elements(state_bitset, applicable_axioms);
+
+            /* Apply applicable axioms */
+
+            for (const auto& grounded_axiom : applicable_axioms)
             {
-                if (grounded_axiom.is_applicable(ref_state_atoms))
+                assert(grounded_axiom.get_axiom());
+                if (!lifted_partition.get_axioms().count(grounded_axiom.get_axiom()))
                 {
-                    assert(!grounded_axiom.get_simple_effect().is_negated);
-
-                    const auto grounded_atom_id = grounded_axiom.get_simple_effect().atom_id;
-
-                    if (!ref_state_atoms.get(grounded_atom_id))
-                    {
-                        // GENERATED NEW DERIVED ATOM!
-                        reached_partition_fixed_point = false;
-                    }
-
-                    ref_state_atoms.set(grounded_atom_id);
-                    ref_derived_atoms.set(grounded_atom_id);
+                    // axiom not part of same partition
+                    continue;
                 }
+
+                assert(grounded_axiom.is_applicable(ref_state_atoms));
+
+                assert(!grounded_axiom.get_simple_effect().is_negated);
+
+                const auto grounded_atom_id = grounded_axiom.get_simple_effect().atom_id;
+
+                if (!ref_state_atoms.get(grounded_atom_id))
+                {
+                    // GENERATED NEW DERIVED ATOM!
+                    reached_partition_fixed_point = false;
+                }
+
+                ref_state_atoms.set(grounded_atom_id);
+                ref_derived_atoms.set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);

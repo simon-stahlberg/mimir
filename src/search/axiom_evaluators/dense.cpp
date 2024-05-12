@@ -142,6 +142,8 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
         {
             reached_partition_fixed_point = true;
 
+            /* Compute applicable axioms */
+
             for (const auto& axiom : relevant_axioms)
             {
                 if (nullary_preconditions_hold(axiom, ref_state_atoms))
@@ -160,6 +162,8 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
                     }
                 }
             }
+
+            /* Apply applicable axioms */
 
             new_ground_atoms.clear();
             relevant_axioms.clear();
