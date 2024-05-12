@@ -35,38 +35,159 @@ static LiteralList filter_positive_literals(const LiteralList& literals)
     return positive_literals;
 }
 
+LiteralList DeleteRelaxTransformer::transform_impl(const LiteralList& literals)
+{
+    auto positive_literals = LiteralList {};
+    for (const auto& literal : literals)
+    {
+        const auto positive_literal = this->transform(*literal);
+        if (positive_literal)
+        {
+            positive_literals.push_back(positive_literal);
+        }
+    }
+    return positive_literals;
+}
+
+EffectSimpleList DeleteRelaxTransformer::transform_impl(const EffectSimpleList& effects)
+{
+    auto positive_simple_effects = EffectSimpleList {};
+    for (const auto& simple_effect : effects)
+    {
+        const auto positive_simple_effect = this->transform(*simple_effect);
+        if (positive_simple_effect)
+        {
+            positive_simple_effects.push_back(positive_simple_effect);
+        }
+    }
+    return positive_simple_effects;
+}
+
+EffectConditionalList DeleteRelaxTransformer::transform_impl(const EffectConditionalList& effects)
+{
+    auto positive_conditional_effects = EffectConditionalList {};
+    for (const auto& conditional_effect : effects)
+    {
+        const auto positive_conditional_effect = this->transform(*conditional_effect);
+        if (positive_conditional_effect)
+        {
+            positive_conditional_effects.push_back(positive_conditional_effect);
+        }
+    }
+    return uniquify_elements(positive_conditional_effects);
+}
+
+EffectUniversalList DeleteRelaxTransformer::transform_impl(const EffectUniversalList& effects)
+{
+    auto positive_universal_effects = EffectUniversalList {};
+    for (const auto& universal_effect : effects)
+    {
+        const auto positive_universal_effect = this->transform(*universal_effect);
+        if (positive_universal_effect)
+        {
+            positive_universal_effects.push_back(positive_universal_effect);
+        }
+    }
+    return uniquify_elements(positive_universal_effects);
+}
+
+ActionList DeleteRelaxTransformer::transform_impl(const ActionList& actions)
+{
+    auto relaxed_actions = ActionList {};
+    for (const auto& action : actions)
+    {
+        const auto relaxed_action = this->transform(*action);
+        if (relaxed_action)
+        {
+            relaxed_actions.push_back(relaxed_action);
+        }
+    }
+    return uniquify_elements(relaxed_actions);
+}
+
+AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
+{
+    auto relaxed_axioms = AxiomList {};
+    for (const auto& axiom : axioms)
+    {
+        const auto relaxed_axiom = this->transform(*axiom);
+        if (relaxed_axiom)
+        {
+            relaxed_axioms.push_back(relaxed_axiom);
+        }
+    }
+    return uniquify_elements(relaxed_axioms);
+}
+
+Literal DeleteRelaxTransformer::transform_impl(const LiteralImpl& literal)
+{
+    if (literal.is_negated())
+    {
+        return nullptr;
+    }
+
+    const auto atom = this->transform(*literal.get_atom());
+
+    return this->m_pddl_factories.get_or_create_literal(false, atom);
+}
+
+EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effect)
+{
+    const auto literal = this->transform(*effect.get_effect());
+    if (!literal)
+    {
+        return nullptr;
+    }
+
+    return this->m_pddl_factories.get_or_create_simple_effect(literal);
+}
+
+EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
+{
+    auto simple_effect = this->transform(*effect.get_effect());
+    if (!simple_effect)
+    {
+        return nullptr;
+    }
+
+    auto conditions = filter_positive_literals(this->transform(effect.get_conditions()));
+    auto static_conditions = filter_positive_literals(this->transform(effect.get_static_conditions()));
+    auto fluent_conditions = filter_positive_literals(this->transform(effect.get_fluent_conditions()));
+
+    return this->m_pddl_factories.get_or_create_conditional_effect(conditions, static_conditions, fluent_conditions, simple_effect);
+}
+
+EffectUniversal DeleteRelaxTransformer::transform_impl(const EffectUniversalImpl& effect)
+{
+    auto simple_effect = this->transform(*effect.get_effect());
+    if (!simple_effect)
+    {
+        return nullptr;
+    }
+
+    auto parameters = this->transform(effect.get_parameters());
+    auto conditions = filter_positive_literals(this->transform(effect.get_conditions()));
+    auto static_conditions = filter_positive_literals(this->transform(effect.get_static_conditions()));
+    auto fluent_conditions = filter_positive_literals(this->transform(effect.get_fluent_conditions()));
+
+    return this->m_pddl_factories.get_or_create_universal_effect(parameters, conditions, static_conditions, fluent_conditions, simple_effect);
+}
+
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
+    auto simple_effects = this->transform(action.get_simple_effects());
+    auto conditional_effects = this->transform(action.get_conditional_effects());
+    auto universal_effects = this->transform(action.get_universal_effects());
+    if (simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
+    {
+        return nullptr;
+    }
+
     auto parameters = this->transform(action.get_parameters());
     auto conditions = filter_positive_literals(this->transform(action.get_conditions()));
     auto static_conditions = filter_positive_literals(this->transform(action.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(action.get_fluent_conditions()));
-
-    // Remove negative effects.
-    auto simple_effects = EffectSimpleList {};
-    for (const auto& effect : this->transform(action.get_simple_effects()))
-    {
-        if (!effect->get_effect()->is_negated())
-        {
-            simple_effects.push_back(effect);
-        }
-    }
-    auto conditional_effects = EffectConditionalList {};
-    for (const auto& effect : this->transform(action.get_conditional_effects()))
-    {
-        if (!effect->get_effect()->is_negated())
-        {
-            conditional_effects.push_back(effect);
-        }
-    }
-    auto universal_effects = EffectUniversalList {};
-    for (const auto& effect : this->transform(action.get_universal_effects()))
-    {
-        if (!effect->get_effect()->is_negated())
-        {
-            universal_effects.push_back(effect);
-        }
-    }
+    auto cost_expression = this->transform(*action.get_function_expression());
 
     auto delete_relaxed_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                                              parameters,
@@ -76,7 +197,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                              simple_effects,
                                                                              conditional_effects,
                                                                              universal_effects,
-                                                                             this->transform(*action.get_function_expression()));
+                                                                             cost_expression);
 
     m_delete_to_normal_action.emplace(delete_relaxed_action, &action);
 
@@ -85,15 +206,16 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 
 Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 {
+    const auto literal = this->transform(*axiom.get_literal());
+    if (!literal)
+    {
+        return nullptr;
+    }
+
     auto parameters = this->transform(axiom.get_parameters());
     auto conditions = filter_positive_literals(this->transform(axiom.get_conditions()));
     auto static_conditions = filter_positive_literals(this->transform(axiom.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(axiom.get_fluent_conditions()));
-
-    // Remove negative effects.
-    auto simple_effects = EffectSimpleList {};
-    assert(!axiom.get_literal()->is_negated());
-    const auto literal = this->transform(*axiom.get_literal());
 
     auto delete_relaxed_axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, conditions, static_conditions, fluent_conditions);
 
@@ -104,7 +226,6 @@ Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 
 Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
 {
-    // TODO: remove axioms with negated literal, although we currently do not support such axioms anyways.
     return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                        this->transform(*domain.get_requirements()),
                                                        this->transform(domain.get_constants()),
@@ -113,8 +234,8 @@ Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
                                                        this->transform(domain.get_fluent_predicates()),
                                                        this->transform(domain.get_derived_predicates()),
                                                        this->transform(domain.get_functions()),
-                                                       uniquify_elements(this->transform(domain.get_actions())),
-                                                       uniquify_elements(this->transform(domain.get_axioms())));
+                                                       this->transform(domain.get_actions()),
+                                                       this->transform(domain.get_axioms()));
 }
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }

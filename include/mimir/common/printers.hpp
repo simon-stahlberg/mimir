@@ -21,8 +21,9 @@
 
 #include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/actions.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/actions/dense.hpp"
+#include "mimir/search/axioms/dense.hpp"
+#include "mimir/search/states/dense.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -33,10 +34,13 @@ namespace mimir
 {
 
 /// @brief Prints a State to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<StateDispatcher<DenseStateTag>>, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data);
 
 /// @brief Prints an Action to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDispatcher<DenseStateTag>>, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const PDDLFactories&>& data);
+
+/// @brief Prints an Axiom to the output stream.
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PDDLFactories&>& data);
 
 std::ostream& operator<<(std::ostream& os, const DenseAction& action);
 

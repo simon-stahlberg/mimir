@@ -49,6 +49,9 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         state_bitset.set(atom_id);
     }
 
+    std::cout << *dr_problem->get_domain() << std::endl;
+    std::cout << *dr_problem << std::endl;
+
     // Keep track of changes
     size_t num_atoms = 0;
     size_t num_actions = 0;

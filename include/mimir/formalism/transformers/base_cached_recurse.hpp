@@ -81,6 +81,11 @@ protected:
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
+    template<typename Container>
+    void prepare_base(const Container& input)
+    {
+        self().prepare_impl(input);
+    }
     void prepare_base(const RequirementsImpl& requirements) { self().prepare_impl(requirements); }
     void prepare_base(const ObjectImpl& object) { self().prepare_impl(object); }
     void prepare_base(const VariableImpl& variable) { self().prepare_impl(variable); }
@@ -111,6 +116,11 @@ protected:
     void prepare_base(const OptimizationMetricImpl& metric) { self().prepare_impl(metric); }
     void prepare_base(const ProblemImpl& problem) { self().prepare_impl(problem); }
 
+    template<typename Container>
+    void prepare_impl(const Container& input)
+    {
+        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare(*arg); });
+    }
     void prepare_impl(const RequirementsImpl& requirements) {}
     void prepare_impl(const ObjectImpl& object) {}
     void prepare_impl(const VariableImpl& variable) {}
@@ -213,6 +223,11 @@ protected:
 
     /// @brief Apply problem translation.
     ///        Default behavior reparses it into the pddl_factories.
+    template<typename Container>
+    auto transform_base(const Container& input)
+    {
+        return this->self().transform_impl(input);
+    }
     Requirements transform_base(const RequirementsImpl& requirements)
     {
         return cached_transform_impl(requirements, m_transformed_requirements, [this](const auto& arg) { return this->self().transform_impl(arg); });
@@ -356,6 +371,14 @@ protected:
         cache.emplace(&impl, transformd);
 
         return transformd;
+    }
+    template<typename Container>
+    auto transform_impl(const Container& input)
+    {
+        Container output;
+        output.reserve(input.size());
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->transform(*arg); });
+        return output;
     }
     Requirements transform_impl(const RequirementsImpl& requirements)
     {

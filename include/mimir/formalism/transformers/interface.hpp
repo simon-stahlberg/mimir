@@ -44,11 +44,10 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    /// @brief Prepare all elements in a container.
     template<typename Container>
     void prepare(const Container& input)
     {
-        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare(*arg); });
+        self().prepare_base(input);
     }
     void prepare(const RequirementsImpl& requirements) { self().prepare_base(requirements); }
     void prepare(const ObjectImpl& object) { self().prepare_base(object); }
@@ -80,14 +79,10 @@ public:
     void prepare(const OptimizationMetricImpl& metric) { self().prepare_base(metric); }
     void prepare(const ProblemImpl& problem) { self().prepare_base(problem); }
 
-    /// @brief Transform a container of elements into a container of elements.
     template<typename Container>
     auto transform(const Container& input)
     {
-        Container output;
-        output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->transform(*arg); });
-        return output;
+        return self().transform_base(input);
     }
     Requirements transform(const RequirementsImpl& requirements) { return self().transform_base(requirements); }
     Object transform(const ObjectImpl& object) { return self().transform_base(object); }

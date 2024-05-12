@@ -41,6 +41,17 @@ private:
     std::unordered_map<Action, Action> m_delete_to_normal_action;
     std::unordered_map<Axiom, Axiom> m_delete_to_normal_axiom;
 
+    LiteralList transform_impl(const LiteralList& literals);
+    EffectSimpleList transform_impl(const EffectSimpleList& effects);
+    EffectConditionalList transform_impl(const EffectConditionalList& effects);
+    EffectUniversalList transform_impl(const EffectUniversalList& effects);
+    ActionList transform_impl(const ActionList& actions);
+    AxiomList transform_impl(const AxiomList& axioms);
+
+    Literal transform_impl(const LiteralImpl& literal);
+    EffectSimple transform_impl(const EffectSimpleImpl& effect);
+    EffectConditional transform_impl(const EffectConditionalImpl& effect);
+    EffectUniversal transform_impl(const EffectUniversalImpl& effect);
     Action transform_impl(const ActionImpl& action);
     Axiom transform_impl(const AxiomImpl& axiom);
     Domain transform_impl(const DomainImpl& domain);

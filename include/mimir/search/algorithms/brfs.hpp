@@ -123,6 +123,10 @@ public:
             {
                 g_value = search_node.get_g_value();
                 m_event_handler->on_finish_g_layer(g_value, m_state_repository->get_state_count());
+                // if (g_value == 1)
+                //{
+                //     return SearchStatus::FAILED;
+                // }
             }
 
             m_event_handler->on_expand_state(state, m_pddl_factories);

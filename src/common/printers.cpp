@@ -1,12 +1,7 @@
 #include "mimir/common/printers.hpp"
 
 #include "mimir/common/translations.hpp"
-#include "mimir/formalism/action.hpp"
 #include "mimir/formalism/factories.hpp"
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/search/actions.hpp"
-#include "mimir/search/states.hpp"
 
 namespace mimir
 {
@@ -30,7 +25,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<const T*>& vec)
 }
 
 /// @brief Prints a State to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<StateDispatcher<DenseStateTag>>, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data)
 {
     const auto [state, pddl_factories] = data;
     auto out_ground_atoms = GroundAtomList {};
@@ -44,7 +39,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<StateDispa
 }
 
 /// @brief Prints an Action to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDispatcher<DenseStateTag>>, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const PDDLFactories&>& data)
 {
     const auto [action, pddl_factories] = data;
 
@@ -97,6 +92,35 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConstView<ActionDisp
         os << "], ";
     }
     os << "])";
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PDDLFactories&>& data)
+{
+    const auto [axiom, pddl_factories] = data;
+
+    auto positive_precondition_bitset = axiom.get_applicability_positive_precondition_bitset();
+    auto negative_precondition_bitset = axiom.get_applicability_negative_precondition_bitset();
+
+    auto positive_precondition = GroundAtomList {};
+    auto negative_precondition = GroundAtomList {};
+
+    to_ground_atoms(positive_precondition_bitset, pddl_factories, positive_precondition);
+    to_ground_atoms(negative_precondition_bitset, pddl_factories, negative_precondition);
+
+    os << "Action("
+       << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "
+       << "positive precondition=" << positive_precondition << ", "
+       << "negative precondition=" << negative_precondition << ", "
+       << "effect=" <<
+        [&]()
+    {
+        return axiom.get_simple_effect() < 0 ? "not " + pddl_factories.get_ground_atom(std::abs(axiom.get_simple_effect() + 1))->str() :
+                                               pddl_factories.get_ground_atom(axiom.get_simple_effect())->str();
+    }();
+
+    os << ")";
 
     return os;
 }
