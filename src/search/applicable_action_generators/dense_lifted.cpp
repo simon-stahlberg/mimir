@@ -173,7 +173,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     auto& conditional_effects = m_action_builder.get_conditional_effects();
 
     // Resize builders.
-    // TODO: this might cause reallocation, we probably want to set "actual" size to 0 and keep its size.
+    // Note: flatmemory tracks "actual" size to avoid deallocation of nested types
     const auto num_conditional_effects = action->get_conditional_effects().size();
     positive_conditional_preconditions.resize(num_conditional_effects);
     negative_conditional_preconditions.resize(num_conditional_effects);
@@ -209,7 +209,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
             const auto& objects_by_parameter_index = consistency_graph.get_objects_by_parameter_index();
 
             // Resize builders.
-            const auto num_conditional_effects = Combinations(objects_by_parameter_index).num_combinations();
+            const auto num_conditional_effects = CartesianProduct(objects_by_parameter_index).num_combinations();
             const auto old_size = positive_conditional_preconditions.size();
             positive_conditional_preconditions.resize(old_size + num_conditional_effects);
             negative_conditional_preconditions.resize(old_size + num_conditional_effects);
@@ -221,7 +221,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
             // The position to place the conditional precondition + effect
             auto j = old_size;
             assert(!objects_by_parameter_index.empty());
-            for (const auto& combination : Combinations(objects_by_parameter_index))
+            for (const auto& combination : CartesianProduct(objects_by_parameter_index))
             {
                 // Create binding
                 for (size_t pos = 0; pos < universal_effect->get_arity(); ++pos)
@@ -306,8 +306,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
                                                            DenseActionList& out_applicable_actions)
 {
     const auto& graphs = m_static_consistency_graphs.at(action);
-    assert(graphs.get_precondition_graph().has_value());
-    const auto& precondition_graph = graphs.get_precondition_graph().value();
+    const auto& precondition_graph = graphs.get_precondition_graph();
     const auto num_vertices = precondition_graph.get_vertices().size();
 
     std::vector<boost::dynamic_bitset<>> adjacency_matrix(num_vertices, boost::dynamic_bitset<>(num_vertices));
@@ -398,10 +397,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
 {
     // In the lifted case, we use the axiom evaluator.
-    m_axiom_evaluator.generate_and_apply_axioms(ref_state_atoms, ref_derived_atoms);
+    m_axiom_evaluator.generate_and_apply_axioms(ref_state_atoms);
 }
 
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :

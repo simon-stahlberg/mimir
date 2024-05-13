@@ -26,10 +26,9 @@ private:
     std::shared_ptr<IDynamicAAG> m_aag;
 
     FlatDenseStateSet m_states;
+    FlatDenseStateVector m_states_by_index;
+    FlatDenseStateVector m_extended_states_by_state;
     DenseStateBuilder m_state_builder;
-
-    // We need to unset all derived atoms before fixed point iteration
-    FlatBitsetBuilder m_derived_atoms_bitset;
 
     /* Implement IStaticSSG interface */
     friend class IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>;
@@ -42,35 +41,45 @@ private:
 
         auto& state_id = m_state_builder.get_id();
         auto& state_bitset = m_state_builder.get_atoms_bitset();
+        state_bitset.unset_all();
 
-        // Assign values to members.
+        /* 1. Set state id */
 
         state_id = next_state_id;
 
-        state_bitset.unset_all();
+        /* 2. Construct non-extended state */
 
         for (const auto& literal : problem->get_initial_literals())
         {
-            if (literal->is_negated())
-            {
-                throw std::runtime_error("negative literals in the initial state are not supported");
-            }
-            else
-            {
-                auto position = literal->get_atom()->get_identifier();
-                state_bitset.set(position);
-            }
+            state_bitset.set(literal->get_atom()->get_identifier());
         }
 
-        /* Axioms */
-        state_bitset -= m_derived_atoms_bitset;
-        m_aag->generate_and_apply_axioms(state_bitset, m_derived_atoms_bitset);
-
-        /* Construct the state and store it. */
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
-        return DenseState(*iter);
+        const auto state = DenseState(*iter);
+
+        /* 3. Retrieve cached extended state */
+
+        if (!inserted)
+        {
+            return DenseState(m_extended_states_by_state[state.get_id()]);
+        }
+
+        m_states_by_index.push_back(*iter);
+
+        /* 4. Construct extended state by evaluating Axioms */
+
+        m_aag->generate_and_apply_axioms(state_bitset);
+        flatmemory_builder.finish();
+
+        /* 5. Cache extended state */
+
+        m_extended_states_by_state.push_back(flatmemory_builder);
+
+        /* 6. Return newly generated extended state */
+
+        return DenseState(m_extended_states_by_state[next_state_id]);
     }
 
     [[nodiscard]] DenseState get_or_create_successor_state_impl(DenseState state, DenseAction action)
@@ -81,11 +90,16 @@ private:
 
         auto& state_id = m_state_builder.get_id();
         auto& state_bitset = m_state_builder.get_atoms_bitset();
-
-        // Assign values to members.
-        state_id = next_state_id;
+        // TODO: add assignment operator to bitset to replace unset + operator|=
         state_bitset.unset_all();
-        state_bitset |= state.get_atoms_bitset();
+        const auto& unextended_state = DenseState(m_states_by_index[state.get_id()]);
+        state_bitset |= unextended_state.get_atoms_bitset();
+
+        /* 1. Set state id */
+
+        state_id = next_state_id;
+
+        /* 2. Construct non-extended state */
 
         /* Simple effects*/
         state_bitset -= action.get_unconditional_negative_effect_bitset();
@@ -110,22 +124,52 @@ private:
             }
         }
 
-        /* Axioms */
-        state_bitset -= m_derived_atoms_bitset;
-
-        m_aag->generate_and_apply_axioms(state_bitset, m_derived_atoms_bitset);
-
-        /* Construct the state and store it. */
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         flatmemory_builder.finish();
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
-        return DenseState(*iter);
+        const auto succ_state = DenseState(*iter);
+
+        /* 3. Retrieve cached extended state */
+
+        if (!inserted)
+        {
+            return DenseState(m_extended_states_by_state[succ_state.get_id()]);
+        }
+
+        m_states_by_index.push_back(*iter);
+
+        /* 4. Construct extended state by evaluating Axioms */
+
+        m_aag->generate_and_apply_axioms(state_bitset);
+        flatmemory_builder.finish();
+
+        /* 5. Cache extended state */
+
+        m_extended_states_by_state.push_back(flatmemory_builder);
+
+        /* 6. Return newly generated extended state */
+
+        return DenseState(m_extended_states_by_state[next_state_id]);
     }
 
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
-    explicit SSG(Problem problem, std::shared_ptr<IDynamicAAG> aag) : m_problem(problem), m_aag(std::move(aag)) {}
+    explicit SSG(Problem problem, std::shared_ptr<IDynamicAAG> aag) :
+        m_problem(problem),
+        m_aag(std::move(aag)),
+        m_states_by_index(),
+        m_extended_states_by_state()
+    {
+        /* Error checking */
+        for (const auto& literal : problem->get_initial_literals())
+        {
+            if (literal->is_negated())
+            {
+                throw std::runtime_error("negative literals in the initial state are not supported");
+            }
+        }
+    }
 };
 
 /**

@@ -50,7 +50,7 @@ private:
     /* Implement IStaticAE interface */
     friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
 public:
     AE(Problem problem, PDDLFactories& pddl_factories);

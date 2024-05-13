@@ -57,11 +57,7 @@ int main(int argc, char** argv)
     auto event_handler = (debug) ? std::shared_ptr<IEventHandler> { std::make_shared<DebugEventHandler>() } :
                                    std::shared_ptr<IEventHandler> { std::make_shared<MinimalEventHandler>() };
 
-    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(parser.get_problem(),
-                                                       parser.get_factories(),
-                                                       std::move(state_repository),
-                                                       std::move(successor_generator),
-                                                       std::move(event_handler));
+    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(parser.get_problem(), parser.get_factories(), state_repository, successor_generator, event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(parser.get_domain(), parser.get_problem(), parser.get_factories(), std::move(lifted_brfs));
 

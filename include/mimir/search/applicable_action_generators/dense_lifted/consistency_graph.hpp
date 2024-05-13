@@ -120,15 +120,14 @@ public:
 class Graphs
 {
 private:
-    // Store graphs only if arity >= 2.
-    std::optional<StaticConsistencyGraph> m_precondition;
+    StaticConsistencyGraph m_precondition;
     // TODO: For universal effects, we do not need edges, lets keep it for simplicity now.
     std::vector<StaticConsistencyGraph> m_universal_effects;
 
 public:
     Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set);
 
-    const std::optional<StaticConsistencyGraph>& get_precondition_graph() const;
+    const StaticConsistencyGraph& get_precondition_graph() const;
     const std::vector<StaticConsistencyGraph>& get_universal_effect_graphs() const;
 };
 

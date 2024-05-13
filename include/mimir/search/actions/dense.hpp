@@ -19,6 +19,17 @@ struct FlatSimpleEffect
     size_t atom_id;
 };
 
+struct FlatConditionalEffect
+{
+    FlatBitset positive_conditions;
+    FlatBitset negative_conditions;
+    FlatSimpleEffect effect;
+};
+
+using FlatConditionalEffectVectorLayout = flatmemory::Vector<FlatConditionalEffect>;
+using FlatConditionalEffectVectorBuilder = flatmemory::Builder<FlatConditionalEffectVectorLayout>;
+using FlatConditionalEffectVector = flatmemory::ConstView<FlatConditionalEffectVectorLayout>;
+
 using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
 using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
 using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;

@@ -53,12 +53,15 @@ private:
 
     void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, DenseActionList& out_applicable_actions);
 
+    /// @brief Ground the precondition of an action and return a view onto it.
+    [[nodiscard]] DenseAction ground_action_precondition(const Action& action, const ObjectList& binding);
+
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<LiftedAAGDispatcher<DenseStateTag>>>;
 
     void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);

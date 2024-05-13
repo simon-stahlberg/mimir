@@ -26,13 +26,13 @@ namespace mimir
 {
 
 template<typename T>
-class Combinations
+class CartesianProduct
 {
 private:
     const std::vector<std::vector<T>>& m_vectors;
 
 public:
-    explicit Combinations(const std::vector<std::vector<T>>& vectors) : m_vectors(vectors) {}
+    explicit CartesianProduct(const std::vector<std::vector<T>>& vectors) : m_vectors(vectors) {}
 
     /**
      * Iterators

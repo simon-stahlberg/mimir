@@ -46,7 +46,6 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     auto state_builder = StateBuilder();
     auto& state_atoms = state_builder.get_atoms_bitset();
-    auto derived_atoms = FlatBitsetBuilder();
 
     for (const auto& atom_id : delete_free_ssg.get_or_create_initial_state(m_problem).get_atoms_bitset())
     {
@@ -64,11 +63,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
 
-        auto num_atoms_before = 0;
-        for (const auto atom_id : state_atoms)
-        {
-            ++num_atoms_before;
-        }
+        auto num_atoms_before = state_atoms.count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
@@ -83,13 +78,9 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         }
 
         // Create and all applicable axioms and apply them
-        delete_free_lifted_aag->generate_and_apply_axioms(state_atoms, derived_atoms);
+        delete_free_lifted_aag->generate_and_apply_axioms(state_atoms);
 
-        auto num_atoms_after = 0;
-        for (const auto atom_id : state_atoms)
-        {
-            ++num_atoms_after;
-        }
+        auto num_atoms_after = state_atoms.count();
 
         if (num_atoms_before != num_atoms_after)
         {
@@ -97,9 +88,6 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         }
 
     } while (!reached_delete_free_explore_fixpoint);
-
-    std::cout << "Total number of ground atoms reachable in delete-relaxed task: " << m_pddl_factories.get_ground_atoms().size() << std::endl;
-    std::cout << "Total number of ground actions in delete-relaxed task: " << delete_free_lifted_aag->get_actions().size() << std::endl;
 
     // 2. Create ground actions
     auto ground_actions = DenseActionList {};
@@ -133,10 +121,13 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     // 3. Build match tree
     m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms);
 
-    std::cout << "Total number of ground actions in task: " << ground_actions.size() << std::endl;
-    std::cout << "Total number of ground axioms in task: " << ground_axioms.size() << std::endl;
-    std::cout << "Total number of nodes in action match tree: " << m_action_match_tree.get_num_nodes() << std::endl;
-    std::cout << "Total number of nodes in axiom match tree: " << m_axiom_match_tree.get_num_nodes() << std::endl;
+    std::cout << "[Grounded AAG] Total number of ground atoms reachable in delete-relaxed task: " << state_atoms.count() << std::endl;
+    std::cout << "[Grounded AAG] Total number of instantiated delete free ground actions: " << delete_free_lifted_aag->get_actions().size() << std::endl;
+    std::cout << "[Grounded AAG] Total number of instantiated delete free ground axioms: " << delete_free_lifted_aag->get_axioms().size() << std::endl;
+    std::cout << "[Grounded AAG] Total number of ground actions in task: " << ground_actions.size() << std::endl;
+    std::cout << "[Grounded AAG] Total number of ground axioms in task: " << ground_axioms.size() << std::endl;
+    std::cout << "[Grounded AAG] Total number of nodes in action match tree: " << m_action_match_tree.get_num_nodes() << std::endl;
+    std::cout << "[Grounded AAG] Total number of nodes in axiom match tree: " << m_axiom_match_tree.get_num_nodes() << std::endl;
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseActionList& out_applicable_actions)
@@ -146,11 +137,9 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
     m_action_match_tree.get_applicable_elements(state.get_atoms_bitset(), out_applicable_actions);
 }
 
-void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms)
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
 {
-    // Lifted works so there must be an issue with generating applicable axioms and applying them in grounded setting.
-    // m_lifted_aag.generate_and_apply_axioms(ref_state_atoms, ref_derived_atoms);
-    // return;
+    auto tmp_builder = FlatBitsetBuilder();
 
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {
@@ -163,8 +152,6 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
             /* Compute applicable axioms. */
 
             auto applicable_axioms = GroundAxiomList {};
-            auto tmp_builder = FlatBitsetBuilder();
-            tmp_builder.unset_all();
             tmp_builder |= ref_state_atoms;
             tmp_builder.finish();
             auto state_bitset = FlatBitset(tmp_builder.buffer().data());
@@ -194,7 +181,6 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
                 }
 
                 ref_state_atoms.set(grounded_atom_id);
-                ref_derived_atoms.set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);

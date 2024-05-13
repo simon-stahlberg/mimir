@@ -110,7 +110,7 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms)
+void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
 {
     /* 1. Initialize assignment set */
 
@@ -197,7 +197,6 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
                 }
 
                 ref_state_atoms.set(grounded_atom_id);
-                ref_derived_atoms.set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);

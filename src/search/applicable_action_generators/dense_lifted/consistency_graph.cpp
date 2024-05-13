@@ -72,12 +72,9 @@ std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph)
     return out;
 }
 
-Graphs::Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set)
+Graphs::Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set) :
+    m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_static_conditions(), static_assignment_set))
 {
-    m_precondition = action->get_arity() < 2 ?
-                         std::nullopt :
-                         std::make_optional(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_static_conditions(), static_assignment_set));
-
     m_universal_effects.reserve(action->get_universal_effects().size());
     for (const auto& universal_effect : action->get_universal_effects())
     {
@@ -89,7 +86,7 @@ Graphs::Graphs(Problem problem, Action action, const AssignmentSet& static_assig
     }
 }
 
-const std::optional<StaticConsistencyGraph>& Graphs::get_precondition_graph() const { return m_precondition; }
+const StaticConsistencyGraph& Graphs::get_precondition_graph() const { return m_precondition; }
 
 const std::vector<StaticConsistencyGraph>& Graphs::get_universal_effect_graphs() const { return m_universal_effects; }
 

@@ -31,7 +31,7 @@ private:
 
     void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms, FlatBitsetBuilder& ref_derived_atoms);
+    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);

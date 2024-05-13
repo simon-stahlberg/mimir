@@ -37,6 +37,7 @@ struct FlatDenseStateEqual
 };
 
 using FlatDenseStateSet = flatmemory::UnorderedSet<FlatDenseStateLayout, FlatDenseStateHash, FlatDenseStateEqual>;
+using FlatDenseStateVector = flatmemory::FixedSizedTypeVector<FlatDenseStateLayout>;
 
 /**
  * Implementation class
