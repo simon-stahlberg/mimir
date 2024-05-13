@@ -278,6 +278,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
     // TODO: this also unnecessarily grounds universal effects
     if (grounded_action.is_applicable(state))
     {
+        m_applicable_actions.insert(grounded_action);
         out_applicable_actions.emplace_back(grounded_action);
     }
 }
@@ -293,6 +294,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, D
         // TODO: this also unnecessarily grounds universal effects
         if (grounded_action.is_applicable(state))
         {
+            m_applicable_actions.insert(grounded_action);
             out_applicable_actions.emplace_back(grounded_action);
         }
     }
@@ -354,6 +356,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
         // TODO: this also unnecessarily grounds universal effects
         if (grounded_action.is_applicable(state))
         {
+            m_applicable_actions.insert(grounded_action);
             out_applicable_actions.push_back(grounded_action);
         }
     }
@@ -437,7 +440,11 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     }
 }
 
+const DenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_axiom_evaluator.get_applicable_axioms(); }
+
 const FlatDenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axioms() const { return m_axiom_evaluator.get_axioms(); }
+
+const DenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_actions() const { return m_applicable_actions; }
 
 const FlatDenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
 

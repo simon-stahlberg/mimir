@@ -92,6 +92,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const P
     }
 
     os << "Action("
+       << "id=" << action.get_id() << ", "
        << "name=" << action.get_action()->get_name() << ", "
        << "positive precondition=" << positive_precondition << ", "
        << "negative precondition=" << negative_precondition << ", "
@@ -122,7 +123,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PD
     to_ground_atoms(positive_precondition_bitset, pddl_factories, positive_precondition);
     to_ground_atoms(negative_precondition_bitset, pddl_factories, negative_precondition);
 
-    os << "Action("
+    os << "Axiom("
+       << "id=" << axiom.get_id() << ", "
        << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "
        << "positive precondition=" << positive_precondition << ", "
        << "negative precondition=" << negative_precondition << ", "

@@ -1,6 +1,7 @@
 #include "mimir/search/axiom_evaluators/dense.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
+#include "mimir/common/itertools.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/grounding_utils.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -29,6 +30,7 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
 
     if (grounded_axiom.is_applicable(state_atoms))
     {
+        m_applicable_axioms.insert(grounded_axiom);
         out_applicable_axioms.emplace_back(grounded_axiom);
     }
 }
@@ -43,6 +45,7 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatB
 
         if (grounded_axiom.is_applicable(state_atoms))
         {
+            m_applicable_axioms.insert(grounded_axiom);
             out_applicable_axioms.emplace_back(grounded_axiom);
         }
     }
@@ -101,6 +104,7 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
 
         if (grounded_axiom.is_applicable(state_atoms))
         {
+            m_applicable_axioms.insert(grounded_axiom);
             out_applicable_axioms.push_back(grounded_axiom);
         }
     }
@@ -303,4 +307,6 @@ GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, Ob
 }
 
 const FlatDenseAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_axioms() const { return m_axioms; }
+
+const DenseAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_applicable_axioms; }
 }

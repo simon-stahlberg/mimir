@@ -131,6 +131,7 @@ public:
 using DenseAxiomBuilder = Builder<AxiomDispatcher<DenseStateTag>>;
 using DenseAxiom = ConstView<AxiomDispatcher<DenseStateTag>>;
 using DenseAxiomList = std::vector<DenseAxiom>;
+using DenseAxiomSet = std::unordered_set<DenseAxiom, loki::Hash<DenseAxiom>, loki::EqualTo<DenseAxiom>>;
 }
 
 #endif

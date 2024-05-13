@@ -35,6 +35,7 @@ private:
 
     DenseAE m_axiom_evaluator;
 
+    DenseActionSet m_applicable_actions;
     FlatDenseActionSet m_actions;
     DenseActionList m_actions_by_index;
     DenseActionBuilder m_action_builder;
@@ -71,8 +72,14 @@ public:
     /// @brief Ground an action and return a view onto it.
     [[nodiscard]] DenseAction ground_action(const Action& action, ObjectList&& binding);
 
+    /// @brief Return all applicable axioms.
+    [[nodiscard]] const DenseAxiomSet& get_applicable_axioms() const;
+
     /// @brief Return all axioms.
     [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
+
+    /// @brief Return all applicable actions.
+    [[nodiscard]] const DenseActionSet& get_applicable_actions() const;
 
     /// @brief Return all actions.
     [[nodiscard]] const FlatDenseActionSet& get_actions() const;

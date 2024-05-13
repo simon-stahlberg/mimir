@@ -58,29 +58,24 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // Keep track of changes
     size_t num_atoms = 0;
-    size_t num_actions = 0;
     // Temporary variables
     auto actions = DenseActionList {};
     do
     {
         num_atoms = m_pddl_factories.get_ground_atoms().size();
-        num_actions = delete_free_lifted_aag->get_actions().size();
 
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
 
         // Create and all applicable actions and apply them
+        // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
         delete_free_lifted_aag->generate_applicable_actions(state, actions);
         for (const auto& action : actions)
         {
-            const auto is_newly_generated = (action.get_id() >= num_actions);
-            if (is_newly_generated)
+            const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
+            for (const auto atom_id : succ_state.get_atoms_bitset())
             {
-                const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
-                for (const auto atom_id : succ_state.get_atoms_bitset())
-                {
-                    state_atoms.set(atom_id);
-                }
+                state_atoms.set(atom_id);
             }
         }
 
@@ -94,13 +89,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // 2. Create ground actions
     auto ground_actions = DenseActionList {};
-    for (const auto& action : delete_free_lifted_aag->get_actions())
+    for (const auto& action : delete_free_lifted_aag->get_applicable_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        const auto action_proxy = DenseAction(action);
-        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(action_proxy.get_action()))
+        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(action.get_action()))
         {
-            auto action_arguments = ObjectList(action_proxy.get_objects().begin(), action_proxy.get_objects().end());
+            auto action_arguments = ObjectList(action.get_objects().begin(), action.get_objects().end());
             ground_actions.push_back(m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments)));
         }
     }
@@ -110,44 +104,14 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // 2. Create ground axioms
     auto ground_axioms = DenseAxiomList {};
-
-    // ERROR here: some ground axioms are not being generated
-    /*
-    for (const auto& axiom : delete_free_lifted_aag->get_axioms())
+    for (const auto& axiom : delete_free_lifted_aag->get_applicable_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        const auto axiom_proxy = DenseAxiom(axiom);
-        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(axiom_proxy.get_axiom()))
+        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(axiom.get_axiom()))
         {
-            auto axiom_arguments = ObjectList(axiom_proxy.get_objects().begin(), axiom_proxy.get_objects().end());
-            ground_axioms.push_back(m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments)));
-        }
-    }
-    */
-
-    // Current solution that works: exhaustively generate ground axioms for testing
-    auto axioms = m_problem->get_axioms();
-    auto add_axioms = m_problem->get_domain()->get_axioms();
-    axioms.insert(axioms.end(), add_axioms.begin(), add_axioms.end());
-
-    for (const auto& axiom : axioms)
-    {
-        if (axiom->get_arity() == 0)
-        {
-            ground_axioms.push_back(m_lifted_aag.ground_axiom(axiom, ObjectList {}));
-        }
-        else
-        {
-            auto vecs = std::vector<ObjectList>(axiom->get_arity(), m_problem->get_objects());
-            for (const auto& combination_it : Combinations(vecs))
-            {
-                auto binding = ObjectList {};
-                for (const auto& object_it : combination_it)
-                {
-                    binding.push_back(*object_it);
-                }
-                ground_axioms.push_back(m_lifted_aag.ground_axiom(axiom, std::move(binding)));
-            }
+            auto axiom_arguments = ObjectList(axiom.get_objects().begin(), axiom.get_objects().end());
+            auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
+            ground_axioms.push_back(grounded_axiom);
         }
     }
 

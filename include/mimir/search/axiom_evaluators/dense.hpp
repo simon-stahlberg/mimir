@@ -30,6 +30,8 @@ private:
 
     std::vector<AxiomPartition> m_partitioning;
 
+    DenseAxiomSet m_applicable_axioms;
+
     FlatDenseAxiomSet m_axioms;
     DenseAxiomList m_axioms_by_index;
     DenseAxiomBuilder m_axiom_builder;
@@ -61,6 +63,9 @@ public:
 
     /// @brief Return all axioms.
     [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
+
+    /// @brief Return all applicable axioms.
+    [[nodiscard]] const DenseAxiomSet& get_applicable_axioms() const;
 };
 
 /**

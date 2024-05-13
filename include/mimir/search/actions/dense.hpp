@@ -162,6 +162,7 @@ public:
 using DenseActionBuilder = Builder<ActionDispatcher<DenseStateTag>>;
 using DenseAction = ConstView<ActionDispatcher<DenseStateTag>>;
 using DenseActionList = std::vector<DenseAction>;
+using DenseActionSet = std::unordered_set<DenseAction, loki::Hash<DenseAction>, loki::EqualTo<DenseAction>>;
 
 }
 
