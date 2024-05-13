@@ -26,7 +26,7 @@ private:
     std::shared_ptr<IDynamicAAG> m_aag;
 
     FlatDenseStateSet m_states;
-    FlatDenseStateVector m_states_by_index;
+    std::vector<DenseState> m_states_by_index;
     FlatDenseStateVector m_extended_states_by_state;
     DenseStateBuilder m_state_builder;
 
@@ -66,7 +66,7 @@ private:
             return DenseState(m_extended_states_by_state[state.get_id()]);
         }
 
-        m_states_by_index.push_back(*iter);
+        m_states_by_index.push_back(state);
 
         /* 4. Construct extended state by evaluating Axioms */
 
@@ -92,7 +92,7 @@ private:
         auto& state_bitset = m_state_builder.get_atoms_bitset();
         // TODO: add assignment operator to bitset to replace unset + operator|=
         state_bitset.unset_all();
-        const auto& unextended_state = DenseState(m_states_by_index[state.get_id()]);
+        const auto& unextended_state = m_states_by_index[state.get_id()];
         state_bitset |= unextended_state.get_atoms_bitset();
 
         /* 1. Set state id */
@@ -135,7 +135,7 @@ private:
             return DenseState(m_extended_states_by_state[succ_state.get_id()]);
         }
 
-        m_states_by_index.push_back(*iter);
+        m_states_by_index.push_back(succ_state);
 
         /* 4. Construct extended state by evaluating Axioms */
 
