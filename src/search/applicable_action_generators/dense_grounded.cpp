@@ -53,19 +53,22 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         state_atoms.set(atom_id);
     }
 
-    std::cout << *delete_free_problem->get_domain() << std::endl;
-    std::cout << *delete_free_problem << std::endl;
-
     // Keep track of changes
-    size_t num_atoms = 0;
-    // Temporary variables
+    bool reached_delete_free_explore_fixpoint = true;
+
     auto actions = DenseActionList {};
     do
     {
-        num_atoms = m_pddl_factories.get_ground_atoms().size();
+        reached_delete_free_explore_fixpoint = true;
 
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
+
+        auto num_atoms_before = 0;
+        for (const auto atom_id : state_atoms)
+        {
+            ++num_atoms_before;
+        }
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
@@ -82,7 +85,18 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         // Create and all applicable axioms and apply them
         delete_free_lifted_aag->generate_and_apply_axioms(state_atoms, derived_atoms);
 
-    } while (num_atoms != m_pddl_factories.get_ground_atoms().size());
+        auto num_atoms_after = 0;
+        for (const auto atom_id : state_atoms)
+        {
+            ++num_atoms_after;
+        }
+
+        if (num_atoms_before != num_atoms_after)
+        {
+            reached_delete_free_explore_fixpoint = false;
+        }
+
+    } while (!reached_delete_free_explore_fixpoint);
 
     std::cout << "Total number of ground atoms reachable in delete-relaxed task: " << m_pddl_factories.get_ground_atoms().size() << std::endl;
     std::cout << "Total number of ground actions in delete-relaxed task: " << delete_free_lifted_aag->get_actions().size() << std::endl;
@@ -95,7 +109,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(action.get_action()))
         {
             auto action_arguments = ObjectList(action.get_objects().begin(), action.get_objects().end());
-            ground_actions.push_back(m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments)));
+            auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
+            ground_actions.push_back(grounded_action);
         }
     }
 
