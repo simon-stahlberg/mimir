@@ -13,15 +13,17 @@ namespace mimir
  * Flatmemory types
  */
 
-using FlatConditionalEffectLayout = flatmemory::Tuple<FlatBitsetLayout, FlatBitsetLayout, uint64_t, bool>;
-using FlatConditionalEffectBuilder = flatmemory::Builder<FlatConditionalEffectLayout>;
-using FlatConditionalEffect = flatmemory::ConstView<FlatConditionalEffectLayout>;
+struct FlatSimpleEffect
+{
+    bool is_negated;
+    size_t atom_id;
+};
 
-using FlatConditionalEffectVectorLayout = flatmemory::Vector<FlatConditionalEffectLayout>;
-using FlatConditionalEffectVectorBuilder = flatmemory::Builder<FlatConditionalEffectVectorLayout>;
-using FlatConditionalEffectVector = flatmemory::ConstView<FlatConditionalEffectVectorLayout>;
+using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
+using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
+using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
 
-using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,  //
+using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,
                                                 int32_t,
                                                 Action,
                                                 FlatObjectListLayout,
@@ -29,7 +31,9 @@ using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,  //
                                                 FlatBitsetLayout,
                                                 FlatBitsetLayout,
                                                 FlatBitsetLayout,
-                                                FlatConditionalEffectVectorLayout>;
+                                                FlatBitsetVectorLayout,
+                                                FlatBitsetVectorLayout,
+                                                FlatSimpleEffectVectorLayout>;
 using FlatDenseActionBuilder = flatmemory::Builder<FlatDenseActionLayout>;
 using FlatDenseAction = flatmemory::ConstView<FlatDenseActionLayout>;
 using FlatDenseActionVector = flatmemory::VariableSizedTypeVector<FlatDenseActionLayout>;
@@ -90,8 +94,11 @@ public:
     /* Simple effects */
     [[nodiscard]] FlatBitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
     [[nodiscard]] FlatBitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
-    /* Conditional effect structs */
-    [[nodiscard]] FlatConditionalEffectVectorBuilder& get_conditional_effects() { return m_builder.get<8>(); }
+    /* Conditional preconditions */
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<8>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<9>(); }
+    /* Conditional simple effects */
+    [[nodiscard]] FlatSimpleEffectVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
 };
 
 /**
@@ -105,6 +112,8 @@ class ConstView<ActionDispatcher<DenseStateTag>> :
     public IActionView<ConstView<ActionDispatcher<DenseStateTag>>>
 {
 private:
+    using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
+
     FlatDenseAction m_view;
 
     /* Implement IView interface: */
@@ -125,6 +134,7 @@ private:
     [[nodiscard]] FlatObjectList get_objects_impl() const { return m_view.get<3>(); }
 
 public:
+    /// @brief Create a view on a DefaultAction.
     explicit ConstView(FlatDenseAction view) : m_view(view) {}
 
     /* Precondition */
@@ -133,8 +143,10 @@ public:
     /* Simple effects */
     [[nodiscard]] FlatBitset get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
     [[nodiscard]] FlatBitset get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
-    /* Conditional effect structs */
-    [[nodiscard]] FlatConditionalEffectVector get_conditional_effects() const { return m_view.get<8>(); }
+    /* Conditional effects */
+    [[nodiscard]] FlatBitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<8>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<9>(); }
+    [[nodiscard]] FlatSimpleEffectVector get_conditional_effects() const { return m_view.get<10>(); }
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
@@ -142,34 +154,6 @@ public:
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
     }
-};
-
-class FlatConditionalEffectBuilderProxy
-{
-private:
-    FlatConditionalEffectBuilder& m_builder;
-
-public:
-    explicit FlatConditionalEffectBuilderProxy(FlatConditionalEffectBuilder& builder) : m_builder(builder) {}
-
-    [[nodiscard]] FlatBitsetBuilder& get_positive_precondition_bitset() { return m_builder.get<0>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_negative_precondition_bitset() { return m_builder.get<1>(); }
-    [[nodiscard]] uint64_t& get_effect_atom_id() { return m_builder.get<2>(); }
-    [[nodiscard]] bool& get_is_negated_effect() { return m_builder.get<3>(); }
-};
-
-class FlatConditionalEffectProxy
-{
-private:
-    FlatConditionalEffect m_view;
-
-public:
-    explicit FlatConditionalEffectProxy(FlatConditionalEffect view) : m_view(view) {}
-
-    [[nodiscard]] FlatBitset get_positive_precondition_bitset() const { return m_view.get<0>(); }
-    [[nodiscard]] FlatBitset get_negative_precondition_bitset() const { return m_view.get<1>(); }
-    [[nodiscard]] uint64_t get_effect_atom_id() const { return m_view.get<2>(); }
-    [[nodiscard]] bool get_is_negated_effect() const { return m_view.get<3>(); }
 };
 
 /**

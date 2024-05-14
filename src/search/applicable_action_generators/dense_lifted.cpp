@@ -127,11 +127,11 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
-    const auto fill_effect = [this](const Literal& literal, size_t& effect_atom_id, bool& is_negated, const auto& binding)
+    const auto fill_effect = [this](const Literal& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
         const auto grounded_literal = ground_literal(literal, binding, m_pddl_factories);
-        effect_atom_id = grounded_literal->get_atom()->get_identifier();
-        is_negated = grounded_literal->is_negated();
+        ref_effect.is_negated = grounded_literal->is_negated();
+        ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
     };
 
     /* Header */
@@ -168,30 +168,30 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     /* Conditional effects */
     // Fetch data
-    auto& conditional_effects_flat_builders = m_action_builder.get_conditional_effects();
+    auto& positive_conditional_preconditions = m_action_builder.get_conditional_positive_precondition_bitsets();
+    auto& negative_conditional_preconditions = m_action_builder.get_conditional_negative_precondition_bitsets();
+    auto& conditional_effects = m_action_builder.get_conditional_effects();
 
     // Resize builders.
     // Note: flatmemory tracks "actual" size to avoid deallocation of nested types
     const auto num_conditional_effects = action->get_conditional_effects().size();
-    conditional_effects_flat_builders.resize(num_conditional_effects);
+    positive_conditional_preconditions.resize(num_conditional_effects);
+    negative_conditional_preconditions.resize(num_conditional_effects);
+    conditional_effects.resize(num_conditional_effects);
     if (num_conditional_effects > 0)
     {
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
-            // fetch data members
-            auto conditional_effect_builder = FlatConditionalEffectBuilderProxy(conditional_effects_flat_builders[i]);
-            auto& positive_conditions = conditional_effect_builder.get_positive_precondition_bitset();
-            auto& negative_conditions = conditional_effect_builder.get_negative_precondition_bitset();
-            auto& effect_atom_id = conditional_effect_builder.get_effect_atom_id();
-            auto& is_negated_effect = conditional_effect_builder.get_is_negated_effect();
-
-            positive_conditions.unset_all();
-            negative_conditions.unset_all();
+            positive_conditional_preconditions[i].unset_all();
+            negative_conditional_preconditions[i].unset_all();
 
             // Ground conditions and effect
-            fill_bitsets(action->get_conditional_effects().at(i)->get_conditions(), positive_conditions, negative_conditions, binding);
+            fill_bitsets(action->get_conditional_effects().at(i)->get_conditions(),
+                         positive_conditional_preconditions[i],
+                         negative_conditional_preconditions[i],
+                         binding);
 
-            fill_effect(action->get_conditional_effects().at(i)->get_effect(), effect_atom_id, is_negated_effect, binding);
+            fill_effect(action->get_conditional_effects().at(i)->get_effect(), conditional_effects[i], binding);
         }
     }
 
@@ -210,8 +210,10 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
             // Resize builders.
             const auto num_conditional_effects = CartesianProduct(objects_by_parameter_index).num_combinations();
-            const auto old_size = conditional_effects_flat_builders.size();
-            conditional_effects_flat_builders.resize(old_size + num_conditional_effects);
+            const auto old_size = positive_conditional_preconditions.size();
+            positive_conditional_preconditions.resize(old_size + num_conditional_effects);
+            negative_conditional_preconditions.resize(old_size + num_conditional_effects);
+            conditional_effects.resize(old_size + num_conditional_effects);
 
             // Create binding and ground conditions and effect
             binding.resize(binding_size + universal_effect->get_arity());
@@ -229,17 +231,11 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 }
 
                 // Ground conditions and effect
-                // fetch data members
-                auto conditional_effect_builder = FlatConditionalEffectBuilderProxy(conditional_effects_flat_builders[j]);
-                auto& positive_conditions = conditional_effect_builder.get_positive_precondition_bitset();
-                auto& negative_conditions = conditional_effect_builder.get_negative_precondition_bitset();
-                auto& effect_atom_id = conditional_effect_builder.get_effect_atom_id();
-                auto& is_negated_effect = conditional_effect_builder.get_is_negated_effect();
-                positive_conditions.unset_all();
-                negative_conditions.unset_all();
+                positive_conditional_preconditions[j].unset_all();
+                negative_conditional_preconditions[j].unset_all();
 
-                fill_bitsets(universal_effect->get_conditions(), positive_conditions, negative_conditions, binding);
-                fill_effect(universal_effect->get_effect(), effect_atom_id, is_negated_effect, binding);
+                fill_bitsets(universal_effect->get_conditions(), positive_conditional_preconditions[j], negative_conditional_preconditions[j], binding);
+                fill_effect(universal_effect->get_effect(), conditional_effects[j], binding);
 
                 ++j;
             }

@@ -106,19 +106,20 @@ private:
         state_bitset |= action.get_unconditional_positive_effect_bitset();
 
         /* Conditional effects */
-        for (const auto& flat_conditional_effect : action.get_conditional_effects())
+        const auto num_conditional_effects = action.get_conditional_effects().size();
+        for (size_t i = 0; i < num_conditional_effects; ++i)
         {
-            const auto conditional_effect = FlatConditionalEffectProxy(flat_conditional_effect);
-            if (state.get_atoms_bitset().is_superseteq(conditional_effect.get_positive_precondition_bitset())
-                && state.get_atoms_bitset().are_disjoint(conditional_effect.get_negative_precondition_bitset()))
+            if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
+                && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i]))
             {
-                if (conditional_effect.get_is_negated_effect())
+                const auto simple_effect = action.get_conditional_effects()[i];
+                if (simple_effect.is_negated)
                 {
-                    state_bitset.unset(conditional_effect.get_effect_atom_id());
+                    state_bitset.unset(simple_effect.atom_id);
                 }
                 else
                 {
-                    state_bitset.set(conditional_effect.get_effect_atom_id());
+                    state_bitset.set(simple_effect.atom_id);
                 }
             }
         }
