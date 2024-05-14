@@ -8,6 +8,13 @@
 
 namespace mimir
 {
+
+struct FlatSimpleEffect
+{
+    bool is_negated;
+    size_t atom_id;
+};
+
 /**
  * Flatmemory types
  */

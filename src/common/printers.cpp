@@ -45,6 +45,26 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, co
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const std::tuple<FlatConditionalEffectProxy, const PDDLFactories&>& data)
+{
+    const auto [conditional_effect, pddl_factories] = data;
+
+    auto positive_precondition = GroundAtomList {};
+    auto negative_precondition = GroundAtomList {};
+
+    to_ground_atoms(conditional_effect.get_positive_precondition_bitset(), pddl_factories, positive_precondition);
+    to_ground_atoms(conditional_effect.get_negative_precondition_bitset(), pddl_factories, negative_precondition);
+
+    os << "("
+       << "positive precondition=" << positive_precondition << ", "
+       << "negative precondition=" << negative_precondition << ", "
+       << "effect="
+       << std::make_tuple(FlatSimpleEffect(conditional_effect.get_is_negated_effect(), conditional_effect.get_effect_atom_id()), std::cref(pddl_factories))
+       << ")";
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data)
 {
     const auto [state, pddl_factories] = data;
@@ -66,30 +86,16 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const P
     auto negative_precondition_bitset = action.get_applicability_negative_precondition_bitset();
     auto positive_effect_bitset = action.get_unconditional_positive_effect_bitset();
     auto negative_effect_bitset = action.get_unconditional_negative_effect_bitset();
-    auto positive_conditional_condition_bitsets = action.get_conditional_positive_precondition_bitsets();
-    auto negative_conditional_condition_bitsets = action.get_conditional_negative_precondition_bitsets();
-    auto conditional_effects = action.get_conditional_effects();
 
     auto positive_precondition = GroundAtomList {};
     auto negative_precondition = GroundAtomList {};
     auto positive_simple_effects = GroundAtomList {};
     auto negative_simple_effects = GroundAtomList {};
-    auto positive_conditional_preconditions = std::vector<GroundAtomList> {};
-    auto negative_conditional_preconditions = std::vector<GroundAtomList> {};
 
     to_ground_atoms(positive_precondition_bitset, pddl_factories, positive_precondition);
     to_ground_atoms(negative_precondition_bitset, pddl_factories, negative_precondition);
     to_ground_atoms(positive_effect_bitset, pddl_factories, positive_simple_effects);
     to_ground_atoms(negative_effect_bitset, pddl_factories, negative_simple_effects);
-
-    const auto num_conditional_effects = action.get_conditional_effects().size();
-    positive_conditional_preconditions.resize(num_conditional_effects);
-    negative_conditional_preconditions.resize(num_conditional_effects);
-    for (size_t i = 0; i < num_conditional_effects; ++i)
-    {
-        to_ground_atoms(positive_conditional_condition_bitsets[i], pddl_factories, positive_conditional_preconditions[i]);
-        to_ground_atoms(negative_conditional_condition_bitsets[i], pddl_factories, negative_conditional_preconditions[i]);
-    }
 
     os << "Action("
        << "id=" << action.get_id() << ", "
@@ -99,11 +105,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const P
        << "simple_delete=" << negative_simple_effects << ", "
        << "simple_add=" << positive_simple_effects << ", "
        << "conditional_effects=[";
-    for (size_t i = 0; i < num_conditional_effects; ++i)
+    for (const auto& conditional_effect : action.get_conditional_effects())
     {
-        os << "[positive precondition=" << positive_conditional_preconditions[i] << ", "
-           << "negative precondition=" << negative_conditional_preconditions[i] << ", "
-           << "effect=" << std::make_tuple(conditional_effects[i], std::cref(pddl_factories)) << "], ";
+        os << std::make_tuple(FlatConditionalEffectProxy(conditional_effect), std::cref(pddl_factories)) << ", ";
     }
     os << "])";
 
