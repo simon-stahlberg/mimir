@@ -23,13 +23,13 @@ private:
 
     LiftedDenseAAG m_lifted_aag;
 
-    MatchTree<DenseAction> m_action_match_tree;
-    MatchTree<DenseAxiom> m_axiom_match_tree;
+    MatchTree<DenseGroundAction> m_action_match_tree;
+    MatchTree<DenseGroundAxiom> m_axiom_match_tree;
 
     /* Implement IStaticAAG interface */
     friend class IStaticAAG<AAG<GroundedAAGDispatcher<DenseStateTag>>>;
 
-    void generate_applicable_actions_impl(const DenseState state, DenseActionList& out_applicable_actions);
+    void generate_applicable_actions_impl(const DenseState state, DenseGroundActionList& out_applicable_actions);
 
     void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
@@ -40,7 +40,7 @@ public:
     [[nodiscard]] const FlatDenseActionSet& get_actions() const;
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] DenseAction get_action(size_t action_id) const;
+    [[nodiscard]] DenseGroundAction get_action(size_t action_id) const;
 };
 
 /**

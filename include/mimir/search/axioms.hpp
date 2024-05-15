@@ -12,8 +12,8 @@
 
 namespace mimir
 {
-using GroundAxiomBuilder = DenseAxiomBuilder;
-using GroundAxiom = DenseAxiom;
+using GroundAxiomBuilder = DenseGroundAxiomBuilder;
+using GroundAxiom = DenseGroundAxiom;
 using GroundAxiomList = std::vector<GroundAxiom>;
 }
 

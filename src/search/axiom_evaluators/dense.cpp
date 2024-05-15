@@ -22,7 +22,7 @@ bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& ax
     return true;
 }
 
-void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms)
+void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground axiom is applicable.
 
@@ -35,7 +35,7 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, GroundAxiomList& out_applicable_axioms)
+void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms)
 {
     // There is only one parameter, try all bindings with the correct type.
 
@@ -54,7 +54,7 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatB
 void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignment_sets,
                                                    const Axiom& axiom,
                                                    const FlatBitsetBuilder& state_atoms,
-                                                   GroundAxiomList& out_applicable_axioms)
+                                                   DenseGroundAxiomList& out_applicable_axioms)
 {
     const auto& precondition_graph = m_static_consistency_graphs.at(axiom);
     const auto num_vertices = precondition_graph.get_vertices().size();
@@ -129,7 +129,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
     /* 3. Fixed point computation */
 
-    auto applicable_axioms = GroundAxiomList {};
+    auto applicable_axioms = DenseGroundAxiomList {};
 
     for (const auto& partition : m_partitioning)
     {
@@ -248,8 +248,19 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
 
 const std::vector<AxiomPartition>& AE<AEDispatcher<DenseStateTag>>::get_axiom_partitioning() const { return m_partitioning; }
 
-GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
+DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
 {
+    /* 1. Check if grounding is cached */
+
+    auto& groundings = m_axiom_groundings[axiom];
+    auto it = groundings.find(binding);
+    if (it != groundings.end())
+    {
+        return it->second;
+    }
+
+    /* 2. Ground the axiom */
+
     const auto fill_bitsets =
         [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
     {
@@ -296,16 +307,22 @@ GroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, Ob
     flatmemory_builder.finish();
 
     const auto [iter, inserted] = m_axioms.insert(flatmemory_builder);
-    const auto result_axiom = DenseAxiom(*iter);
+    const auto grounded_axiom = DenseGroundAxiom(*iter);
     if (inserted)
     {
-        m_axioms_by_index.push_back(result_axiom);
+        m_axioms_by_index.push_back(grounded_axiom);
     }
 
-    return result_axiom;
+    /* 3. Insert to groundings table */
+
+    groundings.emplace(std::move(binding), DenseGroundAxiom(grounded_axiom));
+
+    /* 4. Return the resulting ground axiom */
+
+    return grounded_axiom;
 }
 
 const FlatDenseAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_axioms() const { return m_axioms; }
 
-const DenseAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_applicable_axioms; }
+const DenseGroundAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_applicable_axioms; }
 }

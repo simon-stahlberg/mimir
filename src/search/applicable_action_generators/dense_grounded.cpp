@@ -55,7 +55,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
 
-    auto actions = DenseActionList {};
+    auto actions = DenseGroundActionList {};
     do
     {
         reached_delete_free_explore_fixpoint = true;
@@ -90,7 +90,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     } while (!reached_delete_free_explore_fixpoint);
 
     // 2. Create ground actions
-    auto ground_actions = DenseActionList {};
+    auto ground_actions = DenseGroundActionList {};
     for (const auto& action : delete_free_lifted_aag->get_applicable_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
@@ -106,7 +106,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions);
 
     // 2. Create ground axioms
-    auto ground_axioms = DenseAxiomList {};
+    auto ground_axioms = DenseGroundAxiomList {};
     for (const auto& axiom : delete_free_lifted_aag->get_applicable_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
@@ -130,7 +130,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     std::cout << "[Grounded AAG] Total number of nodes in axiom match tree: " << m_axiom_match_tree.get_num_nodes() << std::endl;
 }
 
-void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseActionList& out_applicable_actions)
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseGroundActionList& out_applicable_actions)
 {
     out_applicable_actions.clear();
 

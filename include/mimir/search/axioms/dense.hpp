@@ -129,10 +129,10 @@ public:
 /**
  * Mimir types
  */
-using DenseAxiomBuilder = Builder<AxiomDispatcher<DenseStateTag>>;
-using DenseAxiom = ConstView<AxiomDispatcher<DenseStateTag>>;
-using DenseAxiomList = std::vector<DenseAxiom>;
-using DenseAxiomSet = std::unordered_set<DenseAxiom, loki::Hash<DenseAxiom>, loki::EqualTo<DenseAxiom>>;
+using DenseGroundAxiomBuilder = Builder<AxiomDispatcher<DenseStateTag>>;
+using DenseGroundAxiom = ConstView<AxiomDispatcher<DenseStateTag>>;
+using DenseGroundAxiomList = std::vector<DenseGroundAxiom>;
+using DenseGroundAxiomSet = std::unordered_set<DenseGroundAxiom, loki::Hash<DenseGroundAxiom>, loki::EqualTo<DenseGroundAxiom>>;
 }
 
 #endif

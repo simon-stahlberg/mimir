@@ -159,10 +159,10 @@ public:
 /**
  * Mimir types
  */
-using DenseActionBuilder = Builder<ActionDispatcher<DenseStateTag>>;
-using DenseAction = ConstView<ActionDispatcher<DenseStateTag>>;
-using DenseActionList = std::vector<DenseAction>;
-using DenseActionSet = std::unordered_set<DenseAction, loki::Hash<DenseAction>, loki::EqualTo<DenseAction>>;
+using DenseGroundActionBuilder = Builder<ActionDispatcher<DenseStateTag>>;
+using DenseGroundAction = ConstView<ActionDispatcher<DenseStateTag>>;
+using DenseGroundActionList = std::vector<DenseGroundAction>;
+using DenseGroundActionSet = std::unordered_set<DenseGroundAction, loki::Hash<DenseGroundAction>, loki::EqualTo<DenseGroundAction>>;
 
 }
 

@@ -13,8 +13,8 @@
 
 namespace mimir
 {
-using GroundActionBuilder = DenseActionBuilder;
-using GroundAction = DenseAction;
+using GroundActionBuilder = DenseGroundActionBuilder;
+using GroundAction = DenseGroundAction;
 using GroundActionList = std::vector<GroundAction>;
 }
 

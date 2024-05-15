@@ -58,7 +58,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PD
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, const PDDLFactories&>& data)
 {
     const auto [action, pddl_factories] = data;
 
@@ -110,7 +110,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const P
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, const PDDLFactories&>& data)
 {
     const auto [axiom, pddl_factories] = data;
 
@@ -133,7 +133,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PD
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const DenseAction& action)
+std::ostream& operator<<(std::ostream& os, const DenseGroundAction& action)
 {
     os << "(" << action.get_action()->get_name();
     for (const auto& obj : action.get_objects())

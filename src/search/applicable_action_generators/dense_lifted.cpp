@@ -109,6 +109,17 @@ GroundAxiom AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_axiom(const Axiom& a
 
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::ground_action(const Action& action, ObjectList&& binding)
 {
+    /* 1. Check if grounding is cached */
+
+    auto& groundings = m_action_groundings[action];
+    auto it = groundings.find(binding);
+    if (it != groundings.end())
+    {
+        return it->second;
+    }
+
+    /* 2. Ground the action */
+
     const auto fill_bitsets =
         [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
     {
@@ -246,13 +257,19 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     flatmemory_builder.finish();
 
     const auto [iter, inserted] = m_actions.insert(flatmemory_builder);
-    const auto result_action = DenseAction(*iter);
+    const auto grounded_action = DenseGroundAction(*iter);
     if (inserted)
     {
-        m_actions_by_index.push_back(result_action);
+        m_actions_by_index.push_back(grounded_action);
     }
 
-    return result_action;
+    /* 3. Insert to groundings table */
+
+    groundings.emplace(std::move(binding), DenseGroundAction(grounded_action));
+
+    /* 4. Return the resulting ground action */
+
+    return grounded_action;
 }
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
@@ -269,7 +286,7 @@ bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const A
     return true;
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
 
@@ -283,7 +300,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, DenseState state, DenseActionList& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions)
 {
     // There is only one parameter, try all bindings with the correct type.
 
@@ -303,7 +320,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, D
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignment_sets,
                                                            const Action& action,
                                                            DenseState state,
-                                                           DenseActionList& out_applicable_actions)
+                                                           DenseGroundActionList& out_applicable_actions)
 {
     const auto& graphs = m_static_consistency_graphs.at(action);
     const auto& precondition_graph = graphs.get_precondition_graph();
@@ -361,7 +378,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseActionList& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseGroundActionList& out_applicable_actions)
 {
     out_applicable_actions.clear();
 
@@ -439,11 +456,11 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     }
 }
 
-const DenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_axiom_evaluator.get_applicable_axioms(); }
+const DenseGroundAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_axiom_evaluator.get_applicable_axioms(); }
 
 const FlatDenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axioms() const { return m_axiom_evaluator.get_axioms(); }
 
-const DenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_actions() const { return m_applicable_actions; }
+const DenseGroundActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_actions() const { return m_applicable_actions; }
 
 const FlatDenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_actions; }
 

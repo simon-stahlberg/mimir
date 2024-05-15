@@ -82,7 +82,7 @@ private:
         return DenseState(m_extended_states_by_state[next_state_id]);
     }
 
-    [[nodiscard]] DenseState get_or_create_successor_state_impl(DenseState state, DenseAction action)
+    [[nodiscard]] DenseState get_or_create_successor_state_impl(DenseState state, DenseGroundAction action)
     {
         int next_state_id = m_states.size();
 

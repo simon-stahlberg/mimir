@@ -40,12 +40,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, co
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data);
 
 /// @brief Prints an Action to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAction, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, const PDDLFactories&>& data);
 
 /// @brief Prints an Axiom to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseAxiom, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, const PDDLFactories&>& data);
 
-std::ostream& operator<<(std::ostream& os, const DenseAction& action);
+std::ostream& operator<<(std::ostream& os, const DenseGroundAction& action);
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
