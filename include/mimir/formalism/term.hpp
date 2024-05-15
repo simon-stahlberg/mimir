@@ -25,6 +25,13 @@
 
 namespace mimir
 {
+/*
+   TODO: Flattening TermImpl using a Variant with the following fields
+   1) Flat indices
+   - uint64_t m_identifier; (8 byte)
+   - Variant<Object, Variable> m_element; (variable sized)
+*/
+
 class TermObjectImpl : public loki::Base<TermObjectImpl>
 {
 private:

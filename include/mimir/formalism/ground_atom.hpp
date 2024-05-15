@@ -26,6 +26,16 @@
 
 namespace mimir
 {
+/*
+   TODO: Flattening GroundAtomImpl using a tuple with the following fields:
+   1) Flat indices
+   - uint64_t m_identifier; (8 byte)
+   - uint64_t m_predicate_id; (8 byte)
+   - Vector<uint64_t> m_object_ids; (variable bytes)
+   2) Data views
+   - ConstView<Predicate> m_predicate; (8 byte)
+   - ConstView<Vector<Object>> m_objects; (8 byte)
+*/
 class GroundAtomImpl : public loki::Base<GroundAtomImpl>
 {
 private:

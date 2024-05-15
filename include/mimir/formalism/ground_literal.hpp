@@ -25,6 +25,9 @@
 
 namespace mimir
 {
+/*
+    TODO: Flattening GroundLiteralImpl is unnecessary. It is already flat.
+*/
 class GroundLiteralImpl : public loki::Base<GroundLiteralImpl>
 {
 private:

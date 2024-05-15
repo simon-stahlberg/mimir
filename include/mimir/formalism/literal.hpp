@@ -25,7 +25,9 @@
 
 namespace mimir
 {
-
+/*
+    TODO: Flattening LiteralImpl is unnecessary. It is already flat.
+*/
 class LiteralImpl : public loki::Base<LiteralImpl>
 {
 private:

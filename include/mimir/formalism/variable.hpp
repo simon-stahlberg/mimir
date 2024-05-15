@@ -25,6 +25,14 @@
 
 namespace mimir
 {
+/*
+   TODO: Flattening VariableImpl using a simple struct with the following fields
+   1) Flat indices
+   - uint64_t m_identifier; (8 byte)
+   - uint64_t m_parameter_index; (8 byte)
+   2) Data views
+   - ConstView<String> m_name; (8 byte)
+*/
 class VariableImpl : public loki::Base<VariableImpl>
 {
 private:

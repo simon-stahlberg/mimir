@@ -25,6 +25,9 @@
 
 namespace mimir
 {
+/*
+    TODO: Parameter is redundant after compiling away types, we can just use variable.
+*/
 class ParameterImpl : public loki::Base<ParameterImpl>
 {
 private:
