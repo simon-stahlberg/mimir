@@ -3,10 +3,10 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/grounding_table.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/dense.hpp"
 #include "mimir/search/axioms/dense.hpp"
@@ -47,7 +47,7 @@ private:
     std::unordered_map<Action, consistency_graph::Graphs> m_static_consistency_graphs;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const Action& action, DenseState state) const;
+    bool nullary_preconditions_hold(const Action& action, DenseState state);
 
     void nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 

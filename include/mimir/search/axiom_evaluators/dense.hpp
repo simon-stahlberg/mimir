@@ -4,9 +4,9 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/grounding_table.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/axioms.hpp"
@@ -41,7 +41,7 @@ private:
     std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms) const;
+    bool nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms);
 
     void nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms);
 

@@ -3,7 +3,12 @@ project(InstallFlatmemory)
 
 include(ExternalProject)
 
+if(NOT DEFINED BUILD_TYPE)
+    set(BUILD_TYPE "Release")
+endif()
+
 list(APPEND CMAKE_ARGS
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
 )
 

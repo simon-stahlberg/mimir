@@ -3,11 +3,14 @@ project(InstallLoki)
 
 include(ExternalProject)
 
+if(NOT DEFINED BUILD_TYPE)
+    set(BUILD_TYPE "Release")
+endif()
 
 list(APPEND CMAKE_ARGS
+    -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
     -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
-    -DCMAKE_BUILD_TYPE=Release
 )
 
 message(STATUS "Preparing external project \"loki\" with args:")

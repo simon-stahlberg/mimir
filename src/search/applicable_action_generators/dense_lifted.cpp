@@ -21,7 +21,6 @@
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/search/actions/dense.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/grounding_utils.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <iostream>
@@ -42,7 +41,7 @@ private:
     GroundFunction ground_function(const Function& function)
     {
         auto grounded_terms = ObjectList {};
-        ground_variables(function->get_terms(), m_binding, grounded_terms);
+        m_pddl_factories.ground_variables(function->get_terms(), m_binding, grounded_terms);
         return m_pddl_factories.get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
     }
 
@@ -125,7 +124,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     {
         for (const auto& literal : literals)
         {
-            const auto grounded_literal = ground_literal(literal, binding, m_pddl_factories);
+            const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
 
             if (grounded_literal->is_negated())
             {
@@ -140,7 +139,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     const auto fill_effect = [this](const Literal& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
-        const auto grounded_literal = ground_literal(literal, binding, m_pddl_factories);
+        const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
         ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
     };
@@ -273,11 +272,11 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 }
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Action& action, DenseState state) const
+bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Action& action, DenseState state)
 {
     for (const auto& literal : action->get_fluent_conditions())
     {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0 && !state.literal_holds(ground_literal(literal, {}, m_pddl_factories)))
+        if (literal->get_atom()->get_predicate()->get_arity() == 0 && !state.literal_holds(m_pddl_factories.ground_literal(literal, {})))
         {
             return false;
         }

@@ -30,6 +30,7 @@
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_fluent.hpp"
@@ -102,6 +103,10 @@ private:
     NumericFluentFactory numeric_fluents;
     DomainFactory domains;
     ProblemFactory problems;
+
+    // TODO: provide more efficient grounding tables for arity 0, 1
+    // that do not store the actual binding but instead compute a perfect hash value.
+    std::vector<GroundingTable<GroundLiteral>> m_groundings_by_literal;
 
 public:
     PDDLFactories() :
@@ -458,6 +463,8 @@ public:
                                                    std::move(axioms));
     }
 
+    /* Accessors */
+
     const LiteralFactory& get_literals() const { return literals; }
 
     const PredicateFactory& get_predicates() const { return predicates; }
@@ -470,37 +477,62 @@ public:
 
     Object get_object(size_t object_id) const { return objects.get(object_id); }
 
-    GroundAtom to_ground_atom(Atom atom)
+    /* Grounding */
+
+    void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
     {
-        ObjectList terms;
+        out_terms.clear();
 
-        for (const auto& term : atom->get_terms())
+        for (const auto& term : terms)
         {
-            if (const auto* object_term = std::get_if<TermObjectImpl>(term))
-            {
-                terms.emplace_back(object_term->get_object());
-            }
-            else
-            {
-                throw std::runtime_error("atom contains a variable");
-            }
+            std::visit(
+                [&](const auto& arg)
+                {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, TermObjectImpl>)
+                    {
+                        out_terms.emplace_back(arg.get_object());
+                    }
+                    else if constexpr (std::is_same_v<T, TermVariableImpl>)
+                    {
+                        assert(arg.get_variable()->get_parameter_index() < binding.size());
+                        out_terms.emplace_back(binding[arg.get_variable()->get_parameter_index()]);
+                    }
+                },
+                *term);
         }
-
-        return get_or_create_ground_atom(atom->get_predicate(), terms);
     }
 
-    /// @brief Converts an alraedy grounded Literal to type GroundLiteral.
-    GroundLiteral to_ground_literal(Literal literal) { return get_or_create_ground_literal(literal->is_negated(), to_ground_atom(literal->get_atom())); }
-
-    /// @brief Converts a list of already grounded Literal elements to a list of type GroundLiteral.
-    void to_ground_literals(const LiteralList& literals, GroundLiteralList& out_ground_literals)
+    GroundLiteral ground_literal(const Literal literal, const ObjectList& binding)
     {
-        out_ground_literals.clear();
-
-        for (const auto& literal : literals)
+        /* 1. Check if grounding is cached */
+        const auto literal_id = literal->get_identifier();
+        if (literal_id >= m_groundings_by_literal.size())
         {
-            out_ground_literals.emplace_back(to_ground_literal(literal));
+            m_groundings_by_literal.resize(literal_id + 1);
         }
+
+        auto& groundings = m_groundings_by_literal[literal_id];
+        const auto it = groundings.find(binding);
+        if (it != groundings.end())
+        {
+            return it->second;
+        }
+
+        /* 2. Ground the literal */
+
+        ObjectList grounded_terms;
+        ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
+        auto grounded_atom = get_or_create_ground_atom(literal->get_atom()->get_predicate(), std::move(grounded_terms));
+        auto grounded_literal = get_or_create_ground_literal(literal->is_negated(), grounded_atom);
+
+        /* 3. Insert to groundings table */
+
+        groundings.emplace(ObjectList(binding), GroundLiteral(grounded_literal));
+
+        /* 4. Return the resulting ground literal */
+
+        return grounded_literal;
     }
 };
 }

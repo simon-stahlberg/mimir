@@ -175,23 +175,30 @@ void MatchTree<T>::print() const
     for (size_t i = 0; i < m_nodes.size(); ++i)
     {
         const auto& node = m_nodes[i];
-        if (const auto& node_generator = std::get_if<GeneratorNode>(&node))
-        {
-            std::cout << i << " GeneratorNode(elements=[";
-            for (auto it = m_elements.begin() + node_generator->begin; it < m_elements.begin() + node_generator->end; ++it)
+
+        std::visit(
+            [&](const auto& arg)
             {
-                std::cout << it->get_id() << ", ";
-            }
-            std::cout << "]" << std::endl;
-        }
-        else if (const auto& node_selector = std::get_if<SelectorNode>(&node))
-        {
-            std::cout << i << " SelectorNode("
-                      << "ground_atom_id: " << node_selector->ground_atom_id << " "
-                      << "true_succ: " << node_selector->true_succ << " "
-                      << "false_succ: " << node_selector->false_succ << " "
-                      << "dontcare_succ: " << node_selector->dontcare_succ << ")" << std::endl;
-        }
+                using T_ = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T_, MatchTree::GeneratorNode>)
+                {
+                    std::cout << i << " GeneratorNode(elements=[";
+                    for (auto it = m_elements.begin() + arg.begin; it < m_elements.begin() + arg.end; ++it)
+                    {
+                        std::cout << it->get_id() << ", ";
+                    }
+                    std::cout << "]" << std::endl;
+                }
+                else if constexpr (std::is_same_v<T_, MatchTree::SelectorNode>)
+                {
+                    std::cout << i << " SelectorNode("
+                              << "ground_atom_id: " << arg.ground_atom_id << " "
+                              << "true_succ: " << arg.true_succ << " "
+                              << "false_succ: " << arg.false_succ << " "
+                              << "dontcare_succ: " << arg.dontcare_succ << ")" << std::endl;
+                }
+            },
+            node);
     }
 }
 
@@ -214,23 +221,29 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_id, const Fla
 {
     auto& node = m_nodes[node_id];
 
-    if (const auto generator_node = std::get_if<MatchTree::GeneratorNode>(&node))
-    {
-        out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + generator_node->begin, m_elements.begin() + generator_node->end);
-    }
-    else if (const auto selector_node = std::get_if<MatchTree::SelectorNode>(&node))
-    {
-        get_applicable_elements_recursively(selector_node->dontcare_succ, state, out_applicable_elements);
+    std::visit(
+        [&](const auto& arg)
+        {
+            using T_ = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T_, MatchTree::GeneratorNode>)
+            {
+                out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + arg.begin, m_elements.begin() + arg.end);
+            }
+            else if constexpr (std::is_same_v<T_, MatchTree::SelectorNode>)
+            {
+                get_applicable_elements_recursively(arg.dontcare_succ, state, out_applicable_elements);
 
-        if (state.get(selector_node->ground_atom_id))
-        {
-            get_applicable_elements_recursively(selector_node->true_succ, state, out_applicable_elements);
-        }
-        else
-        {
-            get_applicable_elements_recursively(selector_node->false_succ, state, out_applicable_elements);
-        }
-    }
+                if (state.get(arg.ground_atom_id))
+                {
+                    get_applicable_elements_recursively(arg.true_succ, state, out_applicable_elements);
+                }
+                else
+                {
+                    get_applicable_elements_recursively(arg.false_succ, state, out_applicable_elements);
+                }
+            }
+        },
+        node);
 }
 
 template<typename T>

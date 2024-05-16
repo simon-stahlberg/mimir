@@ -2,19 +2,18 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/itertools.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/grounding_utils.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 
 namespace mimir
 {
 
-bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms) const
+bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms)
 {
     for (const auto& literal : axiom->get_fluent_conditions())
     {
         if (literal->get_atom()->get_predicate()->get_arity() == 0
-            && !state_atoms.get(ground_literal(literal, {}, m_pddl_factories)->get_atom()->get_identifier()))
+            && !state_atoms.get(m_pddl_factories.ground_literal(literal, {})->get_atom()->get_identifier()))
         {
             return false;
         }
@@ -266,7 +265,7 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     {
         for (const auto& literal : literals)
         {
-            const auto grounded_literal = ground_literal(literal, binding, m_pddl_factories);
+            const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
 
             if (grounded_literal->is_negated())
             {
@@ -298,7 +297,7 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     fill_bitsets(axiom->get_conditions(), positive_precondition, negative_precondition, binding);
 
     /* Effect */
-    const auto grounded_literal = ground_literal(axiom->get_literal(), binding, m_pddl_factories);
+    const auto grounded_literal = m_pddl_factories.ground_literal(axiom->get_literal(), binding);
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_simple_effect().is_negated = false;
     m_axiom_builder.get_simple_effect().atom_id = grounded_literal->get_atom()->get_identifier();
