@@ -90,7 +90,7 @@ public:
 class EffectUniversalImpl : public loki::Base<EffectUniversalImpl>
 {
 private:
-    ParameterList m_quantified_variables;
+    VariableList m_quantified_variables;
     LiteralList m_conditions;
     LiteralList m_static_conditions;
     LiteralList m_fluent_conditions;
@@ -99,7 +99,7 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
 
     EffectUniversalImpl(int identifier,
-                        ParameterList quantified_variables,
+                        VariableList quantified_variables,
                         LiteralList conditions,
                         LiteralList static_conditions,
                         LiteralList fluent_conditions,
@@ -116,7 +116,7 @@ private:
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    const ParameterList& get_parameters() const;
+    const VariableList& get_parameters() const;
     const LiteralList& get_conditions() const;
     const LiteralList& get_static_conditions() const;
     const LiteralList& get_fluent_conditions() const;

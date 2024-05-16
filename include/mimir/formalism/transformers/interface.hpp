@@ -55,7 +55,6 @@ public:
     void prepare(const TermObjectImpl& term) { self().prepare_base(term); }
     void prepare(const TermVariableImpl& term) { self().prepare_base(term); }
     void prepare(const TermImpl& term) { self().prepare_base(term); }
-    void prepare(const ParameterImpl& parameter) { self().prepare_base(parameter); }
     void prepare(const PredicateImpl& predicate) { self().prepare_base(predicate); }
     void prepare(const AtomImpl& atom) { self().prepare_base(atom); }
     void prepare(const GroundAtomImpl& atom) { self().prepare_base(atom); }
@@ -90,7 +89,6 @@ public:
     Term transform(const TermObjectImpl& term) { return self().transform_base(term); }
     Term transform(const TermVariableImpl& term) { return self().transform_base(term); }
     Term transform(const TermImpl& term) { return self().transform_base(term); }
-    Parameter transform(const ParameterImpl& parameter) { return self().transform_base(parameter); }
     Predicate transform(const PredicateImpl& predicate) { return self().transform_base(predicate); }
     Atom transform(const AtomImpl& atom) { return self().transform_base(atom); }
     GroundAtom transform(const GroundAtomImpl& atom) { return self().transform_base(atom); }

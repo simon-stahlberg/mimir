@@ -54,11 +54,6 @@ using TermImpl = std::variant<TermObjectImpl, TermVariableImpl>;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
 
-class ParameterImpl;
-using Parameter = const ParameterImpl*;
-using ParameterList = std::vector<Parameter>;
-using ParameterAssignment = std::unordered_map<Parameter, Object>;
-
 class PredicateImpl;
 using Predicate = const PredicateImpl*;
 using PredicateList = std::vector<Predicate>;

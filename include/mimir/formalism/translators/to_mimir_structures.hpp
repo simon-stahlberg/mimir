@@ -95,19 +95,21 @@ private:
     }
     auto translate_common(const loki::ParameterList& input)
     {
-        auto output = ParameterList {};
+        auto output = VariableList {};
         for (size_t i = 0; i < input.size(); ++i)
         {
             m_variable_to_parameter_index[input[i]->get_variable()] = m_cur_parameter_index + i;
         }
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg, true); });
+        std::transform(std::begin(input),
+                       std::end(input),
+                       std::back_inserter(output),
+                       [this](auto&& arg) { return this->translate_common(*arg->get_variable(), true); });
         return output;
     }
     Requirements translate_common(const loki::RequirementsImpl& requirements);
     Object translate_common(const loki::ObjectImpl& object);
     Variable translate_common(const loki::VariableImpl& variable, bool encode_parameter_index);
-    Parameter translate_common(const loki::ParameterImpl& parameter, bool encode_parameter_index);
     Predicate translate_common(const loki::PredicateImpl& predicate);
 
     /**

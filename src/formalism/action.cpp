@@ -22,8 +22,8 @@
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <cassert>
 #include <loki/loki.hpp>
@@ -32,7 +32,7 @@ namespace mimir
 {
 ActionImpl::ActionImpl(int identifier,
                        std::string name,
-                       ParameterList parameters,
+                       VariableList parameters,
                        LiteralList conditions,
                        LiteralList static_conditions,
                        LiteralList fluent_conditions,
@@ -151,7 +151,7 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
 
 const std::string& ActionImpl::get_name() const { return m_name; }
 
-const ParameterList& ActionImpl::get_parameters() const { return m_parameters; }
+const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 
 const LiteralList& ActionImpl::get_conditions() const { return m_conditions; }
 

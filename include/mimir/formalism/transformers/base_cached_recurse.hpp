@@ -16,7 +16,6 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
-#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
@@ -52,7 +51,6 @@ protected:
     std::unordered_map<Object, Object> m_transformed_objects;
     std::unordered_map<Variable, Variable> m_transformed_variables;
     std::unordered_map<Term, Term> m_transformed_terms;
-    std::unordered_map<Parameter, Parameter> m_transformed_parameters;
     std::unordered_map<Predicate, Predicate> m_transformed_predicates;
     std::unordered_map<Atom, Atom> m_transformed_atoms;
     std::unordered_map<GroundAtom, GroundAtom> m_transformed_ground_atoms;
@@ -92,7 +90,6 @@ protected:
     void prepare_base(const TermObjectImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermVariableImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const ParameterImpl& parameter) { self().prepare_impl(parameter); }
     void prepare_base(const PredicateImpl& predicate) { self().prepare_impl(predicate); }
     void prepare_base(const AtomImpl& atom) { self().prepare_impl(atom); }
     void prepare_base(const GroundAtomImpl& atom) { self().prepare_impl(atom); }
@@ -130,7 +127,6 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
     }
-    void prepare_impl(const ParameterImpl& parameter) { this->prepare(*parameter.get_variable()); }
     void prepare_impl(const PredicateImpl& predicate) { this->prepare(predicate.get_parameters()); }
     void prepare_impl(const AtomImpl& atom)
     {
@@ -245,10 +241,6 @@ protected:
     Term transform_base(const TermImpl& term)
     {
         return cached_transform_impl(term, m_transformed_terms, [this, &term](const auto& arg) { return this->self().transform_impl(term); });
-    }
-    Parameter transform_base(const ParameterImpl& parameter)
-    {
-        return cached_transform_impl(parameter, m_transformed_parameters, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     Predicate transform_base(const PredicateImpl& predicate)
     {
@@ -394,10 +386,6 @@ protected:
     Term transform_impl(const TermImpl& term)
     {
         return std::visit([this](auto&& arg) { return this->transform(arg); }, term);
-    }
-    Parameter transform_impl(const ParameterImpl& parameter)
-    {
-        return this->m_pddl_factories.get_or_create_parameter(this->transform(*parameter.get_variable()));
     }
     Predicate transform_impl(const PredicateImpl& predicate)
     {

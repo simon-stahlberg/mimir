@@ -21,7 +21,7 @@
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/parameter.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <cassert>
 #include <loki/loki.hpp>
@@ -113,7 +113,7 @@ const Literal& EffectConditionalImpl::get_effect() const { return m_effect; }
  */
 
 EffectUniversalImpl::EffectUniversalImpl(int identifier,
-                                         ParameterList quantified_variables,
+                                         VariableList quantified_variables,
                                          LiteralList conditions,
                                          LiteralList static_conditions,
                                          LiteralList fluent_conditions,
@@ -185,7 +185,7 @@ void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOpti
     out << ")";  // end forall
 }
 
-const ParameterList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
+const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
 
 const LiteralList& EffectUniversalImpl::get_conditions() const { return m_conditions; }
 

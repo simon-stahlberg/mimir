@@ -17,13 +17,13 @@
 
 #include "mimir/formalism/function_skeleton.hpp"
 
-#include "mimir/formalism/parameter.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
 
 namespace mimir
 {
-FunctionSkeletonImpl::FunctionSkeletonImpl(int identifier, std::string name, ParameterList parameters) :
+FunctionSkeletonImpl::FunctionSkeletonImpl(int identifier, std::string name, VariableList parameters) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
@@ -50,5 +50,5 @@ void FunctionSkeletonImpl::str_impl(std::ostream& out, const loki::FormattingOpt
 
 const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }
 
-const ParameterList& FunctionSkeletonImpl::get_parameters() const { return m_parameters; }
+const VariableList& FunctionSkeletonImpl::get_parameters() const { return m_parameters; }
 }

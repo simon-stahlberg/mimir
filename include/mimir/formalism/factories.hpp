@@ -35,7 +35,6 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
-#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
@@ -58,7 +57,6 @@ using AtomFactory = loki::PDDLFactory<AtomImpl>;
 using GroundAtomFactory = loki::PDDLFactory<GroundAtomImpl>;
 using LiteralFactory = loki::PDDLFactory<LiteralImpl>;
 using GroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl>;
-using ParameterFactory = loki::PDDLFactory<ParameterImpl>;
 using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using GroundFunctionExpressionFactory = loki::PDDLFactory<GroundFunctionExpressionImpl>;
@@ -87,7 +85,6 @@ private:
     GroundAtomFactory ground_atoms;
     LiteralFactory literals;
     GroundLiteralFactory ground_literals;
-    ParameterFactory parameters;
     PredicateFactory predicates;
     FunctionExpressionFactory function_expressions;
     GroundFunctionExpressionFactory ground_function_expressions;
@@ -118,7 +115,6 @@ public:
         ground_atoms(GroundAtomFactory(1000)),
         literals(LiteralFactory(1000)),
         ground_literals(GroundLiteralFactory(1000)),
-        parameters(ParameterFactory(1000)),
         predicates(PredicateFactory(1000)),
         function_expressions(FunctionExpressionFactory(1000)),
         ground_function_expressions(GroundFunctionExpressionFactory(1000)),
@@ -200,15 +196,10 @@ public:
         return ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
     }
 
-    /// @brief Get or create a parameter for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Parameter get_or_create_parameter(Variable variable) { return parameters.get_or_create<ParameterImpl>(std::move(variable)); }
-
     /// @brief Get or create a predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Predicate get_or_create_predicate(std::string name, ParameterList parameters)
+    Predicate get_or_create_predicate(std::string name, VariableList parameters)
     {
         return predicates.get_or_create<PredicateImpl>(std::move(name), std::move(parameters));
     }
@@ -321,7 +312,7 @@ public:
     /// @brief Get or create a function skeleton for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    FunctionSkeleton get_or_create_function_skeleton(std::string name, ParameterList parameters)
+    FunctionSkeleton get_or_create_function_skeleton(std::string name, VariableList parameters)
     {
         return function_skeletons.get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
     }
@@ -346,7 +337,7 @@ public:
     ///
     ///        This function allows us to can change the underlying representation and storage.
     EffectUniversal
-    get_or_create_universal_effect(ParameterList parameters, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    get_or_create_universal_effect(VariableList parameters, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
     {
         return universal_effects.get_or_create<EffectUniversalImpl>(std::move(parameters),
                                                                     std::move(condition),
@@ -359,7 +350,7 @@ public:
     ///
     ///        This function allows us to can change the underlying representation and storage.
     Action get_or_create_action(std::string name,
-                                ParameterList parameters,
+                                VariableList parameters,
                                 LiteralList conditions,
                                 LiteralList static_conditions,
                                 LiteralList fluent_conditions,
@@ -382,7 +373,7 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(ParameterList parameters, Literal literal, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition)
+    Axiom get_or_create_axiom(VariableList parameters, Literal literal, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition)
     {
         return axioms.get_or_create<AxiomImpl>(std::move(parameters),
                                                std::move(literal),
@@ -513,6 +504,12 @@ public:
         }
 
         auto& groundings = m_groundings_by_literal[literal_id];
+
+        // binding.size() might actually be greater than literal->get_predicate()->get_arity()
+        // due to objects affecting variables in other literals of the same formula.
+        // This results in duplicate entries in the table.
+        // I tried some things but doing extra work here before the test is much slower.
+
         const auto it = groundings.find(binding);
         if (it != groundings.end())
         {
@@ -528,7 +525,7 @@ public:
 
         /* 3. Insert to groundings table */
 
-        groundings.emplace(ObjectList(binding), GroundLiteral(grounded_literal));
+        groundings.emplace(ObjectList(binding), std::move(grounded_literal));
 
         /* 4. Return the resulting ground literal */
 

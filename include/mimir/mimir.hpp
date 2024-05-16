@@ -17,7 +17,6 @@
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
-#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"

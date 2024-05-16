@@ -18,7 +18,6 @@
 #include "mimir/formalism/predicate.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/formalism/parameter.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
@@ -27,7 +26,7 @@
 
 namespace mimir
 {
-PredicateImpl::PredicateImpl(int identifier, std::string name, ParameterList parameters) :
+PredicateImpl::PredicateImpl(int identifier, std::string name, VariableList parameters) :
     Base(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
@@ -55,7 +54,7 @@ void PredicateImpl::str_impl(std::ostream& out, const loki::FormattingOptions& o
 
 const std::string& PredicateImpl::get_name() const { return m_name; }
 
-const ParameterList& PredicateImpl::get_parameters() const { return m_parameters; }
+const VariableList& PredicateImpl::get_parameters() const { return m_parameters; }
 
 size_t PredicateImpl::get_arity() const { return m_parameters.size(); }
 }

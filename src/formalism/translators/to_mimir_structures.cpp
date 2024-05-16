@@ -249,22 +249,13 @@ Object ToMimirStructures::translate_common(const loki::ObjectImpl& object)
     return m_pddl_factories.get_or_create_object(object.get_name());
 }
 
-Parameter ToMimirStructures::translate_common(const loki::ParameterImpl& parameter, bool encode_parameter_index)
-{
-    if (!parameter.get_bases().empty())
-    {
-        throw std::logic_error("Expected types to be empty.");
-    }
-    return m_pddl_factories.get_or_create_parameter(translate_common(*parameter.get_variable(), encode_parameter_index));
-}
-
 Predicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
 {
-    auto parameters = ParameterList {};
+    auto parameters = VariableList {};
     parameters.reserve(predicate.get_parameters().size());
     for (const auto& parameter : predicate.get_parameters())
     {
-        parameters.push_back(translate_common(*parameter, false));
+        parameters.push_back(translate_common(*parameter->get_variable(), false));
     }
     auto result = m_pddl_factories.get_or_create_predicate(predicate.get_name(), parameters);
     if (result->get_name() == "=")
@@ -338,11 +329,11 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
 
 FunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    auto parameters = ParameterList {};
+    auto parameters = VariableList {};
     parameters.reserve(function_skeleton.get_parameters().size());
     for (const auto& parameter : function_skeleton.get_parameters())
     {
-        parameters.push_back(translate_common(*parameter, false));
+        parameters.push_back(translate_common(*parameter->get_variable(), false));
     }
     return m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), parameters);
 }
@@ -430,7 +421,7 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             auto tmp_effect = nested_effect;
 
             // 2. Parse universal part
-            auto parameters = ParameterList {};
+            auto parameters = VariableList {};
             if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
             {
                 parameters = translate_common(tmp_effect_forall->get_parameters());

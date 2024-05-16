@@ -19,7 +19,7 @@ public:
     virtual ~IDynamicAAG() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) = 0;
+    virtual void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) = 0;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms) = 0;
