@@ -18,8 +18,8 @@ if __name__ == "__main__":
     print(str(parser.get_domain()))
     print(str(parser.get_problem()))
 
-    ssg = SSG(parser.get_problem())
     aag = LiftedAAG(parser.get_problem(), parser.get_factories())
+    ssg = SSG(aag)
     event_handler = MinimalEventHandler()
     brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), ssg, aag, event_handler)
     brfs.find_solution()

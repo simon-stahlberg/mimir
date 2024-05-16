@@ -80,7 +80,7 @@ setup(
     packages=find_packages(where="python/src"),
     package_dir={"": "python/src"},
     package_data={
-        "": ["*.pyi"],
+        "": [],
     },
     ext_modules=[CMakeExtension("_pymimir")],
     cmdclass={"build_ext": CMakeBuild},

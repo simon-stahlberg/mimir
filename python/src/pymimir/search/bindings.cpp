@@ -61,7 +61,10 @@ void init_search(py::module_& m_search)
     /* AAGs */
     py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m_search, "IAAG")  //
         .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
-        .def("get_action", &IDynamicAAG::get_action);
+        .def("generate_and_apply_axioms", &IDynamicAAG::generate_and_apply_axioms)
+        .def("get_action", &IDynamicAAG::get_action)
+        .def("get_problem", &IDynamicAAG::get_problem)
+        .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
     py::class_<LiftedAAG, IDynamicAAG, std::shared_ptr<LiftedAAG>>(m_search, "LiftedAAG")  //
         .def(py::init<Problem, PDDLFactories&>());
     py::class_<GroundedAAG, IDynamicAAG, std::shared_ptr<GroundedAAG>>(m_search, "GroundedAAG")  //
@@ -70,10 +73,12 @@ void init_search(py::module_& m_search)
     /* SSGs */
     py::class_<IDynamicSSG, std::shared_ptr<IDynamicSSG>>(m_search, "ISSG")  //
         .def("get_or_create_initial_state", &IDynamicSSG::get_or_create_initial_state)
+        .def("get_or_create_state", &IDynamicSSG::get_or_create_state)
         .def("get_or_create_successor_state", &IDynamicSSG::get_or_create_successor_state)
+        .def("get_non_extended_state", &IDynamicSSG::get_non_extended_state)
         .def("get_state_count", &IDynamicSSG::get_state_count);
     py::class_<SuccessorStateGenerator, IDynamicSSG, std::shared_ptr<SuccessorStateGenerator>>(m_search, "SSG")  //
-        .def(py::init<Problem, std::shared_ptr<IDynamicAAG>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>>());
 
     /* Heuristics */
     py::class_<IDynamicHeuristic, std::shared_ptr<IDynamicHeuristic>>(m_search, "IHeuristic");

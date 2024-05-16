@@ -42,12 +42,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, false);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
     auto delete_free_lifted_aag = std::make_shared<LiftedDenseAAG>(delete_free_problem, m_pddl_factories);
-    auto delete_free_ssg = DenseSSG(delete_free_problem, delete_free_lifted_aag);
+    auto delete_free_ssg = DenseSSG(delete_free_lifted_aag);
 
     auto state_builder = StateBuilder();
     auto& state_atoms = state_builder.get_atoms_bitset();
 
-    for (const auto& atom_id : delete_free_ssg.get_or_create_initial_state(m_problem).get_atoms_bitset())
+    for (const auto& atom_id : delete_free_ssg.get_or_create_initial_state().get_atoms_bitset())
     {
         state_atoms.set(atom_id);
     }
@@ -193,4 +193,11 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
 {
     return m_lifted_aag.get_action(action_id);
 }
+
+Problem AAG<GroundedAAGDispatcher<DenseStateTag>>::get_problem_impl() const { return m_problem; }
+
+[[nodiscard]] PDDLFactories& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_pddl_factories_impl() { return m_pddl_factories; }
+
+[[nodiscard]] const PDDLFactories& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_pddl_factories_impl() const { return m_pddl_factories; }
+
 }

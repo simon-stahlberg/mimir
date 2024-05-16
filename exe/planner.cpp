@@ -52,7 +52,7 @@ int main(int argc, char** argv)
             std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) } :
             std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) };
 
-    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem(), successor_generator);
+    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(successor_generator);
 
     auto event_handler = (debug) ? std::shared_ptr<IEventHandler> { std::make_shared<DebugEventHandler>() } :
                                    std::shared_ptr<IEventHandler> { std::make_shared<MinimalEventHandler>() };

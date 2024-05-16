@@ -321,11 +321,6 @@ void init_formalism(py::module_& m_formalism)
         .def("get_identifier", &ObjectImpl::get_identifier)
         .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference);
 
-    py::class_<ParameterImpl>(m_formalism, "Parameter")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<ParameterImpl>::str, py::const_))
-        .def("get_identifier", &ParameterImpl::get_identifier, py::return_value_policy::reference)
-        .def("get_variable", &ParameterImpl::get_variable, py::return_value_policy::reference);
-
     py::class_<PDDLFactories>(m_formalism, "PDDLFactories");
 
     py::class_<PDDLParser>(m_formalism, "PDDLParser")  //

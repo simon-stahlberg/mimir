@@ -13,7 +13,7 @@ def test_brfs():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     parser = PDDLParser(domain_filepath, problem_filepath)
     aag = LiftedAAG(parser.get_problem(), parser.get_factories())
-    ssg = SSG(parser.get_problem(), aag)
+    ssg = SSG(aag)
     event_handler = DebugEventHandler()
     brfs = BrFsAlgorithm(parser.get_problem(), parser.get_factories(), ssg, aag, event_handler)
     search_status, plan = brfs.find_solution()

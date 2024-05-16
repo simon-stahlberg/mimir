@@ -78,7 +78,7 @@ public:
         m_problem(problem),
         m_pddl_factories(pddl_factories),
         m_state_repository(std::move(state_repository)),
-        m_initial_state(m_state_repository->get_or_create_initial_state(problem)),
+        m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_successor_generator(std::move(successor_generator)),
         m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
         m_event_handler(std::move(event_handler))

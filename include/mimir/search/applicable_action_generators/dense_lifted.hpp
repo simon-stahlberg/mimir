@@ -65,6 +65,12 @@ private:
 
     void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
+    [[nodiscard]] Problem get_problem_impl() const;
+
+    [[nodiscard]] PDDLFactories& get_pddl_factories_impl();
+
+    [[nodiscard]] const PDDLFactories& get_pddl_factories_impl() const;
+
 public:
     AAG(Problem problem, PDDLFactories& pddl_factories);
 

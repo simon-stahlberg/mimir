@@ -16,7 +16,7 @@ TEST(MimirTests, SearchPlannersSingleTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
     auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
-    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(parser.get_problem(), successor_generator);
+    auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(successor_generator);
     auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
     auto event_handler = std::make_shared<MinimalEventHandler>();
     auto lifted_astar =

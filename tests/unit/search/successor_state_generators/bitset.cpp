@@ -15,8 +15,8 @@ TEST(MimirTests, SearchSSGBitsetTest)
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
     auto lifted_aag = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(problem, parser.get_factories());
-    auto ssg = SSG<SSGDispatcher<DenseStateTag>>(problem, lifted_aag);
-    const auto initial_state = ssg.get_or_create_initial_state(problem);
+    auto ssg = SSG<SSGDispatcher<DenseStateTag>>(lifted_aag);
+    const auto initial_state = ssg.get_or_create_initial_state();
 }
 
 }

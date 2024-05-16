@@ -5,7 +5,7 @@ find_package(pybind11)
 pybind11_add_module(_pymimir MODULE)
 target_sources(_pymimir
     PRIVATE
-        main.cpp
+        pymimir/main.cpp
         pymimir/formalism/bindings.cpp
         pymimir/search/bindings.cpp)
 target_link_libraries(_pymimir

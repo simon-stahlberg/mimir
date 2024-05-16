@@ -468,4 +468,10 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     return m_actions_by_index.at(action_id);
 }
 
+Problem AAG<LiftedAAGDispatcher<DenseStateTag>>::get_problem_impl() const { return m_problem; }
+
+[[nodiscard]] PDDLFactories& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_pddl_factories_impl() { return m_pddl_factories; }
+
+[[nodiscard]] const PDDLFactories& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_pddl_factories_impl() const { return m_pddl_factories; }
+
 }

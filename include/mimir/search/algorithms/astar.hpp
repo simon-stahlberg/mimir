@@ -34,7 +34,7 @@ public:
                    std::shared_ptr<IEventHandler> event_handler) :
         m_problem(problem),
         m_state_repository(std::move(state_repository)),
-        m_initial_state(m_state_repository->get_or_create_initial_state(problem)),
+        m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_successor_generator(std::move(successor_generator)),
         m_heuristic(std::move(heuristic)),
         m_event_handler(std::move(event_handler))

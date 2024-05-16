@@ -22,7 +22,6 @@ template<>
 class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>
 {
 private:
-    Problem m_problem;
     std::shared_ptr<IDynamicAAG> m_aag;
 
     FlatDenseStateSet m_states;
@@ -33,11 +32,30 @@ private:
     /* Implement IStaticSSG interface */
     friend class IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] DenseState get_or_create_initial_state_impl(Problem problem)
+    [[nodiscard]] DenseState get_or_create_initial_state_impl()
     {
+        auto ground_atoms = GroundAtomList {};
+
+        for (const auto& literal : m_aag->get_problem()->get_initial_literals())
+        {
+            if (literal->is_negated())
+            {
+                throw std::runtime_error("negative literals in the initial state are not supported");
+            }
+
+            ground_atoms.push_back(literal->get_atom());
+        }
+
+        return get_or_create_state(ground_atoms);
+    }
+
+    [[nodiscard]] State get_or_create_state_impl(const GroundAtomList& atoms)
+    {
+        /* Header */
+
         int next_state_id = m_states.size();
 
-        // Fetch member references.
+        /* Fetch member references. */
 
         auto& state_id = m_state_builder.get_id();
         auto& state_bitset = m_state_builder.get_atoms_bitset();
@@ -49,9 +67,9 @@ private:
 
         /* 2. Construct non-extended state */
 
-        for (const auto& literal : problem->get_initial_literals())
+        for (const auto& atom : atoms)
         {
-            state_bitset.set(literal->get_atom()->get_identifier());
+            state_bitset.set(atom->get_identifier());
         }
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
@@ -82,7 +100,7 @@ private:
         return DenseState(m_extended_states_by_state[next_state_id]);
     }
 
-    [[nodiscard]] DenseState get_or_create_successor_state_impl(DenseState state, DenseGroundAction action)
+    [[nodiscard]] DenseState get_or_create_successor_state_impl(const DenseState state, const DenseGroundAction action)
     {
         int next_state_id = m_states.size();
 
@@ -152,24 +170,15 @@ private:
         return DenseState(m_extended_states_by_state[next_state_id]);
     }
 
+    [[nodiscard]] DenseState get_non_extended_state_impl(const DenseState state)
+    {  //
+        return m_states_by_index[state.get_id()];
+    }
+
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
-    explicit SSG(Problem problem, std::shared_ptr<IDynamicAAG> aag) :
-        m_problem(problem),
-        m_aag(std::move(aag)),
-        m_states_by_index(),
-        m_extended_states_by_state()
-    {
-        /* Error checking */
-        for (const auto& literal : problem->get_initial_literals())
-        {
-            if (literal->is_negated())
-            {
-                throw std::runtime_error("negative literals in the initial state are not supported");
-            }
-        }
-    }
+    explicit SSG(std::shared_ptr<IDynamicAAG> aag) : m_aag(std::move(aag)), m_states_by_index(), m_extended_states_by_state() {}
 };
 
 /**

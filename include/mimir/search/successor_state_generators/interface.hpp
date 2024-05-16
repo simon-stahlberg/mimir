@@ -16,9 +16,15 @@ class IDynamicSSG
 public:
     virtual ~IDynamicSSG() = default;
 
-    [[nodiscard]] virtual State get_or_create_initial_state(Problem problem) = 0;
+    [[nodiscard]] virtual State get_or_create_initial_state() = 0;
 
-    [[nodiscard]] virtual State get_or_create_successor_state(State state, GroundAction action) = 0;
+    /// @brief Expert interface for creating states.
+    /// The user must ensure that the atoms are part of the problem from the applicable action generator.
+    [[nodiscard]] virtual State get_or_create_state(const GroundAtomList& atoms) = 0;
+
+    [[nodiscard]] virtual State get_or_create_successor_state(const State state, const GroundAction action) = 0;
+
+    [[nodiscard]] virtual State get_non_extended_state(const State state) = 0;
 
     [[nodiscard]] virtual size_t get_state_count() const = 0;
 };
@@ -38,14 +44,30 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    [[nodiscard]] State get_or_create_initial_state(Problem problem) override { return self().get_or_create_initial_state_impl(problem); }
+    [[nodiscard]] State get_or_create_initial_state() override
+    {  //
+        return self().get_or_create_initial_state_impl();
+    }
 
-    [[nodiscard]] State get_or_create_successor_state(State state, GroundAction action) override
-    {
+    [[nodiscard]] State get_or_create_state(const GroundAtomList& atoms) override
+    {  //
+        return self().get_or_create_state_impl(atoms);
+    }
+
+    [[nodiscard]] State get_or_create_successor_state(const State state, const GroundAction action) override
+    {  //
         return self().get_or_create_successor_state_impl(state, action);
     }
 
-    [[nodiscard]] size_t get_state_count() const override { return self().get_state_count_impl(); }
+    [[nodiscard]] State get_non_extended_state(const State state) override
+    {  //
+        return self().get_non_extended_state_impl(state);
+    }
+
+    [[nodiscard]] size_t get_state_count() const override
+    {  //
+        return self().get_state_count_impl();
+    }
 };
 
 /**
