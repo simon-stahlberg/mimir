@@ -27,11 +27,9 @@ namespace mimir
 class BrFsAlgorithm : public IAlgorithm
 {
 private:
-    Problem m_problem;
-    PDDLFactories& m_pddl_factories;
+    std::shared_ptr<IDynamicAAG> m_successor_generator;
     std::shared_ptr<IDynamicSSG> m_state_repository;
     State m_initial_state;
-    std::shared_ptr<IDynamicAAG> m_successor_generator;
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
     std::shared_ptr<IEventHandler> m_event_handler;
@@ -70,16 +68,10 @@ private:
     }
 
 public:
-    BrFsAlgorithm(const Problem& problem,
-                  PDDLFactories& pddl_factories,
-                  std::shared_ptr<IDynamicSSG> state_repository,
-                  std::shared_ptr<IDynamicAAG> successor_generator,
-                  std::shared_ptr<IEventHandler> event_handler) :
-        m_problem(problem),
-        m_pddl_factories(pddl_factories),
-        m_state_repository(std::move(state_repository)),
+    BrFsAlgorithm(std::shared_ptr<IDynamicAAG> aag, std::shared_ptr<IEventHandler> event_handler) :
+        m_successor_generator(std::move(aag)),
+        m_state_repository(std::make_shared<SuccessorStateGenerator>(m_successor_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),
-        m_successor_generator(std::move(successor_generator)),
         m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
         m_event_handler(std::move(event_handler))
     {
@@ -87,13 +79,13 @@ public:
 
     SearchStatus find_solution(GroundActionList& out_plan) override
     {
-        m_event_handler->on_start_search(this->m_initial_state, m_pddl_factories);
+        m_event_handler->on_start_search(this->m_initial_state, m_successor_generator->get_pddl_factories());
 
         auto initial_search_node = CostSearchNode(this->m_search_nodes[this->m_initial_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        const auto& goal_ground_literals = m_problem->get_goal_condition();
+        const auto& goal_ground_literals = m_successor_generator->get_problem()->get_goal_condition();
 
         auto applicable_actions = GroundActionList {};
 
@@ -125,7 +117,7 @@ public:
                 m_event_handler->on_finish_g_layer(g_value, m_state_repository->get_state_count());
             }
 
-            m_event_handler->on_expand_state(state, m_pddl_factories);
+            m_event_handler->on_expand_state(state, m_successor_generator->get_pddl_factories());
 
             this->m_successor_generator->generate_applicable_actions(state, applicable_actions);
             for (const auto& action : applicable_actions)
@@ -133,7 +125,7 @@ public:
                 const auto state_count = m_state_repository->get_state_count();
                 const auto& successor_state = this->m_state_repository->get_or_create_successor_state(state, action);
 
-                m_event_handler->on_generate_state(action, successor_state, m_pddl_factories);
+                m_event_handler->on_generate_state(action, successor_state, m_successor_generator->get_pddl_factories());
 
                 if (state_count != m_state_repository->get_state_count())
                 {

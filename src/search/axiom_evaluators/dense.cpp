@@ -62,6 +62,8 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
 
     // D: Restrict statically consistent assignments based on the assignments in the current state
     //    and build the consistency graph as an adjacency matrix
+    // Only iterate the edges that are currently part of the graph
+    // Edges that were already removed we do not need to check again.
     for (const auto& edge : precondition_graph.get_edges())
     {
         if (assignment_sets.literal_all_consistent(axiom->get_fluent_conditions(), edge))
@@ -139,6 +141,9 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
         // Optimization 2: Track axioms that might trigger in next iteration.
         // Note: this gives a good speedup.
+        // Optimization 3: Axioms with derived literal in body must not be evaluated initially.
+        // get_simple_axioms(), i.e., only those with simple predicates in the body.
+        // Optimization 4: Inductively compile away axioms with static bodies. (grounded in match tree?)
         auto relevant_axioms = partition.get_axioms();
 
         do

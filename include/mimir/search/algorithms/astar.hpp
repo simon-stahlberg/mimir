@@ -18,24 +18,19 @@ namespace mimir
 class AStarAlgorithm : public IAlgorithm
 {
 private:
-    Problem m_problem;
+    std::shared_ptr<IDynamicAAG> m_successor_generator;
     std::shared_ptr<IDynamicSSG> m_state_repository;
     State m_initial_state;
-    std::shared_ptr<IDynamicAAG> m_successor_generator;
     std::shared_ptr<IDynamicHeuristic> m_heuristic;
     std::shared_ptr<IEventHandler> m_event_handler;
 
 public:
-    AStarAlgorithm(const Problem& problem,
-                   PDDLFactories& pddl_factories,
-                   std::shared_ptr<IDynamicSSG> state_repository,
-                   std::shared_ptr<IDynamicAAG> successor_generator,
+    AStarAlgorithm(std::shared_ptr<IDynamicAAG> successor_generator,
                    std::shared_ptr<IDynamicHeuristic> heuristic,
                    std::shared_ptr<IEventHandler> event_handler) :
-        m_problem(problem),
-        m_state_repository(std::move(state_repository)),
-        m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_successor_generator(std::move(successor_generator)),
+        m_state_repository(std::make_shared<SuccessorStateGenerator>(m_successor_generator)),
+        m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_heuristic(std::move(heuristic)),
         m_event_handler(std::move(event_handler))
     {

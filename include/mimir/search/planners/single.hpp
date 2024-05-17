@@ -19,18 +19,10 @@ namespace mimir
 class SinglePlanner : public IPlanner
 {
 private:
-    Domain m_domain;
-    Problem m_problem;
-
     std::shared_ptr<IAlgorithm> m_algorithm;
 
 public:
-    SinglePlanner(const Domain& domain, const Problem& problem, PDDLFactories& factories, std::shared_ptr<IAlgorithm> algorithm) :
-        m_domain(domain),
-        m_problem(problem),
-        m_algorithm(std::move(algorithm))
-    {
-    }
+    SinglePlanner(std::shared_ptr<IAlgorithm> algorithm) : m_algorithm(std::move(algorithm)) {}
 
     std::tuple<SearchStatus, Plan> find_solution() override
     {
@@ -38,9 +30,6 @@ public:
         const auto status = m_algorithm->find_solution(action_view_list);
         return std::make_tuple(status, to_plan(action_view_list));
     }
-
-    const Domain& get_domain() const override { return m_domain; }
-    const Problem& get_problem() const override { return m_problem; }
 };
 
 }

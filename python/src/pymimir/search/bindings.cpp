@@ -102,12 +102,7 @@ void init_search(py::module_& m_search)
              });
 
     py::class_<mimir::BrFsAlgorithm, mimir::IAlgorithm, std::shared_ptr<mimir::BrFsAlgorithm>>(m_search, "BrFsAlgorithm")  //
-        .def(py::init<Problem, PDDLFactories&, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IDynamicAAG>, std::shared_ptr<IEventHandler>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IEventHandler>>());
     py::class_<mimir::AStarAlgorithm, mimir::IAlgorithm, std::shared_ptr<mimir::AStarAlgorithm>>(m_search, "AStarAlgorithm")  //
-        .def(py::init<Problem,
-                      PDDLFactories&,
-                      std::shared_ptr<IDynamicSSG>,
-                      std::shared_ptr<IDynamicAAG>,
-                      std::shared_ptr<IDynamicHeuristic>,
-                      std::shared_ptr<IEventHandler>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicHeuristic>, std::shared_ptr<IEventHandler>>());
 }

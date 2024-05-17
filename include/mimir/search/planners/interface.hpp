@@ -19,9 +19,6 @@ class IPlanner
 public:
     virtual ~IPlanner() = default;
 
-    virtual const Domain& get_domain() const = 0;
-    virtual const Problem& get_problem() const = 0;
-
     virtual std::tuple<SearchStatus, Plan> find_solution() = 0;
 };
 

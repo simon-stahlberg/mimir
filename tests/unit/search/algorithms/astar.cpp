@@ -26,15 +26,9 @@ public:
             (grounded) ?
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) } :
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) };
-        auto state_repository = std::make_shared<SSG<SSGDispatcher<DenseStateTag>>>(successor_generator);
         auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
         auto event_handler = std::make_shared<MinimalEventHandler>();
-        m_algorithm = std::make_unique<AStarAlgorithm>(m_parser.get_problem(),
-                                                       m_parser.get_factories(),
-                                                       state_repository,
-                                                       successor_generator,
-                                                       blind_heuristic,
-                                                       event_handler);
+        m_algorithm = std::make_unique<AStarAlgorithm>(successor_generator, blind_heuristic, event_handler);
     }
 
     std::tuple<SearchStatus, Plan> find_solution()

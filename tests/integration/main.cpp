@@ -22,6 +22,6 @@
 #include <boost/container/small_vector.hpp>
 
 // Test mimir include
-#include <mimir/algorithms/kpkc.hpp>
+#include <mimir/mimir.hpp>
 
 int main() { return 0; }
