@@ -40,7 +40,7 @@ class CMakeBuild(build_ext):
         # Create the temporary build directory, if it does not already exist
         os.makedirs(temp_directory, exist_ok=True)
 
-        # Build dependencies
+        # 1. Build dependencies
 
         subprocess.run(
             ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
@@ -50,7 +50,8 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory)}/dependencies/build", f"-j{multiprocessing.cpu_count()}"]
         )
 
-        # Build dlplan
+        # 2. Build mimir
+
         cmake_args = [
             "-DBUILD_PYMIMIR=On",
             f"-DMIMIR_VERSION_INFO={__version__}",
@@ -69,13 +70,20 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"] + build_args, cwd=str(temp_directory), check=True
         )
 
-        print("Generating stub files ...")
+
+        # 3. Generate pyi stub files
+
+        # This is safer than adding a custom command in cmake because it will not silently fail.
         subprocess.run(
             [sys.executable, '-m', 'pybind11_stubgen', '--output-dir', temp_directory, '_pymimir'], cwd=output_directory, check=True
         )
 
+        # Create package output directory
         os.makedirs(output_directory / "pymimir", exist_ok=True)
+
         # Copy the stubs from temp to suitable output directory
+        # The name has to match the package initialization pymimir/__init__.py,
+        # i.e., pymimir/__init__.pyi to ensure full IDE support.
         shutil.copy(temp_directory / "_pymimir.pyi", output_directory / "pymimir" / "__init__.pyi")
 
 
