@@ -10,6 +10,17 @@
 namespace mimir
 {
 
+DenseGroundActionList to_ground_actions(const FlatDenseActionSet& flat_actions)
+{
+    auto result = DenseGroundActionList {};
+    result.reserve(flat_actions.size());
+    for (const auto& flat_action : flat_actions)
+    {
+        result.push_back(DenseGroundAction(flat_action));
+    }
+    return result;
+}
+
 std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data)
 {
     const auto [simple_effect, pddl_factories] = data;

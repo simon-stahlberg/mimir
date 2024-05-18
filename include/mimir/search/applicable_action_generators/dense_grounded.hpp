@@ -2,6 +2,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/applicable_action_generators/dense_grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/dense_grounded/match_tree.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
@@ -20,6 +21,7 @@ class AAG<GroundedAAGDispatcher<DenseStateTag>> : public IStaticAAG<AAG<Grounded
 private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
+    std::shared_ptr<IGroundedAAGEventHandler> m_event_handler;
 
     LiftedDenseAAG m_lifted_aag;
 
@@ -40,7 +42,11 @@ private:
     [[nodiscard]] const PDDLFactories& get_pddl_factories_impl() const;
 
 public:
+    /// @brief Simplest construction
     AAG(Problem problem, PDDLFactories& pddl_factories);
+
+    /// @brief Complete construction
+    AAG(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler);
 
     /// @brief Return all actions.
     [[nodiscard]] const FlatDenseActionSet& get_actions() const;

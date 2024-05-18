@@ -170,6 +170,12 @@ using DenseGroundActionList = std::vector<DenseGroundAction>;
 using DenseGroundActionSet = std::unordered_set<DenseGroundAction, loki::Hash<DenseGroundAction>, loki::EqualTo<DenseGroundAction>>;
 
 /**
+ * Translations
+ */
+
+extern DenseGroundActionList to_ground_actions(const FlatDenseActionSet& flat_actions);
+
+/**
  * Pretty printing
  */
 

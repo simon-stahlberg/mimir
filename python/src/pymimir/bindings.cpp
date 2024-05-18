@@ -426,15 +426,27 @@ void init_pymimir(py::module_& m)
         .def("get_id", &GroundAction::get_id);
 
     /* AAGs */
+
     py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m, "IAAG")  //
         .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
         .def("get_action", &IDynamicAAG::get_action)
         .def("get_problem", &IDynamicAAG::get_problem)
         .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
+
+    // Lifted
     py::class_<LiftedAAG, IDynamicAAG, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
         .def(py::init<Problem, PDDLFactories&>());
+
+    // Grounded
+    py::class_<IGroundedAAGEventHandler, std::shared_ptr<IGroundedAAGEventHandler>>(m, "IGroundedAAGEventHandler");  //
+    py::class_<DefaultGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DefaultGroundedAAGEventHandler>>(m,
+                                                                                                                          "DefaultGroundedAAGEventHandler")  //
+        .def(py::init<>());
+    py::class_<DebugGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DebugGroundedAAGEventHandler>>(m, "DebugGroundedAAGEventHandler")  //
+        .def(py::init<>());
     py::class_<GroundedAAG, IDynamicAAG, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
-        .def(py::init<Problem, PDDLFactories&>());
+        .def(py::init<Problem, PDDLFactories&>())
+        .def(py::init<Problem, PDDLFactories&, std::shared_ptr<IGroundedAAGEventHandler>>());
 
     /* SSGs */
     py::class_<IDynamicSSG, std::shared_ptr<IDynamicSSG>>(m, "ISSG")  //
@@ -465,9 +477,13 @@ void init_pymimir(py::module_& m)
                  auto search_status = algorithm.find_solution(out_actions);
                  return std::make_tuple(search_status, out_actions);
              });
+
+    // BrFs
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>>())
         .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IAlgorithmEventHandler>>());
+
+    // AStar
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicHeuristic>>())
         .def(py::init<std::shared_ptr<IDynamicAAG>,

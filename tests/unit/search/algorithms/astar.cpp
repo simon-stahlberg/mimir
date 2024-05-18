@@ -3,6 +3,7 @@
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/heuristics.hpp"
+#include "mimir/search/plan.hpp"
 
 #include <gtest/gtest.h>
 

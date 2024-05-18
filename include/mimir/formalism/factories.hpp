@@ -476,6 +476,14 @@ public:
         }
     }
 
+    template<std::ranges::forward_range Iterable>
+    GroundAtomList get_ground_atoms(const Iterable& atom_ids) const
+    {
+        auto result = GroundAtomList {};
+        get_ground_atoms(atom_ids, result);
+        return result;
+    }
+
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
 
     Object get_object(size_t object_id) const { return objects.get(object_id); }

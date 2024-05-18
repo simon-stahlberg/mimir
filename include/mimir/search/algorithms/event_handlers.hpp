@@ -7,4 +7,4 @@
 #include "mimir/search/algorithms/event_handlers/debug.hpp"
 #include "mimir/search/algorithms/event_handlers/default.hpp"
 
-#endif  // MIMIR_SEARCH_ALGORITHM_HPP_
+#endif

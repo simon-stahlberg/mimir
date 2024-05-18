@@ -28,13 +28,20 @@
 #include "mimir/search/successor_state_generators/dense.hpp"
 
 #include <deque>
+#include <memory>
 
 namespace mimir
 {
 
 AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
+    AAG<GroundedAAGDispatcher<DenseStateTag>>(problem, pddl_factories, std::make_shared<DefaultGroundedAAGEventHandler>())
+{
+}
+
+AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(pddl_factories),
+    m_event_handler(std::move(event_handler)),
     m_lifted_aag(m_problem, m_pddl_factories)
 {
     // 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects.
@@ -45,7 +52,6 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     auto state_builder = StateBuilder();
     auto& state_atoms = state_builder.get_atoms_bitset();
-
     for (const auto& atom_id : delete_free_ssg.get_or_create_initial_state().get_atoms_bitset())
     {
         state_atoms.set(atom_id);
@@ -88,6 +94,10 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms(state_atoms),
+                                                       to_ground_actions(delete_free_lifted_aag->get_actions()),
+                                                       to_ground_axioms(delete_free_lifted_aag->get_axioms()));
+
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
     for (const auto& action : delete_free_lifted_aag->get_applicable_actions())
@@ -101,8 +111,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         }
     }
 
+    m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
+
     // 3. Build match tree
     m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions);
+
+    m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
     // 2. Create ground axioms
     auto ground_axioms = DenseGroundAxiomList {};
@@ -117,16 +131,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         }
     }
 
+    m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
+
     // 3. Build match tree
     m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms);
 
-    std::cout << "[Grounded AAG] Total number of ground atoms reachable in delete-relaxed task: " << state_atoms.count() << std::endl;
-    std::cout << "[Grounded AAG] Total number of instantiated delete free ground actions: " << delete_free_lifted_aag->get_actions().size() << std::endl;
-    std::cout << "[Grounded AAG] Total number of instantiated delete free ground axioms: " << delete_free_lifted_aag->get_axioms().size() << std::endl;
-    std::cout << "[Grounded AAG] Total number of ground actions in task: " << ground_actions.size() << std::endl;
-    std::cout << "[Grounded AAG] Total number of ground axioms in task: " << ground_axioms.size() << std::endl;
-    std::cout << "[Grounded AAG] Total number of nodes in action match tree: " << m_action_match_tree.get_num_nodes() << std::endl;
-    std::cout << "[Grounded AAG] Total number of nodes in axiom match tree: " << m_axiom_match_tree.get_num_nodes() << std::endl;
+    m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(DenseState state, DenseGroundActionList& out_applicable_actions)

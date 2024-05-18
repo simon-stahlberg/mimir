@@ -139,6 +139,12 @@ using DenseGroundAxiomList = std::vector<DenseGroundAxiom>;
 using DenseGroundAxiomSet = std::unordered_set<DenseGroundAxiom, loki::Hash<DenseGroundAxiom>, loki::EqualTo<DenseGroundAxiom>>;
 
 /**
+ * Translations
+ */
+
+extern DenseGroundAxiomList to_ground_axioms(const FlatDenseAxiomSet& flat_axioms);
+
+/**
  * Pretty printing
  */
 
