@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 import multiprocessing
+import shutil
 
 from pathlib import Path
 
@@ -24,20 +25,23 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
+        ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
+        output_directory = ext_fullpath.parent.resolve()
+        temp_directory = Path.cwd() / self.build_temp
 
-        # required for auto-detection of auxiliary "native" libs
-        if not extdir.endswith(os.path.sep):
-            extdir += os.path.sep
+        print("ext_fullpath", ext_fullpath)
+        print("output_directory", output_directory)
+        print("temp_directory", temp_directory)
 
         build_type = "Debug" if os.environ.get('PYMIMIR_DEBUG_BUILD') else "Release"
         print("Pymimir build type:", build_type)
 
-        temp_directory = Path.cwd() / self.build_temp
         # Create the temporary build directory, if it does not already exist
         os.makedirs(temp_directory, exist_ok=True)
 
         # Build dependencies
+
         subprocess.run(
             ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
         )
@@ -50,7 +54,7 @@ class CMakeBuild(build_ext):
         cmake_args = [
             "-DBUILD_PYMIMIR=On",
             f"-DMIMIR_VERSION_INFO={__version__}",
-            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
+            f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={build_type}",  # not used on MSVC, but no harm
             f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"
@@ -64,6 +68,15 @@ class CMakeBuild(build_ext):
         subprocess.run(
             ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"] + build_args, cwd=str(temp_directory), check=True
         )
+
+        print("Generating stub files ...")
+        subprocess.run(
+            [sys.executable, '-m', 'pybind11_stubgen', '--output-dir', temp_directory, '_pymimir'], cwd=output_directory, check=True
+        )
+
+        os.makedirs(output_directory / "pymimir", exist_ok=True)
+        # Copy the stubs from temp to suitable output directory
+        shutil.copy(temp_directory / "_pymimir.pyi", output_directory / "pymimir" / "pymimir.pyi")
 
 
 # The information here can also be placed in setup.cfg - better separation of

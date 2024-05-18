@@ -1,6 +1,7 @@
 [build-system]
 requires = [
     "setuptools>=42",
+    "pybind11_stubgen",
     "wheel",
     "cmake>=3.21",
 ]
