@@ -467,7 +467,9 @@ void init_pymimir(py::module_& m)
                  return std::make_tuple(search_status, out_actions);
              });
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IEventHandler>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>>())
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IEventHandler>>());
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicHeuristic>, std::shared_ptr<IEventHandler>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicHeuristic>>())
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IDynamicHeuristic>, std::shared_ptr<IEventHandler>>());
 }

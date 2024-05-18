@@ -117,10 +117,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
     /* 1. Initialize assignment set */
 
     auto ground_atoms = GroundAtomList {};
-    for (const auto& atom_id : ref_state_atoms)
-    {
-        ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
-    }
+    m_pddl_factories.get_ground_atoms(ref_state_atoms, ground_atoms);
     auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
 
     /* 2. Initialize bookkeeping */

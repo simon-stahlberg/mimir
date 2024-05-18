@@ -67,9 +67,20 @@ private:
     }
 
 public:
-    BrFsAlgorithm(std::shared_ptr<IDynamicAAG> aag, std::shared_ptr<IEventHandler> event_handler) :
-        m_successor_generator(std::move(aag)),
-        m_state_repository(std::make_shared<SuccessorStateGenerator>(m_successor_generator)),
+    /// @brief Simplest construction
+    explicit BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator) :
+        BrFsAlgorithm(applicable_action_generator,
+                      std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
+                      std::make_shared<MinimalEventHandler>())
+    {
+    }
+
+    /// @brief Complete construction
+    BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
+                  std::shared_ptr<IDynamicSSG> successor_state_generator,
+                  std::shared_ptr<IEventHandler> event_handler) :
+        m_successor_generator(std::move(applicable_action_generator)),
+        m_state_repository(std::move(successor_state_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
         m_event_handler(std::move(event_handler))

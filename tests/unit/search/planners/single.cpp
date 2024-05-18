@@ -17,8 +17,7 @@ TEST(MimirTests, SearchPlannersSingleTest)
     auto parser = PDDLParser(domain_file, problem_file);
     auto successor_generator = std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories());
     auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
-    auto event_handler = std::make_shared<MinimalEventHandler>();
-    auto lifted_astar = std::make_shared<AStarAlgorithm>(successor_generator, blind_heuristic, event_handler);
+    auto lifted_astar = std::make_shared<AStarAlgorithm>(successor_generator, blind_heuristic);
     auto planner = SinglePlanner(lifted_astar);
     const auto [status, plan] = planner.find_solution();
 }

@@ -47,15 +47,16 @@ int main(int argc, char** argv)
 
     std::cout << "Initializing planner..." << std::endl;
 
-    auto successor_generator =
-        (grounded) ?
-            std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) } :
-            std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(parser.get_problem(), parser.get_factories()) };
+    auto applicable_action_generator = (grounded) ?
+                                           std::shared_ptr<IDynamicAAG> { std::make_shared<GroundedDenseAAG>(parser.get_problem(), parser.get_factories()) } :
+                                           std::shared_ptr<IDynamicAAG> { std::make_shared<LiftedDenseAAG>(parser.get_problem(), parser.get_factories()) };
+
+    auto successor_state_generator = std::shared_ptr<IDynamicSSG> { std::make_shared<DenseSSG>(applicable_action_generator) };
 
     auto event_handler = (debug) ? std::shared_ptr<IEventHandler> { std::make_shared<DebugEventHandler>() } :
                                    std::shared_ptr<IEventHandler> { std::make_shared<MinimalEventHandler>() };
 
-    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(successor_generator, event_handler);
+    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(applicable_action_generator, successor_state_generator, event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(lifted_brfs));
 

@@ -385,11 +385,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     // Create the assignment sets that are shared by all action schemas.
 
     auto ground_atoms = GroundAtomList {};
-    for (const auto& atom_id : state.get_atoms_bitset())
-    {
-        ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
-    }
-
+    m_pddl_factories.get_ground_atoms(state.get_atoms_bitset(), ground_atoms);
     const auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
 
     // Get the applicable ground actions for each action schema.

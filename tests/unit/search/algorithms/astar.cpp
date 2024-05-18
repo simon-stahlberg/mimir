@@ -27,8 +27,7 @@ public:
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) } :
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) };
         auto blind_heuristic = std::make_shared<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>();
-        auto event_handler = std::make_shared<MinimalEventHandler>();
-        m_algorithm = std::make_unique<AStarAlgorithm>(successor_generator, blind_heuristic, event_handler);
+        m_algorithm = std::make_unique<AStarAlgorithm>(successor_generator, blind_heuristic);
     }
 
     std::tuple<SearchStatus, Plan> find_solution()

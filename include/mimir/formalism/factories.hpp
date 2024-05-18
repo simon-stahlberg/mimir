@@ -42,6 +42,7 @@
 #include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
+#include <ranges>
 
 namespace mimir
 {
@@ -464,7 +465,7 @@ public:
 
     const GroundAtomFactory& get_ground_atoms() const { return ground_atoms; }
 
-    template<typename Iterable>
+    template<std::ranges::forward_range Iterable>
     void get_ground_atoms(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
     {
         out_ground_atoms.clear();
