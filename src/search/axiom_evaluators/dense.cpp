@@ -2,6 +2,7 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/itertools.hpp"
+#include "mimir/search/translations.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 

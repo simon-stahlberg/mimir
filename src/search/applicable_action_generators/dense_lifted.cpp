@@ -21,6 +21,7 @@
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/search/actions/dense.hpp"
+#include "mimir/search/translations.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <iostream>

@@ -1,11 +1,15 @@
 #ifndef MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 #define MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 
+#include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/builder.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states/dense.hpp"
 #include "mimir/search/view_const.hpp"
+
+#include <ostream>
+#include <tuple>
 
 namespace mimir
 {
@@ -159,10 +163,21 @@ public:
 /**
  * Mimir types
  */
+
 using DenseGroundActionBuilder = Builder<ActionDispatcher<DenseStateTag>>;
 using DenseGroundAction = ConstView<ActionDispatcher<DenseStateTag>>;
 using DenseGroundActionList = std::vector<DenseGroundAction>;
 using DenseGroundActionSet = std::unordered_set<DenseGroundAction, loki::Hash<DenseGroundAction>, loki::EqualTo<DenseGroundAction>>;
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data);
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, const PDDLFactories&>& data);
+
+extern std::ostream& operator<<(std::ostream& os, const DenseGroundAction& action);
 
 }
 

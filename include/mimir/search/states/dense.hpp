@@ -1,12 +1,15 @@
 #ifndef MIMIR_SEARCH_STATES_DENSE_HPP_
 #define MIMIR_SEARCH_STATES_DENSE_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states/interface.hpp"
 
 #include <flatmemory/flatmemory.hpp>
+#include <ostream>
+#include <tuple>
 
 namespace mimir
 {
@@ -39,6 +42,9 @@ struct FlatDenseStateEqual
 using FlatDenseStateSet = flatmemory::UnorderedSet<FlatDenseStateLayout, FlatDenseStateHash, FlatDenseStateEqual>;
 using FlatDenseStateVector = flatmemory::FixedSizedTypeVector<FlatDenseStateLayout>;
 
+/**
+ * Implementation class
+ */
 /**
  * Implementation class
  */
@@ -119,8 +125,16 @@ public:
 /**
  * Mimir types
  */
+
 using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
 using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data);
+
 }
 
 #endif

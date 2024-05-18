@@ -1,10 +1,13 @@
 #ifndef MIMIR_SEARCH_AXIOMS_DENSE_HPP_
 #define MIMIR_SEARCH_AXIOMS_DENSE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/search/axioms/interface.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states.hpp"
+
+#include <ostream>
+#include <tuple>
 
 namespace mimir
 {
@@ -129,10 +132,17 @@ public:
 /**
  * Mimir types
  */
+
 using DenseGroundAxiomBuilder = Builder<AxiomDispatcher<DenseStateTag>>;
 using DenseGroundAxiom = ConstView<AxiomDispatcher<DenseStateTag>>;
 using DenseGroundAxiomList = std::vector<DenseGroundAxiom>;
 using DenseGroundAxiomSet = std::unordered_set<DenseGroundAxiom, loki::Hash<DenseGroundAxiom>, loki::EqualTo<DenseGroundAxiom>>;
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, const PDDLFactories&>& data);
 }
 
 #endif

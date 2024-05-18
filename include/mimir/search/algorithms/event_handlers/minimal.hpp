@@ -1,9 +1,8 @@
-#ifndef MIMIR_SEARCH_EVENT_HANDLERS_MINIMAL_HPP_
-#define MIMIR_SEARCH_EVENT_HANDLERS_MINIMAL_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_MINIMAL_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_MINIMAL_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/common/translations.hpp"
-#include "mimir/search/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/event_handlers/interface.hpp"
 
 #include <iostream>
 

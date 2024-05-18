@@ -25,7 +25,6 @@
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
-#include "mimir/search/event_handlers/minimal.hpp"
 #include "mimir/search/successor_state_generators/dense.hpp"
 
 #include <deque>

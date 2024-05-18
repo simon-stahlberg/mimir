@@ -3,6 +3,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
 

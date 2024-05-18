@@ -1,9 +1,9 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
+#include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/event_handlers.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/successor_state_generators.hpp"
 

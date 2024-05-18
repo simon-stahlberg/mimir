@@ -1,8 +1,14 @@
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/action.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
+
+#include <cstdint>
 
 namespace mimir::consistency_graph
 {

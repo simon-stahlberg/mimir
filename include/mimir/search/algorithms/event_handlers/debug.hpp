@@ -1,9 +1,9 @@
-#ifndef MIMIR_SEARCH_EVENT_HANDLERS_DEBUG_HPP_
-#define MIMIR_SEARCH_EVENT_HANDLERS_DEBUG_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_DEBUG_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_DEBUG_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/common/translations.hpp"
-#include "mimir/search/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/event_handlers/interface.hpp"
+#include "mimir/search/plan.hpp"
 
 #include <iostream>
 

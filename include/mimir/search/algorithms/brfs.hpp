@@ -2,11 +2,10 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/common/translations.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/event_handlers.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/search_nodes/cost/cost.hpp"
 #include "mimir/search/successor_state_generators.hpp"

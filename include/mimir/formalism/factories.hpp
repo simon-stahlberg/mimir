@@ -464,6 +464,17 @@ public:
 
     const GroundAtomFactory& get_ground_atoms() const { return ground_atoms; }
 
+    template<typename Iterable>
+    void get_ground_atoms(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
+    {
+        out_ground_atoms.clear();
+
+        for (const auto& atom_id : atom_ids)
+        {
+            out_ground_atoms.push_back(get_ground_atom(atom_id));
+        }
+    }
+
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
 
     Object get_object(size_t object_id) const { return objects.get(object_id); }

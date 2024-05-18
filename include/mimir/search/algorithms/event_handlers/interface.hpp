@@ -1,10 +1,10 @@
-#ifndef MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/actions.hpp"
+#include "mimir/search/algorithms/event_handlers/statistics.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/statistics.hpp"
 
 #include <chrono>
 #include <concepts>
@@ -23,6 +23,7 @@ public:
     /// @brief React on generating a successor_state by applying an action.
     virtual void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
 
+    /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer(uint64_t g_value, uint64_t num_states) = 0;
 
     /// @brief React on expanding a state.

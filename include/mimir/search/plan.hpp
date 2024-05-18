@@ -1,12 +1,15 @@
 #ifndef MIMIR_SEARCH_PLAN_HPP_
 #define MIMIR_SEARCH_PLAN_HPP_
 
+#include "mimir/search/actions.hpp"
+
 #include <cstdint>
 #include <string>
 #include <vector>
 
 namespace mimir
 {
+
 class Plan
 {
 private:
@@ -20,6 +23,9 @@ public:
 
     uint64_t get_cost() const { return m_cost; }
 };
+
+/// @brief Translates a ground action list to a plan
+extern Plan to_plan(const GroundActionList& action_view_list);
 
 }
 

@@ -19,33 +19,12 @@
 #ifndef MIMIR_COMMON_PRINTERS_HPP_
 #define MIMIR_COMMON_PRINTERS_HPP_
 
-#include "mimir/common/translations.hpp"
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/search/actions/dense.hpp"
-#include "mimir/search/axioms/dense.hpp"
-#include "mimir/search/states/dense.hpp"
-
 #include <ostream>
-#include <tuple>
 #include <unordered_set>
 #include <vector>
 
 namespace mimir
 {
-
-/// @brief Prints a simple effect to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data);
-
-/// @brief Prints a State to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data);
-
-/// @brief Prints an Action to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, const PDDLFactories&>& data);
-
-/// @brief Prints an Axiom to the output stream.
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, const PDDLFactories&>& data);
-
-std::ostream& operator<<(std::ostream& os, const DenseGroundAction& action);
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)

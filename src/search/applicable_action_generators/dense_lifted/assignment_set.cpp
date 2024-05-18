@@ -1,6 +1,15 @@
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/term.hpp"
+#include "mimir/formalism/variable.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 
 #include <cassert>
