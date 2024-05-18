@@ -18,12 +18,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # more options to the list of string, e.g., "Dense" "Sparse"
 set(STATE_REPR "Dense" CACHE STRING "Select the state representation type")
 set_property(CACHE STATE_REPR PROPERTY STRINGS "Dense")
-
-# Apply the compile definition based on the selected representation
-if(STATE_REPR STREQUAL "Dense")
-    add_compile_definitions(STATE_REPR_DENSE=1)
-endif()
-
 message("Use state representation compile flag: ${STATE_REPR}")
 
 
