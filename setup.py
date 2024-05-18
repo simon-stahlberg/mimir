@@ -76,7 +76,7 @@ class CMakeBuild(build_ext):
 
         os.makedirs(output_directory / "pymimir", exist_ok=True)
         # Copy the stubs from temp to suitable output directory
-        shutil.copy(temp_directory / "_pymimir.pyi", output_directory / "pymimir" / "pymimir.pyi")
+        shutil.copy(temp_directory / "_pymimir.pyi", output_directory / "pymimir" / "__init__.pyi")
 
 
 # The information here can also be placed in setup.cfg - better separation of

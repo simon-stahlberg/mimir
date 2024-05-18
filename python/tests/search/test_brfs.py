@@ -1,5 +1,5 @@
-from pymimir.formalism import PDDLParser
-from pymimir.search import SSG, LiftedAAG, MinimalEventHandler, DebugEventHandler, BrFsAlgorithm, SearchStatus
+from pymimir import PDDLParser
+from pymimir import SSG, LiftedAAG, MinimalEventHandler, DebugEventHandler, BrFsAlgorithm, SearchStatus
 
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-from pymimir.formalism import PDDLParser
+from pymimir import PDDLParser
 
 from pathlib import Path
 
