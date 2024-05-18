@@ -22,7 +22,7 @@ private:
     std::shared_ptr<IDynamicSSG> m_state_repository;
     State m_initial_state;
     std::shared_ptr<IDynamicHeuristic> m_heuristic;
-    std::shared_ptr<IEventHandler> m_event_handler;
+    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
 
 public:
     /// @brief Simplest construction
@@ -30,7 +30,7 @@ public:
         AStarAlgorithm(applicable_action_generator,
                        std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
                        std::move(heuristic),
-                       std::make_shared<MinimalEventHandler>())
+                       std::make_shared<DefaultAlgorithmEventHandler>())
     {
     }
 
@@ -38,7 +38,7 @@ public:
     AStarAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
                    std::shared_ptr<IDynamicSSG> successor_state_generator,
                    std::shared_ptr<IDynamicHeuristic> heuristic,
-                   std::shared_ptr<IEventHandler> event_handler) :
+                   std::shared_ptr<IAlgorithmEventHandler> event_handler) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),

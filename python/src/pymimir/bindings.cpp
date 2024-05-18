@@ -450,14 +450,13 @@ void init_pymimir(py::module_& m)
     py::class_<IDynamicHeuristic, std::shared_ptr<IDynamicHeuristic>>(m, "IHeuristic");
     py::class_<BlindHeuristic, IDynamicHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
 
-    /* Event Handlers */
-    py::class_<IEventHandler, std::shared_ptr<IEventHandler>>(m, "IEventHandler");
-    py::class_<MinimalEventHandler, IEventHandler, std::shared_ptr<MinimalEventHandler>>(m, "MinimalEventHandler")  //
+    /* Algorithms */
+    py::class_<IAlgorithmEventHandler, std::shared_ptr<IAlgorithmEventHandler>>(m, "IAlgorithmEventHandler");
+    py::class_<DefaultAlgorithmEventHandler, IAlgorithmEventHandler, std::shared_ptr<DefaultAlgorithmEventHandler>>(m, "DefaultAlgorithmEventHandler")  //
         .def(py::init<>());
-    py::class_<DebugEventHandler, IEventHandler, std::shared_ptr<DebugEventHandler>>(m, "DebugEventHandler")  //
+    py::class_<DebugAlgorithmEventHandler, IAlgorithmEventHandler, std::shared_ptr<DebugAlgorithmEventHandler>>(m, "DebugAlgorithmEventHandler")  //
         .def(py::init<>());
 
-    /* Algorithms */
     py::class_<IAlgorithm, std::shared_ptr<IAlgorithm>>(m, "IAlgorithm")  //
         .def("find_solution",
              [](IAlgorithm& algorithm)
@@ -468,8 +467,11 @@ void init_pymimir(py::module_& m)
              });
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>>())
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IEventHandler>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IAlgorithmEventHandler>>());
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicHeuristic>>())
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IDynamicHeuristic>, std::shared_ptr<IEventHandler>>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>,
+                      std::shared_ptr<IDynamicSSG>,
+                      std::shared_ptr<IDynamicHeuristic>,
+                      std::shared_ptr<IAlgorithmEventHandler>>());
 }

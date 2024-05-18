@@ -1,5 +1,5 @@
-#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_DEBUG_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_DEBUG_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_MINIMAL_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_MINIMAL_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/search/algorithms/event_handlers/interface.hpp"
@@ -13,37 +13,24 @@ namespace mimir
 /**
  * Implementation class
  */
-class DebugAlgorithmEventHandler : public AlgorithmEventHandlerBase<DebugAlgorithmEventHandler>
+class DefaultAlgorithmEventHandler : public AlgorithmEventHandlerBase<DefaultAlgorithmEventHandler>
 {
 private:
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class AlgorithmEventHandlerBase<DebugAlgorithmEventHandler>;
+    friend class AlgorithmEventHandlerBase<DefaultAlgorithmEventHandler>;
 
-    void on_generate_state_impl(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) const
-    {
-        std::cout << "[Algorithm] Action: " << std::make_tuple(action, std::cref(pddl_factories)) << "\n"
-                  << "[Algorithm] Successor: " << std::make_tuple(successor_state, std::cref(pddl_factories)) << "\n"
-                  << std::endl;
-    }
+    void on_generate_state_impl(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) const {}
 
     void on_finish_g_layer_impl(uint64_t g_value, uint64_t num_states) const
     {
-        std::cout << "[Algorithm] Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl << std::endl;
+        std::cout << "[Algorithm] Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl;
     }
 
-    void on_expand_state_impl(State state, const PDDLFactories& pddl_factories) const
-    {
-        std::cout << "[Algorithm] ----------------------------------------"
-                  << "\n"
-                  << "[Algorithm] State: " << std::make_tuple(state, std::cref(pddl_factories)) << std::endl
-                  << std::endl;
-    }
+    void on_expand_state_impl(State state, const PDDLFactories& pddl_factories) const {}
 
     void on_start_search_impl(State initial_state, const PDDLFactories& pddl_factories) const
-    {
-        std::cout << "[Algorithm] Search started."
-                  << "\n"
-                  << "[Algorithm] Initial: " << std::make_tuple(initial_state, std::cref(pddl_factories)) << std::endl;
+    {  //
+        std::cout << "[Algorithm] Search started." << std::endl;
     }
 
     void on_end_search_impl() const

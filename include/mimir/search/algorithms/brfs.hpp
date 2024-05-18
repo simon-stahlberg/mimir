@@ -31,7 +31,7 @@ private:
     State m_initial_state;
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
-    std::shared_ptr<IEventHandler> m_event_handler;
+    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions
     ///        and reversing them.
@@ -71,14 +71,14 @@ public:
     explicit BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator) :
         BrFsAlgorithm(applicable_action_generator,
                       std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                      std::make_shared<MinimalEventHandler>())
+                      std::make_shared<DefaultAlgorithmEventHandler>())
     {
     }
 
     /// @brief Complete construction
     BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
                   std::shared_ptr<IDynamicSSG> successor_state_generator,
-                  std::shared_ptr<IEventHandler> event_handler) :
+                  std::shared_ptr<IAlgorithmEventHandler> event_handler) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),

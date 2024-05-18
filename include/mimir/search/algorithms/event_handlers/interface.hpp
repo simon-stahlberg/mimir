@@ -15,10 +15,10 @@ namespace mimir
 /**
  * Interface class
  */
-class IEventHandler
+class IAlgorithmEventHandler
 {
 public:
-    virtual ~IEventHandler() = default;
+    virtual ~IAlgorithmEventHandler() = default;
 
     /// @brief React on generating a successor_state by applying an action.
     virtual void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
@@ -50,13 +50,13 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived>
-class EventHandlerBase : public IEventHandler
+class AlgorithmEventHandlerBase : public IAlgorithmEventHandler
 {
 protected:
     Statistics m_statistics;
 
 private:
-    EventHandlerBase() = default;
+    AlgorithmEventHandlerBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
