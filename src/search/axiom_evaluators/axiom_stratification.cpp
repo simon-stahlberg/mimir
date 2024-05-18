@@ -12,13 +12,32 @@
 namespace mimir
 {
 
-AxiomPartition::AxiomPartition(AxiomSet axioms) : m_axioms(std::move(axioms)), m_axioms_by_body_predicates()
+AxiomPartition::AxiomPartition(AxiomSet axioms, const PredicateSet& derived_predicates, const PredicateSet& affected_derived_predicates_in_earlier_partition) :
+    m_axioms(std::move(axioms)),
+    m_initially_relevant_axioms(),
+    m_axioms_by_body_predicates()
 {
     for (const auto& axiom : m_axioms)
     {
+        bool is_relevant_first = true;
+
         for (const auto& literal : axiom->get_fluent_conditions())
         {
-            m_axioms_by_body_predicates[literal->get_atom()->get_predicate()].insert(axiom);
+            const auto& predicate = literal->get_atom()->get_predicate();
+
+            m_axioms_by_body_predicates[predicate].insert(axiom);
+
+            if (derived_predicates.count(predicate) && !affected_derived_predicates_in_earlier_partition.count(predicate))
+            {
+                // axioms whose derived body literals were not affected in an earlier partition are not relevant initially.
+                // because the precondition cannot be satisfied initially.
+                is_relevant_first = false;
+            }
+        }
+
+        if (is_relevant_first)
+        {
+            m_initially_relevant_axioms.insert(axiom);
         }
     }
 }
@@ -35,6 +54,8 @@ void AxiomPartition::retrieve_axioms_with_same_body_predicate(GroundAtom derived
 }
 
 const AxiomSet& AxiomPartition::get_axioms() const { return m_axioms; }
+
+const AxiomSet& AxiomPartition::get_initially_relevant_axioms() const { return m_initially_relevant_axioms; }
 
 /// @brief Compute occurrences of predicates in axiom heads
 /// @param axioms a set of axioms
@@ -190,6 +211,7 @@ std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, 
     auto axiom_partitioning = std::vector<AxiomPartition> {};
 
     auto remaining_axioms = AxiomSet(axioms.begin(), axioms.end());
+    auto affected_derived_predicates_in_earlier_partition = PredicateSet {};
     for (const auto& stratum : stratification)
     {
         auto partition = AxiomSet {};
@@ -204,7 +226,13 @@ std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, 
         {
             remaining_axioms.erase(axiom);
         }
-        axiom_partitioning.push_back(AxiomPartition(std::move(partition)));
+
+        axiom_partitioning.push_back(AxiomPartition(partition, derived_predicate_set, affected_derived_predicates_in_earlier_partition));
+
+        for (const auto& axiom : partition)
+        {
+            affected_derived_predicates_in_earlier_partition.insert(axiom->get_literal()->get_atom()->get_predicate());
+        }
     }
 
     return axiom_partitioning;

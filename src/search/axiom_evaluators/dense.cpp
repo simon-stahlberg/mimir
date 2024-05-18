@@ -117,7 +117,10 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
     /* 1. Initialize assignment set */
 
     auto ground_atoms = GroundAtomList {};
-    m_pddl_factories.get_ground_atoms(ref_state_atoms, ground_atoms);
+    for (const auto& atom_id : ref_state_atoms)
+    {
+        ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
+    }
     auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
 
     /* 2. Initialize bookkeeping */
@@ -137,12 +140,11 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
         // Optimization 1: Track new ground atoms to simplify the clique enumeration graph in the next iteration.
         auto new_ground_atoms = ground_atoms;
 
+        // TODO: Optimization 4: Inductively compile away axioms with static bodies. (grounded in match tree?)
+
         // Optimization 2: Track axioms that might trigger in next iteration.
-        // Note: this gives a good speedup.
-        // Optimization 3: Axioms with derived literal in body must not be evaluated initially.
-        // get_simple_axioms(), i.e., only those with simple predicates in the body.
-        // Optimization 4: Inductively compile away axioms with static bodies. (grounded in match tree?)
-        auto relevant_axioms = partition.get_axioms();
+        // Optimization 3: Use precomputed set of axioms that might be applicable initially
+        auto relevant_axioms = partition.get_initially_relevant_axioms();
 
         do
         {
@@ -186,9 +188,8 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
                     const auto new_ground_atom = m_pddl_factories.get_ground_atom(grounded_atom_id);
                     reached_partition_fixed_point = false;
 
-                    // Update new ground atoms to speed up successive iterations, i.e.,
+                    // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,
                     // only cliques that takes these new atoms into account must be computed.
-                    // TODO: exploit this!
                     new_ground_atoms.push_back(new_ground_atom);
 
                     // Update the assignment set
@@ -218,6 +219,7 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
     }
 
     /* 2. Initialize axiom partitioning using stratification */
+
     auto axioms = m_problem->get_domain()->get_axioms();
     axioms.insert(axioms.end(), m_problem->get_axioms().begin(), m_problem->get_axioms().end());
 

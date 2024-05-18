@@ -129,7 +129,7 @@ void init_pymimir(py::module_& m)
         .value("MAXIMIZE", loki::OptimizationMetricEnum::MAXIMIZE)
         .export_values();
 
-    py::class_<RequirementsImpl>(m, "Requirements")  //
+    py::class_<RequirementsImpl>(m, "Requirements")  // s
         .def("__str__", py::overload_cast<>(&loki::Base<RequirementsImpl>::str, py::const_))
         .def("get_identifier", &RequirementsImpl::get_identifier)
         .def("get_requirements", &RequirementsImpl::get_requirements, py::return_value_policy::reference);
