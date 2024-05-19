@@ -58,6 +58,10 @@ void DebugLiftedAAGEventHandler::on_end_generating_applicable_axioms_impl(const 
     //
 }
 
+void DebugLiftedAAGEventHandler::on_finish_f_layer_impl() const
+{  //
+}
+
 void DebugLiftedAAGEventHandler::on_end_search_impl() const
 {  //
     std::cout << get_statistics() << std::endl;

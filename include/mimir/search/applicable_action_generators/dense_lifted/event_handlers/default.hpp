@@ -36,6 +36,8 @@ private:
 
     void on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) const;
 
+    void on_finish_f_layer_impl() const;
+
     void on_end_search_impl() const;
 };
 

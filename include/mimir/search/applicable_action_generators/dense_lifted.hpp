@@ -67,6 +67,8 @@ private:
 
     void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
+    void on_finish_f_layer_impl() const;
+
     void on_end_search_impl() const;
 
     [[nodiscard]] Problem get_problem_impl() const;

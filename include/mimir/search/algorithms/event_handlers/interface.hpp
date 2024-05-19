@@ -23,8 +23,8 @@ public:
     /// @brief React on generating a successor_state by applying an action.
     virtual void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
 
-    /// @brief React on finishing expanding a g-layer.
-    virtual void on_finish_g_layer(uint64_t g_value, uint64_t num_states) = 0;
+    /// @brief React on finishing expanding a f-layer.
+    virtual void on_finish_f_layer() = 0;
 
     /// @brief React on expanding a state.
     virtual void on_expand_state(State state, const PDDLFactories& pddl_factories) = 0;
@@ -71,12 +71,12 @@ public:
         self().on_generate_state_impl(action, successor_state, pddl_factories);
     }
 
-    void on_finish_g_layer(uint64_t g_value, uint64_t num_states) override
+    void on_finish_f_layer() override
     {
-        m_statistics.set_g_value(g_value);
-        m_statistics.set_num_states_until_g_value(num_states);
+        m_statistics.on_finish_f_layer();
 
-        self().on_finish_g_layer_impl(g_value, num_states);
+        assert(!m_statistics.get_num_expanded_until_f_value().empty());
+        self().on_finish_f_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1, m_statistics.get_num_expanded_until_f_value().back());
     }
 
     void on_expand_state(State state, const PDDLFactories& pddl_factories) override

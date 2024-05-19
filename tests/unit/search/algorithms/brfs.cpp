@@ -24,10 +24,9 @@ public:
         m_parser(PDDLParser(domain_file, problem_file)),
         m_algorithm(nullptr)
     {
-        auto successor_generator =
-            (grounded) ?
-                std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) } :
-                std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) };
+        auto successor_generator = (grounded) ?
+                                       std::shared_ptr<IDynamicAAG> { std::make_shared<GroundedDenseAAG>(m_parser.get_problem(), m_parser.get_factories()) } :
+                                       std::shared_ptr<IDynamicAAG> { std::make_shared<LiftedDenseAAG>(m_parser.get_problem(), m_parser.get_factories()) };
 
         m_algorithm = std::make_unique<BrFsAlgorithm>(successor_generator);
     }

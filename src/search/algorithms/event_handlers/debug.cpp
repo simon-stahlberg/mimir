@@ -12,9 +12,9 @@ void DebugAlgorithmEventHandler::on_generate_state_impl(GroundAction action, Sta
               << std::endl;
 }
 
-void DebugAlgorithmEventHandler::on_finish_g_layer_impl(uint64_t g_value, uint64_t num_states) const
+void DebugAlgorithmEventHandler::on_finish_f_layer_impl(uint64_t f_value, uint64_t num_expanded_states) const
 {
-    std::cout << "[Algorithm] Finished state expansion until g-layer " << g_value << " with num states " << num_states << std::endl << std::endl;
+    std::cout << "[Algorithm] Finished state expansion until f-layer " << f_value << " with num states " << num_expanded_states << std::endl << std::endl;
 }
 
 void DebugAlgorithmEventHandler::on_expand_state_impl(State state, const PDDLFactories& pddl_factories) const

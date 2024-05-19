@@ -108,6 +108,16 @@ public:
             const auto state = m_queue.front();
             m_queue.pop_front();
 
+            // We need this before goal test for correct statistics reporting.
+            auto search_node = CostSearchNode(this->m_search_nodes[state.get_id()]);
+            search_node.get_status() = SearchNodeStatus::CLOSED;
+            if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
+            {
+                g_value = search_node.get_g_value();
+                m_successor_generator->on_finish_f_layer();
+                m_event_handler->on_finish_f_layer();
+            }
+
             if (state.literals_hold(goal_ground_literals))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
@@ -117,20 +127,6 @@ public:
                 m_event_handler->on_solved(out_plan);
 
                 return SearchStatus::SOLVED;
-            }
-
-            auto search_node = CostSearchNode(this->m_search_nodes[state.get_id()]);
-            search_node.get_status() = SearchNodeStatus::CLOSED;
-
-            if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
-            {
-                g_value = search_node.get_g_value();
-                m_event_handler->on_finish_g_layer(g_value, m_state_repository->get_state_count());
-            }
-
-            if (g_value == 5)
-            {
-                // return SearchStatus::FAILED;
             }
 
             m_event_handler->on_expand_state(state, m_successor_generator->get_pddl_factories());

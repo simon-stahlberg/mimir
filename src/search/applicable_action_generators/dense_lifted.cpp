@@ -453,6 +453,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(Fla
     m_axiom_evaluator.generate_and_apply_axioms(ref_state_atoms);
 }
 
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::on_finish_f_layer_impl() const { m_event_handler->on_finish_f_layer(); }
+
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::on_end_search_impl() const { m_event_handler->on_end_search(); }
 
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :

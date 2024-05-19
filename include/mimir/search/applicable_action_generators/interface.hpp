@@ -24,6 +24,9 @@ public:
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms) = 0;
 
+    // Notify that a new f-layer was reached
+    virtual void on_finish_f_layer() = 0;
+
     /// @brief Notify that the search has finished
     virtual void on_end_search() = 0;
 
@@ -59,6 +62,11 @@ public:
     void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms) override
     {  //
         self().generate_and_apply_axioms_impl(ref_state_atoms);
+    }
+
+    void on_finish_f_layer() override
+    {  //
+        self().on_finish_f_layer_impl();
     }
 
     void on_end_search() override

@@ -7,8 +7,6 @@
 #include "mimir/search/axioms.hpp"
 #include "mimir/search/states.hpp"
 
-#include <chrono>
-
 namespace mimir
 {
 template<typename T>
@@ -47,6 +45,8 @@ public:
     virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) = 0;
 
     virtual void on_end_search() = 0;
+
+    virtual void on_finish_f_layer() = 0;
 
     virtual const LiftedAAGStatistics& get_statistics() const = 0;
 };
@@ -141,6 +141,13 @@ public:
     void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) override
     {  //
         self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_factories);
+    }
+
+    void on_finish_f_layer() override
+    {  //
+        m_statistics.on_finish_f_layer();
+
+        self().on_finish_f_layer_impl();
     }
 
     void on_end_search() override
