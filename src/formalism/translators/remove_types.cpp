@@ -24,7 +24,12 @@ namespace mimir
 
 static void collect_types_from_type_hierarchy_recursively(const loki::Type& type, std::unordered_set<loki::Type>& ref_type_list)
 {
-    ref_type_list.insert(type);
+    // Base case: Skip object types since they do not contribute to give any additional information
+    if (type->get_name() != "object")
+    {
+        ref_type_list.insert(type);
+    }
+    // Inductive case:
     for (const auto& base_type : type->get_bases())
     {
         collect_types_from_type_hierarchy_recursively(base_type, ref_type_list);
