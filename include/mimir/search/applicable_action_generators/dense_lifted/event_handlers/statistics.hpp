@@ -63,12 +63,12 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const LiftedAAGStatistics& statistics)
 {
-    os << "[LiftedAAGStatistics] Number of action grounding cache hits: " << statistics.get_num_ground_action_cache_hits() << "\n"
-       << "[LiftedAAGStatistics] Number of action grounding cache misses: " << statistics.get_num_ground_action_cache_misses() << "\n"
-       << "[LiftedAAGStatistics] Number of inapplicable grounded actions: " << statistics.get_num_inapplicable_grounded_actions() << "\n"
-       << "[LiftedAAGStatistics] Number of axiom grounding cache hits: " << statistics.get_num_ground_axiom_cache_hits() << "\n"
-       << "[LiftedAAGStatistics] Number of axiom grounding cache misses: " << statistics.get_num_ground_axiom_cache_misses() << "\n"
-       << "[LiftedAAGStatistics] Number of inapplicable grounded axioms: " << statistics.get_num_inapplicable_grounded_axioms();
+    os << "[LiftedAAGStatistics] Number of ground action cache hits: " << statistics.get_num_ground_action_cache_hits() << "\n"
+       << "[LiftedAAGStatistics] Number of ground action cache misses: " << statistics.get_num_ground_action_cache_misses() << "\n"
+       << "[LiftedAAGStatistics] Number of generated inapplicable grounded actions: " << statistics.get_num_inapplicable_grounded_actions() << "\n"
+       << "[LiftedAAGStatistics] Number of ground axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << "\n"
+       << "[LiftedAAGStatistics] Number of ground axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << "\n"
+       << "[LiftedAAGStatistics] Number of generated inapplicable grounded axioms: " << statistics.get_num_inapplicable_grounded_axioms();
 
     return os;
 }

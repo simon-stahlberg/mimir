@@ -213,11 +213,16 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     }
 
     /* Universal effects */
+
+    // We have copy the binding to extend it with objects for quantified effect variables
+    // and at the same time we need to use the original binding as cache key.
+    auto binding_ext = binding;
+
     const auto num_universal_effects = action->get_universal_effects().size();
     if (num_universal_effects > 0)
     {
         const auto& graphs = m_static_consistency_graphs.at(action);
-        const auto binding_size = binding.size();
+        const auto binding_ext_size = binding_ext.size();
         for (size_t i = 0; i < num_universal_effects; ++i)
         {
             // Fetch data
@@ -233,7 +238,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
             conditional_effects.resize(old_size + num_conditional_effects);
 
             // Create binding and ground conditions and effect
-            binding.resize(binding_size + universal_effect->get_arity());
+            binding_ext.resize(binding_ext_size + universal_effect->get_arity());
 
             // The position to place the conditional precondition + effect
             auto j = old_size;
@@ -244,15 +249,15 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 for (size_t pos = 0; pos < universal_effect->get_arity(); ++pos)
                 {
                     const auto object_id = *combination[pos];
-                    binding[binding_size + pos] = m_pddl_factories.get_object(object_id);
+                    binding_ext[binding_ext_size + pos] = m_pddl_factories.get_object(object_id);
                 }
 
                 // Ground conditions and effect
                 positive_conditional_preconditions[j].unset_all();
                 negative_conditional_preconditions[j].unset_all();
 
-                fill_bitsets(universal_effect->get_conditions(), positive_conditional_preconditions[j], negative_conditional_preconditions[j], binding);
-                fill_effect(universal_effect->get_effect(), conditional_effects[j], binding);
+                fill_bitsets(universal_effect->get_conditions(), positive_conditional_preconditions[j], negative_conditional_preconditions[j], binding_ext);
+                fill_effect(universal_effect->get_effect(), conditional_effects[j], binding_ext);
 
                 ++j;
             }
