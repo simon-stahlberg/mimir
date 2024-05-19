@@ -7,6 +7,7 @@
 #include "../formalism/state.hpp"
 #include "successor_generator.hpp"
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -18,6 +19,8 @@ namespace mimir::planners
         virtual ~DecisionNode();
 
         virtual void get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const = 0;
+
+        virtual std::size_t get_size() const = 0;
     };
 
     class BranchNode : public DecisionNode
@@ -31,6 +34,8 @@ namespace mimir::planners
         BranchNode(uint32_t rank);
 
         void get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const override;
+
+        std::size_t get_size() const override;
     };
 
     class LeafNode : public DecisionNode
@@ -41,6 +46,8 @@ namespace mimir::planners
         LeafNode(const mimir::formalism::ActionList& actions);
 
         void get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const override;
+
+        std::size_t get_size() const override;
     };
 
     class GroundedSuccessorGenerator : public SuccessorGeneratorBase
@@ -58,6 +65,8 @@ namespace mimir::planners
         const mimir::formalism::ActionList& get_actions() const;
 
         mimir::formalism::ActionList get_applicable_actions(const mimir::formalism::State& state) const override;
+
+        std::size_t get_size() const;
 
       private:
         mimir::formalism::AtomList::const_iterator select_branching_atom(const mimir::formalism::ActionList& ground_actions,

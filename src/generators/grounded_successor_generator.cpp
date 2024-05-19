@@ -19,6 +19,8 @@
 #include "../../include/mimir/generators/grounded_successor_generator.hpp"
 
 #include <algorithm>
+#include <cstddef>
+#include <iterator>
 
 namespace mimir::planners
 {
@@ -56,6 +58,11 @@ namespace mimir::planners
         }
 
         return applicable_actions;
+    }
+
+    std::size_t GroundedSuccessorGenerator::get_size() const
+    {
+        return root_->get_size();
     }
 
     mimir::formalism::AtomList::const_iterator GroundedSuccessorGenerator::select_branching_atom(const mimir::formalism::ActionList& ground_actions,
@@ -223,5 +230,32 @@ namespace mimir::planners
     void LeafNode::get_applicable_actions(const mimir::formalism::State& state, mimir::formalism::ActionList& applicable_actions) const
     {
         applicable_actions.insert(applicable_actions.end(), actions_.cbegin(), actions_.cend());
+    }
+
+    std::size_t BranchNode::get_size() const
+    {
+        std::size_t size = 1;
+
+        if (present_)
+        {
+            size += present_->get_size();
+        }
+
+        if (not_present_)
+        {
+            size += not_present_->get_size();
+        }
+
+        if (dont_care_)
+        {
+            size += dont_care_->get_size();
+        }
+
+        return size;
+    }
+
+    std::size_t LeafNode::get_size() const
+    {
+        return 1;
     }
 }  // namespace planners

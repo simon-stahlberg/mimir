@@ -50,41 +50,41 @@ std::size_t total_memory_allocated = 0;
 std::size_t total_memory_deallocated = 0;
 std::size_t peak_memory_usage = 0;
 
-// Override the new operator
-void* operator new(std::size_t size)
-{
-    const auto pointer = static_cast<int32_t*>(std::malloc(size + sizeof(int32_t)));
+// // Override the new operator
+// void* operator new(std::size_t size)
+// {
+//     const auto pointer = static_cast<int32_t*>(std::malloc(size + sizeof(int32_t)));
 
-    if (pointer)
-    {
-        pointer[0] = size;
-        total_memory_allocated += size;
-        peak_memory_usage = std::max(peak_memory_usage, total_memory_allocated - total_memory_deallocated);
-        return pointer + 1;
-    }
-    else
-    {
-        throw std::bad_alloc();
-    }
-}
+//     if (pointer)
+//     {
+//         pointer[0] = size;
+//         total_memory_allocated += size;
+//         peak_memory_usage = std::max(peak_memory_usage, total_memory_allocated - total_memory_deallocated);
+//         return pointer + 1;
+//     }
+//     else
+//     {
+//         throw std::bad_alloc();
+//     }
+// }
 
-// Override the delete operator
-void operator delete(void* ptr) noexcept
-{
-    if (ptr)
-    {
-        const auto original_pointer = static_cast<int32_t*>(ptr) - 1;
-        const auto size = *original_pointer;
-        total_memory_deallocated += static_cast<std::size_t>(size);
-        std::free(original_pointer);
-    }
-}
+// // Override the delete operator
+// void operator delete(void* ptr) noexcept
+// {
+//     if (ptr)
+//     {
+//         const auto original_pointer = static_cast<int32_t*>(ptr) - 1;
+//         const auto size = *original_pointer;
+//         total_memory_deallocated += static_cast<std::size_t>(size);
+//         std::free(original_pointer);
+//     }
+// }
 
-// Override the new[] operator
-void* operator new[](std::size_t size) { return operator new(size); }
+// // Override the new[] operator
+// void* operator new[](std::size_t size) { return operator new(size); }
 
-// Override the delete[] operator
-void operator delete[](void* ptr) noexcept { operator delete(ptr); }
+// // Override the delete[] operator
+// void operator delete[](void* ptr) noexcept { operator delete(ptr); }
 
 std::vector<std::string> successor_generator_types() { return std::vector<std::string>({ "automatic", "lifted", "grounded" }); }
 
@@ -360,6 +360,7 @@ int main(int argc, char* argv[])
         std::cout << "Number of ground actions: " << grounded_successor_generator->get_actions().size() << std::endl;
         std::cout << "Number of atoms: " << problem->get_encountered_atoms().size() << std::endl;
         std::cout << "Number of static atoms: " << problem->get_static_atoms().size() << std::endl;
+        std::cout << "Size of tree: " << grounded_successor_generator->get_size() << std::endl;
     }
 
     std::cout << std::endl;
