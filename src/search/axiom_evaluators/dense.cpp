@@ -37,6 +37,10 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
         m_applicable_axioms.insert(grounded_axiom);
         out_applicable_axioms.emplace_back(grounded_axiom);
     }
+    else
+    {
+        m_event_handler->on_ground_inapplicable_axiom(grounded_axiom, m_pddl_factories);
+    }
 }
 
 void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment_sets,
@@ -59,7 +63,7 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment
             }
             else
             {
-                // m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
+                m_event_handler->on_ground_inapplicable_axiom(grounded_axiom, m_pddl_factories);
             }
         }
     }
@@ -123,12 +127,18 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
             m_applicable_axioms.insert(grounded_axiom);
             out_applicable_axioms.push_back(grounded_axiom);
         }
+        else
+        {
+            m_event_handler->on_ground_inapplicable_axiom(grounded_axiom, m_pddl_factories);
+        }
     }
 }
 
 void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
 {
     /* 1. Initialize assignment set */
+
+    m_event_handler->on_start_generating_applicable_axioms();
 
     auto ground_atoms = GroundAtomList {};
     for (const auto& atom_id : ref_state_atoms)
@@ -218,9 +228,14 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
         } while (!reached_partition_fixed_point);
     }
+
+    m_event_handler->on_end_generating_applicable_axioms(applicable_axioms, m_pddl_factories);
 }
 
-AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factories) : m_problem(problem), m_pddl_factories(pddl_factories)
+AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
+    m_problem(problem),
+    m_pddl_factories(pddl_factories),
+    m_event_handler(std::move(event_handler))
 {
     /* 1. Error checking */
 
@@ -274,10 +289,16 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     auto it = groundings.find(binding);
     if (it != groundings.end())
     {
+        m_event_handler->on_ground_axiom_cache_hit(axiom, binding);
+
         return it->second;
     }
 
+    m_event_handler->on_ground_axiom_cache_miss(axiom, binding);
+
     /* 2. Ground the axiom */
+
+    m_event_handler->on_ground_axiom(axiom, binding);
 
     const auto fill_bitsets =
         [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)

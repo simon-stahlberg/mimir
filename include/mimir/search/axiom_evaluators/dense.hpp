@@ -7,6 +7,7 @@
 #include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/axioms.hpp"
@@ -28,6 +29,7 @@ class AE<AEDispatcher<DenseStateTag>> : public IStaticAE<AE<AEDispatcher<DenseSt
 private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
+    std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
 
@@ -57,7 +59,8 @@ private:
     void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
 public:
-    AE(Problem problem, PDDLFactories& pddl_factories);
+    /// @brief Simplest construction, expects the event handler from the lifted aag.
+    AE(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
     /// @brief Return the axiom partitioning.
     [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;

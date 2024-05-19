@@ -24,6 +24,18 @@ private:
 
     void on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) const;
 
+    void on_start_generating_applicable_axioms_impl() const;
+
+    void on_ground_axiom_impl(const Axiom axiom, const ObjectList& binding) const;
+
+    void on_ground_axiom_cache_hit_impl(const Axiom axiom, const ObjectList& binding) const;
+
+    void on_ground_axiom_cache_miss_impl(const Axiom axiom, const ObjectList& binding) const;
+
+    void on_ground_inapplicable_axiom_impl(const GroundAxiom axiom, const PDDLFactories& pddl_factories) const;
+
+    void on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) const;
+
     void on_end_search_impl() const;
 };
 

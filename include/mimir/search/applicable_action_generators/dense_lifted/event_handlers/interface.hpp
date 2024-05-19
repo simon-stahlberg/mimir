@@ -34,6 +34,18 @@ public:
 
     virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) = 0;
 
+    virtual void on_start_generating_applicable_axioms() = 0;
+
+    virtual void on_ground_axiom(const Axiom axiom, const ObjectList& binding) = 0;
+
+    virtual void on_ground_axiom_cache_hit(const Axiom axiom, const ObjectList& binding) = 0;
+
+    virtual void on_ground_axiom_cache_miss(const Axiom axiom, const ObjectList& binding) = 0;
+
+    virtual void on_ground_inapplicable_axiom(const GroundAxiom axiom, const PDDLFactories& pddl_factories) = 0;
+
+    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) = 0;
+
     virtual void on_end_search() = 0;
 
     virtual const LiftedAAGStatistics& get_statistics() const = 0;
@@ -71,14 +83,14 @@ public:
 
     void on_ground_action_cache_hit(const Action action, const ObjectList& binding) override
     {  //
-        m_statistics.increment_num_cache_hits();
+        m_statistics.increment_num_ground_action_cache_hits();
 
         self().on_ground_action_cache_hit_impl(action, binding);
     }
 
     void on_ground_action_cache_miss(const Action action, const ObjectList& binding) override
     {  //
-        m_statistics.increment_num_cache_misses();
+        m_statistics.increment_num_ground_action_cache_misses();
 
         self().on_ground_action_cache_miss_impl(action, binding);
     }
@@ -93,6 +105,42 @@ public:
     void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) override
     {  //
         self().on_end_generating_applicable_actions_impl(ground_actions, pddl_factories);
+    }
+
+    void on_start_generating_applicable_axioms() override
+    {  //
+        self().on_start_generating_applicable_axioms_impl();
+    }
+
+    void on_ground_axiom(const Axiom axiom, const ObjectList& binding) override
+    {  //
+        self().on_ground_axiom_impl(axiom, binding);
+    }
+
+    void on_ground_axiom_cache_hit(const Axiom axiom, const ObjectList& binding) override
+    {  //
+        m_statistics.increment_num_ground_axiom_cache_hits();
+
+        self().on_ground_axiom_cache_hit_impl(axiom, binding);
+    }
+
+    void on_ground_axiom_cache_miss(const Axiom axiom, const ObjectList& binding) override
+    {  //
+        m_statistics.increment_num_ground_axiom_cache_misses();
+
+        self().on_ground_axiom_cache_miss_impl(axiom, binding);
+    }
+
+    void on_ground_inapplicable_axiom(const GroundAxiom axiom, const PDDLFactories& pddl_factories) override
+    {  //
+        m_statistics.increment_num_inapplicable_grounded_axioms();
+
+        self().on_ground_inapplicable_axiom_impl(axiom, pddl_factories);
+    }
+
+    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) override
+    {  //
+        self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_factories);
     }
 
     void on_end_search() override

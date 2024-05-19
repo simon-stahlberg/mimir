@@ -459,7 +459,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     m_problem(problem),
     m_pddl_factories(pddl_factories),
     m_event_handler(std::move(event_handler)),
-    m_axiom_evaluator(problem, pddl_factories),
+    m_axiom_evaluator(problem, pddl_factories, m_event_handler),
     m_ground_function_value_costs(),
     m_static_consistency_graphs()
 {
