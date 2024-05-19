@@ -112,8 +112,8 @@ public:
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 
-                m_successor_generator->on_end_search();
                 m_event_handler->on_end_search();
+                m_successor_generator->on_end_search();
                 m_event_handler->on_solved(out_plan);
 
                 return SearchStatus::SOLVED;

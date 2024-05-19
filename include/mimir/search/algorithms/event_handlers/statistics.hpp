@@ -40,6 +40,20 @@ public:
     }
 };
 
+/**
+ * Pretty printing
+ */
+
+inline std::ostream& operator<<(std::ostream& os, const AlgorithmStatistics& statistics)
+{
+    os << "[AlgorithmStatistics] Search time: " << statistics.get_search_time_ms().count() << "ms"
+       << "\n"
+       << "[AlgorithmStatistics] Num expanded states: " << statistics.get_num_expanded() << "\n"
+       << "[AlgorithmStatistics] Num generated states: " << statistics.get_num_generated();
+
+    return os;
+}
+
 }
 
 #endif

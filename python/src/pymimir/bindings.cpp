@@ -434,8 +434,15 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
 
     // Lifted
+    py::class_<ILiftedAAGEventHandler, std::shared_ptr<ILiftedAAGEventHandler>>(m, "ILiftedAAGEventHandler");  //
+    py::class_<DefaultLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DefaultLiftedAAGEventHandler>>(m,
+                                                                                                                    "DefaultLiftedAAGEventHandler")  //
+        .def(py::init<>());
+    py::class_<DebugLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DebugLiftedAAGEventHandler>>(m, "DebugLiftedAAGEventHandler")  //
+        .def(py::init<>());
     py::class_<LiftedAAG, IDynamicAAG, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
-        .def(py::init<Problem, PDDLFactories&>());
+        .def(py::init<Problem, PDDLFactories&>())
+        .def(py::init<Problem, PDDLFactories&, std::shared_ptr<ILiftedAAGEventHandler>>());
 
     // Grounded
     py::class_<IGroundedAAGEventHandler, std::shared_ptr<IGroundedAAGEventHandler>>(m, "IGroundedAAGEventHandler");  //

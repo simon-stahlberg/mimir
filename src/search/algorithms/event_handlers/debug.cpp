@@ -34,11 +34,9 @@ void DebugAlgorithmEventHandler::on_start_search_impl(State initial_state, const
 
 void DebugAlgorithmEventHandler::on_end_search_impl() const
 {
-    std::cout << "[Algorithm] Search finished."
+    std::cout << "[Algorithm] Search ended."
               << "\n"
-              << "[Algorithm] Num expanded states: " << this->m_statistics.get_num_expanded() << "\n"
-              << "[Algorithm] Num generated states: " << this->m_statistics.get_num_generated() << "\n"
-              << "[Algorithm] Search time: " << this->m_statistics.get_search_time_ms().count() << "ms" << std::endl;
+              << m_statistics << std::endl;
 }
 
 void DebugAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan) const
@@ -47,7 +45,7 @@ void DebugAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_a
     std::cout << "[Algorithm] Plan found with cost: " << plan.get_cost() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << i + 1 << ". " << plan.get_actions()[i] << std::endl;
+        std::cout << "[Algorithm] " << i + 1 << ". " << plan.get_actions()[i] << std::endl;
     }
 }
 

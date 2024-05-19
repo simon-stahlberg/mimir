@@ -2,6 +2,8 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
+#include "mimir/search/applicable_action_generators/dense_grounded/event_handlers.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted/event_handlers.hpp"
 #include "mimir/search/plan.hpp"
 
 #include <gtest/gtest.h>
@@ -26,6 +28,7 @@ public:
             (grounded) ?
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<GroundedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) } :
                 std::shared_ptr<IDynamicAAG> { std::make_shared<AAG<LiftedAAGDispatcher<DenseStateTag>>>(m_parser.get_problem(), m_parser.get_factories()) };
+
         m_algorithm = std::make_unique<BrFsAlgorithm>(successor_generator);
     }
 
