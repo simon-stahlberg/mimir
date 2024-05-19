@@ -84,8 +84,10 @@ private:
     ObjectFactory objects;
     AtomFactory atoms;
     GroundAtomFactory ground_atoms;
+    GroundAtomFactory static_ground_atoms;
     LiteralFactory literals;
     GroundLiteralFactory ground_literals;
+    GroundLiteralFactory static_ground_literals;
     PredicateFactory predicates;
     FunctionExpressionFactory function_expressions;
     GroundFunctionExpressionFactory ground_function_expressions;
@@ -114,8 +116,10 @@ public:
         objects(ObjectFactory(1000)),
         atoms(AtomFactory(1000)),
         ground_atoms(GroundAtomFactory(1000)),
+        static_ground_atoms(GroundAtomFactory(1000)),
         literals(LiteralFactory(1000)),
         ground_literals(GroundLiteralFactory(1000)),
+        static_ground_literals(GroundLiteralFactory(1000)),
         predicates(PredicateFactory(1000)),
         function_expressions(FunctionExpressionFactory(1000)),
         ground_function_expressions(GroundFunctionExpressionFactory(1000)),
@@ -184,6 +188,14 @@ public:
         return ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
     }
 
+    /// @brief Get or create a static ground atom for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundAtom get_or_create_static_ground_atom(Predicate predicate, ObjectList objects)
+    {
+        return static_ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
+    }
+
     /// @brief Get or create a literal for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
@@ -195,6 +207,14 @@ public:
     GroundLiteral get_or_create_ground_literal(bool is_negated, GroundAtom atom)
     {
         return ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
+    }
+
+    /// @brief Get or create a static ground literal for the given parameters.
+    ///
+    ///        This function allows us to can change the underlying representation and storage.
+    GroundLiteral get_or_create_static_ground_literal(bool is_negated, GroundAtom atom)
+    {
+        return static_ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
     }
 
     /// @brief Get or create a predicate for the given parameters.

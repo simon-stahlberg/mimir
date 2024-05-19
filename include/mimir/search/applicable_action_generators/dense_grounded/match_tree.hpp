@@ -23,39 +23,65 @@ private:
     using NodeID = size_t;
     using ActionIter = size_t;
 
-    struct SelectorNode
+    /* We encode selector and generator nodes in a single type */
+    struct GeneratorOrSelectorNode
     {
-        size_t ground_atom_id;
-        NodeID true_succ;
-        NodeID false_succ;
-        NodeID dontcare_succ;
+        static const size_t MAX_VALUE = (size_t) -1;
 
-        explicit SelectorNode(size_t ground_atom_id);
+        size_t first_data;
+        size_t second_data;
+        size_t third_data;
+        size_t fourth_data;
 
-        bool is_initialized() const;
+        /* Selector specific accessors */
+
+        /// @brief Partial instantiation of a selector node.
+        /// Initialization of true_succ, false_succ, and dont_care are postponed
+        explicit GeneratorOrSelectorNode(size_t ground_atom_id) :
+            first_data(ground_atom_id),
+            second_data(MAX_VALUE),
+            third_data(MAX_VALUE),
+            fourth_data(MAX_VALUE)
+        {
+        }
+
+        [[nodiscard]] bool is_selector_node() const noexcept { return first_data != MAX_VALUE; }
+
+        [[nodiscard]] bool has_true_succ() const noexcept { return second_data != MAX_VALUE; }
+        [[nodiscard]] NodeID get_true_succ() const noexcept { return second_data; }
+        void set_true_succ(NodeID true_succ) noexcept { second_data = true_succ; }
+
+        [[nodiscard]] bool has_false_succ() const noexcept { return third_data != MAX_VALUE; }
+        [[nodiscard]] NodeID get_false_succ() const noexcept { return third_data; }
+        void set_false_succ(NodeID false_succ) noexcept { third_data = false_succ; }
+
+        [[nodiscard]] bool has_dontcare_succ() const noexcept { return fourth_data != MAX_VALUE; }
+        [[nodiscard]] NodeID get_dontcare_succ() const noexcept { return fourth_data; }
+        void set_dontcare_succ(NodeID dontcare_succ) noexcept { fourth_data = dontcare_succ; }
+
+        /* Generator specific accessors */
+
+        /// @brief Complete instantiation of a generator node.
+        /// The fourth data member is unused.
+        GeneratorOrSelectorNode(size_t begin, size_t end) : first_data(MAX_VALUE), second_data(begin), third_data(end), fourth_data(MAX_VALUE) {}
+
+        [[nodiscard]] bool is_generator_node() const noexcept { return first_data == MAX_VALUE; }
+
+        [[nodiscard]] ActionIter get_begin() const noexcept { return second_data; }
+
+        [[nodiscard]] ActionIter get_end() const noexcept { return third_data; }
     };
 
-    struct GeneratorNode
-    {
-        ActionIter begin;
-        ActionIter end;
-
-        GeneratorNode();
-        GeneratorNode(ActionIter begin, ActionIter end);
-    };
-
-    using Node = std::variant<SelectorNode, GeneratorNode>;
-
-    std::vector<Node> m_nodes;
+    std::vector<GeneratorOrSelectorNode> m_nodes;
     std::vector<T> m_elements;
 
-    NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<T>& elements);
+    NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atom_ids);
 
     void get_applicable_elements_recursively(size_t node_id, const FlatBitset state, std::vector<T>& out_applicable_elements);
 
 public:
     MatchTree();
-    MatchTree(const size_t num_atoms, const std::vector<T>& elements);
+    MatchTree(const size_t num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atom_ids);
 
     void get_applicable_elements(const FlatBitset state, std::vector<T>& out_applicable_elements);
 
@@ -65,28 +91,10 @@ public:
 };
 
 template<typename T>
-MatchTree<T>::SelectorNode::SelectorNode(size_t ground_atom_id_) : ground_atom_id(ground_atom_id_), true_succ(-1), false_succ(-1), dontcare_succ(-1)
-{
-}
-
-template<typename T>
-bool MatchTree<T>::SelectorNode::is_initialized() const
-{
-    return true_succ != (uint32_t) -1 && false_succ != (uint32_t) -1 && dontcare_succ != (uint32_t) -1;
-}
-
-template<typename T>
-MatchTree<T>::GeneratorNode::GeneratorNode() : begin(0), end(0)
-{
-}
-
-template<typename T>
-MatchTree<T>::GeneratorNode::GeneratorNode(ActionIter begin_, ActionIter end_) : begin(begin_), end(end_)
-{
-}
-
-template<typename T>
-MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<T>& elements)
+MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t atom_id,
+                                                                const size_t num_atoms,
+                                                                const std::vector<T>& elements,
+                                                                const FlatBitsetBuilder& static_atom_ids)
 {
     // 1. Base cases:
 
@@ -95,10 +103,14 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
     if ((atom_id == num_atoms) || (elements.empty()))
     {
         const auto node_id = MatchTree::NodeID { m_nodes.size() };
-        m_nodes.push_back(MatchTree::GeneratorNode(m_elements.size(), m_elements.size() + elements.size()));
+        m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(m_elements.size(), m_elements.size() + elements.size()));
         m_elements.insert(m_elements.end(), elements.begin(), elements.end());
-
         return node_id;
+    }
+    if (static_atom_ids.get(atom_id))
+    {
+        // Static atoms are always true
+        return build_recursively(atom_id + 1, num_atoms, elements, static_atom_ids);
     }
 
     // 2. Conquer
@@ -140,26 +152,24 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
         // Top-down creation of nodes, update information after recursion.
         const auto node_id = MatchTree::NodeID { m_nodes.size() };
 
-        m_nodes.push_back(MatchTree::SelectorNode(atom_id));
+        m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(atom_id));
 
-        const auto true_succ = build_recursively(atom_id + 1, num_atoms, positive_elements);
-        const auto false_succ = build_recursively(atom_id + 1, num_atoms, negative_elements);
-        const auto dontcare_succ = build_recursively(atom_id + 1, num_atoms, dontcare_elements);
-        assert(node_id < true_succ && node_id < false_succ && node_id < dontcare_succ);
+        const auto true_succ = (!positive_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, positive_elements, static_atom_ids) : (size_t) -1;
+        const auto false_succ = (!negative_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, negative_elements, static_atom_ids) : (size_t) -1;
+        const auto dontcare_succ = (!dontcare_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, dontcare_elements, static_atom_ids) : (size_t) -1;
 
         // Update node with computed information
-        auto& node = std::get<MatchTree::SelectorNode>(m_nodes[node_id]);
-        node.true_succ = true_succ;
-        node.false_succ = false_succ;
-        node.dontcare_succ = dontcare_succ;
-        assert(node.is_initialized());
+        auto& node = m_nodes[node_id];
+        node.set_true_succ(true_succ);
+        node.set_false_succ(false_succ);
+        node.set_dontcare_succ(dontcare_succ);
 
         return node_id;
     }
     else
     {
         // All elements are dontcares, skip creating a node.
-        return build_recursively(atom_id + 1, num_atoms, dontcare_elements);
+        return build_recursively(atom_id + 1, num_atoms, dontcare_elements, static_atom_ids);
     }
 }
 
@@ -175,44 +185,20 @@ void MatchTree<T>::print() const
     for (size_t i = 0; i < m_nodes.size(); ++i)
     {
         const auto& node = m_nodes[i];
-
-        std::visit(
-            [&](const auto& arg)
-            {
-                using T_ = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T_, MatchTree::GeneratorNode>)
-                {
-                    std::cout << i << " GeneratorNode(elements=[";
-                    for (auto it = m_elements.begin() + arg.begin; it < m_elements.begin() + arg.end; ++it)
-                    {
-                        std::cout << it->get_id() << ", ";
-                    }
-                    std::cout << "]" << std::endl;
-                }
-                else if constexpr (std::is_same_v<T_, MatchTree::SelectorNode>)
-                {
-                    std::cout << i << " SelectorNode("
-                              << "ground_atom_id: " << arg.ground_atom_id << " "
-                              << "true_succ: " << arg.true_succ << " "
-                              << "false_succ: " << arg.false_succ << " "
-                              << "dontcare_succ: " << arg.dontcare_succ << ")" << std::endl;
-                }
-            },
-            node);
     }
 }
 
 template<typename T>
 MatchTree<T>::MatchTree()
 {
-    m_nodes.push_back(MatchTree::GeneratorNode());
+    m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(0, 0));
 }
 
 template<typename T>
-MatchTree<T>::MatchTree(const size_t num_atoms, const std::vector<T>& elements)
+MatchTree<T>::MatchTree(const size_t num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atom_ids)
 {
     assert(m_nodes.size() == 0);
-    const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, elements);
+    const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, elements, static_atom_ids);
     assert(root_node_id == 0);
 }
 
@@ -221,29 +207,32 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_id, const Fla
 {
     auto& node = m_nodes[node_id];
 
-    std::visit(
-        [&](const auto& arg)
+    if (node.is_selector_node())
+    {
+        if (node.has_dontcare_succ())
         {
-            using T_ = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T_, MatchTree::GeneratorNode>)
-            {
-                out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + arg.begin, m_elements.begin() + arg.end);
-            }
-            else if constexpr (std::is_same_v<T_, MatchTree::SelectorNode>)
-            {
-                get_applicable_elements_recursively(arg.dontcare_succ, state, out_applicable_elements);
+            get_applicable_elements_recursively(node.get_dontcare_succ(), state, out_applicable_elements);
+        }
 
-                if (state.get(arg.ground_atom_id))
-                {
-                    get_applicable_elements_recursively(arg.true_succ, state, out_applicable_elements);
-                }
-                else
-                {
-                    get_applicable_elements_recursively(arg.false_succ, state, out_applicable_elements);
-                }
+        if (state.get(node.first_data))
+        {
+            if (node.has_true_succ())
+            {
+                get_applicable_elements_recursively(node.get_true_succ(), state, out_applicable_elements);
             }
-        },
-        node);
+        }
+        else
+        {
+            if (node.has_false_succ())
+            {
+                get_applicable_elements_recursively(node.get_false_succ(), state, out_applicable_elements);
+            }
+        }
+    }
+    else
+    {
+        out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + node.second_data, m_elements.begin() + node.third_data);
+    }
 }
 
 template<typename T>
@@ -255,7 +244,6 @@ void MatchTree<T>::get_applicable_elements(const FlatBitset state, std::vector<T
 
     get_applicable_elements_recursively(0, state, out_applicable_elements);
 }
-
 }
 
 #endif

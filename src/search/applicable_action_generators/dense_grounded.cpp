@@ -26,6 +26,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/successor_state_generators/dense.hpp"
+#include "mimir/search/translations.hpp"
 
 #include <deque>
 #include <memory>
@@ -113,8 +114,20 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
+    auto static_atoms = FlatBitsetBuilder();
+    auto ground_static_atoms = GroundAtomList {};
+    to_ground_atoms(m_problem->get_static_initial_literals(), ground_static_atoms);
+    for (const auto static_atom : ground_static_atoms)
+    {
+        std::cout << *static_atom << std::endl;
+        if (static_atom->get_predicate()->get_name() == "object")
+        {
+            static_atoms.set(static_atom->get_identifier());
+        }
+    }
+
     // 3. Build match tree
-    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions);
+    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions, static_atoms);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -134,7 +147,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms);
+    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms, static_atoms);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
