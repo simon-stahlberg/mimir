@@ -49,6 +49,8 @@ private:
 
         [[nodiscard]] bool is_selector_node() const noexcept { return first_data != MAX_VALUE; }
 
+        [[nodiscard]] size_t get_ground_atom_id() const noexcept { return first_data; }
+
         [[nodiscard]] bool has_true_succ() const noexcept { return second_data != MAX_VALUE; }
         [[nodiscard]] NodeID get_true_succ() const noexcept { return second_data; }
         void set_true_succ(NodeID true_succ) noexcept { second_data = true_succ; }
@@ -113,7 +115,7 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
         return node_id;
     }
 
-    // 2. Conquer
+    // 2. Conquer:
 
     // Partition elements into positive, negative and dontcare depending on how atom_id occurs in precondition
     auto positive_elements = std::vector<T> {};
@@ -149,7 +151,7 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
     const bool must_split = (dontcare_elements.size() != elements.size());
     if (must_split)
     {
-        // Top-down creation of nodes, update information after recursion.
+        // Top-down creation of nodes to ensure in order evaluation, update information after recursion.
         const auto node_id = MatchTree::NodeID { m_nodes.size() };
 
         m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(atom_id));
@@ -202,7 +204,10 @@ MatchTree<T>::MatchTree(const size_t num_atoms, const std::vector<T>& elements)
 {
     assert(m_nodes.size() == 0);
     const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, elements);
+
     assert(root_node_id == 0);
+    // Prevent unused variable warning when not in debug mode
+    (void) root_node_id;
 }
 
 template<typename T>
@@ -217,7 +222,7 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_id, const Fla
             get_applicable_elements_recursively(node.get_dontcare_succ(), state, out_applicable_elements);
         }
 
-        if (state.get(node.first_data))
+        if (state.get(node.get_ground_atom_id()))
         {
             if (node.has_true_succ())
             {
@@ -234,7 +239,7 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_id, const Fla
     }
     else
     {
-        out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + node.second_data, m_elements.begin() + node.third_data);
+        out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + node.get_begin(), m_elements.begin() + node.get_end());
     }
 }
 
