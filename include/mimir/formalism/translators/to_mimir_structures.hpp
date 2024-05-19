@@ -34,6 +34,8 @@ private:
 
     // Predicate with an action effect
     std::unordered_set<loki::Predicate> m_fluent_predicates;
+    // Derived predicates
+    std::unordered_set<loki::Predicate> m_derived_predicates;
     // Equality predicate that does not occur in predicates section
     Predicate m_equal_predicate;
     // Encode parameter index into variables for grounding

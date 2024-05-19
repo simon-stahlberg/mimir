@@ -7,6 +7,7 @@
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
+#include "mimir/search/applicable_action_generators/dense_lifted/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/dense.hpp"
 #include "mimir/search/axioms/dense.hpp"
@@ -33,6 +34,7 @@ class AAG<LiftedAAGDispatcher<DenseStateTag>> : public IStaticAAG<AAG<LiftedAAGD
 private:
     Problem m_problem;
     PDDLFactories& m_pddl_factories;
+    std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
 
     DenseAE m_axiom_evaluator;
 
@@ -51,7 +53,7 @@ private:
 
     void nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 
-    void unary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
+    void unary_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 
     void general_case(const AssignmentSet& assignment_sets, const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 
@@ -65,6 +67,8 @@ private:
 
     void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
+    void on_end_search_impl() const;
+
     [[nodiscard]] Problem get_problem_impl() const;
 
     [[nodiscard]] PDDLFactories& get_pddl_factories_impl();
@@ -72,7 +76,11 @@ private:
     [[nodiscard]] const PDDLFactories& get_pddl_factories_impl() const;
 
 public:
+    /// @brief Simplest construction
     AAG(Problem problem, PDDLFactories& pddl_factories);
+
+    /// @brief Complete construction
+    AAG(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
     /// @brief Return the axiom partitioning.
     [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;

@@ -200,6 +200,11 @@ void ToMimirStructures::prepare(const loki::DomainImpl& domain)
     prepare(domain.get_functions());
     prepare(domain.get_actions());
     prepare(domain.get_axioms());
+
+    for (const auto& derived_predicate : domain.get_derived_predicates())
+    {
+        m_derived_predicates.insert(derived_predicate);
+    }
 }
 void ToMimirStructures::prepare(const loki::OptimizationMetricImpl& metric) { prepare(*metric.get_function_expression()); }
 void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
@@ -219,6 +224,11 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
         prepare(*problem.get_optimization_metric().value());
     }
     prepare(problem.get_axioms());
+
+    for (const auto& derived_predicate : problem.get_derived_predicates())
+    {
+        m_derived_predicates.insert(derived_predicate);
+    }
 }
 
 /**
@@ -350,12 +360,15 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
     const auto func_insert_fluents = [](const loki::Literal literal,
                                         const Literal& translated_literal,
                                         const std::unordered_set<loki::Predicate>& fluent_predicates,
+                                        const std::unordered_set<loki::Predicate>& derived_predicates,
                                         LiteralList& ref_literals,
                                         LiteralList& ref_static_literals,
                                         LiteralList& ref_fluent_literals)
     {
         ref_literals.push_back(translated_literal);
-        if (fluent_predicates.count(literal->get_atom()->get_predicate()))
+
+        const auto predicate = literal->get_atom()->get_predicate();
+        if (fluent_predicates.count(predicate) || derived_predicates.count(predicate))
         {
             ref_fluent_literals.push_back(translated_literal);
         }
@@ -376,7 +389,13 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
             {
                 const auto translated_literal = translate_lifted(*condition_literal->get_literal());
 
-                func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
+                func_insert_fluents(condition_literal->get_literal(),
+                                    translated_literal,
+                                    m_fluent_predicates,
+                                    m_derived_predicates,
+                                    literals,
+                                    static_literals,
+                                    fluent_literals);
             }
             else
             {
@@ -395,7 +414,13 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
 
         const auto translated_literal = translate_lifted(*condition_literal->get_literal());
 
-        func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, literals, static_literals, fluent_literals);
+        func_insert_fluents(condition_literal->get_literal(),
+                            translated_literal,
+                            m_fluent_predicates,
+                            m_derived_predicates,
+                            literals,
+                            static_literals,
+                            fluent_literals);
 
         return std::make_tuple(literals, static_literals, fluent_literals);
     }
@@ -562,6 +587,7 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
 {
     const auto requirements = translate_common(*domain.get_requirements());
     const auto constants = translate_common(domain.get_constants());
+
     auto predicates = translate_common(domain.get_predicates());
     auto static_predicates = PredicateList {};
     for (const auto& predicate : domain.get_predicates())

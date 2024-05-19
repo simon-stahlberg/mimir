@@ -199,6 +199,7 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
             get_assignment_position(Assignment { first_position, first_object_id, second_position, second_object_id }, arity, m_problem->get_objects().size());
         assert(assignment_rank < assignment_set.size());
         const auto consistent_with_state = assignment_set[assignment_rank];
+
         if (!literal->is_negated() && !consistent_with_state)
         {
             return false;

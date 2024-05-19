@@ -13,10 +13,14 @@ bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& ax
 {
     for (const auto& literal : axiom->get_fluent_conditions())
     {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0
-            && !state_atoms.get(m_pddl_factories.ground_literal(literal, {})->get_atom()->get_identifier()))
+        if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            return false;
+            const auto grounded_literal = m_pddl_factories.ground_literal(literal, {});
+
+            if (state_atoms.get(grounded_literal->get_atom()->get_identifier()) == grounded_literal->is_negated())
+            {
+                return false;
+            }
         }
     }
     return true;
@@ -35,18 +39,28 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::unary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms)
+void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment_sets,
+                                                 const Axiom& axiom,
+                                                 const FlatBitsetBuilder& state_atoms,
+                                                 DenseGroundAxiomList& out_applicable_axioms)
 {
-    // There is only one parameter, try all bindings with the correct type.
+    const auto& precondition_graph = m_static_consistency_graphs.at(axiom);
 
-    for (const auto& object : m_problem->get_objects())
+    for (const auto& vertex : precondition_graph.get_vertices())
     {
-        auto grounded_axiom = ground_axiom(axiom, { object });
-
-        if (grounded_axiom.is_applicable(state_atoms))
+        if (assignment_sets.literal_all_consistent(axiom->get_fluent_conditions(), vertex))
         {
-            m_applicable_axioms.insert(grounded_axiom);
-            out_applicable_axioms.emplace_back(grounded_axiom);
+            auto grounded_axiom = ground_axiom(axiom, { m_pddl_factories.get_object(vertex.get_object_index()) });
+
+            if (grounded_axiom.is_applicable(state_atoms))
+            {
+                m_applicable_axioms.insert(grounded_axiom);
+                out_applicable_axioms.emplace_back(grounded_axiom);
+            }
+            else
+            {
+                // m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
+            }
         }
     }
 }
@@ -162,7 +176,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
                     }
                     else if (axiom->get_arity() == 1)
                     {
-                        unary_case(axiom, ref_state_atoms, applicable_axioms);
+                        unary_case(assignment_sets, axiom, ref_state_atoms, applicable_axioms);
                     }
                     else
                     {

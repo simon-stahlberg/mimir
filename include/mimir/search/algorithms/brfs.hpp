@@ -112,6 +112,7 @@ public:
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 
+                m_successor_generator->on_end_search();
                 m_event_handler->on_end_search();
                 m_event_handler->on_solved(out_plan);
 
@@ -125,6 +126,11 @@ public:
             {
                 g_value = search_node.get_g_value();
                 m_event_handler->on_finish_g_layer(g_value, m_state_repository->get_state_count());
+            }
+
+            if (g_value == 5)
+            {
+                // return SearchStatus::FAILED;
             }
 
             m_event_handler->on_expand_state(state, m_successor_generator->get_pddl_factories());

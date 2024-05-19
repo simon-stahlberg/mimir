@@ -115,10 +115,16 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     auto it = groundings.find(binding);
     if (it != groundings.end())
     {
+        m_event_handler->on_ground_action_cache_hit(action, binding);
+
         return it->second;
     }
 
+    m_event_handler->on_ground_action_cache_miss(action, binding);
+
     /* 2. Ground the action */
+
+    m_event_handler->on_ground_action(action, binding);
 
     const auto fill_bitsets =
         [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
@@ -277,9 +283,12 @@ bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const A
 {
     for (const auto& literal : action->get_fluent_conditions())
     {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0 && !state.literal_holds(m_pddl_factories.ground_literal(literal, {})))
+        if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            return false;
+            if (!state.literal_holds(m_pddl_factories.ground_literal(literal, {})))
+            {
+                return false;
+            }
         }
     }
 
@@ -298,21 +307,36 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
         m_applicable_actions.insert(grounded_action);
         out_applicable_actions.emplace_back(grounded_action);
     }
+    else
+    {
+        m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
+    }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment_sets,
+                                                         const Action& action,
+                                                         DenseState state,
+                                                         DenseGroundActionList& out_applicable_actions)
 {
-    // There is only one parameter, try all bindings with the correct type.
+    const auto& graphs = m_static_consistency_graphs.at(action);
+    const auto& precondition_graph = graphs.get_precondition_graph();
 
-    for (const auto& object : m_problem->get_objects())
+    for (const auto& vertex : precondition_graph.get_vertices())
     {
-        auto grounded_action = ground_action(action, { object });
-
-        // TODO: this also unnecessarily grounds universal effects
-        if (grounded_action.is_applicable(state))
+        if (assignment_sets.literal_all_consistent(action->get_fluent_conditions(), vertex))
         {
-            m_applicable_actions.insert(grounded_action);
-            out_applicable_actions.emplace_back(grounded_action);
+            auto grounded_action = ground_action(action, { m_pddl_factories.get_object(vertex.get_object_index()) });
+
+            // TODO: this also unnecessarily grounds universal effects
+            if (grounded_action.is_applicable(state))
+            {
+                m_applicable_actions.insert(grounded_action);
+                out_applicable_actions.emplace_back(grounded_action);
+            }
+            else
+            {
+                m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
+            }
         }
     }
 }
@@ -375,6 +399,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
             m_applicable_actions.insert(grounded_action);
             out_applicable_actions.push_back(grounded_action);
         }
+        else
+        {
+            m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
+        }
     }
 }
 
@@ -382,10 +410,12 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
 {
     out_applicable_actions.clear();
 
+    m_event_handler->on_start_generating_applicable_actions();
+
     // Create the assignment sets that are shared by all action schemas.
 
     auto ground_atoms = GroundAtomList {};
-    m_pddl_factories.get_ground_atoms(state.get_atoms_bitset(), ground_atoms);
+    m_pddl_factories.get_ground_atoms_from_ids(state.get_atoms_bitset(), ground_atoms);
     const auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
 
     // Get the applicable ground actions for each action schema.
@@ -400,7 +430,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
             }
             else if (action->get_arity() == 1)
             {
-                unary_case(action, state, out_applicable_actions);
+                unary_case(assignment_sets, action, state, out_applicable_actions);
             }
             else
             {
@@ -408,6 +438,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
             }
         }
     }
+
+    m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, m_pddl_factories);
 }
 
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
@@ -416,9 +448,17 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(Fla
     m_axiom_evaluator.generate_and_apply_axioms(ref_state_atoms);
 }
 
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::on_end_search_impl() const { m_event_handler->on_end_search(); }
+
 AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
+    AAG<LiftedAAGDispatcher<DenseStateTag>>(problem, pddl_factories, std::make_shared<DefaultLiftedAAGEventHandler>())
+{
+}
+
+AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(pddl_factories),
+    m_event_handler(std::move(event_handler)),
     m_axiom_evaluator(problem, pddl_factories),
     m_ground_function_value_costs(),
     m_static_consistency_graphs()

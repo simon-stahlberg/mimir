@@ -9,7 +9,7 @@
       (origin p0 f1)
       (destin p0 f0)
       (lift-at f0))
-   (:goal (and (served p0)))
+   (:goal (forall (?p - passenger) (served ?p)))
 )
 
 

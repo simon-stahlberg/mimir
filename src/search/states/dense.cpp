@@ -14,7 +14,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PD
 {
     const auto [state, pddl_factories] = data;
     auto out_ground_atoms = GroundAtomList {};
-    pddl_factories.get_ground_atoms(state.get_atoms_bitset(), out_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms_bitset(), out_ground_atoms);
 
     os << "State("
        << "state_id=" << state.get_id() << ", "

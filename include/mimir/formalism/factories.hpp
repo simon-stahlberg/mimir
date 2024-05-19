@@ -477,16 +477,22 @@ public:
 
     /* Accessors */
 
+    // Literal
     const LiteralFactory& get_literals() const { return literals; }
 
+    // Predicate
     const PredicateFactory& get_predicates() const { return predicates; }
 
+    // Action
     const ActionFactory& get_actions() const { return actions; }
 
-    const GroundAtomFactory& get_ground_atoms() const { return ground_atoms; }
+    // GroundAtom
+    GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
+
+    const GroundAtomFactory& get_ground_atoms_from_ids() const { return ground_atoms; }
 
     template<std::ranges::forward_range Iterable>
-    void get_ground_atoms(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
+    void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
     {
         out_ground_atoms.clear();
 
@@ -497,14 +503,32 @@ public:
     }
 
     template<std::ranges::forward_range Iterable>
-    GroundAtomList get_ground_atoms(const Iterable& atom_ids) const
+    GroundAtomList get_ground_atoms_from_ids(const Iterable& atom_ids) const
     {
         auto result = GroundAtomList {};
-        get_ground_atoms(atom_ids, result);
+        get_ground_atoms_from_ids(atom_ids, result);
         return result;
     }
 
-    GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
+    // Object
+    template<std::ranges::forward_range Iterable>
+    void get_objects_from_ids(const Iterable& object_ids, ObjectList& out_objects) const
+    {
+        out_objects.clear();
+
+        for (const auto& object_id : object_ids)
+        {
+            out_objects.push_back(get_object(object_id));
+        }
+    }
+
+    template<std::ranges::forward_range Iterable>
+    ObjectList get_objects_from_ids(const Iterable& object_ids) const
+    {
+        auto result = ObjectList {};
+        get_objects_from_ids(object_ids, result);
+        return result;
+    }
 
     Object get_object(size_t object_id) const { return objects.get(object_id); }
 

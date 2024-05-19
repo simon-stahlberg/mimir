@@ -35,6 +35,8 @@ private:
 
     void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
 
+    void on_end_search_impl() const;
+
     [[nodiscard]] Problem get_problem_impl() const;
 
     [[nodiscard]] PDDLFactories& get_pddl_factories_impl();

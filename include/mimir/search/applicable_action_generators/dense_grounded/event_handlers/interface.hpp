@@ -33,6 +33,8 @@ public:
     virtual void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) = 0;
 
     virtual void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) = 0;
+
+    virtual void on_end_search() = 0;
 };
 
 /**
@@ -78,6 +80,11 @@ public:
     void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) override
     {  //
         self().on_finish_build_axiom_match_tree_impl(axiom_match_tree);
+    }
+
+    void on_end_search() override
+    {  //
+        self().on_end_search_impl();
     }
 };
 }

@@ -95,7 +95,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms(state_atoms),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids(state_atoms),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
@@ -115,7 +115,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
-    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions);
+    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_actions);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -135,7 +135,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms);
+    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_axioms);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
@@ -196,6 +196,8 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
         } while (!reached_partition_fixed_point);
     }
 }
+
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::on_end_search_impl() const { m_event_handler->on_end_search(); }
 
 [[nodiscard]] const FlatDenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
 

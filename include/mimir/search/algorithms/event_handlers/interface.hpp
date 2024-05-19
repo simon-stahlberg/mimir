@@ -41,7 +41,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const Statistics& get_statistics() const = 0;
+    virtual const AlgorithmStatistics& get_statistics() const = 0;
 };
 
 /**
@@ -53,7 +53,7 @@ template<typename Derived>
 class AlgorithmEventHandlerBase : public IAlgorithmEventHandler
 {
 protected:
-    Statistics m_statistics;
+    AlgorithmStatistics m_statistics;
 
 private:
     AlgorithmEventHandlerBase() = default;
@@ -105,7 +105,7 @@ public:
     void on_exhausted() override { self().on_exhausted_impl(); }
 
     /// @brief Get the statistics.
-    const Statistics& get_statistics() const override { return m_statistics; }
+    const AlgorithmStatistics& get_statistics() const override { return m_statistics; }
 };
 
 }

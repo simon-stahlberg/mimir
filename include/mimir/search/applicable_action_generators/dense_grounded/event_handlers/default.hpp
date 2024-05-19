@@ -23,6 +23,8 @@ private:
     void on_finish_grounding_unrelaxed_axioms_impl(const GroundAxiomList& unrelaxed_axioms);
 
     void on_finish_build_axiom_match_tree_impl(const MatchTree<GroundAxiom>& axiom_match_tree);
+
+    void on_end_search_impl() const;
 };
 
 }

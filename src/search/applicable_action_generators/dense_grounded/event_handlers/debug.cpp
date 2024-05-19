@@ -36,4 +36,6 @@ void DebugGroundedAAGEventHandler::on_finish_build_axiom_match_tree_impl(const M
     std::cout << "[Grounded AAG] Total number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
 }
 
+void DebugGroundedAAGEventHandler::on_end_search_impl() const {}
+
 }

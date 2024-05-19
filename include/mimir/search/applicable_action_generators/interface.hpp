@@ -24,6 +24,9 @@ public:
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms) = 0;
 
+    /// @brief Notify that the search has finished
+    virtual void on_end_search() = 0;
+
     /// @brief Return the action with the given id.
     [[nodiscard]] virtual GroundAction get_action(size_t action_id) const = 0;
 
@@ -56,6 +59,11 @@ public:
     void generate_and_apply_axioms(FlatBitsetBuilder& ref_state_atoms) override
     {  //
         self().generate_and_apply_axioms_impl(ref_state_atoms);
+    }
+
+    void on_end_search() override
+    {  //
+        self().on_end_search_impl();
     }
 
     [[nodiscard]] Problem get_problem() const override
