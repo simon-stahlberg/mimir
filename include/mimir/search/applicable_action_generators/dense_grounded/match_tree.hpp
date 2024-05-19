@@ -148,7 +148,7 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
     }
 
     // 2. Inductive cases:
-    const bool must_split = (dontcare_elements.size() != elements.size());
+    const bool must_split = (positive_elements.size() != 0) || (negative_elements.size() != 0);
     if (must_split)
     {
         // Top-down creation of nodes to ensure in order evaluation, update information after recursion.
@@ -170,6 +170,11 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
         node.set_dontcare_succ(dontcare_succ);
 
         return node_id;
+    }
+    else if (dontcare_elements.size() == 0)
+    {
+        // All elements were detected to be inapplicable, return a leaf node
+        return MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
     }
     else
     {

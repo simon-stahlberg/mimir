@@ -3,6 +3,8 @@
 
 #include <chrono>
 #include <cstdint>
+#include <ostream>
+#include <vector>
 
 namespace mimir
 {
