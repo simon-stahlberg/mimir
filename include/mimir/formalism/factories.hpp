@@ -589,7 +589,7 @@ public:
 
         /* 3. Insert to groundings table */
 
-        groundings.emplace(ObjectList(binding), std::move(grounded_literal));
+        groundings.emplace(ObjectList(binding), GroundLiteral(grounded_literal));
 
         /* 4. Return the resulting ground literal */
 

@@ -3,6 +3,7 @@
 
 (define (problem mixed-f4-p2-u20-v5-g5-a60-n10-A20-B80-N50-F5-r3)
    (:domain miconic)
+    (:requirements :adl)
 (:objects
              p0 p1 - passenger
              f0 f1 f2 f3 - floor)
