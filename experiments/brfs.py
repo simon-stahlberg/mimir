@@ -41,7 +41,7 @@ if REMOTE:
         "miconic-fulladl",
         "reward",
     ]
-    TIME_LIMIT = 60 * 60 * 24 * 1  # 2 days
+    TIME_LIMIT = 15 * 60  # 15 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
@@ -60,7 +60,7 @@ ATTRIBUTES = [
     Attribute("cost", absolute=True, min_wins=False, scale="linear"),
 ]
 
-MEMORY_LIMIT = 96000
+MEMORY_LIMIT = 2500
 
 # Create a new experiment.
 exp = Experiment(environment=ENV)
