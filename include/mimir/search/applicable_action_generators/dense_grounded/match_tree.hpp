@@ -85,13 +85,13 @@ private:
     /// @param elements
     /// @param static_atom_ids
     /// @return
-    NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<T>& elements);
+    NodeID build_recursively(const size_t atom_id, size_t const num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms);
 
     void get_applicable_elements_recursively(size_t node_id, const FlatBitset state, std::vector<T>& out_applicable_elements);
 
 public:
     MatchTree();
-    MatchTree(const size_t num_atoms, const std::vector<T>& elements);
+    MatchTree(const size_t num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms);
 
     void get_applicable_elements(const FlatBitset state, std::vector<T>& out_applicable_elements);
 
@@ -101,7 +101,8 @@ public:
 };
 
 template<typename T>
-MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<T>& elements)
+MatchTree<T>::NodeID
+MatchTree<T>::MatchTree::build_recursively(const size_t atom_id, const size_t num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms)
 {
     // 1. Base cases:
 
@@ -113,6 +114,16 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
         m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(m_elements.size(), m_elements.size() + elements.size()));
         m_elements.insert(m_elements.end(), elements.begin(), elements.end());
         return node_id;
+    }
+    if (static_atoms.get(atom_id))
+    {
+        // Precondition is static and always true.
+        for (const auto& element : elements)
+        {
+            // Actions with static negated precondition are inapplicable
+            assert(!element.get_applicability_negative_precondition_bitset().get(atom_id));
+        }
+        return build_recursively(atom_id + 1, num_atoms, elements, static_atoms);
     }
 
     // 2. Conquer:
@@ -156,12 +167,12 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
 
         m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(atom_id));
 
-        const auto true_succ =
-            (!positive_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, positive_elements) : MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
-        const auto false_succ =
-            (!negative_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, negative_elements) : MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
-        const auto dontcare_succ =
-            (!dontcare_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, dontcare_elements) : MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
+        const auto true_succ = (!positive_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, positive_elements, static_atoms) :
+                                                              MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
+        const auto false_succ = (!negative_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, negative_elements, static_atoms) :
+                                                               MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
+        const auto dontcare_succ = (!dontcare_elements.empty()) ? build_recursively(atom_id + 1, num_atoms, dontcare_elements, static_atoms) :
+                                                                  MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
 
         // Update node with computed information
         auto& node = m_nodes[node_id];
@@ -179,7 +190,7 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ato
     else
     {
         // All elements are dontcares, skip creating a node.
-        return build_recursively(atom_id + 1, num_atoms, dontcare_elements);
+        return build_recursively(atom_id + 1, num_atoms, dontcare_elements, static_atoms);
     }
 }
 
@@ -205,10 +216,10 @@ MatchTree<T>::MatchTree()
 }
 
 template<typename T>
-MatchTree<T>::MatchTree(const size_t num_atoms, const std::vector<T>& elements)
+MatchTree<T>::MatchTree(const size_t num_atoms, const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms)
 {
     assert(m_nodes.size() == 0);
-    const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, elements);
+    const auto root_node_id = build_recursively(m_nodes.size(), num_atoms, elements, static_atoms);
 
     assert(root_node_id == 0);
     // Prevent unused variable warning when not in debug mode

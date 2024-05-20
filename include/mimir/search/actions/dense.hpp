@@ -158,6 +158,12 @@ public:
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
     }
+
+    template<flatmemory::IsBitset Bitset>
+    [[nodiscard]] bool is_statically_applicable(const Bitset& static_initial_atoms) const
+    {
+        return static_initial_atoms.are_disjoint(get_applicability_negative_precondition_bitset());
+    }
 };
 
 /**

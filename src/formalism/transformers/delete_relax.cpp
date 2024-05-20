@@ -180,7 +180,6 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto universal_effects = this->transform(action.get_universal_effects());
     if (m_remove_useless_actions_and_axioms && simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
     {
-        throw std::runtime_error("We do not want to enter this branch for now.");
         return nullptr;
     }
 

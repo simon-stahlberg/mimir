@@ -99,6 +99,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
+    auto static_atom_ids = FlatBitsetBuilder();
+    for (const auto& static_initial_literal : m_problem->get_static_initial_literals())
+    {
+        static_atom_ids.set(static_initial_literal->get_atom()->get_identifier());
+    }
+
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
     for (const auto& action : delete_free_lifted_aag->get_applicable_actions())
@@ -108,14 +114,17 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto action_arguments = ObjectList(action.get_objects().begin(), action.get_objects().end());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
-            ground_actions.push_back(grounded_action);
+            if (grounded_action.is_statically_applicable(static_atom_ids))
+            {
+                ground_actions.push_back(grounded_action);
+            }
         }
     }
 
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
-    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_actions);
+    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_actions, static_atom_ids);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -128,14 +137,17 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto axiom_arguments = ObjectList(axiom.get_objects().begin(), axiom.get_objects().end());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            ground_axioms.push_back(grounded_axiom);
+            if (grounded_axiom.is_statically_applicable(static_atom_ids))
+            {
+                ground_axioms.push_back(grounded_axiom);
+            }
         }
     }
 
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_axioms);
+    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_axioms, static_atom_ids);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }

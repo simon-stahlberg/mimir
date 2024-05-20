@@ -368,6 +368,7 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
         ref_literals.push_back(translated_literal);
 
         const auto predicate = literal->get_atom()->get_predicate();
+
         if (fluent_predicates.count(predicate) || derived_predicates.count(predicate))
         {
             ref_fluent_literals.push_back(translated_literal);
@@ -732,7 +733,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 {
     // Translate domain first, to get predicate indices 0,1,2,...
     const auto translated_domain = translate_lifted(*problem.get_domain());
-
     // Translate derived predicates to fetch parameter indices
     const auto derived_predicates = translate_common(problem.get_derived_predicates());
 
@@ -747,31 +747,40 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
         goal_literals = translate_grounded(*problem.get_goal_condition().value());
     }
 
-    auto initial_literals = translate_grounded(problem.get_initial_literals());
-    // Add equal atoms, e.g., (= object1 object1)
-    // This must occur after parsing the domain
-    if (m_equal_predicate)
-    {
-        for (const auto& object : objects)
-        {
-            initial_literals.push_back(
-                m_pddl_factories.get_or_create_ground_literal(false,
-                                                              m_pddl_factories.get_or_create_ground_atom(m_equal_predicate, ObjectList { object, object })));
-        }
-    }
     // Derive static and fluent initial literals
+    auto initial_literals = GroundLiteralList {};
     auto static_initial_literals = GroundLiteralList {};
+    auto static_always_positive_initial_literals = GroundLiteralList {};
     auto fluent_initial_literals = GroundLiteralList {};
     const auto static_predicates = PredicateSet(translated_domain->get_static_predicates().begin(), translated_domain->get_static_predicates().end());
-    for (const auto& literal : initial_literals)
+    for (const auto& literal : translate_grounded(problem.get_initial_literals()))
     {
-        if (static_predicates.count(literal->get_atom()->get_predicate()))
+        const auto& predicate = literal->get_atom()->get_predicate();
+
+        initial_literals.push_back(literal);
+
+        if (static_predicates.count(predicate))
         {
             static_initial_literals.push_back(literal);
         }
         else
         {
             fluent_initial_literals.push_back(literal);
+        }
+    }
+
+    // Add equal atoms, e.g., (= object1 object1)
+    // This must occur after parsing the domain
+    if (m_equal_predicate)
+    {
+        for (const auto& object : objects)
+        {
+            const auto equal_literal =
+                m_pddl_factories.get_or_create_ground_literal(false,
+                                                              m_pddl_factories.get_or_create_ground_atom(m_equal_predicate, ObjectList { object, object }));
+
+            initial_literals.push_back(equal_literal);
+            static_initial_literals.push_back(equal_literal);
         }
     }
 

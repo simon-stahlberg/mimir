@@ -27,10 +27,10 @@ TEST(MimirTests, SearchAAGsDenseGroundedTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 20);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 65);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 46);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 20);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 51);
+    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 16);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 20);
 
     const auto& brfs_statistics = algorithm_event_handler->get_statistics();
 
