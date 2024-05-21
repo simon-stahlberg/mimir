@@ -30,10 +30,14 @@ VariableImpl::VariableImpl(int identifier, std::string name, size_t parameter_in
 
 bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const
 {
-    // (m_name == other.m_name) => (m_parameter_index == other.m_parameter_index)
-    assert(!(m_name == other.m_name) || (m_parameter_index == other.m_parameter_index));
+    if (this != &other)
+    {
+        // (m_name == other.m_name) => (m_parameter_index == other.m_parameter_index)
+        assert(!(m_name == other.m_name) || (m_parameter_index == other.m_parameter_index));
 
-    return (m_name == other.m_name);
+        return (m_name == other.m_name);
+    }
+    return true;
 }
 
 size_t VariableImpl::hash_impl() const { return loki::hash_combine(m_name); }

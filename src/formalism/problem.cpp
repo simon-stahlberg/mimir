@@ -77,12 +77,16 @@ ProblemImpl::ProblemImpl(int identifier,
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
 {
-    return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements)
-           && (loki::get_sorted_vector(m_objects) == loki::get_sorted_vector(other.m_objects))
-           && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
-           && (loki::get_sorted_vector(m_initial_literals)) == loki::get_sorted_vector(other.m_initial_literals)
-           && (loki::get_sorted_vector(m_goal_condition)) == loki::get_sorted_vector(other.m_goal_condition)
-           && (m_optimization_metric == other.m_optimization_metric) && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
+    if (this != &other)
+    {
+        return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements)
+               && (loki::get_sorted_vector(m_objects) == loki::get_sorted_vector(other.m_objects))
+               && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
+               && (loki::get_sorted_vector(m_initial_literals)) == loki::get_sorted_vector(other.m_initial_literals)
+               && (loki::get_sorted_vector(m_goal_condition)) == loki::get_sorted_vector(other.m_goal_condition)
+               && (m_optimization_metric == other.m_optimization_metric) && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
+    }
+    return true;
 }
 
 size_t ProblemImpl::hash_impl() const

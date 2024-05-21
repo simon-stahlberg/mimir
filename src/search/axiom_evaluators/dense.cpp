@@ -347,10 +347,14 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
 
     const auto [iter, inserted] = m_axioms.insert(flatmemory_builder);
     const auto grounded_axiom = DenseGroundAxiom(*iter);
+
     if (inserted)
     {
         m_axioms_by_index.push_back(grounded_axiom);
     }
+
+    // Ensure that buffer is interpretable back to same data as builder
+    assert(flatmemory_builder == *iter);
 
     /* 3. Insert to groundings table */
 

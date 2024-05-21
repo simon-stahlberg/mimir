@@ -124,7 +124,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
-    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_actions, static_atom_ids);
+    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions, static_atom_ids);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -147,7 +147,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms_from_ids().size(), ground_axioms, static_atom_ids);
+    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms, static_atom_ids);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }

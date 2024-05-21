@@ -274,6 +274,9 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         m_actions_by_index.push_back(grounded_action);
     }
 
+    // Ensure that buffer is interpretable back to same data as builder
+    assert(flatmemory_builder == *iter);
+
     /* 3. Insert to groundings table */
 
     groundings.emplace(std::move(binding), DenseGroundAction(grounded_action));

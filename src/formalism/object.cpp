@@ -23,7 +23,14 @@ namespace mimir
 {
 ObjectImpl::ObjectImpl(int identifier, std::string name) : Base(identifier), m_name(std::move(name)) {}
 
-bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const { return (m_name == other.m_name); }
+bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const
+{
+    if (this != &other)
+    {
+        return (m_name == other.m_name);
+    }
+    return true;
+}
 
 size_t ObjectImpl::hash_impl() const { return loki::hash_combine(m_name); }
 

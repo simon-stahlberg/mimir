@@ -132,6 +132,7 @@ public:
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset& static_initial_atoms) const
     {
+        // TODO: is this correct?
         return static_initial_atoms.are_disjoint(get_applicability_negative_precondition_bitset());
     }
 };

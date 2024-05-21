@@ -30,15 +30,11 @@ private:
 public:
     Vertex(VertexID id, ParameterID param, ObjectID object) : m_id(id), m_param(param), m_object(object) {}
 
+    bool operator==(const Vertex& other) const { return m_id == other.m_id; }
+
     VertexID get_id() const { return m_id; }
     ParameterID get_param_index() const { return m_param; }
     ObjectID get_object_index() const { return m_object; }
-
-    friend std::ostream& operator<<(std::ostream& out, const Vertex& vertex)
-    {
-        out << "Vertex(id=" << vertex.get_id() << " param=" << vertex.get_param_index() << " object=" << vertex.get_object_index() << ")";
-        return out;
-    }
 };
 
 /// @brief An undirected edge {src,dst} in the consistency graph.
@@ -51,14 +47,10 @@ private:
 public:
     Edge(Vertex src, Vertex dst) : m_src(std::move(src)), m_dst(std::move(dst)) {}
 
+    bool operator==(const Edge& other) const { return m_src == other.m_src && m_dst == other.m_dst; }
+
     const Vertex& get_src() const { return m_src; }
     const Vertex& get_dst() const { return m_dst; }
-
-    friend std::ostream& operator<<(std::ostream& out, const Edge& edge)
-    {
-        out << "Edge(src=" << edge.get_src() << " dst=" << edge.get_dst() << ")";
-        return out;
-    }
 };
 
 using Vertices = std::vector<Vertex>;
@@ -110,8 +102,6 @@ public:
 
     /// @brief Get the object indices partitioned by the parameter index.
     const std::vector<ObjectIDs>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
-
-    friend std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph);
 };
 
 /// @brief The Graphs is a collection of StaticConsistenctGraphs:
@@ -130,6 +120,12 @@ public:
     const StaticConsistencyGraph& get_precondition_graph() const;
     const std::vector<StaticConsistencyGraph>& get_universal_effect_graphs() const;
 };
+
+/**
+ * Print the graph nicely as dot format
+ */
+
+extern std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGraph&, const PDDLFactories&> data);
 
 }
 

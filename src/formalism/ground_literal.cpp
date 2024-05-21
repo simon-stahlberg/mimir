@@ -27,7 +27,11 @@ GroundLiteralImpl::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom
 
 bool GroundLiteralImpl::is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const
 {
-    return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
+    if (this != &other)
+    {
+        return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
+    }
+    return true;
 }
 
 size_t GroundLiteralImpl::hash_impl() const { return loki::hash_combine(m_is_negated, m_atom); }

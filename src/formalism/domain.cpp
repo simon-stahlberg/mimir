@@ -71,13 +71,17 @@ DomainImpl::DomainImpl(int identifier,
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const
 {
-    return (m_name == other.m_name) && (m_requirements == other.m_requirements)
-           && (loki::get_sorted_vector(m_constants) == loki::get_sorted_vector(other.m_constants))
-           && (loki::get_sorted_vector(m_predicates) == loki::get_sorted_vector(other.m_predicates))
-           && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
-           && (loki::get_sorted_vector(m_functions) == loki::get_sorted_vector(other.m_functions))
-           && (loki::get_sorted_vector(m_actions) == loki::get_sorted_vector(other.m_actions))
-           && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
+    if (this != &other)
+    {
+        return (m_name == other.m_name) && (m_requirements == other.m_requirements)
+               && (loki::get_sorted_vector(m_constants) == loki::get_sorted_vector(other.m_constants))
+               && (loki::get_sorted_vector(m_predicates) == loki::get_sorted_vector(other.m_predicates))
+               && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
+               && (loki::get_sorted_vector(m_functions) == loki::get_sorted_vector(other.m_functions))
+               && (loki::get_sorted_vector(m_actions) == loki::get_sorted_vector(other.m_actions))
+               && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
+    }
+    return true;
 }
 
 size_t DomainImpl::hash_impl() const

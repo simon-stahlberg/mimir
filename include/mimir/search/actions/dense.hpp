@@ -21,6 +21,15 @@ struct FlatSimpleEffect
 {
     bool is_negated;
     size_t atom_id;
+
+    bool operator==(const FlatSimpleEffect& other) const
+    {
+        if (this != &other)
+        {
+            return is_negated == other.is_negated && atom_id == other.atom_id;
+        }
+        return true;
+    }
 };
 
 using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
@@ -162,6 +171,7 @@ public:
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset& static_initial_atoms) const
     {
+        // TODO: is this correct?
         return static_initial_atoms.are_disjoint(get_applicability_negative_precondition_bitset());
     }
 };

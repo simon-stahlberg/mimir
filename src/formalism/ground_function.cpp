@@ -33,7 +33,11 @@ GroundFunctionImpl::GroundFunctionImpl(int identifier, FunctionSkeleton function
 
 bool GroundFunctionImpl::is_structurally_equivalent_to_impl(const GroundFunctionImpl& other) const
 {
-    return (m_function_skeleton == other.m_function_skeleton) && (m_objects == other.m_objects);
+    if (this != &other)
+    {
+        return (m_function_skeleton == other.m_function_skeleton) && (m_objects == other.m_objects);
+    }
+    return true;
 }
 
 size_t GroundFunctionImpl::hash_impl() const { return hash_combine(m_function_skeleton, hash_container(m_objects)); }

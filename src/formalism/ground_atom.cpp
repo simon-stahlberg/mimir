@@ -33,7 +33,11 @@ GroundAtomImpl::GroundAtomImpl(int identifier, Predicate predicate, ObjectList o
 
 bool GroundAtomImpl::is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const
 {
-    return (m_predicate == other.m_predicate) && (m_objects == other.m_objects);
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate) && (m_objects == other.m_objects);
+    }
+    return true;
 }
 
 size_t GroundAtomImpl::hash_impl() const { return loki::hash_combine(m_predicate, loki::hash_container(m_objects)); }

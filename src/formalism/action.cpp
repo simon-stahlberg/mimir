@@ -64,12 +64,16 @@ ActionImpl::ActionImpl(int identifier,
 
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
 {
-    return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
-           && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions))
-           && (loki::get_sorted_vector(m_simple_effects) == loki::get_sorted_vector(other.m_simple_effects))
-           && (loki::get_sorted_vector(m_conditional_effects) == loki::get_sorted_vector(other.m_conditional_effects))
-           && (loki::get_sorted_vector(m_universal_effects) == loki::get_sorted_vector(other.m_universal_effects))
-           && (m_function_expression == other.m_function_expression);
+    if (this != &other)
+    {
+        return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
+               && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions))
+               && (loki::get_sorted_vector(m_simple_effects) == loki::get_sorted_vector(other.m_simple_effects))
+               && (loki::get_sorted_vector(m_conditional_effects) == loki::get_sorted_vector(other.m_conditional_effects))
+               && (loki::get_sorted_vector(m_universal_effects) == loki::get_sorted_vector(other.m_universal_effects))
+               && (m_function_expression == other.m_function_expression);
+    }
+    return true;
 }
 
 size_t ActionImpl::hash_impl() const

@@ -48,7 +48,11 @@ AxiomImpl::AxiomImpl(int identifier,
 
 bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
 {
-    return (m_literal == other.m_literal) && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions));
+    if (this != &other)
+    {
+        return (m_literal == other.m_literal) && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions));
+    }
+    return true;
 }
 
 size_t AxiomImpl::hash_impl() const { return hash_combine(m_literal, loki::hash_container(loki::get_sorted_vector(m_conditions))); }

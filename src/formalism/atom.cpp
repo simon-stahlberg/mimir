@@ -26,7 +26,14 @@ namespace mimir
 {
 AtomImpl::AtomImpl(int identifier, Predicate predicate, TermList terms) : Base(identifier), m_predicate(std::move(predicate)), m_terms(std::move(terms)) {}
 
-bool AtomImpl::is_structurally_equivalent_to_impl(const AtomImpl& other) const { return (m_predicate == other.m_predicate) && (m_terms == other.m_terms); }
+bool AtomImpl::is_structurally_equivalent_to_impl(const AtomImpl& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate) && (m_terms == other.m_terms);
+    }
+    return true;
+}
 
 size_t AtomImpl::hash_impl() const { return loki::hash_combine(m_predicate, loki::hash_container(m_terms)); }
 

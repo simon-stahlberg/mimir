@@ -36,7 +36,11 @@ PredicateImpl::PredicateImpl(int identifier, std::string name, VariableList para
 
 bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& other) const
 {
-    return (m_name == other.m_name) && (m_parameters == other.m_parameters);
+    if (this != &other)
+    {
+        return (m_name == other.m_name) && (m_parameters == other.m_parameters);
+    }
+    return true;
 }
 
 size_t PredicateImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }

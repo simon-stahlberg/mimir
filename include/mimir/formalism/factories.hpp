@@ -489,7 +489,7 @@ public:
     // GroundAtom
     GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
 
-    const GroundAtomFactory& get_ground_atoms_from_ids() const { return ground_atoms; }
+    const GroundAtomFactory& get_ground_atoms() const { return ground_atoms; }
 
     template<std::ranges::forward_range Iterable>
     void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const

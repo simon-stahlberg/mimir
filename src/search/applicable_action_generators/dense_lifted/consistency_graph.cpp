@@ -4,6 +4,7 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
@@ -70,14 +71,6 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
     }
 }
 
-std::ostream& operator<<(std::ostream& out, const StaticConsistencyGraph& graph)
-{
-    out << "StaticConsistencyGraph(\n"
-        << "    vertices=" << graph.get_vertices() << "\n"
-        << "    edges=" << graph.get_edges() << std::endl;
-    return out;
-}
-
 Graphs::Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set) :
     m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_static_conditions(), static_assignment_set))
 {
@@ -95,5 +88,31 @@ Graphs::Graphs(Problem problem, Action action, const AssignmentSet& static_assig
 const StaticConsistencyGraph& Graphs::get_precondition_graph() const { return m_precondition; }
 
 const std::vector<StaticConsistencyGraph>& Graphs::get_universal_effect_graphs() const { return m_universal_effects; }
+
+std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGraph&, const PDDLFactories&> data)
+{
+    const auto& [graph, pddl_factories] = data;
+
+    const auto create_node = [](const Vertex& vertex, const PDDLFactories& pddl_factories, std::ostream& out)
+    { out << "  \"" << vertex.get_id() << "\" [label=\"" << *pddl_factories.get_object(vertex.get_object_index()) << "\"];\n"; };
+
+    const auto create_edge = [](const Edge& edge, std::ostream& out)
+    { out << "  \"" << edge.get_src().get_id() << "\" -- \"" << edge.get_dst().get_id() << "\";\n"; };
+
+    // Define the undirected graph
+    out << "graph myGraph {\n";
+    // Define the nodes
+    for (const auto& vertex : graph.get_vertices())
+    {
+        create_node(vertex, pddl_factories, out);
+    }
+    // Define the edges
+    for (const auto& edge : graph.get_edges())
+    {
+        create_edge(edge, out);
+    }
+    out << "}\n";
+    return out;
+}
 
 }

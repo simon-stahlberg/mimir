@@ -120,7 +120,6 @@ MatchTree<T>::MatchTree::build_recursively(const size_t atom_id, const size_t nu
         // Precondition is static and always true.
         for (const auto& element : elements)
         {
-            // Actions with static negated precondition are inapplicable
             assert(!element.get_applicability_negative_precondition_bitset().get(atom_id));
         }
         return build_recursively(atom_id + 1, num_atoms, elements, static_atoms);
