@@ -107,11 +107,12 @@ AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms
             for (size_t second_position = first_position + 1; second_position < arity; ++second_position)
             {
                 const auto& second_object = arguments[second_position];
-                assignment_set[get_assignment_position(Assignment { second_position, second_object->get_identifier(), MAX_VALUE, MAX_VALUE },
-                                                       arity,
-                                                       num_objects)] = true;
                 assignment_set[get_assignment_position(
                     Assignment { first_position, first_object->get_identifier(), second_position, second_object->get_identifier() },
+                    arity,
+                    num_objects)] = true;
+                assignment_set[get_assignment_position(
+                    Assignment { second_position, second_object->get_identifier(), first_position, first_object->get_identifier() },
                     arity,
                     num_objects)] = true;
             }
@@ -136,10 +137,12 @@ void AssignmentSet::insert_ground_atom(GroundAtom ground_atom)
         for (size_t second_position = first_position + 1; second_position < arity; ++second_position)
         {
             const auto& second_object = arguments[second_position];
-            assignment_set[get_assignment_position(Assignment { second_position, second_object->get_identifier(), MAX_VALUE, MAX_VALUE }, arity, num_objects)] =
-                true;
             assignment_set[get_assignment_position(
                 Assignment { first_position, first_object->get_identifier(), second_position, second_object->get_identifier() },
+                arity,
+                num_objects)] = true;
+            assignment_set[get_assignment_position(
+                Assignment { second_position, second_object->get_identifier(), first_position, first_object->get_identifier() },
                 arity,
                 num_objects)] = true;
         }
@@ -184,29 +187,40 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
             return std::make_pair(MAX_VALUE, MAX_VALUE);
         };
 
-        // Find nonempty assignment
-        const auto [first_position, first_object_id] = find_assignment(0, literal->get_atom()->get_terms(), consistent_edge);
-        bool is_empty_assignment = (first_object_id == MAX_VALUE);
-        if (is_empty_assignment)
-        {
-            continue;
-        }
-        const auto [second_position, second_object_id] = find_assignment(first_position + 1, literal->get_atom()->get_terms(), consistent_edge);
-
-        // Test assignment
+        // Test all nonempty assignments
         const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-        const auto assignment_rank =
-            get_assignment_position(Assignment { first_position, first_object_id, second_position, second_object_id }, arity, m_problem->get_objects().size());
-        assert(assignment_rank < assignment_set.size());
-        const auto consistent_with_state = assignment_set[assignment_rank];
+        const auto& terms = literal->get_atom()->get_terms();
+        const auto num_objects = m_problem->get_objects().size();
+        for (size_t index = 0; index < arity; ++index)
+        {
+            const auto [first_position, first_object_id] = find_assignment(index, terms, consistent_edge);
+            bool is_empty_assignment = (first_object_id == MAX_VALUE);
+            if (is_empty_assignment)
+            {
+                // Stop searching for nonempty assignments
+                break;
+            }
+            const auto [second_position, second_object_id] = find_assignment(first_position + 1, terms, consistent_edge);
 
-        if (!literal->is_negated() && !consistent_with_state)
-        {
-            return false;
-        }
-        else if (literal->is_negated() && consistent_with_state && ((arity == 1) || ((arity == 2) && (second_position != (size_t) -1))))
-        {
-            return false;
+            // Test assignment
+            const auto assignment_rank =
+                get_assignment_position(Assignment { first_position, first_object_id, second_position, second_object_id }, arity, num_objects);
+            assert(assignment_rank < assignment_set.size());
+            const auto consistent_with_state = assignment_set[assignment_rank];
+
+            // Note: We implicitly check vertex consistency here to avoid literal_all_consistent for each of the vertices of the edge
+            // This has the benefit of looping only once over the literals instead of three times.
+            // As a result, this check becomes a bit more complicated in the negated case.
+            if (!literal->is_negated() && !consistent_with_state)
+            {
+                // Positive literal conflict of assignment represented by the given vertex was found.
+                return false;
+            }
+            else if (literal->is_negated() && consistent_with_state && ((arity == 1) || ((arity == 2) && (second_position != MAX_VALUE))))
+            {
+                // Negative literal conflict of assignment represented by the given vertex was found.
+                return false;
+            }
         }
     }
 
@@ -247,26 +261,32 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
             return std::make_pair(MAX_VALUE, MAX_VALUE);
         };
 
-        // Find nonempty assignment
-        const auto [position, object_id] = find_assignment(0, literal->get_atom()->get_terms(), consistent_vertex);
-        bool is_empty_assignment = (object_id == MAX_VALUE);
-        if (is_empty_assignment)
-        {
-            continue;
-        }
-
-        // Test assignment
+        // Test all nonempty assignments
         const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-        const auto assignment_rank = get_assignment_position(Assignment { position, object_id, MAX_VALUE, MAX_VALUE }, arity, m_problem->get_objects().size());
-        assert(assignment_rank < assignment_set.size());
-        const auto consistent_with_state = assignment_set[assignment_rank];
-        if (literal->is_negated() == consistent_with_state)
+        const auto& terms = literal->get_atom()->get_terms();
+        const auto num_objects = m_problem->get_objects().size();
+        for (size_t index = 0; index < arity; ++index)
         {
-            return false;
+            const auto [position, object_id] = find_assignment(index, terms, consistent_vertex);
+            bool is_empty_assignment = (object_id == MAX_VALUE);
+            if (is_empty_assignment)
+            {
+                // Stop searching for nonempty assignments
+                break;
+            }
+
+            // Test assignment
+            const auto assignment_rank = get_assignment_position(Assignment { position, object_id, MAX_VALUE, MAX_VALUE }, arity, num_objects);
+            assert(assignment_rank < assignment_set.size());
+            const auto consistent_with_state = assignment_set[assignment_rank];
+            if (literal->is_negated() == consistent_with_state)
+            {
+                // Conflict of assignment represented by the given vertex was found.
+                return false;
+            }
         }
     }
 
     return true;
 }
-
 }
