@@ -28,7 +28,7 @@ class BaseReport(AbsoluteReport):
 
 DIR = Path(__file__).resolve().parent
 REPO = DIR.parent
-BENCHMARKS_DIR = os.environ["BENCHMARKS_DOWNWARD"]
+BENCHMARKS_DIR = os.environ["BENCHMARKS_PDDL_DOWNWARD"]
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
