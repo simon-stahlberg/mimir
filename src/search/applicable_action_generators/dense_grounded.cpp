@@ -35,6 +35,43 @@
 namespace mimir
 {
 
+/// @brief Compute a ground atom order where ground atoms over same predicate are next to each other
+/// The basic idea is that those can be potential mutex variables and grouping them together
+/// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
+/// We also consider larger groups first since such mutex variables would result in a very large linear split.
+/// @param atoms
+/// @param pddl_factories
+/// @return
+static std::vector<size_t> compute_ground_atom_order(const FlatBitsetBuilder& atoms, const PDDLFactories& pddl_factories)
+{
+    auto ground_atoms_order = std::vector<size_t> {};
+    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate, GroundAtomList> {};
+    for (const auto& ground_atom : pddl_factories.get_ground_atoms_from_ids(atoms))
+    {
+        m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
+    }
+    auto ground_atoms = GroundAtomList {};
+    // Sort group decreasingly in their size.
+    auto sorted_groups = std::vector<GroundAtomList> {};
+    for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
+    {
+        sorted_groups.push_back(group);
+    }
+    std::sort(sorted_groups.begin(), sorted_groups.end(), [](const GroundAtomList& left, const GroundAtomList& right) { return left.size() > right.size(); });
+    for (const auto& group : sorted_groups)
+    {
+        // Sort grounded atoms in the group lexicographically to get compiler independent results.
+        auto sorted_group = group;
+        std::sort(sorted_group.begin(), sorted_group.end(), [](const GroundAtom& left, const GroundAtom& right) { return left->str() < right->str(); });
+        for (const auto& grounded_atom : sorted_group)
+
+        {
+            ground_atoms_order.push_back(grounded_atom->get_identifier());
+        }
+    }
+    return ground_atoms_order;
+}
+
 AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pddl_factories) :
     AAG<GroundedAAGDispatcher<DenseStateTag>>(problem, pddl_factories, std::make_shared<DefaultGroundedAAGEventHandler>())
 {
@@ -96,26 +133,6 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    // Compute a ground atom order where ground atoms over same predicate are next to each other
-    // The basic idea is that those can be potential mutex variables and grouping them together
-    // can result in a smaller match tree. The idea comes from edge-valued multi-valued decision diagrams.
-    auto ground_atoms_order = std::vector<size_t> {};
-    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate, GroundAtomList> {};
-    for (const auto& ground_atom : m_pddl_factories.get_ground_atoms_from_ids(state_atoms))
-    {
-        m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
-    }
-    auto ground_atoms = GroundAtomList {};
-    for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
-    {
-        for (const auto& grounded_atom : group)
-        {
-            auto new_index = ground_atoms_order.size();
-            ground_atoms_order.push_back(grounded_atom->get_identifier());
-            std::cout << *grounded_atom << " : " << grounded_atom->get_identifier() << "->" << new_index << std::endl;
-        }
-    }
-
     m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids(state_atoms),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
@@ -125,6 +142,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     {
         static_atom_ids.set(static_initial_literal->get_atom()->get_identifier());
     }
+
+    auto ground_atoms_order = compute_ground_atom_order(state_atoms, m_pddl_factories);
 
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
