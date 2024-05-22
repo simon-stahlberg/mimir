@@ -218,7 +218,6 @@ MatchTree<T>::MatchTree()
 template<typename T>
 MatchTree<T>::MatchTree(const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms, const std::vector<size_t>& ground_atoms_order)
 {
-    assert(num_atoms == ground_atoms_order.size());
     const auto root_node_id = build_recursively(0, elements, static_atoms, ground_atoms_order);
 
     assert(root_node_id == 0);

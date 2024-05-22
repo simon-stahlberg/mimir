@@ -90,11 +90,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     auto delete_free_ssg = DenseSSG(delete_free_lifted_aag);
 
     auto state_builder = StateBuilder();
-    auto& state_atoms = state_builder.get_atoms_bitset();
-    for (const auto& atom_id : delete_free_ssg.get_or_create_initial_state().get_atoms_bitset())
-    {
-        state_atoms.set(atom_id);
-    }
+    auto& state_bitset = state_builder.get_atoms_bitset();
+    state_bitset = delete_free_ssg.get_or_create_initial_state().get_atoms_bitset();
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -107,7 +104,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
 
-        auto num_atoms_before = state_atoms.count();
+        auto num_atoms_before = state_bitset.count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
@@ -117,14 +114,14 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
             for (const auto atom_id : succ_state.get_atoms_bitset())
             {
-                state_atoms.set(atom_id);
+                state_bitset.set(atom_id);
             }
         }
 
         // Create and all applicable axioms and apply them
-        delete_free_lifted_aag->generate_and_apply_axioms(state_atoms);
+        delete_free_lifted_aag->generate_and_apply_axioms(state_bitset);
 
-        auto num_atoms_after = state_atoms.count();
+        auto num_atoms_after = state_bitset.count();
 
         if (num_atoms_before != num_atoms_after)
         {
@@ -133,7 +130,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids(state_atoms),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids(state_bitset),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
@@ -143,7 +140,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         static_atom_ids.set(static_initial_literal->get_atom()->get_identifier());
     }
 
-    auto ground_atoms_order = compute_ground_atom_order(state_atoms, m_pddl_factories);
+    auto ground_atoms_order = compute_ground_atom_order(state_bitset, m_pddl_factories);
 
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
