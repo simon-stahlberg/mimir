@@ -24,4 +24,49 @@
 // Test mimir include
 #include <mimir/mimir.hpp>
 
-int main() { return 0; }
+// STL includes
+#include <iostream>
+
+using namespace mimir;
+
+int main(int argc, char** argv)
+{
+    if (argc < 5)
+    {
+        std::cout << "Usage: planner <domain:str> <problem:str> <grounded:bool> <debug:bool>" << std::endl;
+        return 1;
+    }
+
+    const auto domain_file_path = fs::path { argv[1] };
+    const auto problem_file_path = fs::path { argv[2] };
+    const auto grounded = static_cast<bool>(std::atoi(argv[3]));
+    const auto debug = static_cast<bool>(std::atoi(argv[4]));
+
+    std::cout << "Parsing PDDL files..." << std::endl;
+
+    auto parser = PDDLParser(domain_file_path, problem_file_path);
+
+    std::cout << "Domain:" << std::endl;
+    std::cout << *parser.get_domain() << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Problem:" << std::endl;
+    std::cout << *parser.get_problem() << std::endl;
+
+    auto applicable_action_generator = (grounded) ?
+                                           std::shared_ptr<IDynamicAAG> { std::make_shared<GroundedDenseAAG>(parser.get_problem(), parser.get_factories()) } :
+                                           std::shared_ptr<IDynamicAAG> { std::make_shared<LiftedDenseAAG>(parser.get_problem(), parser.get_factories()) };
+
+    auto successor_state_generator = std::shared_ptr<IDynamicSSG> { std::make_shared<DenseSSG>(applicable_action_generator) };
+
+    auto event_handler = (debug) ? std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DebugAlgorithmEventHandler>() } :
+                                   std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DefaultAlgorithmEventHandler>() };
+
+    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(applicable_action_generator, successor_state_generator, event_handler);
+
+    auto planner = std::make_shared<SinglePlanner>(std::move(lifted_brfs));
+
+    auto [stats, plan] = planner->find_solution();
+
+    return 0;
+}
