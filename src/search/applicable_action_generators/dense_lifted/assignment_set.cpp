@@ -111,10 +111,6 @@ AssignmentSet::AssignmentSet(Problem problem, const GroundAtomList& ground_atoms
                     Assignment { first_position, first_object->get_identifier(), second_position, second_object->get_identifier() },
                     arity,
                     num_objects)] = true;
-                assignment_set[get_assignment_position(
-                    Assignment { second_position, second_object->get_identifier(), first_position, first_object->get_identifier() },
-                    arity,
-                    num_objects)] = true;
             }
         }
     }
@@ -139,10 +135,6 @@ void AssignmentSet::insert_ground_atom(GroundAtom ground_atom)
             const auto& second_object = arguments[second_position];
             assignment_set[get_assignment_position(
                 Assignment { first_position, first_object->get_identifier(), second_position, second_object->get_identifier() },
-                arity,
-                num_objects)] = true;
-            assignment_set[get_assignment_position(
-                Assignment { second_position, second_object->get_identifier(), first_position, first_object->get_identifier() },
                 arity,
                 num_objects)] = true;
         }
@@ -201,6 +193,7 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
                 break;
             }
             const auto [second_position, second_object_id] = find_assignment(first_position + 1, terms, consistent_edge);
+            assert(first_position < second_position);
 
             // Test assignment
             const auto assignment_rank =
@@ -208,7 +201,7 @@ bool AssignmentSet::literal_all_consistent(const std::vector<Literal>& literals,
             assert(assignment_rank < assignment_set.size());
             const auto consistent_with_state = assignment_set[assignment_rank];
 
-            // Note: We implicitly check vertex consistency here to avoid literal_all_consistent for each of the vertices of the edge
+            // Note: We also check vertex consistency here to avoid literal_all_consistent for each of the vertices of the edge
             // This has the benefit of looping only once over the literals instead of three times.
             // As a result, this check becomes a bit more complicated in the negated case.
             if (!literal->is_negated() && !consistent_with_state)
