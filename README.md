@@ -2,24 +2,31 @@
 
 Mimir is a C++20 planning library for grounded and lifted planning. We created Mimir to be 1) efficient, 2) easy to integrate, use, and extend. Mimir implements standard search algorithms such as breadth-first search and AStar search. Mimir also provides Python bindings for the most common template instantiations.
 
-**Buffering:** Mimir serializes data types to cache-efficient flat memory layouts with zero-cost de-serialization. Mimir copies the buffers and reuses preallocated buffers. Mimir uses it for states, search nodes, and ground actions. Mimir provides additional general implementations on top of flatbuffers for pointers and bitsets which can be used to make algorithms more efficient.
+**Flatmemory:** Mimir serializes data types using [flatmemory](https://github.com/drexlerd/flatmemory) into cache-efficient flat memory layouts with zero-cost de-serialization. Mimir uses it for states, search nodes, grounded actions, and grounded axioms.
 
-
-
-## Example API
+## Example C++ API
 
 ```cpp
-const auto domain_file = std::string("domain.pddl");
-const auto problem_file = std::string("problem.pddl");
-// TODO
+const auto parser = PDDLParser("domain.pddl", "problem.pddl")
+const auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories())
+const auto brfs = BrFsAlgorithm(aag)
+const auto [status, plan] = brfs.find_solution()
 ```
 
+## Example Python API
+
+```python
+parser = PDDLParser("domain.pddl", "problem.pddl")
+aag = LiftedAAG(parser.get_problem(), parser.get_factories())
+brfs = BrFsAlgorithm(aag)
+status, plan = brfs.find_solution()
+```
 
 ## Getting Started
 
 ### Installing the Dependencies
 
-Mimir depends on the PDDL parser [Loki](https://github.com/drexlerd/Loki), a fraction of [Boost's](boost.org) header-only libraries (Fusion, Spirit x3, Container), memory layout flattening on [flatbuffers](https://github.com/google/flatbuffers), its performance benchmarking framework depends on [GoogleBenchmark](https://github.com/google/benchmark), and its testing framework depends on [GoogleTest](https://github.com/google/googletest).
+Mimir depends on the PDDL parser [Loki](https://github.com/drexlerd/Loki), a fraction of [Boost's](boost.org) header-only libraries (Fusion, Spirit x3, Container), memory layout flattening on [flatmemory](https://github.com/drexlerd/flatmemory), its performance benchmarking framework depends on [GoogleBenchmark](https://github.com/google/benchmark), and its testing framework depends on [GoogleTest](https://github.com/google/googletest).
 
 We provide a CMake Superbuild project that takes care of downloading, building, and installing all dependencies.
 
@@ -67,18 +74,6 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 ### Argument passing
 
 - Use prefix `ref_` for initialized output parameters and `out_` for non-initialized output parameters. Try to keep the number of output parameters as small as possible. Never use stack-allocated types as output parameters.
-
-### Directory Structure
-
-- Put interface classes in a header file with the suffix `interface.hpp` in subdirectory `<name>s`.
-- Put declarations of a derived class with tag `<tag>` in the subdirectory `<name>s`.
-- Include all specializations of the derived class with tag `<tag>` in `<name>s.hpp`.
-
-We sometimes use reasonable shortcuts for `<tag>` to make it more readable.
-
-### Header includes
-
-- Include the header that contains all specializations of a derived class with tag `<tag>`.
 
 ### Concepts
 
