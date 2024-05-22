@@ -4,6 +4,7 @@
 #include "mimir/search/actions.hpp"
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,9 @@ public:
 
 /// @brief Translates a ground action list to a plan
 extern Plan to_plan(const GroundActionList& action_view_list);
+
+/// @brief Write the plan to an ostream.
+extern std::ostream& operator<<(std::ostream& os, const Plan& plan);
 
 }
 

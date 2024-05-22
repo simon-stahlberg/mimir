@@ -17,6 +17,7 @@
 
 #include "mimir/mimir.hpp"
 
+#include <fstream>
 #include <iostream>
 
 using namespace mimir;
@@ -25,14 +26,15 @@ int main(int argc, char** argv)
 {
     if (argc < 5)
     {
-        std::cout << "Usage: planner <domain:str> <problem:str> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout << "Usage: planner <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
-    const auto grounded = static_cast<bool>(std::atoi(argv[3]));
-    const auto debug = static_cast<bool>(std::atoi(argv[4]));
+    const auto plan_file_name = argv[3];
+    const auto grounded = static_cast<bool>(std::atoi(argv[4]));
+    const auto debug = static_cast<bool>(std::atoi(argv[5]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -59,6 +61,16 @@ int main(int argc, char** argv)
     auto planner = std::make_shared<SinglePlanner>(std::move(lifted_brfs));
 
     auto [stats, plan] = planner->find_solution();
+
+    std::ofstream plan_file;
+    plan_file.open(plan_file_name);
+    if (!plan_file.is_open())
+    {
+        std::cerr << "Error opening file!" << std::endl;
+        return 1;
+    }
+    plan_file << plan;
+    plan_file.close();
 
     return 0;
 }

@@ -17,4 +17,15 @@ Plan to_plan(const GroundActionList& action_view_list)
     return Plan(std::move(actions), cost);
 }
 
+std::ostream& operator<<(std::ostream& os, const Plan& plan)
+{
+    for (const auto& action : plan.get_actions())
+    {
+        os << action << "\n";
+    }
+    os << "; cost = " << plan.get_cost();
+
+    return os;
+}
+
 }

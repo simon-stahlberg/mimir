@@ -2,7 +2,7 @@
 
 import platform
 import re
-import sys
+import os
 
 from pathlib import Path
 
@@ -12,14 +12,15 @@ from lab.environments import TetralithEnvironment, LocalEnvironment
 from lab.experiment import Experiment
 from lab.reports import Attribute, geometric_mean
 from brfs_parser import BrfsParser
+import utils
 
 # Create custom report class with suitable info and error attributes.
 class BaseReport(AbsoluteReport):
     INFO_ATTRIBUTES = ["time_limit", "memory_limit"]
     ERROR_ATTRIBUTES = [
-        #"domain",
-        #"problem",
-        #"algorithm",
+        "domain",
+        "problem",
+        "algorithm",
         "unexplained_errors",
         "error",
         "node",
@@ -27,7 +28,7 @@ class BaseReport(AbsoluteReport):
 
 DIR = Path(__file__).resolve().parent
 REPO = DIR.parent
-BENCHMARKS_DIR = REPO / "data"
+BENCHMARKS_DIR = os.environ["BENCHMARKS_DOWNWARD"]
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
@@ -35,29 +36,26 @@ if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
         extra_options="#SBATCH --account=naiss2023-5-314")
-    SUITE = [
-        "blocks_3",
-        "delivery",
-        "miconic-fulladl",
-        "reward",
-    ]
+    SUITE = utils.SUITE_OPTIMAL_STRIPS
     TIME_LIMIT = 15 * 60  # 15 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "blocks_3:p213.pddl",
-        "delivery:instance_2_1_3_28.pddl",
-        "miconic-fulladl:f6-3.pddl",
-        "reward:instance_2x2_10.pddl",
+        "gripper:prob01.pddl",
+        "gripper:prob10.pddl",
     ]
     TIME_LIMIT = 10
 ATTRIBUTES = [
     "run_dir",
     "coverage",
     "unsolvable",
-    Attribute("num_generated", absolute=True, min_wins=False, scale="linear"),
-    Attribute("num_expanded", absolute=True, min_wins=False, scale="linear"),
-    Attribute("cost", absolute=True, min_wins=False, scale="linear"),
+    "search_time",
+    "num_generated",
+    "num_expanded",
+    "num_expanded_until_last_f_layer",
+    "num_generated_until_last_f_layer",
+    "cost",
+    "invalid_plan_reported",
 ]
 
 MEMORY_LIMIT = 2500
@@ -69,7 +67,8 @@ exp.add_parser(BrfsParser())
 
 PLANNER_DIR = REPO / "build" / "exe" / "planner"
 
-exp.add_resource("planner_exr", PLANNER_DIR)
+exp.add_resource("planner_exe", PLANNER_DIR)
+exp.add_resource("run_planner", DIR / "run_planner.sh")
 
 for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     ################ Grounded ################
@@ -79,8 +78,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'ff' binary has to be on the PATH.
     # We could also use exp.add_resource().
     run.add_command(
-        "run-planner",
-        [str(PLANNER_DIR), "{domain}", "{problem}", "1", "0"],
+        "brfs_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
@@ -105,8 +104,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'ff' binary has to be on the PATH.
     # We could also use exp.add_resource().
     run.add_command(
-        "run-planner",
-        [str(PLANNER_DIR), "{domain}", "{problem}", "0", "0"],
+        "brfs_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
