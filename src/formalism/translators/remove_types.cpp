@@ -194,7 +194,11 @@ loki::Action RemoveTypesTranslator::translate_impl(const loki::ActionImpl& actio
         conditions.empty() ? std::nullopt : std::optional<loki::Condition>(this->m_pddl_factories.get_or_create_condition_and(conditions));
     auto translated_effect = action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt;
 
-    return this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
+    return this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                       action.get_original_arity(),
+                                                       translated_parameters,
+                                                       translated_condition,
+                                                       translated_effect);
 }
 
 loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domain)

@@ -190,6 +190,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto cost_expression = this->transform(*action.get_function_expression());
 
     auto delete_relaxed_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                                             action.get_original_arity(),
                                                                              parameters,
                                                                              conditions,
                                                                              static_conditions,

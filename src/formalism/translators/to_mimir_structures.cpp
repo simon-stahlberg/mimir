@@ -563,6 +563,7 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     }
 
     return m_pddl_factories.get_or_create_action(action.get_name(),
+                                                 action.get_original_arity(),
                                                  parameters,
                                                  literals,
                                                  static_literals,

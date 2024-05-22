@@ -88,7 +88,11 @@ loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::Act
     const auto translated_effect =
         (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt);
 
-    return this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_conditions, translated_effect);
+    return this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                       action.get_original_arity(),
+                                                       translated_parameters,
+                                                       translated_conditions,
+                                                       translated_effect);
 }
 
 loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::ConditionExistsImpl& condition)

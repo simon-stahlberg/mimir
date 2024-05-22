@@ -516,6 +516,7 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_action(
             action.get_name(),
+            action.get_original_arity(),
             this->translate(action.get_parameters()),
             (action.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*action.get_condition().value())) : std::nullopt),
             (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt));

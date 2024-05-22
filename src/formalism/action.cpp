@@ -32,6 +32,7 @@ namespace mimir
 {
 ActionImpl::ActionImpl(int identifier,
                        std::string name,
+                       size_t original_arity,
                        VariableList parameters,
                        LiteralList conditions,
                        LiteralList static_conditions,
@@ -42,6 +43,7 @@ ActionImpl::ActionImpl(int identifier,
                        FunctionExpression function_expression) :
     Base(identifier),
     m_name(std::move(name)),
+    m_original_arity(std::move(original_arity)),
     m_parameters(std::move(parameters)),
     m_conditions(std::move(conditions)),
     m_static_conditions(std::move(static_conditions)),
@@ -51,6 +53,7 @@ ActionImpl::ActionImpl(int identifier,
     m_universal_effects(std::move(universal_effects)),
     m_function_expression(std::move(function_expression))
 {
+    assert(m_original_arity <= m_parameters.size());
     assert(is_subseteq(m_static_conditions, m_conditions));
     assert(is_subseteq(m_fluent_conditions, m_conditions));
     assert(is_all_unique(m_parameters));
@@ -154,6 +157,8 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
 }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
+
+size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 

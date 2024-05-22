@@ -31,6 +31,7 @@ class ActionImpl : public loki::Base<ActionImpl>
 {
 private:
     std::string m_name;
+    size_t m_original_arity;
     VariableList m_parameters;
     LiteralList m_conditions;
     LiteralList m_static_conditions;
@@ -47,6 +48,7 @@ private:
 
     ActionImpl(int identifier,
                std::string name,
+               size_t original_arity,
                VariableList parameters,
                LiteralList conditions,
                LiteralList static_conditions,
@@ -69,6 +71,7 @@ private:
 
 public:
     const std::string& get_name() const;
+    size_t get_original_arity() const;
     const VariableList& get_parameters() const;
     const LiteralList& get_conditions() const;
     const LiteralList& get_static_conditions() const;

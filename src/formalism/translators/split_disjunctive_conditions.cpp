@@ -35,7 +35,11 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
         {
             for (const auto& part : std::get<loki::ConditionOrImpl>(*condition.value()).get_conditions())
             {
-                split_actions.push_back(pddl_factories.get_or_create_action(action->get_name(), action->get_parameters(), part, action->get_effect()));
+                split_actions.push_back(pddl_factories.get_or_create_action(action->get_name(),
+                                                                            action->get_original_arity(),
+                                                                            action->get_parameters(),
+                                                                            part,
+                                                                            action->get_effect()));
             }
         }
         else

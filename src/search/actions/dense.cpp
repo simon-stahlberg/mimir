@@ -104,9 +104,10 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
 std::ostream& operator<<(std::ostream& os, const DenseGroundAction& action)
 {
     os << "(" << action.get_action()->get_name();
-    for (const auto& obj : action.get_objects())
+    // Only take objects w.r.t. to the original action parameters
+    for (size_t i = 0; i < action.get_action()->get_original_arity(); ++i)
     {
-        os << " " << obj->get_name();
+        os << " " << *action.get_objects()[i];
     }
     os << ")";
     return os;

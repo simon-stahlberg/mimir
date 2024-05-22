@@ -501,6 +501,7 @@ protected:
     Action transform_impl(const ActionImpl& action)
     {
         return this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                           action.get_original_arity(),
                                                            this->transform(action.get_parameters()),
                                                            this->transform(action.get_conditions()),
                                                            this->transform(action.get_static_conditions()),

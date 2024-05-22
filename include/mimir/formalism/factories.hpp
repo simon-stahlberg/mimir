@@ -371,6 +371,7 @@ public:
     ///
     ///        This function allows us to can change the underlying representation and storage.
     Action get_or_create_action(std::string name,
+                                size_t original_arity,
                                 VariableList parameters,
                                 LiteralList conditions,
                                 LiteralList static_conditions,
@@ -381,6 +382,7 @@ public:
                                 FunctionExpression function_expression)
     {
         return actions.get_or_create<ActionImpl>(std::move(name),
+                                                 std::move(original_arity),
                                                  std::move(parameters),
                                                  std::move(conditions),
                                                  std::move(static_conditions),

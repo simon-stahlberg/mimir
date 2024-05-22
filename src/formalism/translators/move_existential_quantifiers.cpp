@@ -87,6 +87,7 @@ loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::Ac
 
     return this->m_pddl_factories.get_or_create_action(
         action.get_name(),
+        action.get_original_arity(),
         parameters,
         condition,
         (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt));

@@ -146,7 +146,11 @@ loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Ac
     // Turn free variables into parameters
     auto translated_parameters = this->translate(action.get_parameters());
 
-    auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(), translated_parameters, translated_condition, translated_effect);
+    auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
+                                                                         action.get_original_arity(),
+                                                                         translated_parameters,
+                                                                         translated_condition,
+                                                                         translated_effect);
 
     this->m_scopes.close_scope();
 
