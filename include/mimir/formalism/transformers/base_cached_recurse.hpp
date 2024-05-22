@@ -105,8 +105,15 @@ protected:
     void prepare_base(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
     void prepare_base(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
     void prepare_base(const FunctionExpressionImpl& function_expression) { self().prepare_impl(function_expression); }
+    void prepare_base(const GroundFunctionExpressionNumberImpl& function_expression) { return self().prepare_impl(function_expression); }
+    void prepare_base(const GroundFunctionExpressionBinaryOperatorImpl& function_expression) { return self().prepare_impl(function_expression); }
+    void prepare_base(const GroundFunctionExpressionMultiOperatorImpl& function_expression) { return self().prepare_impl(function_expression); }
+    void prepare_base(const GroundFunctionExpressionMinusImpl& function_expression) { return self().prepare_impl(function_expression); }
+    void prepare_base(const GroundFunctionExpressionFunctionImpl& function_expression) { return self().prepare_impl(function_expression); }
+    void prepare_base(const GroundFunctionExpressionImpl& function_expression) { return self().prepare_impl(function_expression); }
     void prepare_base(const FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
     void prepare_base(const FunctionImpl& function) { self().prepare_impl(function); }
+    void prepare_base(const GroundFunctionImpl& function) { return self().prepare_impl(function); }
     void prepare_base(const ActionImpl& action) { self().prepare_impl(action); }
     void prepare_base(const AxiomImpl& axiom) { self().prepare_impl(axiom); }
     void prepare_base(const DomainImpl& domain) { self().prepare_impl(domain); }
@@ -170,19 +177,40 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
     }
+    void prepare_impl(const GroundFunctionExpressionNumberImpl& function_expression) {}
+    void prepare_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+    {
+        this->prepare(*function_expression.get_left_function_expression());
+        this->prepare(*function_expression.get_right_function_expression());
+    }
+    void prepare_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression) { this->prepare(function_expression.get_function_expressions()); }
+    void prepare_impl(const GroundFunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
+    void prepare_impl(const GroundFunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
+    void prepare_impl(const GroundFunctionExpressionImpl& function_expression)
+    {
+        std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
+    }
     void prepare_impl(const FunctionSkeletonImpl& function_skeleton) { this->prepare(function_skeleton.get_parameters()); }
     void prepare_impl(const FunctionImpl& function)
     {
         this->prepare(*function.get_function_skeleton());
         this->prepare(function.get_terms());
     }
+    void prepare_impl(const GroundFunctionImpl& function)
+    {
+        this->prepare(*function.get_function_skeleton());
+        this->prepare(function.get_objects());
+    }
     void prepare_impl(const ActionImpl& action)
     {
         this->prepare(action.get_parameters());
         this->prepare(action.get_conditions());
+        this->prepare(action.get_static_conditions());
+        this->prepare(action.get_fluent_conditions());
         this->prepare(action.get_simple_effects());
         this->prepare(action.get_conditional_effects());
         this->prepare(action.get_universal_effects());
+        this->prepare(*action.get_function_expression());
     }
     void prepare_impl(const AxiomImpl& axiom)
     {
@@ -508,7 +536,8 @@ protected:
                                                            this->transform(action.get_fluent_conditions()),
                                                            this->transform(action.get_simple_effects()),
                                                            this->transform(action.get_conditional_effects()),
-                                                           this->transform(action.get_universal_effects()));
+                                                           this->transform(action.get_universal_effects()),
+                                                           this->transform(*action.get_function_expression()));
     }
     Axiom transform_impl(const AxiomImpl& axiom)
     {

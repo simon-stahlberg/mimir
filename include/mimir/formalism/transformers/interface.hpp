@@ -70,8 +70,15 @@ public:
     void prepare(const FunctionExpressionMinusImpl& function_expression) { self().prepare_base(function_expression); }
     void prepare(const FunctionExpressionFunctionImpl& function_expression) { self().prepare_base(function_expression); }
     void prepare(const FunctionExpressionImpl& function_expression) { self().prepare_base(function_expression); }
+    void prepare(const GroundFunctionExpressionNumberImpl& function_expression) { return self().prepare_base(function_expression); }
+    void prepare(const GroundFunctionExpressionBinaryOperatorImpl& function_expression) { return self().prepare_base(function_expression); }
+    void prepare(const GroundFunctionExpressionMultiOperatorImpl& function_expression) { return self().prepare_base(function_expression); }
+    void prepare(const GroundFunctionExpressionMinusImpl& function_expression) { return self().prepare_base(function_expression); }
+    void prepare(const GroundFunctionExpressionFunctionImpl& function_expression) { return self().prepare_base(function_expression); }
+    void prepare(const GroundFunctionExpressionImpl& function_expression) { return self().prepare_base(function_expression); }
     void prepare(const FunctionSkeletonImpl& function_skeleton) { self().prepare_base(function_skeleton); }
     void prepare(const FunctionImpl& function) { self().prepare_base(function); }
+    void prepare(const GroundFunctionImpl& function) { return self().prepare_base(function); }
     void prepare(const ActionImpl& action) { self().prepare_base(action); }
     void prepare(const AxiomImpl& axiom) { self().prepare_base(axiom); }
     void prepare(const DomainImpl& domain) { self().prepare_base(domain); }

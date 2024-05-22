@@ -20,6 +20,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/transformers/copy.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted.hpp"
@@ -45,7 +46,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler(std::move(event_handler)),
     m_lifted_aag(m_problem, m_pddl_factories)
 {
-    // 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects.
+    /* 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects. */
     auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, false);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
     auto delete_free_lifted_aag = std::make_shared<LiftedDenseAAG>(delete_free_problem, m_pddl_factories);
@@ -95,6 +96,26 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
+    // Compute a ground atom order where ground atoms over same predicate are next to each other
+    // The basic idea is that those can be potential mutex variables and grouping them together
+    // can result in a smaller match tree. The idea comes from edge-valued multi-valued decision diagrams.
+    auto ground_atoms_order = std::vector<size_t> {};
+    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate, GroundAtomList> {};
+    for (const auto& ground_atom : m_pddl_factories.get_ground_atoms_from_ids(state_atoms))
+    {
+        m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
+    }
+    auto ground_atoms = GroundAtomList {};
+    for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
+    {
+        for (const auto& grounded_atom : group)
+        {
+            auto new_index = ground_atoms_order.size();
+            ground_atoms_order.push_back(grounded_atom->get_identifier());
+            std::cout << *grounded_atom << " : " << grounded_atom->get_identifier() << "->" << new_index << std::endl;
+        }
+    }
+
     m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids(state_atoms),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
@@ -124,7 +145,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
-    m_action_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_actions, static_atom_ids);
+    m_action_match_tree = MatchTree(ground_actions, static_atom_ids, ground_atoms_order);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -147,7 +168,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(m_pddl_factories.get_ground_atoms().size(), ground_axioms, static_atom_ids);
+    m_axiom_match_tree = MatchTree(ground_axioms, static_atom_ids, ground_atoms_order);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
