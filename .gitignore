@@ -29,6 +29,7 @@ build
 out
 *.sif
 dependencies/installs
+.cache
 
 #CMake
 CMakeLists.txt.user
