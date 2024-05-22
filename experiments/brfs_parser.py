@@ -37,11 +37,11 @@ class BrfsParser(Parser):
     def __init__(self):
         super().__init__()
         self.add_pattern("search_time", r"\[AlgorithmStatistics\] Search time: (\d+)ms", type=int)
-        self.add_pattern("num_expanded", r"\[AlgorithmStatistics\] Number of generated states: (\d+)", type=int)
-        self.add_pattern("num_generated", r"\[AlgorithmStatistics\] Number of expanded states: (\d+)", type=int)
-        self.add_pattern("num_expanded_until_last_f_layer", r"\[AlgorithmStatistics\] Number of generated states until last f-layer: (\d+)", type=int)
-        self.add_pattern("num_generated_until_last_f_layer", r"\[AlgorithmStatistics\] Number of expanded states until last f-layer: (\d+)", type=int)
-        self.add_pattern("cost", r"\[Algorithm\] Plan found with cost: (\d+)", type=int)
+        self.add_pattern("num_expanded", r"\[AlgorithmStatistics\] Number of expanded states: (\d+)", type=int)
+        self.add_pattern("num_generated", r"\[AlgorithmStatistics\] Number of generated states: (\d+)", type=int)
+        self.add_pattern("num_expanded_until_last_f_layer", r"\[AlgorithmStatistics\] Number of expanded states until last f-layer: (\d+)", type=int)
+        self.add_pattern("num_generated_until_last_f_layer", r"\[AlgorithmStatistics\] Number of generated states until last f-layer: (\d+)", type=int)
+        self.add_pattern("cost", r"\[Algorithm\] Plan found with cost: (.+)", type=float)
         self.add_pattern("exhausted", r"(\[Algorithm\] Exhausted!)", type=str)
         self.add_pattern("val_plan_invalid", r"(Plan invalid)", type=str)
 

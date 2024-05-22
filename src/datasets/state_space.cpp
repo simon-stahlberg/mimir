@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ * Copyright (C) 2023 Simon Stahlberg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_PLANNERS_HPP_
-#define MIMIR_SEARCH_PLANNERS_HPP_
+#include "mimir/datasets/state_space.hpp"
 
-/**
- * Include all specializations here
- */
-#include "mimir/search/planners/single.hpp"
+namespace mimir
+{
 
-#endif  // MIMIR_SEARCH_PLANNERS_HPP_
+}

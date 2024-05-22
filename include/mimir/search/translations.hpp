@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
  *

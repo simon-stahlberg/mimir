@@ -35,7 +35,5 @@ if [ -f "$plan_file" ]; then
     validate -v "$domain_file" "$problem_file" "$plan_file"
 else
     echo "No plan file found."
-    # If no plan file, presumably should still attempt to validate?
-    validate -v "$domain_file" "$problem_file"
     exit 99
 fi
