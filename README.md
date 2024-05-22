@@ -50,7 +50,7 @@ cmake --install build --prefix=<path/to/installation-directory>
 
 ### Integrating Mimir
 
-We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/mimir/tree/templated-design/tests/integration) that takes care of downloading, building, and installing Loki together and its dependencies. You can simply copy it to your project or integrate it in your own Superbuild and run it similarly to the Superbuild project from above.
+We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/mimir/tree/dynamic/tests/integration) that takes care of downloading, building, and installing Loki together and its dependencies. You can simply copy it to your project or integrate it in your own Superbuild and run it similarly to the Superbuild project from above.
 
 
 ## For Developers
