@@ -270,7 +270,14 @@ StaticOrFluentPredicate ToMimirStructures::translate_common(const loki::Predicat
     {
         parameters.push_back(translate_common(*parameter->get_variable(), false));
     }
-    bool is_fluent = (m_fluent_predicates.count(predicate.get_name()) || m_derived_predicates.count(predicate.get_name()) || predicate.get_name() == "=");
+
+    bool is_fluent = (m_fluent_predicates.count(predicate.get_name()) || m_derived_predicates.count(predicate.get_name()));
+
+    if (predicate.get_name() == "=")
+    {
+        is_fluent = false;
+    }
+
     auto result = (is_fluent) ? StaticOrFluentPredicate(m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), parameters)) :
                                 StaticOrFluentPredicate(m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), parameters));
     if (predicate.get_name() == "=")
