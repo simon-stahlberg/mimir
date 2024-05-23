@@ -18,6 +18,7 @@
 #include "mimir/formalism/problem.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"
@@ -88,6 +89,9 @@ ProblemImpl::ProblemImpl(int identifier,
     // Ensure that buffer is correctly written
     assert(m_static_initial_positive_atoms_builder == get_static_initial_positive_atoms_bitset());
     assert(m_static_initial_negative_atoms_builder == get_static_initial_negative_atoms_bitset());
+
+    std::cout << "Static initial literals: " << m_static_initial_literals << std::endl;
+    std::cout << "Fluent initial literals: " << m_fluent_initial_literals << std::endl;
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const

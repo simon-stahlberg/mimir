@@ -140,6 +140,8 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
     else if (const auto effect_literal = std::get_if<loki::EffectLiteralImpl>(effect_ptr))
     {
         prepare(*effect_literal->get_literal());
+
+        m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate());
         return;
     }
 
@@ -736,7 +738,11 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     auto goal_literals = GroundLiteralList {};
     if (problem.get_goal_condition().has_value())
     {
-        auto goal_literals = translate_grounded(*problem.get_goal_condition().value());
+        goal_literals = translate_grounded(*problem.get_goal_condition().value());
+        for (const auto ground_atom : goal_literals)
+        {
+            std::cout << ground_atom->get_identifier() << " " << *ground_atom << std::endl;
+        }
         // for (const auto grounded_literal : translate_grounded(*problem.get_goal_condition().value()))
         //{
         //     const auto predicate = grounded_literal->get_atom()->get_predicate();

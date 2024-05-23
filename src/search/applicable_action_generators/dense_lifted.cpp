@@ -516,6 +516,28 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
     m_ground_function_value_costs(),
     m_static_consistency_graphs()
 {
+    std::cout << "Fluent predicate: " << std::endl;
+    for (const auto& predicate : problem->get_domain()->get_fluent_predicates())
+    {
+        std::cout << *predicate << std::endl;
+    }
+    std::cout << "Static predicate: " << std::endl;
+    for (const auto& predicate : problem->get_domain()->get_static_predicates())
+    {
+        std::cout << *predicate << std::endl;
+    }
+
+    std::cout << "Fluent atoms: " << std::endl;
+    for (const auto& fluent_atom : m_pddl_factories.get_ground_atoms())
+    {
+        std::cout << fluent_atom.get_identifier() << " " << fluent_atom << std::endl;
+    }
+    std::cout << "Static atoms: " << std::endl;
+    for (const auto& fluent_atom : m_pddl_factories.get_static_ground_atoms())
+    {
+        std::cout << fluent_atom.get_identifier() << " " << fluent_atom << std::endl;
+    }
+
     /* 1. Error checking */
 
     for (const auto& literal : problem->get_fluent_initial_literals())
