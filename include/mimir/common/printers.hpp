@@ -54,6 +54,22 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
 }
 
 template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<const T*>& set)
+{
+    os << "{";
+    size_t i = 0;
+    for (const auto& element : set)
+    {
+        if (i != 0)
+            os << ", ";
+        os << *element;
+        ++i;
+    }
+    os << "}";
+    return os;
+}
+
+template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set)
 {
     os << "{";

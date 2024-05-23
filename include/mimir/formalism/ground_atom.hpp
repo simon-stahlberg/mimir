@@ -60,6 +60,7 @@ private:
 public:
     const Predicate& get_predicate() const;
     const ObjectList& get_objects() const;
+    bool is_static() const;
     size_t get_arity() const;
 };
 }

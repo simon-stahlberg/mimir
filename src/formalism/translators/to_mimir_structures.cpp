@@ -120,7 +120,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
                 prepare(*effect_literal->get_literal());
 
                 // Found predicate affected by an effect
-                m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate());
+                m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate()->get_name());
             }
             else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
             {
@@ -141,7 +141,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
     {
         prepare(*effect_literal->get_literal());
 
-        m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate());
+        m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate()->get_name());
         return;
     }
 
@@ -205,7 +205,7 @@ void ToMimirStructures::prepare(const loki::DomainImpl& domain)
 
     for (const auto& derived_predicate : domain.get_derived_predicates())
     {
-        m_derived_predicates.insert(derived_predicate);
+        m_derived_predicates.insert(derived_predicate->get_name());
     }
 }
 void ToMimirStructures::prepare(const loki::OptimizationMetricImpl& metric) { prepare(*metric.get_function_expression()); }
@@ -229,7 +229,7 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
 
     for (const auto& derived_predicate : problem.get_derived_predicates())
     {
-        m_derived_predicates.insert(derived_predicate);
+        m_derived_predicates.insert(derived_predicate->get_name());
     }
 }
 
@@ -269,7 +269,8 @@ Predicate ToMimirStructures::translate_common(const loki::PredicateImpl& predica
     {
         parameters.push_back(translate_common(*parameter->get_variable(), false));
     }
-    auto result = m_pddl_factories.get_or_create_predicate(predicate.get_name(), parameters);
+    bool is_fluent = (m_fluent_predicates.count(predicate.get_name()) || m_derived_predicates.count(predicate.get_name()) || predicate.get_name() == "=");
+    auto result = m_pddl_factories.get_or_create_predicate(predicate.get_name(), parameters, !is_fluent);
     if (result->get_name() == "=")
     {
         m_equal_predicate = result;
@@ -361,14 +362,14 @@ std::tuple<LiteralList, LiteralList> ToMimirStructures::translate_lifted(const l
 
     const auto func_insert_fluents = [](const loki::Literal literal,
                                         const Literal& translated_literal,
-                                        const std::unordered_set<loki::Predicate>& fluent_predicates,
-                                        const std::unordered_set<loki::Predicate>& derived_predicates,
+                                        const std::unordered_set<std::string>& fluent_predicates,
+                                        const std::unordered_set<std::string>& derived_predicates,
                                         LiteralList& ref_static_literals,
                                         LiteralList& ref_fluent_literals)
     {
         const auto predicate = literal->get_atom()->get_predicate();
 
-        if (fluent_predicates.count(predicate) || derived_predicates.count(predicate))
+        if (fluent_predicates.count(predicate->get_name()) || derived_predicates.count(predicate->get_name()) || predicate->get_name() == "=")
         {
             ref_fluent_literals.push_back(translated_literal);
         }
@@ -576,14 +577,18 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
 
     auto predicates = translate_common(domain.get_predicates());
     auto static_predicates = PredicateList {};
+    auto fluent_predicates = PredicateList {};
     for (const auto& predicate : domain.get_predicates())
     {
-        if (!m_fluent_predicates.count(predicate))
+        if (!m_fluent_predicates.count(predicate->get_name()))
         {
             static_predicates.push_back(translate_common(*predicate));
         }
+        else
+        {
+            fluent_predicates.push_back(translate_common(*predicate));
+        }
     }
-    const auto fluent_predicates = translate_common(loki::PredicateList(m_fluent_predicates.begin(), m_fluent_predicates.end()));
     const auto derived_predicates = translate_common(domain.get_derived_predicates());
     const auto functions = translate_lifted(domain.get_functions());
     const auto actions = translate_lifted(domain.get_actions());
@@ -627,7 +632,7 @@ GroundAtom ToMimirStructures::translate_grounded(const loki::AtomImpl& atom)
 {
     const auto predicate = atom.get_predicate();
 
-    if (m_fluent_predicates.count(predicate) || m_derived_predicates.count(predicate))
+    if (m_fluent_predicates.count(predicate->get_name()) || m_derived_predicates.count(predicate->get_name()) || predicate->get_name() == "=")
     {
         return m_pddl_factories.get_or_create_ground_atom(translate_common(*atom.get_predicate()), translate_grounded(atom.get_terms()));
     }

@@ -35,9 +35,9 @@ private:
     /* Computed in prepare step */
 
     // Predicate with an action effect
-    std::unordered_set<loki::Predicate> m_fluent_predicates;
+    std::unordered_set<std::string> m_fluent_predicates;
     // Derived predicates
-    std::unordered_set<loki::Predicate> m_derived_predicates;
+    std::unordered_set<std::string> m_derived_predicates;
 
     /* Computed during translate step
       TODO: a scoping mechanism would make this easier to understand

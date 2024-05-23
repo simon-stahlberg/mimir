@@ -56,6 +56,8 @@ const Predicate& GroundAtomImpl::get_predicate() const { return m_predicate; }
 
 const ObjectList& GroundAtomImpl::get_objects() const { return m_objects; }
 
+bool GroundAtomImpl::is_static() const { return m_predicate->is_static(); }
+
 size_t GroundAtomImpl::get_arity() const { return m_objects.size(); }
 
 }

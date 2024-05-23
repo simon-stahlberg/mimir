@@ -129,6 +129,7 @@ loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemI
 {
     this->prepare(problem);
 
+    // Initialize
     for (const auto& variable : m_variables)
     {
         m_num_quantifications.emplace(variable, 0);
@@ -138,7 +139,18 @@ loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemI
         m_renamings.emplace(variable, renamed_variable);
     }
 
-    return this->translate(problem);
+    return this->m_pddl_factories.get_or_create_problem(
+        this->translate(*problem.get_domain()),
+        problem.get_name(),
+        this->translate(*problem.get_requirements()),
+        this->translate(problem.get_objects()),
+        this->translate(problem.get_derived_predicates()),
+        this->translate(problem.get_initial_literals()),
+        this->translate(problem.get_numeric_fluents()),
+        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
+        (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
+                                                         std::nullopt),
+        this->translate(problem.get_axioms()));
 }
 
 RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLFactories& pddl_factories) :

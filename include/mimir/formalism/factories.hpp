@@ -228,6 +228,7 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     GroundAtom get_or_create_ground_atom(Predicate predicate, ObjectList objects)
     {
+        assert(!predicate->is_static());
         return ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
     }
 
@@ -236,6 +237,7 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     GroundAtom get_or_create_static_ground_atom(Predicate predicate, ObjectList objects)
     {
+        assert(predicate->is_static());
         return static_ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
     }
 
@@ -263,9 +265,9 @@ public:
     /// @brief Get or create a predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Predicate get_or_create_predicate(std::string name, VariableList parameters)
+    Predicate get_or_create_predicate(std::string name, VariableList parameters, bool is_static)
     {
-        return predicates.get_or_create<PredicateImpl>(std::move(name), std::move(parameters));
+        return predicates.get_or_create<PredicateImpl>(std::move(name), std::move(parameters), is_static);
     }
 
     /// @brief Get or create a number function expression for the given parameters.

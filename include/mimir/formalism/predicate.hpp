@@ -39,10 +39,11 @@ class PredicateImpl : public loki::Base<PredicateImpl>
 private:
     std::string m_name;
     VariableList m_parameters;
+    bool m_is_static;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    PredicateImpl(int identifier, std::string name, VariableList parameters);
+    PredicateImpl(int identifier, std::string name, VariableList parameters, bool is_static);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<PredicateImpl, loki::Hash<PredicateImpl*>, loki::EqualTo<PredicateImpl*>>;
@@ -58,6 +59,7 @@ private:
 public:
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
+    bool is_static() const;
     size_t get_arity() const;
 };
 }

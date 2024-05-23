@@ -26,10 +26,11 @@
 
 namespace mimir
 {
-PredicateImpl::PredicateImpl(int identifier, std::string name, VariableList parameters) :
+PredicateImpl::PredicateImpl(int identifier, std::string name, VariableList parameters, bool is_static) :
     Base(identifier),
     m_name(std::move(name)),
-    m_parameters(std::move(parameters))
+    m_parameters(std::move(parameters)),
+    m_is_static(is_static)
 {
     assert(is_all_unique(m_parameters));
 }
@@ -59,6 +60,8 @@ void PredicateImpl::str_impl(std::ostream& out, const loki::FormattingOptions& o
 const std::string& PredicateImpl::get_name() const { return m_name; }
 
 const VariableList& PredicateImpl::get_parameters() const { return m_parameters; }
+
+bool PredicateImpl::is_static() const { return m_is_static; }
 
 size_t PredicateImpl::get_arity() const { return m_parameters.size(); }
 }
