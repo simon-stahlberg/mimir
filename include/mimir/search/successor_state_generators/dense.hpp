@@ -153,12 +153,17 @@ private:
         state_bitset -= action.get_unconditional_negative_effect_bitset();
         state_bitset |= action.get_unconditional_positive_effect_bitset();
 
+        const auto positive_static_precondition = state.get_problem()->get_static_initial_positive_atoms_bitset();
+        const auto negative_static_precondition = state.get_problem()->get_static_initial_negative_atoms_bitset();
+
         /* Conditional effects */
         const auto num_conditional_effects = action.get_conditional_effects().size();
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
             if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
-                && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i]))
+                && positive_static_precondition.is_superseteq(action.get_conditional_positive_static_precondition_bitsets()[i])
+                && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i])
+                && negative_static_precondition.is_superseteq(action.get_conditional_negative_static_precondition_bitsets()[i]))
             {
                 const auto simple_effect = action.get_conditional_effects()[i];
                 if (simple_effect.is_negated)

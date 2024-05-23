@@ -739,16 +739,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     if (problem.get_goal_condition().has_value())
     {
         goal_literals = translate_grounded(*problem.get_goal_condition().value());
-        for (const auto ground_atom : goal_literals)
-        {
-            std::cout << ground_atom->get_identifier() << " " << *ground_atom << std::endl;
-        }
-        // for (const auto grounded_literal : translate_grounded(*problem.get_goal_condition().value()))
-        //{
-        //     const auto predicate = grounded_literal->get_atom()->get_predicate();
-        //
-        //    if (m_fluent_predicates.count(predicate) ||)
-        //}
     }
 
     // Derive static and fluent initial literals

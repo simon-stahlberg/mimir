@@ -124,7 +124,7 @@ public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
     [[nodiscard]] FlatBitset get_atoms_bitset() const { return m_view.get<1>(); }
-    [[nodiscard]] Problem get_problem() { return m_view.get<2>(); }
+    [[nodiscard]] Problem get_problem() const { return m_view.get<2>(); }
 
     bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
