@@ -81,6 +81,9 @@ concept IsPredicate = requires(T a) {
 };
 
 template<IsPredicate P>
+using PredicateList = std::vector<const P*>;
+
+template<IsPredicate P>
 class AtomImpl;
 template<IsPredicate P>
 using Atom = const AtomImpl<P>*;

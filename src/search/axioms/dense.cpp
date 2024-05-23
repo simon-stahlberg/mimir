@@ -45,11 +45,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, co
     auto positive_precondition_bitset = axiom.get_applicability_positive_precondition_bitset();
     auto negative_precondition_bitset = axiom.get_applicability_negative_precondition_bitset();
 
-    auto positive_precondition = GroundAtomList {};
-    auto negative_precondition = GroundAtomList {};
+    auto positive_precondition = GroundAtomList<FluentPredicateImpl> {};
+    auto negative_precondition = GroundAtomList<FluentPredicateImpl> {};
 
-    pddl_factories.get_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
-    pddl_factories.get_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
 
     os << "Axiom("
        << "id=" << axiom.get_id() << ", "

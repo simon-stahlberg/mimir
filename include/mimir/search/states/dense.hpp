@@ -21,6 +21,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states/interface.hpp"
 
@@ -126,11 +127,11 @@ public:
     [[nodiscard]] FlatBitset get_atoms_bitset() const { return m_view.get<1>(); }
     [[nodiscard]] Problem get_problem() const { return m_view.get<2>(); }
 
-    bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
+    bool contains(const GroundAtom<FluentPredicateImpl>& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
-    bool literal_holds(const GroundLiteral& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
+    bool literal_holds(const GroundLiteral<FluentPredicateImpl>& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
 
-    bool literals_hold(const GroundLiteralList& literals) const
+    bool literals_hold(const GroundLiteralList<FluentPredicateImpl>& literals) const
     {
         for (const auto& literal : literals)
         {

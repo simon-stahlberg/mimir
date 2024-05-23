@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, co
 {
     const auto [simple_effect, pddl_factories] = data;
 
-    const auto& ground_atom = pddl_factories.get_ground_atom(simple_effect.atom_id);
+    const auto& ground_atom = pddl_factories.get_fluent_ground_atom(simple_effect.atom_id);
 
     if (simple_effect.is_negated)
     {
@@ -81,29 +81,29 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
     auto negative_conditional_static_condition_bitsets = action.get_conditional_negative_static_precondition_bitsets();
     auto conditional_effects = action.get_conditional_effects();
 
-    auto positive_precondition = GroundAtomList {};
-    auto negative_precondition = GroundAtomList {};
-    auto positive_static_precondition = GroundAtomList {};
-    auto negative_static_precondition = GroundAtomList {};
-    auto positive_simple_effects = GroundAtomList {};
-    auto negative_simple_effects = GroundAtomList {};
-    auto positive_conditional_preconditions = std::vector<GroundAtomList> {};
-    auto negative_conditional_preconditions = std::vector<GroundAtomList> {};
+    auto positive_precondition = GroundAtomList<FluentPredicateImpl> {};
+    auto negative_precondition = GroundAtomList<FluentPredicateImpl> {};
+    auto positive_static_precondition = GroundAtomList<StaticPredicateImpl> {};
+    auto negative_static_precondition = GroundAtomList<StaticPredicateImpl> {};
+    auto positive_simple_effects = GroundAtomList<FluentPredicateImpl> {};
+    auto negative_simple_effects = GroundAtomList<FluentPredicateImpl> {};
+    auto positive_conditional_preconditions = std::vector<GroundAtomList<FluentPredicateImpl>> {};
+    auto negative_conditional_preconditions = std::vector<GroundAtomList<FluentPredicateImpl>> {};
 
-    pddl_factories.get_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
-    pddl_factories.get_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
     pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
     pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
-    pddl_factories.get_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
 
     const auto num_conditional_effects = action.get_conditional_effects().size();
     positive_conditional_preconditions.resize(num_conditional_effects);
     negative_conditional_preconditions.resize(num_conditional_effects);
     for (size_t i = 0; i < num_conditional_effects; ++i)
     {
-        pddl_factories.get_ground_atoms_from_ids(positive_conditional_condition_bitsets[i], positive_conditional_preconditions[i]);
-        pddl_factories.get_ground_atoms_from_ids(negative_conditional_condition_bitsets[i], negative_conditional_preconditions[i]);
+        pddl_factories.get_fluent_ground_atoms_from_ids(positive_conditional_condition_bitsets[i], positive_conditional_preconditions[i]);
+        pddl_factories.get_fluent_ground_atoms_from_ids(negative_conditional_condition_bitsets[i], negative_conditional_preconditions[i]);
     }
 
     os << "Action("

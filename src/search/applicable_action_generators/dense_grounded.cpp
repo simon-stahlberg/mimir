@@ -45,24 +45,28 @@ namespace mimir
 static std::vector<size_t> compute_ground_atom_order(const FlatBitsetBuilder& atoms, const PDDLFactories& pddl_factories)
 {
     auto ground_atoms_order = std::vector<size_t> {};
-    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate, GroundAtomList> {};
-    for (const auto& ground_atom : pddl_factories.get_ground_atoms_from_ids(atoms))
+    auto m_ground_atoms_by_predicate = std::unordered_map<FluentPredicate, GroundAtomList<FluentPredicateImpl>> {};
+    for (const auto& ground_atom : pddl_factories.get_fluent_ground_atoms_from_ids(atoms))
     {
         m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
     }
-    auto ground_atoms = GroundAtomList {};
+    auto ground_atoms = GroundAtomList<FluentPredicateImpl> {};
     // Sort group decreasingly in their size.
-    auto sorted_groups = std::vector<GroundAtomList> {};
+    auto sorted_groups = std::vector<GroundAtomList<FluentPredicateImpl>> {};
     for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
     {
         sorted_groups.push_back(group);
     }
-    std::sort(sorted_groups.begin(), sorted_groups.end(), [](const GroundAtomList& left, const GroundAtomList& right) { return left.size() > right.size(); });
+    std::sort(sorted_groups.begin(),
+              sorted_groups.end(),
+              [](const GroundAtomList<FluentPredicateImpl>& left, const GroundAtomList<FluentPredicateImpl>& right) { return left.size() > right.size(); });
     for (const auto& group : sorted_groups)
     {
         // Sort grounded atoms in the group lexicographically to get compiler independent results.
         auto sorted_group = group;
-        std::sort(sorted_group.begin(), sorted_group.end(), [](const GroundAtom& left, const GroundAtom& right) { return left->str() < right->str(); });
+        std::sort(sorted_group.begin(),
+                  sorted_group.end(),
+                  [](const GroundAtom<FluentPredicateImpl>& left, const GroundAtom<FluentPredicateImpl>& right) { return left->str() < right->str(); });
         for (const auto& grounded_atom : sorted_group)
 
         {
@@ -133,7 +137,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids(state_bitset),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_fluent_ground_atoms_from_ids(state_bitset),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 

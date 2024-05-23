@@ -53,7 +53,7 @@ private:
 
     [[nodiscard]] DenseState get_or_create_initial_state_impl()
     {
-        auto ground_atoms = GroundAtomList {};
+        auto ground_atoms = GroundAtomList<FluentPredicateImpl> {};
 
         for (const auto& literal : m_aag->get_problem()->get_fluent_initial_literals())
         {
@@ -68,7 +68,7 @@ private:
         return get_or_create_state(ground_atoms);
     }
 
-    [[nodiscard]] State get_or_create_state_impl(const GroundAtomList& atoms)
+    [[nodiscard]] State get_or_create_state_impl(const GroundAtomList<FluentPredicateImpl>& atoms)
     {
         /* Header */
 

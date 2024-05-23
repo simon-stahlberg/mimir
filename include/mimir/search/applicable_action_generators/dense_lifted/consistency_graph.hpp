@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_CONSISTENCY_GRAPH_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 #include <optional>
 #include <sstream>
@@ -26,6 +27,7 @@
 
 namespace mimir
 {
+template<IsPredicate P>
 class AssignmentSet;
 }
 
@@ -105,8 +107,8 @@ public:
     StaticConsistencyGraph(Problem problem,
                            size_t begin_parameter_index,
                            size_t end_parameter_index,
-                           const LiteralList& static_conditions,
-                           const AssignmentSet& static_assignment_set);
+                           const LiteralList<StaticPredicateImpl>& static_conditions,
+                           const AssignmentSet<StaticPredicateImpl>& static_assignment_set);
 
     /// @brief Get the vertices.
     const Vertices& get_vertices() const { return m_vertices; }
@@ -132,7 +134,7 @@ private:
     std::vector<StaticConsistencyGraph> m_universal_effects;
 
 public:
-    Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set);
+    Graphs(Problem problem, Action action, const AssignmentSet<StaticPredicateImpl>& static_assignment_set);
 
     const StaticConsistencyGraph& get_precondition_graph() const;
     const std::vector<StaticConsistencyGraph>& get_universal_effect_graphs() const;

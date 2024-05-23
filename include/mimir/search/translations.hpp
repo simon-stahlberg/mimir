@@ -19,12 +19,22 @@
 #define MIMIR_SEARCH_TRANSLATIONS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 namespace mimir
 {
 
 /// @brief Translates a bitset into a list of ground atoms
-extern void to_ground_atoms(const GroundLiteralList& literals, GroundAtomList& out_ground_atoms);
+template<IsPredicate P>
+void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms)
+{
+    out_ground_atoms.clear();
+
+    for (const auto& literal : literals)
+    {
+        out_ground_atoms.push_back(literal->get_atom());
+    }
+}
 
 }
 

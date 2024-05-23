@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/successor_state_generators/tags.hpp"
@@ -37,7 +38,7 @@ public:
 
     /// @brief Expert interface for creating states.
     /// The user must ensure that the atoms are part of the problem from the applicable action generator.
-    [[nodiscard]] virtual State get_or_create_state(const GroundAtomList& atoms) = 0;
+    [[nodiscard]] virtual State get_or_create_state(const GroundAtomList<FluentPredicateImpl>& atoms) = 0;
 
     [[nodiscard]] virtual State get_or_create_successor_state(const State state, const GroundAction action) = 0;
 
@@ -66,7 +67,7 @@ public:
         return self().get_or_create_initial_state_impl();
     }
 
-    [[nodiscard]] State get_or_create_state(const GroundAtomList& atoms) override
+    [[nodiscard]] State get_or_create_state(const GroundAtomList<FluentPredicateImpl>& atoms) override
     {  //
         return self().get_or_create_state_impl(atoms);
     }

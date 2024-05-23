@@ -20,6 +20,7 @@
 #include "mimir/formalism/translators/utils.hpp"
 
 #include <numeric>
+#include <typeinfo>
 
 namespace mimir
 {
@@ -707,17 +708,13 @@ StaticOrFluentGroundLiteral ToMimirStructures::translate_grounded(const loki::Li
         [this, &literal](auto&& arg) -> StaticOrFluentGroundLiteral
         {
             using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, GroundLiteral<StaticPredicateImpl>>)
+            if constexpr (std::is_same_v<T, GroundAtom<StaticPredicateImpl>>)
             {
                 return m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), arg);
             }
-            else if constexpr (std::is_same_v<T, GroundLiteral<FluentPredicateImpl>>)
+            else if constexpr (std::is_same_v<T, GroundAtom<FluentPredicateImpl>>)
             {
                 return m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), arg);
-            }
-            else
-            {
-                throw std::runtime_error("Unhandled type in variant");
             }
         },
         static_or_fluent_ground_atom);

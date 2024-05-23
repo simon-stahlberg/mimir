@@ -35,8 +35,8 @@ private:
     Requirements m_requirements;
     ObjectList m_constants;
     StaticPredicateList m_static_predicates;
-    FluentPredicateList m_derived_predicates;
     FluentPredicateList m_fluent_predicates;
+    FluentPredicateList m_derived_predicates;
     FunctionSkeletonList m_functions;
     ActionList m_actions;
     AxiomList m_axioms;

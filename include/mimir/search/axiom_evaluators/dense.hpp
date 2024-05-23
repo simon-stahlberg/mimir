@@ -64,11 +64,15 @@ private:
 
     void nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms);
 
-    void
-    unary_case(const AssignmentSet& assignment_sets, const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms);
+    void unary_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
+                    const Axiom& axiom,
+                    const FlatBitsetBuilder& state_atoms,
+                    DenseGroundAxiomList& out_applicable_axioms);
 
-    void
-    general_case(const AssignmentSet& assignment_sets, const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms);
+    void general_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
+                      const Axiom& axiom,
+                      const FlatBitsetBuilder& state_atoms,
+                      DenseGroundAxiomList& out_applicable_axioms);
 
     /* Implement IStaticAE interface */
     friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;

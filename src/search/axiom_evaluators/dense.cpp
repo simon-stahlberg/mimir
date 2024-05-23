@@ -61,7 +61,7 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment_sets,
+void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
                                                  const Axiom& axiom,
                                                  const FlatBitsetBuilder& state_atoms,
                                                  DenseGroundAxiomList& out_applicable_axioms)
@@ -89,7 +89,7 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignment_sets,
+void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
                                                    const Axiom& axiom,
                                                    const FlatBitsetBuilder& state_atoms,
                                                    DenseGroundAxiomList& out_applicable_axioms)
@@ -162,12 +162,19 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
     m_event_handler->on_start_generating_applicable_axioms();
 
-    auto ground_atoms = GroundAtomList {};
+    auto ground_atoms = GroundAtomList<FluentPredicateImpl> {};
     for (const auto& atom_id : ref_state_atoms)
     {
-        ground_atoms.push_back(m_pddl_factories.get_ground_atom(atom_id));
+        ground_atoms.push_back(m_pddl_factories.get_fluent_ground_atom(atom_id));
     }
-    auto assignment_sets = AssignmentSet(m_problem, ground_atoms);
+
+    auto fluent_predicates = m_problem->get_domain()->get_fluent_predicates();
+    const auto& domain_derived_predicates = m_problem->get_domain()->get_derived_predicates();
+    fluent_predicates.insert(fluent_predicates.end(), domain_derived_predicates.begin(), domain_derived_predicates.end());
+    const auto& problem_derived_predicates = m_problem->get_derived_predicates();
+    fluent_predicates.insert(fluent_predicates.end(), problem_derived_predicates.begin(), problem_derived_predicates.end());
+
+    auto assignment_sets = AssignmentSet<FluentPredicateImpl>(m_problem, fluent_predicates, ground_atoms);
 
     /* 2. Initialize bookkeeping */
 
@@ -231,7 +238,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
                 if (!ref_state_atoms.get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_pddl_factories.get_ground_atom(grounded_atom_id);
+                    const auto new_ground_atom = m_pddl_factories.get_fluent_ground_atom(grounded_atom_id);
                     reached_partition_fixed_point = false;
 
                     // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,
@@ -297,9 +304,9 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
 
     /* 3. Initialize static consistency graph */
 
-    auto static_initial_atoms = GroundAtomList {};
+    auto static_initial_atoms = GroundAtomList<StaticPredicateImpl> {};
     to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
-    const auto static_assignment_set = AssignmentSet(m_problem, static_initial_atoms);
+    const auto static_assignment_set = AssignmentSet<StaticPredicateImpl>(m_problem, m_problem->get_domain()->get_static_predicates(), static_initial_atoms);
 
     for (const auto& axiom : axioms)
     {
@@ -330,8 +337,10 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
 
     m_event_handler->on_ground_axiom(axiom, binding);
 
-    const auto fill_fluent_bitsets =
-        [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
+    const auto fill_fluent_bitsets = [this](const std::vector<Literal<FluentPredicateImpl>>& literals,
+                                            FlatBitsetBuilder& ref_positive_bitset,
+                                            FlatBitsetBuilder& ref_negative_bitset,
+                                            const auto& binding)
     {
         for (const auto& literal : literals)
         {
@@ -348,8 +357,10 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
         }
     };
 
-    const auto fill_static_bitsets =
-        [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
+    const auto fill_static_bitsets = [this](const std::vector<Literal<StaticPredicateImpl>>& literals,
+                                            FlatBitsetBuilder& ref_positive_bitset,
+                                            FlatBitsetBuilder& ref_negative_bitset,
+                                            const auto& binding)
     {
         for (const auto& literal : literals)
         {

@@ -112,7 +112,8 @@ public:
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        const auto& goal_ground_literals = m_successor_generator->get_problem()->get_goal_condition();
+        // TODO: Handle static goals
+        const auto& goal_ground_literals = m_successor_generator->get_problem()->get_fluent_goal_condition();
 
         auto applicable_actions = GroundActionList {};
 

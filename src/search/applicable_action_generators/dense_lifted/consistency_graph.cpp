@@ -36,8 +36,8 @@ using mimir::operator<<;
 StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
                                                size_t begin_parameter_index,
                                                size_t end_parameter_index,
-                                               const LiteralList& static_conditions,
-                                               const AssignmentSet& static_assignment_set) :
+                                               const LiteralList<StaticPredicateImpl>& static_conditions,
+                                               const AssignmentSet<StaticPredicateImpl>& static_assignment_set) :
     m_problem(problem)
 {
     /* 2. Compute vertices */
@@ -88,7 +88,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
     }
 }
 
-Graphs::Graphs(Problem problem, Action action, const AssignmentSet& static_assignment_set) :
+Graphs::Graphs(Problem problem, Action action, const AssignmentSet<StaticPredicateImpl>& static_assignment_set) :
     m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_static_conditions(), static_assignment_set))
 {
     m_universal_effects.reserve(action->get_universal_effects().size());

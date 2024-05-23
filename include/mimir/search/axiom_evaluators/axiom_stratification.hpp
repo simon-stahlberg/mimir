@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_STRATIFICATION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 namespace mimir
 {
@@ -31,13 +32,13 @@ private:
     // Axioms without derived literal in the body.
     AxiomSet m_initially_relevant_axioms;
 
-    std::unordered_map<Predicate, AxiomSet> m_axioms_by_body_predicates;
+    std::unordered_map<FluentPredicate, AxiomSet> m_axioms_by_body_predicates;
 
 public:
-    explicit AxiomPartition(AxiomSet axioms, const PredicateSet& derived_predicates, const PredicateSet& affected_derived_predicates);
+    explicit AxiomPartition(AxiomSet axioms, const FluentPredicateSet& derived_predicates, const FluentPredicateSet& affected_derived_predicates);
 
     /// @brief Retrieve all axioms that have an atom with the same predicate in the body.
-    void retrieve_axioms_with_same_body_predicate(GroundAtom derived_atom, AxiomSet& ref_axioms) const;
+    void retrieve_axioms_with_same_body_predicate(GroundAtom<FluentPredicateImpl> derived_atom, AxiomSet& ref_axioms) const;
 
     const AxiomSet& get_axioms() const;
     const AxiomSet& get_initially_relevant_axioms() const;
@@ -48,7 +49,7 @@ public:
 /// Source: https://users.cecs.anu.edu.au/~thiebaux/papers/ijcai03.pdf
 /// @param axioms
 /// @return
-extern std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, const PredicateList& derived_predicates);
+extern std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, const FluentPredicateList& derived_predicates);
 
 }
 
