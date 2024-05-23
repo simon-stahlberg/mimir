@@ -89,9 +89,12 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     auto delete_free_lifted_aag = std::make_shared<LiftedDenseAAG>(delete_free_problem, m_pddl_factories);
     auto delete_free_ssg = DenseSSG(delete_free_lifted_aag);
 
+    // TODO: create a constructor that takes all arguments in 1 go.
     auto state_builder = StateBuilder();
     auto& state_bitset = state_builder.get_atoms_bitset();
+    auto& state_problem = state_builder.get_problem();
     state_bitset = delete_free_ssg.get_or_create_initial_state().get_atoms_bitset();
+    state_problem = delete_free_problem;
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -134,12 +137,6 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
-    auto static_atom_ids = FlatBitsetBuilder();
-    for (const auto& static_initial_literal : m_problem->get_static_initial_literals())
-    {
-        static_atom_ids.set(static_initial_literal->get_atom()->get_identifier());
-    }
-
     auto ground_atoms_order = compute_ground_atom_order(state_bitset, m_pddl_factories);
 
     // 2. Create ground actions
@@ -151,9 +148,13 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto action_arguments = ObjectList(action.get_objects().begin(), action.get_objects().end());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action.is_statically_applicable(static_atom_ids))
+            if (grounded_action.is_statically_applicable(problem->get_static_initial_negative_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
+            }
+            else
+            {
+                std::cout << "INAPPLICABLE!!!" << std::endl;
             }
         }
     }
@@ -161,7 +162,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
-    m_action_match_tree = MatchTree(ground_actions, static_atom_ids, ground_atoms_order);
+    m_action_match_tree = MatchTree(ground_actions, ground_atoms_order);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -174,7 +175,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto axiom_arguments = ObjectList(axiom.get_objects().begin(), axiom.get_objects().end());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom.is_statically_applicable(static_atom_ids))
+            if (grounded_axiom.is_statically_applicable(problem->get_static_initial_negative_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
@@ -184,7 +185,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(ground_axioms, static_atom_ids, ground_atoms_order);
+    m_axiom_match_tree = MatchTree(ground_axioms, ground_atoms_order);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }

@@ -37,6 +37,8 @@ using FlatDenseAxiomLayout = flatmemory::Tuple<uint32_t,  //
                                                FlatObjectListLayout,
                                                FlatBitsetLayout,
                                                FlatBitsetLayout,
+                                               FlatBitsetLayout,
+                                               FlatBitsetLayout,
                                                FlatSimpleEffect>;
 using FlatDenseAxiomBuilder = flatmemory::Builder<FlatDenseAxiomLayout>;
 using FlatDenseAxiom = flatmemory::ConstView<FlatDenseAxiomLayout>;
@@ -94,8 +96,10 @@ public:
     /* Precondition */
     [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<3>(); }
     [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<4>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_static_precondition_bitset() { return m_builder.get<5>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_static_precondition_bitset() { return m_builder.get<6>(); }
     /* Simple effect */
-    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<5>(); }
+    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<7>(); }
 };
 
 /**
@@ -136,21 +140,25 @@ public:
     /* Precondition */
     [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<3>(); }
     [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<4>(); }
+    [[nodiscard]] FlatBitset get_applicability_positive_static_precondition_bitset() const { return m_view.get<5>(); }
+    [[nodiscard]] FlatBitset get_applicability_negative_static_precondition_bitset() const { return m_view.get<6>(); }
     /* Effect*/
-    [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<5>(); }
+    [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<7>(); }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_applicable(const Bitset& state_bitset) const
+    [[nodiscard]] bool is_applicable(const Bitset state_bitset) const
     {
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
-               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
+               && state_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
+               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
+               && state_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset& static_initial_atoms) const
+    [[nodiscard]] bool is_statically_applicable(const Bitset static_negative_bitset) const
     {
-        // TODO: is this correct?
-        return static_initial_atoms.are_disjoint(get_applicability_negative_precondition_bitset());
+        // positive atoms are a superset in the state
+        return static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 };
 

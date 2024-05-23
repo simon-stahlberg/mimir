@@ -353,7 +353,7 @@ Function ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
     return m_pddl_factories.get_or_create_function(translate_lifted(*function.get_function_skeleton()), translate_lifted(function.get_terms()));
 }
 
-std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
+std::tuple<LiteralList, LiteralList> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
@@ -361,12 +361,9 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
                                         const Literal& translated_literal,
                                         const std::unordered_set<loki::Predicate>& fluent_predicates,
                                         const std::unordered_set<loki::Predicate>& derived_predicates,
-                                        LiteralList& ref_literals,
                                         LiteralList& ref_static_literals,
                                         LiteralList& ref_fluent_literals)
     {
-        ref_literals.push_back(translated_literal);
-
         const auto predicate = literal->get_atom()->get_predicate();
 
         if (fluent_predicates.count(predicate) || derived_predicates.count(predicate))
@@ -381,7 +378,6 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
 
     if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition_ptr))
     {
-        auto literals = LiteralList {};
         auto static_literals = LiteralList {};
         auto fluent_literals = LiteralList {};
         for (const auto& part : condition_and->get_conditions())
@@ -394,7 +390,6 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
                                     translated_literal,
                                     m_fluent_predicates,
                                     m_derived_predicates,
-                                    literals,
                                     static_literals,
                                     fluent_literals);
             }
@@ -405,25 +400,18 @@ std::tuple<LiteralList, LiteralList, LiteralList> ToMimirStructures::translate_l
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(literals, static_literals, fluent_literals);
+        return std::make_tuple(static_literals, fluent_literals);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
     {
-        auto literals = LiteralList {};
         auto static_literals = LiteralList {};
         auto fluent_literals = LiteralList {};
 
         const auto translated_literal = translate_lifted(*condition_literal->get_literal());
 
-        func_insert_fluents(condition_literal->get_literal(),
-                            translated_literal,
-                            m_fluent_predicates,
-                            m_derived_predicates,
-                            literals,
-                            static_literals,
-                            fluent_literals);
+        func_insert_fluents(condition_literal->get_literal(), translated_literal, m_fluent_predicates, m_derived_predicates, static_literals, fluent_literals);
 
-        return std::make_tuple(literals, static_literals, fluent_literals);
+        return std::make_tuple(static_literals, fluent_literals);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -456,13 +444,11 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             }
 
             // 3. Parse conditional part
-            auto literals = LiteralList {};
             auto static_literals = LiteralList {};
             auto fluent_literals = LiteralList {};
             if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
             {
-                const auto [literals_, static_literals_, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
-                literals = literals_;
+                const auto [static_literals_, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
                 static_literals = static_literals_;
                 fluent_literals = fluent_literals_;
 
@@ -477,12 +463,11 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
                 if (!parameters.empty())
                 {
                     universal_effects.push_back(
-                        m_pddl_factories.get_or_create_universal_effect(parameters, literals, static_literals, fluent_literals, translated_effect));
+                        m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, translated_effect));
                 }
-                else if (!literals.empty())
+                else if (!(static_literals.empty() && fluent_literals.empty()))
                 {
-                    conditional_effects.push_back(
-                        m_pddl_factories.get_or_create_conditional_effect(literals, static_literals, fluent_literals, translated_effect));
+                    conditional_effects.push_back(m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, translated_effect));
                 }
                 else
                 {
@@ -537,13 +522,11 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     m_cur_parameter_index = parameters.size();
 
     // 2. Translate conditions
-    auto literals = LiteralList {};
     auto static_literals = LiteralList {};
     auto fluent_literals = LiteralList {};
     if (action.get_condition().has_value())
     {
-        const auto [literals_, static_literals_, fluent_literals_] = translate_lifted(*action.get_condition().value());
-        literals = literals_;
+        const auto [static_literals_, fluent_literals_] = translate_lifted(*action.get_condition().value());
         static_literals = static_literals_;
         fluent_literals = fluent_literals_;
     }
@@ -565,7 +548,6 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     return m_pddl_factories.get_or_create_action(action.get_name(),
                                                  action.get_original_arity(),
                                                  parameters,
-                                                 literals,
                                                  static_literals,
                                                  fluent_literals,
                                                  simple_effects,
@@ -580,9 +562,9 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
     m_cur_parameter_index = 0;
     auto parameters = translate_common(axiom.get_parameters());
 
-    const auto [literals, static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
+    const auto [static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
 
-    return m_pddl_factories.get_or_create_axiom(parameters, translate_lifted(*axiom.get_literal()), literals, static_literals, fluent_literals);
+    return m_pddl_factories.get_or_create_axiom(parameters, translate_lifted(*axiom.get_literal()), static_literals, fluent_literals);
 }
 
 Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
@@ -641,7 +623,16 @@ Object ToMimirStructures::translate_grounded(const loki::TermImpl& term)
 
 GroundAtom ToMimirStructures::translate_grounded(const loki::AtomImpl& atom)
 {
-    return m_pddl_factories.get_or_create_ground_atom(translate_common(*atom.get_predicate()), translate_grounded(atom.get_terms()));
+    const auto predicate = atom.get_predicate();
+
+    if (m_fluent_predicates.count(predicate) || m_derived_predicates.count(predicate))
+    {
+        return m_pddl_factories.get_or_create_ground_atom(translate_common(*atom.get_predicate()), translate_grounded(atom.get_terms()));
+    }
+    else
+    {
+        return m_pddl_factories.get_or_create_static_ground_atom(translate_common(*atom.get_predicate()), translate_grounded(atom.get_terms()));
+    }
 }
 
 GroundLiteral ToMimirStructures::translate_grounded(const loki::LiteralImpl& literal)
@@ -749,7 +740,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     }
 
     // Derive static and fluent initial literals
-    auto initial_literals = GroundLiteralList {};
     auto static_initial_literals = GroundLiteralList {};
     auto static_always_positive_initial_literals = GroundLiteralList {};
     auto fluent_initial_literals = GroundLiteralList {};
@@ -757,8 +747,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     for (const auto& literal : translate_grounded(problem.get_initial_literals()))
     {
         const auto& predicate = literal->get_atom()->get_predicate();
-
-        initial_literals.push_back(literal);
 
         if (static_predicates.count(predicate))
         {
@@ -780,7 +768,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                 m_pddl_factories.get_or_create_ground_literal(false,
                                                               m_pddl_factories.get_or_create_ground_atom(m_equal_predicate, ObjectList { object, object }));
 
-            initial_literals.push_back(equal_literal);
             static_initial_literals.push_back(equal_literal);
         }
     }
@@ -790,7 +777,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                   translate_common(*problem.get_requirements()),
                                                   objects,
                                                   derived_predicates,
-                                                  initial_literals,
                                                   static_initial_literals,
                                                   fluent_initial_literals,
                                                   translate_grounded(problem.get_numeric_fluents()),

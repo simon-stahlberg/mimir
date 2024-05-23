@@ -78,9 +78,9 @@ struct CastVisitor
  */
 void init_pymimir(py::module_& m)
 {
-    /**
-     * Formalism
-     */
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Formalism
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     py::enum_<loki::RequirementEnum>(m, "RequirementEnum")
         .value("STRIPS", loki::RequirementEnum::STRIPS)
@@ -221,7 +221,6 @@ void init_pymimir(py::module_& m)
     py::class_<EffectConditionalImpl>(m, "ConditionalEffect")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalImpl>::str, py::const_))
         .def("get_identifier", &EffectConditionalImpl::get_identifier)
-        .def("get_conditions", &EffectConditionalImpl::get_conditions, py::return_value_policy::reference)
         .def("get_static_conditions", &EffectConditionalImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &EffectConditionalImpl::get_fluent_conditions, py::return_value_policy::reference)
         .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference);
@@ -234,7 +233,6 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<EffectUniversalImpl>::str, py::const_))
         .def("get_identifier", &EffectUniversalImpl::get_identifier)
         .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_conditions", &EffectUniversalImpl::get_conditions, py::return_value_policy::reference)
         .def("get_static_conditions", &EffectUniversalImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &EffectUniversalImpl::get_fluent_conditions, py::return_value_policy::reference)
         .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference);
@@ -328,7 +326,6 @@ void init_pymimir(py::module_& m)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
         .def("get_arity", &ActionImpl::get_arity)
         .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_conditions", &ActionImpl::get_conditions, py::return_value_policy::reference)
         .def("get_static_conditions", &ActionImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &ActionImpl::get_fluent_conditions, py::return_value_policy::reference)
         .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference)
@@ -339,7 +336,6 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
         .def("get_identifier", &AxiomImpl::get_identifier)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
-        .def("get_conditions", &AxiomImpl::get_conditions, py::return_value_policy::reference)
         .def("get_static_conditions", &AxiomImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &AxiomImpl::get_fluent_conditions, py::return_value_policy::reference);
 
@@ -362,7 +358,8 @@ void init_pymimir(py::module_& m)
         .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference)
         .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference)
         .def("get_objects", &ProblemImpl::get_objects, py::return_value_policy::reference)
-        .def("get_initial_literals", &ProblemImpl::get_initial_literals, py::return_value_policy::reference)
+        .def("get_static_initial_literals", &ProblemImpl::get_static_initial_literals, py::return_value_policy::reference)
+        .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::return_value_policy::reference)
         .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference)
         .def("get_goal_condition", &ProblemImpl::get_goal_condition, py::return_value_policy::reference);
@@ -375,9 +372,9 @@ void init_pymimir(py::module_& m)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference)
         .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference);
 
-    /**
-     * Search
-     */
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Search
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     py::enum_<SearchNodeStatus>(m, "SearchNodeStatus")
         .value("NEW", SearchNodeStatus::NEW)
@@ -497,4 +494,12 @@ void init_pymimir(py::module_& m)
                       std::shared_ptr<IDynamicSSG>,
                       std::shared_ptr<IDynamicHeuristic>,
                       std::shared_ptr<IAlgorithmEventHandler>>());
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // DataSets
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    // StateSpace
+    py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
+        .def_static("create", &StateSpaceImpl::create);
 }

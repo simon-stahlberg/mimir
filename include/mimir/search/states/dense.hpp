@@ -33,7 +33,7 @@ namespace mimir
 /**
  * Flatmemory types
  */
-using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout>;
+using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout, Problem>;
 using FlatDenseStateBuilder = flatmemory::Builder<FlatDenseStateLayout>;
 using FlatDenseState = flatmemory::ConstView<FlatDenseStateLayout>;
 
@@ -42,7 +42,8 @@ struct FlatDenseStateHash
     size_t operator()(const FlatDenseState& view) const
     {
         const auto bitset_view = view.get<1>();
-        return bitset_view.hash();
+        const auto problem = view.get<2>();
+        return loki::hash_combine(bitset_view.hash(), problem);
     }
 };
 
@@ -52,7 +53,9 @@ struct FlatDenseStateEqual
     {
         const auto bitset_view_left = view_left.get<1>();
         const auto bitset_view_right = view_right.get<1>();
-        return bitset_view_left == bitset_view_right;
+        const auto problem_left = view_left.get<2>();
+        const auto problem_right = view_right.get<2>();
+        return (bitset_view_left == bitset_view_right) && (problem_left == problem_right);
     }
 };
 
@@ -86,6 +89,7 @@ private:
 
 public:
     [[nodiscard]] FlatBitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
+    [[nodiscard]] Problem& get_problem() { return m_builder.get<2>(); }
 };
 
 /**
@@ -120,6 +124,7 @@ public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
     [[nodiscard]] FlatBitset get_atoms_bitset() const { return m_view.get<1>(); }
+    [[nodiscard]] Problem get_problem() { return m_view.get<2>(); }
 
     bool contains(const GroundAtom& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
@@ -145,6 +150,14 @@ public:
 
 using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
 using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
+using DenseStateList = std::vector<DenseState>;
+
+struct DenseStateHash
+{
+    size_t operator()(const DenseState& view) const { return view.hash(); }
+};
+
+using DenseStateSet = std::unordered_set<DenseState, DenseStateHash>;
 
 /**
  * Pretty printing

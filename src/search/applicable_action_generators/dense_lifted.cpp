@@ -126,12 +126,30 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_bitsets =
+    const auto fill_fluent_bitsets =
         [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
     {
         for (const auto& literal : literals)
         {
-            const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
+            const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    };
+
+    const auto fill_static_bitsets =
+        [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = m_pddl_factories.ground_static_literal(literal, binding);
 
             if (grounded_literal->is_negated())
             {
@@ -146,7 +164,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     const auto fill_effect = [this](const Literal& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
-        const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
+        const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
         ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
     };
@@ -169,7 +187,12 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
     positive_precondition.unset_all();
     negative_precondition.unset_all();
-    fill_bitsets(action->get_conditions(), positive_precondition, negative_precondition, binding);
+    fill_fluent_bitsets(action->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
+    auto& positive_static_precondition = m_action_builder.get_applicability_positive_static_precondition_bitset();
+    auto& negative_static_precondition = m_action_builder.get_applicability_negative_static_precondition_bitset();
+    positive_static_precondition.unset_all();
+    negative_static_precondition.unset_all();
+    fill_static_bitsets(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
 
     /* Simple effects */
     auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
@@ -181,12 +204,14 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     {
         effect_literals.push_back(effect->get_effect());
     }
-    fill_bitsets(effect_literals, positive_effect, negative_effect, binding);
+    fill_fluent_bitsets(effect_literals, positive_effect, negative_effect, binding);
 
     /* Conditional effects */
     // Fetch data
     auto& positive_conditional_preconditions = m_action_builder.get_conditional_positive_precondition_bitsets();
     auto& negative_conditional_preconditions = m_action_builder.get_conditional_negative_precondition_bitsets();
+    auto& positive_conditional_static_preconditions = m_action_builder.get_conditional_positive_static_precondition_bitsets();
+    auto& negative_conditional_static_preconditions = m_action_builder.get_conditional_negative_static_precondition_bitsets();
     auto& conditional_effects = m_action_builder.get_conditional_effects();
 
     // Resize builders.
@@ -201,12 +226,18 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         {
             positive_conditional_preconditions[i].unset_all();
             negative_conditional_preconditions[i].unset_all();
+            positive_conditional_static_preconditions[i].unset_all();
+            negative_conditional_static_preconditions[i].unset_all();
 
             // Ground conditions and effect
-            fill_bitsets(action->get_conditional_effects().at(i)->get_conditions(),
-                         positive_conditional_preconditions[i],
-                         negative_conditional_preconditions[i],
-                         binding);
+            fill_fluent_bitsets(action->get_conditional_effects().at(i)->get_fluent_conditions(),
+                                positive_conditional_preconditions[i],
+                                negative_conditional_preconditions[i],
+                                binding);
+            fill_static_bitsets(action->get_conditional_effects().at(i)->get_static_conditions(),
+                                positive_conditional_static_preconditions[i],
+                                negative_conditional_static_preconditions[i],
+                                binding);
 
             fill_effect(action->get_conditional_effects().at(i)->get_effect(), conditional_effects[i], binding);
         }
@@ -235,6 +266,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
             const auto old_size = positive_conditional_preconditions.size();
             positive_conditional_preconditions.resize(old_size + num_conditional_effects);
             negative_conditional_preconditions.resize(old_size + num_conditional_effects);
+            positive_conditional_static_preconditions.resize(old_size + num_conditional_effects);
+            negative_conditional_static_preconditions.resize(old_size + num_conditional_effects);
             conditional_effects.resize(old_size + num_conditional_effects);
 
             // Create binding and ground conditions and effect
@@ -255,8 +288,18 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 // Ground conditions and effect
                 positive_conditional_preconditions[j].unset_all();
                 negative_conditional_preconditions[j].unset_all();
+                positive_conditional_static_preconditions[j].unset_all();
+                negative_conditional_static_preconditions[j].unset_all();
 
-                fill_bitsets(universal_effect->get_conditions(), positive_conditional_preconditions[j], negative_conditional_preconditions[j], binding_ext);
+                fill_fluent_bitsets(universal_effect->get_fluent_conditions(),
+                                    positive_conditional_preconditions[j],
+                                    negative_conditional_preconditions[j],
+                                    binding_ext);
+                fill_static_bitsets(universal_effect->get_static_conditions(),
+                                    positive_conditional_static_preconditions[j],
+                                    negative_conditional_static_preconditions[j],
+                                    binding_ext);
+
                 fill_effect(universal_effect->get_effect(), conditional_effects[j], binding_ext);
 
                 ++j;
@@ -287,13 +330,13 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 }
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Action& action, DenseState state)
+bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Action& action, DenseState state)
 {
     for (const auto& literal : action->get_fluent_conditions())
     {
         if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            if (!state.literal_holds(m_pddl_factories.ground_literal(literal, {})))
+            if (!state.literal_holds(m_pddl_factories.ground_fluent_literal(literal, {})))
             {
                 return false;
             }
@@ -375,6 +418,9 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
         }
     }
 
+    std::cout << action->get_name() << std::endl;
+    std::cout << std::make_tuple(std::cref(precondition_graph), std::cref(m_pddl_factories)) << std::endl;
+
     // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
     // parameters) tends to be very small.
@@ -382,6 +428,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
     const auto& partitions = precondition_graph.get_vertices_by_parameter_index();
     std::vector<std::vector<std::size_t>> cliques;
     find_all_k_cliques_in_k_partite_graph(adjacency_matrix, partitions, cliques);
+
+    std::cout << "Num cliques: " << cliques.size() << std::endl;
 
     for (const auto& clique : cliques)
     {
@@ -396,7 +444,11 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
             terms[parameter_index] = m_pddl_factories.get_object(object_id);
         }
 
+        std::cout << "binding: " << terms << std::endl;
+
         const auto grounded_action = ground_action(action, std::move(terms));
+
+        std::cout << std::make_tuple(grounded_action, std::cref(m_pddl_factories)) << std::endl;
 
         // TODO: We do not need to check applicability if action consists of at most binary predicates in the precondition.
         // Add this information to the FlatAction struct.
@@ -409,6 +461,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
         }
         else
         {
+            std::cout << "INAPPLICABLE" << std::endl;
             m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
         }
     }
@@ -430,7 +483,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
 
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
-        if (nullary_preconditions_hold(action, state))
+        if (nullary_fluent_preconditions_hold(action, state))
         {
             if (action->get_arity() == 0)
             {
@@ -475,7 +528,15 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
 {
     /* 1. Error checking */
 
-    for (const auto& literal : problem->get_initial_literals())
+    for (const auto& literal : problem->get_fluent_initial_literals())
+    {
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("Negative literals in the initial state is not supported.");
+        }
+    }
+
+    for (const auto& literal : problem->get_static_initial_literals())
     {
         if (literal->is_negated())
         {
@@ -494,6 +555,7 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
 
     auto static_initial_atoms = GroundAtomList {};
     to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
+
     const auto static_assignment_set = AssignmentSet(m_problem, static_initial_atoms);
 
     for (const auto& action : m_problem->get_domain()->get_actions())

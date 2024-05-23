@@ -55,7 +55,7 @@ private:
     {
         auto ground_atoms = GroundAtomList {};
 
-        for (const auto& literal : m_aag->get_problem()->get_initial_literals())
+        for (const auto& literal : m_aag->get_problem()->get_fluent_initial_literals())
         {
             if (literal->is_negated())
             {
@@ -79,12 +79,17 @@ private:
         auto& state_id = m_state_builder.get_id();
         auto& state_bitset = m_state_builder.get_atoms_bitset();
         state_bitset.unset_all();
+        auto& problem = m_state_builder.get_problem();
 
         /* 1. Set state id */
 
         state_id = next_state_id;
 
-        /* 2. Construct non-extended state */
+        /* 2. Set problem */
+
+        problem = m_aag->get_problem();
+
+        /* 3. Construct non-extended state */
 
         for (const auto& atom : atoms)
         {
@@ -96,7 +101,7 @@ private:
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
         const auto state = DenseState(*iter);
 
-        /* 3. Retrieve cached extended state */
+        /* 4. Retrieve cached extended state */
 
         if (!inserted)
         {
@@ -105,16 +110,16 @@ private:
 
         m_states_by_index.push_back(state);
 
-        /* 4. Construct extended state by evaluating Axioms */
+        /* 5. Construct extended state by evaluating Axioms */
 
         m_aag->generate_and_apply_axioms(state_bitset);
         flatmemory_builder.finish();
 
-        /* 5. Cache extended state */
+        /* 6. Cache extended state */
 
         m_extended_states_by_state.push_back(flatmemory_builder);
 
-        /* 6. Return newly generated extended state */
+        /* 7. Return newly generated extended state */
 
         return DenseState(m_extended_states_by_state[next_state_id]);
     }
@@ -127,6 +132,8 @@ private:
 
         auto& state_id = m_state_builder.get_id();
         auto& state_bitset = m_state_builder.get_atoms_bitset();
+        auto& problem = m_state_builder.get_problem();
+
         // TODO: add assignment operator to bitset to replace unset + operator|=
         state_bitset.unset_all();
         const auto& unextended_state = m_states_by_index[state.get_id()];
@@ -136,7 +143,11 @@ private:
 
         state_id = next_state_id;
 
-        /* 2. Construct non-extended state */
+        /* 2. Set problem */
+
+        problem = m_aag->get_problem();
+
+        /* 3. Construct non-extended state */
 
         /* Simple effects*/
         state_bitset -= action.get_unconditional_negative_effect_bitset();
@@ -166,7 +177,7 @@ private:
         const auto [iter, inserted] = m_states.insert(flatmemory_builder);
         const auto succ_state = DenseState(*iter);
 
-        /* 3. Retrieve cached extended state */
+        /* 4. Retrieve cached extended state */
 
         if (!inserted)
         {
@@ -175,16 +186,16 @@ private:
 
         m_states_by_index.push_back(succ_state);
 
-        /* 4. Construct extended state by evaluating Axioms */
+        /* 5. Construct extended state by evaluating Axioms */
 
         m_aag->generate_and_apply_axioms(state_bitset);
         flatmemory_builder.finish();
 
-        /* 5. Cache extended state */
+        /* 6. Cache extended state */
 
         m_extended_states_by_state.push_back(flatmemory_builder);
 
-        /* 6. Return newly generated extended state */
+        /* 7. Return newly generated extended state */
 
         return DenseState(m_extended_states_by_state[next_state_id]);
     }

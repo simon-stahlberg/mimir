@@ -60,7 +60,7 @@ private:
     std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms);
+    bool nullary_fluent_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms);
 
     void nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms);
 

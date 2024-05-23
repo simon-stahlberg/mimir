@@ -66,7 +66,7 @@ private:
     std::unordered_map<Action, consistency_graph::Graphs> m_static_consistency_graphs;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_preconditions_hold(const Action& action, DenseState state);
+    bool nullary_fluent_preconditions_hold(const Action& action, DenseState state);
 
     void nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 

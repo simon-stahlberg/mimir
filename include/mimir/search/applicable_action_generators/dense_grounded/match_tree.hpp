@@ -96,16 +96,13 @@ private:
     std::vector<GeneratorOrSelectorNode> m_nodes;
     std::vector<T> m_elements;
 
-    NodeID build_recursively(const size_t order_pos,
-                             const std::vector<T>& elements,
-                             const FlatBitsetBuilder& static_atoms,
-                             const std::vector<size_t>& ground_atoms_order);
+    NodeID build_recursively(const size_t order_pos, const std::vector<T>& elements, const std::vector<size_t>& ground_atoms_order);
 
     void get_applicable_elements_recursively(size_t node_id, const FlatBitset state, std::vector<T>& out_applicable_elements);
 
 public:
     MatchTree();
-    MatchTree(const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms, const std::vector<size_t>& ground_atoms_order);
+    MatchTree(const std::vector<T>& elements, const std::vector<size_t>& ground_atoms_order);
 
     void get_applicable_elements(const FlatBitset state, std::vector<T>& out_applicable_elements);
 
@@ -115,10 +112,8 @@ public:
 };
 
 template<typename T>
-MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t order_pos,
-                                                                const std::vector<T>& elements,
-                                                                const FlatBitsetBuilder& static_atoms,
-                                                                const std::vector<size_t>& ground_atoms_order)
+MatchTree<T>::NodeID
+MatchTree<T>::MatchTree::build_recursively(const size_t order_pos, const std::vector<T>& elements, const std::vector<size_t>& ground_atoms_order)
 {
     const auto atom_id = ground_atoms_order[order_pos];
     // 1. Base cases:
@@ -131,16 +126,6 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
         m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(m_elements.size(), m_elements.size() + elements.size()));
         m_elements.insert(m_elements.end(), elements.begin(), elements.end());
         return node_id;
-    }
-    if (static_atoms.get(atom_id))
-    {
-        // Precondition is static and always true.
-        for (const auto& element : elements)
-        {
-            assert(!element.get_applicability_negative_precondition_bitset().get(atom_id));
-            (void) element;
-        }
-        return build_recursively(order_pos + 1, elements, static_atoms, ground_atoms_order);
     }
 
     // 2. Conquer:
@@ -184,11 +169,11 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
 
         m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(atom_id));
 
-        const auto true_succ = (!positive_elements.empty()) ? build_recursively(order_pos + 1, positive_elements, static_atoms, ground_atoms_order) :
+        const auto true_succ = (!positive_elements.empty()) ? build_recursively(order_pos + 1, positive_elements, ground_atoms_order) :
                                                               MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
-        const auto false_succ = (!negative_elements.empty()) ? build_recursively(order_pos + 1, negative_elements, static_atoms, ground_atoms_order) :
+        const auto false_succ = (!negative_elements.empty()) ? build_recursively(order_pos + 1, negative_elements, ground_atoms_order) :
                                                                MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
-        const auto dontcare_succ = (!dontcare_elements.empty()) ? build_recursively(order_pos + 1, dontcare_elements, static_atoms, ground_atoms_order) :
+        const auto dontcare_succ = (!dontcare_elements.empty()) ? build_recursively(order_pos + 1, dontcare_elements, ground_atoms_order) :
                                                                   MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
 
         // Update node with computed information
@@ -207,7 +192,7 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
     else
     {
         // All elements are dontcares, skip creating a node.
-        return build_recursively(order_pos + 1, dontcare_elements, static_atoms, ground_atoms_order);
+        return build_recursively(order_pos + 1, dontcare_elements, ground_atoms_order);
     }
 }
 
@@ -233,9 +218,9 @@ MatchTree<T>::MatchTree()
 }
 
 template<typename T>
-MatchTree<T>::MatchTree(const std::vector<T>& elements, const FlatBitsetBuilder& static_atoms, const std::vector<size_t>& ground_atoms_order)
+MatchTree<T>::MatchTree(const std::vector<T>& elements, const std::vector<size_t>& ground_atoms_order)
 {
-    const auto root_node_id = build_recursively(0, elements, static_atoms, ground_atoms_order);
+    const auto root_node_id = build_recursively(0, elements, ground_atoms_order);
 
     assert(root_node_id == 0);
     // Prevent unused variable warning when not in debug mode

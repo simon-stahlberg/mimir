@@ -95,7 +95,14 @@ static std::unordered_map<Predicate, AxiomList> compute_predicate_body_positive_
     auto predicate_occurrences = std::unordered_map<Predicate, AxiomList> {};
     for (const auto& axiom : axioms)
     {
-        for (const auto& condition : axiom->get_conditions())
+        for (const auto& condition : axiom->get_static_conditions())
+        {
+            if (!condition->is_negated())
+            {
+                predicate_occurrences[condition->get_atom()->get_predicate()].push_back(axiom);
+            }
+        }
+        for (const auto& condition : axiom->get_fluent_conditions())
         {
             if (!condition->is_negated())
             {
@@ -114,7 +121,14 @@ static std::unordered_map<Predicate, AxiomList> compute_predicate_body_negative_
     auto predicate_occurrences = std::unordered_map<Predicate, AxiomList> {};
     for (const auto& axiom : axioms)
     {
-        for (const auto& condition : axiom->get_conditions())
+        for (const auto& condition : axiom->get_static_conditions())
+        {
+            if (condition->is_negated())
+            {
+                predicate_occurrences[condition->get_atom()->get_predicate()].push_back(axiom);
+            }
+        }
+        for (const auto& condition : axiom->get_fluent_conditions())
         {
             if (condition->is_negated())
             {
@@ -154,7 +168,20 @@ static std::vector<PredicateSet> compute_stratification(const AxiomList& axioms,
     {
         const auto head_predicate = axiom->get_literal()->get_atom()->get_predicate();
 
-        for (const auto& condition : axiom->get_conditions())
+        // TODO: Can we ignore static atoms here? I think, yes.
+        for (const auto& condition : axiom->get_static_conditions())
+        {
+            const auto condition_predicate = condition->get_atom()->get_predicate();
+            if (condition->is_negated())
+            {
+                R[condition_predicate][head_predicate] = StratumStatus::STRICTLY_LOWER;
+            }
+            else
+            {
+                R[condition_predicate][head_predicate] = StratumStatus::LOWER;
+            }
+        }
+        for (const auto& condition : axiom->get_fluent_conditions())
         {
             const auto condition_predicate = condition->get_atom()->get_predicate();
             if (condition->is_negated())

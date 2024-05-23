@@ -33,7 +33,6 @@ private:
     std::string m_name;
     size_t m_original_arity;
     VariableList m_parameters;
-    LiteralList m_conditions;
     LiteralList m_static_conditions;
     LiteralList m_fluent_conditions;
     EffectSimpleList m_simple_effects;
@@ -50,7 +49,6 @@ private:
                std::string name,
                size_t original_arity,
                VariableList parameters,
-               LiteralList conditions,
                LiteralList static_conditions,
                LiteralList fluent_conditions,
                EffectSimpleList simple_effects,
@@ -73,7 +71,6 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    const LiteralList& get_conditions() const;
     const LiteralList& get_static_conditions() const;
     const LiteralList& get_fluent_conditions() const;
     const EffectSimpleList& get_simple_effects() const;

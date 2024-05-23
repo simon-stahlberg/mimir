@@ -20,6 +20,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -42,7 +43,6 @@ ProblemImpl::ProblemImpl(int identifier,
                          Requirements requirements,
                          ObjectList objects,
                          PredicateList derived_predicates,
-                         GroundLiteralList initial_literals,
                          GroundLiteralList static_initial_literals,
                          GroundLiteralList fluent_initial_literals,
                          NumericFluentList numeric_fluents,
@@ -55,7 +55,6 @@ ProblemImpl::ProblemImpl(int identifier,
     m_requirements(std::move(requirements)),
     m_objects(std::move(objects)),
     m_derived_predicates(std::move(derived_predicates)),
-    m_initial_literals(std::move(initial_literals)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_numeric_fluents(std::move(numeric_fluents)),
@@ -63,16 +62,32 @@ ProblemImpl::ProblemImpl(int identifier,
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms))
 {
-    assert(is_subseteq(m_static_initial_literals, m_initial_literals));
-    assert(is_subseteq(m_fluent_initial_literals, m_initial_literals));
+    assert(are_disjoint(m_static_initial_literals, m_fluent_initial_literals));
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
-    assert(is_all_unique(m_initial_literals));
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
     assert(is_all_unique(m_numeric_fluents));
     assert(is_all_unique(m_goal_condition));
     assert(is_all_unique(m_axioms));
+
+    // Initialize static atom bitsets
+    for (const auto& literal : m_static_initial_literals)
+    {
+        if (literal->is_negated())
+        {
+            m_static_initial_negative_atoms_builder.set(literal->get_atom()->get_identifier());
+        }
+        else
+        {
+            m_static_initial_positive_atoms_builder.set(literal->get_atom()->get_identifier());
+        }
+    }
+    m_static_initial_positive_atoms_builder.finish();
+    m_static_initial_negative_atoms_builder.finish();
+    // Ensure that buffer is correctly written
+    assert(m_static_initial_positive_atoms_builder == get_static_initial_positive_atoms_bitset());
+    assert(m_static_initial_negative_atoms_builder == get_static_initial_negative_atoms_bitset());
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
@@ -82,7 +97,8 @@ bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) c
         return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements)
                && (loki::get_sorted_vector(m_objects) == loki::get_sorted_vector(other.m_objects))
                && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
-               && (loki::get_sorted_vector(m_initial_literals)) == loki::get_sorted_vector(other.m_initial_literals)
+               && (loki::get_sorted_vector(m_static_initial_literals)) == loki::get_sorted_vector(other.m_static_initial_literals)
+               && (loki::get_sorted_vector(m_fluent_initial_literals)) == loki::get_sorted_vector(other.m_fluent_initial_literals)
                && (loki::get_sorted_vector(m_goal_condition)) == loki::get_sorted_vector(other.m_goal_condition)
                && (m_optimization_metric == other.m_optimization_metric) && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
     }
@@ -97,7 +113,8 @@ size_t ProblemImpl::hash_impl() const
                               m_requirements,
                               loki::hash_container(loki::get_sorted_vector(m_objects)),
                               loki::hash_container(loki::get_sorted_vector(m_derived_predicates)),
-                              loki::hash_container(loki::get_sorted_vector(m_initial_literals)),
+                              loki::hash_container(loki::get_sorted_vector(m_static_initial_literals)),
+                              loki::hash_container(loki::get_sorted_vector(m_fluent_initial_literals)),
                               loki::hash_container(loki::get_sorted_vector(m_goal_condition)),
                               optimization_hash,
                               loki::hash_container(loki::get_sorted_vector(m_axioms)));
@@ -139,14 +156,19 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
         out << ")\n";
     }
 
-    if (!(m_initial_literals.empty() && m_numeric_fluents.empty()))
+    if (!(m_static_initial_literals.empty() && m_fluent_initial_literals.empty() && m_numeric_fluents.empty()))
     {
         out << string(nested_options.indent, ' ') << "(:init ";
-        for (size_t i = 0; i < m_initial_literals.size(); ++i)
+        for (size_t i = 0; i < m_static_initial_literals.size(); ++i)
         {
             if (i != 0)
                 out << " ";
-            m_initial_literals[i]->str(out, nested_options);
+            m_static_initial_literals[i]->str(out, nested_options);
+        }
+        for (size_t i = 0; i < m_fluent_initial_literals.size(); ++i)
+        {
+            out << " ";
+            m_fluent_initial_literals[i]->str(out, nested_options);
         }
         for (size_t i = 0; i < m_numeric_fluents.size(); ++i)
         {
@@ -196,9 +218,11 @@ const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
 const PredicateList& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
 
-const GroundLiteralList& ProblemImpl::get_initial_literals() const { return m_initial_literals; }
-
 const GroundLiteralList& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
+
+FlatBitset ProblemImpl::get_static_initial_positive_atoms_bitset() const { return FlatBitset(m_static_initial_positive_atoms_builder.buffer().data()); }
+
+FlatBitset ProblemImpl::get_static_initial_negative_atoms_bitset() const { return FlatBitset(m_static_initial_negative_atoms_builder.buffer().data()); }
 
 const GroundLiteralList& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 

@@ -39,6 +39,21 @@ bool is_subseteq(const std::vector<T>& left, const std::vector<T>& right)
     return true;
 }
 
+/// @brief Return true iff left vector is disjoint of right vector
+template<typename T>
+bool are_disjoint(const std::vector<T>& left, const std::vector<T>& right)
+{
+    const auto right_set = std::unordered_set<T>(right.begin(), right.end());
+    for (const auto& element : left)
+    {
+        if (right_set.count(element))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 /// @brief Return true iff all elements in the vector are unique.
 template<typename T>
 bool is_all_unique(const std::vector<T>& vec)

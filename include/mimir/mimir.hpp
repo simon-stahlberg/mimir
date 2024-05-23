@@ -19,8 +19,13 @@
 #define MIMIR_MIMIR_HPP_
 
 /**
+ * Include all specializations here
+ */
+
+/**
  * Formalism
  */
+
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -43,9 +48,8 @@
 
 /**
  * Search
- *
- * Include all specializations here
  */
+
 #include "mimir/search/actions.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -55,5 +59,11 @@
 #include "mimir/search/search_nodes.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/successor_state_generators.hpp"
+
+/**
+ * DataSet
+ */
+
+#include "mimir/datasets/state_space.hpp"
 
 #endif  // MIMIR_MIMIR_HPP_

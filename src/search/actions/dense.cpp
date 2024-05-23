@@ -71,14 +71,20 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
 
     auto positive_precondition_bitset = action.get_applicability_positive_precondition_bitset();
     auto negative_precondition_bitset = action.get_applicability_negative_precondition_bitset();
+    auto positive_static_precondition_bitset = action.get_applicability_positive_static_precondition_bitset();
+    auto negative_static_precondition_bitset = action.get_applicability_negative_static_precondition_bitset();
     auto positive_effect_bitset = action.get_unconditional_positive_effect_bitset();
     auto negative_effect_bitset = action.get_unconditional_negative_effect_bitset();
     auto positive_conditional_condition_bitsets = action.get_conditional_positive_precondition_bitsets();
     auto negative_conditional_condition_bitsets = action.get_conditional_negative_precondition_bitsets();
+    auto positive_conditional_static_condition_bitsets = action.get_conditional_positive_static_precondition_bitsets();
+    auto negative_conditional_static_condition_bitsets = action.get_conditional_negative_static_precondition_bitsets();
     auto conditional_effects = action.get_conditional_effects();
 
     auto positive_precondition = GroundAtomList {};
     auto negative_precondition = GroundAtomList {};
+    auto positive_static_precondition = GroundAtomList {};
+    auto negative_static_precondition = GroundAtomList {};
     auto positive_simple_effects = GroundAtomList {};
     auto negative_simple_effects = GroundAtomList {};
     auto positive_conditional_preconditions = std::vector<GroundAtomList> {};
@@ -86,6 +92,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
 
     pddl_factories.get_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
     pddl_factories.get_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
+    pddl_factories.get_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_factories.get_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
     pddl_factories.get_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
     pddl_factories.get_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
 
@@ -102,8 +110,10 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
        << "id=" << action.get_id() << ", "
        << "name=" << action.get_action()->get_name() << ", "
        << "binding=" << binding << ", "
-       << "positive precondition=" << positive_precondition << ", "
-       << "negative precondition=" << negative_precondition << ", "
+       << "positive fluent precondition=" << positive_precondition << ", "
+       << "negative fluent precondition=" << negative_precondition << ", "
+       << "positive static precondition=" << positive_static_precondition << ", "
+       << "negative static precondition=" << negative_static_precondition << ", "
        << "simple_delete=" << negative_simple_effects << ", "
        << "simple_add=" << positive_simple_effects << ", "
        << "conditional_effects=[";

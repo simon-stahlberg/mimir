@@ -18,8 +18,6 @@
 #ifndef MIMIR_SEARCH_STATES_HPP_
 #define MIMIR_SEARCH_STATES_HPP_
 
-#include <vector>
-
 /**
  * Include all specializations here
  */
@@ -32,7 +30,8 @@ namespace mimir
 {
 using StateBuilder = DenseStateBuilder;
 using State = DenseState;
-using StateList = std::vector<State>;
+using StateList = DenseStateList;
+using StateSet = DenseStateSet;
 }
 
 #else

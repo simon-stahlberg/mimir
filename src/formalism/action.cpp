@@ -34,7 +34,6 @@ ActionImpl::ActionImpl(int identifier,
                        std::string name,
                        size_t original_arity,
                        VariableList parameters,
-                       LiteralList conditions,
                        LiteralList static_conditions,
                        LiteralList fluent_conditions,
                        EffectSimpleList simple_effects,
@@ -45,7 +44,6 @@ ActionImpl::ActionImpl(int identifier,
     m_name(std::move(name)),
     m_original_arity(std::move(original_arity)),
     m_parameters(std::move(parameters)),
-    m_conditions(std::move(conditions)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_simple_effects(std::move(simple_effects)),
@@ -54,10 +52,8 @@ ActionImpl::ActionImpl(int identifier,
     m_function_expression(std::move(function_expression))
 {
     assert(m_original_arity <= m_parameters.size());
-    assert(is_subseteq(m_static_conditions, m_conditions));
-    assert(is_subseteq(m_fluent_conditions, m_conditions));
+    assert(are_disjoint(m_static_conditions, m_fluent_conditions));
     assert(is_all_unique(m_parameters));
-    assert(is_all_unique(m_conditions));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_simple_effects));
@@ -70,7 +66,8 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
     if (this != &other)
     {
         return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
-               && (loki::get_sorted_vector(m_conditions) == loki::get_sorted_vector(other.m_conditions))
+               && (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
+               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
                && (loki::get_sorted_vector(m_simple_effects) == loki::get_sorted_vector(other.m_simple_effects))
                && (loki::get_sorted_vector(m_conditional_effects) == loki::get_sorted_vector(other.m_conditional_effects))
                && (loki::get_sorted_vector(m_universal_effects) == loki::get_sorted_vector(other.m_universal_effects))
@@ -83,7 +80,8 @@ size_t ActionImpl::hash_impl() const
 {
     return loki::hash_combine(m_name,
                               loki::hash_container(m_parameters),
-                              loki::hash_container(loki::get_sorted_vector(m_conditions)),
+                              loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
+                              loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
                               loki::hash_container(loki::get_sorted_vector(m_simple_effects)),
                               loki::hash_container(loki::get_sorted_vector(m_conditional_effects)),
                               loki::hash_container(loki::get_sorted_vector(m_universal_effects)),
@@ -105,20 +103,20 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
     out << ")\n";
 
     out << std::string(nested_options.indent, ' ') << ":conditions ";
-    if (m_conditions.empty())
+    if (m_static_conditions.empty() && m_fluent_conditions.empty())
     {
         out << "()\n";
     }
     else
     {
-        out << "(and ";
-        for (size_t i = 0; i < m_conditions.size(); ++i)
+        out << "(and";
+        for (const auto& condition : m_static_conditions)
         {
-            if (i != 0)
-            {
-                out << " ";
-            }
-            out << *m_conditions[i];
+            out << " " << *condition;
+        }
+        for (const auto& condition : m_fluent_conditions)
+        {
+            out << " " << *condition;
         }
         out << ")\n";
     }
@@ -161,8 +159,6 @@ const std::string& ActionImpl::get_name() const { return m_name; }
 size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
-
-const LiteralList& ActionImpl::get_conditions() const { return m_conditions; }
 
 const LiteralList& ActionImpl::get_static_conditions() const { return m_static_conditions; }
 

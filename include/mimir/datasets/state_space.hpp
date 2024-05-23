@@ -51,22 +51,25 @@ private:
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     State m_initial_state;
+
+    size_t m_num_transitions;
     std::vector<Transitions> m_forward_transitions;
     std::vector<Transitions> m_backward_transitions;
 
     std::vector<double> m_goal_distances;
 
-    std::unordered_set<State> m_goal_states;
-    std::unordered_set<State> m_deadend_states;
+    StateSet m_goal_states;
+    StateSet m_deadend_states;
 
     StateSpaceImpl(std::shared_ptr<GroundedAAG> aag,
                    std::shared_ptr<SuccessorStateGenerator> ssg,
                    State initial_state,
+                   size_t num_transitions,
                    std::vector<Transitions> forward_transitions,
                    std::vector<Transitions> backward_transitions,
                    std::vector<double> goal_distances,
-                   std::unordered_set<State> goal_states,
-                   std::unordered_set<State> m_deadend_states);
+                   StateSet goal_states,
+                   StateSet m_deadend_states);
 
 public:
     /// @brief Try to create a StateSpace from the given input files with the given resource limits
@@ -81,8 +84,12 @@ public:
     /* Extended functionality */
     std::vector<double> compute_distances_from_state(const State state) const;
 
+    std::vector<std::vector<double>> compute_pairwise_distances() const;
+
     /* Getters */
     State get_initial_state() const;
+
+    const std::vector<State>& get_states() const;
 
     const std::vector<Transitions>& get_forward_transitions() const;
 
@@ -102,6 +109,8 @@ public:
 
     size_t get_num_deadend_states() const;
 };
+
+using StateSpace = std::shared_ptr<const StateSpaceImpl>;
 
 }
 

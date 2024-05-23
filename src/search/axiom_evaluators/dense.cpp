@@ -26,13 +26,13 @@
 namespace mimir
 {
 
-bool AE<AEDispatcher<DenseStateTag>>::nullary_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms)
+bool AE<AEDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms)
 {
     for (const auto& literal : axiom->get_fluent_conditions())
     {
         if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            const auto grounded_literal = m_pddl_factories.ground_literal(literal, {});
+            const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, {});
 
             if (state_atoms.get(grounded_literal->get_atom()->get_identifier()) == grounded_literal->is_negated())
             {
@@ -195,7 +195,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
             for (const auto& axiom : relevant_axioms)
             {
-                if (nullary_preconditions_hold(axiom, ref_state_atoms))
+                if (nullary_fluent_preconditions_hold(axiom, ref_state_atoms))
                 {
                     if (axiom->get_arity() == 0)
                     {
@@ -256,7 +256,15 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& pddl_factori
 {
     /* 1. Error checking */
 
-    for (const auto& literal : problem->get_initial_literals())
+    for (const auto& literal : problem->get_fluent_initial_literals())
+    {
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("Negative literals in the initial state is not supported.");
+        }
+    }
+
+    for (const auto& literal : problem->get_static_initial_literals())
     {
         if (literal->is_negated())
         {
@@ -317,12 +325,30 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
 
     m_event_handler->on_ground_axiom(axiom, binding);
 
-    const auto fill_bitsets =
+    const auto fill_fluent_bitsets =
         [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
     {
         for (const auto& literal : literals)
         {
-            const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
+            const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    };
+
+    const auto fill_static_bitsets =
+        [this](const std::vector<Literal>& literals, FlatBitsetBuilder& ref_positive_bitset, FlatBitsetBuilder& ref_negative_bitset, const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = m_pddl_factories.ground_static_literal(literal, binding);
 
             if (grounded_literal->is_negated())
             {
@@ -351,10 +377,15 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     auto& negative_precondition = m_axiom_builder.get_applicability_negative_precondition_bitset();
     positive_precondition.unset_all();
     negative_precondition.unset_all();
-    fill_bitsets(axiom->get_conditions(), positive_precondition, negative_precondition, binding);
+    fill_fluent_bitsets(axiom->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
+    auto& positive_static_precondition = m_axiom_builder.get_applicability_positive_static_precondition_bitset();
+    auto& negative_static_precondition = m_axiom_builder.get_applicability_negative_static_precondition_bitset();
+    positive_static_precondition.unset_all();
+    negative_static_precondition.unset_all();
+    fill_static_bitsets(axiom->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
 
     /* Effect */
-    const auto grounded_literal = m_pddl_factories.ground_literal(axiom->get_literal(), binding);
+    const auto grounded_literal = m_pddl_factories.ground_fluent_literal(axiom->get_literal(), binding);
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_simple_effect().is_negated = false;
     m_axiom_builder.get_simple_effect().atom_id = grounded_literal->get_atom()->get_identifier();

@@ -106,7 +106,50 @@ private:
 
     // TODO: provide more efficient grounding tables for arity 0, 1
     // that do not store the actual binding but instead compute a perfect hash value.
-    std::vector<GroundingTable<GroundLiteral>> m_groundings_by_literal;
+    std::vector<GroundingTable<GroundLiteral>> m_groundings_by_fluent_literal;
+    std::vector<GroundingTable<GroundLiteral>> m_groundings_by_static_literal;
+
+    template<typename GroundAtomCreator>
+    GroundLiteral ground_literal_generic(const Literal literal,
+                                         const ObjectList& binding,
+                                         GroundAtomCreator create_ground_atom,
+                                         std::vector<GroundingTable<GroundLiteral>>& grounding_table)
+    {
+        /* 1. Check if grounding is cached */
+        const auto literal_id = literal->get_identifier();
+        if (literal_id >= grounding_table.size())
+        {
+            grounding_table.resize(literal_id + 1);
+        }
+
+        auto& groundings = grounding_table[literal_id];
+
+        // binding.size() might actually be greater than literal->get_predicate()->get_arity()
+        // due to objects affecting variables in other literals of the same formula.
+        // This results in duplicate entries in the table.
+        // I tried some things but doing extra work here before the test is much slower.
+
+        const auto it = groundings.find(binding);
+        if (it != groundings.end())
+        {
+            return it->second;
+        }
+
+        /* 2. Ground the literal */
+
+        ObjectList grounded_terms;
+        ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
+        auto grounded_atom = create_ground_atom(literal->get_atom()->get_predicate(), std::move(grounded_terms));
+        auto grounded_literal = get_or_create_ground_literal(literal->is_negated(), grounded_atom);
+
+        /* 3. Insert to groundings table */
+
+        groundings.emplace(ObjectList(binding), GroundLiteral(grounded_literal));
+
+        /* 4. Return the resulting ground literal */
+
+        return grounded_literal;
+    }
 
 public:
     PDDLFactories() :
@@ -346,22 +389,17 @@ public:
     /// @brief Get or create a conditional simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectConditional get_or_create_conditional_effect(LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    EffectConditional get_or_create_conditional_effect(LiteralList static_condition, LiteralList fluent_condition, Literal effect)
     {
-        return conditional_effects.get_or_create<EffectConditionalImpl>(std::move(condition),
-                                                                        std::move(static_condition),
-                                                                        std::move(fluent_condition),
-                                                                        std::move(effect));
+        return conditional_effects.get_or_create<EffectConditionalImpl>(std::move(static_condition), std::move(fluent_condition), std::move(effect));
     }
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectUniversal
-    get_or_create_universal_effect(VariableList parameters, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    EffectUniversal get_or_create_universal_effect(VariableList parameters, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
     {
         return universal_effects.get_or_create<EffectUniversalImpl>(std::move(parameters),
-                                                                    std::move(condition),
                                                                     std::move(static_condition),
                                                                     std::move(fluent_condition),
                                                                     std::move(effect));
@@ -373,7 +411,6 @@ public:
     Action get_or_create_action(std::string name,
                                 size_t original_arity,
                                 VariableList parameters,
-                                LiteralList conditions,
                                 LiteralList static_conditions,
                                 LiteralList fluent_conditions,
                                 EffectSimpleList simple_effects,
@@ -384,7 +421,6 @@ public:
         return actions.get_or_create<ActionImpl>(std::move(name),
                                                  std::move(original_arity),
                                                  std::move(parameters),
-                                                 std::move(conditions),
                                                  std::move(static_conditions),
                                                  std::move(fluent_conditions),
                                                  std::move(simple_effects),
@@ -396,13 +432,9 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(VariableList parameters, Literal literal, LiteralList condition, LiteralList static_condition, LiteralList fluent_condition)
+    Axiom get_or_create_axiom(VariableList parameters, Literal literal, LiteralList static_condition, LiteralList fluent_condition)
     {
-        return axioms.get_or_create<AxiomImpl>(std::move(parameters),
-                                               std::move(literal),
-                                               std::move(condition),
-                                               std::move(static_condition),
-                                               std::move(fluent_condition));
+        return axioms.get_or_create<AxiomImpl>(std::move(parameters), std::move(literal), std::move(static_condition), std::move(fluent_condition));
     }
 
     /// @brief Get or create an optimization metric for the given parameters.
@@ -455,7 +487,6 @@ public:
                                   Requirements requirements,
                                   ObjectList objects,
                                   PredicateList derived_predicates,
-                                  GroundLiteralList initial_literals,
                                   GroundLiteralList static_initial_literals,
                                   GroundLiteralList fluent_initial_literals,
                                   NumericFluentList numeric_fluents,
@@ -468,7 +499,6 @@ public:
                                                    std::move(requirements),
                                                    std::move(objects),
                                                    std::move(derived_predicates),
-                                                   std::move(initial_literals),
                                                    std::move(static_initial_literals),
                                                    std::move(fluent_initial_literals),
                                                    std::move(numeric_fluents),
@@ -560,42 +590,16 @@ public:
         }
     }
 
-    GroundLiteral ground_literal(const Literal literal, const ObjectList& binding)
+    GroundLiteral ground_fluent_literal(const Literal literal, const ObjectList& binding)
     {
-        /* 1. Check if grounding is cached */
-        const auto literal_id = literal->get_identifier();
-        if (literal_id >= m_groundings_by_literal.size())
-        {
-            m_groundings_by_literal.resize(literal_id + 1);
-        }
+        auto creator = [this](const Predicate& pred, const ObjectList& terms) { return this->get_or_create_ground_atom(pred, terms); };
+        return ground_literal_generic(literal, binding, creator, m_groundings_by_fluent_literal);
+    }
 
-        auto& groundings = m_groundings_by_literal[literal_id];
-
-        // binding.size() might actually be greater than literal->get_predicate()->get_arity()
-        // due to objects affecting variables in other literals of the same formula.
-        // This results in duplicate entries in the table.
-        // I tried some things but doing extra work here before the test is much slower.
-
-        const auto it = groundings.find(binding);
-        if (it != groundings.end())
-        {
-            return it->second;
-        }
-
-        /* 2. Ground the literal */
-
-        ObjectList grounded_terms;
-        ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
-        auto grounded_atom = get_or_create_ground_atom(literal->get_atom()->get_predicate(), std::move(grounded_terms));
-        auto grounded_literal = get_or_create_ground_literal(literal->is_negated(), grounded_atom);
-
-        /* 3. Insert to groundings table */
-
-        groundings.emplace(ObjectList(binding), GroundLiteral(grounded_literal));
-
-        /* 4. Return the resulting ground literal */
-
-        return grounded_literal;
+    GroundLiteral ground_static_literal(const Literal literal, const ObjectList& binding)
+    {
+        auto static_creator = [this](const Predicate& pred, const ObjectList& terms) { return this->get_or_create_static_ground_atom(pred, terms); };
+        return ground_literal_generic(literal, binding, static_creator, m_groundings_by_static_literal);
     }
 };
 }

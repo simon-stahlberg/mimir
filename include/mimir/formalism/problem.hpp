@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/flat_types.hpp"
 
 #include <loki/loki.hpp>
 #include <optional>
@@ -34,8 +35,9 @@ private:
     Requirements m_requirements;
     ObjectList m_objects;
     PredicateList m_derived_predicates;
-    GroundLiteralList m_initial_literals;
     GroundLiteralList m_static_initial_literals;
+    FlatBitsetBuilder m_static_initial_positive_atoms_builder;
+    FlatBitsetBuilder m_static_initial_negative_atoms_builder;
     GroundLiteralList m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
     GroundLiteralList m_goal_condition;
@@ -50,7 +52,6 @@ private:
                 Requirements requirements,
                 ObjectList objects,
                 PredicateList derived_predicates,
-                GroundLiteralList initial_literals,
                 GroundLiteralList static_initial_literals,
                 GroundLiteralList fluent_initial_literals,
                 NumericFluentList numeric_fluents,
@@ -75,8 +76,9 @@ public:
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
     const PredicateList& get_derived_predicates() const;
-    const GroundLiteralList& get_initial_literals() const;
     const GroundLiteralList& get_static_initial_literals() const;
+    FlatBitset get_static_initial_positive_atoms_bitset() const;
+    FlatBitset get_static_initial_negative_atoms_bitset() const;
     const GroundLiteralList& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     const GroundLiteralList& get_goal_condition() const;

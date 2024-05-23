@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/builder.hpp"
 #include "mimir/search/flat_types.hpp"
@@ -61,6 +62,10 @@ using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,
                                                 FlatBitsetLayout,
                                                 FlatBitsetLayout,
                                                 FlatBitsetLayout,
+                                                FlatBitsetLayout,
+                                                FlatBitsetLayout,
+                                                FlatBitsetVectorLayout,
+                                                FlatBitsetVectorLayout,
                                                 FlatBitsetVectorLayout,
                                                 FlatBitsetVectorLayout,
                                                 FlatSimpleEffectVectorLayout>;
@@ -121,14 +126,18 @@ public:
     /* Precondition */
     [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
     [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_static_precondition_bitset() { return m_builder.get<6>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_static_precondition_bitset() { return m_builder.get<7>(); }
     /* Simple effects */
-    [[nodiscard]] FlatBitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<6>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<7>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<8>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<9>(); }
     /* Conditional preconditions */
-    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<8>(); }
-    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<9>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<10>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<11>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_static_precondition_bitsets() { return m_builder.get<12>(); }
+    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_static_precondition_bitsets() { return m_builder.get<13>(); }
     /* Conditional simple effects */
-    [[nodiscard]] FlatSimpleEffectVectorBuilder& get_conditional_effects() { return m_builder.get<10>(); }
+    [[nodiscard]] FlatSimpleEffectVectorBuilder& get_conditional_effects() { return m_builder.get<14>(); }
 };
 
 /**
@@ -170,26 +179,35 @@ public:
     /* Precondition */
     [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
     [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
+    [[nodiscard]] FlatBitset get_applicability_positive_static_precondition_bitset() const { return m_view.get<6>(); }
+    [[nodiscard]] FlatBitset get_applicability_negative_static_precondition_bitset() const { return m_view.get<7>(); }
     /* Simple effects */
-    [[nodiscard]] FlatBitset get_unconditional_positive_effect_bitset() const { return m_view.get<6>(); };
-    [[nodiscard]] FlatBitset get_unconditional_negative_effect_bitset() const { return m_view.get<7>(); };
+    [[nodiscard]] FlatBitset get_unconditional_positive_effect_bitset() const { return m_view.get<8>(); };
+    [[nodiscard]] FlatBitset get_unconditional_negative_effect_bitset() const { return m_view.get<9>(); };
     /* Conditional effects */
-    [[nodiscard]] FlatBitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<8>(); }
-    [[nodiscard]] FlatBitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<9>(); }
-    [[nodiscard]] FlatSimpleEffectVector get_conditional_effects() const { return m_view.get<10>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<10>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<11>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_positive_static_precondition_bitsets() const { return m_view.get<12>(); }
+    [[nodiscard]] FlatBitsetVector get_conditional_negative_static_precondition_bitsets() const { return m_view.get<13>(); }
+    [[nodiscard]] FlatSimpleEffectVector get_conditional_effects() const { return m_view.get<14>(); }
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
         const auto state_bitset = state.get_atoms_bitset();
+        const auto static_positive_bitset = state.get_problem()->get_static_initial_positive_atoms_bitset();
+        const auto static_negative_bitset = state.get_problem()->get_static_initial_negative_atoms_bitset();
+
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
-               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset());
+               && static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
+               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
+               && static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset& static_initial_atoms) const
+    [[nodiscard]] bool is_statically_applicable(const Bitset static_negative_bitset) const
     {
-        // TODO: is this correct?
-        return static_initial_atoms.are_disjoint(get_applicability_negative_precondition_bitset());
+        // positive atoms are a superset in the state
+        return static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 };
 

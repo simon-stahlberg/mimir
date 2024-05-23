@@ -168,7 +168,6 @@ protected:
     void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(*effect.get_effect()); }
     void prepare_impl(const EffectConditionalImpl& effect)
     {
-        this->prepare(effect.get_conditions());
         this->prepare(effect.get_static_conditions());
         this->prepare(effect.get_fluent_conditions());
         this->prepare(*effect.get_effect());
@@ -176,7 +175,6 @@ protected:
     void prepare_impl(const EffectUniversalImpl& effect)
     {
         this->prepare(effect.get_parameters());
-        this->prepare(effect.get_conditions());
         this->prepare(effect.get_static_conditions());
         this->prepare(effect.get_fluent_conditions());
         this->prepare(*effect.get_effect());
@@ -221,7 +219,6 @@ protected:
     void prepare_impl(const ActionImpl& action)
     {
         this->prepare(action.get_parameters());
-        this->prepare(action.get_conditions());
         this->prepare(action.get_static_conditions());
         this->prepare(action.get_fluent_conditions());
         this->prepare(action.get_simple_effects());
@@ -232,7 +229,8 @@ protected:
     void prepare_impl(const AxiomImpl& axiom)
     {
         this->prepare(axiom.get_parameters());
-        this->prepare(axiom.get_conditions());
+        this->prepare(axiom.get_static_conditions());
+        this->prepare(axiom.get_fluent_conditions());
         this->prepare(*axiom.get_literal());
     }
     void prepare_impl(const DomainImpl& domain)
@@ -252,7 +250,8 @@ protected:
         this->prepare(*problem.get_requirements());
         this->prepare(problem.get_objects());
         this->prepare(problem.get_derived_predicates());
-        this->prepare(problem.get_initial_literals());
+        this->prepare(problem.get_static_initial_literals());
+        this->prepare(problem.get_fluent_initial_literals());
         this->prepare(problem.get_numeric_fluents());
         this->prepare(problem.get_goal_condition());
         if (problem.get_optimization_metric().has_value())
@@ -462,15 +461,13 @@ protected:
     }
     EffectConditional transform_impl(const EffectConditionalImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_conditional_effect(this->transform(effect.get_conditions()),
-                                                                       this->transform(effect.get_static_conditions()),
+        return this->m_pddl_factories.get_or_create_conditional_effect(this->transform(effect.get_static_conditions()),
                                                                        this->transform(effect.get_static_conditions()),
                                                                        this->transform(*effect.get_effect()));
     }
     EffectUniversal transform_impl(const EffectUniversalImpl& effect)
     {
         return this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
-                                                                     this->transform(effect.get_conditions()),
                                                                      this->transform(effect.get_static_conditions()),
                                                                      this->transform(effect.get_static_conditions()),
                                                                      this->transform(*effect.get_effect()));
@@ -548,7 +545,6 @@ protected:
         return this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                            action.get_original_arity(),
                                                            this->transform(action.get_parameters()),
-                                                           this->transform(action.get_conditions()),
                                                            this->transform(action.get_static_conditions()),
                                                            this->transform(action.get_fluent_conditions()),
                                                            this->transform(action.get_simple_effects()),
@@ -560,7 +556,6 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_axiom(this->transform(axiom.get_parameters()),
                                                           this->transform(*axiom.get_literal()),
-                                                          this->transform(axiom.get_conditions()),
                                                           this->transform(axiom.get_static_conditions()),
                                                           this->transform(axiom.get_fluent_conditions()));
     }
@@ -590,7 +585,6 @@ protected:
             this->transform(*problem.get_requirements()),
             this->transform(problem.get_objects()),
             this->transform(problem.get_derived_predicates()),
-            this->transform(problem.get_initial_literals()),
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
             this->transform(problem.get_numeric_fluents()),

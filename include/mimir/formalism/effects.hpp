@@ -58,14 +58,13 @@ public:
 class EffectConditionalImpl : public loki::Base<EffectConditionalImpl>
 {
 private:
-    LiteralList m_conditions;
     LiteralList m_static_conditions;
     LiteralList m_fluent_conditions;
     Literal m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(int identifier, LiteralList conditions, LiteralList static_conditions, LiteralList fluent_conditions, Literal effect);
+    EffectConditionalImpl(int identifier, LiteralList static_conditions, LiteralList fluent_conditions, Literal effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectConditionalImpl, loki::Hash<EffectConditionalImpl*>, loki::EqualTo<EffectConditionalImpl*>>;
@@ -78,7 +77,6 @@ private:
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    const LiteralList& get_conditions() const;
     const LiteralList& get_static_conditions() const;
     const LiteralList& get_fluent_conditions() const;
     const Literal& get_effect() const;
@@ -91,19 +89,13 @@ class EffectUniversalImpl : public loki::Base<EffectUniversalImpl>
 {
 private:
     VariableList m_quantified_variables;
-    LiteralList m_conditions;
     LiteralList m_static_conditions;
     LiteralList m_fluent_conditions;
     Literal m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectUniversalImpl(int identifier,
-                        VariableList quantified_variables,
-                        LiteralList conditions,
-                        LiteralList static_conditions,
-                        LiteralList fluent_conditions,
-                        Literal effect);
+    EffectUniversalImpl(int identifier, VariableList quantified_variables, LiteralList static_conditions, LiteralList fluent_conditions, Literal effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectUniversalImpl, loki::Hash<EffectUniversalImpl*>, loki::EqualTo<EffectUniversalImpl*>>;
@@ -117,7 +109,6 @@ private:
 
 public:
     const VariableList& get_parameters() const;
-    const LiteralList& get_conditions() const;
     const LiteralList& get_static_conditions() const;
     const LiteralList& get_fluent_conditions() const;
     const Literal& get_effect() const;
