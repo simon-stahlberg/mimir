@@ -197,6 +197,14 @@ public:
         const auto static_positive_bitset = state.get_problem()->get_static_initial_positive_atoms_bitset();
         const auto static_negative_bitset = state.get_problem()->get_static_initial_negative_atoms_bitset();
 
+        std::cout << static_positive_bitset.get_blocks().size() << " " << get_applicability_positive_static_precondition_bitset().get_blocks().size()
+                  << std::endl;
+
+        std::cout << state_bitset.is_superseteq(get_applicability_positive_precondition_bitset()) << std::endl;
+        std::cout << static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset()) << std::endl;
+        std::cout << state_bitset.are_disjoint(get_applicability_negative_precondition_bitset()) << std::endl;
+        std::cout << static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset()) << std::endl;
+
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
                && static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())

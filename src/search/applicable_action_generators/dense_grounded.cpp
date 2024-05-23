@@ -96,6 +96,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     state_bitset = delete_free_ssg.get_or_create_initial_state().get_atoms_bitset();
     state_problem = delete_free_problem;
 
+    std::cout << m_pddl_factories.get_static_ground_atoms_from_ids(problem->get_static_initial_positive_atoms_bitset()) << std::endl;
+
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
 
@@ -106,6 +108,8 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
+
+        std::cout << std::make_tuple(state, std::cref(m_pddl_factories)) << std::endl;
 
         auto num_atoms_before = state_bitset.count();
 

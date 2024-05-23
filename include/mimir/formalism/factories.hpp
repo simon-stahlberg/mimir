@@ -542,6 +542,30 @@ public:
         return result;
     }
 
+    // Static GroundAtom
+    GroundAtom get_static_ground_atom(size_t atom_id) const { return static_ground_atoms.get(atom_id); }
+
+    const GroundAtomFactory& get_static_ground_atoms() const { return static_ground_atoms; }
+
+    template<std::ranges::forward_range Iterable>
+    void get_static_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
+    {
+        out_ground_atoms.clear();
+
+        for (const auto& atom_id : atom_ids)
+        {
+            out_ground_atoms.push_back(get_static_ground_atom(atom_id));
+        }
+    }
+
+    template<std::ranges::forward_range Iterable>
+    GroundAtomList get_static_ground_atoms_from_ids(const Iterable& atom_ids) const
+    {
+        auto result = GroundAtomList {};
+        get_static_ground_atoms_from_ids(atom_ids, result);
+        return result;
+    }
+
     // Object
     template<std::ranges::forward_range Iterable>
     void get_objects_from_ids(const Iterable& object_ids, ObjectList& out_objects) const

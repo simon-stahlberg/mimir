@@ -92,8 +92,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
 
     pddl_factories.get_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
     pddl_factories.get_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
-    pddl_factories.get_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
     pddl_factories.get_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
     pddl_factories.get_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
 
