@@ -61,6 +61,11 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
+    /* Intialized during prepare step */
+    PredicateSet m_static_predicates;
+    PredicateSet m_fluent_predicates;
+    PredicateSet m_derived_predicates;
+
 protected:
     PDDLFactories& m_pddl_factories;
 
@@ -238,10 +243,16 @@ protected:
         this->prepare(*domain.get_requirements());
         this->prepare(domain.get_constants());
         this->prepare(domain.get_predicates());
+        this->prepare(domain.get_static_predicates());
+        this->prepare(domain.get_fluent_predicates());
         this->prepare(domain.get_derived_predicates());
         this->prepare(domain.get_functions());
         this->prepare(domain.get_actions());
         this->prepare(domain.get_axioms());
+
+        m_static_predicates = PredicateSet(domain.get_static_predicates().begin(), domain.get_static_predicates().end());
+        m_fluent_predicates = PredicateSet(domain.get_fluent_predicates().begin(), domain.get_fluent_predicates().end());
+        m_derived_predicates.insert(domain.get_derived_predicates().begin(), domain.get_derived_predicates().end());
     }
     void prepare_impl(const OptimizationMetricImpl& metric) { this->prepare(*metric.get_function_expression()); }
     void prepare_impl(const ProblemImpl& problem)
@@ -259,6 +270,8 @@ protected:
             this->prepare(*problem.get_optimization_metric().value());
         }
         this->prepare(problem.get_axioms());
+
+        m_derived_predicates.insert(problem.get_derived_predicates().begin(), problem.get_derived_predicates().end());
     }
 
     /// @brief Apply problem translation.
@@ -441,7 +454,15 @@ protected:
     }
     GroundAtom transform_impl(const GroundAtomImpl& atom)
     {
-        return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
+        // Transform ground atoms into the respective factory where they belong
+        if (m_static_predicates.count(atom.get_predicate()))
+        {
+            return this->m_pddl_factories.get_or_create_static_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
+        }
+        else
+        {
+            return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
+        }
     }
     Literal transform_impl(const LiteralImpl& literal)
     {

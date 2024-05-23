@@ -18,6 +18,7 @@
 #include "mimir/formalism/domain.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/function_skeleton.hpp"

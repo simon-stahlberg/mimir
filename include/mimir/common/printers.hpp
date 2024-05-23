@@ -68,7 +68,6 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set)
     os << "}";
     return os;
 }
-
 }
 
 #endif

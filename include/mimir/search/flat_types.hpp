@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <flatmemory/flatmemory.hpp>
+#include <ostream>
 
 namespace mimir
 {
@@ -33,6 +34,21 @@ using FlatBitset = flatmemory::ConstView<FlatBitsetLayout>;
 using FlatBitsetVectorLayout = flatmemory::Vector<flatmemory::Bitset<uint64_t>>;
 using FlatBitsetVectorBuilder = flatmemory::Builder<FlatBitsetVectorLayout>;
 using FlatBitsetVector = flatmemory::ConstView<FlatBitsetVectorLayout>;
+
+inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
+{
+    os << "[";
+    size_t i = 0;
+    for (const auto& element : set)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "]";
+    return os;
+}
 
 /* ObjectList */
 

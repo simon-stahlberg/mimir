@@ -234,7 +234,11 @@ Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
                                                        this->transform(domain.get_axioms()));
 }
 
-Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
+Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem)
+{
+    this->prepare(problem);
+    return this->transform(problem);
+}
 
 DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool remove_useless_actions_and_axioms) :
     BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories),

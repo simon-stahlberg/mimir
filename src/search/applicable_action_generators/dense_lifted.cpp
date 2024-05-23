@@ -418,9 +418,6 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
         }
     }
 
-    std::cout << action->get_name() << std::endl;
-    std::cout << std::make_tuple(std::cref(precondition_graph), std::cref(m_pddl_factories)) << std::endl;
-
     // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
     // parameters) tends to be very small.
@@ -428,8 +425,6 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
     const auto& partitions = precondition_graph.get_vertices_by_parameter_index();
     std::vector<std::vector<std::size_t>> cliques;
     find_all_k_cliques_in_k_partite_graph(adjacency_matrix, partitions, cliques);
-
-    std::cout << "Num cliques: " << cliques.size() << std::endl;
 
     for (const auto& clique : cliques)
     {
@@ -444,11 +439,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
             terms[parameter_index] = m_pddl_factories.get_object(object_id);
         }
 
-        std::cout << "binding: " << terms << std::endl;
-
         const auto grounded_action = ground_action(action, std::move(terms));
-
-        std::cout << std::make_tuple(grounded_action, std::cref(m_pddl_factories)) << std::endl;
 
         // TODO: We do not need to check applicability if action consists of at most binary predicates in the precondition.
         // Add this information to the FlatAction struct.
@@ -461,7 +452,6 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet& 
         }
         else
         {
-            std::cout << "INAPPLICABLE" << std::endl;
             m_event_handler->on_ground_inapplicable_action(grounded_action, m_pddl_factories);
         }
     }

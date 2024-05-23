@@ -145,13 +145,13 @@ public:
     /* Effect*/
     [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<7>(); }
 
-    template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_applicable(const Bitset state_bitset) const
+    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2, flatmemory::IsBitset Bitset3>
+    [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset, const Bitset3 static_negative_bitset) const
     {
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
-               && state_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
+               && static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
-               && state_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+               && static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 
     template<flatmemory::IsBitset Bitset>

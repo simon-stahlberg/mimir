@@ -40,6 +40,7 @@ bool AE<AEDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Ax
             }
         }
     }
+
     return true;
 }
 
@@ -49,7 +50,7 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom, const Fla
 
     const auto grounded_axiom = ground_axiom(axiom, {});
 
-    if (grounded_axiom.is_applicable(state_atoms))
+    if (grounded_axiom.is_applicable(state_atoms, m_problem->get_static_initial_positive_atoms_bitset(), m_problem->get_static_initial_negative_atoms_bitset()))
     {
         m_applicable_axioms.insert(grounded_axiom);
         out_applicable_axioms.emplace_back(grounded_axiom);
@@ -73,7 +74,9 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet& assignment
         {
             auto grounded_axiom = ground_axiom(axiom, { m_pddl_factories.get_object(vertex.get_object_index()) });
 
-            if (grounded_axiom.is_applicable(state_atoms))
+            if (grounded_axiom.is_applicable(state_atoms,
+                                             m_problem->get_static_initial_positive_atoms_bitset(),
+                                             m_problem->get_static_initial_negative_atoms_bitset()))
             {
                 m_applicable_axioms.insert(grounded_axiom);
                 out_applicable_axioms.emplace_back(grounded_axiom);
@@ -139,7 +142,9 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet& assignme
         // TODO: We do not need to check applicability if axiom consists of at most binary predicates in the precondition.
         // Add this information to the FlatAction struct.
 
-        if (grounded_axiom.is_applicable(state_atoms))
+        if (grounded_axiom.is_applicable(state_atoms,
+                                         m_problem->get_static_initial_positive_atoms_bitset(),
+                                         m_problem->get_static_initial_negative_atoms_bitset()))
         {
             m_applicable_axioms.insert(grounded_axiom);
             out_applicable_axioms.push_back(grounded_axiom);
