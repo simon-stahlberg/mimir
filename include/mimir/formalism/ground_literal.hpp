@@ -28,15 +28,16 @@ namespace mimir
 /*
     TODO: Flattening GroundLiteralImpl is unnecessary. It is already flat.
 */
+template<IsPredicate P>
 class GroundLiteralImpl : public loki::Base<GroundLiteralImpl>
 {
 private:
     bool m_is_negated;
-    GroundAtom m_atom;
+    GroundAtom<P> m_atom;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundLiteralImpl(int identifier, bool is_negated, GroundAtom atom);
+    GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<GroundLiteralImpl, loki::Hash<GroundLiteralImpl*>, loki::EqualTo<GroundLiteralImpl*>>;
@@ -51,8 +52,59 @@ private:
 
 public:
     bool is_negated() const;
-    const GroundAtom& get_atom() const;
+    const GroundAtom<P>& get_atom() const;
 };
+
+template<IsPredicate P>
+GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom) :
+    Base(identifier),
+    m_is_negated(is_negated),
+    m_atom(std::move(atom))
+{
+}
+
+template<IsPredicate P>
+bool GroundLiteralImpl<P>::is_structurally_equivalent_to_impl(const GroundLiteralImpl<P>& other) const
+{
+    if (this != &other)
+    {
+        return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
+    }
+    return true;
+}
+
+template<IsPredicate P>
+size_t GroundLiteralImpl<P>::hash_impl() const
+{
+    return loki::hash_combine(m_is_negated, m_atom);
+}
+
+template<IsPredicate P>
+void GroundLiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+{
+    if (m_is_negated)
+    {
+        out << "(not ";
+        m_atom->str(out, options);
+        out << ")";
+    }
+    else
+    {
+        m_atom->str(out, options);
+    }
+}
+
+template<IsPredicate P>
+bool GroundLiteralImpl<P>::is_negated() const
+{
+    return m_is_negated;
+}
+
+template<IsPredicate P>
+const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
+{
+    return m_atom;
+}
 }
 
 #endif

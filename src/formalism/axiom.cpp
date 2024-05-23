@@ -25,14 +25,17 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(int identifier, VariableList parameters, Literal literal, LiteralList static_conditions, LiteralList fluent_conditions) :
+AxiomImpl::AxiomImpl(int identifier,
+                     VariableList parameters,
+                     Literal<FluentPredicateImpl> literal,
+                     LiteralList<StaticPredicateImpl> static_conditions,
+                     LiteralList<FluentPredicateImpl> fluent_conditions) :
     Base(identifier),
     m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions))
 {
-    assert(are_disjoint(m_static_conditions, fluent_conditions));
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
@@ -74,11 +77,11 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 
-const Literal& AxiomImpl::get_literal() const { return m_literal; }
+const Literal<FluentPredicateImpl>& AxiomImpl::get_literal() const { return m_literal; }
 
-const LiteralList& AxiomImpl::get_static_conditions() const { return m_static_conditions; }
+const LiteralList<StaticPredicateImpl>& AxiomImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+const LiteralList<FluentPredicateImpl>& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
 size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
 

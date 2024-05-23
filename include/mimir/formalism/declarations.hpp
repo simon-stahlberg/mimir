@@ -18,6 +18,9 @@
 #ifndef MIMIR_FORMALISM_DECLARATIONS_HPP_
 #define MIMIR_FORMALISM_DECLARATIONS_HPP_
 
+#include <concepts>
+#include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>
@@ -54,26 +57,56 @@ using TermImpl = std::variant<TermObjectImpl, TermVariableImpl>;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
 
-class PredicateImpl;
-using Predicate = const PredicateImpl*;
-using PredicateList = std::vector<Predicate>;
-using PredicateSet = std::unordered_set<Predicate>;
+class FluentPredicateImpl;
+using FluentPredicate = const FluentPredicateImpl*;
+using FluentPredicateList = std::vector<FluentPredicate>;
+using FluentPredicateSet = std::unordered_set<FluentPredicate>;
 
+class StaticPredicateImpl;
+using StaticPredicate = const StaticPredicateImpl*;
+using StaticPredicateList = std::vector<StaticPredicate>;
+using StaticPredicateSet = std::unordered_set<StaticPredicate>;
+
+template<typename T>
+concept IsPredicate = requires(T a) {
+    {
+        a.get_name()
+    } -> std::same_as<const std::string&>;
+    {
+        a.get_parameters()
+    } -> std::same_as<const VariableList&>;
+    {
+        a.get_arity()
+    } -> std::same_as<size_t>;
+};
+
+template<IsPredicate P>
 class AtomImpl;
-using Atom = const AtomImpl*;
-using AtomList = std::vector<Atom>;
+template<IsPredicate P>
+using Atom = const AtomImpl<P>*;
+template<IsPredicate P>
+using AtomList = std::vector<Atom<P>>;
 
+template<IsPredicate P>
 class GroundAtomImpl;
-using GroundAtom = const GroundAtomImpl*;
-using GroundAtomList = std::vector<GroundAtom>;
+template<IsPredicate P>
+using GroundAtom = const GroundAtomImpl<P>*;
+template<IsPredicate P>
+using GroundAtomList = std::vector<GroundAtom<P>>;
 
+template<IsPredicate P>
 class LiteralImpl;
-using Literal = const LiteralImpl*;
-using LiteralList = std::vector<Literal>;
+template<IsPredicate P>
+using Literal = const LiteralImpl<P>*;
+template<IsPredicate P>
+using LiteralList = std::vector<Literal<P>>;
 
+template<IsPredicate P>
 class GroundLiteralImpl;
-using GroundLiteral = const GroundLiteralImpl*;
-using GroundLiteralList = std::vector<GroundLiteral>;
+template<IsPredicate P>
+using GroundLiteral = const GroundLiteralImpl<P>*;
+template<IsPredicate P>
+using GroundLiteralList = std::vector<GroundLiteral<P>>;
 
 class NumericFluentImpl;
 using NumericFluent = const NumericFluentImpl*;

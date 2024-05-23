@@ -39,10 +39,9 @@ DomainImpl::DomainImpl(int identifier,
                        std::string name,
                        Requirements requirements,
                        ObjectList constants,
-                       PredicateList predicates,
-                       PredicateList static_predicates,
-                       PredicateList fluent_predicates,
-                       PredicateList derived_predicates,
+                       StaticPredicateList static_predicates,
+                       FluentPredicateList fluent_predicates,
+                       FluentPredicateList derived_predicates,
                        FunctionSkeletonList functions,
                        ActionList actions,
                        AxiomList axioms) :
@@ -50,7 +49,6 @@ DomainImpl::DomainImpl(int identifier,
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
     m_constants(std::move(constants)),
-    m_predicates(std::move(predicates)),
     m_derived_predicates(std::move(derived_predicates)),
     m_static_predicates(std::move(static_predicates)),
     m_fluent_predicates(std::move(fluent_predicates)),
@@ -58,10 +56,7 @@ DomainImpl::DomainImpl(int identifier,
     m_actions(std::move(actions)),
     m_axioms(std::move(axioms))
 {
-    assert(is_subseteq(m_static_predicates, m_predicates));
-    assert(is_subseteq(m_fluent_predicates, m_predicates));
     assert(is_all_unique(m_constants));
-    assert(is_all_unique(m_predicates));
     assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_static_predicates));
     assert(is_all_unique(m_fluent_predicates));
@@ -76,7 +71,8 @@ bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) con
     {
         return (m_name == other.m_name) && (m_requirements == other.m_requirements)
                && (loki::get_sorted_vector(m_constants) == loki::get_sorted_vector(other.m_constants))
-               && (loki::get_sorted_vector(m_predicates) == loki::get_sorted_vector(other.m_predicates))
+               && (loki::get_sorted_vector(m_static_predicates) == loki::get_sorted_vector(other.m_static_predicates))
+               && (loki::get_sorted_vector(m_fluent_predicates) == loki::get_sorted_vector(other.m_fluent_predicates))
                && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
                && (loki::get_sorted_vector(m_functions) == loki::get_sorted_vector(other.m_functions))
                && (loki::get_sorted_vector(m_actions) == loki::get_sorted_vector(other.m_actions))
@@ -90,7 +86,8 @@ size_t DomainImpl::hash_impl() const
     return loki::hash_combine(m_name,
                               m_requirements,
                               loki::hash_container(loki::get_sorted_vector(m_constants)),
-                              loki::hash_container(loki::get_sorted_vector(m_predicates)),
+                              loki::hash_container(loki::get_sorted_vector(m_static_predicates)),
+                              loki::hash_container(loki::get_sorted_vector(m_fluent_predicates)),
                               loki::hash_container(loki::get_sorted_vector(m_derived_predicates)),
                               loki::hash_container(loki::get_sorted_vector(m_functions)),
                               loki::hash_container(loki::get_sorted_vector(m_actions)),
@@ -118,14 +115,18 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
         }
         out << ")\n";
     }
-    if (!m_predicates.empty())
+    if (!(m_static_predicates.empty() && m_fluent_predicates.empty()))
     {
-        out << string(nested_options.indent, ' ') << "(:predicates ";
-        for (size_t i = 0; i < m_predicates.size(); ++i)
+        out << string(nested_options.indent, ' ') << "(:predicates";
+        for (const auto& predicate : m_static_predicates)
         {
-            if (i != 0)
-                out << " ";
-            m_predicates[i]->str(out, nested_options);
+            out << " ";
+            predicate->str(out, nested_options);
+        }
+        for (const auto& predicate : m_fluent_predicates)
+        {
+            out << " ";
+            predicate->str(out, nested_options);
         }
         out << ")\n";
     }
@@ -170,13 +171,11 @@ const Requirements& DomainImpl::get_requirements() const { return m_requirements
 
 const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 
-const PredicateList& DomainImpl::get_predicates() const { return m_predicates; }
+const StaticPredicateList& DomainImpl::get_static_predicates() const { return m_static_predicates; }
 
-const PredicateList& DomainImpl::get_static_predicates() const { return m_static_predicates; }
+const FluentPredicateList& DomainImpl::get_fluent_predicates() const { return m_fluent_predicates; }
 
-const PredicateList& DomainImpl::get_fluent_predicates() const { return m_fluent_predicates; }
-
-const PredicateList& DomainImpl::get_derived_predicates() const { return m_derived_predicates; }
+const FluentPredicateList& DomainImpl::get_derived_predicates() const { return m_derived_predicates; }
 
 const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functions; }
 

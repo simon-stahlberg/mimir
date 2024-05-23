@@ -34,34 +34,62 @@ namespace mimir
    - ConstView<String> m_name; (8 byte)
    - ConstView<Vector<Variable>> m_variables (8 byte)
 */
-class PredicateImpl : public loki::Base<PredicateImpl>
+class FluentPredicateImpl : public loki::Base<FluentPredicateImpl>
 {
 private:
     std::string m_name;
     VariableList m_parameters;
-    bool m_is_static;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    PredicateImpl(int identifier, std::string name, VariableList parameters, bool is_static);
+    FluentPredicateImpl(int identifier, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<PredicateImpl, loki::Hash<PredicateImpl*>, loki::EqualTo<PredicateImpl*>>;
+    friend class loki::PDDLFactory<FluentPredicateImpl, loki::Hash<FluentPredicateImpl*>, loki::EqualTo<FluentPredicateImpl*>>;
 
     /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const PredicateImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const FluentPredicateImpl& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<PredicateImpl>;
+    friend class loki::Base<FluentPredicateImpl>;
 
 public:
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
-    bool is_static() const;
     size_t get_arity() const;
 };
+
+class StaticPredicateImpl : public loki::Base<StaticPredicateImpl>
+{
+private:
+    std::string m_name;
+    VariableList m_parameters;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    StaticPredicateImpl(int identifier, std::string name, VariableList parameters);
+
+    // Give access to the constructor.
+    friend class loki::PDDLFactory<StaticPredicateImpl, loki::Hash<StaticPredicateImpl*>, loki::EqualTo<StaticPredicateImpl*>>;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const StaticPredicateImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<StaticPredicateImpl>;
+
+public:
+    const std::string& get_name() const;
+    const VariableList& get_parameters() const;
+    size_t get_arity() const;
+};
+
+// TODO: Add DerivedPredicate
+
 }
 
 #endif

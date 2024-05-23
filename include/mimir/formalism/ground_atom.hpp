@@ -36,15 +36,16 @@ namespace mimir
    - ConstView<Predicate> m_predicate; (8 byte)
    - ConstView<Vector<Object>> m_objects; (8 byte)
 */
+template<IsPredicate P>
 class GroundAtomImpl : public loki::Base<GroundAtomImpl>
 {
 private:
-    Predicate m_predicate;
+    P m_predicate;
     ObjectList m_objects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(int identifier, Predicate predicate, ObjectList objects);
+    GroundAtomImpl(int identifier, P predicate, ObjectList objects);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<GroundAtomImpl, loki::Hash<GroundAtomImpl*>, loki::EqualTo<GroundAtomImpl*>>;
@@ -58,11 +59,70 @@ private:
     friend class loki::Base<GroundAtomImpl>;
 
 public:
-    const Predicate& get_predicate() const;
+    const P& get_predicate() const;
     const ObjectList& get_objects() const;
     bool is_static() const;
     size_t get_arity() const;
 };
+
+template<IsPredicate P>
+GroundAtomImpl<P>::GroundAtomImpl(int identifier, P predicate, ObjectList objects) :
+    Base(identifier),
+    m_predicate(std::move(predicate)),
+    m_objects(std::move(objects))
+{
+}
+
+template<IsPredicate P>
+bool GroundAtomImpl<P>::is_structurally_equivalent_to_impl(const GroundAtomImpl<P>& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate) && (m_objects == other.m_objects);
+    }
+    return true;
+}
+
+template<IsPredicate P>
+size_t GroundAtomImpl<P>::hash_impl() const
+{
+    return loki::hash_combine(m_predicate, loki::hash_container(m_objects));
+}
+
+template<IsPredicate P>
+void GroundAtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
+{
+    out << "(" << m_predicate->get_name();
+    for (size_t i = 0; i < m_objects.size(); ++i)
+    {
+        out << " " << m_objects[i]->get_name();
+    }
+    out << ")";
+}
+
+template<IsPredicate P>
+const P& GroundAtomImpl<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template<IsPredicate P>
+const ObjectList& GroundAtomImpl<P>::get_objects() const
+{
+    return m_objects;
+}
+
+template<IsPredicate P>
+bool GroundAtomImpl<P>::is_static() const
+{
+    return m_predicate->is_static();
+}
+
+template<IsPredicate P>
+size_t GroundAtomImpl<P>::get_arity() const
+{
+    return m_objects.size();
+}
 }
 
 #endif

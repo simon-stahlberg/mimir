@@ -34,8 +34,8 @@ ActionImpl::ActionImpl(int identifier,
                        std::string name,
                        size_t original_arity,
                        VariableList parameters,
-                       LiteralList static_conditions,
-                       LiteralList fluent_conditions,
+                       LiteralList<StaticPredicateImpl> static_conditions,
+                       LiteralList<FluentPredicateImpl> fluent_conditions,
                        EffectSimpleList simple_effects,
                        EffectConditionalList conditional_effects,
                        EffectUniversalList universal_effects,
@@ -52,7 +52,6 @@ ActionImpl::ActionImpl(int identifier,
     m_function_expression(std::move(function_expression))
 {
     assert(m_original_arity <= m_parameters.size());
-    assert(are_disjoint(m_static_conditions, m_fluent_conditions));
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
@@ -160,9 +159,9 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 
-const LiteralList& ActionImpl::get_static_conditions() const { return m_static_conditions; }
+const LiteralList<StaticPredicateImpl>& ActionImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+const LiteralList<FluentPredicateImpl>& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
 const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
 

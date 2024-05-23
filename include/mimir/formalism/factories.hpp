@@ -54,11 +54,16 @@ using RequirementFactory = loki::PDDLFactory<RequirementsImpl>;
 using VariableFactory = loki::PDDLFactory<VariableImpl>;
 using TermFactory = loki::PDDLFactory<TermImpl>;
 using ObjectFactory = loki::PDDLFactory<ObjectImpl>;
-using AtomFactory = loki::PDDLFactory<AtomImpl>;
-using GroundAtomFactory = loki::PDDLFactory<GroundAtomImpl>;
-using LiteralFactory = loki::PDDLFactory<LiteralImpl>;
-using GroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl>;
-using PredicateFactory = loki::PDDLFactory<PredicateImpl>;
+using StaticAtomFactory = loki::PDDLFactory<AtomImpl<StaticPredicateImpl>>;
+using FluentAtomFactory = loki::PDDLFactory<AtomImpl<FluentPredicateImpl>>;
+using StaticGroundAtomFactory = loki::PDDLFactory<GroundAtomImpl<StaticPredicateImpl>>;
+using FluentGroundAtomFactory = loki::PDDLFactory<GroundAtomImpl<FluentPredicateImpl>>;
+using StaticLiteralFactory = loki::PDDLFactory<LiteralImpl<StaticPredicateImpl>>;
+using FluentLiteralFactory = loki::PDDLFactory<LiteralImpl<FluentPredicateImpl>>;
+using StaticGroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl<StaticPredicateImpl>>;
+using FluentGroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl<FluentPredicateImpl>>;
+using StaticPredicateFactory = loki::PDDLFactory<StaticPredicateImpl>;
+using FluentPredicateFactory = loki::PDDLFactory<FluentPredicateImpl>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using GroundFunctionExpressionFactory = loki::PDDLFactory<GroundFunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
@@ -82,13 +87,16 @@ private:
     VariableFactory variables;
     TermFactory terms;
     ObjectFactory objects;
-    AtomFactory atoms;
-    GroundAtomFactory ground_atoms;
-    GroundAtomFactory static_ground_atoms;
-    LiteralFactory literals;
-    GroundLiteralFactory ground_literals;
-    GroundLiteralFactory static_ground_literals;
-    PredicateFactory predicates;
+    StaticAtomFactory static_atoms;
+    FluentAtomFactory fluent_atoms;
+    StaticGroundAtomFactory static_ground_atoms;
+    FluentGroundAtomFactory fluent_ground_atoms;
+    StaticLiteralFactory static_literals;
+    FluentLiteralFactory fluent_literals;
+    StaticGroundLiteralFactory static_ground_literals;
+    FluentGroundLiteralFactory fluent_ground_literals;
+    StaticPredicateFactory static_predicates;
+    FluentPredicateFactory fluent_predicates;
     FunctionExpressionFactory function_expressions;
     GroundFunctionExpressionFactory ground_function_expressions;
     FunctionFactory functions;
@@ -106,14 +114,11 @@ private:
 
     // TODO: provide more efficient grounding tables for arity 0, 1
     // that do not store the actual binding but instead compute a perfect hash value.
-    std::vector<GroundingTable<GroundLiteral>> m_groundings_by_fluent_literal;
-    std::vector<GroundingTable<GroundLiteral>> m_groundings_by_static_literal;
+    std::vector<GroundingTable<GroundLiteral<FluentPredicateImpl>>> m_groundings_by_fluent_literal;
+    std::vector<GroundingTable<GroundLiteral<StaticPredicateImpl>>> m_groundings_by_static_literal;
 
-    template<typename GroundAtomCreator>
-    GroundLiteral ground_literal_generic(const Literal literal,
-                                         const ObjectList& binding,
-                                         GroundAtomCreator create_ground_atom,
-                                         std::vector<GroundingTable<GroundLiteral>>& grounding_table)
+    template<IsPredicate P>
+    GroundLiteral<P> ground_literal_generic(const Literal<P> literal, const ObjectList& binding, std::vector<GroundingTable<GroundLiteral<P>>>& grounding_table)
     {
         /* 1. Check if grounding is cached */
         const auto literal_id = literal->get_identifier();
@@ -157,13 +162,16 @@ public:
         variables(VariableFactory(1000)),
         terms(TermFactory(1000)),
         objects(ObjectFactory(1000)),
-        atoms(AtomFactory(1000)),
-        ground_atoms(GroundAtomFactory(1000)),
-        static_ground_atoms(GroundAtomFactory(1000)),
-        literals(LiteralFactory(1000)),
-        ground_literals(GroundLiteralFactory(1000)),
-        static_ground_literals(GroundLiteralFactory(1000)),
-        predicates(PredicateFactory(1000)),
+        static_atoms(StaticAtomFactory(1000)),
+        fluent_atoms(FluentAtomFactory(1000)),
+        static_ground_atoms(StaticGroundAtomFactory(1000)),
+        fluent_ground_atoms(FluentGroundAtomFactory(1000)),
+        static_literals(StaticLiteralFactory(1000)),
+        fluent_literals(FluentLiteralFactory(1000)),
+        static_ground_literals(StaticGroundLiteralFactory(1000)),
+        fluent_ground_literals(FluentGroundLiteralFactory(1000)),
+        static_predicates(StaticPredicateFactory(1000)),
+        fluent_predicates(FluentPredicateFactory(1000)),
         function_expressions(FunctionExpressionFactory(1000)),
         ground_function_expressions(GroundFunctionExpressionFactory(1000)),
         functions(FunctionFactory(1000)),
@@ -218,56 +226,49 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     Object get_or_create_object(std::string name) { return objects.get_or_create<ObjectImpl>(std::move(name)); }
 
-    /// @brief Get or create an atom for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Atom get_or_create_atom(Predicate predicate, TermList terms) { return atoms.get_or_create<AtomImpl>(std::move(predicate), std::move(terms)); }
-
-    /// @brief Get or create a ground atom for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    GroundAtom get_or_create_ground_atom(Predicate predicate, ObjectList objects)
+    Atom<StaticPredicateImpl> get_or_create_static_atom(StaticPredicate predicate, TermList terms)
     {
-        assert(!predicate->is_static());
-        return ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
+        return static_atoms.get_or_create<AtomImpl<StaticPredicateImpl>>(std::move(predicate), std::move(terms));
+    }
+    Atom<FluentPredicateImpl> get_or_create_fluent_atom(FluentPredicate predicate, TermList terms)
+    {
+        return fluent_atoms.get_or_create<AtomImpl<FluentPredicateImpl>>(std::move(predicate), std::move(terms));
     }
 
-    /// @brief Get or create a static ground atom for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    GroundAtom get_or_create_static_ground_atom(Predicate predicate, ObjectList objects)
+    GroundAtom<StaticPredicateImpl> get_or_create_static_ground_atom(StaticPredicate predicate, ObjectList objects)
     {
-        assert(predicate->is_static());
-        return static_ground_atoms.get_or_create<GroundAtomImpl>(std::move(predicate), std::move(objects));
+        return static_ground_atoms.get_or_create<GroundAtomImpl<StaticPredicateImpl>>(std::move(predicate), std::move(objects));
+    }
+    GroundAtom<FluentPredicateImpl> get_or_create_fluent_ground_atom(FluentPredicate predicate, ObjectList objects)
+    {
+        return fluent_ground_atoms.get_or_create<GroundAtomImpl<FluentPredicateImpl>>(std::move(predicate), std::move(objects));
     }
 
-    /// @brief Get or create a literal for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Literal get_or_create_literal(bool is_negated, Atom atom) { return literals.get_or_create<LiteralImpl>(std::move(is_negated), std::move(atom)); }
-
-    /// @brief Get or create a ground literal for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    GroundLiteral get_or_create_ground_literal(bool is_negated, GroundAtom atom)
+    Literal<StaticPredicateImpl> get_or_create_static_literal(bool is_negated, Atom<StaticPredicateImpl> atom)
     {
-        return ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
+        return static_literals.get_or_create<LiteralImpl<StaticPredicateImpl>>(is_negated, std::move(atom));
+    }
+    Literal<FluentPredicateImpl> get_or_create_fluent_literal(bool is_negated, Atom<StaticPredicateImpl> atom)
+    {
+        return fluent_literals.get_or_create<LiteralImpl<FluentPredicateImpl>>(is_negated, std::move(atom));
     }
 
-    /// @brief Get or create a static ground literal for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    GroundLiteral get_or_create_static_ground_literal(bool is_negated, GroundAtom atom)
+    GroundLiteral<StaticPredicateImpl> get_or_create_static_ground_literal(bool is_negated, GroundAtom<StaticPredicateImpl> atom)
     {
-        return static_ground_literals.get_or_create<GroundLiteralImpl>(std::move(is_negated), std::move(atom));
+        return static_ground_literals.get_or_create<GroundLiteralImpl<StaticPredicateImpl>>(is_negated, std::move(atom));
+    }
+    GroundLiteral<FluentPredicateImpl> get_or_create_fluent_ground_literal(bool is_negated, GroundAtom<StaticPredicateImpl> atom)
+    {
+        return fluent_ground_literals.get_or_create<GroundLiteralImpl<FluentPredicateImpl>>(is_negated, std::move(atom));
     }
 
-    /// @brief Get or create a predicate for the given parameters.
-    ///
-    ///        This function allows us to can change the underlying representation and storage.
-    Predicate get_or_create_predicate(std::string name, VariableList parameters, bool is_static)
+    StaticPredicate get_or_create_static_predicate(std::string name, VariableList parameters)
     {
-        return predicates.get_or_create<PredicateImpl>(std::move(name), std::move(parameters), is_static);
+        return static_predicates.get_or_create<StaticPredicateImpl>(name, std::move(parameters));
+    }
+    FluentPredicate get_or_create_fluent_predicate(std::string name, VariableList parameters)
+    {
+        return fluent_predicates.get_or_create<FluentPredicateImpl>(name, std::move(parameters));
     }
 
     /// @brief Get or create a number function expression for the given parameters.
@@ -386,12 +387,14 @@ public:
     /// @brief Get or create a simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectSimple get_or_create_simple_effect(Literal effect) { return simple_effects.get_or_create<EffectSimpleImpl>(std::move(effect)); }
+    EffectSimple get_or_create_simple_effect(Literal<FluentPredicateImpl> effect) { return simple_effects.get_or_create<EffectSimpleImpl>(std::move(effect)); }
 
     /// @brief Get or create a conditional simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectConditional get_or_create_conditional_effect(LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    EffectConditional get_or_create_conditional_effect(LiteralList<StaticPredicateImpl> static_condition,
+                                                       LiteralList<FluentPredicateImpl> fluent_condition,
+                                                       Literal<FluentPredicateImpl> effect)
     {
         return conditional_effects.get_or_create<EffectConditionalImpl>(std::move(static_condition), std::move(fluent_condition), std::move(effect));
     }
@@ -399,7 +402,10 @@ public:
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectUniversal get_or_create_universal_effect(VariableList parameters, LiteralList static_condition, LiteralList fluent_condition, Literal effect)
+    EffectUniversal get_or_create_universal_effect(VariableList parameters,
+                                                   LiteralList<StaticPredicateImpl> static_condition,
+                                                   LiteralList<FluentPredicateImpl> fluent_condition,
+                                                   Literal<FluentPredicateImpl> effect)
     {
         return universal_effects.get_or_create<EffectUniversalImpl>(std::move(parameters),
                                                                     std::move(static_condition),
@@ -413,8 +419,8 @@ public:
     Action get_or_create_action(std::string name,
                                 size_t original_arity,
                                 VariableList parameters,
-                                LiteralList static_conditions,
-                                LiteralList fluent_conditions,
+                                LiteralList<StaticPredicateImpl> static_conditions,
+                                LiteralList<FluentPredicateImpl> fluent_conditions,
                                 EffectSimpleList simple_effects,
                                 EffectConditionalList conditional_effects,
                                 EffectUniversalList universal_effects,
@@ -434,7 +440,10 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(VariableList parameters, Literal literal, LiteralList static_condition, LiteralList fluent_condition)
+    Axiom get_or_create_axiom(VariableList parameters,
+                              Literal<FluentPredicateImpl> literal,
+                              LiteralList<StaticPredicateImpl> static_condition,
+                              LiteralList<FluentPredicateImpl> fluent_condition)
     {
         return axioms.get_or_create<AxiomImpl>(std::move(parameters), std::move(literal), std::move(static_condition), std::move(fluent_condition));
     }
@@ -461,10 +470,9 @@ public:
     Domain get_or_create_domain(std::string name,
                                 Requirements requirements,
                                 ObjectList constants,
-                                PredicateList predicates,
-                                PredicateList static_predicates,
-                                PredicateList fluent_predicates,
-                                PredicateList derived_predicates,
+                                StaticPredicateList static_predicates,
+                                FluentPredicateList fluent_predicates,
+                                FluentPredicateList derived_predicates,
                                 FunctionSkeletonList functions,
                                 ActionList actions,
                                 AxiomList axioms)
@@ -472,7 +480,6 @@ public:
         return domains.get_or_create<DomainImpl>(std::move(name),
                                                  std::move(requirements),
                                                  std::move(constants),
-                                                 std::move(predicates),
                                                  std::move(static_predicates),
                                                  std::move(fluent_predicates),
                                                  std::move(derived_predicates),
@@ -488,11 +495,11 @@ public:
                                   std::string name,
                                   Requirements requirements,
                                   ObjectList objects,
-                                  PredicateList derived_predicates,
-                                  GroundLiteralList static_initial_literals,
-                                  GroundLiteralList fluent_initial_literals,
+                                  FluentPredicateList derived_predicates,
+                                  GroundLiteralList<StaticPredicateImpl> static_initial_literals,
+                                  GroundLiteralList<FluentPredicateImpl> fluent_initial_literals,
                                   NumericFluentList numeric_fluents,
-                                  GroundLiteralList goal_condition,
+                                  GroundLiteralList<FluentPredicateImpl> goal_condition,
                                   std::optional<OptimizationMetric> optimization_metric,
                                   AxiomList axioms)
     {
@@ -511,22 +518,13 @@ public:
 
     /* Accessors */
 
-    // Literal
-    const LiteralFactory& get_literals() const { return literals; }
-
-    // Predicate
-    const PredicateFactory& get_predicates() const { return predicates; }
-
-    // Action
-    const ActionFactory& get_actions() const { return actions; }
-
     // GroundAtom
-    GroundAtom get_ground_atom(size_t atom_id) const { return ground_atoms.get(atom_id); }
+    GroundAtom<FluentPredicateImpl> get_ground_atom(size_t atom_id) const { return fluent_ground_atoms.get(atom_id); }
 
-    const GroundAtomFactory& get_ground_atoms() const { return ground_atoms; }
+    const FluentGroundAtomFactory& get_ground_atoms() const { return fluent_ground_atoms; }
 
     template<std::ranges::forward_range Iterable>
-    void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
+    void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<FluentPredicateImpl>& out_ground_atoms) const
     {
         out_ground_atoms.clear();
 
@@ -537,7 +535,7 @@ public:
     }
 
     template<std::ranges::forward_range Iterable>
-    GroundAtomList get_ground_atoms_from_ids(const Iterable& atom_ids) const
+    GroundAtomList<FluentPredicateImpl> get_fluent_ground_atoms_from_ids(const Iterable& atom_ids) const
     {
         auto result = GroundAtomList {};
         get_ground_atoms_from_ids(atom_ids, result);
@@ -545,12 +543,12 @@ public:
     }
 
     // Static GroundAtom
-    GroundAtom get_static_ground_atom(size_t atom_id) const { return static_ground_atoms.get(atom_id); }
+    GroundAtom<StaticPredicateImpl> get_static_ground_atom(size_t atom_id) const { return static_ground_atoms.get(atom_id); }
 
-    const GroundAtomFactory& get_static_ground_atoms() const { return static_ground_atoms; }
+    const StaticGroundAtomFactory& get_static_ground_atoms() const { return static_ground_atoms; }
 
     template<std::ranges::forward_range Iterable>
-    void get_static_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList& out_ground_atoms) const
+    void get_static_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<StaticPredicateImpl>& out_ground_atoms) const
     {
         out_ground_atoms.clear();
 
@@ -561,7 +559,7 @@ public:
     }
 
     template<std::ranges::forward_range Iterable>
-    GroundAtomList get_static_ground_atoms_from_ids(const Iterable& atom_ids) const
+    GroundAtomList<StaticPredicateImpl> get_static_ground_atoms_from_ids(const Iterable& atom_ids) const
     {
         auto result = GroundAtomList {};
         get_static_ground_atoms_from_ids(atom_ids, result);
@@ -616,16 +614,14 @@ public:
         }
     }
 
-    GroundLiteral ground_fluent_literal(const Literal literal, const ObjectList& binding)
+    GroundLiteral<FluentPredicateImpl> ground_fluent_literal(const Literal<FluentPredicateImpl> literal, const ObjectList& binding)
     {
-        auto creator = [this](const Predicate& pred, const ObjectList& terms) { return this->get_or_create_ground_atom(pred, terms); };
-        return ground_literal_generic(literal, binding, creator, m_groundings_by_fluent_literal);
+        return ground_literal_generic(literal, binding, m_groundings_by_fluent_literal);
     }
 
-    GroundLiteral ground_static_literal(const Literal literal, const ObjectList& binding)
+    GroundLiteral<StaticPredicateImpl> ground_static_literal(const Literal<StaticPredicateImpl> literal, const ObjectList& binding)
     {
-        auto static_creator = [this](const Predicate& pred, const ObjectList& terms) { return this->get_or_create_static_ground_atom(pred, terms); };
-        return ground_literal_generic(literal, binding, static_creator, m_groundings_by_static_literal);
+        return ground_literal_generic(literal, binding, m_groundings_by_static_literal);
     }
 };
 }

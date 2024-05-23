@@ -28,15 +28,16 @@ namespace mimir
 /*
     TODO: Flattening LiteralImpl is unnecessary. It is already flat.
 */
+template<IsPredicate P>
 class LiteralImpl : public loki::Base<LiteralImpl>
 {
 private:
     bool m_is_negated;
-    Atom m_atom;
+    Atom<P> m_atom;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    LiteralImpl(int identifier, bool is_negated, Atom atom);
+    LiteralImpl(int identifier, bool is_negated, Atom<P> atom);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<LiteralImpl, loki::Hash<LiteralImpl*>, loki::EqualTo<LiteralImpl*>>;
@@ -51,8 +52,56 @@ private:
 
 public:
     bool is_negated() const;
-    const Atom& get_atom() const;
+    const Atom<P>& get_atom() const;
 };
+
+template<IsPredicate P>
+LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) : Base(identifier), m_is_negated(is_negated), m_atom(std::move(atom))
+{
+}
+
+template<IsPredicate P>
+bool LiteralImpl<P>::is_structurally_equivalent_to_impl(const LiteralImpl<P>& other) const
+{
+    if (this != &other)
+    {
+        return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
+    }
+    return true;
+}
+
+template<IsPredicate P>
+size_t LiteralImpl<P>::hash_impl() const
+{
+    return loki::hash_combine(m_is_negated, m_atom);
+}
+
+template<IsPredicate P>
+void LiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+{
+    if (m_is_negated)
+    {
+        out << "(not ";
+        m_atom->str(out, options);
+        out << ")";
+    }
+    else
+    {
+        m_atom->str(out, options);
+    }
+}
+
+template<IsPredicate P>
+bool LiteralImpl<P>::is_negated() const
+{
+    return m_is_negated;
+}
+
+template<IsPredicate P>
+const Atom<P>& LiteralImpl<P>::get_atom() const
+{
+    return m_atom;
+}
 
 }
 

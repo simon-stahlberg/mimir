@@ -25,15 +25,16 @@
 
 namespace mimir
 {
+template<IsPredicate P>
 class AtomImpl : public loki::Base<AtomImpl>
 {
 private:
-    Predicate m_predicate;
+    P m_predicate;
     TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AtomImpl(int identifier, Predicate predicate, TermList terms);
+    AtomImpl(int identifier, P predicate, TermList terms);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AtomImpl, loki::Hash<AtomImpl*>, loki::EqualTo<AtomImpl*>>;
@@ -47,9 +48,54 @@ private:
     friend class loki::Base<AtomImpl>;
 
 public:
-    const Predicate& get_predicate() const;
+    const P& get_predicate() const;
     const TermList& get_terms() const;
 };
+
+template<IsPredicate P>
+AtomImpl<P>::AtomImpl(int identifier, P predicate, TermList terms) : Base(identifier), m_predicate(std::move(predicate)), m_terms(std::move(terms))
+{
+}
+
+template<IsPredicate P>
+bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate) && (m_terms == other.m_terms);
+    }
+    return true;
+}
+
+template<IsPredicate P>
+size_t AtomImpl<P>::hash_impl() const
+{
+    return loki::hash_combine(m_predicate, loki::hash_container(m_terms));
+}
+
+template<IsPredicate P>
+void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+{
+    out << "(" << m_predicate->get_name();
+    for (size_t i = 0; i < m_terms.size(); ++i)
+    {
+        out << " ";
+        std::visit(loki::StringifyVisitor(out, options), *m_terms[i]);
+    }
+    out << ")";
+}
+
+template<IsPredicate P>
+const P& AtomImpl<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template<IsPredicate P>
+const TermList& AtomImpl<P>::get_terms() const
+{
+    return m_terms;
+}
 }
 
 #endif

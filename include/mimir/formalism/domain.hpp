@@ -34,10 +34,9 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
-    PredicateList m_predicates;
-    PredicateList m_derived_predicates;
-    PredicateList m_static_predicates;
-    PredicateList m_fluent_predicates;
+    StaticPredicateList m_static_predicates;
+    FluentPredicateList m_derived_predicates;
+    FluentPredicateList m_fluent_predicates;
     FunctionSkeletonList m_functions;
     ActionList m_actions;
     AxiomList m_axioms;
@@ -48,10 +47,9 @@ private:
                std::string name,
                Requirements requirements,
                ObjectList constants,
-               PredicateList predicates,
-               PredicateList static_predicates,
-               PredicateList fluent_predicates,
-               PredicateList derived_predicates,
+               StaticPredicateList static_predicates,
+               FluentPredicateList fluent_predicates,
+               FluentPredicateList derived_predicates,
                FunctionSkeletonList functions,
                ActionList actions,
                AxiomList axioms);
@@ -71,10 +69,9 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_constants() const;
-    const PredicateList& get_predicates() const;
-    const PredicateList& get_static_predicates() const;
-    const PredicateList& get_fluent_predicates() const;
-    const PredicateList& get_derived_predicates() const;
+    const StaticPredicateList& get_static_predicates() const;
+    const FluentPredicateList& get_fluent_predicates() const;
+    const FluentPredicateList& get_derived_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;

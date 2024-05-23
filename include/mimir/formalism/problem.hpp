@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/search/flat_types.hpp"
 
 #include <loki/loki.hpp>
@@ -34,13 +35,13 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
-    PredicateList m_derived_predicates;
-    GroundLiteralList m_static_initial_literals;
+    FluentPredicateList m_derived_predicates;
+    GroundLiteralList<StaticPredicateImpl> m_static_initial_literals;
     FlatBitsetBuilder m_static_initial_positive_atoms_builder;
     FlatBitsetBuilder m_static_initial_negative_atoms_builder;
-    GroundLiteralList m_fluent_initial_literals;
+    GroundLiteralList<FluentPredicateImpl> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
-    GroundLiteralList m_goal_condition;
+    GroundLiteralList<FluentPredicateImpl> m_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
 
@@ -51,11 +52,11 @@ private:
                 std::string name,
                 Requirements requirements,
                 ObjectList objects,
-                PredicateList derived_predicates,
-                GroundLiteralList static_initial_literals,
-                GroundLiteralList fluent_initial_literals,
+                FluentPredicateList derived_predicates,
+                GroundLiteralList<StaticPredicateImpl> static_initial_literals,
+                GroundLiteralList<FluentPredicateImpl> fluent_initial_literals,
                 NumericFluentList numeric_fluents,
-                GroundLiteralList goal_condition,
+                GroundLiteralList<FluentPredicateImpl> goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms);
 
@@ -75,13 +76,13 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
-    const PredicateList& get_derived_predicates() const;
-    const GroundLiteralList& get_static_initial_literals() const;
+    const FluentPredicateList& get_derived_predicates() const;
+    const GroundLiteralList<StaticPredicateImpl>& get_static_initial_literals() const;
     FlatBitset get_static_initial_positive_atoms_bitset() const;
     FlatBitset get_static_initial_negative_atoms_bitset() const;
-    const GroundLiteralList& get_fluent_initial_literals() const;
+    const GroundLiteralList<FluentPredicateImpl>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
-    const GroundLiteralList& get_goal_condition() const;
+    const GroundLiteralList<FluentPredicateImpl>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 };

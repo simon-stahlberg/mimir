@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_AXIOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
@@ -29,11 +30,15 @@ class AxiomImpl : public loki::Base<AxiomImpl>
 {
 private:
     VariableList m_parameters;
-    Literal m_literal;
-    LiteralList m_static_conditions;
-    LiteralList m_fluent_conditions;
+    Literal<FluentPredicateImpl> m_literal;
+    LiteralList<StaticPredicateImpl> m_static_conditions;
+    LiteralList<FluentPredicateImpl> m_fluent_conditions;
 
-    AxiomImpl(int identifier, VariableList parameters, Literal literal, LiteralList static_conditions, LiteralList fluent_conditions);
+    AxiomImpl(int identifier,
+              VariableList parameters,
+              Literal<FluentPredicateImpl> literal,
+              LiteralList<StaticPredicateImpl> static_conditions,
+              LiteralList<FluentPredicateImpl> fluent_conditions);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AxiomImpl, loki::Hash<AxiomImpl*>, loki::EqualTo<AxiomImpl*>>;
@@ -48,9 +53,9 @@ private:
 
 public:
     const VariableList& get_parameters() const;
-    const Literal& get_literal() const;
-    const LiteralList& get_static_conditions() const;
-    const LiteralList& get_fluent_conditions() const;
+    const Literal<FluentPredicateImpl>& get_literal() const;
+    const LiteralList<StaticPredicateImpl>& get_static_conditions() const;
+    const LiteralList<FluentPredicateImpl>& get_fluent_conditions() const;
 
     size_t get_arity() const;
 };

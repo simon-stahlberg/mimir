@@ -33,7 +33,7 @@ namespace mimir
  * Type 1 effect
  */
 
-EffectSimpleImpl::EffectSimpleImpl(int identifier, Literal effect) : Base(identifier), m_effect(std::move(effect)) {}
+EffectSimpleImpl::EffectSimpleImpl(int identifier, Literal<FluentPredicateImpl> effect) : Base(identifier), m_effect(std::move(effect)) {}
 
 bool EffectSimpleImpl::is_structurally_equivalent_to_impl(const EffectSimpleImpl& other) const
 {
@@ -47,20 +47,22 @@ size_t EffectSimpleImpl::hash_impl() const { return loki::hash_combine(m_effect)
 
 void EffectSimpleImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << *m_effect; }
 
-const Literal& EffectSimpleImpl::get_effect() const { return m_effect; }
+const Literal<FluentPredicateImpl>& EffectSimpleImpl::get_effect() const { return m_effect; }
 
 /**
  * Type 2 effect
  */
 
-EffectConditionalImpl::EffectConditionalImpl(int identifier, LiteralList static_conditions, LiteralList fluent_conditions, Literal effect) :
+EffectConditionalImpl::EffectConditionalImpl(int identifier,
+                                             LiteralList<StaticPredicateImpl> static_conditions,
+                                             LiteralList<FluentPredicateImpl> fluent_conditions,
+                                             Literal<FluentPredicateImpl> effect) :
     Base(identifier),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_effect(std::move(effect))
 {
     assert(!(m_static_conditions.empty() && m_fluent_conditions.empty()));
-    assert(are_disjoint(m_static_conditions, m_fluent_conditions));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
 }
@@ -99,11 +101,11 @@ void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOp
     out << ")";  // end when
 }
 
-const LiteralList& EffectConditionalImpl::get_static_conditions() const { return m_static_conditions; }
+const LiteralList<StaticPredicateImpl>& EffectConditionalImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList& EffectConditionalImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+const LiteralList<FluentPredicateImpl>& EffectConditionalImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
-const Literal& EffectConditionalImpl::get_effect() const { return m_effect; }
+const Literal<FluentPredicateImpl>& EffectConditionalImpl::get_effect() const { return m_effect; }
 
 /**
  * Type 3 effect
@@ -111,9 +113,9 @@ const Literal& EffectConditionalImpl::get_effect() const { return m_effect; }
 
 EffectUniversalImpl::EffectUniversalImpl(int identifier,
                                          VariableList quantified_variables,
-                                         LiteralList static_conditions,
-                                         LiteralList fluent_conditions,
-                                         Literal effect) :
+                                         LiteralList<StaticPredicateImpl> static_conditions,
+                                         LiteralList<FluentPredicateImpl> fluent_conditions,
+                                         Literal<FluentPredicateImpl> effect) :
     Base(identifier),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
@@ -121,7 +123,6 @@ EffectUniversalImpl::EffectUniversalImpl(int identifier,
     m_effect(std::move(effect))
 {
     assert(!m_quantified_variables.empty());
-    assert(are_disjoint(m_static_conditions, m_fluent_conditions));
     assert(is_all_unique(m_quantified_variables));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
@@ -184,11 +185,11 @@ void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOpti
 
 const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
 
-const LiteralList& EffectUniversalImpl::get_static_conditions() const { return m_static_conditions; }
+const LiteralList<StaticPredicateImpl>& EffectUniversalImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList& EffectUniversalImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+const LiteralList<FluentPredicateImpl>& EffectUniversalImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
-const Literal& EffectUniversalImpl::get_effect() const { return m_effect; }
+const Literal<FluentPredicateImpl>& EffectUniversalImpl::get_effect() const { return m_effect; }
 
 size_t EffectUniversalImpl::get_arity() const { return m_quantified_variables.size(); }
 
