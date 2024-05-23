@@ -22,9 +22,10 @@
 namespace mimir
 {
 
-static LiteralList filter_positive_literals(const LiteralList& literals)
+template<IsPredicate P>
+static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
 {
-    auto positive_literals = LiteralList {};
+    auto positive_literals = LiteralList<P> {};
     for (const auto& literal : literals)
     {
         if (!literal->is_negated())
@@ -35,9 +36,23 @@ static LiteralList filter_positive_literals(const LiteralList& literals)
     return positive_literals;
 }
 
-LiteralList DeleteRelaxTransformer::transform_impl(const LiteralList& literals)
+LiteralList<StaticPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralList<StaticPredicateImpl>& literals)
 {
-    auto positive_literals = LiteralList {};
+    auto positive_literals = LiteralList<StaticPredicateImpl> {};
+    for (const auto& literal : literals)
+    {
+        const auto positive_literal = this->transform(*literal);
+        if (positive_literal)
+        {
+            positive_literals.push_back(positive_literal);
+        }
+    }
+    return positive_literals;
+}
+
+LiteralList<FluentPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralList<FluentPredicateImpl>& literals)
+{
+    auto positive_literals = LiteralList<FluentPredicateImpl> {};
     for (const auto& literal : literals)
     {
         const auto positive_literal = this->transform(*literal);
@@ -119,7 +134,19 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
-Literal DeleteRelaxTransformer::transform_impl(const LiteralImpl& literal)
+Literal<StaticPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralImpl<StaticPredicateImpl>& literal)
+{
+    if (literal.is_negated())
+    {
+        return nullptr;
+    }
+
+    const auto atom = this->transform(*literal.get_atom());
+
+    return this->m_pddl_factories.get_or_create_static_literal(false, atom);
+}
+
+Literal<FluentPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralImpl<FluentPredicateImpl>& literal)
 {
     if (literal.is_negated())
     {
@@ -225,7 +252,6 @@ Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
     return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                        this->transform(*domain.get_requirements()),
                                                        this->transform(domain.get_constants()),
-                                                       this->transform(domain.get_predicates()),
                                                        this->transform(domain.get_static_predicates()),
                                                        this->transform(domain.get_fluent_predicates()),
                                                        this->transform(domain.get_derived_predicates()),

@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/term.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
@@ -26,15 +28,15 @@
 namespace mimir
 {
 template<IsPredicate P>
-class AtomImpl : public loki::Base<AtomImpl>
+class AtomImpl : public loki::Base<AtomImpl<P>>
 {
 private:
-    P m_predicate;
+    const P* m_predicate;
     TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AtomImpl(int identifier, P predicate, TermList terms);
+    AtomImpl(int identifier, const P* predicate, TermList terms);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AtomImpl, loki::Hash<AtomImpl*>, loki::EqualTo<AtomImpl*>>;
@@ -48,12 +50,15 @@ private:
     friend class loki::Base<AtomImpl>;
 
 public:
-    const P& get_predicate() const;
+    const P* get_predicate() const;
     const TermList& get_terms() const;
 };
 
 template<IsPredicate P>
-AtomImpl<P>::AtomImpl(int identifier, P predicate, TermList terms) : Base(identifier), m_predicate(std::move(predicate)), m_terms(std::move(terms))
+AtomImpl<P>::AtomImpl(int identifier, const P* predicate, TermList terms) :
+    loki::Base<AtomImpl<P>>(identifier),
+    m_predicate(std::move(predicate)),
+    m_terms(std::move(terms))
 {
 }
 
@@ -86,7 +91,7 @@ void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& opt
 }
 
 template<IsPredicate P>
-const P& AtomImpl<P>::get_predicate() const
+const P* AtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }

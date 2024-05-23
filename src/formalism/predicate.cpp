@@ -26,16 +26,15 @@
 
 namespace mimir
 {
-PredicateImpl::PredicateImpl(int identifier, std::string name, VariableList parameters, bool is_static) :
+StaticPredicateImpl::StaticPredicateImpl(int identifier, std::string name, VariableList parameters) :
     Base(identifier),
     m_name(std::move(name)),
-    m_parameters(std::move(parameters)),
-    m_is_static(is_static)
+    m_parameters(std::move(parameters))
 {
     assert(is_all_unique(m_parameters));
 }
 
-bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& other) const
+bool StaticPredicateImpl::is_structurally_equivalent_to_impl(const StaticPredicateImpl& other) const
 {
     if (this != &other)
     {
@@ -44,9 +43,9 @@ bool PredicateImpl::is_structurally_equivalent_to_impl(const PredicateImpl& othe
     return true;
 }
 
-size_t PredicateImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
+size_t StaticPredicateImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
 
-void PredicateImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+void StaticPredicateImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(" << m_name;
     for (size_t i = 0; i < m_parameters.size(); ++i)
@@ -57,11 +56,45 @@ void PredicateImpl::str_impl(std::ostream& out, const loki::FormattingOptions& o
     out << ")";
 }
 
-const std::string& PredicateImpl::get_name() const { return m_name; }
+const std::string& StaticPredicateImpl::get_name() const { return m_name; }
 
-const VariableList& PredicateImpl::get_parameters() const { return m_parameters; }
+const VariableList& StaticPredicateImpl::get_parameters() const { return m_parameters; }
 
-bool PredicateImpl::is_static() const { return m_is_static; }
+size_t StaticPredicateImpl::get_arity() const { return m_parameters.size(); }
 
-size_t PredicateImpl::get_arity() const { return m_parameters.size(); }
+FluentPredicateImpl::FluentPredicateImpl(int identifier, std::string name, VariableList parameters) :
+    Base(identifier),
+    m_name(std::move(name)),
+    m_parameters(std::move(parameters))
+{
+    assert(is_all_unique(m_parameters));
+}
+
+bool FluentPredicateImpl::is_structurally_equivalent_to_impl(const FluentPredicateImpl& other) const
+{
+    if (this != &other)
+    {
+        return (m_name == other.m_name) && (m_parameters == other.m_parameters);
+    }
+    return true;
+}
+
+size_t FluentPredicateImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
+
+void FluentPredicateImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+{
+    out << "(" << m_name;
+    for (size_t i = 0; i < m_parameters.size(); ++i)
+    {
+        out << " ";
+        m_parameters[i]->str(out, options);
+    }
+    out << ")";
+}
+
+const std::string& FluentPredicateImpl::get_name() const { return m_name; }
+
+const VariableList& FluentPredicateImpl::get_parameters() const { return m_parameters; }
+
+size_t FluentPredicateImpl::get_arity() const { return m_parameters.size(); }
 }

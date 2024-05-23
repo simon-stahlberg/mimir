@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_LITERAL_HPP_
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
+#include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <loki/loki.hpp>
@@ -29,7 +30,7 @@ namespace mimir
     TODO: Flattening LiteralImpl is unnecessary. It is already flat.
 */
 template<IsPredicate P>
-class LiteralImpl : public loki::Base<LiteralImpl>
+class LiteralImpl : public loki::Base<LiteralImpl<P>>
 {
 private:
     bool m_is_negated;
@@ -56,7 +57,10 @@ public:
 };
 
 template<IsPredicate P>
-LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) : Base(identifier), m_is_negated(is_negated), m_atom(std::move(atom))
+LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) :
+    loki::Base<LiteralImpl<P>>(identifier),
+    m_is_negated(is_negated),
+    m_atom(std::move(atom))
 {
 }
 

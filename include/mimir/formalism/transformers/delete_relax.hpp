@@ -44,14 +44,16 @@ private:
     using BaseCachedRecurseTransformer::prepare_impl;
     using BaseCachedRecurseTransformer::transform_impl;
 
-    LiteralList transform_impl(const LiteralList& literals);
+    LiteralList<StaticPredicateImpl> transform_impl(const LiteralList<StaticPredicateImpl>& literals);
+    LiteralList<FluentPredicateImpl> transform_impl(const LiteralList<FluentPredicateImpl>& literals);
     EffectSimpleList transform_impl(const EffectSimpleList& effects);
     EffectConditionalList transform_impl(const EffectConditionalList& effects);
     EffectUniversalList transform_impl(const EffectUniversalList& effects);
     ActionList transform_impl(const ActionList& actions);
     AxiomList transform_impl(const AxiomList& axioms);
 
-    Literal transform_impl(const LiteralImpl& literal);
+    Literal<StaticPredicateImpl> transform_impl(const LiteralImpl<StaticPredicateImpl>& literal);
+    Literal<FluentPredicateImpl> transform_impl(const LiteralImpl<FluentPredicateImpl>& literal);
     EffectSimple transform_impl(const EffectSimpleImpl& effect);
     EffectConditional transform_impl(const EffectConditionalImpl& effect);
     EffectUniversal transform_impl(const EffectUniversalImpl& effect);

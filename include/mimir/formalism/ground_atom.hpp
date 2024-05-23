@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 #include <loki/loki.hpp>
 #include <ostream>
@@ -37,15 +39,15 @@ namespace mimir
    - ConstView<Vector<Object>> m_objects; (8 byte)
 */
 template<IsPredicate P>
-class GroundAtomImpl : public loki::Base<GroundAtomImpl>
+class GroundAtomImpl : public loki::Base<GroundAtomImpl<P>>
 {
 private:
-    P m_predicate;
+    const P* m_predicate;
     ObjectList m_objects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(int identifier, P predicate, ObjectList objects);
+    GroundAtomImpl(int identifier, const P* predicate, ObjectList objects);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<GroundAtomImpl, loki::Hash<GroundAtomImpl*>, loki::EqualTo<GroundAtomImpl*>>;
@@ -59,15 +61,15 @@ private:
     friend class loki::Base<GroundAtomImpl>;
 
 public:
-    const P& get_predicate() const;
+    const P* get_predicate() const;
     const ObjectList& get_objects() const;
     bool is_static() const;
     size_t get_arity() const;
 };
 
 template<IsPredicate P>
-GroundAtomImpl<P>::GroundAtomImpl(int identifier, P predicate, ObjectList objects) :
-    Base(identifier),
+GroundAtomImpl<P>::GroundAtomImpl(int identifier, const P* predicate, ObjectList objects) :
+    loki::Base<GroundAtomImpl<P>>(identifier),
     m_predicate(std::move(predicate)),
     m_objects(std::move(objects))
 {
@@ -101,7 +103,7 @@ void GroundAtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOption
 }
 
 template<IsPredicate P>
-const P& GroundAtomImpl<P>::get_predicate() const
+const P* GroundAtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }

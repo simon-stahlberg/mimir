@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
@@ -29,7 +30,7 @@ namespace mimir
     TODO: Flattening GroundLiteralImpl is unnecessary. It is already flat.
 */
 template<IsPredicate P>
-class GroundLiteralImpl : public loki::Base<GroundLiteralImpl>
+class GroundLiteralImpl : public loki::Base<GroundLiteralImpl<P>>
 {
 private:
     bool m_is_negated;
@@ -57,7 +58,7 @@ public:
 
 template<IsPredicate P>
 GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom) :
-    Base(identifier),
+    loki::Base<GroundLiteralImpl<P>>(identifier),
     m_is_negated(is_negated),
     m_atom(std::move(atom))
 {

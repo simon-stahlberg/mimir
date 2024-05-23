@@ -68,11 +68,16 @@ protected:
     std::unordered_map<Object, Object> m_transformed_objects;
     std::unordered_map<Variable, Variable> m_transformed_variables;
     std::unordered_map<Term, Term> m_transformed_terms;
-    std::unordered_map<Predicate, Predicate> m_transformed_predicates;
-    std::unordered_map<Atom, Atom> m_transformed_atoms;
-    std::unordered_map<GroundAtom, GroundAtom> m_transformed_ground_atoms;
-    std::unordered_map<Literal, Literal> m_transformed_literals;
-    std::unordered_map<GroundLiteral, GroundLiteral> m_transformed_ground_literals;
+    std::unordered_map<StaticPredicate, StaticPredicate> m_transformed_static_predicates;
+    std::unordered_map<FluentPredicate, FluentPredicate> m_transformed_fluent_predicates;
+    std::unordered_map<Atom<StaticPredicateImpl>, Atom<StaticPredicateImpl>> m_transformed_static_atoms;
+    std::unordered_map<Atom<FluentPredicateImpl>, Atom<FluentPredicateImpl>> m_transformed_fluent_atoms;
+    std::unordered_map<GroundAtom<StaticPredicateImpl>, GroundAtom<StaticPredicateImpl>> m_transformed_static_ground_atoms;
+    std::unordered_map<GroundAtom<FluentPredicateImpl>, GroundAtom<FluentPredicateImpl>> m_transformed_fluent_ground_atoms;
+    std::unordered_map<Literal<StaticPredicateImpl>, Literal<StaticPredicateImpl>> m_transformed_static_literals;
+    std::unordered_map<Literal<FluentPredicateImpl>, Literal<FluentPredicateImpl>> m_transformed_fluent_literals;
+    std::unordered_map<GroundLiteral<StaticPredicateImpl>, GroundLiteral<StaticPredicateImpl>> m_transformed_static_ground_literals;
+    std::unordered_map<GroundLiteral<FluentPredicateImpl>, GroundLiteral<FluentPredicateImpl>> m_transformed_fluent_ground_literals;
     std::unordered_map<NumericFluent, NumericFluent> m_transformed_numeric_fluents;
     std::unordered_map<EffectSimple, EffectSimple> m_transformed_simple_effects;
     std::unordered_map<EffectConditional, EffectConditional> m_transformed_conditional_effects;
@@ -107,12 +112,17 @@ protected:
     void prepare_base(const TermObjectImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermVariableImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const PredicateImpl& predicate) { self().prepare_impl(predicate); }
-    void prepare_base(const AtomImpl& atom) { self().prepare_impl(atom); }
-    void prepare_base(const GroundAtomImpl& atom) { self().prepare_impl(atom); }
-    void prepare_base(const LiteralImpl& literal) { self().prepare_impl(literal); }
+    void prepare_base(const StaticPredicateImpl& predicate) { self().prepare_impl(predicate); }
+    void prepare_base(const FluentPredicateImpl& predicate) { self().prepare_impl(predicate); }
+    void prepare_base(const AtomImpl<StaticPredicateImpl>& atom) { self().prepare_impl(atom); }
+    void prepare_base(const AtomImpl<FluentPredicateImpl>& atom) { self().prepare_impl(atom); }
+    void prepare_base(const GroundAtomImpl<StaticPredicateImpl>& atom) { self().prepare_impl(atom); }
+    void prepare_base(const GroundAtomImpl<FluentPredicateImpl>& atom) { self().prepare_impl(atom); }
+    void prepare_base(const LiteralImpl<StaticPredicateImpl>& literal) { self().prepare_impl(literal); }
+    void prepare_base(const LiteralImpl<FluentPredicateImpl>& literal) { self().prepare_impl(literal); }
+    void prepare_base(const GroundLiteralImpl<StaticPredicateImpl>& literal) { self().prepare_impl(literal); }
+    void prepare_base(const GroundLiteralImpl<FluentPredicateImpl>& literal) { self().prepare_impl(literal); }
     void prepare_base(const NumericFluentImpl& numeric_fluent) { self().prepare_impl(numeric_fluent); }
-    void prepare_base(const GroundLiteralImpl& literal) { self().prepare_impl(literal); }
     void prepare_base(const EffectSimpleImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectConditionalImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const EffectUniversalImpl& effect) { self().prepare_impl(effect); }
@@ -151,20 +161,33 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
     }
-    void prepare_impl(const PredicateImpl& predicate) { this->prepare(predicate.get_parameters()); }
-    void prepare_impl(const AtomImpl& atom)
+    void prepare_impl(const StaticPredicateImpl& predicate) { this->prepare(predicate.get_parameters()); }
+    void prepare_impl(const FluentPredicateImpl& predicate) { this->prepare(predicate.get_parameters()); }
+    void prepare_impl(const AtomImpl<StaticPredicateImpl>& atom)
     {
         this->prepare(*atom.get_predicate());
         this->prepare(atom.get_terms());
     }
-    void prepare_impl(const GroundAtomImpl& atom)
+    void prepare_impl(const AtomImpl<FluentPredicateImpl>& atom)
+    {
+        this->prepare(*atom.get_predicate());
+        this->prepare(atom.get_terms());
+    }
+    void prepare_impl(const GroundAtomImpl<StaticPredicateImpl>& atom)
     {
         this->prepare(*atom.get_predicate());
         this->prepare(atom.get_objects());
     }
-    void prepare_impl(const LiteralImpl& literal) { this->prepare(*literal.get_atom()); }
+    void prepare_impl(const GroundAtomImpl<FluentPredicateImpl>& atom)
+    {
+        this->prepare(*atom.get_predicate());
+        this->prepare(atom.get_objects());
+    }
+    void prepare_impl(const LiteralImpl<StaticPredicateImpl>& literal) { this->prepare(*literal.get_atom()); }
+    void prepare_impl(const LiteralImpl<FluentPredicateImpl>& literal) { this->prepare(*literal.get_atom()); }
+    void prepare_impl(const GroundLiteralImpl<StaticPredicateImpl>& literal) { this->prepare(*literal.get_atom()); }
+    void prepare_impl(const GroundLiteralImpl<FluentPredicateImpl>& literal) { this->prepare(*literal.get_atom()); }
     void prepare_impl(const NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
-    void prepare_impl(const GroundLiteralImpl& literal) { this->prepare(*literal.get_atom()); }
     void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(*effect.get_effect()); }
     void prepare_impl(const EffectConditionalImpl& effect)
     {
@@ -237,7 +260,6 @@ protected:
     {
         this->prepare(*domain.get_requirements());
         this->prepare(domain.get_constants());
-        this->prepare(domain.get_predicates());
         this->prepare(domain.get_static_predicates());
         this->prepare(domain.get_fluent_predicates());
         this->prepare(domain.get_derived_predicates());
@@ -255,7 +277,8 @@ protected:
         this->prepare(problem.get_static_initial_literals());
         this->prepare(problem.get_fluent_initial_literals());
         this->prepare(problem.get_numeric_fluents());
-        this->prepare(problem.get_goal_condition());
+        this->prepare(problem.get_static_goal_condition());
+        this->prepare(problem.get_fluent_goal_condition());
         if (problem.get_optimization_metric().has_value())
         {
             this->prepare(*problem.get_optimization_metric().value());
@@ -288,25 +311,45 @@ protected:
     {
         return cached_transform_impl(term, m_transformed_terms, [this, &term](const auto& arg) { return this->self().transform_impl(term); });
     }
-    Predicate transform_base(const PredicateImpl& predicate)
+    StaticPredicate transform_base(const StaticPredicateImpl& predicate)
     {
-        return cached_transform_impl(predicate, m_transformed_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(predicate, m_transformed_static_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
-    Atom transform_base(const AtomImpl& atom)
+    FluentPredicate transform_base(const FluentPredicateImpl& predicate)
     {
-        return cached_transform_impl(atom, m_transformed_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(predicate, m_transformed_fluent_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
-    GroundAtom transform_base(const GroundAtomImpl& atom)
+    Atom<StaticPredicateImpl> transform_base(const AtomImpl<StaticPredicateImpl>& atom)
     {
-        return cached_transform_impl(atom, m_transformed_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(atom, m_transformed_static_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
-    Literal transform_base(const LiteralImpl& literal)
+    Atom<FluentPredicateImpl> transform_base(const AtomImpl<FluentPredicateImpl>& atom)
     {
-        return cached_transform_impl(literal, m_transformed_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(atom, m_transformed_fluent_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
-    GroundLiteral transform_base(const GroundLiteralImpl& literal)
+    GroundAtom<StaticPredicateImpl> transform_base(const GroundAtomImpl<StaticPredicateImpl>& atom)
     {
-        return cached_transform_impl(literal, m_transformed_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return cached_transform_impl(atom, m_transformed_static_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    GroundAtom<FluentPredicateImpl> transform_base(const GroundAtomImpl<FluentPredicateImpl>& atom)
+    {
+        return cached_transform_impl(atom, m_transformed_fluent_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    Literal<StaticPredicateImpl> transform_base(const LiteralImpl<StaticPredicateImpl>& literal)
+    {
+        return cached_transform_impl(literal, m_transformed_static_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    Literal<FluentPredicateImpl> transform_base(const LiteralImpl<FluentPredicateImpl>& literal)
+    {
+        return cached_transform_impl(literal, m_transformed_fluent_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    GroundLiteral<StaticPredicateImpl> transform_base(const GroundLiteralImpl<StaticPredicateImpl>& literal)
+    {
+        return cached_transform_impl(literal, m_transformed_static_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
+    }
+    GroundLiteral<FluentPredicateImpl> transform_base(const GroundLiteralImpl<FluentPredicateImpl>& literal)
+    {
+        return cached_transform_impl(literal, m_transformed_fluent_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
     }
     NumericFluent transform_base(const NumericFluentImpl& numeric_fluent)
     {
@@ -433,31 +476,43 @@ protected:
     {
         return std::visit([this](auto&& arg) { return this->transform(arg); }, term);
     }
-    Predicate transform_impl(const PredicateImpl& predicate)
+    StaticPredicate transform_impl(const StaticPredicateImpl& predicate)
     {
-        return this->m_pddl_factories.get_or_create_predicate(predicate.get_name(), this->transform(predicate.get_parameters()), predicate.is_static());
+        return this->m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
-    Atom transform_impl(const AtomImpl& atom)
+    FluentPredicate transform_impl(const FluentPredicateImpl& predicate)
+    {
+        return this->m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+    }
+    Atom<StaticPredicateImpl> transform_impl(const AtomImpl<StaticPredicateImpl>& atom)
     {
         return this->m_pddl_factories.get_or_create_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_terms()));
     }
-    GroundAtom transform_impl(const GroundAtomImpl& atom)
+    Atom<FluentPredicateImpl> transform_impl(const AtomImpl<FluentPredicateImpl>& atom)
     {
-        // Transform ground atoms into the respective factory where they belong
-        if (atom.get_predicate()->is_static())
-        {
-            return this->m_pddl_factories.get_or_create_static_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
-        }
-        else
-        {
-            return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
-        }
+        return this->m_pddl_factories.get_or_create_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_terms()));
     }
-    Literal transform_impl(const LiteralImpl& literal)
+    GroundAtom<StaticPredicateImpl> transform_impl(const GroundAtomImpl<StaticPredicateImpl>& atom)
+    {
+        return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
+    }
+    GroundAtom<FluentPredicateImpl> transform_impl(const GroundAtomImpl<FluentPredicateImpl>& atom)
+    {
+        return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
+    }
+    Literal<StaticPredicateImpl> transform_impl(const LiteralImpl<StaticPredicateImpl>& literal)
     {
         return this->m_pddl_factories.get_or_create_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
-    GroundLiteral transform_impl(const GroundLiteralImpl& literal)
+    Literal<FluentPredicateImpl> transform_impl(const LiteralImpl<FluentPredicateImpl>& literal)
+    {
+        return this->m_pddl_factories.get_or_create_literal(literal.is_negated(), this->transform(*literal.get_atom()));
+    }
+    GroundLiteral<StaticPredicateImpl> transform_impl(const GroundLiteralImpl<StaticPredicateImpl>& literal)
+    {
+        return this->m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));
+    }
+    GroundLiteral<FluentPredicateImpl> transform_impl(const GroundLiteralImpl<FluentPredicateImpl>& literal)
     {
         return this->m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
@@ -574,7 +629,6 @@ protected:
         return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                            this->transform(*domain.get_requirements()),
                                                            this->transform(domain.get_constants()),
-                                                           this->transform(domain.get_predicates()),
                                                            this->transform(domain.get_static_predicates()),
                                                            this->transform(domain.get_fluent_predicates()),
                                                            this->transform(domain.get_derived_predicates()),
@@ -598,7 +652,8 @@ protected:
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
             this->transform(problem.get_numeric_fluents()),
-            this->transform(problem.get_goal_condition()),
+            this->transform(problem.get_static_goal_condition()),
+            this->transform(problem.get_fluent_goal_condition()),
             (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->transform(*problem.get_optimization_metric().value())) :
                                                              std::nullopt),
             this->transform(problem.get_axioms()));

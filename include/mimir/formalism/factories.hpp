@@ -144,12 +144,12 @@ private:
 
         ObjectList grounded_terms;
         ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
-        auto grounded_atom = create_ground_atom(literal->get_atom()->get_predicate(), std::move(grounded_terms));
+        auto grounded_atom = get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
         auto grounded_literal = get_or_create_ground_literal(literal->is_negated(), grounded_atom);
 
         /* 3. Insert to groundings table */
 
-        groundings.emplace(ObjectList(binding), GroundLiteral(grounded_literal));
+        groundings.emplace(ObjectList(binding), GroundLiteral<P>(grounded_literal));
 
         /* 4. Return the resulting ground literal */
 
@@ -226,20 +226,20 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     Object get_or_create_object(std::string name) { return objects.get_or_create<ObjectImpl>(std::move(name)); }
 
-    Atom<StaticPredicateImpl> get_or_create_static_atom(StaticPredicate predicate, TermList terms)
+    Atom<StaticPredicateImpl> get_or_create_atom(StaticPredicate predicate, TermList terms)
     {
         return static_atoms.get_or_create<AtomImpl<StaticPredicateImpl>>(std::move(predicate), std::move(terms));
     }
-    Atom<FluentPredicateImpl> get_or_create_fluent_atom(FluentPredicate predicate, TermList terms)
+    Atom<FluentPredicateImpl> get_or_create_atom(FluentPredicate predicate, TermList terms)
     {
         return fluent_atoms.get_or_create<AtomImpl<FluentPredicateImpl>>(std::move(predicate), std::move(terms));
     }
 
-    GroundAtom<StaticPredicateImpl> get_or_create_static_ground_atom(StaticPredicate predicate, ObjectList objects)
+    GroundAtom<StaticPredicateImpl> get_or_create_ground_atom(StaticPredicate predicate, ObjectList objects)
     {
         return static_ground_atoms.get_or_create<GroundAtomImpl<StaticPredicateImpl>>(std::move(predicate), std::move(objects));
     }
-    GroundAtom<FluentPredicateImpl> get_or_create_fluent_ground_atom(FluentPredicate predicate, ObjectList objects)
+    GroundAtom<FluentPredicateImpl> get_or_create_ground_atom(FluentPredicate predicate, ObjectList objects)
     {
         return fluent_ground_atoms.get_or_create<GroundAtomImpl<FluentPredicateImpl>>(std::move(predicate), std::move(objects));
     }
@@ -248,16 +248,16 @@ public:
     {
         return static_literals.get_or_create<LiteralImpl<StaticPredicateImpl>>(is_negated, std::move(atom));
     }
-    Literal<FluentPredicateImpl> get_or_create_fluent_literal(bool is_negated, Atom<StaticPredicateImpl> atom)
+    Literal<FluentPredicateImpl> get_or_create_literal(bool is_negated, Atom<FluentPredicateImpl> atom)
     {
         return fluent_literals.get_or_create<LiteralImpl<FluentPredicateImpl>>(is_negated, std::move(atom));
     }
 
-    GroundLiteral<StaticPredicateImpl> get_or_create_static_ground_literal(bool is_negated, GroundAtom<StaticPredicateImpl> atom)
+    GroundLiteral<StaticPredicateImpl> get_or_create_ground_literal(bool is_negated, GroundAtom<StaticPredicateImpl> atom)
     {
         return static_ground_literals.get_or_create<GroundLiteralImpl<StaticPredicateImpl>>(is_negated, std::move(atom));
     }
-    GroundLiteral<FluentPredicateImpl> get_or_create_fluent_ground_literal(bool is_negated, GroundAtom<StaticPredicateImpl> atom)
+    GroundLiteral<FluentPredicateImpl> get_or_create_ground_literal(bool is_negated, GroundAtom<FluentPredicateImpl> atom)
     {
         return fluent_ground_literals.get_or_create<GroundLiteralImpl<FluentPredicateImpl>>(is_negated, std::move(atom));
     }
@@ -499,7 +499,8 @@ public:
                                   GroundLiteralList<StaticPredicateImpl> static_initial_literals,
                                   GroundLiteralList<FluentPredicateImpl> fluent_initial_literals,
                                   NumericFluentList numeric_fluents,
-                                  GroundLiteralList<FluentPredicateImpl> goal_condition,
+                                  GroundLiteralList<StaticPredicateImpl> static_goal_condition,
+                                  GroundLiteralList<FluentPredicateImpl> fluent_goal_condition,
                                   std::optional<OptimizationMetric> optimization_metric,
                                   AxiomList axioms)
     {
@@ -511,7 +512,8 @@ public:
                                                    std::move(static_initial_literals),
                                                    std::move(fluent_initial_literals),
                                                    std::move(numeric_fluents),
-                                                   std::move(goal_condition),
+                                                   std::move(static_goal_condition),
+                                                   std::move(fluent_goal_condition),
                                                    std::move(optimization_metric),
                                                    std::move(axioms));
     }
@@ -537,7 +539,7 @@ public:
     template<std::ranges::forward_range Iterable>
     GroundAtomList<FluentPredicateImpl> get_fluent_ground_atoms_from_ids(const Iterable& atom_ids) const
     {
-        auto result = GroundAtomList {};
+        auto result = GroundAtomList<FluentPredicateImpl> {};
         get_ground_atoms_from_ids(atom_ids, result);
         return result;
     }
@@ -561,7 +563,7 @@ public:
     template<std::ranges::forward_range Iterable>
     GroundAtomList<StaticPredicateImpl> get_static_ground_atoms_from_ids(const Iterable& atom_ids) const
     {
-        auto result = GroundAtomList {};
+        auto result = GroundAtomList<StaticPredicateImpl> {};
         get_static_ground_atoms_from_ids(atom_ids, result);
         return result;
     }

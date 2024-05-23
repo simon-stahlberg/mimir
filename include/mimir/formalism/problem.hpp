@@ -41,7 +41,8 @@ private:
     FlatBitsetBuilder m_static_initial_negative_atoms_builder;
     GroundLiteralList<FluentPredicateImpl> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
-    GroundLiteralList<FluentPredicateImpl> m_goal_condition;
+    GroundLiteralList<StaticPredicateImpl> m_static_goal_condition;
+    GroundLiteralList<FluentPredicateImpl> m_fluent_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
 
@@ -56,7 +57,8 @@ private:
                 GroundLiteralList<StaticPredicateImpl> static_initial_literals,
                 GroundLiteralList<FluentPredicateImpl> fluent_initial_literals,
                 NumericFluentList numeric_fluents,
-                GroundLiteralList<FluentPredicateImpl> goal_condition,
+                GroundLiteralList<StaticPredicateImpl> static_goal_condition,
+                GroundLiteralList<FluentPredicateImpl> fluent_goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms);
 
@@ -82,7 +84,8 @@ public:
     FlatBitset get_static_initial_negative_atoms_bitset() const;
     const GroundLiteralList<FluentPredicateImpl>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
-    const GroundLiteralList<FluentPredicateImpl>& get_goal_condition() const;
+    const GroundLiteralList<StaticPredicateImpl>& get_static_goal_condition() const;
+    const GroundLiteralList<FluentPredicateImpl>& get_fluent_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 };

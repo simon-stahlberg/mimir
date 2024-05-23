@@ -23,9 +23,17 @@
 
 #include <loki/loki.hpp>
 #include <unordered_map>
+#include <variant>
 
 namespace mimir
 {
+
+using StaticOrFluentPredicate = std::variant<StaticPredicate, FluentPredicate>;
+using StaticOrFluentAtom = std::variant<Atom<StaticPredicateImpl>, Atom<FluentPredicateImpl>>;
+using StaticOrFluentLiteral = std::variant<Literal<StaticPredicateImpl>, Literal<FluentPredicateImpl>>;
+
+using StaticOrFluentGroundAtom = std::variant<GroundAtom<StaticPredicateImpl>, GroundAtom<FluentPredicateImpl>>;
+using StaticOrFluentGroundLiteral = std::variant<GroundLiteral<StaticPredicateImpl>, GroundLiteral<FluentPredicateImpl>>;
 
 class ToMimirStructures
 {
@@ -44,7 +52,7 @@ private:
     */
 
     // Equality predicate that does not occur in predicates section
-    Predicate m_equal_predicate;
+    StaticPredicate m_equal_predicate;
     // Encode parameter index into variables for grounding
     size_t m_cur_parameter_index;
     std::unordered_map<loki::Variable, size_t> m_variable_to_parameter_index;
@@ -119,7 +127,7 @@ private:
     Requirements translate_common(const loki::RequirementsImpl& requirements);
     Object translate_common(const loki::ObjectImpl& object);
     Variable translate_common(const loki::VariableImpl& variable, bool encode_parameter_index);
-    Predicate translate_common(const loki::PredicateImpl& predicate);
+    StaticOrFluentPredicate translate_common(const loki::PredicateImpl& predicate);
 
     /**
      * Lifted translation.
@@ -138,8 +146,8 @@ private:
     Term translate_lifted(const loki::TermVariableImpl& term);
     Term translate_lifted(const loki::TermObjectImpl& term);
     Term translate_lifted(const loki::TermImpl& term);
-    Atom translate_lifted(const loki::AtomImpl& atom);
-    Literal translate_lifted(const loki::LiteralImpl& literal);
+    StaticOrFluentAtom translate_lifted(const loki::AtomImpl& atom);
+    StaticOrFluentLiteral translate_lifted(const loki::LiteralImpl& literal);
     FunctionExpression translate_lifted(const loki::FunctionExpressionNumberImpl& function_expression);
     FunctionExpression translate_lifted(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
     FunctionExpression translate_lifted(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
@@ -148,7 +156,7 @@ private:
     FunctionExpression translate_lifted(const loki::FunctionExpressionImpl& function_expression);
     FunctionSkeleton translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton);
     Function translate_lifted(const loki::FunctionImpl& function);
-    std::tuple<LiteralList, LiteralList> translate_lifted(const loki::ConditionImpl& condition);
+    std::tuple<LiteralList<StaticPredicateImpl>, LiteralList<FluentPredicateImpl>> translate_lifted(const loki::ConditionImpl& condition);
     std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, FunctionExpression> translate_lifted(const loki::EffectImpl& effect);
     Action translate_lifted(const loki::ActionImpl& action);
     Axiom translate_lifted(const loki::AxiomImpl& axiom);
@@ -168,8 +176,8 @@ private:
         return output;
     }
     Object translate_grounded(const loki::TermImpl& term);
-    GroundAtom translate_grounded(const loki::AtomImpl& atom);
-    GroundLiteral translate_grounded(const loki::LiteralImpl& literal);
+    StaticOrFluentGroundAtom translate_grounded(const loki::AtomImpl& atom);
+    StaticOrFluentGroundLiteral translate_grounded(const loki::LiteralImpl& literal);
     NumericFluent translate_grounded(const loki::NumericFluentImpl& numeric_fluent);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
@@ -178,7 +186,7 @@ private:
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionFunctionImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionImpl& function_expression);
     GroundFunction translate_grounded(const loki::FunctionImpl& function);
-    GroundLiteralList translate_grounded(const loki::ConditionImpl& condition);
+    std::tuple<GroundLiteralList<StaticPredicateImpl>, GroundLiteralList<FluentPredicateImpl>> translate_grounded(const loki::ConditionImpl& condition);
     OptimizationMetric translate_grounded(const loki::OptimizationMetricImpl& optimization_metric);
     Problem translate_grounded(const loki::ProblemImpl& problem);
 
