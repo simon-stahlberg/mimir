@@ -62,7 +62,6 @@ EffectConditionalImpl::EffectConditionalImpl(int identifier,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_effect(std::move(effect))
 {
-    assert(!(m_static_conditions.empty() && m_fluent_conditions.empty()));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
 }

@@ -18,7 +18,6 @@
 #include "mimir/search/axioms/dense.hpp"
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/factories.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 #include <ostream>

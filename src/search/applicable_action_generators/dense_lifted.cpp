@@ -223,6 +223,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     const auto num_conditional_effects = action->get_conditional_effects().size();
     positive_conditional_preconditions.resize(num_conditional_effects);
     negative_conditional_preconditions.resize(num_conditional_effects);
+    positive_conditional_static_preconditions.resize(num_conditional_effects);
+    negative_conditional_static_preconditions.resize(num_conditional_effects);
     conditional_effects.resize(num_conditional_effects);
     if (num_conditional_effects > 0)
     {

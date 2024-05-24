@@ -195,11 +195,11 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
         out << "(and";
         for (const auto& literal : m_static_goal_condition)
         {
-            std::cout << " " << *literal;
+            out << " " << *literal;
         }
         for (const auto& literal : m_fluent_goal_condition)
         {
-            std::cout << " " << *literal;
+            out << " " << *literal;
         }
         out << " )\n";
     }
