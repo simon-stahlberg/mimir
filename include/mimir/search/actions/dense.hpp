@@ -193,18 +193,19 @@ public:
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
         const auto state_bitset = state.get_atoms_bitset();
+        const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
 
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
-               && state.get_problem()->get_static_initial_positive_atoms_bitset().is_superseteq(get_applicability_positive_static_precondition_bitset())
-               && state.get_problem()->get_static_initial_negative_atoms_bitset().are_disjoint(get_applicability_negative_static_precondition_bitset());
+               && initial_static_atoms.is_superseteq(get_applicability_positive_static_precondition_bitset())
+               && initial_static_atoms.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset static_negative_bitset) const
+    [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
     {
-        // positive atoms are a superset in the state
-        return static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+        return static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
+               && static_positive_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 };
 

@@ -34,7 +34,6 @@
 
 namespace mimir
 {
-
 using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
 
 /**

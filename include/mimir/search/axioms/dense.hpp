@@ -147,20 +147,20 @@ public:
     /* Effect*/
     [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<7>(); }
 
-    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2, flatmemory::IsBitset Bitset3>
-    [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset, const Bitset3 static_negative_bitset) const
+    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
+    [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset) const
     {
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
                && static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
-               && static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+               && static_positive_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset static_negative_bitset) const
+    [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
     {
-        // positive atoms are a superset in the state
-        return static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+        return static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
+               && static_positive_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }
 };
 

@@ -83,20 +83,14 @@ ProblemImpl::ProblemImpl(int identifier,
     // Initialize static atom bitsets
     for (const auto& literal : m_static_initial_literals)
     {
-        if (literal->is_negated())
-        {
-            m_static_initial_negative_atoms_builder.set(literal->get_atom()->get_identifier());
-        }
-        else
+        if (!literal->is_negated())
         {
             m_static_initial_positive_atoms_builder.set(literal->get_atom()->get_identifier());
         }
     }
     m_static_initial_positive_atoms_builder.finish();
-    m_static_initial_negative_atoms_builder.finish();
     // Ensure that buffer is correctly written
     assert(m_static_initial_positive_atoms_builder == get_static_initial_positive_atoms_bitset());
-    assert(m_static_initial_negative_atoms_builder == get_static_initial_negative_atoms_bitset());
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
@@ -232,8 +226,6 @@ const PredicateList<Fluent>& ProblemImpl::get_derived_predicates() const { retur
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
 FlatBitset ProblemImpl::get_static_initial_positive_atoms_bitset() const { return FlatBitset(m_static_initial_positive_atoms_builder.buffer().data()); }
-
-FlatBitset ProblemImpl::get_static_initial_negative_atoms_bitset() const { return FlatBitset(m_static_initial_negative_atoms_builder.buffer().data()); }
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 

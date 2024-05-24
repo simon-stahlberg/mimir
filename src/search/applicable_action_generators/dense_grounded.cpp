@@ -150,7 +150,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto action_arguments = ObjectList(action.get_objects().begin(), action.get_objects().end());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action.is_statically_applicable(problem->get_static_initial_negative_atoms_bitset()))
+            if (grounded_action.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
             }
@@ -173,7 +173,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         {
             auto axiom_arguments = ObjectList(axiom.get_objects().begin(), axiom.get_objects().end());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom.is_statically_applicable(problem->get_static_initial_negative_atoms_bitset()))
+            if (grounded_axiom.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
@@ -226,9 +226,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
                     continue;
                 }
 
-                assert(grounded_axiom.is_applicable(ref_state_atoms,
-                                                    m_problem->get_static_initial_positive_atoms_bitset(),
-                                                    m_problem->get_static_initial_negative_atoms_bitset()));
+                assert(grounded_axiom.is_applicable(ref_state_atoms, m_problem->get_static_initial_positive_atoms_bitset()));
 
                 assert(!grounded_axiom.get_simple_effect().is_negated);
 
