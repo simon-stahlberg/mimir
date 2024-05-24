@@ -36,7 +36,7 @@ private:
 
     void on_generate_state_impl(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) const;
 
-    void on_finish_f_layer_impl(uint64_t f_value, uint64_t num_expanded_states) const;
+    void on_finish_f_layer_impl(uint64_t f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
     void on_expand_state_impl(State state, const PDDLFactories& pddl_factories) const;
 

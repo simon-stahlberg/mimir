@@ -93,7 +93,9 @@ public:
         m_statistics.on_finish_f_layer();
 
         assert(!m_statistics.get_num_expanded_until_f_value().empty());
-        self().on_finish_f_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1, m_statistics.get_num_expanded_until_f_value().back());
+        self().on_finish_f_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
+                                      m_statistics.get_num_expanded_until_f_value().back(),
+                                      m_statistics.get_num_generated_until_f_value().back());
     }
 
     void on_expand_state(State state, const PDDLFactories& pddl_factories) override

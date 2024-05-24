@@ -193,11 +193,11 @@ public:
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
         const auto state_bitset = state.get_atoms_bitset();
-        const auto static_positive_bitset = state.get_problem()->get_static_initial_positive_atoms_bitset();
         const auto static_negative_bitset = state.get_problem()->get_static_initial_negative_atoms_bitset();
 
+        assert(state.get_problem()->get_static_initial_positive_atoms_bitset().is_superseteq(get_applicability_positive_static_precondition_bitset()));
+
         return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
-               && static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
                && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
                && static_negative_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
     }

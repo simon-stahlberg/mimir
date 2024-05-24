@@ -18,6 +18,7 @@
 #include "mimir/formalism/action.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/function_expressions.hpp"

@@ -150,6 +150,7 @@ public:
             m_event_handler->on_expand_state(state, m_successor_generator->get_pddl_factories());
 
             this->m_successor_generator->generate_applicable_actions(state, applicable_actions);
+
             for (const auto& action : applicable_actions)
             {
                 const auto state_count = m_state_repository->get_state_count();

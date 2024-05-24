@@ -90,6 +90,33 @@ public:
     size_t get_arity() const;
 };
 
+class DerivedPredicateImpl : public loki::Base<DerivedPredicateImpl>
+{
+private:
+    std::string m_name;
+    VariableList m_parameters;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    DerivedPredicateImpl(int identifier, std::string name, VariableList parameters);
+
+    // Give access to the constructor.
+    friend class loki::PDDLFactory<DerivedPredicateImpl, loki::Hash<DerivedPredicateImpl*>, loki::EqualTo<DerivedPredicateImpl*>>;
+
+    /// @brief Test for semantic equivalence
+    bool is_structurally_equivalent_to_impl(const DerivedPredicateImpl& other) const;
+    size_t hash_impl() const;
+    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+
+    // Give access to the private interface implementations.
+    friend class loki::Base<DerivedPredicateImpl>;
+
+public:
+    const std::string& get_name() const;
+    const VariableList& get_parameters() const;
+    size_t get_arity() const;
+};
+
 // TODO: Add DerivedPredicate
 
 /**
