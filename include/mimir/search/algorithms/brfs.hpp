@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators.hpp"

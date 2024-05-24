@@ -18,17 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_ASSIGNMENT_SET_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_ASSIGNMENT_SET_HPP_
 
-#include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/term.hpp"
-#include "mimir/formalism/variable.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 
 #include <cassert>

@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_TRANSLATIONS_HPP_
 #define MIMIR_SEARCH_TRANSLATIONS_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/formalism.hpp"
 
 namespace mimir
 {

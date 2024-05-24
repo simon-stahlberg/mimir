@@ -18,9 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/factories.hpp"
-#include "mimir/formalism/grounding_table.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"

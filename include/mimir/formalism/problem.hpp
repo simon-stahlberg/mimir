@@ -18,13 +18,20 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/metric.hpp"
+#include "mimir/formalism/numeric_fluent.hpp"
+#include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/requirements.hpp"
 #include "mimir/search/flat_types.hpp"
 
 #include <loki/loki.hpp>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace mimir
 {
@@ -89,6 +96,14 @@ public:
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using Problem = const ProblemImpl*;
+using ProblemList = std::vector<Problem>;
+
 }
 
 #endif

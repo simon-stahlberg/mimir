@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_PLANNERS_SINGLE_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/planners/interface.hpp"
 

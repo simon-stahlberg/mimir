@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PARSER_HPP_
 #define MIMIR_FORMALISM_PARSER_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/pddl.hpp"
 
 #include <loki/loki.hpp>
 

@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_CONSISTENCY_GRAPH_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_CONSISTENCY_GRAPH_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/formalism.hpp"
 
 #include <optional>
 #include <sstream>

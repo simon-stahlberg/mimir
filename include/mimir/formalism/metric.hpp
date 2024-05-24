@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_METRIC_HPP_
 #define MIMIR_FORMALISM_METRIC_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_function_expressions.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
@@ -50,6 +50,12 @@ public:
     loki::OptimizationMetricEnum get_optimization_metric() const;
     const GroundFunctionExpression& get_function_expression() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using OptimizationMetric = const OptimizationMetricImpl*;
 }
 
 #endif

@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 #define MIMIR_SEARCH_ACTIONS_DENSE_HPP_
 
-#include "mimir/formalism/factories.hpp"
-#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions/interface.hpp"
 #include "mimir/search/builder.hpp"
 #include "mimir/search/flat_types.hpp"

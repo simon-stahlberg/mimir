@@ -1,8 +1,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_GROUNDING_TABLE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_GROUNDING_TABLE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/search/actions/dense.hpp"
+#include "mimir/formalism/object.hpp"
 
 #include <unordered_map>
 

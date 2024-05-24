@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/pddl.hpp"
 
 #include <loki/loki.hpp>
 #include <unordered_map>

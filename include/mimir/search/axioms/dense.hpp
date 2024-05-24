@@ -19,10 +19,12 @@
 #define MIMIR_SEARCH_AXIOMS_DENSE_HPP_
 
 #include "mimir/formalism/factories.hpp"
+#include "mimir/search/actions/dense.hpp"
 #include "mimir/search/axioms/interface.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states.hpp"
 
+#include <cstdint>
 #include <ostream>
 #include <tuple>
 

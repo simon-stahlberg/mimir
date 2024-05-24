@@ -18,7 +18,6 @@
 #ifndef MIMIR_FORMALISM_ATOM_HPP_
 #define MIMIR_FORMALISM_ATOM_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 
@@ -54,6 +53,18 @@ public:
     const TermList& get_terms() const;
 };
 
+/**
+ * Type aliases
+ */
+
+template<IsPredicate P>
+using Atom = const AtomImpl<P>*;
+template<IsPredicate P>
+using AtomList = std::vector<Atom<P>>;
+
+/**
+ * Implementation details
+ */
 template<IsPredicate P>
 AtomImpl<P>::AtomImpl(int identifier, const P* predicate, TermList terms) :
     loki::Base<AtomImpl<P>>(identifier),

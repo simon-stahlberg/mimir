@@ -41,8 +41,8 @@ private:
     friend class BaseCachedRecurseTransformer<DeleteRelaxTransformer>;
 
     // Provide default implementations
-    using BaseCachedRecurseTransformer::prepare_impl;
-    using BaseCachedRecurseTransformer::transform_impl;
+    using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::prepare_impl;
+    using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::transform_impl;
 
     LiteralList<StaticPredicateImpl> transform_impl(const LiteralList<StaticPredicateImpl>& literals);
     LiteralList<FluentPredicateImpl> transform_impl(const LiteralList<FluentPredicateImpl>& literals);

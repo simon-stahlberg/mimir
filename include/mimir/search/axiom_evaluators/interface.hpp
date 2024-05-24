@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/axiom_evaluators/tags.hpp"
 #include "mimir/search/axioms.hpp"

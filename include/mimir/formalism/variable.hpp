@@ -18,10 +18,10 @@
 #ifndef MIMIR_FORMALISM_VARIABLE_HPP_
 #define MIMIR_FORMALISM_VARIABLE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-
 #include <loki/loki.hpp>
 #include <string>
+#include <unordered_set>
+#include <vector>
 
 namespace mimir
 {
@@ -58,6 +58,15 @@ public:
     const std::string& get_name() const;
     const size_t get_parameter_index() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using Variable = const VariableImpl*;
+using VariableList = std::vector<Variable>;
+using VariableSet = std::unordered_set<Variable>;
+
 }
 
 #endif

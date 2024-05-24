@@ -19,9 +19,7 @@
 #define MIMIR_SEARCH_STATES_DENSE_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states/interface.hpp"
 

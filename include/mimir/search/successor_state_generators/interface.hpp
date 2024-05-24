@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_INTERFACE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
 #include "mimir/search/successor_state_generators/tags.hpp"

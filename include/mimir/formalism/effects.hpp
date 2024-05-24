@@ -18,11 +18,13 @@
 #ifndef MIMIR_FORMALISM_EFFECTS_HPP_
 #define MIMIR_FORMALISM_EFFECTS_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <vector>
 
 namespace mimir
 {
@@ -123,6 +125,19 @@ public:
 
     size_t get_arity() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using EffectSimple = const EffectSimpleImpl*;
+using EffectSimpleList = std::vector<EffectSimple>;
+
+using EffectConditional = const EffectConditionalImpl*;
+using EffectConditionalList = std::vector<EffectConditional>;
+
+using EffectUniversal = const EffectUniversalImpl*;
+using EffectUniversalList = std::vector<EffectUniversal>;
 
 }
 

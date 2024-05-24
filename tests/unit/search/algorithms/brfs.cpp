@@ -1,5 +1,4 @@
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/dense_grounded/event_handlers.hpp"

@@ -18,13 +18,36 @@
 #ifndef MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_function.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <variant>
+#include <vector>
 
 namespace mimir
 {
+/**
+ * Type alises
+ */
+
+class GroundFunctionExpressionNumberImpl;
+using GroundFunctionExpressionNumber = const GroundFunctionExpressionNumberImpl*;
+class GroundFunctionExpressionBinaryOperatorImpl;
+using GroundFunctionExpressionBinaryOperator = const GroundFunctionExpressionBinaryOperatorImpl*;
+class GroundFunctionExpressionMultiOperatorImpl;
+using GroundFunctionExpressionMultiOperator = const GroundFunctionExpressionMultiOperatorImpl*;
+class GroundFunctionExpressionMinusImpl;
+using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
+class GroundFunctionExpressionFunctionImpl;
+using GroundFunctionExpressionImpl = std::variant<GroundFunctionExpressionNumberImpl,
+                                                  GroundFunctionExpressionBinaryOperatorImpl,
+                                                  GroundFunctionExpressionMultiOperatorImpl,
+                                                  GroundFunctionExpressionMinusImpl,
+                                                  GroundFunctionExpressionFunctionImpl>;
+using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
+using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
+
 /* FunctionExpressionNumber */
 class GroundFunctionExpressionNumberImpl : public loki::Base<GroundFunctionExpressionNumberImpl>
 {

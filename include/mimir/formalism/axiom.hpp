@@ -18,11 +18,14 @@
 #ifndef MIMIR_FORMALISM_AXIOM_HPP_
 #define MIMIR_FORMALISM_AXIOM_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <unordered_set>
+#include <vector>
 
 namespace mimir
 {
@@ -59,6 +62,14 @@ public:
 
     size_t get_arity() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using Axiom = const AxiomImpl*;
+using AxiomList = std::vector<Axiom>;
+using AxiomSet = std::unordered_set<Axiom>;
 
 }
 

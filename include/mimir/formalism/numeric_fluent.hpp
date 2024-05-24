@@ -18,10 +18,11 @@
 #ifndef MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
 #define MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_function.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <vector>
 
 namespace mimir
 {
@@ -50,6 +51,13 @@ public:
     const GroundFunction& get_function() const;
     double get_number() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using NumericFluent = const NumericFluentImpl*;
+using NumericFluentList = std::vector<NumericFluent>;
 }
 
 #endif

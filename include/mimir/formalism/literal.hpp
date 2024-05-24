@@ -19,10 +19,11 @@
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
 #include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <vector>
 
 namespace mimir
 {
@@ -55,6 +56,19 @@ public:
     bool is_negated() const;
     const Atom<P>& get_atom() const;
 };
+
+/**
+ * Type aliases
+ */
+
+template<IsPredicate P>
+using Literal = const LiteralImpl<P>*;
+template<IsPredicate P>
+using LiteralList = std::vector<Literal<P>>;
+
+/**
+ * Implementation details
+ */
 
 template<IsPredicate P>
 LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) :

@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_FLAT_TYPES_HPP_
 #define MIMIR_SEARCH_FLAT_TYPES_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/object.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 #include <ostream>

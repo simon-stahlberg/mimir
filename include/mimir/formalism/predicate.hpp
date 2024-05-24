@@ -18,10 +18,12 @@
 #ifndef MIMIR_FORMALISM_PREDICATE_HPP_
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <unordered_set>
+#include <vector>
 
 namespace mimir
 {
@@ -89,6 +91,33 @@ public:
 };
 
 // TODO: Add DerivedPredicate
+
+/**
+ * Type aliases and concepts
+ */
+using FluentPredicate = const FluentPredicateImpl*;
+using FluentPredicateList = std::vector<FluentPredicate>;
+using FluentPredicateSet = std::unordered_set<FluentPredicate>;
+
+using StaticPredicate = const StaticPredicateImpl*;
+using StaticPredicateList = std::vector<StaticPredicate>;
+using StaticPredicateSet = std::unordered_set<StaticPredicate>;
+
+template<typename T>
+concept IsPredicate = requires(T a) {
+    {
+        a.get_name()
+    } -> std::same_as<const std::string&>;
+    {
+        a.get_parameters()
+    } -> std::same_as<const VariableList&>;
+    {
+        a.get_arity()
+    } -> std::same_as<size_t>;
+};
+
+template<IsPredicate P>
+using PredicateList = std::vector<const P*>;
 
 }
 

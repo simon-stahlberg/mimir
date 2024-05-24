@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/applicable_action_generators/tags.hpp"
 #include "mimir/search/axioms.hpp"

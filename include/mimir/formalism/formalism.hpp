@@ -15,30 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_PLANNERS_INTERFACE_HPP_
-
-#include "mimir/formalism/formalism.hpp"
-#include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/plan.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-
-namespace mimir
-{
+#ifndef MIMIR_FORMALISM_FORMALISM_HPP_
+#define MIMIR_FORMALISM_FORMALISM_HPP_
 
 /**
- * Interface class
+ * Shortcut to pddl constructs
  */
-class IPlanner
-{
-public:
-    virtual ~IPlanner() = default;
 
-    virtual std::tuple<SearchStatus, Plan> find_solution() = 0;
-};
+#include "mimir/formalism/pddl.hpp"
 
-}
+/**
+ * Shortcut to all relevant headers for other components
+ */
+
+#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/grounding_table.hpp"
+#include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/transformers.hpp"
 
 #endif

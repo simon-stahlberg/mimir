@@ -19,8 +19,7 @@
 #define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_DENSE_HPP_
 
 #include "mimir/common/collections.hpp"
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/states/dense.hpp"
 #include "mimir/search/successor_state_generators/interface.hpp"

@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 #define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/heuristics/tags.hpp"
 #include "mimir/search/states.hpp"
 

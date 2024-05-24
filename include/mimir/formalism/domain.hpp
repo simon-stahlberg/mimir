@@ -18,12 +18,17 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/action.hpp"
+#include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/requirements.hpp"
 
 #include <loki/loki.hpp>
-#include <map>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
@@ -76,6 +81,14 @@ public:
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 };
+
+/**
+ * Type alises
+ */
+
+using Domain = const DomainImpl*;
+using DomainList = std::vector<Domain>;
+
 }
 
 #endif

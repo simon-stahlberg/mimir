@@ -18,12 +18,9 @@
 #ifndef MIMIR_FORMALISM_REQUIREMENTS_HPP_
 #define MIMIR_FORMALISM_REQUIREMENTS_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-
 #include <loki/loki.hpp>
 #include <set>
 #include <string>
-#include <unordered_map>
 
 namespace mimir
 {
@@ -52,6 +49,13 @@ public:
 
     const loki::RequirementEnumSet& get_requirements() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using Requirements = const RequirementsImpl*;
+
 }
 
 #endif

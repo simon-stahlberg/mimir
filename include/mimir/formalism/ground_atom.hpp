@@ -18,7 +18,6 @@
 #ifndef MIMIR_FORMALISM_GROUND_ATOM_HPP_
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -66,6 +65,19 @@ public:
     bool is_static() const;
     size_t get_arity() const;
 };
+
+/**
+ * Type aliases
+ */
+
+template<IsPredicate P>
+using GroundAtom = const GroundAtomImpl<P>*;
+template<IsPredicate P>
+using GroundAtomList = std::vector<GroundAtom<P>>;
+
+/**
+ * Implementation details
+ */
 
 template<IsPredicate P>
 GroundAtomImpl<P>::GroundAtomImpl(int identifier, const P* predicate, ObjectList objects) :

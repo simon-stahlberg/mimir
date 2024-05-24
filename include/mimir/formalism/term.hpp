@@ -18,13 +18,29 @@
 #ifndef MIMIR_FORMALISM_TERM_HPP_
 #define MIMIR_FORMALISM_TERM_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
+#include <variant>
+#include <vector>
 
 namespace mimir
 {
+
+/**
+ * Type aliases
+ */
+
+class TermObjectImpl;
+using TermObject = const TermObjectImpl*;
+class TermVariableImpl;
+using TermVariable = const TermVariableImpl*;
+using TermImpl = std::variant<TermObjectImpl, TermVariableImpl>;
+using Term = const TermImpl*;
+using TermList = std::vector<Term>;
+
 /*
    TODO: Flattening TermImpl using a Variant with the following fields
    1) Flat indices

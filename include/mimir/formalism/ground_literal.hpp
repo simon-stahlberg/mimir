@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 #define MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/predicate.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
@@ -55,6 +55,19 @@ public:
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;
 };
+
+/**
+ * Type aliases
+ */
+
+template<IsPredicate P>
+using GroundLiteral = const GroundLiteralImpl<P>*;
+template<IsPredicate P>
+using GroundLiteralList = std::vector<GroundLiteral<P>>;
+
+/**
+ * Implementation details
+ */
 
 template<IsPredicate P>
 GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom) :

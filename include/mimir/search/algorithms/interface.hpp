@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/actions.hpp"
 
 namespace mimir

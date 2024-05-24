@@ -18,8 +18,11 @@
 #ifndef MIMIR_FORMALISM_ACTION_HPP_
 #define MIMIR_FORMALISM_ACTION_HPP_
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/function_expressions.hpp"
+#include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <functional>
 #include <loki/loki.hpp>
@@ -84,6 +87,13 @@ public:
 
     size_t get_arity() const;
 };
+
+/**
+ * Type aliases
+ */
+
+using Action = const ActionImpl*;
+using ActionList = std::vector<Action>;
 
 }
 
