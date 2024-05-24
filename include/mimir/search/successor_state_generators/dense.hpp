@@ -162,7 +162,7 @@ private:
             if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
                 && positive_static_precondition.is_superseteq(action.get_conditional_positive_static_precondition_bitsets()[i])
                 && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i])
-                && negative_static_precondition.is_superseteq(action.get_conditional_negative_static_precondition_bitsets()[i]))
+                && negative_static_precondition.are_disjoint(action.get_conditional_negative_static_precondition_bitsets()[i]))
             {
                 const auto simple_effect = action.get_conditional_effects()[i];
                 if (simple_effect.is_negated)
