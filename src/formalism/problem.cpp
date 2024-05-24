@@ -43,12 +43,12 @@ ProblemImpl::ProblemImpl(int identifier,
                          std::string name,
                          Requirements requirements,
                          ObjectList objects,
-                         FluentPredicateList derived_predicates,
-                         GroundLiteralList<StaticPredicateImpl> static_initial_literals,
-                         GroundLiteralList<FluentPredicateImpl> fluent_initial_literals,
+                         PredicateList<Fluent> derived_predicates,
+                         GroundLiteralList<Static> static_initial_literals,
+                         GroundLiteralList<Fluent> fluent_initial_literals,
                          NumericFluentList numeric_fluents,
-                         GroundLiteralList<StaticPredicateImpl> static_goal_condition,
-                         GroundLiteralList<FluentPredicateImpl> fluent_goal_condition,
+                         GroundLiteralList<Static> static_goal_condition,
+                         GroundLiteralList<Fluent> fluent_goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms) :
     Base(identifier),
@@ -227,21 +227,21 @@ const Requirements& ProblemImpl::get_requirements() const { return m_requirement
 
 const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
-const FluentPredicateList& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+const PredicateList<Fluent>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
 
-const GroundLiteralList<StaticPredicateImpl>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
+const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
 FlatBitset ProblemImpl::get_static_initial_positive_atoms_bitset() const { return FlatBitset(m_static_initial_positive_atoms_builder.buffer().data()); }
 
 FlatBitset ProblemImpl::get_static_initial_negative_atoms_bitset() const { return FlatBitset(m_static_initial_negative_atoms_builder.buffer().data()); }
 
-const GroundLiteralList<FluentPredicateImpl>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
+const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
 
-const GroundLiteralList<StaticPredicateImpl>& ProblemImpl::get_static_goal_condition() const { return m_static_goal_condition; }
+const GroundLiteralList<Static>& ProblemImpl::get_static_goal_condition() const { return m_static_goal_condition; }
 
-const GroundLiteralList<FluentPredicateImpl>& ProblemImpl::get_fluent_goal_condition() const { return m_fluent_goal_condition; }
+const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_goal_condition() const { return m_fluent_goal_condition; }
 
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 

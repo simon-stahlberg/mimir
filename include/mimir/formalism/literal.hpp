@@ -30,7 +30,7 @@ namespace mimir
 /*
     TODO: Flattening LiteralImpl is unnecessary. It is already flat.
 */
-template<IsPredicate P>
+template<PredicateCategory P>
 class LiteralImpl : public loki::Base<LiteralImpl<P>>
 {
 private:
@@ -61,16 +61,16 @@ public:
  * Type aliases
  */
 
-template<IsPredicate P>
+template<PredicateCategory P>
 using Literal = const LiteralImpl<P>*;
-template<IsPredicate P>
+template<PredicateCategory P>
 using LiteralList = std::vector<Literal<P>>;
 
 /**
  * Implementation details
  */
 
-template<IsPredicate P>
+template<PredicateCategory P>
 LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) :
     loki::Base<LiteralImpl<P>>(identifier),
     m_is_negated(is_negated),
@@ -78,7 +78,7 @@ LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) :
 {
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool LiteralImpl<P>::is_structurally_equivalent_to_impl(const LiteralImpl<P>& other) const
 {
     if (this != &other)
@@ -88,13 +88,13 @@ bool LiteralImpl<P>::is_structurally_equivalent_to_impl(const LiteralImpl<P>& ot
     return true;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 size_t LiteralImpl<P>::hash_impl() const
 {
     return loki::hash_combine(m_is_negated, m_atom);
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 void LiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     if (m_is_negated)
@@ -109,13 +109,13 @@ void LiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& 
     }
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool LiteralImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 const Atom<P>& LiteralImpl<P>::get_atom() const
 {
     return m_atom;

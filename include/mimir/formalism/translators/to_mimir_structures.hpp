@@ -28,12 +28,12 @@
 namespace mimir
 {
 
-using StaticOrFluentPredicate = std::variant<StaticPredicate, FluentPredicate>;
-using StaticOrFluentAtom = std::variant<Atom<StaticPredicateImpl>, Atom<FluentPredicateImpl>>;
-using StaticOrFluentLiteral = std::variant<Literal<StaticPredicateImpl>, Literal<FluentPredicateImpl>>;
+using StaticOrFluentPredicate = std::variant<Predicate<Static>, Predicate<Fluent>>;
+using StaticOrFluentAtom = std::variant<Atom<Static>, Atom<Fluent>>;
+using StaticOrFluentLiteral = std::variant<Literal<Static>, Literal<Fluent>>;
 
-using StaticOrFluentGroundAtom = std::variant<GroundAtom<StaticPredicateImpl>, GroundAtom<FluentPredicateImpl>>;
-using StaticOrFluentGroundLiteral = std::variant<GroundLiteral<StaticPredicateImpl>, GroundLiteral<FluentPredicateImpl>>;
+using StaticOrFluentGroundAtom = std::variant<GroundAtom<Static>, GroundAtom<Fluent>>;
+using StaticOrFluentGroundLiteral = std::variant<GroundLiteral<Static>, GroundLiteral<Fluent>>;
 
 class ToMimirStructures
 {
@@ -52,7 +52,7 @@ private:
     */
 
     // Equality predicate that does not occur in predicates section
-    StaticPredicate m_equal_predicate;
+    Predicate<Static> m_equal_predicate;
     // Encode parameter index into variables for grounding
     size_t m_cur_parameter_index;
     std::unordered_map<loki::Variable, size_t> m_variable_to_parameter_index;
@@ -156,7 +156,7 @@ private:
     FunctionExpression translate_lifted(const loki::FunctionExpressionImpl& function_expression);
     FunctionSkeleton translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton);
     Function translate_lifted(const loki::FunctionImpl& function);
-    std::tuple<LiteralList<StaticPredicateImpl>, LiteralList<FluentPredicateImpl>> translate_lifted(const loki::ConditionImpl& condition);
+    std::tuple<LiteralList<Static>, LiteralList<Fluent>> translate_lifted(const loki::ConditionImpl& condition);
     std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, FunctionExpression> translate_lifted(const loki::EffectImpl& effect);
     Action translate_lifted(const loki::ActionImpl& action);
     Axiom translate_lifted(const loki::AxiomImpl& axiom);
@@ -186,7 +186,7 @@ private:
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionFunctionImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionImpl& function_expression);
     GroundFunction translate_grounded(const loki::FunctionImpl& function);
-    std::tuple<GroundLiteralList<StaticPredicateImpl>, GroundLiteralList<FluentPredicateImpl>> translate_grounded(const loki::ConditionImpl& condition);
+    std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>> translate_grounded(const loki::ConditionImpl& condition);
     OptimizationMetric translate_grounded(const loki::OptimizationMetricImpl& optimization_metric);
     Problem translate_grounded(const loki::ProblemImpl& problem);
 

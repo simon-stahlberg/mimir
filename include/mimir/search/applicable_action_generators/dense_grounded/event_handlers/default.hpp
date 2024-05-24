@@ -29,7 +29,7 @@ private:
     /* Implement GroundedAAGEventHandlerBase interface */
     friend class GroundedAAGEventHandlerBase<DefaultGroundedAAGEventHandler>;
 
-    void on_finish_delete_free_exploration_impl(const GroundAtomList<FluentPredicateImpl>& reached_atoms,
+    void on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_atoms,
                                                 const GroundActionList& instantiated_actions,
                                                 const GroundAxiomList& instantiated_axioms);
 

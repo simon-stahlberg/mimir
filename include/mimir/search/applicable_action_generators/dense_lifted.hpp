@@ -68,15 +68,9 @@ private:
 
     void nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 
-    void unary_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
-                    const Action& action,
-                    DenseState state,
-                    DenseGroundActionList& out_applicable_actions);
+    void unary_case(const AssignmentSet<Fluent>& assignment_sets, const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 
-    void general_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
-                      const Action& action,
-                      DenseState state,
-                      DenseGroundActionList& out_applicable_actions);
+    void general_case(const AssignmentSet<Fluent>& assignment_sets, const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
 
     /// @brief Ground the precondition of an action and return a view onto it.
     [[nodiscard]] DenseGroundAction ground_action_precondition(const Action& action, const ObjectList& binding);

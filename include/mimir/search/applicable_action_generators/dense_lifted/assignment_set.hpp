@@ -75,7 +75,7 @@ inline size_t num_assignments(size_t arity, size_t num_objects)
 ///   2. the assignment [i/o] is consistent
 ///
 /// We say that an assignment set is static if all atoms it considers are static.
-template<IsPredicate P>
+template<PredicateCategory P>
 class AssignmentSet
 {
 private:
@@ -108,7 +108,7 @@ public:
     bool literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Vertex& consistent_vertex) const;
 };
 
-template<IsPredicate P>
+template<PredicateCategory P>
 AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_problem(problem)
 {
     const auto num_objects = problem->get_objects().size();
@@ -149,7 +149,7 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
     }
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
     const auto num_objects = m_problem->get_objects().size();
@@ -175,7 +175,7 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     }
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Edge& consistent_edge) const
 {
     for (const auto& literal : literals)
@@ -255,7 +255,7 @@ bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& lit
     return true;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Vertex& consistent_vertex) const
 {
     for (const auto& literal : literals)

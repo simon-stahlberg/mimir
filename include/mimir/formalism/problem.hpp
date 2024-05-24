@@ -42,14 +42,14 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
-    FluentPredicateList m_derived_predicates;
-    GroundLiteralList<StaticPredicateImpl> m_static_initial_literals;
+    PredicateList<Fluent> m_derived_predicates;
+    GroundLiteralList<Static> m_static_initial_literals;
     FlatBitsetBuilder m_static_initial_positive_atoms_builder;
     FlatBitsetBuilder m_static_initial_negative_atoms_builder;
-    GroundLiteralList<FluentPredicateImpl> m_fluent_initial_literals;
+    GroundLiteralList<Fluent> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
-    GroundLiteralList<StaticPredicateImpl> m_static_goal_condition;
-    GroundLiteralList<FluentPredicateImpl> m_fluent_goal_condition;
+    GroundLiteralList<Static> m_static_goal_condition;
+    GroundLiteralList<Fluent> m_fluent_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
 
@@ -60,12 +60,12 @@ private:
                 std::string name,
                 Requirements requirements,
                 ObjectList objects,
-                FluentPredicateList derived_predicates,
-                GroundLiteralList<StaticPredicateImpl> static_initial_literals,
-                GroundLiteralList<FluentPredicateImpl> fluent_initial_literals,
+                PredicateList<Fluent> derived_predicates,
+                GroundLiteralList<Static> static_initial_literals,
+                GroundLiteralList<Fluent> fluent_initial_literals,
                 NumericFluentList numeric_fluents,
-                GroundLiteralList<StaticPredicateImpl> static_goal_condition,
-                GroundLiteralList<FluentPredicateImpl> fluent_goal_condition,
+                GroundLiteralList<Static> static_goal_condition,
+                GroundLiteralList<Fluent> fluent_goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms);
 
@@ -85,14 +85,14 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
-    const FluentPredicateList& get_derived_predicates() const;
-    const GroundLiteralList<StaticPredicateImpl>& get_static_initial_literals() const;
+    const PredicateList<Fluent>& get_derived_predicates() const;
+    const GroundLiteralList<Static>& get_static_initial_literals() const;
     FlatBitset get_static_initial_positive_atoms_bitset() const;
     FlatBitset get_static_initial_negative_atoms_bitset() const;
-    const GroundLiteralList<FluentPredicateImpl>& get_fluent_initial_literals() const;
+    const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
-    const GroundLiteralList<StaticPredicateImpl>& get_static_goal_condition() const;
-    const GroundLiteralList<FluentPredicateImpl>& get_fluent_goal_condition() const;
+    const GroundLiteralList<Static>& get_static_goal_condition() const;
+    const GroundLiteralList<Fluent>& get_fluent_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 };

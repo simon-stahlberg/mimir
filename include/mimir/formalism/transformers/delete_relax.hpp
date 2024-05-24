@@ -44,16 +44,16 @@ private:
     using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::prepare_impl;
     using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::transform_impl;
 
-    LiteralList<StaticPredicateImpl> transform_impl(const LiteralList<StaticPredicateImpl>& literals);
-    LiteralList<FluentPredicateImpl> transform_impl(const LiteralList<FluentPredicateImpl>& literals);
+    LiteralList<Static> transform_impl(const LiteralList<Static>& literals);
+    LiteralList<Fluent> transform_impl(const LiteralList<Fluent>& literals);
     EffectSimpleList transform_impl(const EffectSimpleList& effects);
     EffectConditionalList transform_impl(const EffectConditionalList& effects);
     EffectUniversalList transform_impl(const EffectUniversalList& effects);
     ActionList transform_impl(const ActionList& actions);
     AxiomList transform_impl(const AxiomList& axioms);
 
-    Literal<StaticPredicateImpl> transform_impl(const LiteralImpl<StaticPredicateImpl>& literal);
-    Literal<FluentPredicateImpl> transform_impl(const LiteralImpl<FluentPredicateImpl>& literal);
+    Literal<Static> transform_impl(const LiteralImpl<Static>& literal);
+    Literal<Fluent> transform_impl(const LiteralImpl<Fluent>& literal);
     EffectSimple transform_impl(const EffectSimpleImpl& effect);
     EffectConditional transform_impl(const EffectConditionalImpl& effect);
     EffectUniversal transform_impl(const EffectUniversalImpl& effect);

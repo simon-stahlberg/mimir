@@ -125,11 +125,11 @@ public:
     [[nodiscard]] FlatBitset get_atoms_bitset() const { return m_view.get<1>(); }
     [[nodiscard]] Problem get_problem() const { return m_view.get<2>(); }
 
-    bool contains(const GroundAtom<FluentPredicateImpl>& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
+    bool contains(const GroundAtom<Fluent>& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
 
-    bool literal_holds(const GroundLiteral<FluentPredicateImpl>& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
+    bool literal_holds(const GroundLiteral<Fluent>& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
 
-    bool literals_hold(const GroundLiteralList<FluentPredicateImpl>& literals) const
+    bool literals_hold(const GroundLiteralList<Fluent>& literals) const
     {
         for (const auto& literal : literals)
         {

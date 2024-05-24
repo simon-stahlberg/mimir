@@ -37,16 +37,16 @@ namespace mimir
    - ConstView<Predicate> m_predicate; (8 byte)
    - ConstView<Vector<Object>> m_objects; (8 byte)
 */
-template<IsPredicate P>
+template<PredicateCategory P>
 class GroundAtomImpl : public loki::Base<GroundAtomImpl<P>>
 {
 private:
-    const P* m_predicate;
+    Predicate<P> m_predicate;
     ObjectList m_objects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(int identifier, const P* predicate, ObjectList objects);
+    GroundAtomImpl(int identifier, Predicate<P> predicate, ObjectList objects);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<GroundAtomImpl, loki::Hash<GroundAtomImpl*>, loki::EqualTo<GroundAtomImpl*>>;
@@ -60,7 +60,7 @@ private:
     friend class loki::Base<GroundAtomImpl>;
 
 public:
-    const P* get_predicate() const;
+    Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     bool is_static() const;
     size_t get_arity() const;
@@ -70,24 +70,24 @@ public:
  * Type aliases
  */
 
-template<IsPredicate P>
+template<PredicateCategory P>
 using GroundAtom = const GroundAtomImpl<P>*;
-template<IsPredicate P>
+template<PredicateCategory P>
 using GroundAtomList = std::vector<GroundAtom<P>>;
 
 /**
  * Implementation details
  */
 
-template<IsPredicate P>
-GroundAtomImpl<P>::GroundAtomImpl(int identifier, const P* predicate, ObjectList objects) :
+template<PredicateCategory P>
+GroundAtomImpl<P>::GroundAtomImpl(int identifier, Predicate<P> predicate, ObjectList objects) :
     loki::Base<GroundAtomImpl<P>>(identifier),
     m_predicate(std::move(predicate)),
     m_objects(std::move(objects))
 {
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool GroundAtomImpl<P>::is_structurally_equivalent_to_impl(const GroundAtomImpl<P>& other) const
 {
     if (this != &other)
@@ -97,13 +97,13 @@ bool GroundAtomImpl<P>::is_structurally_equivalent_to_impl(const GroundAtomImpl<
     return true;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 size_t GroundAtomImpl<P>::hash_impl() const
 {
     return loki::hash_combine(m_predicate, loki::hash_container(m_objects));
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 void GroundAtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
 {
     out << "(" << m_predicate->get_name();
@@ -114,25 +114,25 @@ void GroundAtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOption
     out << ")";
 }
 
-template<IsPredicate P>
-const P* GroundAtomImpl<P>::get_predicate() const
+template<PredicateCategory P>
+Predicate<P> GroundAtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 const ObjectList& GroundAtomImpl<P>::get_objects() const
 {
     return m_objects;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool GroundAtomImpl<P>::is_static() const
 {
     return m_predicate->is_static();
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 size_t GroundAtomImpl<P>::get_arity() const
 {
     return m_objects.size();

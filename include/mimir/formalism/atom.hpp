@@ -26,16 +26,16 @@
 
 namespace mimir
 {
-template<IsPredicate P>
+template<PredicateCategory P>
 class AtomImpl : public loki::Base<AtomImpl<P>>
 {
 private:
-    const P* m_predicate;
+    Predicate<P> m_predicate;
     TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AtomImpl(int identifier, const P* predicate, TermList terms);
+    AtomImpl(int identifier, Predicate<P> predicate, TermList terms);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AtomImpl, loki::Hash<AtomImpl*>, loki::EqualTo<AtomImpl*>>;
@@ -49,7 +49,7 @@ private:
     friend class loki::Base<AtomImpl>;
 
 public:
-    const P* get_predicate() const;
+    Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
 };
 
@@ -57,23 +57,23 @@ public:
  * Type aliases
  */
 
-template<IsPredicate P>
+template<PredicateCategory P>
 using Atom = const AtomImpl<P>*;
-template<IsPredicate P>
+template<PredicateCategory P>
 using AtomList = std::vector<Atom<P>>;
 
 /**
  * Implementation details
  */
-template<IsPredicate P>
-AtomImpl<P>::AtomImpl(int identifier, const P* predicate, TermList terms) :
+template<PredicateCategory P>
+AtomImpl<P>::AtomImpl(int identifier, Predicate<P> predicate, TermList terms) :
     loki::Base<AtomImpl<P>>(identifier),
     m_predicate(std::move(predicate)),
     m_terms(std::move(terms))
 {
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) const
 {
     if (this != &other)
@@ -83,13 +83,13 @@ bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) cons
     return true;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 size_t AtomImpl<P>::hash_impl() const
 {
     return loki::hash_combine(m_predicate, loki::hash_container(m_terms));
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(" << m_predicate->get_name();
@@ -101,13 +101,13 @@ void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& opt
     out << ")";
 }
 
-template<IsPredicate P>
-const P* AtomImpl<P>::get_predicate() const
+template<PredicateCategory P>
+Predicate<P> AtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 const TermList& AtomImpl<P>::get_terms() const
 {
     return m_terms;

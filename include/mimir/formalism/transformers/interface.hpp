@@ -55,16 +55,16 @@ public:
     void prepare(const TermObjectImpl& term) { self().prepare_base(term); }
     void prepare(const TermVariableImpl& term) { self().prepare_base(term); }
     void prepare(const TermImpl& term) { self().prepare_base(term); }
-    void prepare(const StaticPredicateImpl& predicate) { self().prepare_base(predicate); }
-    void prepare(const FluentPredicateImpl& predicate) { self().prepare_base(predicate); }
-    void prepare(const AtomImpl<StaticPredicateImpl>& atom) { self().prepare_base(atom); }
-    void prepare(const AtomImpl<FluentPredicateImpl>& atom) { self().prepare_base(atom); }
-    void prepare(const GroundAtomImpl<StaticPredicateImpl>& atom) { self().prepare_base(atom); }
-    void prepare(const GroundAtomImpl<FluentPredicateImpl>& atom) { self().prepare_base(atom); }
-    void prepare(const LiteralImpl<StaticPredicateImpl>& literal) { self().prepare_base(literal); }
-    void prepare(const LiteralImpl<FluentPredicateImpl>& literal) { self().prepare_base(literal); }
-    void prepare(const GroundLiteralImpl<StaticPredicateImpl>& literal) { self().prepare_base(literal); }
-    void prepare(const GroundLiteralImpl<FluentPredicateImpl>& literal) { self().prepare_base(literal); }
+    void prepare(const PredicateImpl<Static>& predicate) { self().prepare_base(predicate); }
+    void prepare(const PredicateImpl<Fluent>& predicate) { self().prepare_base(predicate); }
+    void prepare(const AtomImpl<Static>& atom) { self().prepare_base(atom); }
+    void prepare(const AtomImpl<Fluent>& atom) { self().prepare_base(atom); }
+    void prepare(const GroundAtomImpl<Static>& atom) { self().prepare_base(atom); }
+    void prepare(const GroundAtomImpl<Fluent>& atom) { self().prepare_base(atom); }
+    void prepare(const LiteralImpl<Static>& literal) { self().prepare_base(literal); }
+    void prepare(const LiteralImpl<Fluent>& literal) { self().prepare_base(literal); }
+    void prepare(const GroundLiteralImpl<Static>& literal) { self().prepare_base(literal); }
+    void prepare(const GroundLiteralImpl<Fluent>& literal) { self().prepare_base(literal); }
     void prepare(const NumericFluentImpl& numeric_fluent) { self().prepare_base(numeric_fluent); }
     void prepare(const EffectSimpleImpl& effect) { self().prepare_base(effect); }
     void prepare(const EffectConditionalImpl& effect) { self().prepare_base(effect); }
@@ -101,16 +101,16 @@ public:
     Term transform(const TermObjectImpl& term) { return self().transform_base(term); }
     Term transform(const TermVariableImpl& term) { return self().transform_base(term); }
     Term transform(const TermImpl& term) { return self().transform_base(term); }
-    StaticPredicate transform(const StaticPredicateImpl& predicate) { return self().transform_base(predicate); }
-    FluentPredicate transform(const FluentPredicateImpl& predicate) { return self().transform_base(predicate); }
-    Atom<StaticPredicateImpl> transform(const AtomImpl<StaticPredicateImpl>& atom) { return self().transform_base(atom); }
-    Atom<FluentPredicateImpl> transform(const AtomImpl<FluentPredicateImpl>& atom) { return self().transform_base(atom); }
-    GroundAtom<StaticPredicateImpl> transform(const GroundAtomImpl<StaticPredicateImpl>& atom) { return self().transform_base(atom); }
-    GroundAtom<FluentPredicateImpl> transform(const GroundAtomImpl<FluentPredicateImpl>& atom) { return self().transform_base(atom); }
-    Literal<StaticPredicateImpl> transform(const LiteralImpl<StaticPredicateImpl>& literal) { return self().transform_base(literal); }
-    Literal<FluentPredicateImpl> transform(const LiteralImpl<FluentPredicateImpl>& literal) { return self().transform_base(literal); }
-    GroundLiteral<StaticPredicateImpl> transform(const GroundLiteralImpl<StaticPredicateImpl>& literal) { return self().transform_base(literal); }
-    GroundLiteral<FluentPredicateImpl> transform(const GroundLiteralImpl<FluentPredicateImpl>& literal) { return self().transform_base(literal); }
+    Predicate<Static> transform(const PredicateImpl<Static>& predicate) { return self().transform_base(predicate); }
+    Predicate<Fluent> transform(const PredicateImpl<Fluent>& predicate) { return self().transform_base(predicate); }
+    Atom<Static> transform(const AtomImpl<Static>& atom) { return self().transform_base(atom); }
+    Atom<Fluent> transform(const AtomImpl<Fluent>& atom) { return self().transform_base(atom); }
+    GroundAtom<Static> transform(const GroundAtomImpl<Static>& atom) { return self().transform_base(atom); }
+    GroundAtom<Fluent> transform(const GroundAtomImpl<Fluent>& atom) { return self().transform_base(atom); }
+    Literal<Static> transform(const LiteralImpl<Static>& literal) { return self().transform_base(literal); }
+    Literal<Fluent> transform(const LiteralImpl<Fluent>& literal) { return self().transform_base(literal); }
+    GroundLiteral<Static> transform(const GroundLiteralImpl<Static>& literal) { return self().transform_base(literal); }
+    GroundLiteral<Fluent> transform(const GroundLiteralImpl<Fluent>& literal) { return self().transform_base(literal); }
     NumericFluent transform(const NumericFluentImpl& numeric_fluent) { return self().transform_base(numeric_fluent); }
     EffectSimple transform(const EffectSimpleImpl& effect) { return self().transform_base(effect); }
     EffectConditional transform(const EffectConditionalImpl& effect) { return self().transform_base(effect); }

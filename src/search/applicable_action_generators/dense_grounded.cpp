@@ -43,28 +43,28 @@ namespace mimir
 static std::vector<size_t> compute_ground_atom_order(const FlatBitsetBuilder& atoms, const PDDLFactories& pddl_factories)
 {
     auto ground_atoms_order = std::vector<size_t> {};
-    auto m_ground_atoms_by_predicate = std::unordered_map<FluentPredicate, GroundAtomList<FluentPredicateImpl>> {};
+    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<Fluent>, GroundAtomList<Fluent>> {};
     for (const auto& ground_atom : pddl_factories.get_fluent_ground_atoms_from_ids(atoms))
     {
         m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
     }
-    auto ground_atoms = GroundAtomList<FluentPredicateImpl> {};
+    auto ground_atoms = GroundAtomList<Fluent> {};
     // Sort group decreasingly in their size.
-    auto sorted_groups = std::vector<GroundAtomList<FluentPredicateImpl>> {};
+    auto sorted_groups = std::vector<GroundAtomList<Fluent>> {};
     for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
     {
         sorted_groups.push_back(group);
     }
     std::sort(sorted_groups.begin(),
               sorted_groups.end(),
-              [](const GroundAtomList<FluentPredicateImpl>& left, const GroundAtomList<FluentPredicateImpl>& right) { return left.size() > right.size(); });
+              [](const GroundAtomList<Fluent>& left, const GroundAtomList<Fluent>& right) { return left.size() > right.size(); });
     for (const auto& group : sorted_groups)
     {
         // Sort grounded atoms in the group lexicographically to get compiler independent results.
         auto sorted_group = group;
         std::sort(sorted_group.begin(),
                   sorted_group.end(),
-                  [](const GroundAtom<FluentPredicateImpl>& left, const GroundAtom<FluentPredicateImpl>& right) { return left->str() < right->str(); });
+                  [](const GroundAtom<Fluent>& left, const GroundAtom<Fluent>& right) { return left->str() < right->str(); });
         for (const auto& grounded_atom : sorted_group)
 
         {

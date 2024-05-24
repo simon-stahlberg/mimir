@@ -80,16 +80,16 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
     auto negative_conditional_static_condition_bitsets = action.get_conditional_negative_static_precondition_bitsets();
     auto conditional_effects = action.get_conditional_effects();
 
-    auto positive_static_precondition = GroundAtomList<StaticPredicateImpl> {};
-    auto negative_static_precondition = GroundAtomList<StaticPredicateImpl> {};
-    auto positive_fluent_precondition = GroundAtomList<FluentPredicateImpl> {};
-    auto negative_fluent_precondition = GroundAtomList<FluentPredicateImpl> {};
-    auto positive_simple_effects = GroundAtomList<FluentPredicateImpl> {};
-    auto negative_simple_effects = GroundAtomList<FluentPredicateImpl> {};
-    auto positive_conditional_static_preconditions = std::vector<GroundAtomList<StaticPredicateImpl>> {};
-    auto negative_conditional_static_preconditions = std::vector<GroundAtomList<StaticPredicateImpl>> {};
-    auto positive_conditional_fluent_preconditions = std::vector<GroundAtomList<FluentPredicateImpl>> {};
-    auto negative_conditional_fluent_preconditions = std::vector<GroundAtomList<FluentPredicateImpl>> {};
+    auto positive_static_precondition = GroundAtomList<Static> {};
+    auto negative_static_precondition = GroundAtomList<Static> {};
+    auto positive_fluent_precondition = GroundAtomList<Fluent> {};
+    auto negative_fluent_precondition = GroundAtomList<Fluent> {};
+    auto positive_simple_effects = GroundAtomList<Fluent> {};
+    auto negative_simple_effects = GroundAtomList<Fluent> {};
+    auto positive_conditional_static_preconditions = std::vector<GroundAtomList<Static>> {};
+    auto negative_conditional_static_preconditions = std::vector<GroundAtomList<Static>> {};
+    auto positive_conditional_fluent_preconditions = std::vector<GroundAtomList<Fluent>> {};
+    auto negative_conditional_fluent_preconditions = std::vector<GroundAtomList<Fluent>> {};
 
     pddl_factories.get_fluent_ground_atoms_from_ids(positive_fluent_precondition_bitset, positive_fluent_precondition);
     pddl_factories.get_fluent_ground_atoms_from_ids(negative_fluent_precondition_bitset, negative_fluent_precondition);

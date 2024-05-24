@@ -37,7 +37,7 @@ public:
 
     /// @brief Expert interface for creating states.
     /// The user must ensure that the atoms are part of the problem from the applicable action generator.
-    [[nodiscard]] virtual State get_or_create_state(const GroundAtomList<FluentPredicateImpl>& atoms) = 0;
+    [[nodiscard]] virtual State get_or_create_state(const GroundAtomList<Fluent>& atoms) = 0;
 
     [[nodiscard]] virtual State get_or_create_successor_state(const State state, const GroundAction action) = 0;
 
@@ -66,7 +66,7 @@ public:
         return self().get_or_create_initial_state_impl();
     }
 
-    [[nodiscard]] State get_or_create_state(const GroundAtomList<FluentPredicateImpl>& atoms) override
+    [[nodiscard]] State get_or_create_state(const GroundAtomList<Fluent>& atoms) override
     {  //
         return self().get_or_create_state_impl(atoms);
     }

@@ -39,7 +39,7 @@ public:
     virtual ~IGroundedAAGEventHandler() = default;
 
     /// @brief React on finishing delete-free exploration
-    virtual void on_finish_delete_free_exploration(const GroundAtomList<FluentPredicateImpl>& reached_atoms,
+    virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_atoms,
                                                    const GroundActionList& instantiated_actions,
                                                    const GroundAxiomList& instantiated_axioms) = 0;
 
@@ -78,7 +78,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void on_finish_delete_free_exploration(const GroundAtomList<FluentPredicateImpl>& reached_atoms,
+    void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_atoms,
                                            const GroundActionList& instantiated_actions,
                                            const GroundAxiomList& instantiated_axioms) override
     {  //

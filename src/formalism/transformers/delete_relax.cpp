@@ -22,7 +22,7 @@
 namespace mimir
 {
 
-template<IsPredicate P>
+template<PredicateCategory P>
 static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
 {
     auto positive_literals = LiteralList<P> {};
@@ -36,9 +36,9 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
     return positive_literals;
 }
 
-LiteralList<StaticPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralList<StaticPredicateImpl>& literals)
+LiteralList<Static> DeleteRelaxTransformer::transform_impl(const LiteralList<Static>& literals)
 {
-    auto positive_literals = LiteralList<StaticPredicateImpl> {};
+    auto positive_literals = LiteralList<Static> {};
     for (const auto& literal : literals)
     {
         const auto positive_literal = this->transform(*literal);
@@ -50,9 +50,9 @@ LiteralList<StaticPredicateImpl> DeleteRelaxTransformer::transform_impl(const Li
     return positive_literals;
 }
 
-LiteralList<FluentPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralList<FluentPredicateImpl>& literals)
+LiteralList<Fluent> DeleteRelaxTransformer::transform_impl(const LiteralList<Fluent>& literals)
 {
-    auto positive_literals = LiteralList<FluentPredicateImpl> {};
+    auto positive_literals = LiteralList<Fluent> {};
     for (const auto& literal : literals)
     {
         const auto positive_literal = this->transform(*literal);
@@ -134,7 +134,7 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
-Literal<StaticPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralImpl<StaticPredicateImpl>& literal)
+Literal<Static> DeleteRelaxTransformer::transform_impl(const LiteralImpl<Static>& literal)
 {
     if (literal.is_negated())
     {
@@ -146,7 +146,7 @@ Literal<StaticPredicateImpl> DeleteRelaxTransformer::transform_impl(const Litera
     return this->m_pddl_factories.get_or_create_static_literal(false, atom);
 }
 
-Literal<FluentPredicateImpl> DeleteRelaxTransformer::transform_impl(const LiteralImpl<FluentPredicateImpl>& literal)
+Literal<Fluent> DeleteRelaxTransformer::transform_impl(const LiteralImpl<Fluent>& literal)
 {
     if (literal.is_negated())
     {

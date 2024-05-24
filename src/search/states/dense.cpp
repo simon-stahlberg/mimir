@@ -29,7 +29,7 @@ namespace mimir
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data)
 {
     const auto [state, pddl_factories] = data;
-    auto out_ground_atoms = GroundAtomList<FluentPredicateImpl> {};
+    auto out_ground_atoms = GroundAtomList<Fluent> {};
     pddl_factories.get_fluent_ground_atoms_from_ids(state.get_atoms_bitset(), out_ground_atoms);
 
     os << "State("

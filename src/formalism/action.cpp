@@ -35,8 +35,8 @@ ActionImpl::ActionImpl(int identifier,
                        std::string name,
                        size_t original_arity,
                        VariableList parameters,
-                       LiteralList<StaticPredicateImpl> static_conditions,
-                       LiteralList<FluentPredicateImpl> fluent_conditions,
+                       LiteralList<Static> static_conditions,
+                       LiteralList<Fluent> fluent_conditions,
                        EffectSimpleList simple_effects,
                        EffectConditionalList conditional_effects,
                        EffectUniversalList universal_effects,
@@ -160,9 +160,9 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 
-const LiteralList<StaticPredicateImpl>& ActionImpl::get_static_conditions() const { return m_static_conditions; }
+const LiteralList<Static>& ActionImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList<FluentPredicateImpl>& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+const LiteralList<Fluent>& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
 const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
 

@@ -52,7 +52,7 @@ private:
 
     [[nodiscard]] DenseState get_or_create_initial_state_impl()
     {
-        auto ground_atoms = GroundAtomList<FluentPredicateImpl> {};
+        auto ground_atoms = GroundAtomList<Fluent> {};
 
         for (const auto& literal : m_aag->get_problem()->get_fluent_initial_literals())
         {
@@ -67,7 +67,7 @@ private:
         return get_or_create_state(ground_atoms);
     }
 
-    [[nodiscard]] State get_or_create_state_impl(const GroundAtomList<FluentPredicateImpl>& atoms)
+    [[nodiscard]] State get_or_create_state_impl(const GroundAtomList<Fluent>& atoms)
     {
         /* Header */
 
@@ -156,11 +156,10 @@ private:
         const auto num_conditional_effects = action.get_conditional_effects().size();
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
-            assert(state.get_problem()->get_static_initial_positive_atoms_bitset().is_superseteq(
-                action.get_conditional_positive_static_precondition_bitsets()[i]));
-
             if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
                 && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i])
+                && state.get_problem()->get_static_initial_positive_atoms_bitset().is_superseteq(
+                    action.get_conditional_positive_static_precondition_bitsets()[i])
                 && state.get_problem()->get_static_initial_positive_atoms_bitset().are_disjoint(
                     action.get_conditional_negative_static_precondition_bitsets()[i]))
             {

@@ -24,7 +24,7 @@
 namespace mimir
 {
 
-void DebugGroundedAAGEventHandler::on_finish_delete_free_exploration_impl(const GroundAtomList<FluentPredicateImpl>& reached_atoms,
+void DebugGroundedAAGEventHandler::on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_atoms,
                                                                           const GroundActionList& instantiated_actions,
                                                                           const GroundAxiomList& instantiated_axioms)
 {

@@ -35,11 +35,11 @@ namespace mimir
 class EffectSimpleImpl : public loki::Base<EffectSimpleImpl>
 {
 private:
-    Literal<FluentPredicateImpl> m_effect;
+    Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectSimpleImpl(int identifier, Literal<FluentPredicateImpl> effect);
+    EffectSimpleImpl(int identifier, Literal<Fluent> effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectSimpleImpl, loki::Hash<EffectSimpleImpl*>, loki::EqualTo<EffectSimpleImpl*>>;
@@ -52,7 +52,7 @@ private:
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    const Literal<FluentPredicateImpl>& get_effect() const;
+    const Literal<Fluent>& get_effect() const;
 };
 
 /**
@@ -61,16 +61,13 @@ public:
 class EffectConditionalImpl : public loki::Base<EffectConditionalImpl>
 {
 private:
-    LiteralList<StaticPredicateImpl> m_static_conditions;
-    LiteralList<FluentPredicateImpl> m_fluent_conditions;
-    Literal<FluentPredicateImpl> m_effect;
+    LiteralList<Static> m_static_conditions;
+    LiteralList<Fluent> m_fluent_conditions;
+    Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(int identifier,
-                          LiteralList<StaticPredicateImpl> static_conditions,
-                          LiteralList<FluentPredicateImpl> fluent_conditions,
-                          Literal<FluentPredicateImpl> effect);
+    EffectConditionalImpl(int identifier, LiteralList<Static> static_conditions, LiteralList<Fluent> fluent_conditions, Literal<Fluent> effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectConditionalImpl, loki::Hash<EffectConditionalImpl*>, loki::EqualTo<EffectConditionalImpl*>>;
@@ -83,9 +80,9 @@ private:
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
 public:
-    const LiteralList<StaticPredicateImpl>& get_static_conditions() const;
-    const LiteralList<FluentPredicateImpl>& get_fluent_conditions() const;
-    const Literal<FluentPredicateImpl>& get_effect() const;
+    const LiteralList<Static>& get_static_conditions() const;
+    const LiteralList<Fluent>& get_fluent_conditions() const;
+    const Literal<Fluent>& get_effect() const;
 };
 
 /**
@@ -95,17 +92,17 @@ class EffectUniversalImpl : public loki::Base<EffectUniversalImpl>
 {
 private:
     VariableList m_quantified_variables;
-    LiteralList<StaticPredicateImpl> m_static_conditions;
-    LiteralList<FluentPredicateImpl> m_fluent_conditions;
-    Literal<FluentPredicateImpl> m_effect;
+    LiteralList<Static> m_static_conditions;
+    LiteralList<Fluent> m_fluent_conditions;
+    Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     EffectUniversalImpl(int identifier,
                         VariableList quantified_variables,
-                        LiteralList<StaticPredicateImpl> static_conditions,
-                        LiteralList<FluentPredicateImpl> fluent_conditions,
-                        Literal<FluentPredicateImpl> effect);
+                        LiteralList<Static> static_conditions,
+                        LiteralList<Fluent> fluent_conditions,
+                        Literal<Fluent> effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectUniversalImpl, loki::Hash<EffectUniversalImpl*>, loki::EqualTo<EffectUniversalImpl*>>;
@@ -119,9 +116,9 @@ private:
 
 public:
     const VariableList& get_parameters() const;
-    const LiteralList<StaticPredicateImpl>& get_static_conditions() const;
-    const LiteralList<FluentPredicateImpl>& get_fluent_conditions() const;
-    const Literal<FluentPredicateImpl>& get_effect() const;
+    const LiteralList<Static>& get_static_conditions() const;
+    const LiteralList<Fluent>& get_fluent_conditions() const;
+    const Literal<Fluent>& get_effect() const;
 
     size_t get_arity() const;
 };

@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_PREDICATE_HPP_
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
@@ -27,6 +28,23 @@
 
 namespace mimir
 {
+
+/**
+ * Dispatchers
+ */
+struct Static
+{
+};
+struct Fluent
+{
+};
+struct Derived
+{
+};
+
+template<typename T>
+concept PredicateCategory = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
+
 /*
    TODO: Flattening PredicateImpl using a tuple with the following fields
    1) Flat indices
@@ -36,7 +54,8 @@ namespace mimir
    - ConstView<String> m_name; (8 byte)
    - ConstView<Vector<Variable>> m_variables (8 byte)
 */
-class StaticPredicateImpl : public loki::Base<StaticPredicateImpl>
+template<typename T>
+class PredicateImpl : public loki::Base<PredicateImpl<T>>
 {
 private:
     std::string m_name;
@@ -44,18 +63,18 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    StaticPredicateImpl(int identifier, std::string name, VariableList parameters);
+    PredicateImpl(int identifier, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<StaticPredicateImpl, loki::Hash<StaticPredicateImpl*>, loki::EqualTo<StaticPredicateImpl*>>;
+    friend class loki::PDDLFactory<PredicateImpl<T>, loki::Hash<PredicateImpl<T>*>, loki::EqualTo<PredicateImpl<T>*>>;
 
     /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const StaticPredicateImpl& other) const;
+    bool is_structurally_equivalent_to_impl(const PredicateImpl<T>& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<StaticPredicateImpl>;
+    friend class loki::Base<PredicateImpl<T>>;
 
 public:
     const std::string& get_name() const;
@@ -63,89 +82,74 @@ public:
     size_t get_arity() const;
 };
 
-class FluentPredicateImpl : public loki::Base<FluentPredicateImpl>
+/**
+ * Implementation
+ */
+
+template<typename T>
+PredicateImpl<T>::PredicateImpl(int identifier, std::string name, VariableList parameters) :
+    loki::Base<PredicateImpl<T>>(identifier),
+    m_name(std::move(name)),
+    m_parameters(std::move(parameters))
 {
-private:
-    std::string m_name;
-    VariableList m_parameters;
+    assert(is_all_unique(m_parameters));
+}
 
-    // Below: add additional members if needed and initialize them in the constructor
-
-    FluentPredicateImpl(int identifier, std::string name, VariableList parameters);
-
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<FluentPredicateImpl, loki::Hash<FluentPredicateImpl*>, loki::EqualTo<FluentPredicateImpl*>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const FluentPredicateImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FluentPredicateImpl>;
-
-public:
-    const std::string& get_name() const;
-    const VariableList& get_parameters() const;
-    size_t get_arity() const;
-};
-
-class DerivedPredicateImpl : public loki::Base<DerivedPredicateImpl>
+template<typename T>
+bool PredicateImpl<T>::is_structurally_equivalent_to_impl(const PredicateImpl<T>& other) const
 {
-private:
-    std::string m_name;
-    VariableList m_parameters;
+    if (this != &other)
+    {
+        return (m_name == other.m_name) && (m_parameters == other.m_parameters);
+    }
+    return true;
+}
 
-    // Below: add additional members if needed and initialize them in the constructor
+template<typename T>
+size_t PredicateImpl<T>::hash_impl() const
+{
+    return loki::hash_combine(m_name, loki::hash_container(m_parameters));
+}
 
-    DerivedPredicateImpl(int identifier, std::string name, VariableList parameters);
+template<typename T>
+void PredicateImpl<T>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+{
+    out << "(" << m_name;
+    for (size_t i = 0; i < m_parameters.size(); ++i)
+    {
+        out << " ";
+        m_parameters[i]->str(out, options);
+    }
+    out << ")";
+}
 
-    // Give access to the constructor.
-    friend class loki::PDDLFactory<DerivedPredicateImpl, loki::Hash<DerivedPredicateImpl*>, loki::EqualTo<DerivedPredicateImpl*>>;
+template<typename T>
+const std::string& PredicateImpl<T>::get_name() const
+{
+    return m_name;
+}
 
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const DerivedPredicateImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+template<typename T>
+const VariableList& PredicateImpl<T>::get_parameters() const
+{
+    return m_parameters;
+}
 
-    // Give access to the private interface implementations.
-    friend class loki::Base<DerivedPredicateImpl>;
-
-public:
-    const std::string& get_name() const;
-    const VariableList& get_parameters() const;
-    size_t get_arity() const;
-};
-
-// TODO: Add DerivedPredicate
+template<typename T>
+size_t PredicateImpl<T>::get_arity() const
+{
+    return m_parameters.size();
+}
 
 /**
  * Type aliases and concepts
  */
-using FluentPredicate = const FluentPredicateImpl*;
-using FluentPredicateList = std::vector<FluentPredicate>;
-using FluentPredicateSet = std::unordered_set<FluentPredicate>;
-
-using StaticPredicate = const StaticPredicateImpl*;
-using StaticPredicateList = std::vector<StaticPredicate>;
-using StaticPredicateSet = std::unordered_set<StaticPredicate>;
-
-template<typename T>
-concept IsPredicate = requires(T a) {
-    {
-        a.get_name()
-    } -> std::same_as<const std::string&>;
-    {
-        a.get_parameters()
-    } -> std::same_as<const VariableList&>;
-    {
-        a.get_arity()
-    } -> std::same_as<size_t>;
-};
-
-template<IsPredicate P>
-using PredicateList = std::vector<const P*>;
-
+template<PredicateCategory P>
+using Predicate = const PredicateImpl<P>*;
+template<PredicateCategory P>
+using PredicateList = std::vector<Predicate<P>>;
+template<PredicateCategory P>
+using PredicateSet = std::unordered_set<Predicate<P>>;
 }
 
 #endif

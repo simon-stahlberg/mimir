@@ -29,7 +29,7 @@ namespace mimir
 /*
     TODO: Flattening GroundLiteralImpl is unnecessary. It is already flat.
 */
-template<IsPredicate P>
+template<PredicateCategory P>
 class GroundLiteralImpl : public loki::Base<GroundLiteralImpl<P>>
 {
 private:
@@ -60,16 +60,16 @@ public:
  * Type aliases
  */
 
-template<IsPredicate P>
+template<PredicateCategory P>
 using GroundLiteral = const GroundLiteralImpl<P>*;
-template<IsPredicate P>
+template<PredicateCategory P>
 using GroundLiteralList = std::vector<GroundLiteral<P>>;
 
 /**
  * Implementation details
  */
 
-template<IsPredicate P>
+template<PredicateCategory P>
 GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom) :
     loki::Base<GroundLiteralImpl<P>>(identifier),
     m_is_negated(is_negated),
@@ -77,7 +77,7 @@ GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundA
 {
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool GroundLiteralImpl<P>::is_structurally_equivalent_to_impl(const GroundLiteralImpl<P>& other) const
 {
     if (this != &other)
@@ -87,13 +87,13 @@ bool GroundLiteralImpl<P>::is_structurally_equivalent_to_impl(const GroundLitera
     return true;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 size_t GroundLiteralImpl<P>::hash_impl() const
 {
     return loki::hash_combine(m_is_negated, m_atom);
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 void GroundLiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     if (m_is_negated)
@@ -108,13 +108,13 @@ void GroundLiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOpt
     }
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 bool GroundLiteralImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template<IsPredicate P>
+template<PredicateCategory P>
 const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
 {
     return m_atom;

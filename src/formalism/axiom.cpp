@@ -27,9 +27,9 @@ namespace mimir
 {
 AxiomImpl::AxiomImpl(int identifier,
                      VariableList parameters,
-                     Literal<FluentPredicateImpl> literal,
-                     LiteralList<StaticPredicateImpl> static_conditions,
-                     LiteralList<FluentPredicateImpl> fluent_conditions) :
+                     Literal<Fluent> literal,
+                     LiteralList<Static> static_conditions,
+                     LiteralList<Fluent> fluent_conditions) :
     Base(identifier),
     m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
@@ -77,11 +77,11 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 
-const Literal<FluentPredicateImpl>& AxiomImpl::get_literal() const { return m_literal; }
+const Literal<Fluent>& AxiomImpl::get_literal() const { return m_literal; }
 
-const LiteralList<StaticPredicateImpl>& AxiomImpl::get_static_conditions() const { return m_static_conditions; }
+const LiteralList<Static>& AxiomImpl::get_static_conditions() const { return m_static_conditions; }
 
-const LiteralList<FluentPredicateImpl>& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+const LiteralList<Fluent>& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
 
 size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
 

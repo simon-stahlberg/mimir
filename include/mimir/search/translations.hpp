@@ -24,7 +24,7 @@ namespace mimir
 {
 
 /// @brief Translates a bitset into a list of ground atoms
-template<IsPredicate P>
+template<PredicateCategory P>
 void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms)
 {
     out_ground_atoms.clear();

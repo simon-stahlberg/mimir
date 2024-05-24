@@ -37,8 +37,8 @@ private:
     std::string m_name;
     size_t m_original_arity;
     VariableList m_parameters;
-    LiteralList<StaticPredicateImpl> m_static_conditions;
-    LiteralList<FluentPredicateImpl> m_fluent_conditions;
+    LiteralList<Static> m_static_conditions;
+    LiteralList<Fluent> m_fluent_conditions;
     EffectSimpleList m_simple_effects;
     EffectConditionalList m_conditional_effects;
     EffectUniversalList m_universal_effects;
@@ -53,8 +53,8 @@ private:
                std::string name,
                size_t original_arity,
                VariableList parameters,
-               LiteralList<StaticPredicateImpl> static_conditions,
-               LiteralList<FluentPredicateImpl> fluent_conditions,
+               LiteralList<Static> static_conditions,
+               LiteralList<Fluent> fluent_conditions,
                EffectSimpleList simple_effects,
                EffectConditionalList conditional_effects,
                EffectUniversalList universal_effects,
@@ -75,8 +75,8 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    const LiteralList<StaticPredicateImpl>& get_static_conditions() const;
-    const LiteralList<FluentPredicateImpl>& get_fluent_conditions() const;
+    const LiteralList<Static>& get_static_conditions() const;
+    const LiteralList<Fluent>& get_fluent_conditions() const;
     const EffectSimpleList& get_simple_effects() const;
     const EffectConditionalList& get_conditional_effects() const;
     const EffectUniversalList& get_universal_effects() const;

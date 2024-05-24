@@ -126,7 +126,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_fluent_bitsets = [this](const std::vector<Literal<FluentPredicateImpl>>& literals,
+    const auto fill_fluent_bitsets = [this](const std::vector<Literal<Fluent>>& literals,
                                             FlatBitsetBuilder& ref_positive_bitset,
                                             FlatBitsetBuilder& ref_negative_bitset,
                                             const auto& binding)
@@ -146,7 +146,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
-    const auto fill_static_bitsets = [this](const std::vector<Literal<StaticPredicateImpl>>& literals,
+    const auto fill_static_bitsets = [this](const std::vector<Literal<Static>>& literals,
                                             FlatBitsetBuilder& ref_positive_bitset,
                                             FlatBitsetBuilder& ref_negative_bitset,
                                             const auto& binding)
@@ -166,7 +166,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
-    const auto fill_effect = [this](const Literal<FluentPredicateImpl>& literal, FlatSimpleEffect& ref_effect, const auto& binding)
+    const auto fill_effect = [this](const Literal<Fluent>& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
         const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
@@ -203,7 +203,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
     positive_effect.unset_all();
     negative_effect.unset_all();
-    auto effect_literals = LiteralList<FluentPredicateImpl> {};
+    auto effect_literals = LiteralList<Fluent> {};
     for (const auto& effect : action->get_simple_effects())
     {
         effect_literals.push_back(effect->get_effect());
@@ -370,7 +370,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Fluent>& assignment_sets,
                                                          const Action& action,
                                                          DenseState state,
                                                          DenseGroundActionList& out_applicable_actions)
@@ -398,7 +398,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Flu
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet<FluentPredicateImpl>& assignment_sets,
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet<Fluent>& assignment_sets,
                                                            const Action& action,
                                                            DenseState state,
                                                            DenseGroundActionList& out_applicable_actions)
@@ -471,7 +471,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
 
     // Create the assignment sets that are shared by all action schemas.
 
-    auto ground_atoms = GroundAtomList<FluentPredicateImpl> {};
+    auto ground_atoms = GroundAtomList<Fluent> {};
     m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_atoms_bitset(), ground_atoms);
 
     auto fluent_predicates = m_problem->get_domain()->get_fluent_predicates();
@@ -480,7 +480,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     const auto& problem_derived_predicates = m_problem->get_derived_predicates();
     fluent_predicates.insert(fluent_predicates.end(), problem_derived_predicates.begin(), problem_derived_predicates.end());
 
-    const auto assignment_sets = AssignmentSet<FluentPredicateImpl>(m_problem, fluent_predicates, ground_atoms);
+    const auto assignment_sets = AssignmentSet<Fluent>(m_problem, fluent_predicates, ground_atoms);
 
     // Get the applicable ground actions for each action schema.
 
@@ -556,10 +556,10 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& pdd
 
     /* 3. Initialize static consistency graph */
 
-    auto static_initial_atoms = GroundAtomList<StaticPredicateImpl> {};
+    auto static_initial_atoms = GroundAtomList<Static> {};
     to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
 
-    const auto static_assignment_set = AssignmentSet<StaticPredicateImpl>(m_problem, m_problem->get_domain()->get_static_predicates(), static_initial_atoms);
+    const auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_static_predicates(), static_initial_atoms);
 
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
