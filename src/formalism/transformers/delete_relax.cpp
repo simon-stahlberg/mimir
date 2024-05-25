@@ -172,6 +172,18 @@ Literal<Fluent> DeleteRelaxTransformer::transform_impl(const LiteralImpl<Fluent>
     return this->m_pddl_factories.get_or_create_literal(false, atom);
 }
 
+Literal<Derived> DeleteRelaxTransformer::transform_impl(const LiteralImpl<Derived>& literal)
+{
+    if (literal.is_negated())
+    {
+        return nullptr;
+    }
+
+    const auto atom = this->transform(*literal.get_atom());
+
+    return this->m_pddl_factories.get_or_create_literal(false, atom);
+}
+
 EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effect)
 {
     const auto literal = this->transform(*effect.get_effect());

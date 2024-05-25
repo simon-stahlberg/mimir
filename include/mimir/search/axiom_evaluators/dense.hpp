@@ -58,24 +58,31 @@ private:
     std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_fluent_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& state_atoms);
+    bool nullary_fluent_preconditions_hold(const Axiom& axiom, const FlatBitsetBuilder& fluent_state_atoms, const FlatBitsetBuilder& derived_state_atoms);
 
-    void nullary_case(const Axiom& axiom, const FlatBitsetBuilder& state_atoms, DenseGroundAxiomList& out_applicable_axioms);
+    void nullary_case(const Axiom& axiom,
+                      const FlatBitsetBuilder& fluent_state_atoms,
+                      const FlatBitsetBuilder& derived_state_atoms,
+                      DenseGroundAxiomList& out_applicable_axioms);
 
-    void unary_case(const AssignmentSet<Fluent>& assignment_sets,
+    void unary_case(const AssignmentSet<Fluent>& fluent_assignment_set,
+                    const AssignmentSet<Derived>& derived_assignment_set,
                     const Axiom& axiom,
-                    const FlatBitsetBuilder& state_atoms,
+                    const FlatBitsetBuilder& fluent_state_atoms,
+                    const FlatBitsetBuilder& derived_state_atoms,
                     DenseGroundAxiomList& out_applicable_axioms);
 
-    void general_case(const AssignmentSet<Fluent>& assignment_sets,
+    void general_case(const AssignmentSet<Fluent>& fluent_assignment_set,
+                      const AssignmentSet<Derived>& derived_assignment_set,
                       const Axiom& axiom,
-                      const FlatBitsetBuilder& state_atoms,
+                      const FlatBitsetBuilder& fluent_state_atoms,
+                      const FlatBitsetBuilder& derived_state_atoms,
                       DenseGroundAxiomList& out_applicable_axioms);
 
     /* Implement IStaticAE interface */
     friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
+    void generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms, FlatBitsetBuilder& ref_derived_state_atoms);
 
 public:
     /// @brief Simplest construction, expects the event handler from the lifted aag.

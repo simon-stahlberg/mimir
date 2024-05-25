@@ -79,7 +79,7 @@ private:
 
     void generate_applicable_actions_impl(const DenseState state, DenseGroundActionList& out_applicable_actions);
 
-    void generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms);
+    void generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms, FlatBitsetBuilder& ref_derived_state_atoms);
 
     void on_finish_f_layer_impl() const;
 

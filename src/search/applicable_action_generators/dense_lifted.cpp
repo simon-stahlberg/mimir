@@ -166,6 +166,26 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         }
     };
 
+    const auto fill_derived_bitsets = [this](const std::vector<Literal<Derived>>& literals,
+                                             FlatBitsetBuilder& ref_positive_bitset,
+                                             FlatBitsetBuilder& ref_negative_bitset,
+                                             const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = m_pddl_factories.ground_derived_literal(literal, binding);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    };
+
     const auto fill_effect = [this](const Literal<Fluent>& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
         const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
@@ -188,16 +208,21 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     /* Precondition */
     auto strips_precondition_proxy = DenseStripsActionPreconditionBuilderProxy(m_action_builder.get_strips_precondition());
-    auto& positive_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
-    auto& negative_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
+    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
+    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
     auto& positive_static_precondition = strips_precondition_proxy.get_positive_static_precondition();
     auto& negative_static_precondition = strips_precondition_proxy.get_negative_static_precondition();
-    positive_precondition.unset_all();
-    negative_precondition.unset_all();
+    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_derived_precondition();
+    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_derived_precondition();
+    positive_fluent_precondition.unset_all();
+    negative_fluent_precondition.unset_all();
     positive_static_precondition.unset_all();
     negative_static_precondition.unset_all();
-    fill_fluent_bitsets(action->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
+    positive_derived_precondition.unset_all();
+    negative_derived_precondition.unset_all();
+    fill_fluent_bitsets(action->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
     fill_static_bitsets(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
+    fill_derived_bitsets(action->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
     auto strips_effect_proxy = DenseStripsActionEffectBuilderProxy(m_action_builder.get_strips_effect());
@@ -229,11 +254,15 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
             auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_fluent_precondition();
             auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_static_precondition();
             auto& cond_negative_static_precondition_i = cond_effect_proxy_i.get_negative_static_precondition();
+            auto& cond_positive_derived_precondition_i = cond_effect_proxy_i.get_positive_derived_precondition();
+            auto& cond_negative_derived_precondition_i = cond_effect_proxy_i.get_negative_derived_precondition();
             auto& cond_simple_effect_i = cond_effect_proxy_i.get_simple_effect();
             cond_positive_fluent_precondition_i.unset_all();
             cond_negative_fluent_precondition_i.unset_all();
             cond_positive_static_precondition_i.unset_all();
             cond_negative_static_precondition_i.unset_all();
+            cond_positive_derived_precondition_i.unset_all();
+            cond_negative_derived_precondition_i.unset_all();
             fill_fluent_bitsets(action->get_conditional_effects().at(i)->get_fluent_conditions(),
                                 cond_positive_fluent_precondition_i,
                                 cond_negative_fluent_precondition_i,
@@ -242,6 +271,10 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                                 cond_positive_static_precondition_i,
                                 cond_negative_static_precondition_i,
                                 binding);
+            fill_derived_bitsets(action->get_conditional_effects().at(i)->get_derived_conditions(),
+                                 cond_positive_derived_precondition_i,
+                                 cond_negative_derived_precondition_i,
+                                 binding);
 
             fill_effect(action->get_conditional_effects().at(i)->get_effect(), cond_simple_effect_i, binding);
         }
@@ -290,11 +323,15 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_fluent_precondition();
                 auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_static_precondition();
                 auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_static_precondition();
+                auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_derived_precondition();
+                auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_derived_precondition();
                 auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
                 cond_positive_fluent_precondition_j.unset_all();
                 cond_negative_fluent_precondition_j.unset_all();
                 cond_positive_static_precondition_j.unset_all();
                 cond_negative_static_precondition_j.unset_all();
+                cond_positive_derived_precondition_j.unset_all();
+                cond_negative_derived_precondition_j.unset_all();
                 fill_fluent_bitsets(universal_effect->get_fluent_conditions(),
                                     cond_positive_fluent_precondition_j,
                                     cond_negative_fluent_precondition_j,
@@ -303,6 +340,10 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                                     cond_positive_static_precondition_j,
                                     cond_negative_static_precondition_j,
                                     binding_ext);
+                fill_derived_bitsets(universal_effect->get_derived_conditions(),
+                                     cond_positive_derived_precondition_j,
+                                     cond_negative_derived_precondition_j,
+                                     binding_ext);
 
                 fill_effect(universal_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
@@ -472,13 +513,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     auto ground_atoms = GroundAtomList<Fluent> {};
     m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_fluent_atoms(), ground_atoms);
 
-    auto fluent_predicates = m_problem->get_domain()->get_fluent_predicates();
-    const auto& domain_derived_predicates = m_problem->get_domain()->get_derived_predicates();
-    fluent_predicates.insert(fluent_predicates.end(), domain_derived_predicates.begin(), domain_derived_predicates.end());
-    const auto& problem_derived_predicates = m_problem->get_derived_predicates();
-    fluent_predicates.insert(fluent_predicates.end(), problem_derived_predicates.begin(), problem_derived_predicates.end());
-
-    const auto assignment_sets = AssignmentSet<Fluent>(m_problem, fluent_predicates, ground_atoms);
+    const auto assignment_sets = AssignmentSet<Fluent>(m_problem, m_problem->get_domain()->get_fluent_predicates(), ground_atoms);
 
     // Get the applicable ground actions for each action schema.
 
@@ -504,10 +539,11 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, m_pddl_factories);
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms,
+                                                                             FlatBitsetBuilder& ref_derived_state_atoms)
 {
     // In the lifted case, we use the axiom evaluator.
-    m_axiom_evaluator.generate_and_apply_axioms(ref_state_atoms);
+    m_axiom_evaluator.generate_and_apply_axioms(fluent_state_atoms, ref_derived_state_atoms);
 }
 
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::on_finish_f_layer_impl() const { m_event_handler->on_finish_f_layer(); }

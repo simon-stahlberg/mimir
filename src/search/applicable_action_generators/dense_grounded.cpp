@@ -93,9 +93,10 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // TODO: create a constructor that takes all arguments in 1 go.
     auto state_builder = StateBuilder();
-    auto& state_bitset = state_builder.get_fluent_atoms();
+    auto& fluent_state_bitset = state_builder.get_fluent_atoms();
+    auto& derived_state_bitset = state_builder.get_derived_atoms();
     auto& state_problem = state_builder.get_problem();
-    state_bitset = delete_free_ssg.get_or_create_initial_state().get_fluent_atoms();
+    fluent_state_bitset = delete_free_ssg.get_or_create_initial_state().get_fluent_atoms();
     state_problem = delete_free_problem;
 
     // Keep track of changes
@@ -109,7 +110,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
 
-        auto num_atoms_before = state_bitset.count();
+        auto num_atoms_before = fluent_state_bitset.count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
@@ -119,14 +120,14 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
             for (const auto atom_id : succ_state.get_fluent_atoms())
             {
-                state_bitset.set(atom_id);
+                fluent_state_bitset.set(atom_id);
             }
         }
 
         // Create and all applicable axioms and apply them
-        delete_free_lifted_aag->generate_and_apply_axioms(state_bitset);
+        delete_free_lifted_aag->generate_and_apply_axioms(fluent_state_bitset, derived_state_bitset);
 
-        auto num_atoms_after = state_bitset.count();
+        auto num_atoms_after = fluent_state_bitset.count();
 
         if (num_atoms_before != num_atoms_after)
         {
@@ -135,11 +136,11 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_fluent_ground_atoms_from_ids(state_bitset),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_bitset),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
-    auto ground_atoms_order = compute_ground_atom_order(state_bitset, m_pddl_factories);
+    auto ground_atoms_order = compute_ground_atom_order(fluent_state_bitset, m_pddl_factories);
 
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
@@ -195,7 +196,8 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
     m_action_match_tree.get_applicable_elements(state.get_fluent_atoms(), out_applicable_actions);
 }
 
-void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms,
+                                                                               FlatBitsetBuilder& ref_derived_state_atoms)
 {
     auto tmp_builder = FlatBitsetBuilder();
 
@@ -210,7 +212,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
             /* Compute applicable axioms. */
 
             auto applicable_axioms = GroundAxiomList {};
-            tmp_builder |= ref_state_atoms;
+            tmp_builder |= ref_derived_state_atoms;
             tmp_builder.finish();
             auto state_bitset = FlatBitset(tmp_builder.buffer().data());
             m_axiom_match_tree.get_applicable_elements(state_bitset, applicable_axioms);
@@ -226,19 +228,17 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
                     continue;
                 }
 
-                assert(grounded_axiom.is_applicable(ref_state_atoms, m_problem->get_static_initial_positive_atoms_bitset()));
-
                 assert(!grounded_axiom.get_derived_effect().is_negated);
 
                 const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
 
-                if (!ref_state_atoms.get(grounded_atom_id))
+                if (!ref_derived_state_atoms.get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     reached_partition_fixed_point = false;
                 }
 
-                ref_state_atoms.set(grounded_atom_id);
+                ref_derived_state_atoms.set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);

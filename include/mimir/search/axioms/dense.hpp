@@ -158,9 +158,9 @@ public:
     [[nodiscard]] FlatDerivedEffect get_derived_effect() const { return m_view.get<5>(); }
 
     template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
-    [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset) const
+    [[nodiscard]] bool is_applicable(const Bitset1 state_fluent_atoms, const Bitset1 state_derived_atoms, const Bitset2 static_positive_bitset) const
     {  //
-        return DenseStripsActionPrecondition(get_strips_precondition()).is_applicable(state_bitset, static_positive_bitset);
+        return DenseStripsActionPrecondition(get_strips_precondition()).is_applicable(state_fluent_atoms, state_derived_atoms, static_positive_bitset);
     }
 
     template<flatmemory::IsBitset Bitset>
