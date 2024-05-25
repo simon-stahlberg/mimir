@@ -70,15 +70,18 @@ int main(int argc, char** argv)
 
     auto [stats, plan] = planner->find_solution();
 
-    std::ofstream plan_file;
-    plan_file.open(plan_file_name);
-    if (!plan_file.is_open())
+    if (stats == SearchStatus::SOLVED)
     {
-        std::cerr << "Error opening file!" << std::endl;
-        return 1;
+        std::ofstream plan_file;
+        plan_file.open(plan_file_name);
+        if (!plan_file.is_open())
+        {
+            std::cerr << "Error opening file!" << std::endl;
+            return 1;
+        }
+        plan_file << plan;
+        plan_file.close();
     }
-    plan_file << plan;
-    plan_file.close();
 
     return 0;
 }

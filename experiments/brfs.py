@@ -36,7 +36,7 @@ if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
         extra_options="#SBATCH --account=naiss2023-5-314")
-    SUITE = utils.SUITE_SATISFICING
+    SUITE = utils.SUITE_OPTIMAL
     TIME_LIMIT = 15 * 60  # 15 minutes
 else:
     ENV = LocalEnvironment(processes=12)
