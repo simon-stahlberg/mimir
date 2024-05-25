@@ -77,6 +77,10 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
     {
         out << " " << *condition;
     }
+    for (const auto& condition : m_derived_conditions)
+    {
+        out << " " << *condition;
+    }
     out << " )\n";
 }
 

@@ -192,13 +192,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
                                                               m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms));
     auto derived_assignment_sets = AssignmentSet<Derived>(m_problem, derived_predicates, GroundAtomList<Derived>());
 
-    /* 2. Initialize bookkeeping */
-
-    // Bookkeeping to readd removed statically consistent edges
-    auto removed_statically_consistant_edges = std::unordered_map<Axiom, std::vector<consistency_graph::Edges>> {};
-    // Note: when adding back edges, only strongly connected components readded edges must be considered for clique enumeration
-
-    /* 3. Fixed point computation */
+    /* 2. Fixed point computation */
 
     auto applicable_axioms = DenseGroundAxiomList {};
 
@@ -248,6 +242,8 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
             for (const auto& grounded_axiom : applicable_axioms)
             {
                 assert(!grounded_axiom.get_derived_effect().is_negated);
+
+                assert(grounded_axiom.is_applicable(fluent_state_atoms, ref_derived_state_atoms, m_problem->get_static_initial_positive_atoms_bitset()));
 
                 const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
 
@@ -393,6 +389,26 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
         }
     };
 
+    const auto fill_derived_bitsets = [this](const std::vector<Literal<Derived>>& literals,
+                                             FlatBitsetBuilder& ref_positive_bitset,
+                                             FlatBitsetBuilder& ref_negative_bitset,
+                                             const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = m_pddl_factories.ground_derived_literal(literal, binding);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    };
+
     /* Header */
 
     m_axiom_builder.get_id() = m_axioms.size();
@@ -406,16 +422,21 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
 
     /* Precondition */
     auto strips_precondition_proxy = DenseStripsActionPreconditionBuilderProxy(m_axiom_builder.get_strips_precondition());
-    auto& positive_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
-    auto& negative_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
+    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
+    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
     auto& positive_static_precondition = strips_precondition_proxy.get_positive_static_precondition();
     auto& negative_static_precondition = strips_precondition_proxy.get_negative_static_precondition();
-    positive_precondition.unset_all();
-    negative_precondition.unset_all();
+    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_derived_precondition();
+    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_derived_precondition();
+    positive_fluent_precondition.unset_all();
+    negative_fluent_precondition.unset_all();
     positive_static_precondition.unset_all();
     negative_static_precondition.unset_all();
-    fill_fluent_bitsets(axiom->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
+    positive_derived_precondition.unset_all();
+    negative_derived_precondition.unset_all();
+    fill_fluent_bitsets(axiom->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
     fill_static_bitsets(axiom->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
+    fill_derived_bitsets(axiom->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Effect */
     const auto grounded_literal = m_pddl_factories.ground_derived_literal(axiom->get_literal(), binding);

@@ -174,8 +174,8 @@ public:
                && fluent_state_atoms.are_disjoint(get_negative_fluent_precondition())       //
                && static_positive_bitset.is_superseteq(get_positive_static_precondition())  //
                && static_positive_bitset.are_disjoint(get_negative_static_precondition())
-               && derived_state_atoms.is_superseteq(get_positive_fluent_precondition())  //
-               && derived_state_atoms.are_disjoint(get_negative_fluent_precondition());
+               && derived_state_atoms.is_superseteq(get_positive_derived_precondition())  //
+               && derived_state_atoms.are_disjoint(get_negative_derived_precondition());
     }
 
     template<flatmemory::IsBitset Bitset>

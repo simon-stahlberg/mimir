@@ -40,12 +40,12 @@ int main(int argc, char** argv)
 
     auto parser = PDDLParser(domain_file_path, problem_file_path);
 
-    // std::cout << "Domain:" << std::endl;
-    // std::cout << *parser.get_domain() << std::endl;
+    std::cout << "Domain:" << std::endl;
+    std::cout << *parser.get_domain() << std::endl;
 
-    // std::cout << std::endl;
-    // std::cout << "Problem:" << std::endl;
-    // std::cout << *parser.get_problem() << std::endl;
+    std::cout << std::endl;
+    std::cout << "Problem:" << std::endl;
+    std::cout << *parser.get_problem() << std::endl;
 
     auto applicable_action_generator = (grounded) ?
                                            std::shared_ptr<IDynamicAAG> { std::make_shared<GroundedDenseAAG>(parser.get_problem(), parser.get_factories()) } :

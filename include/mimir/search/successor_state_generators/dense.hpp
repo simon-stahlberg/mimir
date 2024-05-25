@@ -77,10 +77,10 @@ private:
         /* Fetch member references. */
 
         auto& state_id = m_state_builder.get_id();
-        auto& fluent_state_bitset = m_state_builder.get_fluent_atoms();
-        auto& derived_state_bitset = m_state_builder.get_derived_atoms();
-        fluent_state_bitset.unset_all();
-        derived_state_bitset.unset_all();
+        auto& fluent_state_atoms = m_state_builder.get_fluent_atoms();
+        auto& derived_state_atoms = m_state_builder.get_derived_atoms();
+        fluent_state_atoms.unset_all();
+        derived_state_atoms.unset_all();
         auto& problem = m_state_builder.get_problem();
 
         /* 1. Set state id */
@@ -95,7 +95,7 @@ private:
 
         for (const auto& atom : atoms)
         {
-            fluent_state_bitset.set(atom->get_identifier());
+            fluent_state_atoms.set(atom->get_identifier());
         }
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
@@ -114,7 +114,7 @@ private:
 
         /* 5. Construct extended state by evaluating Axioms */
 
-        m_aag->generate_and_apply_axioms(fluent_state_bitset, derived_state_bitset);
+        m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
         flatmemory_builder.finish();
 
         /* 6. Cache extended state */
@@ -133,15 +133,15 @@ private:
         // Fetch member references.
 
         auto& state_id = m_state_builder.get_id();
-        auto& fluent_state_bitset = m_state_builder.get_fluent_atoms();
-        auto& derived_state_bitset = m_state_builder.get_derived_atoms();
-        fluent_state_bitset.unset_all();
-        derived_state_bitset.unset_all();
+        auto& fluent_state_atoms = m_state_builder.get_fluent_atoms();
+        auto& derived_state_atoms = m_state_builder.get_derived_atoms();
+        fluent_state_atoms.unset_all();
+        derived_state_atoms.unset_all();
         auto& problem = m_state_builder.get_problem();
 
         // TODO: add assignment operator to bitset to replace unset + operator|=
         const auto& unextended_state = m_states_by_index[state.get_id()];
-        fluent_state_bitset |= unextended_state.get_fluent_atoms();
+        fluent_state_atoms |= unextended_state.get_fluent_atoms();
 
         /* 1. Set state id */
 
@@ -155,8 +155,8 @@ private:
 
         /* Simple effects*/
         auto strips_part_proxy = DenseStripsActionEffect(action.get_strips_effect());
-        fluent_state_bitset -= strips_part_proxy.get_negative_effects();
-        fluent_state_bitset |= strips_part_proxy.get_positive_effects();
+        fluent_state_atoms -= strips_part_proxy.get_negative_effects();
+        fluent_state_atoms |= strips_part_proxy.get_positive_effects();
 
         /* Conditional effects */
         for (const auto flat_conditional_effect : action.get_conditional_effects())
@@ -169,11 +169,11 @@ private:
 
                 if (simple_effect.is_negated)
                 {
-                    fluent_state_bitset.unset(simple_effect.atom_id);
+                    fluent_state_atoms.unset(simple_effect.atom_id);
                 }
                 else
                 {
-                    fluent_state_bitset.set(simple_effect.atom_id);
+                    fluent_state_atoms.set(simple_effect.atom_id);
                 }
             }
         }
@@ -194,7 +194,7 @@ private:
 
         /* 5. Construct extended state by evaluating Axioms */
 
-        m_aag->generate_and_apply_axioms(fluent_state_bitset, derived_state_bitset);
+        m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
         flatmemory_builder.finish();
 
         /* 6. Cache extended state */
