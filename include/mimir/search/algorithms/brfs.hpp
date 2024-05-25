@@ -112,7 +112,14 @@ public:
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        // TODO: Handle static goals
+        const auto& static_goal_ground_literals = m_successor_generator->get_problem()->get_static_goal_condition();
+        if (!m_initial_state.literals_hold(static_goal_ground_literals))
+        {
+            m_event_handler->on_unsolvable();
+
+            return SearchStatus::UNSOLVABLE;
+        }
+
         const auto& fluent_goal_ground_literals = m_successor_generator->get_problem()->get_fluent_goal_condition();
         const auto& derived_goal_ground_literals = m_successor_generator->get_problem()->get_derived_goal_condition();
 

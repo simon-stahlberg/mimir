@@ -55,6 +55,9 @@ public:
     /// @brief React on solving a search.
     virtual void on_solved(const GroundActionList& ground_action_plan) = 0;
 
+    /// @brief React on proving unsolvability during a search.
+    virtual void on_unsolvable() = 0;
+
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
@@ -120,6 +123,8 @@ public:
     }
 
     void on_solved(const GroundActionList& ground_action_plan) override { self().on_solved_impl(ground_action_plan); }
+
+    void on_unsolvable() override { self().on_unsolvable_impl(); }
 
     void on_exhausted() override { self().on_exhausted_impl(); }
 

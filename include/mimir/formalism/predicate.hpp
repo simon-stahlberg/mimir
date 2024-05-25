@@ -142,7 +142,7 @@ size_t PredicateImpl<T>::get_arity() const
 }
 
 /**
- * Type aliases and concepts
+ * Type aliases
  */
 template<PredicateCategory P>
 using Predicate = const PredicateImpl<P>*;

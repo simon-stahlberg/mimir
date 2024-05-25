@@ -157,17 +157,41 @@ void init_pymimir(py::module_& m)
     py::class_<TermVariant>(m, "Term")  //
         .def("get", [](const TermVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.term); });
 
-    py::class_<PredicateImpl>(m, "Predicate")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl>::str, py::const_))
-        .def("get_identifier", &PredicateImpl::get_identifier)
-        .def("get_name", &PredicateImpl::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl::get_parameters, py::return_value_policy::reference);
+    py::class_<PredicateImpl<Static>>(m, "StaticPredicate")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Static>>::str, py::const_))
+        .def("get_identifier", &PredicateImpl<Static>::get_identifier)
+        .def("get_name", &PredicateImpl<Static>::get_name, py::return_value_policy::reference)
+        .def("get_parameters", &PredicateImpl<Static>::get_parameters, py::return_value_policy::reference);
 
-    py::class_<AtomImpl>(m, "Atom")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl>::str, py::const_))
-        .def("get_identifier", &AtomImpl::get_identifier)
-        .def("get_predicate", &AtomImpl::get_predicate, py::return_value_policy::reference)
-        .def("get_terms", [](const AtomImpl& atom) { return to_term_variant_list(atom.get_terms()); });
+    py::class_<PredicateImpl<Fluent>>(m, "FluentPredicate")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Fluent>>::str, py::const_))
+        .def("get_identifier", &PredicateImpl<Fluent>::get_identifier)
+        .def("get_name", &PredicateImpl<Fluent>::get_name, py::return_value_policy::reference)
+        .def("get_parameters", &PredicateImpl<Fluent>::get_parameters, py::return_value_policy::reference);
+
+    py::class_<PredicateImpl<Derived>>(m, "DerivedPredicate")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Derived>>::str, py::const_))
+        .def("get_identifier", &PredicateImpl<Derived>::get_identifier)
+        .def("get_name", &PredicateImpl<Derived>::get_name, py::return_value_policy::reference)
+        .def("get_parameters", &PredicateImpl<Derived>::get_parameters, py::return_value_policy::reference);
+
+    py::class_<AtomImpl<Static>>(m, "StaticAtom")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Static>>::str, py::const_))
+        .def("get_identifier", &AtomImpl<Static>::get_identifier)
+        .def("get_predicate", &AtomImpl<Static>::get_predicate, py::return_value_policy::reference)
+        .def("get_terms", [](const AtomImpl<Static>& atom) { return to_term_variant_list(atom.get_terms()); });
+
+    py::class_<AtomImpl<Fluent>>(m, "FluentAtom")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Fluent>>::str, py::const_))
+        .def("get_identifier", &AtomImpl<Fluent>::get_identifier)
+        .def("get_predicate", &AtomImpl<Fluent>::get_predicate, py::return_value_policy::reference)
+        .def("get_terms", [](const AtomImpl<Fluent>& atom) { return to_term_variant_list(atom.get_terms()); });
+
+    py::class_<AtomImpl<Derived>>(m, "DerivedAtom")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Derived>>::str, py::const_))
+        .def("get_identifier", &AtomImpl<Derived>::get_identifier)
+        .def("get_predicate", &AtomImpl<Derived>::get_predicate, py::return_value_policy::reference)
+        .def("get_terms", [](const AtomImpl<Derived>& atom) { return to_term_variant_list(atom.get_terms()); });
 
     py::class_<FunctionSkeletonImpl>(m, "FunctionSkeleton")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionSkeletonImpl>::str, py::const_))
@@ -187,25 +211,62 @@ void init_pymimir(py::module_& m)
         .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference)
         .def("get_objects", &GroundFunctionImpl::get_objects, py::return_value_policy::reference);
 
-    py::class_<GroundAtomImpl>(m, "GroundAtom")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl>::str, py::const_))
-        .def("get_identifier", &GroundAtomImpl::get_identifier)
-        .def("get_arity", &GroundAtomImpl::get_arity)
-        .def("get_predicate", &GroundAtomImpl::get_predicate, py::return_value_policy::reference)
-        .def("get_objects", &GroundAtomImpl::get_objects, py::return_value_policy::reference);
+    py::class_<GroundAtomImpl<Static>>(m, "StaticGroundAtom")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Static>>::str, py::const_))
+        .def("get_identifier", &GroundAtomImpl<Static>::get_identifier)
+        .def("get_arity", &GroundAtomImpl<Static>::get_arity)
+        .def("get_predicate", &GroundAtomImpl<Static>::get_predicate, py::return_value_policy::reference)
+        .def("get_objects", &GroundAtomImpl<Static>::get_objects, py::return_value_policy::reference);
 
-    py::class_<GroundLiteralImpl>(m, "GroundLiteral")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl>::str, py::const_))
-        .def("get_identifier", &GroundLiteralImpl::get_identifier)
-        .def("get_atom", &GroundLiteralImpl::get_atom, py::return_value_policy::reference)
-        .def("is_negated", &GroundLiteralImpl::is_negated);
+    py::class_<GroundAtomImpl<Fluent>>(m, "FluentGroundAtom")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Fluent>>::str, py::const_))
+        .def("get_identifier", &GroundAtomImpl<Fluent>::get_identifier)
+        .def("get_arity", &GroundAtomImpl<Fluent>::get_arity)
+        .def("get_predicate", &GroundAtomImpl<Fluent>::get_predicate, py::return_value_policy::reference)
+        .def("get_objects", &GroundAtomImpl<Fluent>::get_objects, py::return_value_policy::reference);
 
-    // We get typing.Literal in the generated stubs when using Literal as name
-    py::class_<LiteralImpl>(m, "_Literal")  //
-        .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl>::str, py::const_))
-        .def("get_identifier", &LiteralImpl::get_identifier)
-        .def("get_atom", &LiteralImpl::get_atom, py::return_value_policy::reference)
-        .def("is_negated", &LiteralImpl::is_negated);
+    py::class_<GroundAtomImpl<Derived>>(m, "DerivedGroundAtom")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Derived>>::str, py::const_))
+        .def("get_identifier", &GroundAtomImpl<Derived>::get_identifier)
+        .def("get_arity", &GroundAtomImpl<Derived>::get_arity)
+        .def("get_predicate", &GroundAtomImpl<Derived>::get_predicate, py::return_value_policy::reference)
+        .def("get_objects", &GroundAtomImpl<Derived>::get_objects, py::return_value_policy::reference);
+
+    py::class_<GroundLiteralImpl<Static>>(m, "StaticGroundLiteral")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Static>>::str, py::const_))
+        .def("get_identifier", &GroundLiteralImpl<Static>::get_identifier)
+        .def("get_atom", &GroundLiteralImpl<Static>::get_atom, py::return_value_policy::reference)
+        .def("is_negated", &GroundLiteralImpl<Static>::is_negated);
+
+    py::class_<GroundLiteralImpl<Fluent>>(m, "FluentGroundLiteral")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Fluent>>::str, py::const_))
+        .def("get_identifier", &GroundLiteralImpl<Fluent>::get_identifier)
+        .def("get_atom", &GroundLiteralImpl<Fluent>::get_atom, py::return_value_policy::reference)
+        .def("is_negated", &GroundLiteralImpl<Fluent>::is_negated);
+
+    py::class_<GroundLiteralImpl<Derived>>(m, "DerivedGroundLiteral")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Derived>>::str, py::const_))
+        .def("get_identifier", &GroundLiteralImpl<Derived>::get_identifier)
+        .def("get_atom", &GroundLiteralImpl<Derived>::get_atom, py::return_value_policy::reference)
+        .def("is_negated", &GroundLiteralImpl<Derived>::is_negated);
+
+    py::class_<LiteralImpl<Static>>(m, "StaticLiteral")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Static>>::str, py::const_))
+        .def("get_identifier", &LiteralImpl<Static>::get_identifier)
+        .def("get_atom", &LiteralImpl<Static>::get_atom, py::return_value_policy::reference)
+        .def("is_negated", &LiteralImpl<Static>::is_negated);
+
+    py::class_<LiteralImpl<Fluent>>(m, "FluentLiteral")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Fluent>>::str, py::const_))
+        .def("get_identifier", &LiteralImpl<Fluent>::get_identifier)
+        .def("get_atom", &LiteralImpl<Fluent>::get_atom, py::return_value_policy::reference)
+        .def("is_negated", &LiteralImpl<Fluent>::is_negated);
+
+    py::class_<LiteralImpl<Derived>>(m, "DerivedLiteral")  //
+        .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Derived>>::str, py::const_))
+        .def("get_identifier", &LiteralImpl<Derived>::get_identifier)
+        .def("get_atom", &LiteralImpl<Derived>::get_atom, py::return_value_policy::reference)
+        .def("is_negated", &LiteralImpl<Derived>::is_negated);
 
     py::class_<NumericFluentImpl>(m, "NumericFluent")  //
         .def("__str__", py::overload_cast<>(&loki::Base<NumericFluentImpl>::str, py::const_))
@@ -328,6 +389,7 @@ void init_pymimir(py::module_& m)
         .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
         .def("get_static_conditions", &ActionImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &ActionImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_derived_conditions", &ActionImpl::get_derived_conditions, py::return_value_policy::reference)
         .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference)
         .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference)
         .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference);
@@ -337,16 +399,17 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &AxiomImpl::get_identifier)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
         .def("get_static_conditions", &AxiomImpl::get_static_conditions, py::return_value_policy::reference)
-        .def("get_fluent_conditions", &AxiomImpl::get_fluent_conditions, py::return_value_policy::reference);
+        .def("get_fluent_conditions", &AxiomImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_derived_conditions", &AxiomImpl::get_derived_conditions, py::return_value_policy::reference);
 
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
         .def("get_identifier", &DomainImpl::get_identifier)
         .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference)
         .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference)
-        .def("get_predicates", &DomainImpl::get_predicates, py::return_value_policy::reference)
         .def("get_fluent_predicates", &DomainImpl::get_fluent_predicates, py::return_value_policy::reference)
         .def("get_static_predicates", &DomainImpl::get_static_predicates, py::return_value_policy::reference)
+        .def("get_derived_predicates", &DomainImpl::get_derived_predicates, py::return_value_policy::reference)
         .def("get_functions", &DomainImpl::get_functions, py::return_value_policy::reference)
         .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference)
         .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference);
@@ -362,7 +425,9 @@ void init_pymimir(py::module_& m)
         .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::return_value_policy::reference)
         .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference)
-        .def("get_goal_condition", &ProblemImpl::get_goal_condition, py::return_value_policy::reference);
+        .def("get_static_goal_condition", &ProblemImpl::get_static_goal_condition, py::return_value_policy::reference)
+        .def("get_fluent_goal_condition", &ProblemImpl::get_fluent_goal_condition, py::return_value_policy::reference)
+        .def("get_derived_goal_condition", &ProblemImpl::get_derived_goal_condition, py::return_value_policy::reference);
 
     py::class_<PDDLFactories>(m, "PDDLFactories");
 
@@ -457,7 +522,6 @@ void init_pymimir(py::module_& m)
         .def("get_or_create_initial_state", &IDynamicSSG::get_or_create_initial_state)
         .def("get_or_create_state", &IDynamicSSG::get_or_create_state)
         .def("get_or_create_successor_state", &IDynamicSSG::get_or_create_successor_state)
-        .def("get_non_extended_state", &IDynamicSSG::get_non_extended_state)
         .def("get_state_count", &IDynamicSSG::get_state_count);
     py::class_<SuccessorStateGenerator, IDynamicSSG, std::shared_ptr<SuccessorStateGenerator>>(m, "SSG")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>>());
@@ -500,6 +564,6 @@ void init_pymimir(py::module_& m)
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     // StateSpace
-    py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
-        .def_static("create", &StateSpaceImpl::create);
+    // py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
+    //    .def_static("create", &StateSpaceImpl::create);
 }

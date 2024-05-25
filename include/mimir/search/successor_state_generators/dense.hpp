@@ -41,8 +41,6 @@ class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<De
 private:
     std::shared_ptr<IDynamicAAG> m_aag;
 
-    // TODO: Is it possible to separate ground atoms over simple and derived predicates
-    // to store extended and non-extended states more efficiently?
     FlatDenseStateSet m_states;
     DenseStateBuilder m_state_builder;
 

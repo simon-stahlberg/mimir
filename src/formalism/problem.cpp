@@ -80,12 +80,6 @@ ProblemImpl::ProblemImpl(int identifier,
     assert(is_all_unique(m_derived_goal_condition));
     assert(is_all_unique(m_axioms));
 
-    if (!m_static_goal_condition.empty())
-    {
-        // TODO: support this
-        throw std::runtime_error("Static literals are not supported in the goal");
-    }
-
     // Initialize static atom bitsets
     for (const auto& literal : m_static_initial_literals)
     {

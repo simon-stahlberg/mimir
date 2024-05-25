@@ -30,7 +30,8 @@ enum SearchStatus
     OUT_OF_MEMORY,
     FAILED,
     EXHAUSTED,
-    SOLVED
+    SOLVED,
+    UNSOLVABLE
 };
 
 /**

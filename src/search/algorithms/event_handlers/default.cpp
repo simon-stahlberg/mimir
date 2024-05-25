@@ -54,5 +54,7 @@ void DefaultAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground
     }
 }
 
+void DefaultAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[Algorithm] Unsolvable!" << std::endl; }
+
 void DefaultAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[Algorithm] Exhausted!" << std::endl; }
 }

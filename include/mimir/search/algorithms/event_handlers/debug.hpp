@@ -46,6 +46,8 @@ private:
 
     void on_solved_impl(const GroundActionList& ground_action_plan) const;
 
+    void on_unsolvable_impl() const;
+
     void on_exhausted_impl() const;
 };
 

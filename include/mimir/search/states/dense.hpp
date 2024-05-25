@@ -129,6 +129,11 @@ public:
     [[nodiscard]] FlatBitset get_derived_atoms() const { return m_view.get<2>(); }
     [[nodiscard]] Problem get_problem() const { return m_view.get<3>(); }
 
+    bool contains(const GroundAtom<Static>& ground_atom) const
+    {
+        return get_problem()->get_static_initial_positive_atoms_bitset().get(ground_atom->get_identifier());
+    }
+
     bool contains(const GroundAtom<Fluent>& ground_atom) const { return get_fluent_atoms().get(ground_atom->get_identifier()); }
 
     bool contains(const GroundAtom<Derived>& ground_atom) const { return get_derived_atoms().get(ground_atom->get_identifier()); }

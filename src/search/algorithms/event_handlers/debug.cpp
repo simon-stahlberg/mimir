@@ -67,5 +67,7 @@ void DebugAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_a
     }
 }
 
+void DebugAlgorithmEventHandler::on_unsolvable_impl() const { std::cout << "[Algorithm] Unsolvable!" << std::endl; }
+
 void DebugAlgorithmEventHandler::on_exhausted_impl() const { std::cout << "[Algorithm] Exhausted!" << std::endl; }
 }
