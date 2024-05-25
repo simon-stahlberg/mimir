@@ -64,6 +64,20 @@ LiteralList<Fluent> DeleteRelaxTransformer::transform_impl(const LiteralList<Flu
     return positive_literals;
 }
 
+LiteralList<Derived> DeleteRelaxTransformer::transform_impl(const LiteralList<Derived>& literals)
+{
+    auto positive_literals = LiteralList<Derived> {};
+    for (const auto& literal : literals)
+    {
+        const auto positive_literal = this->transform(*literal);
+        if (positive_literal)
+        {
+            positive_literals.push_back(positive_literal);
+        }
+    }
+    return positive_literals;
+}
+
 EffectSimpleList DeleteRelaxTransformer::transform_impl(const EffectSimpleList& effects)
 {
     auto positive_simple_effects = EffectSimpleList {};
@@ -179,8 +193,9 @@ EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditional
 
     auto static_conditions = filter_positive_literals(this->transform(effect.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_fluent_conditions()));
+    auto derived_conditions = filter_positive_literals(this->transform(effect.get_derived_conditions()));
 
-    return this->m_pddl_factories.get_or_create_conditional_effect(static_conditions, fluent_conditions, simple_effect);
+    return this->m_pddl_factories.get_or_create_conditional_effect(static_conditions, fluent_conditions, derived_conditions, simple_effect);
 }
 
 EffectUniversal DeleteRelaxTransformer::transform_impl(const EffectUniversalImpl& effect)
@@ -194,8 +209,9 @@ EffectUniversal DeleteRelaxTransformer::transform_impl(const EffectUniversalImpl
     auto parameters = this->transform(effect.get_parameters());
     auto static_conditions = filter_positive_literals(this->transform(effect.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_fluent_conditions()));
+    auto derived_conditions = filter_positive_literals(this->transform(effect.get_derived_conditions()));
 
-    return this->m_pddl_factories.get_or_create_universal_effect(parameters, static_conditions, fluent_conditions, simple_effect);
+    return this->m_pddl_factories.get_or_create_universal_effect(parameters, static_conditions, fluent_conditions, derived_conditions, simple_effect);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
@@ -211,6 +227,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto parameters = this->transform(action.get_parameters());
     auto static_conditions = filter_positive_literals(this->transform(action.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(action.get_fluent_conditions()));
+    auto derived_conditions = filter_positive_literals(this->transform(action.get_derived_conditions()));
     auto cost_expression = this->transform(*action.get_function_expression());
 
     auto delete_relaxed_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
@@ -218,6 +235,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                              parameters,
                                                                              static_conditions,
                                                                              fluent_conditions,
+                                                                             derived_conditions,
                                                                              simple_effects,
                                                                              conditional_effects,
                                                                              universal_effects,
@@ -239,8 +257,9 @@ Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
     auto parameters = this->transform(axiom.get_parameters());
     auto static_conditions = filter_positive_literals(this->transform(axiom.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(axiom.get_fluent_conditions()));
+    auto derived_conditions = filter_positive_literals(this->transform(axiom.get_derived_conditions()));
 
-    auto delete_relaxed_axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, static_conditions, fluent_conditions);
+    auto delete_relaxed_axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, static_conditions, fluent_conditions, derived_conditions);
 
     m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(&axiom);
 

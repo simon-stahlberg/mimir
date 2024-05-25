@@ -43,12 +43,13 @@ ProblemImpl::ProblemImpl(int identifier,
                          std::string name,
                          Requirements requirements,
                          ObjectList objects,
-                         PredicateList<Fluent> derived_predicates,
+                         PredicateList<Derived> derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
                          NumericFluentList numeric_fluents,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
+                         GroundLiteralList<Derived> derived_goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms) :
     Base(identifier),
@@ -62,6 +63,7 @@ ProblemImpl::ProblemImpl(int identifier,
     m_numeric_fluents(std::move(numeric_fluents)),
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
+    m_derived_goal_condition(std::move(derived_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms))
 {
@@ -70,8 +72,9 @@ ProblemImpl::ProblemImpl(int identifier,
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
     assert(is_all_unique(m_numeric_fluents));
-    assert(is_all_unique(static_goal_condition));
-    assert(is_all_unique(fluent_goal_condition));
+    assert(is_all_unique(m_static_goal_condition));
+    assert(is_all_unique(m_fluent_goal_condition));
+    assert(is_all_unique(m_derived_goal_condition));
     assert(is_all_unique(m_axioms));
 
     if (!m_static_goal_condition.empty())
@@ -104,6 +107,7 @@ bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) c
                && (loki::get_sorted_vector(m_fluent_initial_literals)) == loki::get_sorted_vector(other.m_fluent_initial_literals)
                && (loki::get_sorted_vector(m_static_goal_condition)) == loki::get_sorted_vector(other.m_static_goal_condition)
                && (loki::get_sorted_vector(m_fluent_goal_condition)) == loki::get_sorted_vector(other.m_fluent_goal_condition)
+               && (loki::get_sorted_vector(m_derived_goal_condition)) == loki::get_sorted_vector(other.m_derived_goal_condition)
                && (m_optimization_metric == other.m_optimization_metric) && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
     }
     return true;
@@ -121,6 +125,7 @@ size_t ProblemImpl::hash_impl() const
                               loki::hash_container(loki::get_sorted_vector(m_fluent_initial_literals)),
                               loki::hash_container(loki::get_sorted_vector(m_static_goal_condition)),
                               loki::hash_container(loki::get_sorted_vector(m_fluent_goal_condition)),
+                              loki::hash_container(loki::get_sorted_vector(m_derived_goal_condition)),
                               optimization_hash,
                               loki::hash_container(loki::get_sorted_vector(m_axioms)));
 }
@@ -195,6 +200,10 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
         {
             out << " " << *literal;
         }
+        for (const auto& literal : m_derived_goal_condition)
+        {
+            out << " " << *literal;
+        }
         out << " )\n";
     }
 
@@ -221,7 +230,7 @@ const Requirements& ProblemImpl::get_requirements() const { return m_requirement
 
 const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
-const PredicateList<Fluent>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+const PredicateList<Derived>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
@@ -234,6 +243,8 @@ const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_num
 const GroundLiteralList<Static>& ProblemImpl::get_static_goal_condition() const { return m_static_goal_condition; }
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_goal_condition() const { return m_fluent_goal_condition; }
+
+const GroundLiteralList<Derived>& ProblemImpl::get_derived_goal_condition() const { return m_derived_goal_condition; }
 
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 

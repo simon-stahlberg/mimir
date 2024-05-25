@@ -27,18 +27,21 @@ namespace mimir
 {
 AxiomImpl::AxiomImpl(int identifier,
                      VariableList parameters,
-                     Literal<Fluent> literal,
+                     Literal<Derived> literal,
                      LiteralList<Static> static_conditions,
-                     LiteralList<Fluent> fluent_conditions) :
+                     LiteralList<Fluent> fluent_conditions,
+                     LiteralList<Derived> derived_conditions) :
     Base(identifier),
     m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
     m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions))
+    m_fluent_conditions(std::move(fluent_conditions)),
+    m_derived_conditions(std::move(derived_conditions))
 {
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
+    assert(is_all_unique(m_derived_conditions));
 }
 
 bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
@@ -46,7 +49,8 @@ bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
     if (this != &other)
     {
         return (m_literal == other.m_literal) && (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
-               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions));
+               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
+               && (loki::get_sorted_vector(m_derived_conditions) == loki::get_sorted_vector(other.m_derived_conditions));
     }
     return true;
 }
@@ -55,7 +59,8 @@ size_t AxiomImpl::hash_impl() const
 {
     return hash_combine(m_literal,
                         loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
-                        loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)));
+                        loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
+                        loki::hash_container(loki::get_sorted_vector(m_derived_conditions)));
 }
 
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -77,11 +82,13 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 
-const Literal<Fluent>& AxiomImpl::get_literal() const { return m_literal; }
+const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
 
 const LiteralList<Static>& AxiomImpl::get_static_conditions() const { return m_static_conditions; }
 
 const LiteralList<Fluent>& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+
+const LiteralList<Derived>& AxiomImpl::get_derived_conditions() const { return m_derived_conditions; }
 
 size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
 

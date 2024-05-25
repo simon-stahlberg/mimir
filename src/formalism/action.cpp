@@ -37,6 +37,7 @@ ActionImpl::ActionImpl(int identifier,
                        VariableList parameters,
                        LiteralList<Static> static_conditions,
                        LiteralList<Fluent> fluent_conditions,
+                       LiteralList<Derived> derived_conditions,
                        EffectSimpleList simple_effects,
                        EffectConditionalList conditional_effects,
                        EffectUniversalList universal_effects,
@@ -47,6 +48,7 @@ ActionImpl::ActionImpl(int identifier,
     m_parameters(std::move(parameters)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
+    m_derived_conditions(std::move(derived_conditions)),
     m_simple_effects(std::move(simple_effects)),
     m_conditional_effects(std::move(conditional_effects)),
     m_universal_effects(std::move(universal_effects)),
@@ -56,6 +58,7 @@ ActionImpl::ActionImpl(int identifier,
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
+    assert(is_all_unique(m_derived_conditions));
     assert(is_all_unique(m_simple_effects));
     assert(is_all_unique(m_conditional_effects));
     assert(is_all_unique(m_universal_effects));
@@ -68,6 +71,7 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
         return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
                && (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
                && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
+               && (loki::get_sorted_vector(m_derived_conditions) == loki::get_sorted_vector(other.m_derived_conditions))
                && (loki::get_sorted_vector(m_simple_effects) == loki::get_sorted_vector(other.m_simple_effects))
                && (loki::get_sorted_vector(m_conditional_effects) == loki::get_sorted_vector(other.m_conditional_effects))
                && (loki::get_sorted_vector(m_universal_effects) == loki::get_sorted_vector(other.m_universal_effects))
@@ -82,6 +86,7 @@ size_t ActionImpl::hash_impl() const
                               loki::hash_container(m_parameters),
                               loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
                               loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
+                              loki::hash_container(loki::get_sorted_vector(m_derived_conditions)),
                               loki::hash_container(loki::get_sorted_vector(m_simple_effects)),
                               loki::hash_container(loki::get_sorted_vector(m_conditional_effects)),
                               loki::hash_container(loki::get_sorted_vector(m_universal_effects)),
@@ -115,6 +120,10 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
             out << " " << *condition;
         }
         for (const auto& condition : m_fluent_conditions)
+        {
+            out << " " << *condition;
+        }
+        for (const auto& condition : m_derived_conditions)
         {
             out << " " << *condition;
         }
@@ -163,6 +172,8 @@ const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 const LiteralList<Static>& ActionImpl::get_static_conditions() const { return m_static_conditions; }
 
 const LiteralList<Fluent>& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
+
+const LiteralList<Derived>& ActionImpl::get_derived_conditions() const { return m_derived_conditions; }
 
 const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
 

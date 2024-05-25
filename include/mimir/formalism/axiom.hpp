@@ -33,11 +33,17 @@ class AxiomImpl : public loki::Base<AxiomImpl>
 {
 private:
     VariableList m_parameters;
-    Literal<Fluent> m_literal;
+    Literal<Derived> m_literal;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
+    LiteralList<Derived> m_derived_conditions;
 
-    AxiomImpl(int identifier, VariableList parameters, Literal<Fluent> literal, LiteralList<Static> static_conditions, LiteralList<Fluent> fluent_conditions);
+    AxiomImpl(int identifier,
+              VariableList parameters,
+              Literal<Derived> literal,
+              LiteralList<Static> static_conditions,
+              LiteralList<Fluent> fluent_conditions,
+              LiteralList<Derived> derived_conditions);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<AxiomImpl, loki::Hash<AxiomImpl*>, loki::EqualTo<AxiomImpl*>>;
@@ -52,9 +58,10 @@ private:
 
 public:
     const VariableList& get_parameters() const;
-    const Literal<Fluent>& get_literal() const;
+    const Literal<Derived>& get_literal() const;
     const LiteralList<Static>& get_static_conditions() const;
     const LiteralList<Fluent>& get_fluent_conditions() const;
+    const LiteralList<Derived>& get_derived_conditions() const;
 
     size_t get_arity() const;
 };

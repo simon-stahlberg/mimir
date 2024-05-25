@@ -39,6 +39,7 @@ private:
     VariableList m_parameters;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
+    LiteralList<Derived> m_derived_conditions;
     EffectSimpleList m_simple_effects;
     EffectConditionalList m_conditional_effects;
     EffectUniversalList m_universal_effects;
@@ -55,6 +56,7 @@ private:
                VariableList parameters,
                LiteralList<Static> static_conditions,
                LiteralList<Fluent> fluent_conditions,
+               LiteralList<Derived> derived_conditions,
                EffectSimpleList simple_effects,
                EffectConditionalList conditional_effects,
                EffectUniversalList universal_effects,
@@ -77,6 +79,7 @@ public:
     const VariableList& get_parameters() const;
     const LiteralList<Static>& get_static_conditions() const;
     const LiteralList<Fluent>& get_fluent_conditions() const;
+    const LiteralList<Derived>& get_derived_conditions() const;
     const EffectSimpleList& get_simple_effects() const;
     const EffectConditionalList& get_conditional_effects() const;
     const EffectUniversalList& get_universal_effects() const;

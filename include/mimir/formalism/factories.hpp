@@ -104,8 +104,9 @@ private:
 
     // TODO: provide more efficient grounding tables for arity 0, 1
     // that do not store the actual binding but instead compute a perfect hash value.
-    std::vector<GroundingTable<GroundLiteral<Fluent>>> m_groundings_by_fluent_literal;
     std::vector<GroundingTable<GroundLiteral<Static>>> m_groundings_by_static_literal;
+    std::vector<GroundingTable<GroundLiteral<Fluent>>> m_groundings_by_fluent_literal;
+    std::vector<GroundingTable<GroundLiteral<Derived>>> m_groundings_by_derived_literal;
 
     template<PredicateCategory P>
     GroundLiteral<P> ground_literal_generic(const Literal<P> literal, const ObjectList& binding, std::vector<GroundingTable<GroundLiteral<P>>>& grounding_table)
@@ -407,20 +408,30 @@ public:
     /// @brief Get or create a conditional simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectConditional get_or_create_conditional_effect(LiteralList<Static> static_condition, LiteralList<Fluent> fluent_condition, Literal<Fluent> effect)
+    EffectConditional get_or_create_conditional_effect(LiteralList<Static> static_conditions,
+                                                       LiteralList<Fluent> fluent_conditions,
+                                                       LiteralList<Derived> derived_conditions,
+                                                       Literal<Fluent> effect)
     {
-        return conditional_effects.get_or_create<EffectConditionalImpl>(std::move(static_condition), std::move(fluent_condition), std::move(effect));
+        return conditional_effects.get_or_create<EffectConditionalImpl>(std::move(static_conditions),
+                                                                        std::move(fluent_conditions),
+                                                                        std::move(derived_conditions),
+                                                                        std::move(effect));
     }
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    EffectUniversal
-    get_or_create_universal_effect(VariableList parameters, LiteralList<Static> static_condition, LiteralList<Fluent> fluent_condition, Literal<Fluent> effect)
+    EffectUniversal get_or_create_universal_effect(VariableList parameters,
+                                                   LiteralList<Static> static_conditions,
+                                                   LiteralList<Fluent> fluent_conditions,
+                                                   LiteralList<Derived> derived_conditions,
+                                                   Literal<Fluent> effect)
     {
         return universal_effects.get_or_create<EffectUniversalImpl>(std::move(parameters),
-                                                                    std::move(static_condition),
-                                                                    std::move(fluent_condition),
+                                                                    std::move(static_conditions),
+                                                                    std::move(fluent_conditions),
+                                                                    std::move(derived_conditions),
                                                                     std::move(effect));
     }
 
@@ -432,6 +443,7 @@ public:
                                 VariableList parameters,
                                 LiteralList<Static> static_conditions,
                                 LiteralList<Fluent> fluent_conditions,
+                                LiteralList<Derived> derived_conditions,
                                 EffectSimpleList simple_effects,
                                 EffectConditionalList conditional_effects,
                                 EffectUniversalList universal_effects,
@@ -442,6 +454,7 @@ public:
                                                  std::move(parameters),
                                                  std::move(static_conditions),
                                                  std::move(fluent_conditions),
+                                                 std::move(derived_conditions),
                                                  std::move(simple_effects),
                                                  std::move(conditional_effects),
                                                  std::move(universal_effects),
@@ -451,9 +464,17 @@ public:
     /// @brief Get or create a derived predicate for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Axiom get_or_create_axiom(VariableList parameters, Literal<Fluent> literal, LiteralList<Static> static_condition, LiteralList<Fluent> fluent_condition)
+    Axiom get_or_create_axiom(VariableList parameters,
+                              Literal<Derived> literal,
+                              LiteralList<Static> static_condition,
+                              LiteralList<Fluent> fluent_condition,
+                              LiteralList<Derived> derived_conditions)
     {
-        return axioms.get_or_create<AxiomImpl>(std::move(parameters), std::move(literal), std::move(static_condition), std::move(fluent_condition));
+        return axioms.get_or_create<AxiomImpl>(std::move(parameters),
+                                               std::move(literal),
+                                               std::move(static_condition),
+                                               std::move(fluent_condition),
+                                               std::move(derived_conditions));
     }
 
     /// @brief Get or create an optimization metric for the given parameters.
@@ -480,7 +501,7 @@ public:
                                 ObjectList constants,
                                 PredicateList<Static> static_predicates,
                                 PredicateList<Fluent> fluent_predicates,
-                                PredicateList<Fluent> derived_predicates,
+                                PredicateList<Derived> derived_predicates,
                                 FunctionSkeletonList functions,
                                 ActionList actions,
                                 AxiomList axioms)
@@ -503,12 +524,13 @@ public:
                                   std::string name,
                                   Requirements requirements,
                                   ObjectList objects,
-                                  PredicateList<Fluent> derived_predicates,
+                                  PredicateList<Derived> derived_predicates,
                                   GroundLiteralList<Static> static_initial_literals,
                                   GroundLiteralList<Fluent> fluent_initial_literals,
                                   NumericFluentList numeric_fluents,
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
+                                  GroundLiteralList<Derived> derived_goal_condition,
                                   std::optional<OptimizationMetric> optimization_metric,
                                   AxiomList axioms)
     {
@@ -522,6 +544,7 @@ public:
                                                    std::move(numeric_fluents),
                                                    std::move(static_goal_condition),
                                                    std::move(fluent_goal_condition),
+                                                   std::move(derived_goal_condition),
                                                    std::move(optimization_metric),
                                                    std::move(axioms));
     }
@@ -624,14 +647,19 @@ public:
         }
     }
 
+    GroundLiteral<Static> ground_static_literal(const Literal<Static> literal, const ObjectList& binding)
+    {
+        return ground_literal_generic(literal, binding, m_groundings_by_static_literal);
+    }
+
     GroundLiteral<Fluent> ground_fluent_literal(const Literal<Fluent> literal, const ObjectList& binding)
     {
         return ground_literal_generic(literal, binding, m_groundings_by_fluent_literal);
     }
 
-    GroundLiteral<Static> ground_static_literal(const Literal<Static> literal, const ObjectList& binding)
+    GroundLiteral<Derived> ground_derived_literal(const Literal<Derived> literal, const ObjectList& binding)
     {
-        return ground_literal_generic(literal, binding, m_groundings_by_static_literal);
+        return ground_literal_generic(literal, binding, m_groundings_by_derived_literal);
     }
 };
 }

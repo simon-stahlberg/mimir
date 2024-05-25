@@ -32,16 +32,16 @@ namespace mimir
 /**
  * Interface class.
  */
-template<typename Derived>
+template<typename Derived_>
 class ITransformer
 {
 private:
     ITransformer() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     template<typename Container>
@@ -55,16 +55,31 @@ public:
     void prepare(const TermObjectImpl& term) { self().prepare_base(term); }
     void prepare(const TermVariableImpl& term) { self().prepare_base(term); }
     void prepare(const TermImpl& term) { self().prepare_base(term); }
-    void prepare(const PredicateImpl<Static>& predicate) { self().prepare_base(predicate); }
-    void prepare(const PredicateImpl<Fluent>& predicate) { self().prepare_base(predicate); }
-    void prepare(const AtomImpl<Static>& atom) { self().prepare_base(atom); }
-    void prepare(const AtomImpl<Fluent>& atom) { self().prepare_base(atom); }
-    void prepare(const GroundAtomImpl<Static>& atom) { self().prepare_base(atom); }
-    void prepare(const GroundAtomImpl<Fluent>& atom) { self().prepare_base(atom); }
-    void prepare(const LiteralImpl<Static>& literal) { self().prepare_base(literal); }
-    void prepare(const LiteralImpl<Fluent>& literal) { self().prepare_base(literal); }
-    void prepare(const GroundLiteralImpl<Static>& literal) { self().prepare_base(literal); }
-    void prepare(const GroundLiteralImpl<Fluent>& literal) { self().prepare_base(literal); }
+    template<PredicateCategory P>
+    void prepare(const PredicateImpl<P>& predicate)
+    {
+        self().prepare_base(predicate);
+    }
+    template<PredicateCategory P>
+    void prepare(const AtomImpl<P>& atom)
+    {
+        self().prepare_base(atom);
+    }
+    template<PredicateCategory P>
+    void prepare(const GroundAtomImpl<P>& atom)
+    {
+        self().prepare_base(atom);
+    }
+    template<PredicateCategory P>
+    void prepare(const LiteralImpl<P>& literal)
+    {
+        self().prepare_base(literal);
+    }
+    template<PredicateCategory P>
+    void prepare(const GroundLiteralImpl<P>& literal)
+    {
+        self().prepare_base(literal);
+    }
     void prepare(const NumericFluentImpl& numeric_fluent) { self().prepare_base(numeric_fluent); }
     void prepare(const EffectSimpleImpl& effect) { self().prepare_base(effect); }
     void prepare(const EffectConditionalImpl& effect) { self().prepare_base(effect); }
@@ -101,16 +116,31 @@ public:
     Term transform(const TermObjectImpl& term) { return self().transform_base(term); }
     Term transform(const TermVariableImpl& term) { return self().transform_base(term); }
     Term transform(const TermImpl& term) { return self().transform_base(term); }
-    Predicate<Static> transform(const PredicateImpl<Static>& predicate) { return self().transform_base(predicate); }
-    Predicate<Fluent> transform(const PredicateImpl<Fluent>& predicate) { return self().transform_base(predicate); }
-    Atom<Static> transform(const AtomImpl<Static>& atom) { return self().transform_base(atom); }
-    Atom<Fluent> transform(const AtomImpl<Fluent>& atom) { return self().transform_base(atom); }
-    GroundAtom<Static> transform(const GroundAtomImpl<Static>& atom) { return self().transform_base(atom); }
-    GroundAtom<Fluent> transform(const GroundAtomImpl<Fluent>& atom) { return self().transform_base(atom); }
-    Literal<Static> transform(const LiteralImpl<Static>& literal) { return self().transform_base(literal); }
-    Literal<Fluent> transform(const LiteralImpl<Fluent>& literal) { return self().transform_base(literal); }
-    GroundLiteral<Static> transform(const GroundLiteralImpl<Static>& literal) { return self().transform_base(literal); }
-    GroundLiteral<Fluent> transform(const GroundLiteralImpl<Fluent>& literal) { return self().transform_base(literal); }
+    template<PredicateCategory P>
+    Predicate<P> transform(const PredicateImpl<P>& predicate)
+    {
+        return self().transform_base(predicate);
+    }
+    template<PredicateCategory P>
+    Atom<P> transform(const AtomImpl<P>& atom)
+    {
+        return self().transform_base(atom);
+    }
+    template<PredicateCategory P>
+    GroundAtom<P> transform(const GroundAtomImpl<P>& atom)
+    {
+        return self().transform_base(atom);
+    }
+    template<PredicateCategory P>
+    Literal<P> transform(const LiteralImpl<P>& literal)
+    {
+        return self().transform_base(literal);
+    }
+    template<PredicateCategory P>
+    GroundLiteral<P> transform(const GroundLiteralImpl<P>& literal)
+    {
+        return self().transform_base(literal);
+    }
     NumericFluent transform(const NumericFluentImpl& numeric_fluent) { return self().transform_base(numeric_fluent); }
     EffectSimple transform(const EffectSimpleImpl& effect) { return self().transform_base(effect); }
     EffectConditional transform(const EffectConditionalImpl& effect) { return self().transform_base(effect); }
@@ -145,7 +175,6 @@ public:
     /// @brief Collect information and apply problem transformation.
     Problem run(const ProblemImpl& problem) { return self().run_base(problem); }
 };
-
 }
 
 #endif

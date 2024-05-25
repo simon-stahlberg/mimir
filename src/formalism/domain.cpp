@@ -41,7 +41,7 @@ DomainImpl::DomainImpl(int identifier,
                        ObjectList constants,
                        PredicateList<Static> static_predicates,
                        PredicateList<Fluent> fluent_predicates,
-                       PredicateList<Fluent> derived_predicates,
+                       PredicateList<Derived> derived_predicates,
                        FunctionSkeletonList functions,
                        ActionList actions,
                        AxiomList axioms) :
@@ -175,7 +175,7 @@ const PredicateList<Static>& DomainImpl::get_static_predicates() const { return 
 
 const PredicateList<Fluent>& DomainImpl::get_fluent_predicates() const { return m_fluent_predicates; }
 
-const PredicateList<Fluent>& DomainImpl::get_derived_predicates() const { return m_derived_predicates; }
+const PredicateList<Derived>& DomainImpl::get_derived_predicates() const { return m_derived_predicates; }
 
 const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functions; }
 

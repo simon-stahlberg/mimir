@@ -63,11 +63,16 @@ class EffectConditionalImpl : public loki::Base<EffectConditionalImpl>
 private:
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
+    LiteralList<Derived> m_derived_conditions;
     Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(int identifier, LiteralList<Static> static_conditions, LiteralList<Fluent> fluent_conditions, Literal<Fluent> effect);
+    EffectConditionalImpl(int identifier,
+                          LiteralList<Static> static_conditions,
+                          LiteralList<Fluent> fluent_conditions,
+                          LiteralList<Derived> derived_conditions,
+                          Literal<Fluent> effect);
 
     // Give access to the constructor.
     friend class loki::PDDLFactory<EffectConditionalImpl, loki::Hash<EffectConditionalImpl*>, loki::EqualTo<EffectConditionalImpl*>>;
@@ -82,6 +87,7 @@ private:
 public:
     const LiteralList<Static>& get_static_conditions() const;
     const LiteralList<Fluent>& get_fluent_conditions() const;
+    const LiteralList<Derived>& get_derived_conditions() const;
     const Literal<Fluent>& get_effect() const;
 };
 
@@ -94,6 +100,7 @@ private:
     VariableList m_quantified_variables;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
+    LiteralList<Derived> m_derived_conditions;
     Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -102,6 +109,7 @@ private:
                         VariableList quantified_variables,
                         LiteralList<Static> static_conditions,
                         LiteralList<Fluent> fluent_conditions,
+                        LiteralList<Derived> derived_conditions,
                         Literal<Fluent> effect);
 
     // Give access to the constructor.
@@ -118,6 +126,7 @@ public:
     const VariableList& get_parameters() const;
     const LiteralList<Static>& get_static_conditions() const;
     const LiteralList<Fluent>& get_fluent_conditions() const;
+    const LiteralList<Derived>& get_derived_conditions() const;
     const Literal<Fluent>& get_effect() const;
 
     size_t get_arity() const;

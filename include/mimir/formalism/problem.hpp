@@ -42,13 +42,14 @@ private:
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_objects;
-    PredicateList<Fluent> m_derived_predicates;
+    PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
     FlatBitsetBuilder m_static_initial_positive_atoms_builder;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
+    GroundLiteralList<Derived> m_derived_goal_condition;
     std::optional<OptimizationMetric> m_optimization_metric;
     AxiomList m_axioms;
 
@@ -59,12 +60,13 @@ private:
                 std::string name,
                 Requirements requirements,
                 ObjectList objects,
-                PredicateList<Fluent> derived_predicates,
+                PredicateList<Derived> derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
                 NumericFluentList numeric_fluents,
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
+                GroundLiteralList<Derived> derived_goal_condition,
                 std::optional<OptimizationMetric> optimization_metric,
                 AxiomList axioms);
 
@@ -84,13 +86,14 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
-    const PredicateList<Fluent>& get_derived_predicates() const;
+    const PredicateList<Derived>& get_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
     FlatBitset get_static_initial_positive_atoms_bitset() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     const GroundLiteralList<Static>& get_static_goal_condition() const;
     const GroundLiteralList<Fluent>& get_fluent_goal_condition() const;
+    const GroundLiteralList<Derived>& get_derived_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 };

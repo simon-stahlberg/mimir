@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_HPP_
 
-#include "mimir/formalism/transformers/copy.hpp"
+// #include "mimir/formalism/transformers/copy.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
 
 #endif

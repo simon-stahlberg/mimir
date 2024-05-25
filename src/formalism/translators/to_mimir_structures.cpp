@@ -263,7 +263,15 @@ Object ToMimirStructures::translate_common(const loki::ObjectImpl& object)
     return m_pddl_factories.get_or_create_object(object.get_name());
 }
 
-StaticOrFluentPredicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
+enum class PredicateCategoryEnum
+{
+    STATIC,
+    FLUENT,
+    DERIVED,
+    UNKNOWN,
+};
+
+StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
 {
     auto parameters = VariableList {};
     parameters.reserve(predicate.get_parameters().size());
@@ -272,20 +280,50 @@ StaticOrFluentPredicate ToMimirStructures::translate_common(const loki::Predicat
         parameters.push_back(translate_common(*parameter->get_variable(), false));
     }
 
-    bool is_fluent = (m_fluent_predicates.count(predicate.get_name()) || m_derived_predicates.count(predicate.get_name()));
+    // Determine predicate category
+    auto predicate_category = PredicateCategoryEnum::UNKNOWN;
+    if (m_fluent_predicates.count(predicate.get_name()) && !m_derived_predicates.count(predicate.get_name()))
+    {
+        predicate_category = PredicateCategoryEnum::FLUENT;
+    }
+    else if (m_derived_predicates.count(predicate.get_name()))
+    {
+        predicate_category = PredicateCategoryEnum::DERIVED;
+    }
+    else
+    {
+        predicate_category = PredicateCategoryEnum::STATIC;
+    }
+    if (predicate.get_name() == "=")
+    {
+        predicate_category = PredicateCategoryEnum::STATIC;
+    }
+
+    std::optional<StaticOrFluentOrDerivedPredicate> result;
+
+    if (predicate_category == PredicateCategoryEnum::FLUENT)
+    {
+        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), parameters));
+    }
+    else if (predicate_category == PredicateCategoryEnum::STATIC)
+    {
+        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), parameters));
+    }
+    else if (predicate_category == PredicateCategoryEnum::DERIVED)
+    {
+        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_derived_predicate(predicate.get_name(), parameters));
+    }
+    else
+    {
+        throw std::logic_error("Expected predicate type to be known. Contact the developers for a fix.");
+    }
+    assert(result.has_value());
 
     if (predicate.get_name() == "=")
     {
-        is_fluent = false;
+        m_equal_predicate = std::get<Predicate<Static>>(result.value());
     }
-
-    auto result = (is_fluent) ? StaticOrFluentPredicate(m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), parameters)) :
-                                StaticOrFluentPredicate(m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), parameters));
-    if (predicate.get_name() == "=")
-    {
-        m_equal_predicate = std::get<Predicate<Static>>(result);
-    }
-    return result;
+    return result.value();
 }
 
 /**
@@ -307,12 +345,12 @@ Term ToMimirStructures::translate_lifted(const loki::TermImpl& term)
     return std::visit([this](auto&& arg) { return this->translate_lifted(arg); }, term);
 }
 
-StaticOrFluentAtom ToMimirStructures::translate_lifted(const loki::AtomImpl& atom)
+StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(const loki::AtomImpl& atom)
 {
-    auto static_or_fluent_predicate = translate_common(*atom.get_predicate());
+    auto static_or_fluent__or_derived_predicate = translate_common(*atom.get_predicate());
 
     return std::visit(
-        [this, &atom](auto&& arg) -> StaticOrFluentAtom
+        [this, &atom](auto&& arg) -> StaticOrFluentOrDerivedAtom
         {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, Predicate<Static>>)
@@ -323,16 +361,20 @@ StaticOrFluentAtom ToMimirStructures::translate_lifted(const loki::AtomImpl& ato
             {
                 return m_pddl_factories.get_or_create_atom(arg, translate_lifted(atom.get_terms()));
             }
+            else if constexpr (std::is_same_v<T, Predicate<Derived>>)
+            {
+                return m_pddl_factories.get_or_create_atom(arg, translate_lifted(atom.get_terms()));
+            }
         },
-        static_or_fluent_predicate);
+        static_or_fluent__or_derived_predicate);
 }
 
-std::variant<Literal<Static>, Literal<Fluent>> ToMimirStructures::translate_lifted(const loki::LiteralImpl& literal)
+StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(const loki::LiteralImpl& literal)
 {
-    auto static_or_fluent_atom = translate_lifted(*literal.get_atom());
+    auto static_or_fluent_or_derived_atom = translate_lifted(*literal.get_atom());
 
     return std::visit(
-        [this, &literal](auto&& arg) -> StaticOrFluentLiteral
+        [this, &literal](auto&& arg) -> StaticOrFluentOrDerivedLiteral
         {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, Atom<Static>>)
@@ -343,8 +385,12 @@ std::variant<Literal<Static>, Literal<Fluent>> ToMimirStructures::translate_lift
             {
                 return m_pddl_factories.get_or_create_literal(literal.is_negated(), arg);
             }
+            else if constexpr (std::is_same_v<T, Atom<Derived>>)
+            {
+                return m_pddl_factories.get_or_create_literal(literal.is_negated(), arg);
+            }
         },
-        static_or_fluent_atom);
+        static_or_fluent_or_derived_atom);
 }
 
 FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionNumberImpl& function_expression)
@@ -396,15 +442,17 @@ Function ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
     return m_pddl_factories.get_or_create_function(translate_lifted(*function.get_function_skeleton()), translate_lifted(function.get_terms()));
 }
 
-std::tuple<LiteralList<Static>, LiteralList<Fluent>> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
+std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
-    const auto func_insert_literal =
-        [](const StaticOrFluentLiteral& static_or_fluent_literal, LiteralList<Static>& ref_static_literals, LiteralList<Fluent>& ref_fluent_literals)
+    const auto func_insert_literal = [](const StaticOrFluentOrDerivedLiteral& static_or_fluent_or_derived_literal,
+                                        LiteralList<Static>& ref_static_literals,
+                                        LiteralList<Fluent>& ref_fluent_literals,
+                                        LiteralList<Derived>& ref_derived_literals)
     {
         std::visit(
-            [&ref_static_literals, &ref_fluent_literals](auto&& arg)
+            [&ref_static_literals, &ref_fluent_literals, &ref_derived_literals](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, Literal<Static>>)
@@ -415,21 +463,26 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>> ToMimirStructures::translat
                 {
                     ref_fluent_literals.push_back(arg);
                 }
+                else if constexpr (std::is_same_v<T, Literal<Derived>>)
+                {
+                    ref_derived_literals.push_back(arg);
+                }
             },
-            static_or_fluent_literal);
+            static_or_fluent_or_derived_literal);
     };
 
     if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition_ptr))
     {
         auto static_literals = LiteralList<Static> {};
         auto fluent_literals = LiteralList<Fluent> {};
+        auto derived_literals = LiteralList<Derived> {};
         for (const auto& part : condition_and->get_conditions())
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
             {
                 const auto static_or_fluent_literal = translate_lifted(*condition_literal->get_literal());
 
-                func_insert_literal(static_or_fluent_literal, static_literals, fluent_literals);
+                func_insert_literal(static_or_fluent_literal, static_literals, fluent_literals, derived_literals);
             }
             else
             {
@@ -438,18 +491,19 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>> ToMimirStructures::translat
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(static_literals, fluent_literals);
+        return std::make_tuple(static_literals, fluent_literals, derived_literals);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
     {
         auto static_literals = LiteralList<Static> {};
         auto fluent_literals = LiteralList<Fluent> {};
+        auto derived_literals = LiteralList<Derived> {};
 
-        const auto static_or_fluent_literal = translate_lifted(*condition_literal->get_literal());
+        const auto static_or_fluent_or_derived_literal = translate_lifted(*condition_literal->get_literal());
 
-        func_insert_literal(static_or_fluent_literal, static_literals, fluent_literals);
+        func_insert_literal(static_or_fluent_or_derived_literal, static_literals, fluent_literals, derived_literals);
 
-        return std::make_tuple(static_literals, fluent_literals);
+        return std::make_tuple(static_literals, fluent_literals, derived_literals);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -484,11 +538,13 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             // 3. Parse conditional part
             auto static_literals = LiteralList<Static> {};
             auto fluent_literals = LiteralList<Fluent> {};
+            auto derived_literals = LiteralList<Derived> {};
             if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
             {
-                const auto [static_literals_, fluent_literals_] = translate_lifted(*tmp_effect_when->get_condition());
+                const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*tmp_effect_when->get_condition());
                 static_literals = static_literals_;
                 fluent_literals = fluent_literals_;
+                derived_literals = derived_literals_;
 
                 tmp_effect = tmp_effect_when->get_effect();
             }
@@ -496,17 +552,19 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             // 4. Parse simple effect
             if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
             {
-                const auto static_or_fluent_effect = translate_lifted(*effect_literal->get_literal());
+                const auto static_or_fluent_or_derived_effect = translate_lifted(*effect_literal->get_literal());
 
-                const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_effect);
+                const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
 
                 if (!parameters.empty())
                 {
-                    universal_effects.push_back(m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, fluent_effect));
+                    universal_effects.push_back(
+                        m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, derived_literals, fluent_effect));
                 }
                 else if (!(static_literals.empty() && fluent_literals.empty()))
                 {
-                    conditional_effects.push_back(m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, fluent_effect));
+                    conditional_effects.push_back(
+                        m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, derived_literals, fluent_effect));
                 }
                 else
                 {
@@ -542,9 +600,9 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
     }
     else if (const auto effect_literal = std::get_if<loki::EffectLiteralImpl>(effect_ptr))
     {
-        const auto static_or_fluent_effect = translate_lifted(*effect_literal->get_literal());
+        const auto static_or_fluent_or_derived_effect = translate_lifted(*effect_literal->get_literal());
 
-        const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_effect);
+        const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
 
         return std::make_tuple(EffectSimpleList { this->m_pddl_factories.get_or_create_simple_effect(fluent_effect) },
                                EffectConditionalList {},
@@ -567,11 +625,13 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     // 2. Translate conditions
     auto static_literals = LiteralList<Static> {};
     auto fluent_literals = LiteralList<Fluent> {};
+    auto derived_literals = LiteralList<Derived> {};
     if (action.get_condition().has_value())
     {
-        const auto [static_literals_, fluent_literals_] = translate_lifted(*action.get_condition().value());
+        const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*action.get_condition().value());
         static_literals = static_literals_;
         fluent_literals = fluent_literals_;
+        derived_literals = derived_literals_;
     }
 
     // 3. Translate effects
@@ -593,6 +653,7 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
                                                  parameters,
                                                  static_literals,
                                                  fluent_literals,
+                                                 derived_literals,
                                                  simple_effects,
                                                  conditional_effects,
                                                  universal_effects,
@@ -605,13 +666,13 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
     m_cur_parameter_index = 0;
     auto parameters = translate_common(axiom.get_parameters());
 
-    const auto [static_literals, fluent_literals] = translate_lifted(*axiom.get_condition());
+    const auto [static_literals, fluent_literals, derived_literals] = translate_lifted(*axiom.get_condition());
 
-    const auto static_or_fluent_effect = translate_lifted(*axiom.get_literal());
+    const auto static_or_fluent_or_derived_effect = translate_lifted(*axiom.get_literal());
 
-    const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_effect);
+    const auto fluent_effect = std::get<Literal<Derived>>(static_or_fluent_or_derived_effect);
 
-    return m_pddl_factories.get_or_create_axiom(parameters, fluent_effect, static_literals, fluent_literals);
+    return m_pddl_factories.get_or_create_axiom(parameters, fluent_effect, static_literals, fluent_literals, derived_literals);
 }
 
 Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
@@ -622,12 +683,13 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
     auto predicates = translate_common(domain.get_predicates());
     auto static_predicates = PredicateList<Static> {};
     auto fluent_predicates = PredicateList<Fluent> {};
+    auto derived_predicates = PredicateList<Derived> {};
     for (const auto& predicate : domain.get_predicates())
     {
-        const auto static_or_fluent_predicate = translate_common(*predicate);
+        const auto static_or_fluent_or_derived_predicate = translate_common(*predicate);
 
         std::visit(
-            [&static_predicates, &fluent_predicates](auto&& arg)
+            [&static_predicates, &fluent_predicates, &derived_predicates](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, Predicate<Static>>)
@@ -638,16 +700,20 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
                 {
                     fluent_predicates.push_back(arg);
                 }
+                else if constexpr (std::is_same_v<T, Predicate<Derived>>)
+                {
+                    derived_predicates.push_back(arg);
+                }
             },
-            static_or_fluent_predicate);
+            static_or_fluent_or_derived_predicate);
     }
+    assert(derived_predicates.empty());
 
-    auto derived_predicates = PredicateList<Fluent> {};
-    for (const auto static_or_fluent_predicate : translate_common(domain.get_derived_predicates()))
+    for (const auto static_or_fluent_or_derived_predicate : translate_common(domain.get_derived_predicates()))
     {
-        const auto fluent_predicate = std::get<Predicate<Fluent>>(static_or_fluent_predicate);
+        const auto derived_predicate = std::get<Predicate<Derived>>(static_or_fluent_or_derived_predicate);
 
-        derived_predicates.push_back(fluent_predicate);
+        derived_predicates.push_back(derived_predicate);
     }
 
     const auto functions = translate_lifted(domain.get_functions());
@@ -687,12 +753,12 @@ Object ToMimirStructures::translate_grounded(const loki::TermImpl& term)
     throw std::logic_error("Expected ground term.");
 }
 
-StaticOrFluentGroundAtom ToMimirStructures::translate_grounded(const loki::AtomImpl& atom)
+StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(const loki::AtomImpl& atom)
 {
-    auto static_or_fluent_predicate = translate_common(*atom.get_predicate());
+    auto static_or_fluent_or_derived_predicate = translate_common(*atom.get_predicate());
 
     return std::visit(
-        [this, &atom](auto&& arg) -> StaticOrFluentGroundAtom
+        [this, &atom](auto&& arg) -> StaticOrFluentOrDerivedGroundAtom
         {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, Predicate<Static>>)
@@ -703,16 +769,20 @@ StaticOrFluentGroundAtom ToMimirStructures::translate_grounded(const loki::AtomI
             {
                 return m_pddl_factories.get_or_create_ground_atom(arg, translate_grounded(atom.get_terms()));
             }
+            else if constexpr (std::is_same_v<T, Predicate<Derived>>)
+            {
+                return m_pddl_factories.get_or_create_ground_atom(arg, translate_grounded(atom.get_terms()));
+            }
         },
-        static_or_fluent_predicate);
+        static_or_fluent_or_derived_predicate);
 }
 
-StaticOrFluentGroundLiteral ToMimirStructures::translate_grounded(const loki::LiteralImpl& literal)
+StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(const loki::LiteralImpl& literal)
 {
-    auto static_or_fluent_ground_atom = translate_grounded(*literal.get_atom());
+    auto static_or_fluent_or_derived_ground_atom = translate_grounded(*literal.get_atom());
 
     return std::visit(
-        [this, &literal](auto&& arg) -> StaticOrFluentGroundLiteral
+        [this, &literal](auto&& arg) -> StaticOrFluentOrDerivedGroundLiteral
         {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, GroundAtom<Static>>)
@@ -723,8 +793,12 @@ StaticOrFluentGroundLiteral ToMimirStructures::translate_grounded(const loki::Li
             {
                 return m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), arg);
             }
+            else if constexpr (std::is_same_v<T, GroundAtom<Derived>>)
+            {
+                return m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), arg);
+            }
         },
-        static_or_fluent_ground_atom);
+        static_or_fluent_or_derived_ground_atom);
 }
 
 NumericFluent ToMimirStructures::translate_grounded(const loki::NumericFluentImpl& numeric_fluent)
@@ -770,16 +844,18 @@ GroundFunction ToMimirStructures::translate_grounded(const loki::FunctionImpl& f
     return m_pddl_factories.get_or_create_ground_function(translate_lifted(*function.get_function_skeleton()), translate_grounded(function.get_terms()));
 }
 
-std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>> ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
+std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>
+ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
-    const auto func_insert_ground_literal = [](const StaticOrFluentGroundLiteral& static_or_fluent_literal,
+    const auto func_insert_ground_literal = [](const StaticOrFluentOrDerivedGroundLiteral& static_or_fluent_or_derived_literal,
                                                GroundLiteralList<Static>& ref_static_ground_literals,
-                                               GroundLiteralList<Fluent>& ref_fluent_ground_literals)
+                                               GroundLiteralList<Fluent>& ref_fluent_ground_literals,
+                                               GroundLiteralList<Derived>& ref_derived_ground_literals)
     {
         std::visit(
-            [&ref_static_ground_literals, &ref_fluent_ground_literals](auto&& arg)
+            [&ref_static_ground_literals, &ref_fluent_ground_literals, &ref_derived_ground_literals](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, GroundLiteral<Static>>)
@@ -790,21 +866,26 @@ std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>> ToMimirStructur
                 {
                     ref_fluent_ground_literals.push_back(arg);
                 }
+                else if constexpr (std::is_same_v<T, GroundLiteral<Derived>>)
+                {
+                    ref_derived_ground_literals.push_back(arg);
+                }
             },
-            static_or_fluent_literal);
+            static_or_fluent_or_derived_literal);
     };
 
     if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(condition_ptr))
     {
         auto static_ground_literals = GroundLiteralList<Static> {};
         auto fluent_ground_literals = GroundLiteralList<Fluent> {};
+        auto derived_ground_literals = GroundLiteralList<Derived> {};
         for (const auto& part : condition_and->get_conditions())
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
             {
                 const auto static_or_fluent_ground_literal = translate_grounded(*condition_literal->get_literal());
 
-                func_insert_ground_literal(static_or_fluent_ground_literal, static_ground_literals, fluent_ground_literals);
+                func_insert_ground_literal(static_or_fluent_ground_literal, static_ground_literals, fluent_ground_literals, derived_ground_literals);
             }
             else
             {
@@ -813,18 +894,19 @@ std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>> ToMimirStructur
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(static_ground_literals, fluent_ground_literals);
+        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(condition_ptr))
     {
         auto static_ground_literals = GroundLiteralList<Static> {};
         auto fluent_ground_literals = GroundLiteralList<Fluent> {};
+        auto derived_ground_literals = GroundLiteralList<Derived> {};
 
-        const auto static_or_fluent_ground_literal = translate_grounded(*condition_literal->get_literal());
+        const auto static_or_fluent_or_derived_ground_literal = translate_grounded(*condition_literal->get_literal());
 
-        func_insert_ground_literal(static_or_fluent_ground_literal, static_ground_literals, fluent_ground_literals);
+        func_insert_ground_literal(static_or_fluent_or_derived_ground_literal, static_ground_literals, fluent_ground_literals, derived_ground_literals);
 
-        return std::make_tuple(static_ground_literals, fluent_ground_literals);
+        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals);
     }
 
     std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -843,28 +925,10 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     // Translate domain first, to get predicate indices 0,1,2,...
     const auto translated_domain = translate_lifted(*problem.get_domain());
     // Translate derived predicates to fetch parameter indices
-    auto static_derived_predicates = PredicateList<Static> {};
-    auto fluent_derived_predicate = PredicateList<Fluent> {};
-    for (const auto static_or_fluent_predicate : translate_common(problem.get_derived_predicates()))
+    auto derived_predicates = PredicateList<Derived> {};
+    for (const auto static_or_fluent_or_derived_predicate : translate_common(problem.get_derived_predicates()))
     {
-        std::visit(
-            [&static_derived_predicates, &fluent_derived_predicate](auto&& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, Predicate<Static>>)
-                {
-                    static_derived_predicates.push_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Predicate<Fluent>>)
-                {
-                    fluent_derived_predicate.push_back(arg);
-                }
-            },
-            static_or_fluent_predicate);
-    }
-    if (!static_derived_predicates.empty())
-    {
-        std::runtime_error("Found static derived predicate. Please contact the developers to support this.");
+        derived_predicates.push_back(std::get<Predicate<Derived>>(static_or_fluent_or_derived_predicate));
     }
 
     // Add constants to objects in problem.
@@ -874,21 +938,24 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 
     auto static_goal_literals = GroundLiteralList<Static> {};
     auto fluent_goal_literals = GroundLiteralList<Fluent> {};
+    auto derived_goal_literals = GroundLiteralList<Derived> {};
     if (problem.get_goal_condition().has_value())
     {
-        const auto [static_goal_literals_, fluent_goal_literals_] = translate_grounded(*problem.get_goal_condition().value());
+        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_] = translate_grounded(*problem.get_goal_condition().value());
 
         static_goal_literals = static_goal_literals_;
         fluent_goal_literals = fluent_goal_literals_;
+        derived_goal_literals = derived_goal_literals_;
     }
 
     // Derive static and fluent initial literals
     auto static_initial_literals = GroundLiteralList<Static> {};
     auto fluent_initial_literals = GroundLiteralList<Fluent> {};
-    for (const auto& static_or_fluent_ground_literal : translate_grounded(problem.get_initial_literals()))
+    auto derived_initial_literals = GroundLiteralList<Derived> {};
+    for (const auto& static_or_fluent_or_derived_ground_literal : translate_grounded(problem.get_initial_literals()))
     {
         std::visit(
-            [&static_initial_literals, &fluent_initial_literals](auto&& arg)
+            [&static_initial_literals, &fluent_initial_literals, &derived_initial_literals](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, GroundLiteral<Static>>)
@@ -899,8 +966,12 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                 {
                     fluent_initial_literals.push_back(arg);
                 }
+                else if constexpr (std::is_same_v<T, GroundLiteral<Derived>>)
+                {
+                    derived_initial_literals.push_back(arg);
+                }
             },
-            static_or_fluent_ground_literal);
+            static_or_fluent_or_derived_ground_literal);
     }
 
     // Add equal atoms, e.g., (= object1 object1)
@@ -921,12 +992,13 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                   problem.get_name(),
                                                   translate_common(*problem.get_requirements()),
                                                   objects,
-                                                  fluent_derived_predicate,
+                                                  derived_predicates,
                                                   static_initial_literals,
                                                   fluent_initial_literals,
                                                   translate_grounded(problem.get_numeric_fluents()),
                                                   static_goal_literals,
                                                   fluent_goal_literals,
+                                                  derived_goal_literals,
                                                   (problem.get_optimization_metric().has_value() ?
                                                        std::optional<OptimizationMetric>(translate_grounded(*problem.get_optimization_metric().value())) :
                                                        std::nullopt),

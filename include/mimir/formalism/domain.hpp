@@ -41,7 +41,7 @@ private:
     ObjectList m_constants;
     PredicateList<Static> m_static_predicates;
     PredicateList<Fluent> m_fluent_predicates;
-    PredicateList<Fluent> m_derived_predicates;
+    PredicateList<Derived> m_derived_predicates;
     FunctionSkeletonList m_functions;
     ActionList m_actions;
     AxiomList m_axioms;
@@ -54,7 +54,7 @@ private:
                ObjectList constants,
                PredicateList<Static> static_predicates,
                PredicateList<Fluent> fluent_predicates,
-               PredicateList<Fluent> derived_predicates,
+               PredicateList<Derived> derived_predicates,
                FunctionSkeletonList functions,
                ActionList actions,
                AxiomList axioms);
@@ -76,7 +76,7 @@ public:
     const ObjectList& get_constants() const;
     const PredicateList<Static>& get_static_predicates() const;
     const PredicateList<Fluent>& get_fluent_predicates() const;
-    const PredicateList<Fluent>& get_derived_predicates() const;
+    const PredicateList<Derived>& get_derived_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
