@@ -45,7 +45,6 @@ private:
     // to store extended and non-extended states more efficiently?
     FlatDenseStateSet m_states;
     std::vector<DenseState> m_states_by_index;
-    FlatDenseStateVector m_extended_states_by_state;
     DenseStateBuilder m_state_builder;
 
     /* Implement IStaticSSG interface */
@@ -99,31 +98,30 @@ private:
         }
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-        flatmemory_builder.finish();
-        const auto [iter, inserted] = m_states.insert(flatmemory_builder);
-        const auto state = DenseState(*iter);
 
         /* 4. Retrieve cached extended state */
 
-        if (!inserted)
+        // Test whether there exists an extended state for the given non extended state
+        flatmemory_builder.finish();
+        auto iter = m_states.find(FlatDenseState(flatmemory_builder.buffer().data()));
+        if (iter != m_states.end())
         {
-            return DenseState(m_extended_states_by_state[state.get_id()]);
+            return DenseState(*iter);
         }
-
-        m_states_by_index.push_back(state);
 
         /* 5. Construct extended state by evaluating Axioms */
 
         m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
-        flatmemory_builder.finish();
 
         /* 6. Cache extended state */
 
-        m_extended_states_by_state.push_back(flatmemory_builder);
+        flatmemory_builder.finish();
+        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+        m_states_by_index.push_back(DenseState(*iter2));
 
         /* 7. Return newly generated extended state */
 
-        return DenseState(m_extended_states_by_state[next_state_id]);
+        return DenseState(*iter2);
     }
 
     [[nodiscard]] DenseState get_or_create_successor_state_impl(const DenseState state, const DenseGroundAction action)
@@ -179,31 +177,30 @@ private:
         }
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-        flatmemory_builder.finish();
-        const auto [iter, inserted] = m_states.insert(flatmemory_builder);
-        const auto succ_state = DenseState(*iter);
 
         /* 4. Retrieve cached extended state */
 
-        if (!inserted)
+        // Test whether there exists an extended state for the given non extended state
+        flatmemory_builder.finish();
+        auto iter = m_states.find(FlatDenseState(flatmemory_builder.buffer().data()));
+        if (iter != m_states.end())
         {
-            return DenseState(m_extended_states_by_state[succ_state.get_id()]);
+            return DenseState(*iter);
         }
-
-        m_states_by_index.push_back(succ_state);
 
         /* 5. Construct extended state by evaluating Axioms */
 
         m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
-        flatmemory_builder.finish();
 
         /* 6. Cache extended state */
 
-        m_extended_states_by_state.push_back(flatmemory_builder);
+        flatmemory_builder.finish();
+        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+        m_states_by_index.push_back(DenseState(*iter2));
 
         /* 7. Return newly generated extended state */
 
-        return DenseState(m_extended_states_by_state[next_state_id]);
+        return DenseState(*iter2);
     }
 
     [[nodiscard]] DenseState get_non_extended_state_impl(const DenseState state)
@@ -214,7 +211,7 @@ private:
     [[nodiscard]] size_t get_state_count_impl() const { return m_states.size(); }
 
 public:
-    explicit SSG(std::shared_ptr<IDynamicAAG> aag) : m_aag(std::move(aag)), m_states_by_index(), m_extended_states_by_state() {}
+    explicit SSG(std::shared_ptr<IDynamicAAG> aag) : m_aag(std::move(aag)), m_states_by_index() {}
 };
 
 /**
