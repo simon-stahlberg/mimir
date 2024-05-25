@@ -44,6 +44,7 @@ ProblemImpl::ProblemImpl(int identifier,
                          Requirements requirements,
                          ObjectList objects,
                          PredicateList<Derived> derived_predicates,
+                         PredicateList<Derived> problem_and_domain_derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
                          NumericFluentList numeric_fluents,
@@ -58,6 +59,7 @@ ProblemImpl::ProblemImpl(int identifier,
     m_requirements(std::move(requirements)),
     m_objects(std::move(objects)),
     m_derived_predicates(std::move(derived_predicates)),
+    m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_numeric_fluents(std::move(numeric_fluents)),
@@ -69,6 +71,7 @@ ProblemImpl::ProblemImpl(int identifier,
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
+    assert(is_all_unique(m_problem_and_domain_derived_predicates));
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
     assert(is_all_unique(m_numeric_fluents));
@@ -231,6 +234,8 @@ const Requirements& ProblemImpl::get_requirements() const { return m_requirement
 const ObjectList& ProblemImpl::get_objects() const { return m_objects; }
 
 const PredicateList<Derived>& ProblemImpl::get_derived_predicates() const { return m_derived_predicates; }
+
+const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predicates() const { return m_problem_and_domain_derived_predicates; }
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 

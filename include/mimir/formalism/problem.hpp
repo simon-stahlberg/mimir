@@ -43,6 +43,7 @@ private:
     Requirements m_requirements;
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
+    PredicateList<Derived> m_problem_and_domain_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
     FlatBitsetBuilder m_static_initial_positive_atoms_builder;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
@@ -61,6 +62,7 @@ private:
                 Requirements requirements,
                 ObjectList objects,
                 PredicateList<Derived> derived_predicates,
+                PredicateList<Derived> problem_and_domain_derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
                 NumericFluentList numeric_fluents,
@@ -87,6 +89,7 @@ public:
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
     const PredicateList<Derived>& get_derived_predicates() const;
+    const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
     FlatBitset get_static_initial_positive_atoms_bitset() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;

@@ -30,7 +30,7 @@ namespace mimir
 {
 
 /**
- * Base implementation recursively calls transform and caches the results.
+ * Base implementation recursively calls prepare, followed by recursively calls transform and caches the results.
  */
 template<typename Derived_>
 class BaseCachedRecurseTransformer : public ITransformer<BaseCachedRecurseTransformer<Derived_>>
@@ -671,6 +671,7 @@ protected:
             this->transform(*problem.get_requirements()),
             this->transform(problem.get_objects()),
             this->transform(problem.get_derived_predicates()),
+            this->transform(problem.get_problem_and_domain_derived_predicates()),
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
             this->transform(problem.get_numeric_fluents()),

@@ -388,6 +388,17 @@ bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(
         }
     }
 
+    for (const auto& literal : action->get_derived_conditions())
+    {
+        if (literal->get_atom()->get_predicate()->get_arity() == 0)
+        {
+            if (!state.literal_holds(m_pddl_factories.ground_derived_literal(literal, {})))
+            {
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 
@@ -409,9 +420,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action,
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Fluent>& assignment_sets,
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                         const AssignmentSet<Derived>& derived_assignment_sets,
                                                          const Action& action,
-                                                         DenseState state,
+                                                         const DenseState state,
                                                          DenseGroundActionList& out_applicable_actions)
 {
     const auto& graphs = m_static_consistency_graphs.at(action);
@@ -419,7 +431,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Flu
 
     for (const auto& vertex : precondition_graph.get_vertices())
     {
-        if (assignment_sets.literal_all_consistent(action->get_fluent_conditions(), vertex))
+        if (fluent_assignment_sets.literal_all_consistent(action->get_fluent_conditions(), vertex)
+            && derived_assignment_sets.literal_all_consistent(action->get_derived_conditions(), vertex))
         {
             auto grounded_action = ground_action(action, { m_pddl_factories.get_object(vertex.get_object_index()) });
 
@@ -437,9 +450,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Flu
     }
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet<Fluent>& assignment_sets,
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                           const AssignmentSet<Derived>& derived_assignment_sets,
                                                            const Action& action,
-                                                           DenseState state,
+                                                           const DenseState state,
                                                            DenseGroundActionList& out_applicable_actions)
 {
     const auto& graphs = m_static_consistency_graphs.at(action);
@@ -452,7 +466,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::general_case(const AssignmentSet<F
     //    and build the consistency graph as an adjacency matrix
     for (const auto& edge : precondition_graph.get_edges())
     {
-        if (assignment_sets.literal_all_consistent(action->get_fluent_conditions(), edge))
+        if (fluent_assignment_sets.literal_all_consistent(action->get_fluent_conditions(), edge)
+            && derived_assignment_sets.literal_all_consistent(action->get_derived_conditions(), edge))
         {
             const auto first_id = edge.get_src().get_id();
             const auto second_id = edge.get_dst().get_id();
@@ -510,10 +525,12 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
 
     // Create the assignment sets that are shared by all action schemas.
 
-    auto ground_atoms = GroundAtomList<Fluent> {};
-    m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_fluent_atoms(), ground_atoms);
-
-    const auto assignment_sets = AssignmentSet<Fluent>(m_problem, m_problem->get_domain()->get_fluent_predicates(), ground_atoms);
+    const auto fluent_assignment_sets = AssignmentSet<Fluent>(m_problem,
+                                                              m_problem->get_domain()->get_fluent_predicates(),
+                                                              m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_fluent_atoms()));
+    const auto derived_assignment_sets = AssignmentSet<Derived>(m_problem,
+                                                                m_problem->get_problem_and_domain_derived_predicates(),
+                                                                m_pddl_factories.get_derived_ground_atoms_from_ids(state.get_derived_atoms()));
 
     // Get the applicable ground actions for each action schema.
 
@@ -527,11 +544,11 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
             }
             else if (action->get_arity() == 1)
             {
-                unary_case(assignment_sets, action, state, out_applicable_actions);
+                unary_case(fluent_assignment_sets, derived_assignment_sets, action, state, out_applicable_actions);
             }
             else
             {
-                general_case(assignment_sets, action, state, out_applicable_actions);
+                general_case(fluent_assignment_sets, derived_assignment_sets, action, state, out_applicable_actions);
             }
         }
     }

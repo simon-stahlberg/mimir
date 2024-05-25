@@ -49,7 +49,7 @@ bool AE<AEDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Ax
         {
             const auto grounded_literal = m_pddl_factories.ground_derived_literal(literal, {});
 
-            if (fluent_state_atoms.get(grounded_literal->get_atom()->get_identifier()) == grounded_literal->is_negated())
+            if (derived_state_atoms.get(grounded_literal->get_atom()->get_identifier()) == grounded_literal->is_negated())
             {
                 return false;
             }
@@ -182,15 +182,14 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
 
     m_event_handler->on_start_generating_applicable_axioms();
 
-    auto derived_predicates = m_problem->get_domain()->get_derived_predicates();
-    const auto& problem_derived_predicates = m_problem->get_derived_predicates();
-    derived_predicates.insert(derived_predicates.end(), problem_derived_predicates.begin(), problem_derived_predicates.end());
-
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_sets = AssignmentSet<Fluent>(m_problem,
                                                               m_problem->get_domain()->get_fluent_predicates(),
                                                               m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms));
-    auto derived_assignment_sets = AssignmentSet<Derived>(m_problem, derived_predicates, GroundAtomList<Derived>());
+
+    auto derived_assignment_sets = AssignmentSet<Derived>(m_problem,
+                                                          m_problem->get_problem_and_domain_derived_predicates(),
+                                                          m_pddl_factories.get_derived_ground_atoms_from_ids(ref_derived_state_atoms));
 
     /* 2. Fixed point computation */
 

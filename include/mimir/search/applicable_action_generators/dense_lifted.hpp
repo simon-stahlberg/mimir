@@ -63,13 +63,21 @@ private:
     std::unordered_map<Action, consistency_graph::Graphs> m_static_consistency_graphs;
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_fluent_preconditions_hold(const Action& action, DenseState state);
+    bool nullary_fluent_preconditions_hold(const Action& action, const DenseState state);
 
-    void nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
+    void nullary_case(const Action& action, const DenseState state, DenseGroundActionList& out_applicable_actions);
 
-    void unary_case(const AssignmentSet<Fluent>& assignment_sets, const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
+    void unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                    const AssignmentSet<Derived>& derived_assignment_sets,
+                    const Action& action,
+                    const DenseState state,
+                    DenseGroundActionList& out_applicable_actions);
 
-    void general_case(const AssignmentSet<Fluent>& assignment_sets, const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions);
+    void general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                      const AssignmentSet<Derived>& derived_assignment_sets,
+                      const Action& action,
+                      const DenseState state,
+                      DenseGroundActionList& out_applicable_actions);
 
     /// @brief Ground the precondition of an action and return a view onto it.
     [[nodiscard]] DenseGroundAction ground_action_precondition(const Action& action, const ObjectList& binding);

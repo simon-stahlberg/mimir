@@ -39,7 +39,8 @@ public:
     virtual ~IGroundedAAGEventHandler() = default;
 
     /// @brief React on finishing delete-free exploration
-    virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_atoms,
+    virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
+                                                   const GroundAtomList<Derived>& reached_derived_atoms,
                                                    const GroundActionList& instantiated_actions,
                                                    const GroundAxiomList& instantiated_axioms) = 0;
 
@@ -63,7 +64,7 @@ public:
  *
  * Collect statistics and call implementation of derived class.
  */
-template<typename Derived>
+template<typename Derived_>
 class GroundedAAGEventHandlerBase : public IGroundedAAGEventHandler
 {
 protected:
@@ -71,22 +72,24 @@ protected:
 
 private:
     GroundedAAGEventHandlerBase() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_atoms,
+    void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
+                                           const GroundAtomList<Derived>& reached_derived_atoms,
                                            const GroundActionList& instantiated_actions,
                                            const GroundAxiomList& instantiated_axioms) override
     {  //
-        m_statistics.set_num_delete_free_reachable_ground_atoms(reached_atoms.size());
+        m_statistics.set_num_delete_free_reachable_fluent_ground_atoms(reached_fluent_atoms.size());
+        m_statistics.set_num_delete_free_reachable_derived_ground_atoms(reached_derived_atoms.size());
         m_statistics.set_num_delete_free_actions(instantiated_actions.size());
         m_statistics.set_num_delete_free_axioms(instantiated_axioms.size());
 
-        self().on_finish_delete_free_exploration_impl(reached_atoms, instantiated_actions, instantiated_axioms);
+        self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions, instantiated_axioms);
     }
 
     void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) override

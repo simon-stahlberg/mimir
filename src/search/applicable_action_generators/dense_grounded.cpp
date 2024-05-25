@@ -37,34 +37,30 @@ namespace mimir
 /// The basic idea is that those can be potential mutex variables and grouping them together
 /// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
 /// We also consider larger groups first since such mutex variables would result in a very large linear split.
-/// @param atoms
-/// @param pddl_factories
-/// @return
-static std::vector<size_t> compute_ground_atom_order(const FlatBitsetBuilder& atoms, const PDDLFactories& pddl_factories)
+template<PredicateCategory P>
+static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLFactories& pddl_factories)
 {
     auto ground_atoms_order = std::vector<size_t> {};
-    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<Fluent>, GroundAtomList<Fluent>> {};
-    for (const auto& ground_atom : pddl_factories.get_fluent_ground_atoms_from_ids(atoms))
+    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<P>, GroundAtomList<P>> {};
+    for (const auto& ground_atom : atoms)
     {
         m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
     }
-    auto ground_atoms = GroundAtomList<Fluent> {};
+    auto ground_atoms = GroundAtomList<P> {};
     // Sort group decreasingly in their size.
-    auto sorted_groups = std::vector<GroundAtomList<Fluent>> {};
+    auto sorted_groups = std::vector<GroundAtomList<P>> {};
     for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
     {
         sorted_groups.push_back(group);
     }
     std::sort(sorted_groups.begin(),
               sorted_groups.end(),
-              [](const GroundAtomList<Fluent>& left, const GroundAtomList<Fluent>& right) { return left.size() > right.size(); });
+              [](const GroundAtomList<P>& left, const GroundAtomList<P>& right) { return left.size() > right.size(); });
     for (const auto& group : sorted_groups)
     {
         // Sort grounded atoms in the group lexicographically to get compiler independent results.
         auto sorted_group = group;
-        std::sort(sorted_group.begin(),
-                  sorted_group.end(),
-                  [](const GroundAtom<Fluent>& left, const GroundAtom<Fluent>& right) { return left->str() < right->str(); });
+        std::sort(sorted_group.begin(), sorted_group.end(), [](const GroundAtom<P>& left, const GroundAtom<P>& right) { return left->str() < right->str(); });
         for (const auto& grounded_atom : sorted_group)
 
         {
@@ -93,10 +89,10 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // TODO: create a constructor that takes all arguments in 1 go.
     auto state_builder = StateBuilder();
-    auto& fluent_state_bitset = state_builder.get_fluent_atoms();
-    auto& derived_state_bitset = state_builder.get_derived_atoms();
+    auto& fluent_state_atoms = state_builder.get_fluent_atoms();
+    auto& derived_state_atoms = state_builder.get_derived_atoms();
     auto& state_problem = state_builder.get_problem();
-    fluent_state_bitset = delete_free_ssg.get_or_create_initial_state().get_fluent_atoms();
+    fluent_state_atoms = delete_free_ssg.get_or_create_initial_state().get_fluent_atoms();
     state_problem = delete_free_problem;
 
     // Keep track of changes
@@ -110,7 +106,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         state_builder.get_flatmemory_builder().finish();
         const auto state = DenseState(FlatDenseState(state_builder.get_flatmemory_builder().buffer().data()));
 
-        auto num_atoms_before = fluent_state_bitset.count();
+        auto num_atoms_before = fluent_state_atoms.count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
@@ -120,14 +116,14 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
             for (const auto atom_id : succ_state.get_fluent_atoms())
             {
-                fluent_state_bitset.set(atom_id);
+                fluent_state_atoms.set(atom_id);
             }
         }
 
         // Create and all applicable axioms and apply them
-        delete_free_lifted_aag->generate_and_apply_axioms(fluent_state_bitset, derived_state_bitset);
+        delete_free_lifted_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
 
-        auto num_atoms_after = fluent_state_bitset.count();
+        auto num_atoms_after = fluent_state_atoms.count();
 
         if (num_atoms_before != num_atoms_after)
         {
@@ -136,11 +132,13 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_bitset),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms),
+                                                       m_pddl_factories.get_derived_ground_atoms_from_ids(derived_state_atoms),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
-    auto ground_atoms_order = compute_ground_atom_order(fluent_state_bitset, m_pddl_factories);
+    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms), m_pddl_factories);
+    auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_derived_ground_atoms_from_ids(derived_state_atoms), m_pddl_factories);
 
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
@@ -161,7 +159,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
-    m_action_match_tree = MatchTree(ground_actions, ground_atoms_order);
+    m_action_match_tree = MatchTree(ground_actions, fluent_ground_atoms_order, derived_ground_atoms_order);
 
     m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
 
@@ -184,7 +182,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // 3. Build match tree
-    m_axiom_match_tree = MatchTree(ground_axioms, ground_atoms_order);
+    m_axiom_match_tree = MatchTree(ground_axioms, fluent_ground_atoms_order, derived_ground_atoms_order);
 
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
@@ -193,14 +191,12 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
 {
     out_applicable_actions.clear();
 
-    m_action_match_tree.get_applicable_elements(state.get_fluent_atoms(), out_applicable_actions);
+    m_action_match_tree.get_applicable_elements(state.get_fluent_atoms(), state.get_derived_atoms(), out_applicable_actions);
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms,
                                                                                FlatBitsetBuilder& ref_derived_state_atoms)
 {
-    auto tmp_builder = FlatBitsetBuilder();
-
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {
         bool reached_partition_fixed_point;
@@ -212,10 +208,10 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(c
             /* Compute applicable axioms. */
 
             auto applicable_axioms = GroundAxiomList {};
-            tmp_builder |= ref_derived_state_atoms;
-            tmp_builder.finish();
-            auto state_bitset = FlatBitset(tmp_builder.buffer().data());
-            m_axiom_match_tree.get_applicable_elements(state_bitset, applicable_axioms);
+
+            // TODO: For axioms, the same fluent branch is taken all the time.
+            // Exploit this!
+            m_axiom_match_tree.get_applicable_elements(fluent_state_atoms, ref_derived_state_atoms, applicable_axioms);
 
             /* Apply applicable axioms */
 
