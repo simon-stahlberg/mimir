@@ -49,6 +49,63 @@ struct FlatSimpleEffect
     }
 };
 
+using FlatDenseStripsActionPartLayout = flatmemory::Tuple<FlatBitsetLayout,   // static positive conditions
+                                                          FlatBitsetLayout,   // static negative conditions
+                                                          FlatBitsetLayout,   // fluent positive conditions
+                                                          FlatBitsetLayout,   // fluent negative conditions
+                                                          FlatBitsetLayout,   // add effects
+                                                          FlatBitsetLayout>;  // delete effects
+using FlatDenseStripsActionPartBuilder = flatmemory::Builder<FlatDenseStripsActionPartLayout>;
+using FlatDenseStripsActionPart = flatmemory::ConstView<FlatDenseStripsActionPartLayout>;
+
+using FlatDenseConditionalEffectsLayout = flatmemory::Vector<flatmemory::Tuple<FlatBitsetLayout,    // static positive conditions
+                                                                               FlatBitsetLayout,    // static negative conditions
+                                                                               FlatBitsetLayout,    // fluent positive conditions
+                                                                               FlatBitsetLayout,    // fluent negative conditions
+                                                                               FlatSimpleEffect>>;  // simple add or delete effect
+using FlatDenseConditionalEffectsBuilder = flatmemory::Builder<FlatDenseConditionalEffectsLayout>;
+using FlatDenseConditionalEffects = flatmemory::ConstView<FlatDenseConditionalEffectsLayout>;
+
+/**
+ * Implementation class
+ */
+class DenseStripsActionPartBuilder
+{
+private:
+    FlatDenseStripsActionPartBuilder m_builder;
+
+public:
+    [[nodiscard]] FlatDenseStripsActionPartBuilder& get_flatmemory_builder_impl() { return m_builder; }
+    [[nodiscard]] const FlatDenseStripsActionPartBuilder& get_flatmemory_builder_impl() const { return m_builder; }
+
+    /* Precondition */
+    [[nodiscard]] FlatBitsetBuilder& get_positive_precondition() { return m_builder.get<0>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_precondition() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_positive_static_precondition() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_static_precondition() { return m_builder.get<3>(); }
+    /* Simple effects */
+    [[nodiscard]] FlatBitsetBuilder& get_positive_effect() { return m_builder.get<4>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_effect() { return m_builder.get<5>(); }
+};
+
+class DenseStripsActionPart
+{
+private:
+    FlatDenseStripsActionPart m_view;
+
+public:
+    explicit DenseStripsActionPart(FlatDenseStripsActionPart view) : m_view(view) {}
+
+    /* Precondition */
+    [[nodiscard]] FlatBitset get_positive_precondition() const { return m_view.get<0>(); }
+    [[nodiscard]] FlatBitset get_negative_precondition() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatBitset get_positive_static_precondition() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatBitset get_negative_static_precondition() const { return m_view.get<3>(); }
+    /* Simple effects */
+    [[nodiscard]] FlatBitset get_positive_effect() const { return m_view.get<4>(); }
+    [[nodiscard]] FlatBitset get_negative_effect() const { return m_view.get<5>(); }
+};
+
 using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
 using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
 using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
@@ -122,6 +179,8 @@ private:
     [[nodiscard]] FlatObjectListBuilder& get_objects_impl() { return m_builder.get<3>(); }
 
 public:
+    /* STRIPS part */
+    // [[nodiscard]] FlatDenseStripsActionPartBuilder& get_strips_part() { return m_builder.get<4>(); }
     /* Precondition */
     [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
     [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }

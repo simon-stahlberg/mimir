@@ -36,14 +36,19 @@ using TermFactory = loki::PDDLFactory<TermImpl>;
 using ObjectFactory = loki::PDDLFactory<ObjectImpl>;
 using StaticAtomFactory = loki::PDDLFactory<AtomImpl<Static>>;
 using FluentAtomFactory = loki::PDDLFactory<AtomImpl<Fluent>>;
+using DerivedAtomFactory = loki::PDDLFactory<AtomImpl<Derived>>;
 using StaticGroundAtomFactory = loki::PDDLFactory<GroundAtomImpl<Static>>;
 using FluentGroundAtomFactory = loki::PDDLFactory<GroundAtomImpl<Fluent>>;
+using DerivedGroundAtomFactory = loki::PDDLFactory<GroundAtomImpl<Derived>>;
 using StaticLiteralFactory = loki::PDDLFactory<LiteralImpl<Static>>;
 using FluentLiteralFactory = loki::PDDLFactory<LiteralImpl<Fluent>>;
+using DerivedLiteralFactory = loki::PDDLFactory<LiteralImpl<Derived>>;
 using StaticGroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl<Static>>;
 using FluentGroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl<Fluent>>;
+using DerivedGroundLiteralFactory = loki::PDDLFactory<GroundLiteralImpl<Derived>>;
 using StaticPredicateFactory = loki::PDDLFactory<PredicateImpl<Static>>;
 using FluentPredicateFactory = loki::PDDLFactory<PredicateImpl<Fluent>>;
+using DerivedPredicateFactory = loki::PDDLFactory<PredicateImpl<Derived>>;
 using FunctionExpressionFactory = loki::PDDLFactory<FunctionExpressionImpl>;
 using GroundFunctionExpressionFactory = loki::PDDLFactory<GroundFunctionExpressionImpl>;
 using FunctionFactory = loki::PDDLFactory<FunctionImpl>;
@@ -69,14 +74,19 @@ private:
     ObjectFactory objects;
     StaticAtomFactory static_atoms;
     FluentAtomFactory fluent_atoms;
+    DerivedAtomFactory derived_atoms;
     StaticGroundAtomFactory static_ground_atoms;
     FluentGroundAtomFactory fluent_ground_atoms;
+    DerivedGroundAtomFactory derived_ground_atoms;
     StaticLiteralFactory static_literals;
     FluentLiteralFactory fluent_literals;
+    DerivedLiteralFactory derived_literals;
     StaticGroundLiteralFactory static_ground_literals;
     FluentGroundLiteralFactory fluent_ground_literals;
+    DerivedGroundLiteralFactory derived_ground_literals;
     StaticPredicateFactory static_predicates;
     FluentPredicateFactory fluent_predicates;
+    DerivedPredicateFactory derived_predicates;
     FunctionExpressionFactory function_expressions;
     GroundFunctionExpressionFactory ground_function_expressions;
     FunctionFactory functions;
@@ -144,14 +154,19 @@ public:
         objects(ObjectFactory(1000)),
         static_atoms(StaticAtomFactory(1000)),
         fluent_atoms(FluentAtomFactory(1000)),
+        derived_atoms(DerivedAtomFactory(1000)),
         static_ground_atoms(StaticGroundAtomFactory(1000)),
         fluent_ground_atoms(FluentGroundAtomFactory(1000)),
+        derived_ground_atoms(DerivedGroundAtomFactory(1000)),
         static_literals(StaticLiteralFactory(1000)),
         fluent_literals(FluentLiteralFactory(1000)),
+        derived_literals(DerivedLiteralFactory(1000)),
         static_ground_literals(StaticGroundLiteralFactory(1000)),
         fluent_ground_literals(FluentGroundLiteralFactory(1000)),
+        derived_ground_literals(DerivedGroundLiteralFactory(1000)),
         static_predicates(StaticPredicateFactory(1000)),
         fluent_predicates(FluentPredicateFactory(1000)),
+        derived_predicates(DerivedPredicateFactory(1000)),
         function_expressions(FunctionExpressionFactory(1000)),
         ground_function_expressions(GroundFunctionExpressionFactory(1000)),
         functions(FunctionFactory(1000)),
@@ -214,6 +229,10 @@ public:
     {
         return fluent_atoms.get_or_create<AtomImpl<Fluent>>(std::move(predicate), std::move(terms));
     }
+    Atom<Derived> get_or_create_atom(Predicate<Derived> predicate, TermList terms)
+    {
+        return derived_atoms.get_or_create<AtomImpl<Derived>>(std::move(predicate), std::move(terms));
+    }
 
     GroundAtom<Static> get_or_create_ground_atom(Predicate<Static> predicate, ObjectList objects)
     {
@@ -222,6 +241,10 @@ public:
     GroundAtom<Fluent> get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList objects)
     {
         return fluent_ground_atoms.get_or_create<GroundAtomImpl<Fluent>>(std::move(predicate), std::move(objects));
+    }
+    GroundAtom<Derived> get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList objects)
+    {
+        return derived_ground_atoms.get_or_create<GroundAtomImpl<Derived>>(std::move(predicate), std::move(objects));
     }
 
     Literal<Static> get_or_create_static_literal(bool is_negated, Atom<Static> atom)
@@ -232,6 +255,10 @@ public:
     {
         return fluent_literals.get_or_create<LiteralImpl<Fluent>>(is_negated, std::move(atom));
     }
+    Literal<Derived> get_or_create_literal(bool is_negated, Atom<Derived> atom)
+    {
+        return derived_literals.get_or_create<LiteralImpl<Derived>>(is_negated, std::move(atom));
+    }
 
     GroundLiteral<Static> get_or_create_ground_literal(bool is_negated, GroundAtom<Static> atom)
     {
@@ -241,6 +268,10 @@ public:
     {
         return fluent_ground_literals.get_or_create<GroundLiteralImpl<Fluent>>(is_negated, std::move(atom));
     }
+    GroundLiteral<Derived> get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom)
+    {
+        return derived_ground_literals.get_or_create<GroundLiteralImpl<Derived>>(is_negated, std::move(atom));
+    }
 
     Predicate<Static> get_or_create_static_predicate(std::string name, VariableList parameters)
     {
@@ -249,6 +280,10 @@ public:
     Predicate<Fluent> get_or_create_fluent_predicate(std::string name, VariableList parameters)
     {
         return fluent_predicates.get_or_create<PredicateImpl<Fluent>>(name, std::move(parameters));
+    }
+    Predicate<Derived> get_or_create_derived_predicate(std::string name, VariableList parameters)
+    {
+        return derived_predicates.get_or_create<PredicateImpl<Derived>>(name, std::move(parameters));
     }
 
     /// @brief Get or create a number function expression for the given parameters.

@@ -91,10 +91,10 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
     auto positive_conditional_fluent_preconditions = std::vector<GroundAtomList<Fluent>> {};
     auto negative_conditional_fluent_preconditions = std::vector<GroundAtomList<Fluent>> {};
 
-    pddl_factories.get_fluent_ground_atoms_from_ids(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_factories.get_fluent_ground_atoms_from_ids(negative_fluent_precondition_bitset, negative_fluent_precondition);
     pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
     pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_fluent_precondition_bitset, negative_fluent_precondition);
     pddl_factories.get_fluent_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
     pddl_factories.get_fluent_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
 
