@@ -58,6 +58,81 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, co
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseStripsActionPrecondition, const PDDLFactories&>& data)
+{
+    const auto [strips_precondition_proxy, pddl_factories] = data;
+
+    const auto positive_static_precondition_bitset = strips_precondition_proxy.get_positive_static_precondition();
+    const auto negative_static_precondition_bitset = strips_precondition_proxy.get_negative_static_precondition();
+    const auto positive_fluent_precondition_bitset = strips_precondition_proxy.get_positive_fluent_precondition();
+    const auto negative_fluent_precondition_bitset = strips_precondition_proxy.get_negative_fluent_precondition();
+
+    auto positive_static_precondition = GroundAtomList<Static> {};
+    auto negative_static_precondition = GroundAtomList<Static> {};
+    auto positive_fluent_precondition = GroundAtomList<Fluent> {};
+    auto negative_fluent_precondition = GroundAtomList<Fluent> {};
+
+    pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_fluent_precondition_bitset, negative_fluent_precondition);
+
+    os << "positive static precondition=" << positive_static_precondition << ", "
+       << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", "
+       << "negative fluent precondition=" << negative_fluent_precondition;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseStripsActionEffect, const PDDLFactories&>& data)
+{
+    const auto [strips_effect_proxy, pddl_factories] = data;
+
+    const auto positive_effect_bitset = strips_effect_proxy.get_positive_effects();
+    const auto negative_effect_bitset = strips_effect_proxy.get_negative_effects();
+
+    auto positive_simple_effects = GroundAtomList<Fluent> {};
+    auto negative_simple_effects = GroundAtomList<Fluent> {};
+
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
+
+    os << "delete effects=" << negative_simple_effects << ", "
+       << "add effects=" << positive_simple_effects;
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::tuple<DenseConditionalEffect, const PDDLFactories&>& data)
+{
+    const auto [cond_effect_proxy, pddl_factories] = data;
+
+    const auto positive_static_precondition_bitset = cond_effect_proxy.get_positive_static_precondition();
+    const auto negative_static_precondition_bitset = cond_effect_proxy.get_negative_static_precondition();
+    const auto positive_fluent_precondition_bitset = cond_effect_proxy.get_positive_fluent_precondition();
+    const auto negative_fluent_precondition_bitset = cond_effect_proxy.get_negative_fluent_precondition();
+    const auto& simple_effect = cond_effect_proxy.get_simple_effect();
+
+    auto positive_static_precondition = GroundAtomList<Static> {};
+    auto negative_static_precondition = GroundAtomList<Static> {};
+    auto positive_fluent_precondition = GroundAtomList<Fluent> {};
+    auto negative_fluent_precondition = GroundAtomList<Fluent> {};
+
+    pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_factories.get_fluent_ground_atoms_from_ids(negative_fluent_precondition_bitset, negative_fluent_precondition);
+
+    os << "positive static precondition=" << positive_static_precondition << ", "
+       << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", "
+       << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_factories));
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, const PDDLFactories&>& data)
 {
     const auto [action, pddl_factories] = data;
@@ -68,67 +143,21 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, c
         binding.push_back(object);
     }
 
-    auto positive_static_precondition_bitset = action.get_applicability_positive_static_precondition_bitset();
-    auto negative_static_precondition_bitset = action.get_applicability_negative_static_precondition_bitset();
-    auto positive_fluent_precondition_bitset = action.get_applicability_positive_precondition_bitset();
-    auto negative_fluent_precondition_bitset = action.get_applicability_negative_precondition_bitset();
-    auto positive_effect_bitset = action.get_unconditional_positive_effect_bitset();
-    auto negative_effect_bitset = action.get_unconditional_negative_effect_bitset();
-    auto positive_conditional_fluent_condition_bitsets = action.get_conditional_positive_precondition_bitsets();
-    auto negative_conditional_fluent_condition_bitsets = action.get_conditional_negative_precondition_bitsets();
-    auto positive_conditional_static_condition_bitsets = action.get_conditional_positive_static_precondition_bitsets();
-    auto negative_conditional_static_condition_bitsets = action.get_conditional_negative_static_precondition_bitsets();
-    auto conditional_effects = action.get_conditional_effects();
+    auto strips_precondition = DenseStripsActionPrecondition(action.get_strips_precondition());
+    auto strips_effect = DenseStripsActionEffect(action.get_strips_effect());
+    auto cond_effects = action.get_conditional_effects();
 
-    auto positive_static_precondition = GroundAtomList<Static> {};
-    auto negative_static_precondition = GroundAtomList<Static> {};
-    auto positive_fluent_precondition = GroundAtomList<Fluent> {};
-    auto negative_fluent_precondition = GroundAtomList<Fluent> {};
-    auto positive_simple_effects = GroundAtomList<Fluent> {};
-    auto negative_simple_effects = GroundAtomList<Fluent> {};
-    auto positive_conditional_static_preconditions = std::vector<GroundAtomList<Static>> {};
-    auto negative_conditional_static_preconditions = std::vector<GroundAtomList<Static>> {};
-    auto positive_conditional_fluent_preconditions = std::vector<GroundAtomList<Fluent>> {};
-    auto negative_conditional_fluent_preconditions = std::vector<GroundAtomList<Fluent>> {};
-
-    pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_fluent_ground_atoms_from_ids(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_factories.get_fluent_ground_atoms_from_ids(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_factories.get_fluent_ground_atoms_from_ids(positive_effect_bitset, positive_simple_effects);
-    pddl_factories.get_fluent_ground_atoms_from_ids(negative_effect_bitset, negative_simple_effects);
-
-    const auto num_conditional_effects = action.get_conditional_effects().size();
-    positive_conditional_static_preconditions.resize(num_conditional_effects);
-    negative_conditional_static_preconditions.resize(num_conditional_effects);
-    positive_conditional_fluent_preconditions.resize(num_conditional_effects);
-    negative_conditional_fluent_preconditions.resize(num_conditional_effects);
-    for (size_t i = 0; i < num_conditional_effects; ++i)
-    {
-        pddl_factories.get_static_ground_atoms_from_ids(positive_conditional_static_condition_bitsets[i], positive_conditional_static_preconditions[i]);
-        pddl_factories.get_static_ground_atoms_from_ids(negative_conditional_static_condition_bitsets[i], negative_conditional_static_preconditions[i]);
-        pddl_factories.get_fluent_ground_atoms_from_ids(positive_conditional_fluent_condition_bitsets[i], positive_conditional_fluent_preconditions[i]);
-        pddl_factories.get_fluent_ground_atoms_from_ids(negative_conditional_fluent_condition_bitsets[i], negative_conditional_fluent_preconditions[i]);
-    }
-
-    os << "Action("
-       << "id=" << action.get_id() << ", "
-       << "name=" << action.get_action()->get_name() << ", "
-       << "binding=" << binding << ", "
-       << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "simple_delete=" << negative_simple_effects << ", "
-       << "simple_add=" << positive_simple_effects << ", "
+    os << "Action("                                                                //
+       << "id=" << action.get_id() << ", "                                         //
+       << "name=" << action.get_action()->get_name() << ", "                       //
+       << "binding=" << binding << ", "                                            //
+       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "  //
+       << std::make_tuple(strips_effect, std::cref(pddl_factories))                //
+       << ", "
        << "conditional_effects=[";
-    for (size_t i = 0; i < num_conditional_effects; ++i)
+    for (const auto& cond_effect : cond_effects)
     {
-        os << "[positive static precondition=" << positive_conditional_static_preconditions[i] << ", "
-           << "negative static precondition=" << negative_conditional_static_preconditions[i] << ", "
-           << "positive fluent precondition=" << positive_conditional_fluent_preconditions[i] << ", "
-           << "negative fluent precondition=" << negative_conditional_fluent_preconditions[i] << ", "
-           << "effect=" << std::make_tuple(conditional_effects[i], std::cref(pddl_factories)) << "], ";
+        os << "[" << std::make_tuple(DenseConditionalEffect(cond_effect), std::cref(pddl_factories)) << "], ";
     }
     os << "])";
 

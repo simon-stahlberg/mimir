@@ -136,8 +136,8 @@ MatchTree<T>::MatchTree::build_recursively(const size_t order_pos, const std::ve
     auto dontcare_elements = std::vector<T> {};
     for (const auto& element : elements)
     {
-        const bool positive_condition = element.get_applicability_positive_precondition_bitset().get(atom_id);
-        const bool negative_condition = element.get_applicability_negative_precondition_bitset().get(atom_id);
+        const bool positive_condition = DenseStripsActionPrecondition(element.get_strips_precondition()).get_positive_fluent_precondition().get(atom_id);
+        const bool negative_condition = DenseStripsActionPrecondition(element.get_strips_precondition()).get_negative_fluent_precondition().get(atom_id);
 
         if (positive_condition && negative_condition)
         {

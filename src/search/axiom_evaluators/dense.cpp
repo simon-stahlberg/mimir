@@ -385,15 +385,16 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     }
 
     /* Precondition */
-    auto& positive_precondition = m_axiom_builder.get_applicability_positive_precondition_bitset();
-    auto& negative_precondition = m_axiom_builder.get_applicability_negative_precondition_bitset();
+    auto strips_precondition_proxy = DenseStripsActionPreconditionBuilderProxy(m_axiom_builder.get_strips_precondition());
+    auto& positive_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
+    auto& negative_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
+    auto& positive_static_precondition = strips_precondition_proxy.get_positive_static_precondition();
+    auto& negative_static_precondition = strips_precondition_proxy.get_negative_static_precondition();
     positive_precondition.unset_all();
     negative_precondition.unset_all();
-    fill_fluent_bitsets(axiom->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
-    auto& positive_static_precondition = m_axiom_builder.get_applicability_positive_static_precondition_bitset();
-    auto& negative_static_precondition = m_axiom_builder.get_applicability_negative_static_precondition_bitset();
     positive_static_precondition.unset_all();
     negative_static_precondition.unset_all();
+    fill_fluent_bitsets(axiom->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
     fill_static_bitsets(axiom->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
 
     /* Effect */

@@ -49,82 +49,41 @@ struct FlatSimpleEffect
     }
 };
 
-using FlatDenseStripsActionPartLayout = flatmemory::Tuple<FlatBitsetLayout,   // static positive conditions
-                                                          FlatBitsetLayout,   // static negative conditions
-                                                          FlatBitsetLayout,   // fluent positive conditions
-                                                          FlatBitsetLayout,   // fluent negative conditions
-                                                          FlatBitsetLayout,   // add effects
-                                                          FlatBitsetLayout>;  // delete effects
-using FlatDenseStripsActionPartBuilder = flatmemory::Builder<FlatDenseStripsActionPartLayout>;
-using FlatDenseStripsActionPart = flatmemory::ConstView<FlatDenseStripsActionPartLayout>;
+using FlatDenseStripsActionPreconditionLayout = flatmemory::Tuple<FlatBitsetLayout,   // static positive conditions
+                                                                  FlatBitsetLayout,   // static negative conditions
+                                                                  FlatBitsetLayout,   // fluent positive conditions
+                                                                  FlatBitsetLayout>;  // fluent negative conditions
+using FlatDenseStripsActionPreconditionBuilder = flatmemory::Builder<FlatDenseStripsActionPreconditionLayout>;
+using FlatDenseStripsActionPrecondition = flatmemory::ConstView<FlatDenseStripsActionPreconditionLayout>;
 
-using FlatDenseConditionalEffectsLayout = flatmemory::Vector<flatmemory::Tuple<FlatBitsetLayout,    // static positive conditions
-                                                                               FlatBitsetLayout,    // static negative conditions
-                                                                               FlatBitsetLayout,    // fluent positive conditions
-                                                                               FlatBitsetLayout,    // fluent negative conditions
-                                                                               FlatSimpleEffect>>;  // simple add or delete effect
+using FlatDenseStripsActionEffectLayout = flatmemory::Tuple<FlatBitsetLayout,   // add effects
+                                                            FlatBitsetLayout>;  // delete effects
+using FlatDenseStripsActionEffectBuilder = flatmemory::Builder<FlatDenseStripsActionEffectLayout>;
+using FlatDenseStripsActionEffect = flatmemory::ConstView<FlatDenseStripsActionEffectLayout>;
+
+using FlatDenseConditionalEffectLayout = flatmemory::Tuple<FlatBitsetLayout,   // static positive conditions
+                                                           FlatBitsetLayout,   // static negative conditions
+                                                           FlatBitsetLayout,   // fluent positive conditions
+                                                           FlatBitsetLayout,   // fluent negative conditions
+                                                           FlatSimpleEffect>;  // simple add or delete effect
+using FlatDenseConditionalEffectBuilder = flatmemory::Builder<FlatDenseConditionalEffectLayout>;
+using FlatDenseConditionalEffect = flatmemory::ConstView<FlatDenseConditionalEffectLayout>;
+
+using FlatDenseConditionalEffectsLayout = flatmemory::Vector<FlatDenseConditionalEffectLayout>;  // simple add or delete effect
 using FlatDenseConditionalEffectsBuilder = flatmemory::Builder<FlatDenseConditionalEffectsLayout>;
 using FlatDenseConditionalEffects = flatmemory::ConstView<FlatDenseConditionalEffectsLayout>;
-
-/**
- * Implementation class
- */
-class DenseStripsActionPartBuilder
-{
-private:
-    FlatDenseStripsActionPartBuilder m_builder;
-
-public:
-    [[nodiscard]] FlatDenseStripsActionPartBuilder& get_flatmemory_builder_impl() { return m_builder; }
-    [[nodiscard]] const FlatDenseStripsActionPartBuilder& get_flatmemory_builder_impl() const { return m_builder; }
-
-    /* Precondition */
-    [[nodiscard]] FlatBitsetBuilder& get_positive_precondition() { return m_builder.get<0>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_negative_precondition() { return m_builder.get<1>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_positive_static_precondition() { return m_builder.get<2>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_negative_static_precondition() { return m_builder.get<3>(); }
-    /* Simple effects */
-    [[nodiscard]] FlatBitsetBuilder& get_positive_effect() { return m_builder.get<4>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_negative_effect() { return m_builder.get<5>(); }
-};
-
-class DenseStripsActionPart
-{
-private:
-    FlatDenseStripsActionPart m_view;
-
-public:
-    explicit DenseStripsActionPart(FlatDenseStripsActionPart view) : m_view(view) {}
-
-    /* Precondition */
-    [[nodiscard]] FlatBitset get_positive_precondition() const { return m_view.get<0>(); }
-    [[nodiscard]] FlatBitset get_negative_precondition() const { return m_view.get<1>(); }
-    [[nodiscard]] FlatBitset get_positive_static_precondition() const { return m_view.get<2>(); }
-    [[nodiscard]] FlatBitset get_negative_static_precondition() const { return m_view.get<3>(); }
-    /* Simple effects */
-    [[nodiscard]] FlatBitset get_positive_effect() const { return m_view.get<4>(); }
-    [[nodiscard]] FlatBitset get_negative_effect() const { return m_view.get<5>(); }
-};
 
 using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
 using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
 using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
 
-using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,
+using FlatDenseActionLayout = flatmemory::Tuple<uint32_t,  //
                                                 int32_t,
                                                 Action,
                                                 FlatObjectListLayout,
-                                                FlatBitsetLayout,
-                                                FlatBitsetLayout,
-                                                FlatBitsetLayout,
-                                                FlatBitsetLayout,
-                                                FlatBitsetLayout,
-                                                FlatBitsetLayout,
-                                                FlatBitsetVectorLayout,
-                                                FlatBitsetVectorLayout,
-                                                FlatBitsetVectorLayout,
-                                                FlatBitsetVectorLayout,
-                                                FlatSimpleEffectVectorLayout>;
+                                                FlatDenseStripsActionPreconditionLayout,
+                                                FlatDenseStripsActionEffectLayout,
+                                                FlatDenseConditionalEffectsLayout>;
 using FlatDenseActionBuilder = flatmemory::Builder<FlatDenseActionLayout>;
 using FlatDenseAction = flatmemory::ConstView<FlatDenseActionLayout>;
 using FlatDenseActionVector = flatmemory::VariableSizedTypeVector<FlatDenseActionLayout>;
@@ -156,6 +115,133 @@ using FlatDenseActionSet = flatmemory::UnorderedSet<FlatDenseActionLayout, FlatD
 /**
  * Implementation class
  */
+
+class DenseStripsActionPreconditionBuilderProxy
+{
+private:
+    FlatDenseStripsActionPreconditionBuilder& m_builder;
+
+public:
+    explicit DenseStripsActionPreconditionBuilderProxy(FlatDenseStripsActionPreconditionBuilder& builder) : m_builder(builder) {}
+
+    /* Precondition */
+    [[nodiscard]] FlatBitsetBuilder& get_positive_fluent_precondition() { return m_builder.get<0>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_fluent_precondition() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_positive_static_precondition() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_static_precondition() { return m_builder.get<3>(); }
+};
+
+class DenseStripsActionPrecondition
+{
+private:
+    FlatDenseStripsActionPrecondition m_view;
+
+public:
+    explicit DenseStripsActionPrecondition(FlatDenseStripsActionPrecondition view) : m_view(view) {}
+
+    /* Precondition */
+    [[nodiscard]] FlatBitset get_positive_fluent_precondition() const { return m_view.get<0>(); }
+    [[nodiscard]] FlatBitset get_negative_fluent_precondition() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatBitset get_positive_static_precondition() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatBitset get_negative_static_precondition() const { return m_view.get<3>(); }
+
+    [[nodiscard]] bool is_applicable(DenseState state) const
+    {
+        const auto state_bitset = state.get_atoms_bitset();
+        const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
+
+        return state_bitset.is_superseteq(get_positive_fluent_precondition())             //
+               && state_bitset.are_disjoint(get_negative_fluent_precondition())           //
+               && initial_static_atoms.is_superseteq(get_positive_static_precondition())  //
+               && initial_static_atoms.are_disjoint(get_negative_static_precondition());
+    }
+
+    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
+    [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset) const
+    {
+        return state_bitset.is_superseteq(get_positive_fluent_precondition())               //
+               && state_bitset.are_disjoint(get_negative_fluent_precondition())             //
+               && static_positive_bitset.is_superseteq(get_positive_static_precondition())  //
+               && static_positive_bitset.are_disjoint(get_negative_static_precondition());
+    }
+
+    template<flatmemory::IsBitset Bitset>
+    [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
+    {
+        return static_positive_bitset.is_superseteq(get_positive_static_precondition())
+               && static_positive_bitset.are_disjoint(get_negative_static_precondition());
+    }
+};
+
+class DenseStripsActionEffectBuilderProxy
+{
+private:
+    FlatDenseStripsActionEffectBuilder& m_builder;
+
+public:
+    explicit DenseStripsActionEffectBuilderProxy(FlatDenseStripsActionEffectBuilder& builder) : m_builder(builder) {}
+
+    [[nodiscard]] FlatBitsetBuilder& get_positive_effects() { return m_builder.get<0>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_effects() { return m_builder.get<1>(); }
+};
+
+class DenseStripsActionEffect
+{
+private:
+    FlatDenseStripsActionEffect m_view;
+
+public:
+    explicit DenseStripsActionEffect(FlatDenseStripsActionEffect view) : m_view(view) {}
+
+    [[nodiscard]] FlatBitset get_positive_effects() const { return m_view.get<0>(); }
+    [[nodiscard]] FlatBitset get_negative_effects() const { return m_view.get<1>(); }
+};
+
+class DenseConditionalEffectBuilderProxy
+{
+private:
+    FlatDenseConditionalEffectBuilder& m_builder;
+
+public:
+    explicit DenseConditionalEffectBuilderProxy(FlatDenseConditionalEffectBuilder& builder) : m_builder(builder) {}
+
+    /* Precondition */
+    [[nodiscard]] FlatBitsetBuilder& get_positive_fluent_precondition() { return m_builder.get<0>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_fluent_precondition() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_positive_static_precondition() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_negative_static_precondition() { return m_builder.get<3>(); }
+    /* Simple effects */
+    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<4>(); }
+};
+
+class DenseConditionalEffect
+{
+private:
+    FlatDenseConditionalEffect m_view;
+
+public:
+    explicit DenseConditionalEffect(FlatDenseConditionalEffect view) : m_view(view) {}
+
+    /* Precondition */
+    [[nodiscard]] FlatBitset get_positive_fluent_precondition() const { return m_view.get<0>(); }
+    [[nodiscard]] FlatBitset get_negative_fluent_precondition() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatBitset get_positive_static_precondition() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatBitset get_negative_static_precondition() const { return m_view.get<3>(); }
+    /* Simple effects */
+    [[nodiscard]] const FlatSimpleEffect& get_simple_effect() const { return m_view.get<4>(); }
+
+    [[nodiscard]] bool is_applicable(DenseState state) const
+    {
+        const auto state_bitset = state.get_atoms_bitset();
+        const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
+
+        return state_bitset.is_superseteq(get_positive_fluent_precondition())             //
+               && state_bitset.are_disjoint(get_negative_fluent_precondition())           //
+               && initial_static_atoms.is_superseteq(get_positive_static_precondition())  //
+               && initial_static_atoms.are_disjoint(get_negative_static_precondition());
+    }
+};
+
 template<>
 class Builder<ActionDispatcher<DenseStateTag>> :
     public IBuilder<Builder<ActionDispatcher<DenseStateTag>>>,
@@ -180,22 +266,10 @@ private:
 
 public:
     /* STRIPS part */
-    // [[nodiscard]] FlatDenseStripsActionPartBuilder& get_strips_part() { return m_builder.get<4>(); }
-    /* Precondition */
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<4>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<5>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_static_precondition_bitset() { return m_builder.get<6>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_static_precondition_bitset() { return m_builder.get<7>(); }
-    /* Simple effects */
-    [[nodiscard]] FlatBitsetBuilder& get_unconditional_positive_effect_bitset() { return m_builder.get<8>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_unconditional_negative_effect_bitset() { return m_builder.get<9>(); }
-    /* Conditional preconditions */
-    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_precondition_bitsets() { return m_builder.get<10>(); }
-    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_precondition_bitsets() { return m_builder.get<11>(); }
-    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_positive_static_precondition_bitsets() { return m_builder.get<12>(); }
-    [[nodiscard]] FlatBitsetVectorBuilder& get_conditional_negative_static_precondition_bitsets() { return m_builder.get<13>(); }
-    /* Conditional simple effects */
-    [[nodiscard]] FlatSimpleEffectVectorBuilder& get_conditional_effects() { return m_builder.get<14>(); }
+    [[nodiscard]] FlatDenseStripsActionPreconditionBuilder& get_strips_precondition() { return m_builder.get<4>(); }
+    [[nodiscard]] FlatDenseStripsActionEffectBuilder& get_strips_effect() { return m_builder.get<5>(); }
+    /* Conditional effects */
+    [[nodiscard]] FlatDenseConditionalEffectsBuilder& get_conditional_effects() { return m_builder.get<6>(); }
 };
 
 /**
@@ -234,37 +308,21 @@ public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(FlatDenseAction view) : m_view(view) {}
 
-    /* Precondition */
-    [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<4>(); }
-    [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<5>(); }
-    [[nodiscard]] FlatBitset get_applicability_positive_static_precondition_bitset() const { return m_view.get<6>(); }
-    [[nodiscard]] FlatBitset get_applicability_negative_static_precondition_bitset() const { return m_view.get<7>(); }
-    /* Simple effects */
-    [[nodiscard]] FlatBitset get_unconditional_positive_effect_bitset() const { return m_view.get<8>(); };
-    [[nodiscard]] FlatBitset get_unconditional_negative_effect_bitset() const { return m_view.get<9>(); };
+    /* STRIPS part */
+    [[nodiscard]] FlatDenseStripsActionPrecondition get_strips_precondition() const { return m_view.get<4>(); }
+    [[nodiscard]] FlatDenseStripsActionEffect get_strips_effect() const { return m_view.get<5>(); }
     /* Conditional effects */
-    [[nodiscard]] FlatBitsetVector get_conditional_positive_precondition_bitsets() const { return m_view.get<10>(); }
-    [[nodiscard]] FlatBitsetVector get_conditional_negative_precondition_bitsets() const { return m_view.get<11>(); }
-    [[nodiscard]] FlatBitsetVector get_conditional_positive_static_precondition_bitsets() const { return m_view.get<12>(); }
-    [[nodiscard]] FlatBitsetVector get_conditional_negative_static_precondition_bitsets() const { return m_view.get<13>(); }
-    [[nodiscard]] FlatSimpleEffectVector get_conditional_effects() const { return m_view.get<14>(); }
+    [[nodiscard]] FlatDenseConditionalEffects get_conditional_effects() const { return m_view.get<6>(); }
 
     [[nodiscard]] bool is_applicable(DenseState state) const
-    {
-        const auto state_bitset = state.get_atoms_bitset();
-        const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
-
-        return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
-               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
-               && initial_static_atoms.is_superseteq(get_applicability_positive_static_precondition_bitset())
-               && initial_static_atoms.are_disjoint(get_applicability_negative_static_precondition_bitset());
+    {  //
+        return DenseStripsActionPrecondition(get_strips_precondition()).is_applicable(state);
     }
 
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
-    {
-        return static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
-               && static_positive_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+    {  //
+        return DenseStripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
     }
 };
 
@@ -288,6 +346,12 @@ extern DenseGroundActionList to_ground_actions(const FlatDenseActionSet& flat_ac
  */
 
 extern std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data);
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseStripsActionPrecondition, const PDDLFactories&>& data);
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseStripsActionEffect, const PDDLFactories&>& data);
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseConditionalEffect, const PDDLFactories&>& data);
 
 extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAction, const PDDLFactories&>& data);
 

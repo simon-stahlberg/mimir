@@ -41,28 +41,19 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, co
 {
     const auto [axiom, pddl_factories] = data;
 
-    auto positive_static_precondition_bitset = axiom.get_applicability_positive_static_precondition_bitset();
-    auto negative_static_precondition_bitset = axiom.get_applicability_negative_static_precondition_bitset();
-    auto positive_precondition_bitset = axiom.get_applicability_positive_precondition_bitset();
-    auto negative_precondition_bitset = axiom.get_applicability_negative_precondition_bitset();
+    auto binding = ObjectList {};
+    for (const auto object : axiom.get_objects())
+    {
+        binding.push_back(object);
+    }
 
-    auto positive_static_precondition = GroundAtomList<Static> {};
-    auto negative_static_precondition = GroundAtomList<Static> {};
-    auto positive_precondition = GroundAtomList<Fluent> {};
-    auto negative_precondition = GroundAtomList<Fluent> {};
+    auto strips_precondition = DenseStripsActionPrecondition(axiom.get_strips_precondition());
 
-    pddl_factories.get_static_ground_atoms_from_ids(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_static_ground_atoms_from_ids(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_fluent_ground_atoms_from_ids(positive_precondition_bitset, positive_precondition);
-    pddl_factories.get_fluent_ground_atoms_from_ids(negative_precondition_bitset, negative_precondition);
-
-    os << "Axiom("
-       << "id=" << axiom.get_id() << ", "
-       << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "
-       << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive precondition=" << positive_precondition << ", "
-       << "negative precondition=" << negative_precondition << ", "
+    os << "Axiom("                                                                                      //
+       << "id=" << axiom.get_id() << ", "                                                               //
+       << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                                 //
+       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                       //
        << "effect=" << std::make_tuple(axiom.get_simple_effect(), std::cref(pddl_factories)) << ")";
 
     return os;

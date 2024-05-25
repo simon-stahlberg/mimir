@@ -149,21 +149,19 @@ private:
         /* 3. Construct non-extended state */
 
         /* Simple effects*/
-        state_bitset -= action.get_unconditional_negative_effect_bitset();
-        state_bitset |= action.get_unconditional_positive_effect_bitset();
+        auto strips_part_proxy = DenseStripsActionEffect(action.get_strips_effect());
+        state_bitset -= strips_part_proxy.get_negative_effects();
+        state_bitset |= strips_part_proxy.get_positive_effects();
 
         /* Conditional effects */
-        const auto num_conditional_effects = action.get_conditional_effects().size();
-        for (size_t i = 0; i < num_conditional_effects; ++i)
+        for (const auto flat_conditional_effect : action.get_conditional_effects())
         {
-            if (state.get_atoms_bitset().is_superseteq(action.get_conditional_positive_precondition_bitsets()[i])
-                && state.get_atoms_bitset().are_disjoint(action.get_conditional_negative_precondition_bitsets()[i])
-                && state.get_problem()->get_static_initial_positive_atoms_bitset().is_superseteq(
-                    action.get_conditional_positive_static_precondition_bitsets()[i])
-                && state.get_problem()->get_static_initial_positive_atoms_bitset().are_disjoint(
-                    action.get_conditional_negative_static_precondition_bitsets()[i]))
+            auto cond_effect_proxy = DenseConditionalEffect(flat_conditional_effect);
+
+            if (cond_effect_proxy.is_applicable(state))
             {
-                const auto simple_effect = action.get_conditional_effects()[i];
+                const auto& simple_effect = cond_effect_proxy.get_simple_effect();
+
                 if (simple_effect.is_negated)
                 {
                     state_bitset.unset(simple_effect.atom_id);

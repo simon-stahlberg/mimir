@@ -187,20 +187,22 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     }
 
     /* Precondition */
-    auto& positive_precondition = m_action_builder.get_applicability_positive_precondition_bitset();
-    auto& negative_precondition = m_action_builder.get_applicability_negative_precondition_bitset();
+    auto strips_precondition_proxy = DenseStripsActionPreconditionBuilderProxy(m_action_builder.get_strips_precondition());
+    auto& positive_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
+    auto& negative_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
+    auto& positive_static_precondition = strips_precondition_proxy.get_positive_static_precondition();
+    auto& negative_static_precondition = strips_precondition_proxy.get_negative_static_precondition();
     positive_precondition.unset_all();
     negative_precondition.unset_all();
-    fill_fluent_bitsets(action->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
-    auto& positive_static_precondition = m_action_builder.get_applicability_positive_static_precondition_bitset();
-    auto& negative_static_precondition = m_action_builder.get_applicability_negative_static_precondition_bitset();
     positive_static_precondition.unset_all();
     negative_static_precondition.unset_all();
+    fill_fluent_bitsets(action->get_fluent_conditions(), positive_precondition, negative_precondition, binding);
     fill_static_bitsets(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
 
     /* Simple effects */
-    auto& positive_effect = m_action_builder.get_unconditional_positive_effect_bitset();
-    auto& negative_effect = m_action_builder.get_unconditional_negative_effect_bitset();
+    auto strips_effect_proxy = DenseStripsActionEffectBuilderProxy(m_action_builder.get_strips_effect());
+    auto& positive_effect = strips_effect_proxy.get_positive_effects();
+    auto& negative_effect = strips_effect_proxy.get_negative_effects();
     positive_effect.unset_all();
     negative_effect.unset_all();
     auto effect_literals = LiteralList<Fluent> {};
@@ -212,40 +214,36 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     /* Conditional effects */
     // Fetch data
-    auto& positive_conditional_preconditions = m_action_builder.get_conditional_positive_precondition_bitsets();
-    auto& negative_conditional_preconditions = m_action_builder.get_conditional_negative_precondition_bitsets();
-    auto& positive_conditional_static_preconditions = m_action_builder.get_conditional_positive_static_precondition_bitsets();
-    auto& negative_conditional_static_preconditions = m_action_builder.get_conditional_negative_static_precondition_bitsets();
     auto& conditional_effects = m_action_builder.get_conditional_effects();
 
     // Resize builders.
     // Note: flatmemory tracks "actual" size to avoid deallocation of nested types
     const auto num_conditional_effects = action->get_conditional_effects().size();
-    positive_conditional_preconditions.resize(num_conditional_effects);
-    negative_conditional_preconditions.resize(num_conditional_effects);
-    positive_conditional_static_preconditions.resize(num_conditional_effects);
-    negative_conditional_static_preconditions.resize(num_conditional_effects);
     conditional_effects.resize(num_conditional_effects);
     if (num_conditional_effects > 0)
     {
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
-            positive_conditional_preconditions[i].unset_all();
-            negative_conditional_preconditions[i].unset_all();
-            positive_conditional_static_preconditions[i].unset_all();
-            negative_conditional_static_preconditions[i].unset_all();
-
-            // Ground conditions and effect
+            auto cond_effect_proxy_i = DenseConditionalEffectBuilderProxy(conditional_effects[i]);
+            auto& cond_positive_fluent_precondition_i = cond_effect_proxy_i.get_positive_fluent_precondition();
+            auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_fluent_precondition();
+            auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_static_precondition();
+            auto& cond_negative_static_precondition_i = cond_effect_proxy_i.get_negative_static_precondition();
+            auto& cond_simple_effect_i = cond_effect_proxy_i.get_simple_effect();
+            cond_positive_fluent_precondition_i.unset_all();
+            cond_negative_fluent_precondition_i.unset_all();
+            cond_positive_static_precondition_i.unset_all();
+            cond_negative_static_precondition_i.unset_all();
             fill_fluent_bitsets(action->get_conditional_effects().at(i)->get_fluent_conditions(),
-                                positive_conditional_preconditions[i],
-                                negative_conditional_preconditions[i],
+                                cond_positive_fluent_precondition_i,
+                                cond_negative_fluent_precondition_i,
                                 binding);
             fill_static_bitsets(action->get_conditional_effects().at(i)->get_static_conditions(),
-                                positive_conditional_static_preconditions[i],
-                                negative_conditional_static_preconditions[i],
+                                cond_positive_static_precondition_i,
+                                cond_negative_static_precondition_i,
                                 binding);
 
-            fill_effect(action->get_conditional_effects().at(i)->get_effect(), conditional_effects[i], binding);
+            fill_effect(action->get_conditional_effects().at(i)->get_effect(), cond_simple_effect_i, binding);
         }
     }
 
@@ -269,11 +267,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
             // Resize builders.
             const auto num_conditional_effects = CartesianProduct(objects_by_parameter_index).num_combinations();
-            const auto old_size = positive_conditional_preconditions.size();
-            positive_conditional_preconditions.resize(old_size + num_conditional_effects);
-            negative_conditional_preconditions.resize(old_size + num_conditional_effects);
-            positive_conditional_static_preconditions.resize(old_size + num_conditional_effects);
-            negative_conditional_static_preconditions.resize(old_size + num_conditional_effects);
+            const auto old_size = conditional_effects.size();
             conditional_effects.resize(old_size + num_conditional_effects);
 
             // Create binding and ground conditions and effect
@@ -291,22 +285,26 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                     binding_ext[binding_ext_size + pos] = m_pddl_factories.get_object(object_id);
                 }
 
-                // Ground conditions and effect
-                positive_conditional_preconditions[j].unset_all();
-                negative_conditional_preconditions[j].unset_all();
-                positive_conditional_static_preconditions[j].unset_all();
-                negative_conditional_static_preconditions[j].unset_all();
-
+                auto cond_effect_proxy_j = DenseConditionalEffectBuilderProxy(conditional_effects[j]);
+                auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_fluent_precondition();
+                auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_fluent_precondition();
+                auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_static_precondition();
+                auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_static_precondition();
+                auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
+                cond_positive_fluent_precondition_j.unset_all();
+                cond_negative_fluent_precondition_j.unset_all();
+                cond_positive_static_precondition_j.unset_all();
+                cond_negative_static_precondition_j.unset_all();
                 fill_fluent_bitsets(universal_effect->get_fluent_conditions(),
-                                    positive_conditional_preconditions[j],
-                                    negative_conditional_preconditions[j],
+                                    cond_positive_fluent_precondition_j,
+                                    cond_negative_fluent_precondition_j,
                                     binding_ext);
                 fill_static_bitsets(universal_effect->get_static_conditions(),
-                                    positive_conditional_static_preconditions[j],
-                                    negative_conditional_static_preconditions[j],
+                                    cond_positive_static_precondition_j,
+                                    cond_negative_static_precondition_j,
                                     binding_ext);
 
-                fill_effect(universal_effect->get_effect(), conditional_effects[j], binding_ext);
+                fill_effect(universal_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
                 ++j;
             }

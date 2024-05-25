@@ -37,10 +37,8 @@ namespace mimir
 using FlatDenseAxiomLayout = flatmemory::Tuple<uint32_t,  //
                                                Axiom,
                                                FlatObjectListLayout,
-                                               FlatBitsetLayout,
-                                               FlatBitsetLayout,
-                                               FlatBitsetLayout,
-                                               FlatBitsetLayout,
+                                               FlatDenseStripsActionPreconditionLayout,
+                                               FlatDenseStripsActionEffectLayout,
                                                FlatSimpleEffect>;
 using FlatDenseAxiomBuilder = flatmemory::Builder<FlatDenseAxiomLayout>;
 using FlatDenseAxiom = flatmemory::ConstView<FlatDenseAxiomLayout>;
@@ -95,13 +93,11 @@ private:
     [[nodiscard]] FlatObjectListBuilder& get_objects_impl() { return m_builder.get<2>(); }
 
 public:
-    /* Precondition */
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_precondition_bitset() { return m_builder.get<3>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_precondition_bitset() { return m_builder.get<4>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_positive_static_precondition_bitset() { return m_builder.get<5>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_applicability_negative_static_precondition_bitset() { return m_builder.get<6>(); }
+    /* STRIPS part */
+    [[nodiscard]] FlatDenseStripsActionPreconditionBuilder& get_strips_precondition() { return m_builder.get<3>(); }
+    [[nodiscard]] FlatDenseStripsActionEffectBuilder& get_strips_effect() { return m_builder.get<4>(); }
     /* Simple effect */
-    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<7>(); }
+    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<5>(); }
 };
 
 /**
@@ -139,28 +135,22 @@ public:
     /// @brief Create a view on a Axiom.
     explicit ConstView(FlatDenseAxiom view) : m_view(view) {}
 
-    /* Precondition */
-    [[nodiscard]] FlatBitset get_applicability_positive_precondition_bitset() const { return m_view.get<3>(); }
-    [[nodiscard]] FlatBitset get_applicability_negative_precondition_bitset() const { return m_view.get<4>(); }
-    [[nodiscard]] FlatBitset get_applicability_positive_static_precondition_bitset() const { return m_view.get<5>(); }
-    [[nodiscard]] FlatBitset get_applicability_negative_static_precondition_bitset() const { return m_view.get<6>(); }
+    /* STRIPS part */
+    [[nodiscard]] FlatDenseStripsActionPrecondition get_strips_precondition() const { return m_view.get<3>(); }
+    [[nodiscard]] FlatDenseStripsActionEffect get_strips_effect() const { return m_view.get<4>(); }
     /* Effect*/
-    [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<7>(); }
+    [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<5>(); }
 
     template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
     [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset) const
-    {
-        return state_bitset.is_superseteq(get_applicability_positive_precondition_bitset())
-               && state_bitset.are_disjoint(get_applicability_negative_precondition_bitset())
-               && static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
-               && static_positive_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+    {  //
+        return DenseStripsActionPrecondition(get_strips_precondition()).is_applicable(state_bitset, static_positive_bitset);
     }
 
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
-    {
-        return static_positive_bitset.is_superseteq(get_applicability_positive_static_precondition_bitset())
-               && static_positive_bitset.are_disjoint(get_applicability_negative_static_precondition_bitset());
+    {  //
+        return DenseStripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
     }
 };
 
