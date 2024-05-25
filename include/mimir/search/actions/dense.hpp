@@ -147,7 +147,7 @@ public:
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
-        const auto state_bitset = state.get_atoms_bitset();
+        const auto state_bitset = state.get_fluent_atoms();
         const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
 
         return state_bitset.is_superseteq(get_positive_fluent_precondition())             //
@@ -232,7 +232,7 @@ public:
 
     [[nodiscard]] bool is_applicable(DenseState state) const
     {
-        const auto state_bitset = state.get_atoms_bitset();
+        const auto state_bitset = state.get_fluent_atoms();
         const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
 
         return state_bitset.is_superseteq(get_positive_fluent_precondition())             //

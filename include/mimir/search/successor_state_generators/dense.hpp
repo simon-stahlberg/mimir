@@ -76,7 +76,7 @@ private:
         /* Fetch member references. */
 
         auto& state_id = m_state_builder.get_id();
-        auto& state_bitset = m_state_builder.get_atoms_bitset();
+        auto& state_bitset = m_state_builder.get_fluent_atoms();
         state_bitset.unset_all();
         auto& problem = m_state_builder.get_problem();
 
@@ -130,13 +130,13 @@ private:
         // Fetch member references.
 
         auto& state_id = m_state_builder.get_id();
-        auto& state_bitset = m_state_builder.get_atoms_bitset();
+        auto& state_bitset = m_state_builder.get_fluent_atoms();
         auto& problem = m_state_builder.get_problem();
 
         // TODO: add assignment operator to bitset to replace unset + operator|=
         state_bitset.unset_all();
         const auto& unextended_state = m_states_by_index[state.get_id()];
-        state_bitset |= unextended_state.get_atoms_bitset();
+        state_bitset |= unextended_state.get_fluent_atoms();
 
         /* 1. Set state id */
 

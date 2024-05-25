@@ -66,7 +66,7 @@ bool GroundFunctionExpressionBinaryOperatorImpl::is_structurally_equivalent_to_i
 
 size_t GroundFunctionExpressionBinaryOperatorImpl::hash_impl() const
 {
-    return hash_combine(m_binary_operator, m_left_function_expression, m_right_function_expression);
+    return loki::hash_combine(m_binary_operator, m_left_function_expression, m_right_function_expression);
 }
 
 void GroundFunctionExpressionBinaryOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -140,7 +140,7 @@ bool GroundFunctionExpressionMinusImpl::is_structurally_equivalent_to_impl(const
     return true;
 }
 
-size_t GroundFunctionExpressionMinusImpl::hash_impl() const { return hash_combine(m_function_expression); }
+size_t GroundFunctionExpressionMinusImpl::hash_impl() const { return loki::hash_combine(m_function_expression); }
 
 void GroundFunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

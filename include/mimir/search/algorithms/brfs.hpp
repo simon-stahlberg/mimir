@@ -113,7 +113,8 @@ public:
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
         // TODO: Handle static goals
-        const auto& goal_ground_literals = m_successor_generator->get_problem()->get_fluent_goal_condition();
+        const auto& fluent_goal_ground_literals = m_successor_generator->get_problem()->get_fluent_goal_condition();
+        const auto& derived_goal_ground_literals = m_successor_generator->get_problem()->get_derived_goal_condition();
 
         auto applicable_actions = GroundActionList {};
 
@@ -136,7 +137,7 @@ public:
                 m_event_handler->on_finish_f_layer();
             }
 
-            if (state.literals_hold(goal_ground_literals))
+            if (state.literals_hold(fluent_goal_ground_literals) && state.literals_hold(derived_goal_ground_literals))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 

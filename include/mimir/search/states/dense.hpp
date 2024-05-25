@@ -32,17 +32,19 @@ namespace mimir
 /**
  * Flatmemory types
  */
-using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout, Problem>;
+using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout, FlatBitsetLayout, Problem>;
 using FlatDenseStateBuilder = flatmemory::Builder<FlatDenseStateLayout>;
 using FlatDenseState = flatmemory::ConstView<FlatDenseStateLayout>;
 
+// Only hash/compare the non-extended portion of a state, and the problem.
+// The extended portion is computed automatically, when calling ssg.create_state(...)
 struct FlatDenseStateHash
 {
     size_t operator()(const FlatDenseState& view) const
     {
-        const auto bitset_view = view.get<1>();
-        const auto problem = view.get<2>();
-        return loki::hash_combine(bitset_view.hash(), problem);
+        const auto fluent_atoms = view.get<1>();
+        const auto problem = view.get<3>();
+        return loki::hash_combine(fluent_atoms.hash(), problem);
     }
 };
 
@@ -50,11 +52,11 @@ struct FlatDenseStateEqual
 {
     bool operator()(const FlatDenseState& view_left, const FlatDenseState& view_right) const
     {
-        const auto bitset_view_left = view_left.get<1>();
-        const auto bitset_view_right = view_right.get<1>();
-        const auto problem_left = view_left.get<2>();
-        const auto problem_right = view_right.get<2>();
-        return (bitset_view_left == bitset_view_right) && (problem_left == problem_right);
+        const auto fluent_atoms_left = view_left.get<1>();
+        const auto fluent_atoms_right = view_right.get<1>();
+        const auto problem_left = view_left.get<3>();
+        const auto problem_right = view_right.get<3>();
+        return (fluent_atoms_left == fluent_atoms_right) && (problem_left == problem_right);
     }
 };
 
@@ -87,8 +89,9 @@ private:
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
 public:
-    [[nodiscard]] FlatBitsetBuilder& get_atoms_bitset() { return m_builder.get<1>(); }
-    [[nodiscard]] Problem& get_problem() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_fluent_atoms() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatBitsetBuilder& get_derived_atoms() { return m_builder.get<2>(); }
+    [[nodiscard]] Problem& get_problem() { return m_builder.get<3>(); }
 };
 
 /**
@@ -107,29 +110,37 @@ private:
     /* Implement IView interface */
     friend class IConstView<ConstView<StateDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_atoms_bitset() == other.get_atoms_bitset(); }
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_fluent_atoms() == other.get_fluent_atoms(); }
 
-    [[nodiscard]] size_t hash_impl() const { return get_atoms_bitset().hash(); }
+    [[nodiscard]] size_t hash_impl() const { return get_fluent_atoms().hash(); }
 
     /* Implement IStateView interface */
     friend class IStateView<ConstView<StateDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 
-    [[nodiscard]] auto begin_impl() const { return get_atoms_bitset().begin(); }
-    [[nodiscard]] auto end_impl() const { return get_atoms_bitset().end(); }
+    [[nodiscard]] auto begin_impl() const { return get_fluent_atoms().begin(); }
+    [[nodiscard]] auto end_impl() const { return get_fluent_atoms().end(); }
 
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
-    [[nodiscard]] FlatBitset get_atoms_bitset() const { return m_view.get<1>(); }
-    [[nodiscard]] Problem get_problem() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatBitset get_fluent_atoms() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatBitset get_derived_atoms() const { return m_view.get<2>(); }
+    [[nodiscard]] Problem get_problem() const { return m_view.get<3>(); }
 
-    bool contains(const GroundAtom<Fluent>& ground_atom) const { return get_atoms_bitset().get(ground_atom->get_identifier()); }
+    bool contains(const GroundAtom<Fluent>& ground_atom) const { return get_fluent_atoms().get(ground_atom->get_identifier()); }
 
-    bool literal_holds(const GroundLiteral<Fluent>& literal) const { return literal->is_negated() != contains(literal->get_atom()); }
+    bool contains(const GroundAtom<Derived>& ground_atom) const { return get_derived_atoms().get(ground_atom->get_identifier()); }
 
-    bool literals_hold(const GroundLiteralList<Fluent>& literals) const
+    template<PredicateCategory P>
+    bool literal_holds(const GroundLiteral<P>& literal) const
+    {
+        return literal->is_negated() != contains(literal->get_atom());
+    }
+
+    template<PredicateCategory P>
+    bool literals_hold(const GroundLiteralList<P>& literals) const
     {
         for (const auto& literal : literals)
         {

@@ -25,8 +25,8 @@ namespace mimir
 {
 
 AxiomPartition::AxiomPartition(AxiomSet axioms,
-                               const PredicateSet<Fluent>& derived_predicates,
-                               const PredicateSet<Fluent>& affected_derived_predicates_in_earlier_partition) :
+                               const PredicateSet<Derived>& derived_predicates,
+                               const PredicateSet<Derived>& affected_derived_predicates_in_earlier_partition) :
     m_axioms(std::move(axioms)),
     m_initially_relevant_axioms(),
     m_axioms_by_body_predicates()
@@ -35,7 +35,7 @@ AxiomPartition::AxiomPartition(AxiomSet axioms,
     {
         bool is_relevant_first = true;
 
-        for (const auto& literal : axiom->get_fluent_conditions())
+        for (const auto& literal : axiom->get_derived_conditions())
         {
             const auto& predicate = literal->get_atom()->get_predicate();
 
@@ -56,7 +56,7 @@ AxiomPartition::AxiomPartition(AxiomSet axioms,
     }
 }
 
-void AxiomPartition::retrieve_axioms_with_same_body_predicate(GroundAtom<Fluent> derived_atom, AxiomSet& ref_axioms) const
+void AxiomPartition::retrieve_axioms_with_same_body_predicate(GroundAtom<Derived> derived_atom, AxiomSet& ref_axioms) const
 {
     auto it = m_axioms_by_body_predicates.find(derived_atom->get_predicate());
     if (it != m_axioms_by_body_predicates.end())
@@ -74,70 +74,14 @@ const AxiomSet& AxiomPartition::get_initially_relevant_axioms() const { return m
 /// @brief Compute occurrences of predicates in axiom heads
 /// @param axioms a set of axioms
 /// @param predicates the set of all predicates occuring in axioms
-static std::unordered_map<Predicate<Fluent>, AxiomList> compute_predicate_head_occurrences(const AxiomList& axioms)
+static std::unordered_map<Predicate<Derived>, AxiomList> compute_predicate_head_occurrences(const AxiomList& axioms)
 {
-    auto predicate_occurrences = std::unordered_map<Predicate<Fluent>, AxiomList> {};
+    auto predicate_occurrences = std::unordered_map<Predicate<Derived>, AxiomList> {};
     for (const auto& axiom : axioms)
     {
         predicate_occurrences[axiom->get_literal()->get_atom()->get_predicate()].push_back(axiom);
     }
     return predicate_occurrences;
-}
-
-/// @brief Compute positive occurrences of predicates in axiom bodies
-/// @param axioms a set of axioms
-/// @param predicates the set of all predicates occuring in axioms
-static std::tuple<std::unordered_map<Predicate<Static>, AxiomList>, std::unordered_map<Predicate<Fluent>, AxiomList>>
-compute_predicate_body_positive_occurrences(const AxiomList& axioms)
-{
-    auto static_predicate_occurrences = std::unordered_map<Predicate<Static>, AxiomList> {};
-    auto fluent_predicate_occurrences = std::unordered_map<Predicate<Fluent>, AxiomList> {};
-    for (const auto& axiom : axioms)
-    {
-        for (const auto& condition : axiom->get_static_conditions())
-        {
-            if (!condition->is_negated())
-            {
-                static_predicate_occurrences[condition->get_atom()->get_predicate()].push_back(axiom);
-            }
-        }
-        for (const auto& condition : axiom->get_fluent_conditions())
-        {
-            if (!condition->is_negated())
-            {
-                fluent_predicate_occurrences[condition->get_atom()->get_predicate()].push_back(axiom);
-            }
-        }
-    }
-    return std::make_pair(static_predicate_occurrences, fluent_predicate_occurrences);
-}
-
-/// @brief Compute negative occurrences of predicates in axiom bodies
-/// @param axioms a set of axioms
-/// @param predicates the set of all predicates occuring in axioms
-static std::tuple<std::unordered_map<Predicate<Static>, AxiomList>, std::unordered_map<Predicate<Fluent>, AxiomList>>
-compute_predicate_body_negative_occurrences(const AxiomList& axioms)
-{
-    auto static_predicate_occurrences = std::unordered_map<Predicate<Static>, AxiomList> {};
-    auto fluent_predicate_occurrences = std::unordered_map<Predicate<Fluent>, AxiomList> {};
-    for (const auto& axiom : axioms)
-    {
-        for (const auto& condition : axiom->get_static_conditions())
-        {
-            if (condition->is_negated())
-            {
-                static_predicate_occurrences[condition->get_atom()->get_predicate()].push_back(axiom);
-            }
-        }
-        for (const auto& condition : axiom->get_fluent_conditions())
-        {
-            if (condition->is_negated())
-            {
-                fluent_predicate_occurrences[condition->get_atom()->get_predicate()].push_back(axiom);
-            }
-        }
-    }
-    return std::make_pair(static_predicate_occurrences, fluent_predicate_occurrences);
 }
 
 enum class StratumStatus
@@ -147,13 +91,11 @@ enum class StratumStatus
     STRICTLY_LOWER = 2,
 };
 
-static std::vector<PredicateSet<Fluent>> compute_stratification(const AxiomList& axioms, const PredicateList<Fluent>& derived_predicates)
+static std::vector<PredicateSet<Derived>> compute_stratification(const AxiomList& axioms, const PredicateList<Derived>& derived_predicates)
 {
     const auto head_predicates = compute_predicate_head_occurrences(axioms);
-    const auto body_positive_predicates = compute_predicate_body_positive_occurrences(axioms);
-    const auto body_negative_predicates = compute_predicate_body_negative_occurrences(axioms);
 
-    auto R = std::unordered_map<Predicate<Fluent>, std::unordered_map<Predicate<Fluent>, StratumStatus>> {};
+    auto R = std::unordered_map<Predicate<Derived>, std::unordered_map<Predicate<Derived>, StratumStatus>> {};
 
     // lines 2-4
     for (const auto predicate_1 : derived_predicates)
@@ -169,7 +111,7 @@ static std::vector<PredicateSet<Fluent>> compute_stratification(const AxiomList&
     {
         const auto head_predicate = axiom->get_literal()->get_atom()->get_predicate();
 
-        for (const auto& condition : axiom->get_fluent_conditions())
+        for (const auto& condition : axiom->get_derived_conditions())
         {
             const auto condition_predicate = condition->get_atom()->get_predicate();
             if (condition->is_negated())
@@ -208,11 +150,11 @@ static std::vector<PredicateSet<Fluent>> compute_stratification(const AxiomList&
         throw std::runtime_error("Set of axioms is not stratifiable.");
     }
 
-    auto stratification = std::vector<PredicateSet<Fluent>> {};
-    auto remaining = PredicateSet<Fluent>(derived_predicates.begin(), derived_predicates.end());
+    auto stratification = std::vector<PredicateSet<Derived>> {};
+    auto remaining = PredicateSet<Derived>(derived_predicates.begin(), derived_predicates.end());
     while (!remaining.empty())
     {
-        auto stratum = PredicateSet<Fluent> {};
+        auto stratum = PredicateSet<Derived> {};
         for (const auto& predicate_1 : remaining)
         {
             if (std::all_of(remaining.begin(),
@@ -234,16 +176,16 @@ static std::vector<PredicateSet<Fluent>> compute_stratification(const AxiomList&
     return stratification;
 }
 
-std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, const PredicateList<Fluent>& derived_predicates)
+std::vector<AxiomPartition> compute_axiom_partitioning(const AxiomList& axioms, const PredicateList<Derived>& derived_predicates)
 {
     const auto stratification = compute_stratification(axioms, derived_predicates);
 
-    const auto derived_predicate_set = PredicateSet<Fluent>(derived_predicates.begin(), derived_predicates.end());
+    const auto derived_predicate_set = PredicateSet<Derived>(derived_predicates.begin(), derived_predicates.end());
 
     auto axiom_partitioning = std::vector<AxiomPartition> {};
 
     auto remaining_axioms = AxiomSet(axioms.begin(), axioms.end());
-    auto affected_derived_predicates_in_earlier_partition = PredicateSet<Fluent> {};
+    auto affected_derived_predicates_in_earlier_partition = PredicateSet<Derived> {};
     for (const auto& stratum : stratification)
     {
         auto partition = AxiomSet {};

@@ -11,7 +11,7 @@ TEST(MimirTests, SearchStatesBitsetTest)
     /*
     auto builder = Builder<StateDispatcher<DenseStateTag>>();
     builder.set_id(5);  // 4 bytes
-    auto& bitset = builder.get_atoms_bitset();
+    auto& bitset = builder.get_fluent_atoms();
     bitset.set(20);
     bitset.set(100);  // 16 bytes
     builder.finish();
@@ -22,10 +22,10 @@ TEST(MimirTests, SearchStatesBitsetTest)
     auto view = View<StateDispatcher<DenseStateTag>>(builder.get_buffer_pointer());
     EXPECT_EQ(view.get_id(), 5);
     EXPECT_EQ(view.get_size(), 64);
-    EXPECT_FALSE(view.get_atoms_bitset().get(0));
-    EXPECT_TRUE(view.get_atoms_bitset().get(20));
-    EXPECT_FALSE(view.get_atoms_bitset().get(64));
-    EXPECT_TRUE(view.get_atoms_bitset().get(100));
+    EXPECT_FALSE(view.get_fluent_atoms().get(0));
+    EXPECT_TRUE(view.get_fluent_atoms().get(20));
+    EXPECT_FALSE(view.get_fluent_atoms().get(64));
+    EXPECT_TRUE(view.get_fluent_atoms().get(100));
     */
 }
 

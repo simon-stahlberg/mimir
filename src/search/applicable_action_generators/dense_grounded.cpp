@@ -93,9 +93,9 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // TODO: create a constructor that takes all arguments in 1 go.
     auto state_builder = StateBuilder();
-    auto& state_bitset = state_builder.get_atoms_bitset();
+    auto& state_bitset = state_builder.get_fluent_atoms();
     auto& state_problem = state_builder.get_problem();
-    state_bitset = delete_free_ssg.get_or_create_initial_state().get_atoms_bitset();
+    state_bitset = delete_free_ssg.get_or_create_initial_state().get_fluent_atoms();
     state_problem = delete_free_problem;
 
     // Keep track of changes
@@ -117,7 +117,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         for (const auto& action : actions)
         {
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
-            for (const auto atom_id : succ_state.get_atoms_bitset())
+            for (const auto atom_id : succ_state.get_fluent_atoms())
             {
                 state_bitset.set(atom_id);
             }
@@ -192,7 +192,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
 {
     out_applicable_actions.clear();
 
-    m_action_match_tree.get_applicable_elements(state.get_atoms_bitset(), out_applicable_actions);
+    m_action_match_tree.get_applicable_elements(state.get_fluent_atoms(), out_applicable_actions);
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetBuilder& ref_state_atoms)
@@ -228,9 +228,9 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(F
 
                 assert(grounded_axiom.is_applicable(ref_state_atoms, m_problem->get_static_initial_positive_atoms_bitset()));
 
-                assert(!grounded_axiom.get_simple_effect().is_negated);
+                assert(!grounded_axiom.get_derived_effect().is_negated);
 
-                const auto grounded_atom_id = grounded_axiom.get_simple_effect().atom_id;
+                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
 
                 if (!ref_state_atoms.get(grounded_atom_id))
                 {

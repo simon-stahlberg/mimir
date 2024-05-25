@@ -37,6 +37,27 @@ DenseGroundAxiomList to_ground_axioms(const FlatDenseAxiomSet& flat_axioms)
     return result;
 }
 
+std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, const PDDLFactories&>& data)
+{
+    const auto [derived_effect, pddl_factories] = data;
+
+    const auto& ground_atom = pddl_factories.get_derived_ground_atom(derived_effect.atom_id);
+
+    if (derived_effect.is_negated)
+    {
+        os << "(not ";
+    }
+
+    os << *ground_atom;
+
+    if (derived_effect.is_negated)
+    {
+        os << ")";
+    }
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, const PDDLFactories&>& data)
 {
     const auto [axiom, pddl_factories] = data;
@@ -54,7 +75,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, co
        << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
        << "binding=" << binding << ", "                                                                 //
        << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                       //
-       << "effect=" << std::make_tuple(axiom.get_simple_effect(), std::cref(pddl_factories)) << ")";
+       << "effect=" << std::make_tuple(axiom.get_derived_effect(), std::cref(pddl_factories)) << ")";
 
     return os;
 }

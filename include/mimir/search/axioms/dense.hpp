@@ -34,12 +34,28 @@ namespace mimir
 /**
  * Flatmemory types
  */
+
+struct FlatDerivedEffect
+{
+    bool is_negated;
+    size_t atom_id;
+
+    bool operator==(const FlatDerivedEffect& other) const
+    {
+        if (this != &other)
+        {
+            return is_negated == other.is_negated && atom_id == other.atom_id;
+        }
+        return true;
+    }
+};
+
 using FlatDenseAxiomLayout = flatmemory::Tuple<uint32_t,  //
                                                Axiom,
                                                FlatObjectListLayout,
                                                FlatDenseStripsActionPreconditionLayout,
                                                FlatDenseStripsActionEffectLayout,
-                                               FlatSimpleEffect>;
+                                               FlatDerivedEffect>;
 using FlatDenseAxiomBuilder = flatmemory::Builder<FlatDenseAxiomLayout>;
 using FlatDenseAxiom = flatmemory::ConstView<FlatDenseAxiomLayout>;
 using FlatDenseAxiomVector = flatmemory::VariableSizedTypeVector<FlatDenseAxiomLayout>;
@@ -97,7 +113,7 @@ public:
     [[nodiscard]] FlatDenseStripsActionPreconditionBuilder& get_strips_precondition() { return m_builder.get<3>(); }
     [[nodiscard]] FlatDenseStripsActionEffectBuilder& get_strips_effect() { return m_builder.get<4>(); }
     /* Simple effect */
-    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<5>(); }
+    [[nodiscard]] FlatDerivedEffect& get_derived_effect() { return m_builder.get<5>(); }
 };
 
 /**
@@ -139,7 +155,7 @@ public:
     [[nodiscard]] FlatDenseStripsActionPrecondition get_strips_precondition() const { return m_view.get<3>(); }
     [[nodiscard]] FlatDenseStripsActionEffect get_strips_effect() const { return m_view.get<4>(); }
     /* Effect*/
-    [[nodiscard]] FlatSimpleEffect get_simple_effect() const { return m_view.get<5>(); }
+    [[nodiscard]] FlatDerivedEffect get_derived_effect() const { return m_view.get<5>(); }
 
     template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
     [[nodiscard]] bool is_applicable(const Bitset1 state_bitset, const Bitset2 static_positive_bitset) const
@@ -172,6 +188,8 @@ extern DenseGroundAxiomList to_ground_axioms(const FlatDenseAxiomSet& flat_axiom
 /**
  * Pretty printing
  */
+
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, const PDDLFactories&>& data);
 
 extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseGroundAxiom, const PDDLFactories&>& data);
 }

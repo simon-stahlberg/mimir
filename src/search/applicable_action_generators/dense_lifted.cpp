@@ -470,7 +470,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     // Create the assignment sets that are shared by all action schemas.
 
     auto ground_atoms = GroundAtomList<Fluent> {};
-    m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_atoms_bitset(), ground_atoms);
+    m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_fluent_atoms(), ground_atoms);
 
     auto fluent_predicates = m_problem->get_domain()->get_fluent_predicates();
     const auto& domain_derived_predicates = m_problem->get_domain()->get_derived_predicates();

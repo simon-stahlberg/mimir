@@ -36,7 +36,7 @@ bool TermObjectImpl::is_structurally_equivalent_to_impl(const TermObjectImpl& ot
     return true;
 }
 
-size_t TermObjectImpl::hash_impl() const { return hash_combine(m_object); }
+size_t TermObjectImpl::hash_impl() const { return loki::hash_combine(m_object); }
 
 void TermObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_object->get_name(); }
 
@@ -54,7 +54,7 @@ bool TermVariableImpl::is_structurally_equivalent_to_impl(const TermVariableImpl
     return true;
 }
 
-size_t TermVariableImpl::hash_impl() const { return hash_combine(m_variable); }
+size_t TermVariableImpl::hash_impl() const { return loki::hash_combine(m_variable); }
 
 void TermVariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_variable->get_name(); }
 

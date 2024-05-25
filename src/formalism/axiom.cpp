@@ -57,10 +57,10 @@ bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
 
 size_t AxiomImpl::hash_impl() const
 {
-    return hash_combine(m_literal,
-                        loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
-                        loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
-                        loki::hash_container(loki::get_sorted_vector(m_derived_conditions)));
+    return loki::hash_combine(m_literal,
+                              loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
+                              loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
+                              loki::hash_container(loki::get_sorted_vector(m_derived_conditions)));
 }
 
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

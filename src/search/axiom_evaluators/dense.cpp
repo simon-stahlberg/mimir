@@ -170,6 +170,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
     const auto& problem_derived_predicates = m_problem->get_derived_predicates();
     fluent_predicates.insert(fluent_predicates.end(), problem_derived_predicates.begin(), problem_derived_predicates.end());
 
+    // TODO: need fluent and derived assignment sets
     auto assignment_sets = AssignmentSet<Fluent>(m_problem, fluent_predicates, ground_atoms);
 
     /* 2. Initialize bookkeeping */
@@ -187,7 +188,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
         bool reached_partition_fixed_point;
 
         // Optimization 1: Track new ground atoms to simplify the clique enumeration graph in the next iteration.
-        auto new_ground_atoms = ground_atoms;
+        auto new_ground_atoms = GroundAtomList<Derived> {};
 
         // TODO: Optimization 4: Inductively compile away axioms with static bodies. (grounded in match tree?)
 
@@ -227,14 +228,14 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(FlatBitsetB
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(!grounded_axiom.get_simple_effect().is_negated);
+                assert(!grounded_axiom.get_derived_effect().is_negated);
 
-                const auto grounded_atom_id = grounded_axiom.get_simple_effect().atom_id;
+                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
 
                 if (!ref_state_atoms.get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_pddl_factories.get_fluent_ground_atom(grounded_atom_id);
+                    const auto new_ground_atom = m_pddl_factories.get_derived_ground_atom(grounded_atom_id);
                     reached_partition_fixed_point = false;
 
                     // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,
@@ -398,10 +399,10 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     fill_static_bitsets(axiom->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
 
     /* Effect */
-    const auto grounded_literal = m_pddl_factories.ground_fluent_literal(axiom->get_literal(), binding);
+    const auto grounded_literal = m_pddl_factories.ground_derived_literal(axiom->get_literal(), binding);
     assert(!grounded_literal->is_negated());
-    m_axiom_builder.get_simple_effect().is_negated = false;
-    m_axiom_builder.get_simple_effect().atom_id = grounded_literal->get_atom()->get_identifier();
+    m_axiom_builder.get_derived_effect().is_negated = false;
+    m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_identifier();
 
     auto& flatmemory_builder = m_axiom_builder.get_flatmemory_builder();
     flatmemory_builder.finish();

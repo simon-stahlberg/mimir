@@ -39,7 +39,7 @@ bool NumericFluentImpl::is_structurally_equivalent_to_impl(const NumericFluentIm
     return true;
 }
 
-size_t NumericFluentImpl::hash_impl() const { return hash_combine(m_function, m_number); }
+size_t NumericFluentImpl::hash_impl() const { return loki::hash_combine(m_function, m_number); }
 
 void NumericFluentImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
