@@ -21,6 +21,7 @@
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/search/actions/dense.hpp"
+#include "mimir/search/applicable_action_generators/grounding_utils.hpp"
 #include "mimir/search/translations.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -126,69 +127,9 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_fluent_bitsets = [this](const std::vector<Literal<Fluent>>& literals,
-                                            FlatBitsetBuilder<Fluent>& ref_positive_bitset,
-                                            FlatBitsetBuilder<Fluent>& ref_negative_bitset,
-                                            const auto& binding)
-    {
-        for (const auto& literal : literals)
-        {
-            const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
-
-            if (grounded_literal->is_negated())
-            {
-                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
-            }
-            else
-            {
-                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
-            }
-        }
-    };
-
-    const auto fill_static_bitsets = [this](const std::vector<Literal<Static>>& literals,
-                                            FlatBitsetBuilder<Static>& ref_positive_bitset,
-                                            FlatBitsetBuilder<Static>& ref_negative_bitset,
-                                            const auto& binding)
-    {
-        for (const auto& literal : literals)
-        {
-            const auto grounded_literal = m_pddl_factories.ground_static_literal(literal, binding);
-
-            if (grounded_literal->is_negated())
-            {
-                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
-            }
-            else
-            {
-                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
-            }
-        }
-    };
-
-    const auto fill_derived_bitsets = [this](const std::vector<Literal<Derived>>& literals,
-                                             FlatBitsetBuilder<Derived>& ref_positive_bitset,
-                                             FlatBitsetBuilder<Derived>& ref_negative_bitset,
-                                             const auto& binding)
-    {
-        for (const auto& literal : literals)
-        {
-            const auto grounded_literal = m_pddl_factories.ground_derived_literal(literal, binding);
-
-            if (grounded_literal->is_negated())
-            {
-                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
-            }
-            else
-            {
-                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
-            }
-        }
-    };
-
     const auto fill_effect = [this](const Literal<Fluent>& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
-        const auto grounded_literal = m_pddl_factories.ground_fluent_literal(literal, binding);
+        const auto grounded_literal = m_pddl_factories.ground_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
         ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
     };
@@ -220,9 +161,9 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    fill_fluent_bitsets(action->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    fill_static_bitsets(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
-    fill_derived_bitsets(action->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_pddl_factories.ground_and_fill_bitset(action->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_pddl_factories.ground_and_fill_bitset(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
+    m_pddl_factories.ground_and_fill_bitset(action->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
     auto strips_effect_proxy = DenseStripsActionEffectBuilderProxy(m_action_builder.get_strips_effect());
@@ -235,7 +176,7 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     {
         effect_literals.push_back(effect->get_effect());
     }
-    fill_fluent_bitsets(effect_literals, positive_effect, negative_effect, binding);
+    m_pddl_factories.ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
 
     /* Conditional effects */
     // Fetch data
@@ -263,18 +204,18 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
             cond_negative_static_precondition_i.unset_all();
             cond_positive_derived_precondition_i.unset_all();
             cond_negative_derived_precondition_i.unset_all();
-            fill_fluent_bitsets(action->get_conditional_effects().at(i)->get_fluent_conditions(),
-                                cond_positive_fluent_precondition_i,
-                                cond_negative_fluent_precondition_i,
-                                binding);
-            fill_static_bitsets(action->get_conditional_effects().at(i)->get_static_conditions(),
-                                cond_positive_static_precondition_i,
-                                cond_negative_static_precondition_i,
-                                binding);
-            fill_derived_bitsets(action->get_conditional_effects().at(i)->get_derived_conditions(),
-                                 cond_positive_derived_precondition_i,
-                                 cond_negative_derived_precondition_i,
-                                 binding);
+            m_pddl_factories.ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_fluent_conditions(),
+                                                    cond_positive_fluent_precondition_i,
+                                                    cond_negative_fluent_precondition_i,
+                                                    binding);
+            m_pddl_factories.ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_static_conditions(),
+                                                    cond_positive_static_precondition_i,
+                                                    cond_negative_static_precondition_i,
+                                                    binding);
+            m_pddl_factories.ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_derived_conditions(),
+                                                    cond_positive_derived_precondition_i,
+                                                    cond_negative_derived_precondition_i,
+                                                    binding);
 
             fill_effect(action->get_conditional_effects().at(i)->get_effect(), cond_simple_effect_i, binding);
         }
@@ -332,18 +273,18 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 cond_negative_static_precondition_j.unset_all();
                 cond_positive_derived_precondition_j.unset_all();
                 cond_negative_derived_precondition_j.unset_all();
-                fill_fluent_bitsets(universal_effect->get_fluent_conditions(),
-                                    cond_positive_fluent_precondition_j,
-                                    cond_negative_fluent_precondition_j,
-                                    binding_ext);
-                fill_static_bitsets(universal_effect->get_static_conditions(),
-                                    cond_positive_static_precondition_j,
-                                    cond_negative_static_precondition_j,
-                                    binding_ext);
-                fill_derived_bitsets(universal_effect->get_derived_conditions(),
-                                     cond_positive_derived_precondition_j,
-                                     cond_negative_derived_precondition_j,
-                                     binding_ext);
+                m_pddl_factories.ground_and_fill_bitset(universal_effect->get_fluent_conditions(),
+                                                        cond_positive_fluent_precondition_j,
+                                                        cond_negative_fluent_precondition_j,
+                                                        binding_ext);
+                m_pddl_factories.ground_and_fill_bitset(universal_effect->get_static_conditions(),
+                                                        cond_positive_static_precondition_j,
+                                                        cond_negative_static_precondition_j,
+                                                        binding_ext);
+                m_pddl_factories.ground_and_fill_bitset(universal_effect->get_derived_conditions(),
+                                                        cond_positive_derived_precondition_j,
+                                                        cond_negative_derived_precondition_j,
+                                                        binding_ext);
 
                 fill_effect(universal_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
@@ -375,31 +316,10 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 }
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Action& action, DenseState state)
+bool AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Action& action, const DenseState state)
 {
-    for (const auto& literal : action->get_fluent_conditions())
-    {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0)
-        {
-            if (!state.literal_holds(m_pddl_factories.ground_fluent_literal(literal, {})))
-            {
-                return false;
-            }
-        }
-    }
-
-    for (const auto& literal : action->get_derived_conditions())
-    {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0)
-        {
-            if (!state.literal_holds(m_pddl_factories.ground_derived_literal(literal, {})))
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
+    return (ground_and_test_nullary_literals(action->get_fluent_conditions(), state, m_pddl_factories))
+           && (ground_and_test_nullary_literals(action->get_derived_conditions(), state, m_pddl_factories));
 }
 
 void AAG<LiftedAAGDispatcher<DenseStateTag>>::nullary_case(const Action& action, DenseState state, DenseGroundActionList& out_applicable_actions)

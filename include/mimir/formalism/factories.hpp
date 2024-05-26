@@ -683,21 +683,43 @@ public:
         }
     }
 
-    GroundLiteral<Static> ground_static_literal(const Literal<Static> literal, const ObjectList& binding)
+    GroundLiteral<Static> ground_literal(const Literal<Static> literal, const ObjectList& binding)
     {
         return ground_literal_generic(literal, binding, m_groundings_by_static_literal);
     }
 
-    GroundLiteral<Fluent> ground_fluent_literal(const Literal<Fluent> literal, const ObjectList& binding)
+    GroundLiteral<Fluent> ground_literal(const Literal<Fluent> literal, const ObjectList& binding)
     {
         return ground_literal_generic(literal, binding, m_groundings_by_fluent_literal);
     }
 
-    GroundLiteral<Derived> ground_derived_literal(const Literal<Derived> literal, const ObjectList& binding)
+    GroundLiteral<Derived> ground_literal(const Literal<Derived> literal, const ObjectList& binding)
     {
         return ground_literal_generic(literal, binding, m_groundings_by_derived_literal);
     }
+
+    template<PredicateCategory P>
+    void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
+                                FlatBitsetBuilder<P>& ref_positive_bitset,
+                                FlatBitsetBuilder<P>& ref_negative_bitset,
+                                const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = ground_literal(literal, binding);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    }
 };
+
 }
 
 #endif

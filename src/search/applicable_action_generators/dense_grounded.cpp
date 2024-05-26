@@ -87,7 +87,6 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     auto delete_free_lifted_aag = std::make_shared<LiftedDenseAAG>(delete_free_problem, m_pddl_factories);
     auto delete_free_ssg = DenseSSG(delete_free_lifted_aag);
 
-    // TODO: create a constructor that takes all arguments in 1 go.
     auto state_builder = StateBuilder();
     auto& fluent_state_atoms = state_builder.get_fluent_atoms();
     auto& derived_state_atoms = state_builder.get_derived_atoms();
