@@ -224,36 +224,38 @@ public:
         }
     }
 
-    [[nodiscard]] bool is_applicable(DenseState state) const
+    template<PredicateCategory P>
+    [[nodiscard]] bool is_applicable(const DenseState state) const
     {
-        const auto fluent_state_atoms = state.get_fluent_atoms();
-        const auto derived_state_atoms = state.get_derived_atoms();
-        const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
+        const auto state_atoms = state.get_atoms<P>();
 
-        return fluent_state_atoms.is_superseteq(get_positive_precondition<Fluent>())       //
-               && fluent_state_atoms.are_disjoint(get_negative_precondition<Fluent>())     //
-               && initial_static_atoms.is_superseteq(get_positive_precondition<Static>())  //
-               && initial_static_atoms.are_disjoint(get_negative_precondition<Static>())
-               && derived_state_atoms.is_superseteq(get_positive_precondition<Derived>())  //
-               && derived_state_atoms.are_disjoint(get_negative_precondition<Derived>());  //;
+        return state_atoms.is_superseteq(get_positive_precondition<P>())  //
+               && state_atoms.are_disjoint(get_negative_precondition<P>());
+    }
+
+    [[nodiscard]] bool is_applicable(const DenseState state) const
+    {
+        return is_applicable<Fluent>(state) && is_applicable<Static>(state) && is_applicable<Derived>(state);
+    }
+
+    template<PredicateCategory P, flatmemory::IsBitset Bitset>
+        requires flatmemory::HasCompatibleTagType<Bitset, P>
+    [[nodiscard]] bool is_applicable(const Bitset& atoms) const
+    {
+        return atoms.is_superseteq(get_positive_precondition<P>())  //
+               && atoms.are_disjoint(get_negative_precondition<P>());
     }
 
     template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2, flatmemory::IsBitset Bitset3>
     [[nodiscard]] bool is_applicable(const Bitset1 fluent_state_atoms, const Bitset2 derived_state_atoms, const Bitset3 static_positive_bitset) const
     {
-        return fluent_state_atoms.is_superseteq(get_positive_precondition<Fluent>())         //
-               && fluent_state_atoms.are_disjoint(get_negative_precondition<Fluent>())       //
-               && static_positive_bitset.is_superseteq(get_positive_precondition<Static>())  //
-               && static_positive_bitset.are_disjoint(get_negative_precondition<Static>())
-               && derived_state_atoms.is_superseteq(get_positive_precondition<Derived>())  //
-               && derived_state_atoms.are_disjoint(get_negative_precondition<Derived>());
+        return is_applicable<Fluent>(fluent_state_atoms) && is_applicable<Static>(static_positive_bitset) && is_applicable<Derived>(derived_state_atoms);
     }
 
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_atoms) const
     {
-        return static_positive_atoms.is_superseteq(get_positive_precondition<Static>())
-               && static_positive_atoms.are_disjoint(get_negative_precondition<Static>());
+        return is_applicable<Static>(static_positive_atoms);
     }
 };
 
@@ -393,18 +395,18 @@ public:
     /* Simple effects */
     [[nodiscard]] const FlatSimpleEffect& get_simple_effect() const { return m_view.get<6>(); }
 
-    [[nodiscard]] bool is_applicable(DenseState state) const
+    template<PredicateCategory P>
+    [[nodiscard]] bool is_applicable(const DenseState state) const
     {
-        const auto fluent_state_atoms = state.get_fluent_atoms();
-        const auto derived_state_atoms = state.get_derived_atoms();
-        const auto initial_static_atoms = state.get_problem()->get_static_initial_positive_atoms_bitset();
+        const auto state_atoms = state.get_atoms<P>();
 
-        return fluent_state_atoms.is_superseteq(get_positive_precondition<Fluent>())       //
-               && fluent_state_atoms.are_disjoint(get_negative_precondition<Fluent>())     //
-               && initial_static_atoms.is_superseteq(get_positive_precondition<Static>())  //
-               && initial_static_atoms.are_disjoint(get_negative_precondition<Static>())   //
-               && derived_state_atoms.is_superseteq(get_positive_precondition<Derived>())  //
-               && derived_state_atoms.are_disjoint(get_negative_precondition<Derived>());
+        return state_atoms.is_superseteq(get_positive_precondition<P>())  //
+               && state_atoms.are_disjoint(get_negative_precondition<P>());
+    }
+
+    [[nodiscard]] bool is_applicable(const DenseState state) const
+    {
+        return is_applicable<Fluent>(state) && is_applicable<Static>(state) && is_applicable<Derived>(state);
     }
 };
 

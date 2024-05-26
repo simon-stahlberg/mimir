@@ -18,6 +18,7 @@
 #ifndef MIMIR_COMMON_FACTORIES_HPP_
 #define MIMIR_COMMON_FACTORIES_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/pddl.hpp"
 
@@ -554,84 +555,45 @@ public:
     /* Accessors */
 
     // GroundAtom
-    GroundAtom<Fluent> get_fluent_ground_atom(size_t atom_id) const { return fluent_ground_atoms.get(atom_id); }
+    template<PredicateCategory P>
+    GroundAtom<P> get_ground_atom(size_t atom_id) const
+    {
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_ground_atoms.get(atom_id);
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_ground_atoms.get(atom_id);
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_ground_atoms.get(atom_id);
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
+    }
 
-    const FluentGroundAtomFactory& get_fluent_ground_atoms() const { return fluent_ground_atoms; }
-
-    template<std::ranges::forward_range Iterable>
-    void get_fluent_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<Fluent>& out_ground_atoms) const
+    template<PredicateCategory P, flatmemory::IsBitset Bitset>
+        requires flatmemory::HasCompatibleTagType<Bitset, P>
+    void get_ground_atoms_from_ids(const Bitset& atom_ids, GroundAtomList<P>& out_ground_atoms) const
     {
         out_ground_atoms.clear();
 
         for (const auto& atom_id : atom_ids)
         {
-            out_ground_atoms.push_back(get_fluent_ground_atom(atom_id));
+            out_ground_atoms.push_back(get_ground_atom<P>(atom_id));
         }
     }
 
-    template<std::ranges::forward_range Iterable>
-    GroundAtomList<Fluent> get_fluent_ground_atoms_from_ids(const Iterable& atom_ids) const
+    template<PredicateCategory P, flatmemory::IsBitset Bitset>
+        requires flatmemory::HasCompatibleTagType<Bitset, P>
+    GroundAtomList<P> get_ground_atoms_from_ids(const Bitset& atom_ids) const
     {
-        auto result = GroundAtomList<Fluent> {};
-        get_fluent_ground_atoms_from_ids(atom_ids, result);
-        return result;
-    }
-
-    // Static GroundAtom
-    GroundAtom<Static> get_static_ground_atom(size_t atom_id) const { return static_ground_atoms.get(atom_id); }
-
-    const StaticGroundAtomFactory& get_static_ground_atoms() const { return static_ground_atoms; }
-
-    template<std::ranges::forward_range Iterable>
-    void get_static_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<Static>& out_ground_atoms) const
-    {
-        out_ground_atoms.clear();
-
-        for (const auto& atom_id : atom_ids)
-        {
-            out_ground_atoms.push_back(get_static_ground_atom(atom_id));
-        }
-    }
-
-    template<std::ranges::forward_range Iterable>
-    GroundAtomList<Static> get_static_ground_atoms_from_ids(const Iterable& atom_ids) const
-    {
-        auto result = GroundAtomList<Static> {};
-        get_static_ground_atoms_from_ids(atom_ids, result);
-        return result;
-    }
-
-    // TODO: Idea to get atoms from bitsets dependent on predicate category, still incomplete
-    // template<PredicateCategory P, flatmemory::IsBitset Bitset>
-    //    requires flatmemory::HasCompatibleTagType<Bitset, P>
-    // GroundAtomList<Static> get_static_ground_atoms_from_ids(const Bitset& atom_ids) const
-    //{
-    //    auto result = GroundAtomList<P> {};
-    //    get_static_ground_atoms_from_ids(atom_ids, result);
-    //    return result;
-    //}
-
-    // Derived GroundAtom
-    GroundAtom<Derived> get_derived_ground_atom(size_t atom_id) const { return derived_ground_atoms.get(atom_id); }
-
-    const DerivedGroundAtomFactory& get_derived_ground_atoms() const { return derived_ground_atoms; }
-
-    template<std::ranges::forward_range Iterable>
-    void get_derived_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<Derived>& out_ground_atoms) const
-    {
-        out_ground_atoms.clear();
-
-        for (const auto& atom_id : atom_ids)
-        {
-            out_ground_atoms.push_back(get_derived_ground_atom(atom_id));
-        }
-    }
-
-    template<std::ranges::forward_range Iterable>
-    GroundAtomList<Derived> get_derived_ground_atoms_from_ids(const Iterable& atom_ids) const
-    {
-        auto result = GroundAtomList<Derived> {};
-        get_derived_ground_atoms_from_ids(atom_ids, result);
+        auto result = GroundAtomList<P> {};
+        get_ground_atoms_from_ids(atom_ids, result);
         return result;
     }
 

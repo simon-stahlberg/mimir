@@ -447,10 +447,10 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
 
     const auto fluent_assignment_sets = AssignmentSet<Fluent>(m_problem,
                                                               m_problem->get_domain()->get_fluent_predicates(),
-                                                              m_pddl_factories.get_fluent_ground_atoms_from_ids(state.get_fluent_atoms()));
+                                                              m_pddl_factories.get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()));
     const auto derived_assignment_sets = AssignmentSet<Derived>(m_problem,
                                                                 m_problem->get_problem_and_domain_derived_predicates(),
-                                                                m_pddl_factories.get_derived_ground_atoms_from_ids(state.get_derived_atoms()));
+                                                                m_pddl_factories.get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()));
 
     // Get the applicable ground actions for each action schema.
 

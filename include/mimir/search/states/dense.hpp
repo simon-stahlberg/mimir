@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_STATES_DENSE_HPP_
 #define MIMIR_SEARCH_STATES_DENSE_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/flat_types.hpp"
@@ -89,8 +90,27 @@ private:
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
 public:
-    [[nodiscard]] FlatBitsetBuilder<Fluent>& get_fluent_atoms() { return m_builder.get<1>(); }
-    [[nodiscard]] FlatBitsetBuilder<Derived>& get_derived_atoms() { return m_builder.get<2>(); }
+    template<PredicateCategory P>
+    [[nodiscard]] FlatBitsetBuilder<P>& get_atoms()
+    {
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            static_assert(dependent_false<P>::value, "Modifying static grounded atoms is not allowed.");
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return m_builder.get<1>();
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return m_builder.get<2>();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
+    }
+
     [[nodiscard]] Problem& get_problem() { return m_builder.get<3>(); }
 };
 
@@ -110,33 +130,49 @@ private:
     /* Implement IView interface */
     friend class IConstView<ConstView<StateDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_fluent_atoms() == other.get_fluent_atoms(); }
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_atoms<Fluent>() == other.get_atoms<Fluent>(); }
 
-    [[nodiscard]] size_t hash_impl() const { return get_fluent_atoms().hash(); }
+    [[nodiscard]] size_t hash_impl() const { return get_atoms<Fluent>().hash(); }
 
     /* Implement IStateView interface */
     friend class IStateView<ConstView<StateDispatcher<DenseStateTag>>>;
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 
-    [[nodiscard]] auto begin_impl() const { return get_fluent_atoms().begin(); }
-    [[nodiscard]] auto end_impl() const { return get_fluent_atoms().end(); }
+    [[nodiscard]] auto begin_impl() const { return get_atoms<Fluent>().begin(); }
+    [[nodiscard]] auto end_impl() const { return get_atoms<Fluent>().end(); }
 
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
-    [[nodiscard]] FlatBitset<Fluent> get_fluent_atoms() const { return m_view.get<1>(); }
-    [[nodiscard]] FlatBitset<Derived> get_derived_atoms() const { return m_view.get<2>(); }
-    [[nodiscard]] Problem get_problem() const { return m_view.get<3>(); }
-
-    bool contains(const GroundAtom<Static>& ground_atom) const
+    template<PredicateCategory P>
+    [[nodiscard]] FlatBitset<P> get_atoms() const
     {
-        return get_problem()->get_static_initial_positive_atoms_bitset().get(ground_atom->get_identifier());
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return get_problem()->get_static_initial_positive_atoms_bitset();
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return m_view.get<1>();
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return m_view.get<2>();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
     }
 
-    bool contains(const GroundAtom<Fluent>& ground_atom) const { return get_fluent_atoms().get(ground_atom->get_identifier()); }
+    [[nodiscard]] Problem get_problem() const { return m_view.get<3>(); }
 
-    bool contains(const GroundAtom<Derived>& ground_atom) const { return get_derived_atoms().get(ground_atom->get_identifier()); }
+    template<PredicateCategory P>
+    bool contains(const GroundAtom<P>& ground_atom) const
+    {
+        return get_atoms<P>().get(ground_atom->get_identifier());
+    }
 
     template<PredicateCategory P>
     bool literal_holds(const GroundLiteral<P>& literal) const

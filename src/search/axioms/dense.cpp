@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, c
 {
     const auto [derived_effect, pddl_factories] = data;
 
-    const auto& ground_atom = pddl_factories.get_derived_ground_atom(derived_effect.atom_id);
+    const auto& ground_atom = pddl_factories.get_ground_atom<Derived>(derived_effect.atom_id);
 
     if (derived_effect.is_negated)
     {

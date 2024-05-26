@@ -162,11 +162,11 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_sets = AssignmentSet<Fluent>(m_problem,
                                                               m_problem->get_domain()->get_fluent_predicates(),
-                                                              m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms));
+                                                              m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms));
 
     auto derived_assignment_sets = AssignmentSet<Derived>(m_problem,
                                                           m_problem->get_problem_and_domain_derived_predicates(),
-                                                          m_pddl_factories.get_derived_ground_atoms_from_ids(ref_derived_state_atoms));
+                                                          m_pddl_factories.get_ground_atoms_from_ids<Derived>(ref_derived_state_atoms));
 
     /* 2. Fixed point computation */
 
@@ -226,7 +226,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
                 if (!ref_derived_state_atoms.get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_pddl_factories.get_derived_ground_atom(grounded_atom_id);
+                    const auto new_ground_atom = m_pddl_factories.get_ground_atom<Derived>(grounded_atom_id);
                     reached_partition_fixed_point = false;
 
                     // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,

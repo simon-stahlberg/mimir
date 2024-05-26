@@ -70,7 +70,7 @@ private:
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         auto& state_id = m_state_builder.get_id();
-        auto& fluent_state_atoms = m_state_builder.get_fluent_atoms();
+        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
         fluent_state_atoms.unset_all();
         auto& problem = m_state_builder.get_problem();
 
@@ -102,7 +102,7 @@ private:
 
         /* Fetch member references for extended construction. */
 
-        auto& derived_state_atoms = m_state_builder.get_derived_atoms();
+        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
         derived_state_atoms.unset_all();
 
         /* 5. Construct extended state by evaluating Axioms */
@@ -125,12 +125,12 @@ private:
 
         auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
         auto& state_id = m_state_builder.get_id();
-        auto& fluent_state_atoms = m_state_builder.get_fluent_atoms();
+        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
         fluent_state_atoms.unset_all();
         auto& problem = m_state_builder.get_problem();
 
         // 1. Initialize non-extended state
-        fluent_state_atoms = state.get_fluent_atoms();
+        fluent_state_atoms = state.get_atoms<Fluent>();
 
         /* 2. Set state id */
 
@@ -179,7 +179,7 @@ private:
 
         /* Fetch member references for extended construction. */
 
-        auto& derived_state_atoms = m_state_builder.get_derived_atoms();
+        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
         derived_state_atoms.unset_all();
 
         /* 6. Construct extended state by evaluating Axioms */

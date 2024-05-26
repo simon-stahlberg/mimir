@@ -88,10 +88,10 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     auto delete_free_ssg = DenseSSG(delete_free_lifted_aag);
 
     auto state_builder = StateBuilder();
-    auto& fluent_state_atoms = state_builder.get_fluent_atoms();
-    auto& derived_state_atoms = state_builder.get_derived_atoms();
+    auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
+    auto& derived_state_atoms = state_builder.get_atoms<Derived>();
     auto& state_problem = state_builder.get_problem();
-    fluent_state_atoms = delete_free_ssg.get_or_create_initial_state().get_fluent_atoms();
+    fluent_state_atoms = delete_free_ssg.get_or_create_initial_state().get_atoms<Fluent>();
     state_problem = delete_free_problem;
 
     // Keep track of changes
@@ -113,7 +113,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         for (const auto& action : actions)
         {
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
-            for (const auto atom_id : succ_state.get_fluent_atoms())
+            for (const auto atom_id : succ_state.get_atoms<Fluent>())
             {
                 fluent_state_atoms.set(atom_id);
             }
@@ -131,13 +131,13 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms),
-                                                       m_pddl_factories.get_derived_ground_atoms_from_ids(derived_state_atoms),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms),
+                                                       m_pddl_factories.get_ground_atoms_from_ids<Derived>(derived_state_atoms),
                                                        to_ground_actions(delete_free_lifted_aag->get_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
-    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_fluent_ground_atoms_from_ids(fluent_state_atoms), m_pddl_factories);
-    auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_derived_ground_atoms_from_ids(derived_state_atoms), m_pddl_factories);
+    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms), m_pddl_factories);
+    auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_ground_atoms_from_ids<Derived>(derived_state_atoms), m_pddl_factories);
 
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
@@ -190,7 +190,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
 {
     out_applicable_actions.clear();
 
-    m_action_match_tree.get_applicable_elements(state.get_fluent_atoms(), state.get_derived_atoms(), out_applicable_actions);
+    m_action_match_tree.get_applicable_elements(state.get_atoms<Fluent>(), state.get_atoms<Derived>(), out_applicable_actions);
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
