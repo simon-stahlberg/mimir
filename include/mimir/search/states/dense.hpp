@@ -199,6 +199,9 @@ public:
  * Mimir types
  */
 
+// TODO: differentiate registered and unregistered state can help us remove some duplicate code.
+// We could use unregistered states internally to represent some unfinished state.
+
 using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
 using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 using DenseStateList = std::vector<DenseState>;
