@@ -157,6 +157,24 @@ loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Ac
     return translated_action;
 }
 
+loki::Axiom RemoveUniversalQuantifiersTranslator::translate_impl(const loki::AxiomImpl& axiom)
+{
+    this->m_scopes.open_scope(axiom.get_parameters());
+
+    // Translate condition and literal
+    auto translated_condition = this->translate(*axiom.get_condition());
+    auto translated_effect = this->translate(*axiom.get_literal());
+
+    // Turn free variables into parameters
+    auto translated_parameters = this->translate(axiom.get_parameters());
+
+    auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(translated_parameters, translated_effect, translated_condition);
+
+    this->m_scopes.close_scope();
+
+    return translated_axiom;
+}
+
 loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(const loki::DomainImpl& domain)
 {
     // Clear containers that store derived predicates and axioms obtained during translation.

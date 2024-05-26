@@ -87,6 +87,7 @@ private:
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
     loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
     loki::Action translate_impl(const loki::ActionImpl& action);
+    loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
     loki::Domain translate_impl(const loki::DomainImpl& domain);
     loki::Problem translate_impl(const loki::ProblemImpl& problem);
 
