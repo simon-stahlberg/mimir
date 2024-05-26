@@ -39,16 +39,16 @@ public:
 /**
  * Interface class
  */
-template<typename Derived>
+template<typename Derived_>
 class IStaticHeuristic : public IDynamicHeuristic
 {
 private:
     IStaticHeuristic() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     [[nodiscard]] double compute_heuristic(State state) override { return self().compute_heuristic_impl(state); }

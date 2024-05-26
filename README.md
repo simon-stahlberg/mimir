@@ -19,7 +19,6 @@ Mimir supports the following PDDL requirements in the grounded and lifting setti
 - [x] :adl
 - [x] :derived-predicates
 - [x] :action-costs
-- [x] :derived-predicates
 
 ## Example C++ API
 
@@ -55,7 +54,7 @@ Run the following sequence of commands to commands to download, configure, build
 
 ```console
 # Configure dependencies
-cmake -S dependencies -B dependencies/build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=dependencies/installs
+cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs
 # Build and install dependencies
 cmake --build dependencies/build -j16
 ```

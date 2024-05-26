@@ -27,16 +27,16 @@ namespace mimir
 /**
  * Interface class
  */
-template<typename Derived>
+template<typename Derived_>
 class IActionBuilder
 {
 private:
     IActionBuilder() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     [[nodiscard]] uint32_t& get_id() { return self().get_id_impl(); }
@@ -48,16 +48,16 @@ public:
 /**
  * Interface class
  */
-template<typename Derived>
+template<typename Derived_>
 class IActionView
 {
 private:
     IActionView() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }

@@ -31,31 +31,31 @@ namespace mimir
 /**
  * Interface class
  */
-template<typename Derived>
+template<typename Derived_>
 class IStateBuilder
 {
 private:
     IStateBuilder() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     [[nodiscard]] uint32_t& get_id() { return self().get_id_impl(); }
 };
 
-template<typename Derived>
+template<typename Derived_>
 class IStateView
 {
 private:
     IStateView() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     /**
