@@ -60,6 +60,8 @@ private:
     friend class loki::Base<GroundAtomImpl>;
 
 public:
+    using Category = P;
+
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     bool is_static() const;

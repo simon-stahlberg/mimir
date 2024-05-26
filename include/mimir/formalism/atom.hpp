@@ -49,6 +49,8 @@ private:
     friend class loki::Base<AtomImpl>;
 
 public:
+    using Category = P;
+
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
 };

@@ -52,6 +52,8 @@ private:
     friend class loki::Base<GroundLiteralImpl>;
 
 public:
+    using Category = P;
+
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;
 };

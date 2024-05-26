@@ -53,6 +53,8 @@ private:
     friend class loki::Base<LiteralImpl>;
 
 public:
+    using Category = P;
+
     bool is_negated() const;
     const Atom<P>& get_atom() const;
 };

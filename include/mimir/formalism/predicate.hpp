@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
 #include "mimir/common/collections.hpp"
+#include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <loki/loki.hpp>
@@ -29,22 +30,6 @@
 namespace mimir
 {
 
-/**
- * Dispatchers
- */
-struct Static
-{
-};
-struct Fluent
-{
-};
-struct Derived
-{
-};
-
-template<typename T>
-concept PredicateCategory = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
-
 /*
    TODO: Flattening PredicateImpl using a tuple with the following fields
    1) Flat indices
@@ -54,8 +39,8 @@ concept PredicateCategory = std::is_same_v<T, Static> || std::is_same_v<T, Fluen
    - ConstView<String> m_name; (8 byte)
    - ConstView<Vector<Variable>> m_variables (8 byte)
 */
-template<typename T>
-class PredicateImpl : public loki::Base<PredicateImpl<T>>
+template<PredicateCategory P>
+class PredicateImpl : public loki::Base<PredicateImpl<P>>
 {
 private:
     std::string m_name;
@@ -66,17 +51,19 @@ private:
     PredicateImpl(int identifier, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<PredicateImpl<T>, loki::Hash<PredicateImpl<T>*>, loki::EqualTo<PredicateImpl<T>*>>;
+    friend class loki::PDDLFactory<PredicateImpl<P>, loki::Hash<PredicateImpl<P>*>, loki::EqualTo<PredicateImpl<P>*>>;
 
     /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const PredicateImpl<T>& other) const;
+    bool is_structurally_equivalent_to_impl(const PredicateImpl<P>& other) const;
     size_t hash_impl() const;
     void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
 
     // Give access to the private interface implementations.
-    friend class loki::Base<PredicateImpl<T>>;
+    friend class loki::Base<PredicateImpl<P>>;
 
 public:
+    using Category = P;
+
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
     size_t get_arity() const;
@@ -86,17 +73,17 @@ public:
  * Implementation
  */
 
-template<typename T>
-PredicateImpl<T>::PredicateImpl(int identifier, std::string name, VariableList parameters) :
-    loki::Base<PredicateImpl<T>>(identifier),
+template<PredicateCategory P>
+PredicateImpl<P>::PredicateImpl(int identifier, std::string name, VariableList parameters) :
+    loki::Base<PredicateImpl<P>>(identifier),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {
     assert(is_all_unique(m_parameters));
 }
 
-template<typename T>
-bool PredicateImpl<T>::is_structurally_equivalent_to_impl(const PredicateImpl<T>& other) const
+template<PredicateCategory P>
+bool PredicateImpl<P>::is_structurally_equivalent_to_impl(const PredicateImpl<P>& other) const
 {
     if (this != &other)
     {
@@ -105,14 +92,14 @@ bool PredicateImpl<T>::is_structurally_equivalent_to_impl(const PredicateImpl<T>
     return true;
 }
 
-template<typename T>
-size_t PredicateImpl<T>::hash_impl() const
+template<PredicateCategory P>
+size_t PredicateImpl<P>::hash_impl() const
 {
     return loki::hash_combine(m_name, loki::hash_container(m_parameters));
 }
 
-template<typename T>
-void PredicateImpl<T>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
+template<PredicateCategory P>
+void PredicateImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     out << "(" << m_name;
     for (size_t i = 0; i < m_parameters.size(); ++i)
@@ -123,20 +110,20 @@ void PredicateImpl<T>::str_impl(std::ostream& out, const loki::FormattingOptions
     out << ")";
 }
 
-template<typename T>
-const std::string& PredicateImpl<T>::get_name() const
+template<PredicateCategory P>
+const std::string& PredicateImpl<P>::get_name() const
 {
     return m_name;
 }
 
-template<typename T>
-const VariableList& PredicateImpl<T>::get_parameters() const
+template<PredicateCategory P>
+const VariableList& PredicateImpl<P>::get_parameters() const
 {
     return m_parameters;
 }
 
-template<typename T>
-size_t PredicateImpl<T>::get_arity() const
+template<PredicateCategory P>
+size_t PredicateImpl<P>::get_arity() const
 {
     return m_parameters.size();
 }
@@ -150,6 +137,7 @@ template<PredicateCategory P>
 using PredicateList = std::vector<Predicate<P>>;
 template<PredicateCategory P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
+
 }
 
 #endif

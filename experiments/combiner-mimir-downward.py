@@ -34,6 +34,6 @@ exp = Experiment("combined-brfs-eval")
 exp.add_fetcher("brfs-downward-eval")
 exp.add_fetcher("brfs-mimir-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "brfs-grounded", "brfs-lifted"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-brfs-grounded", "mimir-brfs-lifted"]))
 
 exp.run_steps()
