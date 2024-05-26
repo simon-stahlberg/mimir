@@ -22,6 +22,92 @@ using namespace std::string_literals;
 namespace mimir
 {
 
+RenameQuantifiedVariablesTranslator::PrepareScope::PrepareScope(RenameQuantifiedVariablesTranslator::PrepareScope* parent) :
+    m_parent(parent),
+    m_quantified_in_scope_or_child_scopes(),
+    m_name_conflict_detected(false)
+{
+}
+
+void RenameQuantifiedVariablesTranslator::PrepareScope::insert(const loki::Variable& variable)
+{
+    if (m_quantified_in_scope_or_child_scopes.count(variable))
+    {
+        m_name_conflict_detected = true;
+    }
+
+    m_quantified_in_scope_or_child_scopes.insert(variable);
+}
+
+void RenameQuantifiedVariablesTranslator::PrepareScope::on_conflict_detected() { m_name_conflict_detected = true; }
+
+RenameQuantifiedVariablesTranslator::PrepareScope* RenameQuantifiedVariablesTranslator::PrepareScope::get_parent() { return m_parent; }
+
+const std::unordered_set<loki::Variable>& RenameQuantifiedVariablesTranslator::PrepareScope::get_quantified_in_scope_or_child_scopes() const
+{
+    return m_quantified_in_scope_or_child_scopes;
+}
+
+bool RenameQuantifiedVariablesTranslator::PrepareScope::get_name_conflict_detected() const { return m_name_conflict_detected; }
+
+const RenameQuantifiedVariablesTranslator::PrepareScope&
+RenameQuantifiedVariablesTranslator::PrepareScopeStack::open_scope(const loki::ParameterList& parameters)
+{
+    m_scopes.empty() ? m_scopes.push_back(std::make_unique<RenameQuantifiedVariablesTranslator::PrepareScope>()) :
+                       m_scopes.push_back(std::make_unique<RenameQuantifiedVariablesTranslator::PrepareScope>(m_scopes.back().get()));
+
+    auto& scope = *m_scopes.back();
+
+    for (const auto& parameter : parameters)
+    {
+        scope.insert(parameter->get_variable());
+    }
+
+    return scope;
+}
+
+void RenameQuantifiedVariablesTranslator::PrepareScopeStack::close_scope()
+{
+    if (m_scopes.empty())
+    {
+        throw std::logic_error("Tried to close scope on empty scope stack.");
+    }
+
+    auto& scope = *m_scopes.back();
+
+    if (scope.get_parent())
+    {
+        for (const auto& variable : scope.get_quantified_in_scope_or_child_scopes())
+        {
+            scope.get_parent()->insert(variable);
+        }
+    }
+
+    m_scopes.pop_back();
+}
+
+void RenameQuantifiedVariablesTranslator::PrepareScopeStack::close_scope_soft()
+{
+    auto& scope = *m_scopes.back();
+
+    if (scope.get_name_conflict_detected() && scope.get_parent())
+    {
+        scope.get_parent()->on_conflict_detected();
+    }
+
+    m_scopes.pop_back();
+}
+
+const RenameQuantifiedVariablesTranslator::PrepareScope& RenameQuantifiedVariablesTranslator::PrepareScopeStack::top() const
+{
+    if (m_scopes.empty())
+    {
+        throw std::logic_error("Tried to access topmost scope of an empty scope stack.");
+    }
+
+    return *m_scopes.back();
+}
+
 static loki::Variable create_renamed_variable(const loki::Variable& variable, size_t num_quantification, loki::PDDLFactories& pddl_factories)
 {
     return pddl_factories.get_or_create_variable(variable->get_name() + "_" + std::to_string(variable->get_identifier()) + "_"
@@ -44,6 +130,64 @@ void RenameQuantifiedVariablesTranslator::rename_variables(const loki::Parameter
 }
 
 void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::VariableImpl& variable) { m_variables.insert(&variable); }
+
+void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::ConditionExistsImpl& condition)
+{
+    m_scopes.open_scope(condition.get_parameters());
+
+    this->prepare(condition.get_parameters());
+    this->prepare(*condition.get_condition());
+
+    m_scopes.close_scope();
+}
+
+void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::ConditionForallImpl& condition)
+{
+    m_scopes.open_scope(condition.get_parameters());
+
+    this->prepare(condition.get_parameters());
+    this->prepare(*condition.get_condition());
+
+    m_scopes.close_scope();
+}
+
+void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::EffectConditionalForallImpl& effect)
+{
+    m_scopes.open_scope(effect.get_parameters());
+
+    this->prepare(effect.get_parameters());
+    this->prepare(*effect.get_effect());
+
+    m_scopes.close_scope();
+}
+
+void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::ActionImpl& action)
+{
+    m_scopes.open_scope(action.get_parameters());
+
+    this->prepare(action.get_parameters());
+    if (action.get_condition().has_value())
+    {
+        this->prepare(*action.get_condition().value());
+    }
+    if (action.get_effect().has_value())
+    {
+        this->prepare(*action.get_effect().value());
+    }
+
+    m_scopes.close_scope_soft();
+}
+
+void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::AxiomImpl& axiom)
+{
+    m_scopes.open_scope(axiom.get_parameters());
+
+    this->prepare(axiom.get_parameters());
+    this->prepare(*axiom.get_condition());
+    this->prepare(*axiom.get_literal());
+
+    m_scopes.close_scope_soft();
+}
 
 loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
 {
@@ -95,6 +239,17 @@ loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::Act
                                                        translated_effect);
 }
 
+loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(const loki::AxiomImpl& axiom)
+{
+    rename_variables(axiom.get_parameters());
+
+    const auto translated_parameters = this->translate(axiom.get_parameters());
+    const auto translated_conditions = this->translate(*axiom.get_condition());
+    const auto translated_literal = this->translate(*axiom.get_literal());
+
+    return this->m_pddl_factories.get_or_create_axiom(translated_parameters, translated_literal, translated_conditions);
+}
+
 loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
     rename_variables(condition.get_parameters());
@@ -127,30 +282,28 @@ loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::Eff
 
 loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemImpl& problem)
 {
+    // Open a scope that holds the result
+    m_scopes.open_scope();
+
     this->prepare(problem);
 
-    // Initialize
-    for (const auto& variable : m_variables)
+    // Only run translate to rename if there was a conflict detected.
+    if (m_scopes.top().get_name_conflict_detected())
     {
-        m_num_quantifications.emplace(variable, 0);
+        // Initialize renaming info
+        for (const auto& variable : m_variables)
+        {
+            m_num_quantifications.emplace(variable, 0);
 
-        const auto renamed_variable = create_renamed_variable(variable, 0, this->m_pddl_factories);
+            const auto renamed_variable = create_renamed_variable(variable, 0, this->m_pddl_factories);
 
-        m_renamings.emplace(variable, renamed_variable);
+            m_renamings.emplace(variable, renamed_variable);
+        }
+
+        return this->translate(problem);
     }
 
-    return this->m_pddl_factories.get_or_create_problem(
-        this->translate(*problem.get_domain()),
-        problem.get_name(),
-        this->translate(*problem.get_requirements()),
-        this->translate(problem.get_objects()),
-        this->translate(problem.get_derived_predicates()),
-        this->translate(problem.get_initial_literals()),
-        this->translate(problem.get_numeric_fluents()),
-        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
-        (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
-                                                         std::nullopt),
-        this->translate(problem.get_axioms()));
+    return &problem;
 }
 
 RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLFactories& pddl_factories) :
@@ -158,5 +311,4 @@ RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::P
     m_renaming_enabled(true)
 {
 }
-
 }

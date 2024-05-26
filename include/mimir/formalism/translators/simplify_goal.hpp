@@ -36,13 +36,10 @@ private:
     using BaseCachedRecurseTranslator::prepare_impl;
     using BaseCachedRecurseTranslator::translate_impl;
 
-    // Track simple and derived predicate names to give unique names
-    std::unordered_set<std::string> m_simple_and_derived_predicate_names;
-    uint64_t m_next_axiom_id;
+    /* Computed in prepare step */
 
-    // Translation might introduce additional derived predicates and axioms.
-    std::unordered_set<loki::Predicate> m_derived_predicates;
-    std::unordered_set<loki::Axiom> m_axioms;
+    // All simple and derived predicate names
+    std::unordered_set<std::string> m_simple_and_derived_predicate_names;
 
     /// @brief Collect all existing simple and derived predicate names.
     void prepare_impl(const loki::PredicateImpl& predicate);

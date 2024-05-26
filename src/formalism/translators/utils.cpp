@@ -160,14 +160,4 @@ std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set
     return axiom_name;
 }
 
-std::string to_hex_string(uint64_t number)
-{
-    std::ostringstream stream;
-    // Set stream to output hexadecimal
-    stream << std::hex << std::setfill('0') << std::setw(16);
-    // Convert the number to a hexadecimal string with leading zeros
-    stream << number;
-    // Return the resulting string
-    return stream.str();
-}
 }

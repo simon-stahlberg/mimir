@@ -248,8 +248,7 @@ Variable ToMimirStructures::translate_common(const loki::VariableImpl& variable,
 {
     const auto parameter_index = (encode_parameter_index) ? m_variable_to_parameter_index.at(&variable) : 0;
 
-    // Encode parameter index in variable name for visibility
-    const auto variable_name = variable.get_name() + "_" + std::to_string(parameter_index);
+    const auto variable_name = variable.get_name();
 
     return m_pddl_factories.get_or_create_variable(variable_name, parameter_index);
 }

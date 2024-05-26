@@ -97,9 +97,6 @@ extern std::vector<T> uniquify_elements(const std::vector<T>& vec)
     return std::vector<T>(set.begin(), set.end());
 }
 
-/// @brief Convert a number to a hex string
-extern std::string to_hex_string(uint64_t number);
-
 }
 
 #endif
