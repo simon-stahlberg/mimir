@@ -62,12 +62,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseStripsActionPre
 {
     const auto [strips_precondition_proxy, pddl_factories] = data;
 
-    const auto positive_static_precondition_bitset = strips_precondition_proxy.get_positive_static_precondition();
-    const auto negative_static_precondition_bitset = strips_precondition_proxy.get_negative_static_precondition();
-    const auto positive_fluent_precondition_bitset = strips_precondition_proxy.get_positive_fluent_precondition();
-    const auto negative_fluent_precondition_bitset = strips_precondition_proxy.get_negative_fluent_precondition();
-    const auto positive_derived_precondition_bitset = strips_precondition_proxy.get_positive_derived_precondition();
-    const auto negative_derived_precondition_bitset = strips_precondition_proxy.get_negative_derived_precondition();
+    const auto positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
+    const auto negative_static_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Static>();
+    const auto positive_fluent_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Fluent>();
+    const auto negative_fluent_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Fluent>();
+    const auto positive_derived_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Derived>();
+    const auto negative_derived_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Derived>();
 
     auto positive_static_precondition = GroundAtomList<Static> {};
     auto negative_static_precondition = GroundAtomList<Static> {};
@@ -116,12 +116,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseConditionalEffe
 {
     const auto [cond_effect_proxy, pddl_factories] = data;
 
-    const auto positive_static_precondition_bitset = cond_effect_proxy.get_positive_static_precondition();
-    const auto negative_static_precondition_bitset = cond_effect_proxy.get_negative_static_precondition();
-    const auto positive_fluent_precondition_bitset = cond_effect_proxy.get_positive_fluent_precondition();
-    const auto negative_fluent_precondition_bitset = cond_effect_proxy.get_negative_fluent_precondition();
-    const auto positive_derived_precondition_bitset = cond_effect_proxy.get_positive_derived_precondition();
-    const auto negative_derived_precondition_bitset = cond_effect_proxy.get_negative_derived_precondition();
+    const auto positive_static_precondition_bitset = cond_effect_proxy.get_positive_precondition<Static>();
+    const auto negative_static_precondition_bitset = cond_effect_proxy.get_negative_precondition<Static>();
+    const auto positive_fluent_precondition_bitset = cond_effect_proxy.get_positive_precondition<Fluent>();
+    const auto negative_fluent_precondition_bitset = cond_effect_proxy.get_negative_precondition<Fluent>();
+    const auto positive_derived_precondition_bitset = cond_effect_proxy.get_positive_precondition<Derived>();
+    const auto negative_derived_precondition_bitset = cond_effect_proxy.get_negative_precondition<Derived>();
     const auto& simple_effect = cond_effect_proxy.get_simple_effect();
 
     auto positive_static_precondition = GroundAtomList<Static> {};

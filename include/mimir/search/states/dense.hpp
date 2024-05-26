@@ -32,7 +32,7 @@ namespace mimir
 /**
  * Flatmemory types
  */
-using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout, FlatBitsetLayout, Problem>;
+using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>, Problem>;
 using FlatDenseStateBuilder = flatmemory::Builder<FlatDenseStateLayout>;
 using FlatDenseState = flatmemory::ConstView<FlatDenseStateLayout>;
 
@@ -89,8 +89,8 @@ private:
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
 public:
-    [[nodiscard]] FlatBitsetBuilder& get_fluent_atoms() { return m_builder.get<1>(); }
-    [[nodiscard]] FlatBitsetBuilder& get_derived_atoms() { return m_builder.get<2>(); }
+    [[nodiscard]] FlatBitsetBuilder<Fluent>& get_fluent_atoms() { return m_builder.get<1>(); }
+    [[nodiscard]] FlatBitsetBuilder<Derived>& get_derived_atoms() { return m_builder.get<2>(); }
     [[nodiscard]] Problem& get_problem() { return m_builder.get<3>(); }
 };
 
@@ -125,8 +125,8 @@ private:
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
-    [[nodiscard]] FlatBitset get_fluent_atoms() const { return m_view.get<1>(); }
-    [[nodiscard]] FlatBitset get_derived_atoms() const { return m_view.get<2>(); }
+    [[nodiscard]] FlatBitset<Fluent> get_fluent_atoms() const { return m_view.get<1>(); }
+    [[nodiscard]] FlatBitset<Derived> get_derived_atoms() const { return m_view.get<2>(); }
     [[nodiscard]] Problem get_problem() const { return m_view.get<3>(); }
 
     bool contains(const GroundAtom<Static>& ground_atom) const

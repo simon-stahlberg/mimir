@@ -27,8 +27,8 @@ namespace mimir
 {
 
 bool AE<AEDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Axiom& axiom,
-                                                                        const FlatBitsetBuilder& fluent_state_atoms,
-                                                                        const FlatBitsetBuilder& derived_state_atoms)
+                                                                        const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                                        const FlatBitsetBuilder<Derived>& derived_state_atoms)
 {
     for (const auto& literal : axiom->get_fluent_conditions())
     {
@@ -60,8 +60,8 @@ bool AE<AEDispatcher<DenseStateTag>>::nullary_fluent_preconditions_hold(const Ax
 }
 
 void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom,
-                                                   const FlatBitsetBuilder& fluent_state_atoms,
-                                                   const FlatBitsetBuilder& derived_state_atoms,
+                                                   const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                   const FlatBitsetBuilder<Derived>& derived_state_atoms,
                                                    DenseGroundAxiomList& out_applicable_axioms)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground axiom is applicable.
@@ -82,8 +82,8 @@ void AE<AEDispatcher<DenseStateTag>>::nullary_case(const Axiom& axiom,
 void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Fluent>& fluent_assignment_set,
                                                  const AssignmentSet<Derived>& derived_assignment_set,
                                                  const Axiom& axiom,
-                                                 const FlatBitsetBuilder& fluent_state_atoms,
-                                                 const FlatBitsetBuilder& derived_state_atoms,
+                                                 const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                 const FlatBitsetBuilder<Derived>& derived_state_atoms,
                                                  DenseGroundAxiomList& out_applicable_axioms)
 {
     const auto& precondition_graph = m_static_consistency_graphs.at(axiom);
@@ -111,8 +111,8 @@ void AE<AEDispatcher<DenseStateTag>>::unary_case(const AssignmentSet<Fluent>& fl
 void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet<Fluent>& fluent_assignment_set,
                                                    const AssignmentSet<Derived>& derived_assignment_set,
                                                    const Axiom& axiom,
-                                                   const FlatBitsetBuilder& fluent_state_atoms,
-                                                   const FlatBitsetBuilder& derived_state_atoms,
+                                                   const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                   const FlatBitsetBuilder<Derived>& derived_state_atoms,
                                                    DenseGroundAxiomList& out_applicable_axioms)
 {
     const auto& precondition_graph = m_static_consistency_graphs.at(axiom);
@@ -176,7 +176,8 @@ void AE<AEDispatcher<DenseStateTag>>::general_case(const AssignmentSet<Fluent>& 
     }
 }
 
-void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms, FlatBitsetBuilder& ref_derived_state_atoms)
+void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                                     FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
 {
     /* 1. Initialize assignment set */
 
@@ -349,8 +350,8 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     m_event_handler->on_ground_axiom(axiom, binding);
 
     const auto fill_fluent_bitsets = [this](const std::vector<Literal<Fluent>>& literals,
-                                            FlatBitsetBuilder& ref_positive_bitset,
-                                            FlatBitsetBuilder& ref_negative_bitset,
+                                            FlatBitsetBuilder<Fluent>& ref_positive_bitset,
+                                            FlatBitsetBuilder<Fluent>& ref_negative_bitset,
                                             const auto& binding)
     {
         for (const auto& literal : literals)
@@ -369,8 +370,8 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     };
 
     const auto fill_static_bitsets = [this](const std::vector<Literal<Static>>& literals,
-                                            FlatBitsetBuilder& ref_positive_bitset,
-                                            FlatBitsetBuilder& ref_negative_bitset,
+                                            FlatBitsetBuilder<Static>& ref_positive_bitset,
+                                            FlatBitsetBuilder<Static>& ref_negative_bitset,
                                             const auto& binding)
     {
         for (const auto& literal : literals)
@@ -389,8 +390,8 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     };
 
     const auto fill_derived_bitsets = [this](const std::vector<Literal<Derived>>& literals,
-                                             FlatBitsetBuilder& ref_positive_bitset,
-                                             FlatBitsetBuilder& ref_negative_bitset,
+                                             FlatBitsetBuilder<Derived>& ref_positive_bitset,
+                                             FlatBitsetBuilder<Derived>& ref_negative_bitset,
                                              const auto& binding)
     {
         for (const auto& literal : literals)
@@ -421,12 +422,12 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
 
     /* Precondition */
     auto strips_precondition_proxy = DenseStripsActionPreconditionBuilderProxy(m_axiom_builder.get_strips_precondition());
-    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
-    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
-    auto& positive_static_precondition = strips_precondition_proxy.get_positive_static_precondition();
-    auto& negative_static_precondition = strips_precondition_proxy.get_negative_static_precondition();
-    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_derived_precondition();
-    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_derived_precondition();
+    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
+    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
+    auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
+    auto& negative_static_precondition = strips_precondition_proxy.get_negative_precondition<Static>();
+    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_precondition<Derived>();
+    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_precondition<Derived>();
     positive_fluent_precondition.unset_all();
     negative_fluent_precondition.unset_all();
     positive_static_precondition.unset_all();

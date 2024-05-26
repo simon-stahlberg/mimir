@@ -233,7 +233,10 @@ const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predic
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
-FlatBitset ProblemImpl::get_static_initial_positive_atoms_bitset() const { return FlatBitset(m_static_initial_positive_atoms_builder.buffer().data()); }
+FlatBitset<Static> ProblemImpl::get_static_initial_positive_atoms_bitset() const
+{
+    return FlatBitset<Static>(m_static_initial_positive_atoms_builder.buffer().data());
+}
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 

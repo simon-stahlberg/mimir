@@ -39,7 +39,7 @@ public:
     virtual void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) = 0;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(const FlatBitsetBuilder& fluent_state_atoms, FlatBitsetBuilder& ref_derived_state_atoms) = 0;
+    virtual void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) = 0;
 
     // Notify that a new f-layer was reached
     virtual void on_finish_f_layer() = 0;
@@ -59,16 +59,16 @@ public:
 /**
  * Static interface class.
  */
-template<typename Derived>
+template<typename Derived_>
 class IStaticAAG : public IDynamicAAG
 {
 private:
     IStaticAAG() = default;
-    friend Derived;
+    friend Derived_;
 
     /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) override
@@ -76,7 +76,7 @@ public:
         self().generate_applicable_actions_impl(state, out_applicable_actions);
     }
 
-    void generate_and_apply_axioms(const FlatBitsetBuilder& fluent_state_atoms, FlatBitsetBuilder& ref_derived_state_atoms) override
+    void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override
     {  //
         self().generate_and_apply_axioms_impl(fluent_state_atoms, ref_derived_state_atoms);
     }

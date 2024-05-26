@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_FLAT_TYPES_HPP_
 
 #include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate_category.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 #include <ostream>
@@ -27,15 +28,15 @@ namespace mimir
 {
 /* Bitset */
 
-using FlatBitsetLayout = flatmemory::Bitset<uint64_t>;
-using FlatBitsetBuilder = flatmemory::Builder<FlatBitsetLayout>;
-using FlatBitset = flatmemory::ConstView<FlatBitsetLayout>;
+// General purpose bitset
+template<typename Tag = void>
+using FlatBitsetLayout = flatmemory::Bitset<uint64_t, Tag>;
+template<typename Tag = void>
+using FlatBitsetBuilder = flatmemory::Builder<FlatBitsetLayout<Tag>>;
+template<typename Tag = void>
+using FlatBitset = flatmemory::ConstView<FlatBitsetLayout<Tag>>;
 
-using FlatBitsetVectorLayout = flatmemory::Vector<flatmemory::Bitset<uint64_t>>;
-using FlatBitsetVectorBuilder = flatmemory::Builder<FlatBitsetVectorLayout>;
-using FlatBitsetVector = flatmemory::ConstView<FlatBitsetVectorLayout>;
-
-inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
+inline std::ostream& operator<<(std::ostream& os, const FlatBitset<>& set)
 {
     os << "[";
     size_t i = 0;

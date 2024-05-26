@@ -194,8 +194,8 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
     m_action_match_tree.get_applicable_elements(state.get_fluent_atoms(), state.get_derived_atoms(), out_applicable_actions);
 }
 
-void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms,
-                                                                               FlatBitsetBuilder& ref_derived_state_atoms)
+void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                                               FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
 {
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {

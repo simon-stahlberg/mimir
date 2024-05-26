@@ -127,8 +127,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     m_event_handler->on_ground_action(action, binding);
 
     const auto fill_fluent_bitsets = [this](const std::vector<Literal<Fluent>>& literals,
-                                            FlatBitsetBuilder& ref_positive_bitset,
-                                            FlatBitsetBuilder& ref_negative_bitset,
+                                            FlatBitsetBuilder<Fluent>& ref_positive_bitset,
+                                            FlatBitsetBuilder<Fluent>& ref_negative_bitset,
                                             const auto& binding)
     {
         for (const auto& literal : literals)
@@ -147,8 +147,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     };
 
     const auto fill_static_bitsets = [this](const std::vector<Literal<Static>>& literals,
-                                            FlatBitsetBuilder& ref_positive_bitset,
-                                            FlatBitsetBuilder& ref_negative_bitset,
+                                            FlatBitsetBuilder<Static>& ref_positive_bitset,
+                                            FlatBitsetBuilder<Static>& ref_negative_bitset,
                                             const auto& binding)
     {
         for (const auto& literal : literals)
@@ -167,8 +167,8 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     };
 
     const auto fill_derived_bitsets = [this](const std::vector<Literal<Derived>>& literals,
-                                             FlatBitsetBuilder& ref_positive_bitset,
-                                             FlatBitsetBuilder& ref_negative_bitset,
+                                             FlatBitsetBuilder<Derived>& ref_positive_bitset,
+                                             FlatBitsetBuilder<Derived>& ref_negative_bitset,
                                              const auto& binding)
     {
         for (const auto& literal : literals)
@@ -208,12 +208,12 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
 
     /* Precondition */
     auto strips_precondition_proxy = DenseStripsActionPreconditionBuilderProxy(m_action_builder.get_strips_precondition());
-    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_fluent_precondition();
-    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_fluent_precondition();
-    auto& positive_static_precondition = strips_precondition_proxy.get_positive_static_precondition();
-    auto& negative_static_precondition = strips_precondition_proxy.get_negative_static_precondition();
-    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_derived_precondition();
-    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_derived_precondition();
+    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
+    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
+    auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
+    auto& negative_static_precondition = strips_precondition_proxy.get_negative_precondition<Static>();
+    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_precondition<Derived>();
+    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_precondition<Derived>();
     positive_fluent_precondition.unset_all();
     negative_fluent_precondition.unset_all();
     positive_static_precondition.unset_all();
@@ -250,12 +250,12 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
             auto cond_effect_proxy_i = DenseConditionalEffectBuilderProxy(conditional_effects[i]);
-            auto& cond_positive_fluent_precondition_i = cond_effect_proxy_i.get_positive_fluent_precondition();
-            auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_fluent_precondition();
-            auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_static_precondition();
-            auto& cond_negative_static_precondition_i = cond_effect_proxy_i.get_negative_static_precondition();
-            auto& cond_positive_derived_precondition_i = cond_effect_proxy_i.get_positive_derived_precondition();
-            auto& cond_negative_derived_precondition_i = cond_effect_proxy_i.get_negative_derived_precondition();
+            auto& cond_positive_fluent_precondition_i = cond_effect_proxy_i.get_positive_precondition<Fluent>();
+            auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_precondition<Fluent>();
+            auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_precondition<Static>();
+            auto& cond_negative_static_precondition_i = cond_effect_proxy_i.get_negative_precondition<Static>();
+            auto& cond_positive_derived_precondition_i = cond_effect_proxy_i.get_positive_precondition<Derived>();
+            auto& cond_negative_derived_precondition_i = cond_effect_proxy_i.get_negative_precondition<Derived>();
             auto& cond_simple_effect_i = cond_effect_proxy_i.get_simple_effect();
             cond_positive_fluent_precondition_i.unset_all();
             cond_negative_fluent_precondition_i.unset_all();
@@ -319,12 +319,12 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
                 }
 
                 auto cond_effect_proxy_j = DenseConditionalEffectBuilderProxy(conditional_effects[j]);
-                auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_fluent_precondition();
-                auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_fluent_precondition();
-                auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_static_precondition();
-                auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_static_precondition();
-                auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_derived_precondition();
-                auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_derived_precondition();
+                auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_precondition<Fluent>();
+                auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_precondition<Fluent>();
+                auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_precondition<Static>();
+                auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_precondition<Static>();
+                auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_precondition<Derived>();
+                auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_precondition<Derived>();
                 auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
                 cond_positive_fluent_precondition_j.unset_all();
                 cond_negative_fluent_precondition_j.unset_all();
@@ -556,8 +556,8 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, m_pddl_factories);
 }
 
-void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder& fluent_state_atoms,
-                                                                             FlatBitsetBuilder& ref_derived_state_atoms)
+void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                                                                             FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
 {
     // In the lifted case, we use the axiom evaluator.
     m_axiom_evaluator.generate_and_apply_axioms(fluent_state_atoms, ref_derived_state_atoms);
