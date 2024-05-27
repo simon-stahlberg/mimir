@@ -217,8 +217,22 @@ loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domai
         translated_constants.push_back(translated_object);
     }
 
-    // Add type predicates
+    // Translate predicates
     auto translated_predicates = this->translate(domain.get_predicates());
+
+    // Translate derived predicates
+    const auto translated_derived_predicates = this->translate(domain.get_derived_predicates());
+
+    // Translate functions
+    const auto translated_functions = this->translate(domain.get_functions());
+
+    // Translate actions
+    const auto translated_actions = this->translate(domain.get_actions());
+
+    // Translated axioms
+    const auto translated_axioms = this->translate(domain.get_axioms());
+
+    // All types that were encountered during translation are now part of m_type_to_predicates
     for (const auto& [type, predicate] : m_type_to_predicates)
     {
         translated_predicates.push_back(predicate);
@@ -229,10 +243,10 @@ loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domai
                                                                          loki::TypeList {},
                                                                          translated_constants,
                                                                          translated_predicates,
-                                                                         this->translate(domain.get_derived_predicates()),
-                                                                         this->translate(domain.get_functions()),
-                                                                         this->translate(domain.get_actions()),
-                                                                         this->translate(domain.get_axioms()));
+                                                                         translated_derived_predicates,
+                                                                         translated_functions,
+                                                                         translated_actions,
+                                                                         translated_axioms);
     return translated_domain;
 }
 
