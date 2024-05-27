@@ -43,13 +43,13 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
     problem = remove_types_translator.run(*problem);
 
-    // To effect normal form
-    auto to_enf_translator = ToENFTranslator(domain_parser.get_factories());
-    problem = to_enf_translator.run(*problem);
-
     // Move existential quantifers
     auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_factories());
     problem = move_existential_quantifiers_translator.run(*problem);
+
+    // To effect normal form
+    auto to_enf_translator = ToENFTranslator(domain_parser.get_factories());
+    problem = to_enf_translator.run(*problem);
 
     // To mimir structures
     auto to_mimir_structures_translator = ToMimirStructures(m_factories);
