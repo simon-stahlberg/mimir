@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 
+#include "mimir/formalism/action.hpp"
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions/dense.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
@@ -26,6 +27,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/dense.hpp"
 #include "mimir/search/axioms/dense.hpp"
+#include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/states/dense.hpp"
 
 #include <flatmemory/details/view_const.hpp>
@@ -47,37 +49,21 @@ class AAG<LiftedAAGDispatcher<DenseStateTag>> : public IStaticAAG<AAG<LiftedAAGD
 {
 private:
     Problem m_problem;
-    PDDLFactories& m_pddl_factories;
+    PDDLFactories& m_ref_pddl_factories;
     std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
 
     DenseAE m_axiom_evaluator;
 
-    DenseGroundActionSet m_applicable_actions;
-    FlatDenseActionSet m_actions;
+    std::unordered_map<Action, DenseConditionGrounder> m_action_precondition_grounders;
+    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_universal_effects;
+
+    DenseGroundActionSet m_dense_actions;
+    FlatDenseActionSet m_flat_actions;
     DenseGroundActionList m_actions_by_index;
     DenseGroundActionBuilder m_action_builder;
     std::unordered_map<Action, GroundingTable<DenseGroundAction>> m_action_groundings;
 
     GroundFunctionToValue m_ground_function_value_costs;
-
-    std::unordered_map<Action, consistency_graph::Graphs> m_static_consistency_graphs;
-
-    /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_fluent_preconditions_hold(const Action& action, const DenseState state);
-
-    void nullary_case(const Action& action, const DenseState state, DenseGroundActionList& out_applicable_actions);
-
-    void unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                    const AssignmentSet<Derived>& derived_assignment_sets,
-                    const Action& action,
-                    const DenseState state,
-                    DenseGroundActionList& out_applicable_actions);
-
-    void general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                      const AssignmentSet<Derived>& derived_assignment_sets,
-                      const Action& action,
-                      const DenseState state,
-                      DenseGroundActionList& out_applicable_actions);
 
     /// @brief Ground the precondition of an action and return a view onto it.
     [[nodiscard]] DenseGroundAction ground_action_precondition(const Action& action, const ObjectList& binding);
@@ -101,10 +87,10 @@ private:
 
 public:
     /// @brief Simplest construction
-    AAG(Problem problem, PDDLFactories& pddl_factories);
+    AAG(Problem problem, PDDLFactories& ref_pddl_factories);
 
     /// @brief Complete construction
-    AAG(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
+    AAG(Problem problem, PDDLFactories& ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
     /// @brief Return the axiom partitioning.
     [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
@@ -121,11 +107,11 @@ public:
     /// @brief Return all axioms.
     [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
 
-    /// @brief Return all applicable actions.
-    [[nodiscard]] const DenseGroundActionSet& get_applicable_actions() const;
+    /// @brief Return all actions.
+    [[nodiscard]] const DenseGroundActionSet& get_dense_actions() const;
 
     /// @brief Return all actions.
-    [[nodiscard]] const FlatDenseActionSet& get_actions() const;
+    [[nodiscard]] const FlatDenseActionSet& get_flat_dense_actions() const;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] DenseGroundAction get_action(size_t action_id) const;

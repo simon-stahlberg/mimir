@@ -35,6 +35,15 @@ void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& ou
     }
 }
 
+/// @brief Translates a bitset into a list of ground atoms
+template<PredicateCategory P>
+GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals)
+{
+    GroundAtomList<P> ground_atoms;
+    to_ground_atoms(literals, ground_atoms);
+    return ground_atoms;
+}
+
 }
 
 #endif  // MIMIR_SEARCH_TRANSLATIONS_HPP_

@@ -133,7 +133,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms),
                                                        m_pddl_factories.get_ground_atoms_from_ids<Derived>(derived_state_atoms),
-                                                       to_ground_actions(delete_free_lifted_aag->get_actions()),
+                                                       to_ground_actions(delete_free_lifted_aag->get_flat_dense_actions()),
                                                        to_ground_axioms(delete_free_lifted_aag->get_axioms()));
 
     auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms), m_pddl_factories);
@@ -141,7 +141,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
 
     // 2. Create ground actions
     auto ground_actions = DenseGroundActionList {};
-    for (const auto& action : delete_free_lifted_aag->get_applicable_actions())
+    for (const auto& action : delete_free_lifted_aag->get_dense_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(action.get_action()))
@@ -244,7 +244,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::on_finish_f_layer_impl() const {
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::on_end_search_impl() const { m_event_handler->on_end_search(); }
 
-[[nodiscard]] const FlatDenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_actions(); }
+[[nodiscard]] const FlatDenseActionSet& AAG<GroundedAAGDispatcher<DenseStateTag>>::get_actions() const { return m_lifted_aag.get_flat_dense_actions(); }
 
 [[nodiscard]] ConstView<ActionDispatcher<DenseStateTag>> AAG<GroundedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {

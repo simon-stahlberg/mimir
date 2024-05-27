@@ -19,7 +19,6 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
-#include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/object.hpp"
@@ -40,7 +39,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
                                                const AssignmentSet<Static>& static_assignment_set) :
     m_problem(problem)
 {
-    /* 2. Compute vertices */
+    /* 1. Compute vertices */
 
     for (uint32_t parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
     {
@@ -64,7 +63,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
         m_objects_by_parameter_index.push_back(std::move(object_partition));
     }
 
-    /* 3. Compute edges */
+    /* 2. Compute edges */
 
     for (size_t first_vertex_id = 0; first_vertex_id < m_vertices.size(); ++first_vertex_id)
     {
