@@ -69,87 +69,80 @@ void ToMimirStructures::prepare(const loki::ConditionImpl& condition)
 }
 void ToMimirStructures::prepare(const loki::EffectImpl& effect)
 {
-    /**
-     * Find predicates affected by an effect.
-     */
-    auto effect_ptr = &effect;
+    const auto prepare_effect_func = [&](const loki::Effect& arg_effect)
+    {
+        auto tmp_effect = arg_effect;
+
+        // 2. Prepare universal part
+        if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
+        {
+            prepare(tmp_effect_forall->get_parameters());
+
+            tmp_effect = tmp_effect_forall->get_effect();
+        }
+
+        // 3. Prepare conditional part
+        if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+        {
+            if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(tmp_effect_when->get_condition()))
+            {
+                for (const auto& part : condition_and->get_conditions())
+                {
+                    if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
+                    {
+                        prepare(*condition_literal->get_literal());
+                    }
+                    else
+                    {
+                        std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
+                        throw std::logic_error("Expected literal in conjunctive condition.");
+                    }
+                }
+            }
+            else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(tmp_effect_when->get_condition()))
+            {
+                prepare(*condition_literal->get_literal());
+            }
+
+            tmp_effect = tmp_effect_when->get_effect();
+        }
+
+        // 4. Parse simple effect
+        if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
+        {
+            prepare(*effect_literal->get_literal());
+
+            // Found predicate affected by an effect
+            m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate()->get_name());
+        }
+        else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
+        {
+            assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
+            assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
+
+            prepare(*effect_numeric->get_function_expression());
+        }
+        else
+        {
+            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
+
+            throw std::logic_error("Expected simple effect.");
+        }
+    };
 
     // 1. Prepare conjunctive part
-    if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect_ptr))
+    if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(&effect))
     {
         for (const auto& nested_effect : effect_and->get_effects())
         {
-            auto tmp_effect = nested_effect;
-
-            // 2. Prepare universal part
-            if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
-            {
-                prepare(tmp_effect_forall->get_parameters());
-
-                tmp_effect = tmp_effect_forall->get_effect();
-            }
-
-            // 3. Prepare conditional part
-            if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
-            {
-                if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(tmp_effect_when->get_condition()))
-                {
-                    for (const auto& part : condition_and->get_conditions())
-                    {
-                        if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(part))
-                        {
-                            prepare(*condition_literal->get_literal());
-                        }
-                        else
-                        {
-                            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
-
-                            throw std::logic_error("Expected literal in conjunctive condition.");
-                        }
-                    }
-                }
-                else if (const auto condition_literal = std::get_if<loki::ConditionLiteralImpl>(tmp_effect_when->get_condition()))
-                {
-                    prepare(*condition_literal->get_literal());
-                }
-
-                tmp_effect = tmp_effect_when->get_effect();
-            }
-
-            // 4. Parse simple effect
-            if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
-            {
-                prepare(*effect_literal->get_literal());
-
-                // Found predicate affected by an effect
-                m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate()->get_name());
-            }
-            else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
-            {
-                assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
-                assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
-                prepare(*effect_numeric->get_function_expression());
-            }
-            else
-            {
-                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
-
-                throw std::logic_error("Expected simple effect.");
-            }
+            prepare_effect_func(nested_effect);
         }
-        return;
     }
-    else if (const auto effect_literal = std::get_if<loki::EffectLiteralImpl>(effect_ptr))
+    else
     {
-        prepare(*effect_literal->get_literal());
-
-        m_fluent_predicates.insert(effect_literal->get_literal()->get_atom()->get_predicate()->get_name());
-        return;
+        prepare_effect_func(&effect);
     }
-
-    std::cout << std::visit([](auto&& arg) { return arg.str(); }, effect) << std::endl;
-
-    throw std::logic_error("Expected conjunctive or literal effect.");
 }
 void ToMimirStructures::prepare(const loki::FunctionExpressionNumberImpl& function_expression) {}
 void ToMimirStructures::prepare(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
@@ -512,106 +505,106 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
 
 std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, FunctionExpression> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
-    auto effect_ptr = &effect;
-
-    // 1. Parse conjunctive part
-    if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect_ptr))
+    const auto translate_effect_func = [&](const loki::Effect& effect,
+                                           EffectSimpleList& ref_simple_effects,
+                                           EffectConditionalList& ref_conditional_effects,
+                                           EffectUniversalList& ref_universal_effects,
+                                           FunctionExpressionList& ref_result_function_expressions)
     {
-        auto simple_effects = EffectSimpleList {};
-        auto conditional_effects = EffectConditionalList {};
-        auto universal_effects = EffectUniversalList {};
-        auto result_function_expressions = FunctionExpressionList {};
-        for (const auto& nested_effect : effect_and->get_effects())
+        auto tmp_effect = effect;
+
+        // 2. Parse universal part
+        auto parameters = VariableList {};
+        if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
         {
-            auto tmp_effect = nested_effect;
+            parameters = translate_common(tmp_effect_forall->get_parameters());
 
-            // 2. Parse universal part
-            auto parameters = VariableList {};
-            if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
+            tmp_effect = tmp_effect_forall->get_effect();
+        }
+
+        // 3. Parse conditional part
+        auto static_literals = LiteralList<Static> {};
+        auto fluent_literals = LiteralList<Fluent> {};
+        auto derived_literals = LiteralList<Derived> {};
+        if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+        {
+            const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*tmp_effect_when->get_condition());
+            static_literals = static_literals_;
+            fluent_literals = fluent_literals_;
+            derived_literals = derived_literals_;
+
+            tmp_effect = tmp_effect_when->get_effect();
+        }
+
+        // 4. Parse simple effect
+        if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
+        {
+            const auto static_or_fluent_or_derived_effect = translate_lifted(*effect_literal->get_literal());
+
+            const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
+
+            if (!parameters.empty())
             {
-                parameters = translate_common(tmp_effect_forall->get_parameters());
-
-                tmp_effect = tmp_effect_forall->get_effect();
+                ref_universal_effects.push_back(
+                    m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, derived_literals, fluent_effect));
             }
-
-            // 3. Parse conditional part
-            auto static_literals = LiteralList<Static> {};
-            auto fluent_literals = LiteralList<Fluent> {};
-            auto derived_literals = LiteralList<Derived> {};
-            if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+            else if (!(static_literals.empty() && fluent_literals.empty()))
             {
-                const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*tmp_effect_when->get_condition());
-                static_literals = static_literals_;
-                fluent_literals = fluent_literals_;
-                derived_literals = derived_literals_;
-
-                tmp_effect = tmp_effect_when->get_effect();
-            }
-
-            // 4. Parse simple effect
-            if (const auto& effect_literal = std::get_if<loki::EffectLiteralImpl>(tmp_effect))
-            {
-                const auto static_or_fluent_or_derived_effect = translate_lifted(*effect_literal->get_literal());
-
-                const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
-
-                if (!parameters.empty())
-                {
-                    universal_effects.push_back(
-                        m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, derived_literals, fluent_effect));
-                }
-                else if (!(static_literals.empty() && fluent_literals.empty()))
-                {
-                    conditional_effects.push_back(
-                        m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, derived_literals, fluent_effect));
-                }
-                else
-                {
-                    simple_effects.push_back(m_pddl_factories.get_or_create_simple_effect(fluent_effect));
-                }
-            }
-            else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
-            {
-                assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
-                assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
-
-                result_function_expressions.push_back(this->translate_lifted(*effect_numeric->get_function_expression()));
+                ref_conditional_effects.push_back(
+                    m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, derived_literals, fluent_effect));
             }
             else
             {
-                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
-
-                throw std::logic_error("Expected simple effect.");
+                ref_simple_effects.push_back(m_pddl_factories.get_or_create_simple_effect(fluent_effect));
             }
         }
+        else if (const auto& effect_numeric = std::get_if<loki::EffectNumericImpl>(tmp_effect))
+        {
+            assert(effect_numeric->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
+            assert(effect_numeric->get_function()->get_function_skeleton()->get_name() == "total-cost");
 
-        // If more than one action cost effects are given then we take their sum,
-        // If one action cost is given then we take it,
-        // and otherwise, we take cost 1.
-        auto cost_function_expression =
-            (result_function_expressions.empty()) ?
-                this->m_pddl_factories.get_or_create_function_expression_number(1) :
-            result_function_expressions.size() > 1 ?
-                this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions) :
-                result_function_expressions.front();
+            ref_result_function_expressions.push_back(this->translate_lifted(*effect_numeric->get_function_expression()));
+        }
+        else
+        {
+            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
 
-        return std::make_tuple(simple_effects, conditional_effects, universal_effects, cost_function_expression);
-    }
-    else if (const auto effect_literal = std::get_if<loki::EffectLiteralImpl>(effect_ptr))
+            throw std::logic_error("Expected simple effect.");
+        }
+    };
+
+    auto effect_ptr = &effect;
+
+    auto simple_effects = EffectSimpleList {};
+    auto conditional_effects = EffectConditionalList {};
+    auto universal_effects = EffectUniversalList {};
+    auto result_function_expressions = FunctionExpressionList {};
+
+    // Parse conjunctive part
+    if (const auto& effect_and = std::get_if<loki::EffectAndImpl>(effect_ptr))
     {
-        const auto static_or_fluent_or_derived_effect = translate_lifted(*effect_literal->get_literal());
-
-        const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
-
-        return std::make_tuple(EffectSimpleList { this->m_pddl_factories.get_or_create_simple_effect(fluent_effect) },
-                               EffectConditionalList {},
-                               EffectUniversalList {},
-                               this->m_pddl_factories.get_or_create_function_expression_number(1));
+        for (const auto& nested_effect : effect_and->get_effects())
+        {
+            translate_effect_func(nested_effect, simple_effects, conditional_effects, universal_effects, result_function_expressions);
+        }
+    }
+    else
+    {
+        // Parse non conjunctive
+        translate_effect_func(effect_ptr, simple_effects, conditional_effects, universal_effects, result_function_expressions);
     }
 
-    std::cout << std::visit([](auto&& arg) { return arg.str(); }, effect) << std::endl;
+    // If more than one action cost effects are given then we take their sum,
+    // If one action cost is given then we take it,
+    // and otherwise, we take cost 1.
+    auto cost_function_expression =
+        (result_function_expressions.empty()) ?
+            this->m_pddl_factories.get_or_create_function_expression_number(1) :
+        result_function_expressions.size() > 1 ?
+            this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions) :
+            result_function_expressions.front();
 
-    throw std::logic_error("Expected conjunctive or literal effect.");
+    return std::make_tuple(simple_effects, conditional_effects, universal_effects, cost_function_expression);
 }
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
