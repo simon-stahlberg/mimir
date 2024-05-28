@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     environment:
       name: testpypi
@@ -41,7 +41,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           pip wheel .
-          export whl_file=$(find -name "wlplan-*.whl" -type f)
+          export whl_file=$(find -name "pymimir-*.whl" -type f)
           auditwheel repair $whl_file --plat manylinux_2_34_x86_64 -w wheelhouse/
           export whl_file_new=$(find wheelhouse/ -name "*.whl" -type f)
           echo $whl_file_new
