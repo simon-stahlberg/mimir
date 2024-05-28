@@ -79,7 +79,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name="pymimir-dzc-fork",
-    version="0.1.2",
+    version="0.1.3",
     author="Dillon Z. Chen",
     author_email="dillon.chen1@gmail.com",
     description="Fork of Simon's Mimir: PDDL Parser and Planner Toolkit",
@@ -87,5 +87,5 @@ setup(
     ext_modules=[CMakeExtension("mimir")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )
