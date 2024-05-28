@@ -184,8 +184,10 @@ void ToMimirStructures::prepare(const loki::ActionImpl& action)
 }
 void ToMimirStructures::prepare(const loki::AxiomImpl& axiom)
 {
+    prepare(axiom.get_parameters());
     prepare(*axiom.get_condition());
-    prepare(*axiom.get_literal());
+
+    m_derived_predicates.insert(axiom.get_derived_predicate_name());
 }
 void ToMimirStructures::prepare(const loki::DomainImpl& domain)
 {
@@ -193,15 +195,9 @@ void ToMimirStructures::prepare(const loki::DomainImpl& domain)
     prepare(domain.get_types());
     prepare(domain.get_constants());
     prepare(domain.get_predicates());
-    prepare(domain.get_derived_predicates());
     prepare(domain.get_functions());
     prepare(domain.get_actions());
     prepare(domain.get_axioms());
-
-    for (const auto& derived_predicate : domain.get_derived_predicates())
-    {
-        m_derived_predicates.insert(derived_predicate->get_name());
-    }
 }
 void ToMimirStructures::prepare(const loki::OptimizationMetricImpl& metric) { prepare(*metric.get_function_expression()); }
 void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
@@ -241,7 +237,7 @@ Variable ToMimirStructures::translate_common(const loki::VariableImpl& variable,
 {
     const auto parameter_index = (encode_parameter_index) ? m_variable_to_parameter_index.at(&variable) : 0;
 
-    const auto variable_name = variable.get_name();
+    const auto variable_name = (encode_parameter_index) ? variable.get_name() + "_" + std::to_string(parameter_index) : variable.get_name();
 
     return m_pddl_factories.get_or_create_variable(variable_name, parameter_index);
 }
@@ -303,7 +299,9 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki:
     }
     else if (predicate_category == PredicateCategoryEnum::DERIVED)
     {
-        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_derived_predicate(predicate.get_name(), parameters));
+        const auto derived_predicate = m_pddl_factories.get_or_create_derived_predicate(predicate.get_name(), parameters);
+        m_derived_predicates_by_name.emplace(derived_predicate->get_name(), derived_predicate);
+        result = StaticOrFluentOrDerivedPredicate(derived_predicate);
     }
     else
     {
@@ -541,6 +539,12 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
         {
             const auto static_or_fluent_or_derived_effect = translate_lifted(*effect_literal->get_literal());
 
+            // TODO: Ensure in Loki that this cannot occur
+            if (std::get_if<Literal<Derived>>(&static_or_fluent_or_derived_effect))
+            {
+                throw std::runtime_error("Derived literals are not allowed in action effects!");
+            }
+
             const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
 
             if (!parameters.empty())
@@ -654,17 +658,44 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 
 Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
+    auto unrenamed_parameters = VariableList {};
+    for (const auto& parameter : axiom.get_parameters())
+    {
+        unrenamed_parameters.push_back(translate_common(*parameter->get_variable(), false));
+    }
     // 1. Prepare variables for renaming with parameter index
     m_cur_parameter_index = 0;
     auto parameters = translate_common(axiom.get_parameters());
 
     const auto [static_literals, fluent_literals, derived_literals] = translate_lifted(*axiom.get_condition());
 
-    const auto static_or_fluent_or_derived_effect = translate_lifted(*axiom.get_literal());
+    const auto derived_predicate_name = axiom.get_derived_predicate_name();
+    if (!m_derived_predicates_by_name.count(derived_predicate_name))
+    {
+        // Create a derived predicate that resulted from translation
+        // and is not part of the predicates section.
+        // The parameters of the derived predicate are only those needed for ground the head
+        // and do not contain other parameters obtained from other free variables.
+        m_derived_predicates_by_name.emplace(
+            derived_predicate_name,
+            m_pddl_factories.get_or_create_derived_predicate(
+                derived_predicate_name,
+                VariableList(unrenamed_parameters.begin(), unrenamed_parameters.begin() + axiom.get_num_parameters_to_ground_head())));
+    }
+    const auto derived_predicate = m_derived_predicates_by_name.at(axiom.get_derived_predicate_name());
 
-    const auto fluent_effect = std::get<Literal<Derived>>(static_or_fluent_or_derived_effect);
+    // The number of terms is only as large as needed and matches the derived predicate
+    auto terms = TermList {};
+    for (size_t i = 0; i < axiom.get_num_parameters_to_ground_head(); ++i)
+    {
+        terms.push_back(m_pddl_factories.get_or_create_term_variable(parameters[i]));
+    }
+    assert(terms.size() == derived_predicate->get_arity());
 
-    return m_pddl_factories.get_or_create_axiom(parameters, fluent_effect, static_literals, fluent_literals, derived_literals);
+    // Our axiom heads are always true literals
+    const auto literal = m_pddl_factories.get_or_create_literal(false, m_pddl_factories.get_or_create_atom(derived_predicate, terms));
+
+    return m_pddl_factories.get_or_create_axiom(parameters, literal, static_literals, fluent_literals, derived_literals);
 }
 
 Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
@@ -698,14 +729,6 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
                 }
             },
             static_or_fluent_or_derived_predicate);
-    }
-    assert(derived_predicates.empty());
-
-    for (const auto static_or_fluent_or_derived_predicate : translate_common(domain.get_derived_predicates()))
-    {
-        const auto derived_predicate = std::get<Predicate<Derived>>(static_or_fluent_or_derived_predicate);
-
-        derived_predicates.push_back(derived_predicate);
     }
 
     const auto functions = translate_lifted(domain.get_functions());

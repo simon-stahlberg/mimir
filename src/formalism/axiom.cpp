@@ -18,6 +18,7 @@
 #include "mimir/formalism/axiom.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/literal.hpp"
 
 #include <cassert>
@@ -38,6 +39,7 @@ AxiomImpl::AxiomImpl(int identifier,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions))
 {
+    assert(!literal->is_negated());
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
@@ -67,7 +69,6 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
 {
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
     out << std::string(options.indent, ' ') << "(:derived " << *m_literal << "\n";
-
     out << std::string(nested_options.indent, ' ') << "(and";
     for (const auto& condition : m_static_conditions)
     {

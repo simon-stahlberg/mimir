@@ -91,10 +91,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     const auto& scope = m_scopes.open_scope(condition.get_parameters());
 
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
-    auto axiom_parameters = loki::ParameterList {};
-    // Parameters that are passed downwards into the existential
-    auto inner_parameters = condition.get_parameters();
-    // Parameters that are passed upwards through an existential
+    auto head_parameters = loki::ParameterList {};
     auto terms = loki::TermList {};
     for (const auto free_variable :
          collect_free_variables(*this->m_pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition())))
@@ -102,29 +99,34 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
         const auto optional_parameter = scope.get_parameter(free_variable);
         assert(optional_parameter.has_value());
         const auto parameter = this->m_pddl_factories.get_or_create_parameter(free_variable, optional_parameter.value()->get_bases());
-        inner_parameters.push_back(parameter);
-        axiom_parameters.push_back(parameter);
+        head_parameters.push_back(parameter);
         terms.push_back(this->m_pddl_factories.get_or_create_term_variable(free_variable));
     }
+    // Important: all other parameters are appended to the axiom parameters
+    auto axiom_parameters = head_parameters;
+    for (const auto& parameter : condition.get_parameters())
+    {
+        axiom_parameters.push_back(parameter);
+    }
+    head_parameters.shrink_to_fit();
     axiom_parameters.shrink_to_fit();
-    inner_parameters.shrink_to_fit();
 
     const auto axiom_condition = this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
-        inner_parameters,
+        axiom_parameters,
         m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
 
     const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_id, this->m_simple_and_derived_predicate_names);
-    const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, axiom_parameters);
+    const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, head_parameters);
     m_derived_predicates.insert(predicate);
     const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
-    const auto literal = this->m_pddl_factories.get_or_create_literal(false, atom);
     // Pass parameters upwards through an existential
     const auto substituted_condition =
-        axiom_parameters.empty() ? this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)) :
-                                   this->m_pddl_factories.get_or_create_condition_exists(
-                                       axiom_parameters,
-                                       this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)));
-    const auto axiom = this->m_pddl_factories.get_or_create_axiom(inner_parameters, literal, axiom_condition);
+        head_parameters.empty() ? this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)) :
+                                  this->m_pddl_factories.get_or_create_condition_exists(
+                                      head_parameters,
+                                      this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)));
+    const auto axiom = this->m_pddl_factories.get_or_create_axiom(axiom_name, axiom_parameters, axiom_condition, head_parameters.size());
+
     m_axioms.insert(axiom);
 
     m_condition_to_substituted_condition.emplace(&condition, substituted_condition);
@@ -163,12 +165,14 @@ loki::Axiom RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Axi
 
     // Translate condition and literal
     auto translated_condition = this->translate(*axiom.get_condition());
-    auto translated_effect = this->translate(*axiom.get_literal());
 
     // Turn free variables into parameters
     auto translated_parameters = this->translate(axiom.get_parameters());
 
-    auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(translated_parameters, translated_effect, translated_condition);
+    auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+                                                                       translated_parameters,
+                                                                       translated_condition,
+                                                                       axiom.get_num_parameters_to_ground_head());
 
     this->m_scopes.close_scope();
 
@@ -181,25 +185,24 @@ loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Do
     m_axioms.clear();
     m_derived_predicates.clear();
 
-    // Translate existing derived predicates and axioms.
-    auto translated_derived_predicates = this->translate(domain.get_derived_predicates());
+    // Translate existing axioms.
     auto translated_axioms = this->translate(domain.get_axioms());
 
     // Translate universal quantifiers in conditions to axioms.
     auto translated_actions = this->translate(domain.get_actions());
 
-    // Combine all derived predicates and axioms.
-    translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
-    translated_derived_predicates = uniquify_elements(translated_derived_predicates);
+    // Combine all axioms.
     translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
     translated_axioms = uniquify_elements(translated_axioms);
+
+    auto translated_predicates = this->translate(domain.get_predicates());
+    translated_predicates.insert(translated_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
 
     return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                        this->translate(*domain.get_requirements()),
                                                        this->translate(domain.get_types()),
                                                        this->translate(domain.get_constants()),
-                                                       this->translate(domain.get_predicates()),
-                                                       translated_derived_predicates,
+                                                       translated_predicates,
                                                        this->translate(domain.get_functions()),
                                                        translated_actions,
                                                        translated_axioms);

@@ -174,6 +174,27 @@ loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectConditional
         this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect));
 }
 
+loki::Axiom RemoveTypesTranslator::translate_impl(const loki::AxiomImpl& axiom)
+{
+    // Translate parameters
+    auto translated_parameters = this->translate(axiom.get_parameters());
+
+    // Translate condition
+    auto conditions = loki::ConditionList {};
+    for (const auto& parameter : axiom.get_parameters())
+    {
+        auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_factories, this->m_type_to_predicates);
+        conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
+    }
+    conditions.push_back(this->translate(*axiom.get_condition()));
+    auto translated_condition = this->m_pddl_factories.get_or_create_condition_and(conditions);
+
+    return this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+                                                      translated_parameters,
+                                                      translated_condition,
+                                                      axiom.get_num_parameters_to_ground_head());
+}
+
 loki::Action RemoveTypesTranslator::translate_impl(const loki::ActionImpl& action)
 {
     // Translate parameters
@@ -220,9 +241,6 @@ loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domai
     // Translate predicates
     auto translated_predicates = this->translate(domain.get_predicates());
 
-    // Translate derived predicates
-    const auto translated_derived_predicates = this->translate(domain.get_derived_predicates());
-
     // Translate functions
     const auto translated_functions = this->translate(domain.get_functions());
 
@@ -243,7 +261,6 @@ loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domai
                                                                          loki::TypeList {},
                                                                          translated_constants,
                                                                          translated_predicates,
-                                                                         translated_derived_predicates,
                                                                          translated_functions,
                                                                          translated_actions,
                                                                          translated_axioms);

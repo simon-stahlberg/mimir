@@ -53,6 +53,7 @@ public:
 
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
+    size_t get_arity() const;
 };
 
 /**
@@ -113,6 +114,12 @@ template<PredicateCategory P>
 const TermList& AtomImpl<P>::get_terms() const
 {
     return m_terms;
+}
+
+template<PredicateCategory P>
+size_t AtomImpl<P>::get_arity() const
+{
+    return m_terms.size();
 }
 }
 

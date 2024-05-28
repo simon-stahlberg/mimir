@@ -217,7 +217,6 @@ protected:
     {
         this->prepare(axiom.get_parameters());
         this->prepare(*axiom.get_condition());
-        this->prepare(*axiom.get_literal());
     }
     void prepare_impl(const loki::DomainImpl& domain)
     {
@@ -225,7 +224,6 @@ protected:
         this->prepare(domain.get_types());
         this->prepare(domain.get_constants());
         this->prepare(domain.get_predicates());
-        this->prepare(domain.get_derived_predicates());
         this->prepare(domain.get_functions());
         this->prepare(domain.get_actions());
         this->prepare(domain.get_axioms());
@@ -540,9 +538,10 @@ protected:
     }
     loki::Axiom translate_impl(const loki::AxiomImpl& axiom)
     {
-        return this->m_pddl_factories.get_or_create_axiom(this->translate(axiom.get_parameters()),
-                                                          this->translate(*axiom.get_literal()),
-                                                          this->translate(*axiom.get_condition()));
+        return this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+                                                          this->translate(axiom.get_parameters()),
+                                                          this->translate(*axiom.get_condition()),
+                                                          axiom.get_num_parameters_to_ground_head());
     }
     loki::Domain translate_impl(const loki::DomainImpl& domain)
     {
@@ -551,7 +550,6 @@ protected:
                                                            this->translate(domain.get_types()),
                                                            this->translate(domain.get_constants()),
                                                            this->translate(domain.get_predicates()),
-                                                           this->translate(domain.get_derived_predicates()),
                                                            this->translate(domain.get_functions()),
                                                            this->translate(domain.get_actions()),
                                                            this->translate(domain.get_axioms()));

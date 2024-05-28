@@ -261,11 +261,6 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 {
     const auto literal = this->transform(*axiom.get_literal());
-    if (m_remove_useless_actions_and_axioms && !literal)
-    {
-        throw std::runtime_error("Axioms with negative effect are not supported.");
-    }
-
     auto parameters = this->transform(axiom.get_parameters());
     auto static_conditions = filter_positive_literals(this->transform(axiom.get_static_conditions()));
     auto fluent_conditions = filter_positive_literals(this->transform(axiom.get_fluent_conditions()));

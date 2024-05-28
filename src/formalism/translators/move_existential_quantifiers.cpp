@@ -112,7 +112,7 @@ loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(const loki::Axi
         condition = condition_exists->get_condition();
     }
 
-    return this->m_pddl_factories.get_or_create_axiom(parameters, this->translate(*axiom.get_literal()), condition);
+    return this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(), parameters, condition, axiom.get_num_parameters_to_ground_head());
 }
 
 loki::Problem MoveExistentialQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }

@@ -184,7 +184,6 @@ void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::AxiomImpl& ax
 
     this->prepare(axiom.get_parameters());
     this->prepare(*axiom.get_condition());
-    this->prepare(*axiom.get_literal());
 
     m_scopes.close_scope_soft();
 }
@@ -245,9 +244,11 @@ loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(const loki::Axio
 
     const auto translated_parameters = this->translate(axiom.get_parameters());
     const auto translated_conditions = this->translate(*axiom.get_condition());
-    const auto translated_literal = this->translate(*axiom.get_literal());
 
-    return this->m_pddl_factories.get_or_create_axiom(translated_parameters, translated_literal, translated_conditions);
+    return this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+                                                      translated_parameters,
+                                                      translated_conditions,
+                                                      axiom.get_num_parameters_to_ground_head());
 }
 
 loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::ConditionExistsImpl& condition)

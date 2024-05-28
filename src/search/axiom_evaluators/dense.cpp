@@ -355,7 +355,16 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     m_pddl_factories.ground_and_fill_bitset(axiom->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Effect */
-    const auto grounded_literal = m_pddl_factories.ground_literal(axiom->get_literal(), binding);
+
+    // The effect literal might only use the first few objects of the complete binding
+    // Therefore, we can prevent the literal grounding table from unnecessarily growing
+    // by restricting the binding to only the relevant part
+    const auto effect_literal_arity = axiom->get_literal()->get_atom()->get_arity();
+    const auto is_complete_binding_relevant_for_head = (binding.size() == effect_literal_arity);
+    const auto grounded_literal =
+        is_complete_binding_relevant_for_head ?
+            m_pddl_factories.ground_literal(axiom->get_literal(), binding) :
+            m_pddl_factories.ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_derived_effect().is_negated = false;
     m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_identifier();
