@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
-#define MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
+#ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_HPP_
+#define MIMIR_FORMALISM_TRANSFORMERS_BASE_HPP_
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/pddl.hpp"
@@ -33,10 +33,10 @@ namespace mimir
  * Base implementation recursively calls prepare, followed by recursively calls transform and caches the results.
  */
 template<typename Derived_>
-class BaseCachedRecurseTransformer : public ITransformer<BaseCachedRecurseTransformer<Derived_>>
+class BaseTransformer : public ITransformer<BaseTransformer<Derived_>>
 {
 private:
-    BaseCachedRecurseTransformer() = default;
+    BaseTransformer() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -46,45 +46,11 @@ private:
 protected:
     PDDLFactories& m_pddl_factories;
 
-    std::unordered_map<Requirements, Requirements> m_transformed_requirements;
-    std::unordered_map<Object, Object> m_transformed_objects;
-    std::unordered_map<Variable, Variable> m_transformed_variables;
-    std::unordered_map<Term, Term> m_transformed_terms;
-    std::unordered_map<Predicate<Static>, Predicate<Static>> m_transformed_static_predicates;
-    std::unordered_map<Predicate<Fluent>, Predicate<Fluent>> m_transformed_fluent_predicates;
-    std::unordered_map<Predicate<Derived>, Predicate<Derived>> m_transformed_derived_predicates;
-    std::unordered_map<Atom<Static>, Atom<Static>> m_transformed_static_atoms;
-    std::unordered_map<Atom<Fluent>, Atom<Fluent>> m_transformed_fluent_atoms;
-    std::unordered_map<Atom<Derived>, Atom<Derived>> m_transformed_derived_atoms;
-    std::unordered_map<GroundAtom<Static>, GroundAtom<Static>> m_transformed_static_ground_atoms;
-    std::unordered_map<GroundAtom<Fluent>, GroundAtom<Fluent>> m_transformed_fluent_ground_atoms;
-    std::unordered_map<GroundAtom<Derived>, GroundAtom<Derived>> m_transformed_derived_ground_atoms;
-    std::unordered_map<Literal<Static>, Literal<Static>> m_transformed_static_literals;
-    std::unordered_map<Literal<Fluent>, Literal<Fluent>> m_transformed_fluent_literals;
-    std::unordered_map<Literal<Derived>, Literal<Derived>> m_transformed_derived_literals;
-    std::unordered_map<GroundLiteral<Static>, GroundLiteral<Static>> m_transformed_static_ground_literals;
-    std::unordered_map<GroundLiteral<Fluent>, GroundLiteral<Fluent>> m_transformed_fluent_ground_literals;
-    std::unordered_map<GroundLiteral<Derived>, GroundLiteral<Derived>> m_transformed_derived_ground_literals;
-    std::unordered_map<NumericFluent, NumericFluent> m_transformed_numeric_fluents;
-    std::unordered_map<EffectSimple, EffectSimple> m_transformed_simple_effects;
-    std::unordered_map<EffectConditional, EffectConditional> m_transformed_conditional_effects;
-    std::unordered_map<EffectUniversal, EffectUniversal> m_transformed_universal_effects;
-    std::unordered_map<FunctionExpression, FunctionExpression> m_transformed_function_expressions;
-    std::unordered_map<GroundFunctionExpression, GroundFunctionExpression> m_transformed_ground_function_expressions;
-    std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_transformed_function_skeletons;
-    std::unordered_map<Function, Function> m_transformed_functions;
-    std::unordered_map<GroundFunction, GroundFunction> m_transformed_ground_functions;
-    std::unordered_map<Action, Action> m_transformed_actions;
-    std::unordered_map<Axiom, Axiom> m_transformed_axioms;
-    std::unordered_map<Domain, Domain> m_transformed_domains;
-    std::unordered_map<OptimizationMetric, OptimizationMetric> m_transformed_optimization_metrics;
-    std::unordered_map<Problem, Problem> m_transformed_problems;
-
-    explicit BaseCachedRecurseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */
-    friend class ITransformer<BaseCachedRecurseTransformer<Derived_>>;
+    friend class ITransformer<BaseTransformer<Derived_>>;
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
@@ -299,100 +265,44 @@ protected:
     {
         return this->self().transform_impl(input);
     }
-    Requirements transform_base(const RequirementsImpl& requirements)
-    {
-        return cached_transform_impl(requirements, m_transformed_requirements, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Object transform_base(const ObjectImpl& object)
-    {
-        return cached_transform_impl(object, m_transformed_objects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Variable transform_base(const VariableImpl& variable)
-    {
-        return cached_transform_impl(variable, m_transformed_variables, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Term transform_base(const TermObjectImpl& term) { return self().transform_impl(term); }
-    Term transform_base(const TermVariableImpl& term) { return self().transform_impl(term); }
+    Requirements transform_base(const RequirementsImpl& requirements) { return this->self().transform_impl(requirements); }
+    Object transform_base(const ObjectImpl& object) { return this->self().transform_impl(object); }
+    Variable transform_base(const VariableImpl& variable) { return this->self().transform_impl(variable); }
+    Term transform_base(const TermObjectImpl& term) { return this->self().transform_impl(term); }
+    Term transform_base(const TermVariableImpl& term) { return this->self().transform_impl(term); }
     Term transform_base(const TermImpl& term)
     {
-        return cached_transform_impl(term, m_transformed_terms, [this, &term](const auto& arg) { return this->self().transform_impl(term); });
+        return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, term);
     }
-    Predicate<Static> transform_base(const PredicateImpl<Static>& predicate)
+    template<PredicateCategory P>
+    Predicate<P> transform_base(const PredicateImpl<P>& predicate)
     {
-        return cached_transform_impl(predicate, m_transformed_static_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return this->self().transform_impl(predicate);
     }
-    Predicate<Fluent> transform_base(const PredicateImpl<Fluent>& predicate)
+    template<PredicateCategory P>
+    Atom<P> transform_base(const AtomImpl<P>& atom)
     {
-        return cached_transform_impl(predicate, m_transformed_fluent_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return this->self().transform_impl(atom);
     }
-    Predicate<Derived> transform_base(const PredicateImpl<Derived>& predicate)
+    template<PredicateCategory P>
+    GroundAtom<P> transform_base(const GroundAtomImpl<P>& atom)
     {
-        return cached_transform_impl(predicate, m_transformed_derived_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return this->self().transform_impl(atom);
     }
-    Atom<Static> transform_base(const AtomImpl<Static>& atom)
+    template<PredicateCategory P>
+    Literal<P> transform_base(const LiteralImpl<P>& literal)
     {
-        return cached_transform_impl(atom, m_transformed_static_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return this->self().transform_impl(literal);
     }
-    Atom<Fluent> transform_base(const AtomImpl<Fluent>& atom)
+    template<PredicateCategory P>
+    GroundLiteral<P> transform_base(const GroundLiteralImpl<P>& literal)
     {
-        return cached_transform_impl(atom, m_transformed_fluent_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return this->self().transform_impl(literal);
     }
-    Atom<Derived> transform_base(const AtomImpl<Derived>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_derived_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundAtom<Static> transform_base(const GroundAtomImpl<Static>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_static_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundAtom<Fluent> transform_base(const GroundAtomImpl<Fluent>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_fluent_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundAtom<Derived> transform_base(const GroundAtomImpl<Derived>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_derived_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Literal<Static> transform_base(const LiteralImpl<Static>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_static_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Literal<Fluent> transform_base(const LiteralImpl<Fluent>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_fluent_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Literal<Derived> transform_base(const LiteralImpl<Derived>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_derived_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundLiteral<Static> transform_base(const GroundLiteralImpl<Static>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_static_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundLiteral<Fluent> transform_base(const GroundLiteralImpl<Fluent>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_fluent_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundLiteral<Derived> transform_base(const GroundLiteralImpl<Derived>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_derived_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    NumericFluent transform_base(const NumericFluentImpl& numeric_fluent)
-    {
-        return cached_transform_impl(numeric_fluent, m_transformed_numeric_fluents, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    EffectSimple transform_base(const EffectSimpleImpl& effect)
-    {
-        return cached_transform_impl(effect, m_transformed_simple_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    EffectConditional transform_base(const EffectConditionalImpl& effect)
-    {
-        return cached_transform_impl(effect, m_transformed_conditional_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    EffectUniversal transform_base(const EffectUniversalImpl& effect)
-    {
-        return cached_transform_impl(effect, m_transformed_universal_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
+    NumericFluent transform_base(const NumericFluentImpl& numeric_fluent) { return this->self().transform_impl(numeric_fluent); }
+    EffectSimple transform_base(const EffectSimpleImpl& effect) { return this->self().transform_impl(effect); }
+    EffectConditional transform_base(const EffectConditionalImpl& effect) { return this->self().transform_impl(effect); }
+    EffectUniversal transform_base(const EffectUniversalImpl& effect) { return this->self().transform_impl(effect); }
     FunctionExpression transform_base(const FunctionExpressionNumberImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
@@ -400,9 +310,7 @@ protected:
     FunctionExpression transform_base(const FunctionExpressionFunctionImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionImpl& function_expression)
     {
-        return cached_transform_impl(function_expression,
-                                     m_transformed_function_expressions,
-                                     [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, function_expression);
     }
     GroundFunctionExpression transform_base(const GroundFunctionExpressionNumberImpl& function_expression)
     {
@@ -423,62 +331,17 @@ protected:
     }
     GroundFunctionExpression transform_base(const GroundFunctionExpressionImpl& function_expression)
     {
-        return cached_transform_impl(function_expression,
-                                     m_transformed_ground_function_expressions,
-                                     [this](const auto& arg) { return this->self().transform_impl(arg); });
+        return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, function_expression);
     }
-    FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton)
-    {
-        return cached_transform_impl(function_skeleton, m_transformed_function_skeletons, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Function transform_base(const FunctionImpl& function)
-    {
-        return cached_transform_impl(function, m_transformed_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundFunction transform_base(const GroundFunctionImpl& function)
-    {
-        return cached_transform_impl(function, m_transformed_ground_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Action transform_base(const ActionImpl& action)
-    {
-        return cached_transform_impl(action, m_transformed_actions, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Axiom transform_base(const AxiomImpl& axiom)
-    {
-        return cached_transform_impl(axiom, m_transformed_axioms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Domain transform_base(const DomainImpl& domain)
-    {
-        return cached_transform_impl(domain, m_transformed_domains, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    OptimizationMetric transform_base(const OptimizationMetricImpl& metric)
-    {
-        return cached_transform_impl(metric, m_transformed_optimization_metrics, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Problem transform_base(const ProblemImpl& problem)
-    {
-        return cached_transform_impl(problem, m_transformed_problems, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
+    FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton) { return this->self().transform_impl(function_skeleton); }
+    Function transform_base(const FunctionImpl& function) { return this->self().transform_impl(function); }
+    GroundFunction transform_base(const GroundFunctionImpl& function) { return this->self().transform_impl(function); }
+    Action transform_base(const ActionImpl& action) { return this->self().transform_impl(action); }
+    Axiom transform_base(const AxiomImpl& axiom) { return this->self().transform_impl(axiom); }
+    Domain transform_base(const DomainImpl& domain) { return this->self().transform_impl(domain); }
+    OptimizationMetric transform_base(const OptimizationMetricImpl& metric) { return this->self().transform_impl(metric); }
+    Problem transform_base(const ProblemImpl& problem) { return this->self().transform_impl(problem); }
 
-    /// @brief Retrieve or create cache entry of translation to avoid recomputations.
-    template<typename Impl, typename TranslateFunc>
-    auto cached_transform_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& transformFunc)
-    {
-        // Access from cache
-        auto it = cache.find(&impl);
-        if (it != cache.end())
-        {
-            return it->second;
-        }
-
-        // Translate
-        auto transformd = transformFunc(impl);
-
-        // Insert into cache
-        cache.emplace(&impl, transformd);
-
-        return transformd;
-    }
     template<typename Container>
     auto transform_impl(const Container& input)
     {

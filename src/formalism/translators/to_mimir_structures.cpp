@@ -228,26 +228,26 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
  * Common
  */
 
+VariableList ToMimirStructures::translate_common(const loki::ParameterList& parameters)
+{
+    auto result = VariableList {};
+    for (const auto& parameter : parameters)
+    {
+        result.push_back(translate_common(*parameter->get_variable()));
+    }
+    return result;
+}
+
 Requirements ToMimirStructures::translate_common(const loki::RequirementsImpl& requirements)
 {
     return m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
 }
 
-Variable ToMimirStructures::translate_common(const loki::VariableImpl& variable, bool encode_parameter_index)
-{
-    const auto parameter_index = (encode_parameter_index) ? m_variable_to_parameter_index.at(&variable) : 0;
-
-    const auto variable_name = (encode_parameter_index) ? variable.get_name() + "_" + std::to_string(parameter_index) : variable.get_name();
-
-    return m_pddl_factories.get_or_create_variable(variable_name, parameter_index);
-}
+Variable ToMimirStructures::translate_common(const loki::VariableImpl& variable) { return m_pddl_factories.get_or_create_variable(variable.get_name(), 0); }
 
 Object ToMimirStructures::translate_common(const loki::ObjectImpl& object)
 {
-    if (!object.get_bases().empty())
-    {
-        throw std::logic_error("Expected types to be empty.");
-    }
+    assert(object.get_bases().empty());
     return m_pddl_factories.get_or_create_object(object.get_name());
 }
 
@@ -261,13 +261,6 @@ enum class PredicateCategoryEnum
 
 StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
 {
-    auto parameters = VariableList {};
-    parameters.reserve(predicate.get_parameters().size());
-    for (const auto& parameter : predicate.get_parameters())
-    {
-        parameters.push_back(translate_common(*parameter->get_variable(), false));
-    }
-
     // Determine predicate category
     auto predicate_category = PredicateCategoryEnum::UNKNOWN;
     if (m_fluent_predicates.count(predicate.get_name()) && !m_derived_predicates.count(predicate.get_name()))
@@ -289,6 +282,7 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki:
 
     std::optional<StaticOrFluentOrDerivedPredicate> result;
 
+    auto parameters = translate_common(predicate.get_parameters());
     if (predicate_category == PredicateCategoryEnum::FLUENT)
     {
         result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), parameters));
@@ -322,7 +316,7 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki:
 
 Term ToMimirStructures::translate_lifted(const loki::TermVariableImpl& term)
 {
-    return m_pddl_factories.get_or_create_term_variable(translate_common(*term.get_variable(), true));
+    return m_pddl_factories.get_or_create_term_variable(translate_common(*term.get_variable()));
 }
 
 Term ToMimirStructures::translate_lifted(const loki::TermObjectImpl& term)
@@ -369,7 +363,7 @@ StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(const loki::L
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, Atom<Static>>)
             {
-                return m_pddl_factories.get_or_create_static_literal(literal.is_negated(), arg);
+                return m_pddl_factories.get_or_create_literal(literal.is_negated(), arg);
             }
             else if constexpr (std::is_same_v<T, Atom<Fluent>>)
             {
@@ -418,13 +412,7 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
 
 FunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    auto parameters = VariableList {};
-    parameters.reserve(function_skeleton.get_parameters().size());
-    for (const auto& parameter : function_skeleton.get_parameters())
-    {
-        parameters.push_back(translate_common(*parameter->get_variable(), false));
-    }
-    return m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), parameters);
+    return m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), translate_common(function_skeleton.get_parameters()));
 }
 
 Function ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
@@ -613,12 +601,7 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 {
-    // 1. Prepare variables for renaming with parameter index
-    m_cur_parameter_index = 0;
-    auto parameters = translate_common(action.get_parameters());
-    m_cur_parameter_index = parameters.size();
-
-    // 2. Translate conditions
+    // 1. Translate conditions
     auto static_literals = LiteralList<Static> {};
     auto fluent_literals = LiteralList<Fluent> {};
     auto derived_literals = LiteralList<Derived> {};
@@ -630,7 +613,7 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
         derived_literals = derived_literals_;
     }
 
-    // 3. Translate effects
+    // 2. Translate effects
     auto simple_effects = EffectSimpleList {};
     auto conditional_effects = EffectConditionalList {};
     auto universal_effects = EffectUniversalList {};
@@ -646,7 +629,7 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 
     return m_pddl_factories.get_or_create_action(action.get_name(),
                                                  action.get_original_arity(),
-                                                 parameters,
+                                                 translate_common(action.get_parameters()),
                                                  static_literals,
                                                  fluent_literals,
                                                  derived_literals,
@@ -658,13 +641,6 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 
 Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
-    auto unrenamed_parameters = VariableList {};
-    for (const auto& parameter : axiom.get_parameters())
-    {
-        unrenamed_parameters.push_back(translate_common(*parameter->get_variable(), false));
-    }
-    // 1. Prepare variables for renaming with parameter index
-    m_cur_parameter_index = 0;
     auto parameters = translate_common(axiom.get_parameters());
 
     const auto [static_literals, fluent_literals, derived_literals] = translate_lifted(*axiom.get_condition());
@@ -678,9 +654,8 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
         // and do not contain other parameters obtained from other free variables.
         m_derived_predicates_by_name.emplace(
             derived_predicate_name,
-            m_pddl_factories.get_or_create_derived_predicate(
-                derived_predicate_name,
-                VariableList(unrenamed_parameters.begin(), unrenamed_parameters.begin() + axiom.get_num_parameters_to_ground_head())));
+            m_pddl_factories.get_or_create_derived_predicate(derived_predicate_name,
+                                                             VariableList(parameters.begin(), parameters.begin() + axiom.get_num_parameters_to_ground_head())));
     }
     const auto derived_predicate = m_derived_predicates_by_name.at(axiom.get_derived_predicate_name());
 
@@ -1033,12 +1008,5 @@ Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
     return translate_grounded(problem);
 }
 
-ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) :
-    m_pddl_factories(pddl_factories),
-    m_fluent_predicates(),
-    m_equal_predicate(nullptr),
-    m_cur_parameter_index(0),
-    m_variable_to_parameter_index()
-{
-}
+ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories), m_fluent_predicates(), m_equal_predicate(nullptr) {}
 }

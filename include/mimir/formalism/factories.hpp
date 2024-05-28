@@ -249,7 +249,7 @@ public:
         return derived_ground_atoms.get_or_create<GroundAtomImpl<Derived>>(std::move(predicate), std::move(objects));
     }
 
-    Literal<Static> get_or_create_static_literal(bool is_negated, Atom<Static> atom)
+    Literal<Static> get_or_create_literal(bool is_negated, Atom<Static> atom)
     {
         return static_literals.get_or_create<LiteralImpl<Static>>(is_negated, std::move(atom));
     }

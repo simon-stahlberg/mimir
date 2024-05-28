@@ -1,6 +1,7 @@
 #include "mimir/formalism/parser.hpp"
 
 #include "mimir/formalism/transformers.hpp"
+#include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
 #include "mimir/formalism/translators.hpp"
 
 #include <loki/loki.hpp>
@@ -52,8 +53,13 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     problem = to_enf_translator.run(*problem);
 
     // To mimir structures
-    auto to_mimir_structures_translator = ToMimirStructures(m_factories);
+    auto tmp_mimir_pddl_factories = PDDLFactories();
+    auto to_mimir_structures_translator = ToMimirStructures(tmp_mimir_pddl_factories);
     m_problem = to_mimir_structures_translator.run(*problem);
+    m_domain = m_problem->get_domain();
+
+    auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(m_factories);
+    m_problem = encode_parameter_index_in_variables.run(*m_problem);
     m_domain = m_problem->get_domain();
 }
 

@@ -157,7 +157,7 @@ Literal<Static> DeleteRelaxTransformer::transform_impl(const LiteralImpl<Static>
 
     const auto atom = this->transform(*literal.get_atom());
 
-    return this->m_pddl_factories.get_or_create_static_literal(false, atom);
+    return this->m_pddl_factories.get_or_create_literal(false, atom);
 }
 
 Literal<Fluent> DeleteRelaxTransformer::transform_impl(const LiteralImpl<Fluent>& literal)
