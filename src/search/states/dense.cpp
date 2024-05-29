@@ -32,14 +32,17 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PD
 
     auto out_fluent_ground_atoms = GroundAtomList<Fluent> {};
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
+    auto out_static_ground_atoms = GroundAtomList<Static> {};
 
     pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Fluent>(), out_fluent_ground_atoms);
     pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(), out_derived_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Static>(), out_static_ground_atoms);
 
     os << "State("
        << "state id=" << state.get_id() << ", "
        << "fluent atoms=" << out_fluent_ground_atoms << ", "
-       << "derived atoms=" << out_derived_ground_atoms << ")";
+       << "derived atoms=" << out_derived_ground_atoms << ", "
+       << "static atoms=" << out_static_ground_atoms << ")";
 
     return os;
 }

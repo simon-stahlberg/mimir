@@ -153,7 +153,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
 
     if (!m_derived_predicates.empty())
     {
-        out << string(nested_options.indent, ' ') << "(:derived-predicates ";
+        out << string(nested_options.indent, ' ') << "(:predicates ";
         for (size_t i = 0; i < m_derived_predicates.size(); ++i)
         {
             if (i != 0)
@@ -185,7 +185,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
     }
     out << ")\n";
 
-    if (!(m_static_goal_condition.empty() && m_fluent_goal_condition.empty()))
+    if (!(m_static_goal_condition.empty() && m_fluent_goal_condition.empty() && m_derived_goal_condition.empty()))
     {
         out << string(nested_options.indent, ' ') << "(:goal ";
         out << "(and";

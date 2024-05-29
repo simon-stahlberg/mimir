@@ -43,7 +43,7 @@ private:
 
     Variable transform_impl(const VariableImpl& variable);
 
-    // Do not rename within predicates or initial numeric fluents
+    // Do not rename within predicates or function skeleton
     Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate);
     Predicate<Fluent> transform_impl(const PredicateImpl<Fluent>& predicate);
     Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate);
