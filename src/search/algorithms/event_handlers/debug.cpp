@@ -37,30 +37,25 @@ void DebugAlgorithmEventHandler::on_finish_f_layer_impl(uint64_t f_value, uint64
 
 void DebugAlgorithmEventHandler::on_expand_state_impl(State state, const PDDLFactories& pddl_factories) const
 {
-    std::cout << "[Algorithm] ----------------------------------------"
-              << "\n"
+    std::cout << "[Algorithm] ----------------------------------------\n"
               << "[Algorithm] State: " << std::make_tuple(state, std::cref(pddl_factories)) << std::endl
               << std::endl;
 }
 
 void DebugAlgorithmEventHandler::on_start_search_impl(State initial_state, const PDDLFactories& pddl_factories) const
 {
-    std::cout << "[Algorithm] Search started."
-              << "\n"
+    std::cout << "[Algorithm] Search started.\n"
               << "[Algorithm] Initial: " << std::make_tuple(initial_state, std::cref(pddl_factories)) << std::endl;
 }
 
-void DebugAlgorithmEventHandler::on_end_search_impl() const
-{
-    std::cout << "[Algorithm] Search ended."
-              << "\n"
-              << m_statistics << std::endl;
-}
+void DebugAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[Algorithm] Search ended.\n" << m_statistics << std::endl; }
 
 void DebugAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan) const
 {
     auto plan = to_plan(ground_action_plan);
-    std::cout << "[Algorithm] Plan found with cost: " << plan.get_cost() << std::endl;
+    std::cout << "[Algorithm] Plan found.\n"
+              << "[Algorithm] Plan cost: " << plan.get_cost() << "\n"
+              << "[Algorithm] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
         std::cout << "[Algorithm] " << i + 1 << ". " << plan.get_actions()[i] << std::endl;

@@ -284,6 +284,7 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &EffectConditionalImpl::get_identifier)
         .def("get_static_conditions", &EffectConditionalImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &EffectConditionalImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_derived_conditions", &EffectConditionalImpl::get_derived_conditions, py::return_value_policy::reference)
         .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference);
 
     py::class_<FunctionExpressionVariant>(m, "FunctionExpression")  //
@@ -296,6 +297,7 @@ void init_pymimir(py::module_& m)
         .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference)
         .def("get_static_conditions", &EffectUniversalImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &EffectUniversalImpl::get_fluent_conditions, py::return_value_policy::reference)
+        .def("get_derived_conditions", &EffectUniversalImpl::get_derived_conditions, py::return_value_policy::reference)
         .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference);
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
@@ -563,7 +565,27 @@ void init_pymimir(py::module_& m)
     // DataSets
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    // Transition
+    py::class_<Transition>(m, "Transition")  //
+        .def("__eq__", &Transition::operator==)
+        .def("__hash__", &Transition::hash)
+        .def("get_successor_state", &Transition::get_successor_state)
+        .def("get_creating_action", &Transition::get_creating_action);
+
     // StateSpace
-    // py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
-    //    .def_static("create", &StateSpaceImpl::create);
+    py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
+        .def_static("create", &StateSpaceImpl::create)
+        .def("compute_distances_from_state", &StateSpaceImpl::compute_distances_from_state)
+        .def("compute_pairwise_state_distances", &StateSpaceImpl::compute_pairwise_state_distances)
+        .def("get_states", &StateSpaceImpl::get_states, py::return_value_policy::reference)
+        .def("get_initial_state", &StateSpaceImpl::get_initial_state)
+        .def("get_forward_transitions", &StateSpaceImpl::get_forward_transitions, py::return_value_policy::reference)
+        .def("get_backward_transitions", &StateSpaceImpl::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_goal_distances", &StateSpaceImpl::get_goal_distances, py::return_value_policy::reference)
+        .def("get_goal_states", &StateSpaceImpl::get_goal_states, py::return_value_policy::reference)
+        .def("get_deadend_states", &StateSpaceImpl::get_deadend_states, py::return_value_policy::reference)
+        .def("get_num_states", &StateSpaceImpl::get_num_states)
+        .def("get_num_transitions", &StateSpaceImpl::get_num_transitions)
+        .def("get_num_goal_states", &StateSpaceImpl::get_num_goal_states)
+        .def("get_num_deadend_states", &StateSpaceImpl::get_num_deadend_states);
 }

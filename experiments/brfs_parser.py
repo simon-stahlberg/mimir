@@ -20,7 +20,9 @@ class BrfsParser(Parser):
     [AlgorithmStatistics] Number of expanded states: 1756
     [AlgorithmStatistics] Number of generated states until last f-layer: 17938
     [AlgorithmStatistics] Number of expanded states until last f-layer: 1741
-    [Algorithm] Plan found with cost: 7
+    [Algorithm] Plan found.
+    [Algorithm] Plan cost: 15
+    [Algorithm] Plan length: 5
 
     Unsolvable Run:
     [Algorithm] Exhausted!
@@ -41,7 +43,8 @@ class BrfsParser(Parser):
         self.add_pattern("num_generated", r"\[AlgorithmStatistics\] Number of generated states: (\d+)", type=int)
         self.add_pattern("num_expanded_until_last_f_layer", r"\[AlgorithmStatistics\] Number of expanded states until last f-layer: (\d+)", type=int)
         self.add_pattern("num_generated_until_last_f_layer", r"\[AlgorithmStatistics\] Number of generated states until last f-layer: (\d+)", type=int)
-        self.add_pattern("cost", r"\[Algorithm\] Plan found with cost: (.+)", type=float)
+        self.add_pattern("cost", r"\[Algorithm\] Plan cost: (.+)", type=float)
+        self.add_pattern("length", r"\[Algorithm\] Plan length: (.+)", type=float)
         self.add_pattern("exhausted", r"(\[Algorithm\] Exhausted!)", type=str)
         self.add_pattern("val_plan_invalid", r"(Plan invalid)", type=str)
 

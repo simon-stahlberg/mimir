@@ -186,11 +186,11 @@ public:
     {
     }
 
-    // delete copy and move to avoid dangling references.
+    // delete copy and allow move
     PDDLFactories(const PDDLFactories& other) = delete;
     PDDLFactories& operator=(const PDDLFactories& other) = delete;
-    PDDLFactories(PDDLFactories&& other) = delete;
-    PDDLFactories& operator=(PDDLFactories&& other) = delete;
+    PDDLFactories(PDDLFactories&& other) = default;
+    PDDLFactories& operator=(PDDLFactories&& other) = default;
 
     /// @brief Get or create requriements for the given parameters.
     ///

@@ -36,6 +36,11 @@ private:
     GroundAction m_creating_action;
 
 public:
+    Transition(State successor_state, GroundAction creating_action);
+
+    [[nodiscard]] bool operator==(const Transition& other) const;
+    [[nodiscard]] size_t hash() const;
+
     State get_successor_state() const;
     GroundAction get_creating_action() const;
 };
@@ -47,9 +52,11 @@ using Transitions = std::vector<Transition>;
 class StateSpaceImpl
 {
 private:
+    PDDLParser m_parser;
     std::shared_ptr<GroundedAAG> m_aag;
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
+    StateList m_states;
     State m_initial_state;
 
     size_t m_num_transitions;
@@ -61,15 +68,17 @@ private:
     StateSet m_goal_states;
     StateSet m_deadend_states;
 
-    StateSpaceImpl(std::shared_ptr<GroundedAAG> aag,
+    StateSpaceImpl(PDDLParser parser,
+                   std::shared_ptr<GroundedAAG> aag,
                    std::shared_ptr<SuccessorStateGenerator> ssg,
+                   StateList states,
                    State initial_state,
                    size_t num_transitions,
                    std::vector<Transitions> forward_transitions,
                    std::vector<Transitions> backward_transitions,
                    std::vector<double> goal_distances,
                    StateSet goal_states,
-                   StateSet m_deadend_states);
+                   StateSet deadend_states);
 
 public:
     /// @brief Try to create a StateSpace from the given input files with the given resource limits
@@ -82,14 +91,17 @@ public:
     create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
 
     /* Extended functionality */
+
+    /// @brief Compute distances from the given state computed using DFS.
     std::vector<double> compute_distances_from_state(const State state) const;
 
-    std::vector<std::vector<double>> compute_pairwise_distances() const;
+    /// @brief Compute pairwise state distances using Floyd-Warshall.
+    std::vector<std::vector<double>> compute_pairwise_state_distances() const;
 
     /* Getters */
-    State get_initial_state() const;
+    const StateList& get_states() const;
 
-    const std::vector<State>& get_states() const;
+    State get_initial_state() const;
 
     const std::vector<Transitions>& get_forward_transitions() const;
 
@@ -97,9 +109,9 @@ public:
 
     const std::vector<double>& get_goal_distances() const;
 
-    const std::unordered_set<State>& get_goal_states() const;
+    const StateSet& get_goal_states() const;
 
-    const std::unordered_set<State>& get_deadend_states() const;
+    const StateSet& get_deadend_states() const;
 
     size_t get_num_states() const;
 

@@ -37,17 +37,14 @@ void DefaultAlgorithmEventHandler::on_start_search_impl(State initial_state, con
     std::cout << "[Algorithm] Search started." << std::endl;
 }
 
-void DefaultAlgorithmEventHandler::on_end_search_impl() const
-{
-    std::cout << "[Algorithm] Search ended."
-              << "\n"
-              << m_statistics << std::endl;
-}
+void DefaultAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[Algorithm] Search ended.\n" << m_statistics << std::endl; }
 
 void DefaultAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan) const
 {
     auto plan = to_plan(ground_action_plan);
-    std::cout << "[Algorithm] Plan found with cost: " << plan.get_cost() << std::endl;
+    std::cout << "[Algorithm] Plan found.\n"
+              << "[Algorithm] Plan cost: " << plan.get_cost() << "\n"
+              << "[Algorithm] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
         std::cout << "[Algorithm] " << i + 1 << ". " << plan.get_actions()[i] << std::endl;

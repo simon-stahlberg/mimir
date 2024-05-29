@@ -10,45 +10,40 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ *<
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_VIEW_HPP_
-#define MIMIR_SEARCH_VIEW_HPP_
+#ifndef MIMIR_FORMALISM_COMMON_TIMERS_HPP_
+#define MIMIR_FORMALISM_COMMON_TIMERS_HPP_
 
-#include <cstddef>
+#include <chrono>
 
-namespace mimir
-{
-/**
- * Interface class
- */
-template<typename Derived_>
-class IView
+class StopWatch
 {
 private:
-    IView() = default;
-    friend Derived_;
-
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+    std::chrono::milliseconds m_timeout;
+    std::chrono::steady_clock::time_point m_endTime;
+    bool m_isRunning;
 
 public:
-    [[nodiscard]] bool operator==(const Derived_& other) const { return self().are_equal_impl(other); }
+    explicit StopWatch(size_t timeout_ms) : m_timeout(timeout_ms), m_isRunning(false) {}
 
-    [[nodiscard]] size_t hash() const { return self().hash_impl(); }
-};
+    void start()
+    {
+        m_endTime = std::chrono::steady_clock::now() + m_timeout;
+        m_isRunning = true;
+    }
 
-/**
- * Implementation class
- */
-template<typename Tag>
-class View : public IView<View<Tag>>
-{
+    bool has_finished() const
+    {
+        if (!m_isRunning)
+        {
+            return true;  // If never started, assume finished.
+        }
+        return std::chrono::steady_clock::now() >= m_endTime;
+    }
 };
-}
 
 #endif
