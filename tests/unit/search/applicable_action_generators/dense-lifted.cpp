@@ -33,7 +33,7 @@ TEST(MimirTests, SearchAAGsDenseLiftedTest)
 
     const auto& brfs_statistics = algorithm_event_handler->get_statistics();
 
-    EXPECT_FALSE(brfs_statistics.get_num_expanded_until_f_value().empty());
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 94);
     EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 36);
 }
 

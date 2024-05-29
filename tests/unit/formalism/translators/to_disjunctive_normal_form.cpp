@@ -10,7 +10,7 @@ namespace mimir::tests
 TEST(MimirTests, FormalismTranslatorsToDisjunctiveNormalForm)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "schedule/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "schedule/problem.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "schedule/test_problem.pddl");
 
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
