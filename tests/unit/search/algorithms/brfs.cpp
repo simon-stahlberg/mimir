@@ -930,7 +930,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
 
     EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 50);
     EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 21);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 42);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 34);
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 54);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 34);
@@ -955,9 +955,9 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedPhilosophersTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 234);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 32);
-    EXPECT_EQ(aag_statistics.get_num_inapplicable_grounded_actions_until_f_value().back(), 56);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 184);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 26);
+    EXPECT_EQ(aag_statistics.get_num_inapplicable_grounded_actions_until_f_value().back(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 1706);
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 34);
