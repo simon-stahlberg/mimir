@@ -24,6 +24,38 @@
 namespace mimir
 {
 
+static std::vector<int>
+compute_shortest_distances_from_states_impl(const size_t num_total_states, const StateList& states, const std::vector<Transitions>& transitions)
+{
+    auto distances = std::vector<int>(-1, num_total_states);
+    auto fifo_queue = std::deque<int>();
+    for (const auto& state : states)
+    {
+        distances[state.get_id()] = 0;
+        fifo_queue.push_back(state.get_id());
+    }
+
+    while (!fifo_queue.empty())
+    {
+        const auto& state_id = fifo_queue.front();
+        fifo_queue.pop_front();
+        const auto cost = distances[state_id];
+
+        for (const auto& transition : transitions[state_id])
+        {
+            const auto successor_state_id = transition.get_successor_state().get_id();
+
+            if (distances[successor_state_id] != -1)
+            {
+                continue;
+            }
+
+            distances[successor_state_id] = cost + 1;
+        }
+    }
+    return distances;
+}
+
 Transition::Transition(State successor_state, GroundAction creating_action) : m_successor_state(successor_state), m_creating_action(creating_action) {}
 
 bool Transition::operator==(const Transition& other) const
@@ -49,7 +81,7 @@ StateSpaceImpl::StateSpaceImpl(PDDLParser parser,
                                size_t num_transitions,
                                std::vector<Transitions> forward_transitions,
                                std::vector<Transitions> backward_transitions,
-                               std::vector<double> goal_distances,
+                               std::vector<int> goal_distances,
                                StateSet goal_states,
                                StateSet deadend_states) :
     m_parser(std::move(parser)),
@@ -66,7 +98,7 @@ StateSpaceImpl::StateSpaceImpl(PDDLParser parser,
 {
 }
 
-std::shared_ptr<const StateSpaceImpl>
+std::shared_ptr<StateSpaceImpl>
 StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
 {
     auto stop_watch = StopWatch(timeout_ms);
@@ -76,22 +108,34 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
 
     auto initial_state = ssg->get_or_create_initial_state();
-    auto queue = std::deque<State>();
-    queue.push_back(initial_state);
+    if (!initial_state.literals_hold(aag->get_problem()->get_static_initial_literals()))
+    {
+        // Unsolvable
+        return nullptr;
+    }
 
-    auto num_states = ssg->get_state_count();
+    auto lifo_queue = std::deque<State>();
+    lifo_queue.push_back(initial_state);
+
+    auto states = StateList { initial_state };
     auto num_transitions = (size_t) 0;
     auto forward_transitions = std::vector<Transitions> {};
     auto backward_transitions = std::vector<Transitions> {};
+    auto goal_states = StateSet {};
 
     auto applicable_actions = GroundActionList {};
     stop_watch.start();
-    while (!queue.empty())
+    while (!lifo_queue.empty())
     {
         while (!stop_watch.has_finished())
         {
-            const auto state = queue.back();
-            queue.pop_back();
+            const auto state = lifo_queue.back();
+            lifo_queue.pop_back();
+
+            if (state.literals_hold(aag->get_problem()->get_fluent_goal_condition()) && state.literals_hold(aag->get_problem()->get_derived_goal_condition()))
+            {
+                goal_states.insert(state);
+            }
 
             aag->generate_applicable_actions(state, applicable_actions);
 
@@ -99,21 +143,22 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
             {
                 const auto successor_state = ssg->get_or_create_successor_state(state, action);
 
-                if (successor_state.get_id() < num_states)
+                if (successor_state.get_id() < states.size())
                 {
                     continue;
                 }
 
-                ++num_states;
-
-                if (num_states == max_num_states)
+                if (states.size() == max_num_states)
                 {
                     // Ran out of state resources
                     return nullptr;
                 }
 
-                forward_transitions.resize(num_states);
-                backward_transitions.resize(num_states);
+                states.push_back(successor_state);
+                // States are stored by index
+                assert(states.back().get_id() == states.size() - 1);
+                forward_transitions.resize(states.size());
+                backward_transitions.resize(states.size());
 
                 forward_transitions[state.get_id()].emplace_back(successor_state, action);
                 backward_transitions[successor_state.get_id()].emplace_back(state, action);
@@ -121,27 +166,75 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
             }
         }
 
-        if (!queue.empty())
+        if (!lifo_queue.empty())
         {
             // Ran out of time
             return nullptr;
         }
     }
-    return nullptr;
+
+    auto goal_distances =
+        compute_shortest_distances_from_states_impl(states.size(), StateList { goal_states.begin(), goal_states.end() }, backward_transitions);
+
+    auto deadend_states = StateSet {};
+    for (const auto& state : states)
+    {
+        if (goal_distances[state.get_id()] == -1)
+        {
+            deadend_states.insert(state);
+        }
+    }
+
+    // Must explicitly call constructor since it is private
+    return std::shared_ptr<StateSpaceImpl>(new StateSpaceImpl(std::move(pddl_parser),
+                                                              std::move(aag),
+                                                              std::move(ssg),
+                                                              std::move(states),
+                                                              initial_state,
+                                                              num_transitions,
+                                                              std::move(forward_transitions),
+                                                              std::move(backward_transitions),
+                                                              std::move(goal_distances),
+                                                              std::move(goal_states),
+                                                              std::move(deadend_states)));
 }
 
 /* Extended functionality */
-std::vector<double> StateSpaceImpl::compute_distances_from_state(const State state) const
+std::vector<int> StateSpaceImpl::compute_shortest_distances_from_states(const StateList& states, bool forward) const
 {
-    auto distances = std::vector<double> {};
-    // TODO
-    return distances;
+    return compute_shortest_distances_from_states_impl(m_states.size(), states, (forward) ? m_forward_transitions : m_backward_transitions);
 }
 
-std::vector<std::vector<double>> StateSpaceImpl::compute_pairwise_state_distances() const
+std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_distances(bool forward) const
 {
-    auto distances = std::vector<std::vector<double>> {};
-    // TODO
+    auto distances = std::vector<std::vector<int>> { m_states.size(), std::vector<int>(-1, m_states.size()) };
+    const auto& transitions = (forward) ? m_forward_transitions : m_backward_transitions;
+
+    // Initialize distance adjacency matrix
+    for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
+    {
+        distances[state_id][state_id] = 0;
+        for (const auto& transition : transitions[state_id])
+        {
+            distances[state_id][transition.get_successor_state().get_id()] = 1;
+        }
+    }
+
+    // Compute transitive closure
+    for (size_t state_k = 0; state_k < m_states.size(); ++state_k)
+    {
+        for (size_t state_i = 0; state_i < m_states.size(); ++state_i)
+        {
+            for (size_t state_j = 0; state_j < m_states.size(); ++state_j)
+            {
+                if (distances[state_i][state_j] > distances[state_i][state_k] + distances[state_k][state_j])
+                {
+                    distances[state_i][state_j] = distances[state_i][state_k] + distances[state_k][state_j];
+                }
+            }
+        }
+    }
+
     return distances;
 }
 
@@ -154,7 +247,7 @@ const std::vector<Transitions>& StateSpaceImpl::get_forward_transitions() const 
 
 const std::vector<Transitions>& StateSpaceImpl::get_backward_transitions() const { return m_backward_transitions; }
 
-const std::vector<double>& StateSpaceImpl::get_goal_distances() const { return m_goal_distances; }
+const std::vector<int>& StateSpaceImpl::get_goal_distances() const { return m_goal_distances; }
 
 const StateSet& StateSpaceImpl::get_goal_states() const { return m_goal_states; }
 

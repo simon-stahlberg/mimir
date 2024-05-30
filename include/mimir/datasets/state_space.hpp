@@ -63,11 +63,15 @@ private:
     std::vector<Transitions> m_forward_transitions;
     std::vector<Transitions> m_backward_transitions;
 
-    std::vector<double> m_goal_distances;
+    std::vector<int> m_goal_distances;
 
     StateSet m_goal_states;
     StateSet m_deadend_states;
 
+    /// @brief Constructs a state state from data.
+    /// The create function calls this constructor and ensures that
+    /// the state space is in a legal state allowing other parts of
+    /// the code base to operate on the invariants in the implementation.
     StateSpaceImpl(PDDLParser parser,
                    std::shared_ptr<GroundedAAG> aag,
                    std::shared_ptr<SuccessorStateGenerator> ssg,
@@ -76,7 +80,7 @@ private:
                    size_t num_transitions,
                    std::vector<Transitions> forward_transitions,
                    std::vector<Transitions> backward_transitions,
-                   std::vector<double> goal_distances,
+                   std::vector<int> goal_distances,
                    StateSet goal_states,
                    StateSet deadend_states);
 
@@ -87,16 +91,19 @@ public:
     /// @param max_num_states The maximum number of states allowed
     /// @param timeout_ms The maximum time spent on creating the StateSpace
     /// @return StateSpace if construction is withing given resource limits, and otherwise nullptr.
-    static std::shared_ptr<const StateSpaceImpl>
+    static std::shared_ptr<StateSpaceImpl>
     create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
 
     /* Extended functionality */
 
-    /// @brief Compute distances from the given state computed using DFS.
-    std::vector<double> compute_distances_from_state(const State state) const;
+    /// @brief Compute shortest distances from the given states computed using BrFS.
+    /// @param states A list of states from which shortest distances are computed.
+    /// @param forward If true, forward transitions are used, and otherwise, backward transitions
+    std::vector<int> compute_shortest_distances_from_states(const StateList& states, bool forward = true) const;
 
     /// @brief Compute pairwise state distances using Floyd-Warshall.
-    std::vector<std::vector<double>> compute_pairwise_state_distances() const;
+    /// @param forward If true, forward transitions are used, and otherwise, backward transitions
+    std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /* Getters */
     const StateList& get_states() const;
@@ -107,7 +114,7 @@ public:
 
     const std::vector<Transitions>& get_backward_transitions() const;
 
-    const std::vector<double>& get_goal_distances() const;
+    const std::vector<int>& get_goal_distances() const;
 
     const StateSet& get_goal_states() const;
 
@@ -122,7 +129,7 @@ public:
     size_t get_num_deadend_states() const;
 };
 
-using StateSpace = std::shared_ptr<const StateSpaceImpl>;
+using StateSpace = std::shared_ptr<StateSpaceImpl>;
 
 }
 

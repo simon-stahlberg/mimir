@@ -575,8 +575,11 @@ void init_pymimir(py::module_& m)
     // StateSpace
     py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
         .def_static("create", &StateSpaceImpl::create)
-        .def("compute_distances_from_state", &StateSpaceImpl::compute_distances_from_state)
-        .def("compute_pairwise_state_distances", &StateSpaceImpl::compute_pairwise_state_distances)
+        .def("compute_shortest_distances_from_states",
+             &StateSpaceImpl::compute_shortest_distances_from_states,
+             pybind11::arg("states"),
+             pybind11::arg("forward") = true)
+        .def("compute_pairwise_shortest_state_distances", &StateSpaceImpl::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
         .def("get_states", &StateSpaceImpl::get_states, py::return_value_policy::reference)
         .def("get_initial_state", &StateSpaceImpl::get_initial_state)
         .def("get_forward_transitions", &StateSpaceImpl::get_forward_transitions, py::return_value_policy::reference)
