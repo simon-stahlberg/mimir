@@ -241,6 +241,8 @@ std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_di
 }
 
 /* Getters */
+Problem StateSpaceImpl::get_problem() const { return m_aag->get_problem(); }
+
 const StateList& StateSpaceImpl::get_states() const { return m_states; }
 
 State StateSpaceImpl::get_initial_state() const { return m_initial_state; }

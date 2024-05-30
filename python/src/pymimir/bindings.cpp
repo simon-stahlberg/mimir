@@ -500,7 +500,7 @@ void init_pymimir(py::module_& m)
     py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m, "IAAG")  //
         .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
         .def("get_action", &IDynamicAAG::get_action)
-        .def("get_problem", &IDynamicAAG::get_problem)
+        .def("get_problem", &IDynamicAAG::get_problem, py::return_value_policy::reference)
         .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
 
     // Lifted
@@ -590,6 +590,7 @@ void init_pymimir(py::module_& m)
         .def("get_initial_state", &StateSpaceImpl::get_initial_state)
         .def("get_forward_transitions", &StateSpaceImpl::get_forward_transitions, py::return_value_policy::reference)
         .def("get_backward_transitions", &StateSpaceImpl::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_problem", &StateSpaceImpl::get_problem, py::return_value_policy::reference)
         .def("get_goal_distances", &StateSpaceImpl::get_goal_distances, py::return_value_policy::reference)
         .def("get_goal_states", &StateSpaceImpl::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &StateSpaceImpl::get_deadend_states, py::return_value_policy::reference)

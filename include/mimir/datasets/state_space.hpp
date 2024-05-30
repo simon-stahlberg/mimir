@@ -106,6 +106,8 @@ public:
     std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /* Getters */
+    Problem get_problem() const;
+
     const StateList& get_states() const;
 
     State get_initial_state() const;
