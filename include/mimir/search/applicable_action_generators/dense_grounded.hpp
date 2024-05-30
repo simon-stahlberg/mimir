@@ -70,7 +70,7 @@ public:
     AAG(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler);
 
     /// @brief Return all actions.
-    [[nodiscard]] const FlatDenseActionSet& get_actions() const;
+    [[nodiscard]] const DenseGroundActionList& get_dense_ground_actions() const;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] DenseGroundAction get_action(size_t action_id) const;

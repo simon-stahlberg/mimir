@@ -15,13 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/applicable_action_generators/dense_lifted.hpp"
+
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/actions/dense.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted.hpp"
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/translations.hpp"
 
@@ -301,7 +302,6 @@ ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag
     const auto grounded_action = DenseGroundAction(*iter);
     if (inserted)
     {
-        m_dense_actions.emplace(grounded_action);
         m_actions_by_index.push_back(grounded_action);
     }
 
@@ -414,13 +414,9 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& ref
     }
 }
 
-const DenseGroundAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_axiom_evaluator.get_dense_ground_axioms(); }
+const DenseGroundAxiomList& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_dense_ground_axioms() const { return m_axiom_evaluator.get_dense_ground_axioms(); }
 
-const FlatDenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axioms() const { return m_axiom_evaluator.get_flat_dense_axioms(); }
-
-const DenseGroundActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_dense_actions() const { return m_dense_actions; }
-
-const FlatDenseActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_flat_dense_actions() const { return m_flat_actions; }
+const DenseGroundActionList& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_dense_ground_actions() const { return m_actions_by_index; }
 
 ConstView<ActionDispatcher<DenseStateTag>> AAG<LiftedAAGDispatcher<DenseStateTag>>::get_action(size_t action_id) const
 {

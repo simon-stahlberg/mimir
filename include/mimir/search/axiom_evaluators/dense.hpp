@@ -83,8 +83,6 @@ private:
 
     std::vector<AxiomPartition> m_partitioning;
 
-    DenseGroundAxiomSet m_dense_ground_axioms;
-
     FlatDenseAxiomSet m_flat_dense_axioms;
     DenseGroundAxiomList m_axioms_by_index;
     DenseGroundAxiomBuilder m_axiom_builder;
@@ -110,10 +108,7 @@ public:
     [[nodiscard]] DenseGroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
 
     /// @brief Return all axioms.
-    [[nodiscard]] const FlatDenseAxiomSet& get_flat_dense_axioms() const;
-
-    /// @brief Return all axioms.
-    [[nodiscard]] const DenseGroundAxiomSet& get_dense_ground_axioms() const;
+    [[nodiscard]] const DenseGroundAxiomList& get_dense_ground_axioms() const;
 };
 
 /**

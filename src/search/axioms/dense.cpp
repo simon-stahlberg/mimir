@@ -26,17 +26,6 @@
 namespace mimir
 {
 
-DenseGroundAxiomList to_ground_axioms(const FlatDenseAxiomSet& flat_axioms)
-{
-    auto result = DenseGroundAxiomList {};
-    result.reserve(flat_axioms.size());
-    for (const auto& flat_axiom : flat_axioms)
-    {
-        result.push_back(DenseGroundAxiom(flat_axiom));
-    }
-    return result;
-}
-
 std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, const PDDLFactories&>& data)
 {
     const auto [derived_effect, pddl_factories] = data;

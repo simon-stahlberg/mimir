@@ -54,7 +54,6 @@ private:
     std::unordered_map<Action, ConditionGrounder<DenseState>> m_action_precondition_grounders;
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_universal_effects;
 
-    DenseGroundActionSet m_dense_actions;
     FlatDenseActionSet m_flat_actions;
     DenseGroundActionList m_actions_by_index;
     DenseGroundActionBuilder m_action_builder;
@@ -98,17 +97,11 @@ public:
     /// @brief Ground an action and return a view onto it.
     [[nodiscard]] DenseGroundAction ground_action(const Action& action, ObjectList&& binding);
 
-    /// @brief Return all applicable axioms.
-    [[nodiscard]] const DenseGroundAxiomSet& get_applicable_axioms() const;
-
     /// @brief Return all axioms.
-    [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
+    [[nodiscard]] const DenseGroundAxiomList& get_dense_ground_axioms() const;
 
     /// @brief Return all actions.
-    [[nodiscard]] const DenseGroundActionSet& get_dense_actions() const;
-
-    /// @brief Return all actions.
-    [[nodiscard]] const FlatDenseActionSet& get_flat_dense_actions() const;
+    [[nodiscard]] const DenseGroundActionList& get_dense_ground_actions() const;
 
     /// @brief Return the action with the given id.
     [[nodiscard]] DenseGroundAction get_action(size_t action_id) const;

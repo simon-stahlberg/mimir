@@ -15,10 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/axiom_evaluators/dense.hpp"
+
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_category.hpp"
-#include "mimir/search/axiom_evaluators/dense.hpp"
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/translations.hpp"
 
@@ -125,7 +126,6 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& ref_pddl_fac
     m_ref_pddl_factories(ref_pddl_factories),
     m_event_handler(std::move(event_handler)),
     m_partitioning(),
-    m_dense_ground_axioms(),
     m_flat_dense_axioms(),
     m_axioms_by_index(),
     m_axiom_builder(),
@@ -261,7 +261,6 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
 
     if (inserted)
     {
-        m_dense_ground_axioms.emplace(grounded_axiom);
         m_axioms_by_index.push_back(grounded_axiom);
     }
 
@@ -277,7 +276,5 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     return grounded_axiom;
 }
 
-const FlatDenseAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_flat_dense_axioms() const { return m_flat_dense_axioms; }
-
-const DenseGroundAxiomSet& AE<AEDispatcher<DenseStateTag>>::get_dense_ground_axioms() const { return m_dense_ground_axioms; }
+const DenseGroundAxiomList& AE<AEDispatcher<DenseStateTag>>::get_dense_ground_axioms() const { return m_axioms_by_index; }
 }
