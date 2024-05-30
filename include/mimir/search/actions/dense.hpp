@@ -458,11 +458,18 @@ private:
     /* Implement IView interface: */
     friend class IConstView<ConstView<ActionDispatcher<DenseStateTag>>>;
 
-    /// @brief Compute equality based on the lifted action and the objects assigned to the parameters.
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_action() == other.get_action() && get_objects() == other.get_objects(); }
+    /// Return true iff two grounded actions are equal.
+    ///
+    /// For grounded actions in same AAG, we know they are already unique.
+    /// Hence, comparison of the buffer pointer suffices.
+    /// For grounded actions in different AAG, buffer pointers are always different.
+    /// Hence, comparison always returns false.
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
 
-    /// @brief Compute hash based on the lifted action and the objects assigned to the parameters.
-    [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(get_action(), get_objects().hash()); }
+    /// @brief Return a hash value for the grounded action.
+    ///
+    /// Same argument from are_equal_impl applies.
+    [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(m_view.buffer()); }
 
     /* Implement IActionView interface */
     friend class IActionView<ConstView<ActionDispatcher<DenseStateTag>>>;

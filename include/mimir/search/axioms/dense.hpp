@@ -134,11 +134,18 @@ private:
     /* Implement IView interface: */
     friend class IConstView<ConstView<AxiomDispatcher<DenseStateTag>>>;
 
-    /// @brief Compute equality based on the lifted action and the objects assigned to the parameters.
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return get_axiom() == other.get_axiom() && get_objects() == other.get_objects(); }
+    /// Return true iff two grounded axioms are equal.
+    ///
+    /// For grounded axioms in same AE, we know they are already unique.
+    /// Hence, comparison of the buffer pointer suffices.
+    /// For grounded axioms in different AE, buffer pointers are always different.
+    /// Hence, comparison always returns false.
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
 
-    /// @brief Compute hash based on the lifted action and the objects assigned to the parameters.
-    [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(get_axiom(), get_objects().hash()); }
+    /// @brief Return a hash value for the grounded action.
+    ///
+    /// Same argument from are_equal_impl applies.
+    [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(m_view.buffer()); }
 
     /* Implement IAxiomView interface */
     friend class IAxiomView<ConstView<AxiomDispatcher<DenseStateTag>>>;

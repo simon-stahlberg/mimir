@@ -130,12 +130,18 @@ private:
     /* Implement IView interface */
     friend class IConstView<ConstView<StateDispatcher<DenseStateTag>>>;
 
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const
-    {
-        return get_atoms<Fluent>() == other.get_atoms<Fluent>() && (get_problem() == other.get_problem());
-    }
+    /// @brief Return true iff two states are equal.
+    ///
+    /// For states in same SSG, we know they are already unique.
+    /// Hence, comparison of the buffer pointer suffices.
+    /// For states in different SSG, buffer pointers are always different.
+    /// Hence, comparison always returns false.
+    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
 
-    [[nodiscard]] size_t hash_impl() const { return get_atoms<Fluent>().hash(); }
+    /// @brief Return a hash value for the state.
+    ///
+    /// Same argument from are_equal_impl applies.
+    [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(m_view.buffer()); }
 
     /* Implement IStateView interface */
     friend class IStateView<ConstView<StateDispatcher<DenseStateTag>>>;
