@@ -20,20 +20,55 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/axioms.hpp"
+#include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/states.hpp"
 
 #include <flatmemory/details/view_const.hpp>
+#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 
 namespace mimir
 {
+
+class PartiallyExtendedState
+{
+private:
+    const Problem& m_problem;
+    const FlatBitsetBuilder<Fluent>& m_fluent_state_atoms;
+    FlatBitsetBuilder<Derived>& m_ref_derived_state_atoms;
+
+public:
+    PartiallyExtendedState(const Problem& problem, const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) :
+        m_problem(problem),
+        m_fluent_state_atoms(fluent_state_atoms),
+        m_ref_derived_state_atoms(ref_derived_state_atoms)
+    {
+    }
+
+    bool literal_holds(GroundLiteral<Static> static_literal) const
+    {
+        return m_problem->get_static_initial_positive_atoms_bitset().get(static_literal->get_atom()->get_identifier()) != static_literal->is_negated();
+    }
+
+    bool literal_holds(GroundLiteral<Fluent> fluent_literal) const
+    {
+        return m_fluent_state_atoms.get(fluent_literal->get_atom()->get_identifier()) != fluent_literal->is_negated();
+    }
+
+    bool literal_holds(GroundLiteral<Derived> derived_literal) const
+    {
+        return m_ref_derived_state_atoms.get(derived_literal->get_atom()->get_identifier()) != derived_literal->is_negated();
+    }
+};
 
 /**
  * Fully specialized implementation class.
@@ -43,43 +78,21 @@ class AE<AEDispatcher<DenseStateTag>> : public IStaticAE<AE<AEDispatcher<DenseSt
 {
 private:
     Problem m_problem;
-    PDDLFactories& m_pddl_factories;
+    PDDLFactories& m_ref_pddl_factories;
     std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
 
-    DenseGroundAxiomSet m_applicable_axioms;
+    DenseGroundAxiomSet m_dense_ground_axioms;
 
-    FlatDenseAxiomSet m_axioms;
+    FlatDenseAxiomSet m_flat_dense_axioms;
     DenseGroundAxiomList m_axioms_by_index;
     DenseGroundAxiomBuilder m_axiom_builder;
     std::unordered_map<Axiom, GroundingTable<DenseGroundAxiom>> m_axiom_groundings;
 
-    std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
+    // std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
 
-    /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_fluent_preconditions_hold(const Axiom& axiom,
-                                           const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                                           const FlatBitsetBuilder<Derived>& derived_state_atoms);
-
-    void nullary_case(const Axiom& axiom,
-                      const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                      const FlatBitsetBuilder<Derived>& derived_state_atoms,
-                      DenseGroundAxiomList& out_applicable_axioms);
-
-    void unary_case(const AssignmentSet<Fluent>& fluent_assignment_set,
-                    const AssignmentSet<Derived>& derived_assignment_set,
-                    const Axiom& axiom,
-                    const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                    const FlatBitsetBuilder<Derived>& derived_state_atoms,
-                    DenseGroundAxiomList& out_applicable_axioms);
-
-    void general_case(const AssignmentSet<Fluent>& fluent_assignment_set,
-                      const AssignmentSet<Derived>& derived_assignment_set,
-                      const Axiom& axiom,
-                      const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                      const FlatBitsetBuilder<Derived>& derived_state_atoms,
-                      DenseGroundAxiomList& out_applicable_axioms);
+    std::unordered_map<Axiom, ConditionGrounder<PartiallyExtendedState>> m_condition_grounders;
 
     /* Implement IStaticAE interface */
     friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;
@@ -97,10 +110,10 @@ public:
     [[nodiscard]] DenseGroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
 
     /// @brief Return all axioms.
-    [[nodiscard]] const FlatDenseAxiomSet& get_axioms() const;
+    [[nodiscard]] const FlatDenseAxiomSet& get_flat_dense_axioms() const;
 
-    /// @brief Return all applicable axioms.
-    [[nodiscard]] const DenseGroundAxiomSet& get_applicable_axioms() const;
+    /// @brief Return all axioms.
+    [[nodiscard]] const DenseGroundAxiomSet& get_dense_ground_axioms() const;
 };
 
 /**

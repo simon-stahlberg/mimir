@@ -340,7 +340,7 @@ void AAG<LiftedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl(D
     std::vector<ObjectList> bindings;
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
-        condition_grounder.get_bindings(state, fluent_assignment_set, derived_assignment_set, bindings);
+        condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings);
 
         for (auto& binding : bindings)
         {
@@ -391,13 +391,13 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& ref
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
         m_action_precondition_grounders.emplace(action,
-                                                DenseConditionGrounder(m_problem,
-                                                                       action->get_parameters(),
-                                                                       action->get_static_conditions(),
-                                                                       action->get_fluent_conditions(),
-                                                                       action->get_derived_conditions(),
-                                                                       static_assignment_set,
-                                                                       m_ref_pddl_factories));
+                                                ConditionGrounder<DenseState>(m_problem,
+                                                                              action->get_parameters(),
+                                                                              action->get_static_conditions(),
+                                                                              action->get_fluent_conditions(),
+                                                                              action->get_derived_conditions(),
+                                                                              static_assignment_set,
+                                                                              m_ref_pddl_factories));
         auto universal_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         universal_effects.reserve(action->get_universal_effects().size());
 
@@ -414,9 +414,9 @@ AAG<LiftedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& ref
     }
 }
 
-const DenseGroundAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_axiom_evaluator.get_applicable_axioms(); }
+const DenseGroundAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_applicable_axioms() const { return m_axiom_evaluator.get_dense_ground_axioms(); }
 
-const FlatDenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axioms() const { return m_axiom_evaluator.get_axioms(); }
+const FlatDenseAxiomSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_axioms() const { return m_axiom_evaluator.get_flat_dense_axioms(); }
 
 const DenseGroundActionSet& AAG<LiftedAAGDispatcher<DenseStateTag>>::get_dense_actions() const { return m_dense_actions; }
 

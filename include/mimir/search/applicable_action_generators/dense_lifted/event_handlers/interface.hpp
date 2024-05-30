@@ -22,6 +22,7 @@
 #include "mimir/search/actions.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/event_handlers/statistics.hpp"
 #include "mimir/search/axioms.hpp"
+#include "mimir/search/condition_grounders/event_handlers/interface.hpp"
 #include "mimir/search/states.hpp"
 
 namespace mimir
@@ -45,8 +46,6 @@ public:
 
     virtual void on_ground_action_cache_miss(const Action action, const ObjectList& binding) = 0;
 
-    virtual void on_ground_inapplicable_action(const GroundAction action, const PDDLFactories& pddl_factories) = 0;
-
     virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) = 0;
 
     virtual void on_start_generating_applicable_axioms() = 0;
@@ -56,8 +55,6 @@ public:
     virtual void on_ground_axiom_cache_hit(const Axiom axiom, const ObjectList& binding) = 0;
 
     virtual void on_ground_axiom_cache_miss(const Axiom axiom, const ObjectList& binding) = 0;
-
-    virtual void on_ground_inapplicable_axiom(const GroundAxiom axiom, const PDDLFactories& pddl_factories) = 0;
 
     virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) = 0;
 
@@ -112,13 +109,6 @@ public:
         self().on_ground_action_cache_miss_impl(action, binding);
     }
 
-    void on_ground_inapplicable_action(const GroundAction action, const PDDLFactories& pddl_factories) override
-    {  //
-        m_statistics.increment_num_inapplicable_grounded_actions();
-
-        self().on_ground_inapplicable_action_impl(action, pddl_factories);
-    }
-
     void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) override
     {  //
         self().on_end_generating_applicable_actions_impl(ground_actions, pddl_factories);
@@ -146,13 +136,6 @@ public:
         m_statistics.increment_num_ground_axiom_cache_misses();
 
         self().on_ground_axiom_cache_miss_impl(axiom, binding);
-    }
-
-    void on_ground_inapplicable_axiom(const GroundAxiom axiom, const PDDLFactories& pddl_factories) override
-    {  //
-        m_statistics.increment_num_inapplicable_grounded_axioms();
-
-        self().on_ground_inapplicable_axiom_impl(axiom, pddl_factories);
     }
 
     void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) override

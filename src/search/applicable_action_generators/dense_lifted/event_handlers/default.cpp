@@ -37,10 +37,6 @@ void DefaultLiftedAAGEventHandler::on_ground_action_cache_miss_impl(const Action
 {  //
 }
 
-void DefaultLiftedAAGEventHandler::on_ground_inapplicable_action_impl(const GroundAction action, const PDDLFactories& pddl_factories) const
-{  //
-}
-
 void DefaultLiftedAAGEventHandler::on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) const
 {
     //
@@ -61,11 +57,6 @@ void DefaultLiftedAAGEventHandler::on_ground_axiom_cache_hit_impl(const Axiom ax
 }
 
 void DefaultLiftedAAGEventHandler::on_ground_axiom_cache_miss_impl(const Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DefaultLiftedAAGEventHandler::on_ground_inapplicable_axiom_impl(const GroundAxiom axiom, const PDDLFactories& pddl_factories) const
 {
     //
 }

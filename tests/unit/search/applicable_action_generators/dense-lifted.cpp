@@ -25,11 +25,9 @@ TEST(MimirTests, SearchAAGsDenseLiftedTest)
 
     EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 84);
     EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 10);
-    EXPECT_EQ(aag_statistics.get_num_inapplicable_grounded_actions_until_f_value().back(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 377);
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 16);
-    EXPECT_EQ(aag_statistics.get_num_inapplicable_grounded_axioms_until_f_value().back(), 0);
 
     const auto& brfs_statistics = algorithm_event_handler->get_statistics();
 

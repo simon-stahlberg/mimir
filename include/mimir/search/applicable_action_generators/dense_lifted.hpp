@@ -19,11 +19,8 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_DENSE_LIFTED_HPP_
 
 #include "mimir/formalism/action.hpp"
-#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions/dense.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/dense.hpp"
 #include "mimir/search/axioms/dense.hpp"
@@ -54,7 +51,7 @@ private:
 
     DenseAE m_axiom_evaluator;
 
-    std::unordered_map<Action, DenseConditionGrounder> m_action_precondition_grounders;
+    std::unordered_map<Action, ConditionGrounder<DenseState>> m_action_precondition_grounders;
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_universal_effects;
 
     DenseGroundActionSet m_dense_actions;
