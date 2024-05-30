@@ -47,18 +47,25 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
         m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
     }
     auto ground_atoms = GroundAtomList<P> {};
-    // Sort group decreasingly in their size.
-    auto sorted_groups = std::vector<GroundAtomList<P>> {};
-    for (const auto& [_predicate, group] : m_ground_atoms_by_predicate)
+    // Sort group decreasingly in their size, break ties lexicographically by predicate name
+    auto sorted_groups = std::vector<std::pair<Predicate<P>, GroundAtomList<P>>> {};
+    for (const auto& [predicate, group] : m_ground_atoms_by_predicate)
     {
-        sorted_groups.push_back(group);
+        sorted_groups.emplace_back(predicate, group);
     }
     std::sort(sorted_groups.begin(),
               sorted_groups.end(),
-              [](const GroundAtomList<P>& left, const GroundAtomList<P>& right) { return left.size() > right.size(); });
-    for (const auto& group : sorted_groups)
+              [](const std::pair<Predicate<P>, GroundAtomList<P>>& left, const std::pair<Predicate<P>, GroundAtomList<P>>& right)
+              {
+                  if (left.second.size() == right.second.size())
+                  {
+                      return left.first->get_name() < right.first->get_name();
+                  }
+                  return left.second.size() > right.second.size();
+              });
+    for (const auto& [_predicate, group] : sorted_groups)
     {
-        // Sort grounded atoms in the group lexicographically to get compiler independent results.
+        // Sort grounded atoms in each group by indices to get compiler independent results.
         auto sorted_group = group;
         std::sort(sorted_group.begin(), sorted_group.end(), [](const GroundAtom<P>& left, const GroundAtom<P>& right) { return left->str() < right->str(); });
         for (const auto& grounded_atom : sorted_group)

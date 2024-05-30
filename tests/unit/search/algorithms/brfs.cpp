@@ -184,7 +184,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 84);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 249);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 237);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -491,7 +491,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 12);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 31);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 30);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -542,7 +542,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 35);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 82);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 88);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -904,7 +904,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 38);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 34);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 130);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 132);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 34);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 94);
@@ -1007,7 +1007,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 7);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 19);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 17);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -1314,7 +1314,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
     EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(aag_statistics.get_num_ground_actions(), 57);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 110);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 112);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
