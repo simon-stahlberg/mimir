@@ -55,7 +55,7 @@ it is necessary to check they are correct.
 /* Function noreturn attribute, if any */
 #define NORET_ATTR _Noreturn
 
-#define USE_ANSICONTROLS 0 
+#define USE_ANSICONTROLS 0
                           /* whether --enable-ansicontrols is used */
 #define FLEX_ARRAY_OK 0
  /* whether the compiler supports flexible array members in structures */
@@ -293,7 +293,7 @@ it is necessary to check they are correct.
 *       16-Jan-16 : - Change NAUTY_INFINITY to 2 billion + 2                 *
 *       12-Mar-16 : - Add const to alloc_error()                             *
 *                 : Froze 2.6                                                *
-*       29-Aug-16 : - Add SWHIBIT, TAKEHIBIT and ATMOSTONEBIT                * 
+*       29-Aug-16 : - Add SWHIBIT, TAKEHIBIT and ATMOSTONEBIT                *
 *       10-Mar-18 : - Add SETWORD_DEC_FORMAT for decimal output              *
 *                   - Fix 64-bit SETWORD_FORMAT to use 0 padding.            *
 *       28-Feb-19 : - Use intrinsics for WORDSIZE=16                         *
@@ -408,7 +408,7 @@ it is necessary to check they are correct.
 #endif
 
 /* Now we determine some sizes, relying on limits.h and
-  stdint.h first in case configuration was not done. 
+  stdint.h first in case configuration was not done.
   None of these tests are perfect, but sizeof() is not
   allowed in preprocessor tests.  The program nautest.c
   will check these. */
@@ -433,7 +433,7 @@ it is necessary to check they are correct.
 #define SIZEOF_LONG 8
 #endif
 
-#if defined(LLONG_MAX) 
+#if defined(LLONG_MAX)
 #define SIZEOF_LONG_LONG 8
 #else
 #define SIZEOF_LONG_LONG 8   /* 0 if nonexistent */
@@ -445,7 +445,7 @@ it is necessary to check they are correct.
 #else
 /* These sizes will be 0 if the type doesn't exist or is disabled */
 #define SIZEOF_UNINT128 16
-#define SIZEOF_UINT128_T 16 
+#define SIZEOF_UINT128_T 16
 #endif
 
 #if defined(_WIN64)
@@ -466,7 +466,7 @@ it is necessary to check they are correct.
 
    If WORDSIZE is not defined, but DEFAULT_WORDSIZE > 0, then set
       WORDSIZE to the same value as DEFAULT_WORDSIZE.
-   If WORDSIZE is so far undefined, use 32 unless longs have more 
+   If WORDSIZE is so far undefined, use 32 unless longs have more
       than 32 bits, in which case use 64.
    Define setword thus:
       WORDSIZE==16 : unsigned short
@@ -716,9 +716,9 @@ typedef unsigned long long nauty_counter;
 #define MSK0856 0xFF00000000000000ULL
 #define MSK1632 0x0000FFFF00000000ULL
 #define MSK0840     0xFF0000000000ULL
-#define MSK1616         0xFFFF0000ULL 
-#define MSK0824         0xFF000000ULL 
-#define MSK0808             0xFF00ULL 
+#define MSK1616         0xFFFF0000ULL
+#define MSK0824         0xFF000000ULL
+#define MSK0808             0xFF00ULL
 #define MSK63C  0x7FFFFFFFFFFFFFFFULL
 #define MSK31C          0x7FFFFFFFULL
 #define MSK15C              0x7FFFULL
@@ -734,9 +734,9 @@ typedef unsigned long long nauty_counter;
 #define MSK0856 0xFF00000000000000UL
 #define MSK1632 0x0000FFFF00000000UL
 #define MSK0840     0xFF0000000000UL
-#define MSK1616         0xFFFF0000UL 
-#define MSK0824         0xFF000000UL 
-#define MSK0808             0xFF00UL 
+#define MSK1616         0xFFFF0000UL
+#define MSK0824         0xFF000000UL
+#define MSK0808             0xFF00UL
 #define MSK63C  0x7FFFFFFFFFFFFFFFUL
 #define MSK31C          0x7FFFFFFFUL
 #define MSK15C              0x7FFFUL
@@ -752,9 +752,9 @@ typedef unsigned long long nauty_counter;
 #define MSK0856 0xFF00000000000000U
 #define MSK1632 0x0000FFFF00000000U
 #define MSK0840     0xFF0000000000U
-#define MSK1616         0xFFFF0000U 
+#define MSK1616         0xFFFF0000U
 #define MSK0824         0xFF000000U
-#define MSK0808             0xFF00U 
+#define MSK0808             0xFF00U
 #define MSK63C  0x7FFFFFFFFFFFFFFFU
 #define MSK31C          0x7FFFFFFFU
 #define MSK15C              0x7FFFU
@@ -927,7 +927,7 @@ static int msc_bsr_64(setword x) \
    { unsigned long *p; \
      _BitScanReverse64(&p,x); return 63 - *p; }
 #define FIRSTBITNZ(x) (msc_bsr_64(x))
-#elif WORDSIZE==32 
+#elif WORDSIZE==32
 #pragma intrinsic(_BitScanReverse)
 static int msc_bsr_32(setword x) \
    { unsigned *p; \
@@ -999,7 +999,7 @@ static int msc_bsr_16(setword x) \
 #elif WORDSIZE==64
 #pragma instrinsic(_mm_popcnt_u64)
 #define POPCOUNT(x) ((int)_mm_popcnt_u64(x))
-#elif WORDSIZE==32 
+#elif WORDSIZE==32
 #pragma instrinsic(_mm_popcnt_u32)
 #define POPCOUNT(x) _mm_popcnt_u32(x)
 #elif WORDSIZE==16
@@ -1062,7 +1062,7 @@ static int msc_bsr_16(setword x) \
 /* The following four types are obsolete, use int in new code. */
 typedef int shortish;
 typedef int permutation;
-typedef int nvector,np2vector; 
+typedef int nvector,np2vector;
 
 #if MAXN > NAUTY_INFINITY-2
  #error MAXN must be at most NAUTY_INFINITY-2
@@ -1227,10 +1227,10 @@ extern void free(void*);
 
 /* ALLOCS(x,y) should return a pointer (any pointer type) to x*y units of new
    storage, not necessarily initialised.  A "unit" of storage is defined by
-   the sizeof operator.   x and y are integer values of type int or larger, 
+   the sizeof operator.   x and y are integer values of type int or larger,
    but x*y may well be too large for an int.  The macro should cast to the
-   correct type for the call.  On failure, ALLOCS(x,y) should return a NULL 
-   pointer.  FREES(p) should free storage previously allocated by ALLOCS, 
+   correct type for the call.  On failure, ALLOCS(x,y) should return a NULL
+   pointer.  FREES(p) should free storage previously allocated by ALLOCS,
    where p is the value that ALLOCS returned. */
 
 #ifdef NAUTY_IN_MAGMA
@@ -1239,7 +1239,7 @@ extern void free(void*);
 #define FREES(p) mem_free(p)
 #else
 #define ALLOCS(x,y) malloc((size_t)(x)*(size_t)(y))
-#define REALLOCS(p,x) realloc(p,(size_t)(x)) 
+#define REALLOCS(p,x) realloc(p,(size_t)(x))
 #define FREES(p) free(p)
 #endif
 
@@ -1254,7 +1254,7 @@ extern void free(void*);
    DYNALLOC2 test if there is enough space allocated, and if not free
    the existing space and allocate a bigger space.  The allocated space
    is not initialised.
-   
+
    In the case of DYNALLOC1, the space is allocated using
        ALLOCS(sz,sizeof(type)).
    In the case of DYNALLOC2, the space is allocated using
@@ -1291,7 +1291,7 @@ extern void free(void*);
 #define ERRFILE stderr
 
 /* Don't use OLDEXTDEFS, it is only still here for Magma. */
-#ifdef OLDEXTDEFS   
+#ifdef OLDEXTDEFS
 #define EXTDEF_CLASS
 #ifdef EXTDEFS
 #define EXTDEF_TYPE 1
@@ -1317,7 +1317,7 @@ extern int leftbit[];
 #if  WORDSIZE==128
 #define B128(i) (((setword)1) << (127-(i)))
 EXTDEF_CLASS const setword bit[] =
- {B128(0),  B128(1),  B128(2),  B128(3),  B128(4), 
+ {B128(0),  B128(1),  B128(2),  B128(3),  B128(4),
     B128(5),  B128(6),  B128(7),  B128(8),  B128(9),
   B128(10), B128(11), B128(12), B128(13), B128(14),
     B128(15), B128(16), B128(17), B128(18), B128(19),

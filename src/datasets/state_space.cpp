@@ -27,7 +27,7 @@ namespace mimir
 static std::vector<int>
 compute_shortest_distances_from_states_impl(const size_t num_total_states, const StateList& states, const std::vector<Transitions>& transitions)
 {
-    auto distances = std::vector<int>(-1, num_total_states);
+    auto distances = std::vector<int>(num_total_states, -1);
     auto fifo_queue = std::deque<int>();
     for (const auto& state : states)
     {
@@ -51,6 +51,8 @@ compute_shortest_distances_from_states_impl(const size_t num_total_states, const
             }
 
             distances[successor_state_id] = cost + 1;
+
+            fifo_queue.push_back(successor_state_id);
         }
     }
     return distances;
@@ -125,52 +127,52 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
 
     auto applicable_actions = GroundActionList {};
     stop_watch.start();
-    while (!lifo_queue.empty())
+    while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
-        while (!stop_watch.has_finished())
+        const auto state = lifo_queue.back();
+
+        lifo_queue.pop_back();
+
+        if (state.literals_hold(aag->get_problem()->get_fluent_goal_condition()) && state.literals_hold(aag->get_problem()->get_derived_goal_condition()))
         {
-            const auto state = lifo_queue.back();
-            lifo_queue.pop_back();
-
-            if (state.literals_hold(aag->get_problem()->get_fluent_goal_condition()) && state.literals_hold(aag->get_problem()->get_derived_goal_condition()))
-            {
-                goal_states.insert(state);
-            }
-
-            aag->generate_applicable_actions(state, applicable_actions);
-
-            for (const auto& action : applicable_actions)
-            {
-                const auto successor_state = ssg->get_or_create_successor_state(state, action);
-
-                if (successor_state.get_id() < states.size())
-                {
-                    continue;
-                }
-
-                if (states.size() == max_num_states)
-                {
-                    // Ran out of state resources
-                    return nullptr;
-                }
-
-                states.push_back(successor_state);
-                // States are stored by index
-                assert(states.back().get_id() == states.size() - 1);
-                forward_transitions.resize(states.size());
-                backward_transitions.resize(states.size());
-
-                forward_transitions[state.get_id()].emplace_back(successor_state, action);
-                backward_transitions[successor_state.get_id()].emplace_back(state, action);
-                ++num_transitions;
-            }
+            goal_states.insert(state);
         }
 
-        if (!lifo_queue.empty())
+        aag->generate_applicable_actions(state, applicable_actions);
+
+        for (const auto& action : applicable_actions)
         {
-            // Ran out of time
-            return nullptr;
+            const auto successor_state = ssg->get_or_create_successor_state(state, action);
+
+            forward_transitions.resize(ssg->get_state_count());
+            backward_transitions.resize(ssg->get_state_count());
+
+            forward_transitions[state.get_id()].emplace_back(successor_state, action);
+            backward_transitions[successor_state.get_id()].emplace_back(state, action);
+            ++num_transitions;
+
+            if (successor_state.get_id() < states.size())
+            {
+                continue;
+            }
+
+            if (states.size() == max_num_states)
+            {
+                // Ran out of state resources
+                return nullptr;
+            }
+
+            states.push_back(successor_state);
+            lifo_queue.push_back(successor_state);
+            // States are stored by index
+            assert(states.back().get_id() == states.size() - 1);
         }
+    }
+
+    if (stop_watch.has_finished())
+    {
+        // Ran out of time
+        return nullptr;
     }
 
     auto goal_distances =
@@ -207,7 +209,7 @@ std::vector<int> StateSpaceImpl::compute_shortest_distances_from_states(const St
 
 std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_distances(bool forward) const
 {
-    auto distances = std::vector<std::vector<int>> { m_states.size(), std::vector<int>(-1, m_states.size()) };
+    auto distances = std::vector<std::vector<int>> { m_states.size(), std::vector<int>(m_states.size(), -1) };
     const auto& transitions = (forward) ? m_forward_transitions : m_backward_transitions;
 
     // Initialize distance adjacency matrix

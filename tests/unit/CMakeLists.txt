@@ -15,6 +15,7 @@ set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 
 add_executable(${TEST_NAME}
     "algorithms/memory_pool.cpp"
+    "datasets/state_space.cpp"
     "formalism/translators/to_disjunctive_normal_form.cpp"
     "formalism/translators/to_negation_normal_form.cpp"
     "formalism/translators/remove_types.cpp"

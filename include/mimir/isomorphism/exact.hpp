@@ -22,6 +22,10 @@ namespace mimir
 {
 // TODO: provide a suitable interface to interact with nauty
 // to compute the information that we need to compute T/iso_~
+
+class NautyGraph
+{
+};
 }
 
 #endif

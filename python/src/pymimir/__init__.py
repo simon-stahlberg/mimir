@@ -82,3 +82,9 @@ from _pymimir import (
     SSG,
     State
 )
+
+# Dataset
+from _pymimir import (
+    Transition,
+    StateSpace
+)

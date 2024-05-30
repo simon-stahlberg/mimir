@@ -73,6 +73,12 @@ struct CastVisitor
     }
 };
 
+static std::shared_ptr<StateSpaceImpl>
+create_state_space_helper(const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
+{
+    return StateSpaceImpl::create(domain_filepath, problem_filepath, max_num_states, timeout_ms);
+}
+
 /**
  * Bindings
  */
@@ -574,7 +580,7 @@ void init_pymimir(py::module_& m)
 
     // StateSpace
     py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
-        .def_static("create", &StateSpaceImpl::create)
+        .def_static("create", &create_state_space_helper)
         .def("compute_shortest_distances_from_states",
              &StateSpaceImpl::compute_shortest_distances_from_states,
              pybind11::arg("states"),
