@@ -15,7 +15,6 @@ Mimir supports the following PDDL requirements in the grounded and lifting setti
 - [x] :universal-preconditions
 - [x] :quantified-preconditions
 - [x] :conditional-effects
-- [x] :numeric-fluents
 - [x] :adl
 - [x] :derived-predicates
 - [x] :action-costs
