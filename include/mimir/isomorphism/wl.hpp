@@ -18,9 +18,19 @@
 #ifndef MIMIR_ISOMORPHISM_WL_HPP_
 #define MIMIR_ISOMORPHISM_WL_HPP_
 
+#include "mimir/search/states.hpp"
+
 namespace mimir
 {
 // TODO: provide a suitable interface to interact with our wl implementation
+
+class StateColoring
+{
+private:
+public:
+    void calculate(const State state);
+};
+
 }
 
 #endif

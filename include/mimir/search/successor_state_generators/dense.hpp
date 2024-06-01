@@ -36,7 +36,7 @@ namespace mimir
  * Implementation class
  */
 template<>
-class SSG<SSGDispatcher<DenseStateTag>> : public IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>
+class SSG<DenseStateTag> : public IStaticSSG<SSG<DenseStateTag>>
 {
 private:
     std::shared_ptr<IDynamicAAG> m_aag;
@@ -45,7 +45,7 @@ private:
     DenseStateBuilder m_state_builder;
 
     /* Implement IStaticSSG interface */
-    friend class IStaticSSG<SSG<SSGDispatcher<DenseStateTag>>>;
+    friend class IStaticSSG<SSG<DenseStateTag>>;
 
     [[nodiscard]] DenseState get_or_create_initial_state_impl()
     {
@@ -206,7 +206,7 @@ public:
  * Types
  */
 
-using DenseSSG = SSG<SSGDispatcher<DenseStateTag>>;
+using DenseSSG = SSG<DenseStateTag>;
 
 }
 

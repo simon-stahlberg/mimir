@@ -18,6 +18,8 @@
 #ifndef MIMIR_ISOMORPHISM_EXACT_HPP_
 #define MIMIR_ISOMORPHISM_EXACT_HPP_
 
+#include "mimir/search/states.hpp"
+
 namespace mimir
 {
 // TODO: provide a suitable interface to interact with nauty
@@ -25,6 +27,13 @@ namespace mimir
 
 class NautyGraph
 {
+};
+
+class StateIsomorphism
+{
+private:
+public:
+    void calculate(const State state);
 };
 }
 

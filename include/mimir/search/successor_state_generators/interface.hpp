@@ -21,7 +21,6 @@
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/states.hpp"
-#include "mimir/search/successor_state_generators/tags.hpp"
 
 namespace mimir
 {
@@ -85,7 +84,7 @@ public:
  *
  * Specialize the wrapped tag to provide your own implementation of a successor state generator.
  */
-template<IsSSGDispatcher S>
+template<IsStateTag S>
 class SSG : public IStaticSSG<SSG<S>>
 {
 };
