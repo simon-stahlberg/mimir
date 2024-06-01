@@ -10,7 +10,7 @@ from pathlib import Path
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-__version__ = "0.0.1"
+__version__ = "0.9.9"
 HERE = Path(__file__).resolve().parent
 
 
@@ -93,7 +93,7 @@ setup(
     name="pymimir",
     version=__version__,
     author="Simon Stahlberg, Dominik Drexler",
-    author_email=r"{simon.stahlberg,dominik.drexler}@liu.se",
+    author_email="simon.stahlberg@gmail.com, dominik.drexler@liu.se",
     url="https://github.com/simon-stahlberg/mimir",
     description="Mimir planning library",
     long_description="",
