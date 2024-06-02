@@ -512,19 +512,19 @@ void init_pymimir(py::module_& m)
     py::class_<State>(m, "State")  //
         .def("__hash__", &State::hash)
         .def("__eq__", &State::operator==)
-        .def("get_static_ground_atoms_ids",
+        .def("get_static_ground_atom_ids",
              [](const State& self, const Problem& problem)
              {
                  auto atoms = self.get_atoms<Static>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("get_fluent_ground_atoms_ids",
+        .def("get_fluent_ground_atom_ids",
              [](const State& self, const Problem& problem)
              {
                  auto atoms = self.get_atoms<Fluent>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("get_derived_ground_atoms_ids",
+        .def("get_derived_ground_atom_ids",
              [](const State& self, const Problem& problem)
              {
                  auto atoms = self.get_atoms<Derived>(problem);
@@ -537,7 +537,7 @@ void init_pymimir(py::module_& m)
         .def("fluent_ground_literals_hold", &State::literals_hold<Fluent>)
         .def("derived_ground_literals_hold", &State::literals_hold<Derived>)
         .def("to_string",
-             [](State self, const Problem& problem, const PDDLFactories& pddl_factories)
+             [](const State& self, const Problem& problem, const PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(problem, self, std::cref(pddl_factories));
@@ -550,7 +550,7 @@ void init_pymimir(py::module_& m)
         .def("__hash__", &GroundAction::hash)
         .def("__eq__", &GroundAction::operator==)
         .def("to_string",
-             [](GroundAction self, PDDLFactories& pddl_factories)
+             [](const GroundAction& self, PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(self, std::cref(pddl_factories));
@@ -561,7 +561,13 @@ void init_pymimir(py::module_& m)
     /* AAGs */
 
     py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m, "IAAG")  //
-        .def("generate_applicable_actions", &IDynamicAAG::generate_applicable_actions)
+        .def("compute_applicable_actions",
+             [](IDynamicAAG& self, const State& state)
+             {
+                 auto applicable_actions = GroundActionList {};
+                 self.generate_applicable_actions(state, applicable_actions);
+                 return applicable_actions;
+             })
         .def("get_action", &IDynamicAAG::get_action)
         .def("get_problem", &IDynamicAAG::get_problem, py::return_value_policy::reference)
         .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
