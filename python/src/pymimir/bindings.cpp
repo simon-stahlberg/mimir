@@ -514,30 +514,30 @@ void init_pymimir(py::module_& m)
     py::class_<State>(m, "State")  //
         .def("__hash__", &State::hash)
         .def("__eq__", &State::operator==)
-        .def("get_static_ground_atom_ids",
+        .def("get_static_atoms",
              [](const State& self, const Problem& problem)
              {
                  auto atoms = self.get_atoms<Static>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("get_fluent_ground_atom_ids",
+        .def("get_fluent_atoms",
              [](const State& self, const Problem& problem)
              {
                  auto atoms = self.get_atoms<Fluent>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("get_derived_ground_atom_ids",
+        .def("get_derived_atoms",
              [](const State& self, const Problem& problem)
              {
                  auto atoms = self.get_atoms<Derived>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("static_ground_literal_holds", &State::literal_holds<Static>)
-        .def("fluent_ground_literal_holds", &State::literal_holds<Fluent>)
-        .def("derived_ground_literal_holds", &State::literal_holds<Derived>)
-        .def("static_ground_literals_hold", &State::literals_hold<Static>)
-        .def("fluent_ground_literals_hold", &State::literals_hold<Fluent>)
-        .def("derived_ground_literals_hold", &State::literals_hold<Derived>)
+        .def("literal_holds", py::overload_cast<const Problem, const GroundLiteral<Static>&>(&State::literal_holds<Static>, py::const_))
+        .def("literal_holds", py::overload_cast<const Problem, const GroundLiteral<Fluent>&>(&State::literal_holds<Fluent>, py::const_))
+        .def("literal_holds", py::overload_cast<const Problem, const GroundLiteral<Derived>&>(&State::literal_holds<Derived>, py::const_))
+        .def("literals_hold", py::overload_cast<const Problem, const GroundLiteralList<Static>&>(&State::literals_hold<Static>, py::const_))
+        .def("literals_hold", py::overload_cast<const Problem, const GroundLiteralList<Fluent>&>(&State::literals_hold<Fluent>, py::const_))
+        .def("literals_hold", py::overload_cast<const Problem, const GroundLiteralList<Derived>&>(&State::literals_hold<Derived>, py::const_))
         .def("to_string",
              [](const State& self, const Problem& problem, const PDDLFactories& pddl_factories)
              {
