@@ -31,17 +31,18 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<const Problem, const
     const auto [problem, state, pddl_factories] = data;
 
     auto out_fluent_ground_atoms = GroundAtomList<Fluent> {};
-    auto out_derived_ground_atoms = GroundAtomList<Derived> {};
     auto out_static_ground_atoms = GroundAtomList<Static> {};
+    auto out_derived_ground_atoms = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Static>(problem), out_static_ground_atoms);
     pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Fluent>(problem), out_fluent_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Static>(problem), out_static_ground_atoms);
     pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(problem), out_derived_ground_atoms);
+
     os << "State("
        << "state id=" << state.get_id() << ", "
        << "fluent atoms=" << out_fluent_ground_atoms << ", "
-       << "derived atoms=" << out_derived_ground_atoms << ", "
-       << "static atoms=" << out_derived_ground_atoms << ")";
+       << "static atoms=" << out_static_ground_atoms << ", "
+       << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }
