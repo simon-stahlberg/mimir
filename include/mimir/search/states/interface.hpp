@@ -63,6 +63,7 @@ public:
      */
 
     [[nodiscard]] uint32_t get_id() const { return self().get_id_impl(); }
+    [[nodiscard]] Problem get_problem() const { return self().get_problem_impl(); }
 
     /**
      * Iterators
@@ -74,6 +75,22 @@ public:
     [[nodiscard]] auto end_fluent_ground_atoms() const { return self().end_fluent_ground_atoms_impl(); }
     [[nodiscard]] auto begin_derived_ground_atoms() const { return self().begin_derived_ground_atoms_impl(); }
     [[nodiscard]] auto end_derived_ground_atoms() const { return self().end_derived_ground_atoms_impl(); }
+
+    /**
+     * Extended
+     */
+
+    template<PredicateCategory P>
+    [[nodiscard]] bool literal_holds(const GroundLiteral<P>& literal) const
+    {
+        return self().literal_holds_impl(literal);
+    }
+
+    template<PredicateCategory P>
+    [[nodiscard]] bool literals_hold(const GroundLiteralList<P>& literals) const
+    {
+        return self().literals_hold_impl(literals);
+    }
 };
 
 /**

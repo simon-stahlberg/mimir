@@ -155,6 +155,34 @@ private:
     [[nodiscard]] auto begin_derived_ground_atoms_impl() const { return get_atoms<Derived>().begin(); }
     [[nodiscard]] auto end_derived_ground_atoms_impl() const { return get_atoms<Derived>().end(); }
 
+    template<PredicateCategory P>
+    [[nodiscard]] bool contains(const GroundAtom<P>& ground_atom) const
+    {
+        return get_atoms<P>().get(ground_atom->get_identifier());
+    }
+
+    template<PredicateCategory P>
+    [[nodiscard]] bool literal_holds_impl(const GroundLiteral<P>& literal) const
+    {
+        return literal->is_negated() != contains(literal->get_atom());
+    }
+
+    template<PredicateCategory P>
+    [[nodiscard]] bool literals_hold_impl(const GroundLiteralList<P>& literals) const
+    {
+        for (const auto& literal : literals)
+        {
+            if (!literal_holds_impl(literal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [[nodiscard]] Problem get_problem_impl() const { return m_view.get<3>(); }
+
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
@@ -177,34 +205,6 @@ public:
         {
             static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
         }
-    }
-
-    [[nodiscard]] Problem get_problem() const { return m_view.get<3>(); }
-
-    template<PredicateCategory P>
-    bool contains(const GroundAtom<P>& ground_atom) const
-    {
-        return get_atoms<P>().get(ground_atom->get_identifier());
-    }
-
-    template<PredicateCategory P>
-    bool literal_holds(const GroundLiteral<P>& literal) const
-    {
-        return literal->is_negated() != contains(literal->get_atom());
-    }
-
-    template<PredicateCategory P>
-    bool literals_hold(const GroundLiteralList<P>& literals) const
-    {
-        for (const auto& literal : literals)
-        {
-            if (!literal_holds(literal))
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 };
 
