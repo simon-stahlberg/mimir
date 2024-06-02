@@ -106,11 +106,12 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
     auto stop_watch = StopWatch(timeout_ms);
 
     auto pddl_parser = PDDLParser(domain_file_path, problem_file_path);
-    auto aag = std::make_shared<GroundedAAG>(pddl_parser.get_problem(), pddl_parser.get_factories());
+    const auto problem = pddl_parser.get_problem();
+    auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser.get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
 
     auto initial_state = ssg->get_or_create_initial_state();
-    if (!initial_state.literals_hold(aag->get_problem()->get_static_initial_literals()))
+    if (!initial_state.literals_hold(problem, problem->get_static_initial_literals()))
     {
         // Unsolvable
         return nullptr;
@@ -133,7 +134,7 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
 
         lifo_queue.pop_back();
 
-        if (state.literals_hold(aag->get_problem()->get_fluent_goal_condition()) && state.literals_hold(aag->get_problem()->get_derived_goal_condition()))
+        if (state.literals_hold(problem, problem->get_fluent_goal_condition()) && state.literals_hold(problem, problem->get_derived_goal_condition()))
         {
             goal_states.insert(state);
         }

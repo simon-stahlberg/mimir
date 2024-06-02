@@ -512,22 +512,22 @@ void init_pymimir(py::module_& m)
     py::class_<State>(m, "State")  //
         .def("__hash__", &State::hash)
         .def("__eq__", &State::operator==)
-        .def("get_static_ground_atom_ids",
-             [](const State& self)
+        .def("get_static_ground_atoms_ids",
+             [](const State& self, const Problem& problem)
              {
-                 auto atoms = self.get_atoms<Static>();
+                 auto atoms = self.get_atoms<Static>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
         .def("get_fluent_ground_atoms_ids",
-             [](const State& self)
+             [](const State& self, const Problem& problem)
              {
-                 auto atoms = self.get_atoms<Fluent>();
+                 auto atoms = self.get_atoms<Fluent>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
         .def("get_derived_ground_atoms_ids",
-             [](const State& self)
+             [](const State& self, const Problem& problem)
              {
-                 auto atoms = self.get_atoms<Derived>();
+                 auto atoms = self.get_atoms<Derived>(problem);
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
         .def("static_ground_literal_holds", &State::literal_holds<Static>)
@@ -537,14 +537,13 @@ void init_pymimir(py::module_& m)
         .def("fluent_ground_literals_hold", &State::literals_hold<Fluent>)
         .def("derived_ground_literals_hold", &State::literals_hold<Derived>)
         .def("to_string",
-             [](State self, PDDLFactories& pddl_factories)
+             [](State self, const Problem& problem, const PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(self, std::cref(pddl_factories));
+                 ss << std::make_tuple(problem, self, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("get_id", &State::get_id)
-        .def("get_problem", &State::get_problem);
+        .def("get_id", &State::get_id);
 
     /* Action */
     py::class_<GroundAction>(m, "GroundAction")  //

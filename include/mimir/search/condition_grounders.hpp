@@ -39,15 +39,21 @@ namespace mimir
 {
 
 template<typename S>
-concept HasLiteralHolds = requires(S state, GroundLiteral<Static> static_literal, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal)
-{
-    { state.literal_holds(static_literal) } -> std::convertible_to<bool>;
-    { state.literal_holds(fluent_literal) } -> std::convertible_to<bool>;
-    { state.literal_holds(derived_literal) } -> std::convertible_to<bool>;
-};
+concept HasLiteralHolds =
+    requires(S state, Problem problem, GroundLiteral<Static> static_literal, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal) {
+        {
+            state.literal_holds(problem, static_literal)
+        } -> std::convertible_to<bool>;
+        {
+            state.literal_holds(problem, fluent_literal)
+        } -> std::convertible_to<bool>;
+        {
+            state.literal_holds(problem, derived_literal)
+        } -> std::convertible_to<bool>;
+    };
 
 template<typename State>
-requires HasLiteralHolds<State>
+    requires HasLiteralHolds<State>
 class ConditionGrounder
 {
 private:
@@ -63,13 +69,13 @@ private:
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
     template<PredicateCategory P>
-    bool is_valid_binding(const LiteralList<P>& literals, const State state, const ObjectList& binding)
+    bool is_valid_binding(const Problem problem, const LiteralList<P>& literals, const State state, const ObjectList& binding)
     {
         for (const auto& literal : literals)
         {
             auto ground_literal = m_ref_pddl_factories.ground_literal(literal, binding);
 
-            if (!state.literal_holds(ground_literal))
+            if (!state.literal_holds(problem, ground_literal))
             {
                 return false;
             }
@@ -78,21 +84,21 @@ private:
         return true;
     }
 
-    bool is_valid_binding(const State state, const ObjectList& binding)
+    bool is_valid_binding(const Problem problem, const State state, const ObjectList& binding)
     {
-        return is_valid_binding(m_static_conditions, state, binding)       // We need to test all
-               && is_valid_binding(m_fluent_conditions, state, binding)    // types of conditions
-               && is_valid_binding(m_derived_conditions, state, binding);  // due to over-approx.
+        return is_valid_binding(problem, m_static_conditions, state, binding)       // We need to test all
+               && is_valid_binding(problem, m_fluent_conditions, state, binding)    // types of conditions
+               && is_valid_binding(problem, m_derived_conditions, state, binding);  // due to over-approx.
     }
 
     template<PredicateCategory P>
-    bool nullary_literals_hold(const LiteralList<P>& literals, const State state, PDDLFactories& pddl_factories)
+    bool nullary_literals_hold(const LiteralList<P>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories)
     {
         for (const auto& literal : literals)
         {
             if (literal->get_atom()->get_predicate()->get_arity() == 0)
             {
-                if (!state.literal_holds(pddl_factories.ground_literal(literal, {})))
+                if (!state.literal_holds(problem, pddl_factories.ground_literal(literal, {})))
                 {
                     return false;
                 }
@@ -103,10 +109,10 @@ private:
     }
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_conditions_hold(const State state)
+    bool nullary_conditions_hold(const Problem problem, const State state)
     {
-        return (nullary_literals_hold(m_fluent_conditions, state, m_ref_pddl_factories))
-               && (nullary_literals_hold(m_derived_conditions, state, m_ref_pddl_factories));
+        return (nullary_literals_hold(m_fluent_conditions, problem, state, m_ref_pddl_factories))
+               && (nullary_literals_hold(m_derived_conditions, problem, state, m_ref_pddl_factories));
     }
 
     void nullary_case(const State state, std::vector<ObjectList>& ref_bindings)
@@ -114,7 +120,7 @@ private:
         // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
         auto binding = ObjectList {};
 
-        if (is_valid_binding(state, binding))
+        if (is_valid_binding(m_problem, state, binding))
         {
             ref_bindings.emplace_back(std::move(binding));
         }
@@ -136,7 +142,7 @@ private:
             {
                 auto binding = ObjectList { m_ref_pddl_factories.get_object(vertex.get_object_index()) };
 
-                if (is_valid_binding(state, binding))
+                if (is_valid_binding(m_problem, state, binding))
                 {
                     ref_bindings.emplace_back(std::move(binding));
                 }
@@ -198,7 +204,7 @@ private:
                 binding[param_index] = m_ref_pddl_factories.get_object(object_id);
             }
 
-            if (is_valid_binding(state, binding))
+            if (is_valid_binding(m_problem, state, binding))
             {
                 ref_bindings.emplace_back(std::move(binding));
             }
@@ -272,7 +278,7 @@ public:
     {
         out_bindings.clear();
 
-        if (nullary_conditions_hold(state))
+        if (nullary_conditions_hold(m_problem, state))
         {
             if (m_variables.size() == 0)
             {

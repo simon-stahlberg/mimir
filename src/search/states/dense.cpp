@@ -26,23 +26,22 @@
 namespace mimir
 {
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<const Problem, const DenseState, const PDDLFactories&>& data)
 {
-    const auto [state, pddl_factories] = data;
+    const auto [problem, state, pddl_factories] = data;
 
     auto out_fluent_ground_atoms = GroundAtomList<Fluent> {};
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
     auto out_static_ground_atoms = GroundAtomList<Static> {};
 
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Fluent>(), out_fluent_ground_atoms);
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(), out_derived_ground_atoms);
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Static>(), out_static_ground_atoms);
-
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Static>(problem), out_static_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Fluent>(problem), out_fluent_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(problem), out_derived_ground_atoms);
     os << "State("
        << "state id=" << state.get_id() << ", "
        << "fluent atoms=" << out_fluent_ground_atoms << ", "
        << "derived atoms=" << out_derived_ground_atoms << ", "
-       << "static atoms=" << out_static_ground_atoms << ")";
+       << "static atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }

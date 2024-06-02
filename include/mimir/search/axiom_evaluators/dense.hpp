@@ -42,29 +42,27 @@ namespace mimir
 class PartiallyExtendedState
 {
 private:
-    const Problem& m_problem;
     const FlatBitsetBuilder<Fluent>& m_fluent_state_atoms;
     FlatBitsetBuilder<Derived>& m_ref_derived_state_atoms;
 
 public:
-    PartiallyExtendedState(const Problem& problem, const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) :
-        m_problem(problem),
+    PartiallyExtendedState(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) :
         m_fluent_state_atoms(fluent_state_atoms),
         m_ref_derived_state_atoms(ref_derived_state_atoms)
     {
     }
 
-    bool literal_holds(GroundLiteral<Static> static_literal) const
+    bool literal_holds(const Problem problem, GroundLiteral<Static> static_literal) const
     {
-        return m_problem->get_static_initial_positive_atoms_bitset().get(static_literal->get_atom()->get_identifier()) != static_literal->is_negated();
+        return problem->get_static_initial_positive_atoms_bitset().get(static_literal->get_atom()->get_identifier()) != static_literal->is_negated();
     }
 
-    bool literal_holds(GroundLiteral<Fluent> fluent_literal) const
+    bool literal_holds(const Problem, GroundLiteral<Fluent> fluent_literal) const
     {
         return m_fluent_state_atoms.get(fluent_literal->get_atom()->get_identifier()) != fluent_literal->is_negated();
     }
 
-    bool literal_holds(GroundLiteral<Derived> derived_literal) const
+    bool literal_holds(const Problem, GroundLiteral<Derived> derived_literal) const
     {
         return m_ref_derived_state_atoms.get(derived_literal->get_atom()->get_identifier()) != derived_literal->is_negated();
     }

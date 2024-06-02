@@ -97,9 +97,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
     auto state_builder = StateBuilder();
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
     auto& derived_state_atoms = state_builder.get_atoms<Derived>();
-    auto& state_problem = state_builder.get_problem();
-    fluent_state_atoms = delete_free_ssg.get_or_create_initial_state().get_atoms<Fluent>();
-    state_problem = delete_free_problem;
+    fluent_state_atoms = delete_free_ssg.get_or_create_initial_state().get_atoms<Fluent>(m_problem);
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -120,7 +118,7 @@ AAG<GroundedAAGDispatcher<DenseStateTag>>::AAG(Problem problem, PDDLFactories& p
         for (const auto& action : actions)
         {
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
-            for (const auto atom_id : succ_state.get_atoms<Fluent>())
+            for (const auto atom_id : succ_state.get_atoms<Fluent>(m_problem))
             {
                 fluent_state_atoms.set(atom_id);
             }
@@ -197,7 +195,7 @@ void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_applicable_actions_impl
 {
     out_applicable_actions.clear();
 
-    m_action_match_tree.get_applicable_elements(state.get_atoms<Fluent>(), state.get_atoms<Derived>(), out_applicable_actions);
+    m_action_match_tree.get_applicable_elements(state.get_atoms<Fluent>(m_problem), state.get_atoms<Derived>(m_problem), out_applicable_actions);
 }
 
 void AAG<GroundedAAGDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,

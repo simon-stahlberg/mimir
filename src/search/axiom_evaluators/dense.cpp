@@ -72,7 +72,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
             applicable_axioms.clear();
             for (const auto& axiom : relevant_axioms)
             {
-                auto partially_extended_state = PartiallyExtendedState(m_problem, fluent_state_atoms, ref_derived_state_atoms);
+                auto partially_extended_state = PartiallyExtendedState(fluent_state_atoms, ref_derived_state_atoms);
                 auto& condition_grounder = m_condition_grounders.at(axiom);
                 condition_grounder.compute_bindings(partially_extended_state, fluent_assignment_set, derived_assignment_set, bindings);
 

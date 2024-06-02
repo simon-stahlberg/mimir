@@ -106,22 +106,24 @@ public:
 
     SearchStatus find_solution(GroundActionList& out_plan) override
     {
-        m_event_handler->on_start_search(this->m_initial_state, m_successor_generator->get_pddl_factories());
+        const auto problem = m_successor_generator->get_problem();
+        const auto& pddl_factories = m_successor_generator->get_pddl_factories();
+        m_event_handler->on_start_search(problem, this->m_initial_state, pddl_factories);
 
         auto initial_search_node = CostSearchNode(this->m_search_nodes[this->m_initial_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        const auto& static_goal_ground_literals = m_successor_generator->get_problem()->get_static_goal_condition();
-        if (!m_initial_state.literals_hold(static_goal_ground_literals))
+        const auto& static_goal_ground_literals = problem->get_static_goal_condition();
+        if (!m_initial_state.literals_hold(problem, static_goal_ground_literals))
         {
             m_event_handler->on_unsolvable();
 
             return SearchStatus::UNSOLVABLE;
         }
 
-        const auto& fluent_goal_ground_literals = m_successor_generator->get_problem()->get_fluent_goal_condition();
-        const auto& derived_goal_ground_literals = m_successor_generator->get_problem()->get_derived_goal_condition();
+        const auto& fluent_goal_ground_literals = problem->get_fluent_goal_condition();
+        const auto& derived_goal_ground_literals = problem->get_derived_goal_condition();
 
         auto applicable_actions = GroundActionList {};
 
@@ -144,7 +146,7 @@ public:
                 m_event_handler->on_finish_f_layer();
             }
 
-            if (state.literals_hold(fluent_goal_ground_literals) && state.literals_hold(derived_goal_ground_literals))
+            if (state.literals_hold(problem, fluent_goal_ground_literals) && state.literals_hold(problem, derived_goal_ground_literals))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 
@@ -160,7 +162,7 @@ public:
                 // return SearchStatus::FAILED;
             }
 
-            m_event_handler->on_expand_state(state, m_successor_generator->get_pddl_factories());
+            m_event_handler->on_expand_state(problem, state, pddl_factories);
 
             this->m_successor_generator->generate_applicable_actions(state, applicable_actions);
 
@@ -169,7 +171,7 @@ public:
                 const auto state_count = m_state_repository->get_state_count();
                 const auto& successor_state = this->m_state_repository->get_or_create_successor_state(state, action);
 
-                m_event_handler->on_generate_state(action, successor_state, m_successor_generator->get_pddl_factories());
+                m_event_handler->on_generate_state(problem, action, successor_state, pddl_factories);
 
                 if (state_count != m_state_repository->get_state_count())
                 {

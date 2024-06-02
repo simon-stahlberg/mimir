@@ -38,16 +38,16 @@ public:
     virtual ~IAlgorithmEventHandler() = default;
 
     /// @brief React on generating a successor_state by applying an action.
-    virtual void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a f-layer.
     virtual void on_finish_f_layer() = 0;
 
     /// @brief React on expanding a state.
-    virtual void on_expand_state(State state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_expand_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State initial_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
@@ -84,11 +84,11 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    void on_generate_state(GroundAction action, State successor_state, const PDDLFactories& pddl_factories) override
+    void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
-        self().on_generate_state_impl(action, successor_state, pddl_factories);
+        self().on_generate_state_impl(problem, action, successor_state, pddl_factories);
     }
 
     void on_finish_f_layer() override
@@ -101,18 +101,18 @@ public:
                                       m_statistics.get_num_generated_until_f_value().back());
     }
 
-    void on_expand_state(State state, const PDDLFactories& pddl_factories) override
+    void on_expand_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
-        self().on_expand_state_impl(state, pddl_factories);
+        self().on_expand_state_impl(problem, state, pddl_factories);
     }
 
-    void on_start_search(State initial_state, const PDDLFactories& pddl_factories) override
+    void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
-        self().on_start_search_impl(initial_state, pddl_factories);
+        self().on_start_search_impl(problem, initial_state, pddl_factories);
     }
 
     void on_end_search() override

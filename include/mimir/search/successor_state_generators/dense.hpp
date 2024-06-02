@@ -72,22 +72,89 @@ private:
         auto& state_id = m_state_builder.get_id();
         auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
         fluent_state_atoms.unset_all();
-        auto& problem = m_state_builder.get_problem();
 
         /* 1. Set state id */
 
         int next_state_id = m_states.size();
         state_id = next_state_id;
 
-        /* 2. Set problem */
-
-        problem = m_aag->get_problem();
-
-        /* 3. Construct non-extended state */
+        /* 2. Construct non-extended state */
 
         for (const auto& atom : atoms)
         {
             fluent_state_atoms.set(atom->get_identifier());
+        }
+
+        /* 3. Retrieve cached extended state */
+
+        // Test whether there exists an extended state for the given non extended state
+        flatmemory_builder.finish();
+        auto iter = m_states.find(FlatDenseState(flatmemory_builder.buffer().data()));
+        if (iter != m_states.end())
+        {
+            return DenseState(*iter);
+        }
+
+        /* Fetch member references for extended construction. */
+
+        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
+        derived_state_atoms.unset_all();
+
+        /* 4. Construct extended state by evaluating Axioms */
+
+        m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
+
+        /* 5. Cache extended state */
+
+        flatmemory_builder.finish();
+        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+
+        /* 6. Return newly generated extended state */
+
+        return DenseState(*iter2);
+    }
+
+    [[nodiscard]] DenseState get_or_create_successor_state_impl(const DenseState state, const DenseGroundAction action)
+    {
+        /* Fetch member references for non extended construction. */
+
+        auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
+        auto& state_id = m_state_builder.get_id();
+        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
+        fluent_state_atoms.unset_all();
+
+        // 1. Initialize non-extended state
+        fluent_state_atoms = state.get_atoms<Fluent>(m_aag->get_problem());
+
+        /* 2. Set state id */
+
+        int next_state_id = m_states.size();
+        state_id = next_state_id;
+
+        /* 3. Construct non-extended state */
+
+        /* STRIPS effects*/
+        auto strips_part_proxy = DenseStripsActionEffect(action.get_strips_effect());
+        fluent_state_atoms -= strips_part_proxy.get_negative_effects();
+        fluent_state_atoms |= strips_part_proxy.get_positive_effects();
+        /* Conditional effects */
+        for (const auto flat_conditional_effect : action.get_conditional_effects())
+        {
+            auto cond_effect_proxy = DenseConditionalEffect(flat_conditional_effect);
+
+            if (cond_effect_proxy.is_applicable(m_aag->get_problem(), state))
+            {
+                const auto& simple_effect = cond_effect_proxy.get_simple_effect();
+
+                if (simple_effect.is_negated)
+                {
+                    fluent_state_atoms.unset(simple_effect.atom_id);
+                }
+                else
+                {
+                    fluent_state_atoms.set(simple_effect.atom_id);
+                }
+            }
         }
 
         /* 4. Retrieve cached extended state */
@@ -110,83 +177,6 @@ private:
         m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
 
         /* 6. Cache extended state */
-
-        flatmemory_builder.finish();
-        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
-
-        /* 7. Return newly generated extended state */
-
-        return DenseState(*iter2);
-    }
-
-    [[nodiscard]] DenseState get_or_create_successor_state_impl(const DenseState state, const DenseGroundAction action)
-    {
-        /* Fetch member references for non extended construction. */
-
-        auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-        auto& state_id = m_state_builder.get_id();
-        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
-        fluent_state_atoms.unset_all();
-        auto& problem = m_state_builder.get_problem();
-
-        // 1. Initialize non-extended state
-        fluent_state_atoms = state.get_atoms<Fluent>();
-
-        /* 2. Set state id */
-
-        int next_state_id = m_states.size();
-        state_id = next_state_id;
-
-        /* 3. Set problem */
-
-        problem = m_aag->get_problem();
-
-        /* 4. Construct non-extended state */
-
-        /* STRIPS effects*/
-        auto strips_part_proxy = DenseStripsActionEffect(action.get_strips_effect());
-        fluent_state_atoms -= strips_part_proxy.get_negative_effects();
-        fluent_state_atoms |= strips_part_proxy.get_positive_effects();
-        /* Conditional effects */
-        for (const auto flat_conditional_effect : action.get_conditional_effects())
-        {
-            auto cond_effect_proxy = DenseConditionalEffect(flat_conditional_effect);
-
-            if (cond_effect_proxy.is_applicable(state))
-            {
-                const auto& simple_effect = cond_effect_proxy.get_simple_effect();
-
-                if (simple_effect.is_negated)
-                {
-                    fluent_state_atoms.unset(simple_effect.atom_id);
-                }
-                else
-                {
-                    fluent_state_atoms.set(simple_effect.atom_id);
-                }
-            }
-        }
-
-        /* 5. Retrieve cached extended state */
-
-        // Test whether there exists an extended state for the given non extended state
-        flatmemory_builder.finish();
-        auto iter = m_states.find(FlatDenseState(flatmemory_builder.buffer().data()));
-        if (iter != m_states.end())
-        {
-            return DenseState(*iter);
-        }
-
-        /* Fetch member references for extended construction. */
-
-        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
-        derived_state_atoms.unset_all();
-
-        /* 6. Construct extended state by evaluating Axioms */
-
-        m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
-
-        /* 7. Cache extended state */
 
         flatmemory_builder.finish();
         auto [iter2, inserted] = m_states.insert(flatmemory_builder);

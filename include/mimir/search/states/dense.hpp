@@ -33,7 +33,7 @@ namespace mimir
 /**
  * Flatmemory types
  */
-using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>, Problem>;
+using FlatDenseStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
 using FlatDenseStateBuilder = flatmemory::Builder<FlatDenseStateLayout>;
 using FlatDenseState = flatmemory::ConstView<FlatDenseStateLayout>;
 
@@ -44,8 +44,7 @@ struct FlatDenseStateHash
     size_t operator()(const FlatDenseState& view) const
     {
         const auto fluent_atoms = view.get<1>();
-        const auto problem = view.get<3>();
-        return loki::hash_combine(fluent_atoms.hash(), problem);
+        return loki::hash_combine(fluent_atoms.hash());
     }
 };
 
@@ -55,9 +54,7 @@ struct FlatDenseStateEqual
     {
         const auto fluent_atoms_left = view_left.get<1>();
         const auto fluent_atoms_right = view_right.get<1>();
-        const auto problem_left = view_left.get<3>();
-        const auto problem_right = view_right.get<3>();
-        return (fluent_atoms_left == fluent_atoms_right) && (problem_left == problem_right);
+        return (fluent_atoms_left == fluent_atoms_right);
     }
 };
 
@@ -95,7 +92,7 @@ public:
     {
         if constexpr (std::is_same_v<P, Static>)
         {
-            static_assert(dependent_false<P>::value, "Modifying static grounded atoms is not allowed.");
+            static_assert(dependent_false<P>::value, "Static ground atoms must be accessed from the corresponding problem.");
         }
         else if constexpr (std::is_same_v<P, Fluent>)
         {
@@ -110,8 +107,6 @@ public:
             static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
         }
     }
-
-    [[nodiscard]] Problem& get_problem() { return m_builder.get<3>(); }
 };
 
 /**
@@ -148,31 +143,32 @@ private:
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 
-    [[nodiscard]] auto begin_static_ground_atoms_impl() const { return get_atoms<Static>().begin(); }
-    [[nodiscard]] auto end_static_ground_atoms_impl() const { return get_atoms<Static>().end(); }
-    [[nodiscard]] auto begin_fluent_ground_atoms_impl() const { return get_atoms<Fluent>().begin(); }
-    [[nodiscard]] auto end_fluent_ground_atoms_impl() const { return get_atoms<Fluent>().end(); }
-    [[nodiscard]] auto begin_derived_ground_atoms_impl() const { return get_atoms<Derived>().begin(); }
-    [[nodiscard]] auto end_derived_ground_atoms_impl() const { return get_atoms<Derived>().end(); }
+    [[nodiscard]] auto begin_fluent_ground_atoms_impl() const { return m_view.get<1>().begin(); }
+    [[nodiscard]] auto end_fluent_ground_atoms_impl() const { return m_view.get<1>().end(); }
+    [[nodiscard]] auto begin_derived_ground_atoms_impl() const { return m_view.get<2>().begin(); }
+    [[nodiscard]] auto end_derived_ground_atoms_impl() const { return m_view.get<2>().end(); }
 
+    /**
+     * Fluent and Derived
+     */
     template<PredicateCategory P>
-    [[nodiscard]] bool contains(const GroundAtom<P>& ground_atom) const
+    [[nodiscard]] bool contains(const Problem problem, const GroundAtom<P>& ground_atom) const
     {
-        return get_atoms<P>().get(ground_atom->get_identifier());
+        return get_atoms<P>(problem).get(ground_atom->get_identifier());
     }
 
     template<PredicateCategory P>
-    [[nodiscard]] bool literal_holds_impl(const GroundLiteral<P>& literal) const
+    [[nodiscard]] bool literal_holds_impl(const Problem problem, const GroundLiteral<P>& literal) const
     {
-        return literal->is_negated() != contains(literal->get_atom());
+        return literal->is_negated() != contains(problem, literal->get_atom());
     }
 
     template<PredicateCategory P>
-    [[nodiscard]] bool literals_hold_impl(const GroundLiteralList<P>& literals) const
+    [[nodiscard]] bool literals_hold_impl(const Problem problem, const GroundLiteralList<P>& literals) const
     {
         for (const auto& literal : literals)
         {
-            if (!literal_holds_impl(literal))
+            if (!literal_holds_impl(problem, literal))
             {
                 return false;
             }
@@ -181,17 +177,15 @@ private:
         return true;
     }
 
-    [[nodiscard]] Problem get_problem_impl() const { return m_view.get<3>(); }
-
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_atoms() const
+    [[nodiscard]] FlatBitset<P> get_atoms(const Problem problem) const
     {
         if constexpr (std::is_same_v<P, Static>)
         {
-            return get_problem()->get_static_initial_positive_atoms_bitset();
+            return problem->get_static_initial_positive_atoms_bitset();
         }
         else if constexpr (std::is_same_v<P, Fluent>)
         {
@@ -230,7 +224,7 @@ using DenseStateSet = std::unordered_set<DenseState, DenseStateHash>;
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<DenseState, const PDDLFactories&>& data);
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Problem, const DenseState, const PDDLFactories&>& data);
 
 }
 
