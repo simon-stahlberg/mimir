@@ -2,7 +2,7 @@
 
 Mimir is a C++20 planning library with Python bindings for grounded and lifted planning. We created Mimir to be 1) efficient, 2) easy to integrate, use, and extend. Mimir implements standard search algorithms such as breadth-first search and AStar search.
 
-## Supported PDDL Requirements
+## 1. Supported PDDL Requirements
 
 Mimir supports the following PDDL requirements in the grounded and lifting setting.
 
@@ -19,16 +19,9 @@ Mimir supports the following PDDL requirements in the grounded and lifting setti
 - [x] :derived-predicates
 - [x] :action-costs
 
-## Example C++ API
+## 2. Getting Started (Python)
 
-```cpp
-const auto parser = PDDLParser("domain.pddl", "problem.pddl")
-const auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories())
-const auto brfs = BrFsAlgorithm(aag)
-const auto [status, plan] = brfs.find_solution()
-```
-
-## Example Python API
+### 2.1. Example Python API
 
 ```python
 parser = PDDLParser("domain.pddl", "problem.pddl")
@@ -37,9 +30,26 @@ brfs = BrFsAlgorithm(aag)
 status, plan = brfs.find_solution()
 ```
 
-## Getting Started
+### 2.2. Installing the Python Bindings Pymimir
 
-### Installing the Dependencies
+Mimir is available on pypi.
+
+```console
+pip install pymimir
+```
+
+## 3. Getting Started (C++)
+
+### 3.1. Example C++ API
+
+```cpp
+const auto parser = PDDLParser("domain.pddl", "problem.pddl")
+const auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories())
+const auto brfs = BrFsAlgorithm(aag)
+const auto [status, plan] = brfs.find_solution()
+```
+
+### 3.2. Installing the Dependencies
 
 Mimir depends on the following set of libraries:
 
@@ -59,7 +69,7 @@ cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/
 cmake --build dependencies/build -j16
 ```
 
-### Building Mimir
+### 3.3. Building Mimir
 
 Run the following sequence of commands to configure, build, and install Mimir:
 
@@ -72,13 +82,13 @@ cmake --build build -j16
 cmake --install build --prefix=<path/to/installation-directory>
 ```
 
-### Creating your own Planner based on Mimir
+### 3.4. Creating your own Planner based on Mimir
 
 We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/mimir/tree/dynamic/tests/integration) that downloads, builds, and installs Mimir and all its dependencies. We recommend using it as a dependency project for your project, similar to how we handle Mimir's dependencies.
 
-## For Developers
+## 4.For Developers
 
-### IDE Support
+### 4.1. IDE Support
 
 We developed Mimir in Visual Studio Code. We recommend installing the `C/C++` and `CMake Tools` extensions by Microsoft. To get maximum IDE support, you should set the following `Cmake: Configure Args` in the `CMake Tools` extension settings under `Workspace`:
 
@@ -94,10 +104,10 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 }
 ```
 
-### Argument passing
+### 4.2. Argument passing
 
 - Use prefix `ref_` for initialized output parameters and `out_` for non-initialized output parameters. Try to keep the number of output parameters as small as possible. Never use stack-allocated types as output parameters.
 
-### Concepts
+### 4.3. Concepts
 
-- Use prefixes `Is` or `Has` to obtain more meaningful names.
+- Use prefixes `Is` or `Has` to obtain more meaningful names. Every template parameter must be constrained using a suitable concept.
