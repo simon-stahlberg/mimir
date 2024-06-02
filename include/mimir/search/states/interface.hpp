@@ -68,8 +68,12 @@ public:
      * Iterators
      */
 
-    [[nodiscard]] auto begin() const { return self().begin_impl(); }
-    [[nodiscard]] auto end() const { return self().end_impl(); }
+    [[nodiscard]] auto begin_static_ground_atoms() const { return self().begin_static_ground_atoms_impl(); }
+    [[nodiscard]] auto end_static_ground_atoms() const { return self().end_static_ground_atoms_impl(); }
+    [[nodiscard]] auto begin_fluent_ground_atoms() const { return self().begin_fluent_ground_atoms_impl(); }
+    [[nodiscard]] auto end_fluent_ground_atoms() const { return self().end_fluent_ground_atoms_impl(); }
+    [[nodiscard]] auto begin_derived_ground_atoms() const { return self().begin_derived_ground_atoms_impl(); }
+    [[nodiscard]] auto end_derived_ground_atoms() const { return self().end_derived_ground_atoms_impl(); }
 };
 
 /**

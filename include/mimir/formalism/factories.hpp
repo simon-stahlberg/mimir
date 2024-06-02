@@ -576,9 +576,8 @@ public:
         }
     }
 
-    template<PredicateCategory P, flatmemory::IsBitset Bitset>
-        requires flatmemory::HasCompatibleTagType<Bitset, P>
-    void get_ground_atoms_from_ids(const Bitset& atom_ids, GroundAtomList<P>& out_ground_atoms) const
+    template<PredicateCategory P, std::ranges::forward_range Iterable>
+    void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
     {
         out_ground_atoms.clear();
 
@@ -588,9 +587,8 @@ public:
         }
     }
 
-    template<PredicateCategory P, flatmemory::IsBitset Bitset>
-        requires flatmemory::HasCompatibleTagType<Bitset, P>
-    GroundAtomList<P> get_ground_atoms_from_ids(const Bitset& atom_ids) const
+    template<PredicateCategory P, std::ranges::forward_range Iterable>
+    GroundAtomList<P> get_ground_atoms_from_ids(const Iterable& atom_ids) const
     {
         auto result = GroundAtomList<P> {};
         get_ground_atoms_from_ids(atom_ids, result);

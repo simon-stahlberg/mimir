@@ -148,8 +148,12 @@ private:
 
     [[nodiscard]] uint32_t get_id_impl() const { return m_view.get<0>(); }
 
-    [[nodiscard]] auto begin_impl() const { return get_atoms<Fluent>().begin(); }
-    [[nodiscard]] auto end_impl() const { return get_atoms<Fluent>().end(); }
+    [[nodiscard]] auto begin_static_ground_atoms_impl() const { return get_atoms<Static>().begin(); }
+    [[nodiscard]] auto end_static_ground_atoms_impl() const { return get_atoms<Static>().end(); }
+    [[nodiscard]] auto begin_fluent_ground_atoms_impl() const { return get_atoms<Fluent>().begin(); }
+    [[nodiscard]] auto end_fluent_ground_atoms_impl() const { return get_atoms<Fluent>().end(); }
+    [[nodiscard]] auto begin_derived_ground_atoms_impl() const { return get_atoms<Derived>().begin(); }
+    [[nodiscard]] auto end_derived_ground_atoms_impl() const { return get_atoms<Derived>().end(); }
 
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}

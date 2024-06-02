@@ -437,7 +437,18 @@ void init_pymimir(py::module_& m)
         .def("get_fluent_goal_condition", &ProblemImpl::get_fluent_goal_condition, py::return_value_policy::reference)
         .def("get_derived_goal_condition", &ProblemImpl::get_derived_goal_condition, py::return_value_policy::reference);
 
-    py::class_<PDDLFactories>(m, "PDDLFactories");
+    py::class_<PDDLFactories>(m, "PDDLFactories")  //
+        .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>)
+        .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>)
+        .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>)
+        .def("get_static_ground_atoms_from_ids",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Static, std::vector<size_t>>, py::const_))
+        .def("get_fluent_ground_atoms_from_ids",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Fluent, std::vector<size_t>>, py::const_))
+        .def("get_derived_ground_atoms_from_ids",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Derived, std::vector<size_t>>, py::const_))
+        .def("get_object", &PDDLFactories::get_object)
+        .def("get_objects_from_ids", py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_));
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
@@ -469,10 +480,24 @@ void init_pymimir(py::module_& m)
     py::class_<State>(m, "State")  //
         .def("__hash__", &State::hash)
         .def("__eq__", &State::operator==)
-        .def(
-            "__iter__",
-            [](State& state) { return py::make_iterator(state.begin(), state.end()); },
-            py::keep_alive<0, 1>())
+        .def("get_static_ground_atom_ids",
+             [](const State& self)
+             {
+                 auto atoms = self.get_atoms<Static>();
+                 return std::vector<size_t>(atoms.begin(), atoms.end());
+             })
+        .def("get_fluent_ground_atoms_ids",
+             [](const State& self)
+             {
+                 auto atoms = self.get_atoms<Fluent>();
+                 return std::vector<size_t>(atoms.begin(), atoms.end());
+             })
+        .def("get_derived_ground_atoms_ids",
+             [](const State& self)
+             {
+                 auto atoms = self.get_atoms<Derived>();
+                 return std::vector<size_t>(atoms.begin(), atoms.end());
+             })
         .def("to_string",
              [](State self, PDDLFactories& pddl_factories)
              {
