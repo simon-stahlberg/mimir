@@ -74,6 +74,7 @@ class AlgorithmEventHandlerBase : public IAlgorithmEventHandler
 {
 protected:
     AlgorithmStatistics m_statistics;
+    bool m_quiet;
 
 private:
     AlgorithmEventHandlerBase() = default;
@@ -84,49 +85,84 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
+    explicit AlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
     void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
-        self().on_generate_state_impl(problem, action, successor_state, pddl_factories);
+        if (!m_quiet)
+        {
+            self().on_generate_state_impl(problem, action, successor_state, pddl_factories);
+        }
     }
 
     void on_finish_f_layer() override
     {
         m_statistics.on_finish_f_layer();
 
-        assert(!m_statistics.get_num_expanded_until_f_value().empty());
-        self().on_finish_f_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
-                                      m_statistics.get_num_expanded_until_f_value().back(),
-                                      m_statistics.get_num_generated_until_f_value().back());
+        if (!m_quiet)
+        {
+            assert(!m_statistics.get_num_expanded_until_f_value().empty());
+            self().on_finish_f_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
+                                          m_statistics.get_num_expanded_until_f_value().back(),
+                                          m_statistics.get_num_generated_until_f_value().back());
+        }
     }
 
     void on_expand_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
-        self().on_expand_state_impl(problem, state, pddl_factories);
+        if (!m_quiet)
+        {
+            self().on_expand_state_impl(problem, state, pddl_factories);
+        }
     }
 
     void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
-        self().on_start_search_impl(problem, initial_state, pddl_factories);
+        if (!m_quiet)
+        {
+            self().on_start_search_impl(problem, initial_state, pddl_factories);
+        }
     }
 
     void on_end_search() override
     {
         m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
 
-        self().on_end_search_impl();
+        if (!m_quiet)
+        {
+            self().on_end_search_impl();
+        }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan) override { self().on_solved_impl(ground_action_plan); }
+    void on_solved(const GroundActionList& ground_action_plan) override
+    {
+        if (!m_quiet)
+        {
+            self().on_solved_impl(ground_action_plan);
+        }
+    }
 
-    void on_unsolvable() override { self().on_unsolvable_impl(); }
+    void on_unsolvable() override
+    {
+        if (!m_quiet)
+        {
+            self().on_unsolvable_impl();
+        }
+    }
 
-    void on_exhausted() override { self().on_exhausted_impl(); }
+    void on_exhausted() override
+    {
+        if (!m_quiet)
+        {
+            self().on_exhausted_impl();
+        }
+    }
 
     /// @brief Get the statistics.
     const AlgorithmStatistics& get_statistics() const override { return m_statistics; }

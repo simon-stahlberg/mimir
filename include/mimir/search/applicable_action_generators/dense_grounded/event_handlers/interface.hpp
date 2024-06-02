@@ -69,6 +69,7 @@ class GroundedAAGEventHandlerBase : public IGroundedAAGEventHandler
 {
 protected:
     GroundedAAGStatistics m_statistics;
+    bool m_quiet;
 
 private:
     GroundedAAGEventHandlerBase() = default;
@@ -79,6 +80,8 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
+    explicit GroundedAAGEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
     void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                            const GroundAtomList<Derived>& reached_derived_atoms,
                                            const GroundActionList& instantiated_actions,
@@ -89,45 +92,66 @@ public:
         m_statistics.set_num_delete_free_actions(instantiated_actions.size());
         m_statistics.set_num_delete_free_axioms(instantiated_axioms.size());
 
-        self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions, instantiated_axioms);
+        if (!m_quiet)
+        {
+            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions, instantiated_axioms);
+        }
     }
 
     void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) override
     {  //
         m_statistics.set_num_ground_actions(unrelaxed_actions.size());
 
-        self().on_finish_grounding_unrelaxed_actions_impl(unrelaxed_actions);
+        if (!m_quiet)
+        {
+            self().on_finish_grounding_unrelaxed_actions_impl(unrelaxed_actions);
+        }
     }
 
     void on_finish_build_action_match_tree(const MatchTree<GroundAction>& action_match_tree) override
     {  //
         m_statistics.set_num_nodes_in_action_match_tree(action_match_tree.get_num_nodes());
 
-        self().on_finish_build_action_match_tree_impl(action_match_tree);
+        if (!m_quiet)
+        {
+            self().on_finish_build_action_match_tree_impl(action_match_tree);
+        }
     }
 
     void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) override
     {  //
         m_statistics.set_num_ground_axioms(unrelaxed_axioms.size());
 
-        self().on_finish_grounding_unrelaxed_axioms_impl(unrelaxed_axioms);
+        if (!m_quiet)
+        {
+            self().on_finish_grounding_unrelaxed_axioms_impl(unrelaxed_axioms);
+        }
     }
 
     void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) override
     {  //
         m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree.get_num_nodes());
 
-        self().on_finish_build_axiom_match_tree_impl(axiom_match_tree);
+        if (!m_quiet)
+        {
+            self().on_finish_build_axiom_match_tree_impl(axiom_match_tree);
+        }
     }
 
     void on_finish_f_layer() override
     {  //
-        self().on_finish_f_layer_impl();
+        if (!m_quiet)
+        {
+            self().on_finish_f_layer_impl();
+        }
     }
 
     void on_end_search() override
     {  //
-        self().on_end_search_impl();
+        if (!m_quiet)
+        {
+            self().on_end_search_impl();
+        }
     }
 
     const GroundedAAGStatistics& get_statistics() const override { return m_statistics; }

@@ -52,6 +52,9 @@ private:
     void on_finish_f_layer_impl() const;
 
     void on_end_search_impl() const;
+
+public:
+    explicit DefaultLiftedAAGEventHandler(bool quiet = true) : LiftedAAGEventHandlerBase<DefaultLiftedAAGEventHandler>(quiet) {}
 };
 
 }

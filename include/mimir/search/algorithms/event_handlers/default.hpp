@@ -49,6 +49,9 @@ private:
     void on_unsolvable_impl() const;
 
     void on_exhausted_impl() const;
+
+public:
+    explicit DefaultAlgorithmEventHandler(bool quiet = true) : AlgorithmEventHandlerBase<DefaultAlgorithmEventHandler>(quiet) {}
 };
 
 }

@@ -47,14 +47,18 @@ int main(int argc, char** argv)
     std::cout << "Problem:" << std::endl;
     std::cout << *parser.get_problem() << std::endl;
 
-    auto applicable_action_generator = (grounded) ?
-                                           std::shared_ptr<IDynamicAAG> { std::make_shared<GroundedDenseAAG>(parser.get_problem(), parser.get_factories()) } :
-                                           std::shared_ptr<IDynamicAAG> { std::make_shared<LiftedDenseAAG>(parser.get_problem(), parser.get_factories()) };
+    auto applicable_action_generator =
+        (grounded) ? std::shared_ptr<IDynamicAAG> { std::make_shared<GroundedDenseAAG>(parser.get_problem(),
+                                                                                       parser.get_factories(),
+                                                                                       std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
+                     std::shared_ptr<IDynamicAAG> {
+                         std::make_shared<LiftedDenseAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
+                     };
 
     auto successor_state_generator = std::shared_ptr<IDynamicSSG> { std::make_shared<DenseSSG>(applicable_action_generator) };
 
-    auto event_handler = (debug) ? std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DebugAlgorithmEventHandler>() } :
-                                   std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DefaultAlgorithmEventHandler>() };
+    auto event_handler = (debug) ? std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DebugAlgorithmEventHandler>(false) } :
+                                   std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DefaultAlgorithmEventHandler>(false) };
 
     auto lifted_brfs = std::make_shared<BrFsAlgorithm>(applicable_action_generator, successor_state_generator, event_handler);
 

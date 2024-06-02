@@ -480,7 +480,9 @@ void init_pymimir(py::module_& m)
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Derived, std::vector<size_t>>, py::const_),
              py::return_value_policy::reference)
         .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference)
-        .def("get_objects_from_ids", py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_));
+        .def("get_objects_from_ids",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_),
+             py::return_value_policy::reference);
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
@@ -561,14 +563,16 @@ void init_pymimir(py::module_& m)
     /* AAGs */
 
     py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m, "IAAG")  //
-        .def("compute_applicable_actions",
-             [](IDynamicAAG& self, const State& state)
-             {
-                 auto applicable_actions = GroundActionList {};
-                 self.generate_applicable_actions(state, applicable_actions);
-                 return applicable_actions;
-             })
-        .def("get_action", &IDynamicAAG::get_action)
+        .def(
+            "compute_applicable_actions",
+            [](IDynamicAAG& self, const State& state)
+            {
+                auto applicable_actions = GroundActionList {};
+                self.generate_applicable_actions(state, applicable_actions);
+                return applicable_actions;
+            },
+            py::return_value_policy::reference)
+        .def("get_action", &IDynamicAAG::get_action, py::return_value_policy::reference)
         .def("get_problem", &IDynamicAAG::get_problem, py::return_value_policy::reference)
         .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
 

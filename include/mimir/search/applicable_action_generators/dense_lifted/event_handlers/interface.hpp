@@ -75,6 +75,7 @@ class LiftedAAGEventHandlerBase : public ILiftedAAGEventHandler
 {
 protected:
     LiftedAAGStatistics m_statistics;
+    bool m_quiet;
 
 private:
     LiftedAAGEventHandlerBase() = default;
@@ -85,74 +86,112 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
+    explicit LiftedAAGEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
     void on_start_generating_applicable_actions() override
-    {  //
-        self().on_start_generating_applicable_actions_impl();
+    {
+        if (!m_quiet)
+        {
+            self().on_start_generating_applicable_actions_impl();
+        }
     }
 
     void on_ground_action(const Action action, const ObjectList& binding) override
-    {  //
-        self().on_ground_action_impl(action, binding);
+    {
+        if (!m_quiet)
+        {
+            self().on_ground_action_impl(action, binding);
+        }
     }
 
     void on_ground_action_cache_hit(const Action action, const ObjectList& binding) override
-    {  //
+    {
         m_statistics.increment_num_ground_action_cache_hits();
 
-        self().on_ground_action_cache_hit_impl(action, binding);
+        if (!m_quiet)
+        {
+            self().on_ground_action_cache_hit_impl(action, binding);
+        }
     }
 
     void on_ground_action_cache_miss(const Action action, const ObjectList& binding) override
-    {  //
+    {
         m_statistics.increment_num_ground_action_cache_misses();
 
-        self().on_ground_action_cache_miss_impl(action, binding);
+        if (!m_quiet)
+        {
+            self().on_ground_action_cache_miss_impl(action, binding);
+        }
     }
 
     void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) override
-    {  //
-        self().on_end_generating_applicable_actions_impl(ground_actions, pddl_factories);
+    {
+        if (!m_quiet)
+        {
+            self().on_end_generating_applicable_actions_impl(ground_actions, pddl_factories);
+        }
     }
 
     void on_start_generating_applicable_axioms() override
-    {  //
-        self().on_start_generating_applicable_axioms_impl();
+    {
+        if (!m_quiet)
+        {
+            self().on_start_generating_applicable_axioms_impl();
+        }
     }
 
     void on_ground_axiom(const Axiom axiom, const ObjectList& binding) override
-    {  //
-        self().on_ground_axiom_impl(axiom, binding);
+    {
+        if (!m_quiet)
+        {
+            self().on_ground_axiom_impl(axiom, binding);
+        }
     }
 
     void on_ground_axiom_cache_hit(const Axiom axiom, const ObjectList& binding) override
-    {  //
+    {
         m_statistics.increment_num_ground_axiom_cache_hits();
 
-        self().on_ground_axiom_cache_hit_impl(axiom, binding);
+        if (!m_quiet)
+        {
+            self().on_ground_axiom_cache_hit_impl(axiom, binding);
+        }
     }
 
     void on_ground_axiom_cache_miss(const Axiom axiom, const ObjectList& binding) override
-    {  //
+    {
         m_statistics.increment_num_ground_axiom_cache_misses();
 
-        self().on_ground_axiom_cache_miss_impl(axiom, binding);
+        if (!m_quiet)
+        {
+            self().on_ground_axiom_cache_miss_impl(axiom, binding);
+        }
     }
 
     void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) override
-    {  //
-        self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_factories);
+    {
+        if (!m_quiet)
+        {
+            self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_factories);
+        }
     }
 
     void on_finish_f_layer() override
-    {  //
+    {
         m_statistics.on_finish_f_layer();
 
-        self().on_finish_f_layer_impl();
+        if (!m_quiet)
+        {
+            self().on_finish_f_layer_impl();
+        }
     }
 
     void on_end_search() override
-    {  //
-        self().on_end_search_impl();
+    {
+        if (!m_quiet)
+        {
+            self().on_end_search_impl();
+        }
     }
 
     const LiftedAAGStatistics& get_statistics() const override { return m_statistics; }
