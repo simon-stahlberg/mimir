@@ -11,5 +11,4 @@ target_link_libraries(_pymimir
     PRIVATE
         pybind11::module
         mimir::core)
-target_link_options(_pymimir PRIVATE -static-libstdc++)
 target_compile_definitions(_pymimir PUBLIC MIMIR_VERSION_INFO="${MIMIR_VERSION_INFO}")
