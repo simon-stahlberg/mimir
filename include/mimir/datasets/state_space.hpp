@@ -24,7 +24,10 @@
 #include "mimir/search/states.hpp"
 #include "mimir/search/successor_state_generators.hpp"
 
+#include <cstddef>
 #include <loki/loki.hpp>
+#include <unordered_map>
+#include <vector>
 
 namespace mimir
 {
@@ -67,6 +70,9 @@ private:
 
     StateSet m_goal_states;
     StateSet m_deadend_states;
+
+    StateMap<size_t> m_state_indices;
+    std::unordered_map<int, StateList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -118,6 +124,10 @@ public:
 
     const std::vector<int>& get_goal_distances() const;
 
+    int get_goal_distance(const State& state) const;
+
+    int get_max_goal_distance() const;
+
     const StateSet& get_goal_states() const;
 
     const StateSet& get_deadend_states() const;
@@ -129,6 +139,10 @@ public:
     size_t get_num_goal_states() const;
 
     size_t get_num_deadend_states() const;
+
+    bool is_deadend_state(const State& state) const;
+
+    State sample_state_with_goal_distance(int goal_distance) const;
 };
 
 using StateSpace = std::shared_ptr<StateSpaceImpl>;

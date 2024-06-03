@@ -1,3 +1,5 @@
+#include "mimir/datasets/state_space.hpp"
+#include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>  // Necessary for automatic conversion of e.g. std::vectors
 
@@ -670,5 +672,9 @@ void init_pymimir(py::module_& m)
         .def("get_num_states", &StateSpaceImpl::get_num_states)
         .def("get_num_transitions", &StateSpaceImpl::get_num_transitions)
         .def("get_num_goal_states", &StateSpaceImpl::get_num_goal_states)
-        .def("get_num_deadend_states", &StateSpaceImpl::get_num_deadend_states);
+        .def("get_num_deadend_states", &StateSpaceImpl::get_num_deadend_states)
+        .def("get_goal_distance", &StateSpaceImpl::get_goal_distance)
+        .def("get_max_goal_distance", &StateSpaceImpl::get_max_goal_distance)
+        .def("is_deadend_state", &StateSpaceImpl::is_deadend_state)
+        .def("sample_state_with_goal_distance", &StateSpaceImpl::sample_state_with_goal_distance, py::return_value_policy::reference);
 }

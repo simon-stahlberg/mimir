@@ -19,6 +19,8 @@
 
 #include "mimir/common/timers.hpp"
 
+#include <algorithm>
+#include <cstdlib>
 #include <deque>
 
 namespace mimir
@@ -96,8 +98,19 @@ StateSpaceImpl::StateSpaceImpl(PDDLParser parser,
     m_backward_transitions(std::move(backward_transitions)),
     m_goal_distances(std::move(goal_distances)),
     m_goal_states(std::move(goal_states)),
-    m_deadend_states(std::move(deadend_states))
+    m_deadend_states(std::move(deadend_states)),
+    m_state_indices(),
+    m_states_by_goal_distance()
 {
+    for (size_t index = 0; index < m_states.size(); ++index)
+    {
+        auto state = m_states.at(index);
+        m_state_indices.emplace(state, index);
+
+        auto distance = m_goal_distances.at(index);
+        auto& states_with_distance = m_states_by_goal_distance[distance];
+        states_with_distance.emplace_back(state);
+    }
 }
 
 std::shared_ptr<StateSpaceImpl>
@@ -254,6 +267,10 @@ const std::vector<Transitions>& StateSpaceImpl::get_backward_transitions() const
 
 const std::vector<int>& StateSpaceImpl::get_goal_distances() const { return m_goal_distances; }
 
+int StateSpaceImpl::get_goal_distance(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)); }
+
+int StateSpaceImpl::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
+
 const StateSet& StateSpaceImpl::get_goal_states() const { return m_goal_states; }
 
 const StateSet& StateSpaceImpl::get_deadend_states() const { return m_deadend_states; }
@@ -265,4 +282,14 @@ size_t StateSpaceImpl::get_num_transitions() const { return m_num_transitions; }
 size_t StateSpaceImpl::get_num_goal_states() const { return m_goal_states.size(); }
 
 size_t StateSpaceImpl::get_num_deadend_states() const { return m_deadend_states.size(); }
+
+bool StateSpaceImpl::is_deadend_state(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)) < 0; }
+
+State StateSpaceImpl::sample_state_with_goal_distance(int goal_distance) const
+{
+    const auto& states = m_states_by_goal_distance.at(goal_distance);
+    const auto index = std::rand() % static_cast<int>(states.size());
+    return states[index];
+}
+
 }

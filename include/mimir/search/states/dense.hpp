@@ -27,6 +27,7 @@
 #include <flatmemory/flatmemory.hpp>
 #include <ostream>
 #include <tuple>
+#include <unordered_map>
 
 namespace mimir
 {
@@ -213,11 +214,14 @@ using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
 using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 using DenseStateList = std::vector<DenseState>;
 
+
 struct DenseStateHash
 {
     size_t operator()(const DenseState& view) const { return view.hash(); }
 };
 
+template<typename T>
+using DenseStateMap = std::unordered_map<DenseState, T, DenseStateHash>;
 using DenseStateSet = std::unordered_set<DenseState, DenseStateHash>;
 
 /**

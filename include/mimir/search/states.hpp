@@ -28,6 +28,8 @@
 
 namespace mimir
 {
+template<typename T>
+using StateMap = DenseStateMap<T>;
 using StateBuilder = DenseStateBuilder;
 using State = DenseState;
 using StateList = DenseStateList;
