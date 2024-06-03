@@ -224,24 +224,29 @@ public:
         }
     }
 
-    template<PredicateCategory P>
-    [[nodiscard]] bool is_applicable(const Problem problem, const DenseState state) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool is_applicable(const DenseState state) const
     {
-        const auto state_atoms = state.get_atoms<P>(problem);
+        const auto state_atoms = state.get_atoms<P>();
 
         return state_atoms.is_superseteq(get_positive_precondition<P>())  //
                && state_atoms.are_disjoint(get_negative_precondition<P>());
     }
 
-    [[nodiscard]] bool is_applicable(const Problem problem, const DenseState state) const
-    {
-        return is_applicable<Fluent>(problem, state) && is_applicable<Static>(problem, state) && is_applicable<Derived>(problem, state);
+    [[nodiscard]] bool is_dynamically_applicable(const DenseState state) const
+    {  //
+        return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
     }
 
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_atoms) const
     {
         return is_applicable<Static>(static_positive_atoms);
+    }
+
+    [[nodiscard]] bool is_applicable(const Problem problem, const DenseState state) const
+    {
+        return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
     }
 
     template<PredicateCategory P, flatmemory::IsBitset Bitset>
@@ -395,18 +400,31 @@ public:
     /* Simple effects */
     [[nodiscard]] const FlatSimpleEffect& get_simple_effect() const { return m_view.get<6>(); }
 
-    template<PredicateCategory P>
-    [[nodiscard]] bool is_applicable(const Problem problem, const DenseState state) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool is_applicable(const DenseState state) const
     {
-        const auto state_atoms = state.get_atoms<P>(problem);
+        const auto state_atoms = state.get_atoms<P>();
 
         return state_atoms.is_superseteq(get_positive_precondition<P>())  //
                && state_atoms.are_disjoint(get_negative_precondition<P>());
     }
 
+    [[nodiscard]] bool is_dynamically_applicable(const DenseState state) const
+    {  //
+        return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
+    }
+
+    [[nodiscard]] bool is_statically_applicable(const Problem problem) const
+    {
+        const auto static_initial_atoms = problem->get_static_initial_positive_atoms_bitset();
+
+        return static_initial_atoms.is_superseteq(get_positive_precondition<Static>())  //
+               && static_initial_atoms.are_disjoint(get_negative_precondition<Static>());
+    }
+
     [[nodiscard]] bool is_applicable(const Problem problem, const DenseState state) const
     {
-        return is_applicable<Fluent>(problem, state) && is_applicable<Static>(problem, state) && is_applicable<Derived>(problem, state);
+        return is_dynamically_applicable(state) && is_statically_applicable(problem);
     }
 };
 
@@ -489,15 +507,20 @@ public:
     /* Conditional effects */
     [[nodiscard]] FlatDenseConditionalEffects get_conditional_effects() const { return m_view.get<6>(); }
 
-    [[nodiscard]] bool is_applicable(const Problem problem, DenseState state) const
+    [[nodiscard]] bool is_dynamically_applicable(const DenseState state) const
     {  //
-        return DenseStripsActionPrecondition(get_strips_precondition()).is_applicable(problem, state);
+        return DenseStripsActionPrecondition(get_strips_precondition()).is_dynamically_applicable(state);
     }
 
     template<flatmemory::IsBitset Bitset>
     [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
     {  //
         return DenseStripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
+    }
+
+    [[nodiscard]] bool is_applicable(const Problem problem, const DenseState state) const
+    {  //
+        return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
     }
 };
 

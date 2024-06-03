@@ -114,8 +114,7 @@ public:
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        const auto& static_goal_ground_literals = problem->get_static_goal_condition();
-        if (!m_initial_state.literals_hold(problem, static_goal_ground_literals))
+        if (!problem->static_goal_holds())
         {
             m_event_handler->on_unsolvable();
 
@@ -146,7 +145,7 @@ public:
                 m_event_handler->on_finish_f_layer();
             }
 
-            if (state.literals_hold(problem, fluent_goal_ground_literals) && state.literals_hold(problem, derived_goal_ground_literals))
+            if (state.literals_hold(fluent_goal_ground_literals) && state.literals_hold(derived_goal_ground_literals))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
 

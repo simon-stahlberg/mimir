@@ -56,6 +56,8 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
+    bool m_static_goal_holds;
+
     ProblemImpl(int identifier,
                 Domain domain,
                 std::string name,
@@ -99,6 +101,7 @@ public:
     const GroundLiteralList<Derived>& get_derived_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
+    bool static_goal_holds() const;
 };
 
 /**

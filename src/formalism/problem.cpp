@@ -67,7 +67,8 @@ ProblemImpl::ProblemImpl(int identifier,
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
     m_derived_goal_condition(std::move(derived_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
-    m_axioms(std::move(axioms))
+    m_axioms(std::move(axioms)),
+    m_static_goal_holds(false)
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -91,6 +92,16 @@ ProblemImpl::ProblemImpl(int identifier,
     m_static_initial_positive_atoms_builder.finish();
     // Ensure that buffer is correctly written
     assert(m_static_initial_positive_atoms_builder == get_static_initial_positive_atoms_bitset());
+
+    // Determine whether the static goal holds
+    m_static_goal_holds = true;
+    for (const auto& literal : m_static_goal_condition)
+    {
+        if (literal->is_negated() == m_static_initial_positive_atoms_builder.get(literal->get_atom()->get_identifier()))
+        {
+            m_static_goal_holds = false;
+        }
+    }
 }
 
 bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
@@ -251,5 +262,7 @@ const GroundLiteralList<Derived>& ProblemImpl::get_derived_goal_condition() cons
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
+
+bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 
 }

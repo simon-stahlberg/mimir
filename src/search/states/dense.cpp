@@ -34,9 +34,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<const Problem, const
     auto out_static_ground_atoms = GroundAtomList<Static> {};
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Fluent>(problem), out_fluent_ground_atoms);
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Static>(problem), out_static_ground_atoms);
-    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(problem), out_derived_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Fluent>(), out_fluent_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
+    pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(), out_derived_ground_atoms);
 
     os << "State("
        << "state id=" << state.get_id() << ", "

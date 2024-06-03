@@ -52,17 +52,12 @@ public:
     {
     }
 
-    bool literal_holds(const Problem problem, GroundLiteral<Static> static_literal) const
-    {
-        return problem->get_static_initial_positive_atoms_bitset().get(static_literal->get_atom()->get_identifier()) != static_literal->is_negated();
-    }
-
-    bool literal_holds(const Problem, GroundLiteral<Fluent> fluent_literal) const
+    bool literal_holds(GroundLiteral<Fluent> fluent_literal) const
     {
         return m_fluent_state_atoms.get(fluent_literal->get_atom()->get_identifier()) != fluent_literal->is_negated();
     }
 
-    bool literal_holds(const Problem, GroundLiteral<Derived> derived_literal) const
+    bool literal_holds(GroundLiteral<Derived> derived_literal) const
     {
         return m_ref_derived_state_atoms.get(derived_literal->get_atom()->get_identifier()) != derived_literal->is_negated();
     }

@@ -88,14 +88,10 @@ private:
     [[nodiscard]] uint32_t& get_id_impl() { return m_builder.get<0>(); }
 
 public:
-    template<PredicateCategory P>
+    template<DynamicPredicateCategory P>
     [[nodiscard]] FlatBitsetBuilder<P>& get_atoms()
     {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            static_assert(dependent_false<P>::value, "Static ground atoms must be accessed from the corresponding problem.");
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
+        if constexpr (std::is_same_v<P, Fluent>)
         {
             return m_builder.get<1>();
         }
@@ -152,24 +148,24 @@ private:
     /**
      * Fluent and Derived
      */
-    template<PredicateCategory P>
-    [[nodiscard]] bool contains(const Problem problem, const GroundAtom<P>& ground_atom) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool contains(const GroundAtom<P>& ground_atom) const
     {
-        return get_atoms<P>(problem).get(ground_atom->get_identifier());
+        return get_atoms<P>().get(ground_atom->get_identifier());
     }
 
-    template<PredicateCategory P>
-    [[nodiscard]] bool literal_holds_impl(const Problem problem, const GroundLiteral<P>& literal) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool literal_holds_impl(const GroundLiteral<P>& literal) const
     {
-        return literal->is_negated() != contains(problem, literal->get_atom());
+        return literal->is_negated() != contains(literal->get_atom());
     }
 
-    template<PredicateCategory P>
-    [[nodiscard]] bool literals_hold_impl(const Problem problem, const GroundLiteralList<P>& literals) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool literals_hold_impl(const GroundLiteralList<P>& literals) const
     {
         for (const auto& literal : literals)
         {
-            if (!literal_holds_impl(problem, literal))
+            if (!literal_holds_impl(literal))
             {
                 return false;
             }
@@ -181,14 +177,10 @@ private:
 public:
     explicit ConstView(FlatDenseState view) : m_view(view) {}
 
-    template<PredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_atoms(const Problem problem) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] FlatBitset<P> get_atoms() const
     {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return problem->get_static_initial_positive_atoms_bitset();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
+        if constexpr (std::is_same_v<P, Fluent>)
         {
             return m_view.get<1>();
         }
@@ -207,13 +199,9 @@ public:
  * Mimir types
  */
 
-// TODO: differentiate registered and unregistered state can help us remove some duplicate code.
-// We could use unregistered states internally to represent some unfinished state.
-
 using DenseStateBuilder = Builder<StateDispatcher<DenseStateTag>>;
 using DenseState = ConstView<StateDispatcher<DenseStateTag>>;
 using DenseStateList = std::vector<DenseState>;
-
 
 struct DenseStateHash
 {

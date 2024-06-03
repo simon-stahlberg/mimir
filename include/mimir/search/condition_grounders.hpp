@@ -39,18 +39,14 @@ namespace mimir
 {
 
 template<typename S>
-concept HasLiteralHolds =
-    requires(S state, Problem problem, GroundLiteral<Static> static_literal, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal) {
-        {
-            state.literal_holds(problem, static_literal)
-        } -> std::convertible_to<bool>;
-        {
-            state.literal_holds(problem, fluent_literal)
-        } -> std::convertible_to<bool>;
-        {
-            state.literal_holds(problem, derived_literal)
-        } -> std::convertible_to<bool>;
-    };
+concept HasLiteralHolds = requires(S state, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal) {
+    {
+        state.literal_holds(fluent_literal)
+    } -> std::convertible_to<bool>;
+    {
+        state.literal_holds(derived_literal)
+    } -> std::convertible_to<bool>;
+};
 
 template<typename State>
     requires HasLiteralHolds<State>
@@ -68,14 +64,29 @@ private:
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
-    template<PredicateCategory P>
-    bool is_valid_binding(const Problem problem, const LiteralList<P>& literals, const State state, const ObjectList& binding)
+    template<DynamicPredicateCategory P>
+    bool is_valid_dynamic_binding(const LiteralList<P>& literals, const State state, const ObjectList& binding)
     {
         for (const auto& literal : literals)
         {
             auto ground_literal = m_ref_pddl_factories.ground_literal(literal, binding);
 
-            if (!state.literal_holds(problem, ground_literal))
+            if (!state.literal_holds(ground_literal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool is_valid_static_binding(const Problem problem, const LiteralList<Static>& literals, const ObjectList& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            auto ground_literal = m_ref_pddl_factories.ground_literal(literal, binding);
+
+            if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_identifier()))
             {
                 return false;
             }
@@ -86,9 +97,9 @@ private:
 
     bool is_valid_binding(const Problem problem, const State state, const ObjectList& binding)
     {
-        return is_valid_binding(problem, m_static_conditions, state, binding)       // We need to test all
-               && is_valid_binding(problem, m_fluent_conditions, state, binding)    // types of conditions
-               && is_valid_binding(problem, m_derived_conditions, state, binding);  // due to over-approx.
+        return is_valid_static_binding(problem, m_static_conditions, binding)      // We need to test all
+               && is_valid_dynamic_binding(m_fluent_conditions, state, binding)    // types of conditions
+               && is_valid_dynamic_binding(m_derived_conditions, state, binding);  // due to over-approx.
     }
 
     template<PredicateCategory P>
@@ -98,7 +109,7 @@ private:
         {
             if (literal->get_atom()->get_predicate()->get_arity() == 0)
             {
-                if (!state.literal_holds(problem, pddl_factories.ground_literal(literal, {})))
+                if (!state.literal_holds(pddl_factories.ground_literal(literal, {})))
                 {
                     return false;
                 }

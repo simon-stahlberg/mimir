@@ -77,16 +77,16 @@ public:
      * Extended
      */
 
-    template<PredicateCategory P>
-    [[nodiscard]] bool literal_holds(const Problem problem, const GroundLiteral<P>& literal) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool literal_holds(const GroundLiteral<P>& literal) const
     {
-        return self().literal_holds_impl(problem, literal);
+        return self().literal_holds_impl(literal);
     }
 
-    template<PredicateCategory P>
-    [[nodiscard]] bool literals_hold(const Problem problem, const GroundLiteralList<P>& literals) const
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool literals_hold(const GroundLiteralList<P>& literals) const
     {
-        return self().literals_hold_impl(problem, literals);
+        return self().literals_hold_impl(literals);
     }
 };
 

@@ -124,7 +124,7 @@ private:
         fluent_state_atoms.unset_all();
 
         // 1. Initialize non-extended state
-        fluent_state_atoms = state.get_atoms<Fluent>(m_aag->get_problem());
+        fluent_state_atoms = state.get_atoms<Fluent>();
 
         /* 2. Set state id */
 
