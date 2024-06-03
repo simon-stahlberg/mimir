@@ -67,7 +67,7 @@ public:
  * Fully specialized implementation class.
  */
 template<>
-class AE<AEDispatcher<DenseStateTag>> : public IStaticAE<AE<AEDispatcher<DenseStateTag>>>
+class AE<DenseStateTag> : public IStaticAE<AE<DenseStateTag>>
 {
 private:
     Problem m_problem;
@@ -86,7 +86,7 @@ private:
     std::unordered_map<Axiom, ConditionGrounder<PartiallyExtendedState>> m_condition_grounders;
 
     /* Implement IStaticAE interface */
-    friend class IStaticAE<AE<AEDispatcher<DenseStateTag>>>;
+    friend class IStaticAE<AE<DenseStateTag>>;
 
     void generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms);
 
@@ -108,7 +108,7 @@ public:
  * Types
  */
 
-using DenseAE = AE<AEDispatcher<DenseStateTag>>;
+using DenseAE = AE<DenseStateTag>;
 
 }  // namespace mimir
 

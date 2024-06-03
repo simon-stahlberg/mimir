@@ -29,8 +29,7 @@
 namespace mimir
 {
 
-void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                                                                     FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
+void AE<DenseStateTag>::generate_and_apply_axioms_impl(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
 {
     /* 1. Initialize assignment set */
 
@@ -121,7 +120,7 @@ void AE<AEDispatcher<DenseStateTag>>::generate_and_apply_axioms_impl(const FlatB
     m_event_handler->on_end_generating_applicable_axioms(applicable_axioms, m_ref_pddl_factories);
 }
 
-AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
+AE<DenseStateTag>::AE(Problem problem, PDDLFactories& ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
     m_problem(problem),
     m_ref_pddl_factories(ref_pddl_factories),
     m_event_handler(std::move(event_handler)),
@@ -188,9 +187,9 @@ AE<AEDispatcher<DenseStateTag>>::AE(Problem problem, PDDLFactories& ref_pddl_fac
     }
 }
 
-const std::vector<AxiomPartition>& AE<AEDispatcher<DenseStateTag>>::get_axiom_partitioning() const { return m_partitioning; }
+const std::vector<AxiomPartition>& AE<DenseStateTag>::get_axiom_partitioning() const { return m_partitioning; }
 
-DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
+DenseGroundAxiom AE<DenseStateTag>::ground_axiom(const Axiom& axiom, ObjectList&& binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -276,5 +275,5 @@ DenseGroundAxiom AE<AEDispatcher<DenseStateTag>>::ground_axiom(const Axiom& axio
     return grounded_axiom;
 }
 
-const DenseGroundAxiomList& AE<AEDispatcher<DenseStateTag>>::get_dense_ground_axioms() const { return m_axioms_by_index; }
+const DenseGroundAxiomList& AE<DenseStateTag>::get_dense_ground_axioms() const { return m_axioms_by_index; }
 }

@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/actions.hpp"
-#include "mimir/search/axiom_evaluators/tags.hpp"
 #include "mimir/search/axioms.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/states.hpp"
@@ -66,8 +65,8 @@ public:
  *
  * Specialize it with your dispatcher.
  */
-template<IsAEDispatcher A>
-class AE : public IStaticAE<AE<A>>
+template<IsStateTag S>
+class AE : public IStaticAE<AE<S>>
 {
 };
 
