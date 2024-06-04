@@ -292,4 +292,12 @@ State StateSpaceImpl::sample_state_with_goal_distance(int goal_distance) const
     return states[index];
 }
 
+std::shared_ptr<GroundedAAG> StateSpaceImpl::get_aag() const { return m_aag; }
+
+std::shared_ptr<SuccessorStateGenerator> StateSpaceImpl::get_ssg() const { return m_ssg; }
+
+const PDDLParser& StateSpaceImpl::get_pddl_parser() const { return m_parser; }
+
+PDDLFactories& StateSpaceImpl::get_factories() { return m_parser.get_factories(); }
+
 }

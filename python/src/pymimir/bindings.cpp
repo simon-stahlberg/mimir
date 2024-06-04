@@ -669,5 +669,9 @@ void init_pymimir(py::module_& m)
         .def("get_goal_distance", &StateSpaceImpl::get_goal_distance)
         .def("get_max_goal_distance", &StateSpaceImpl::get_max_goal_distance)
         .def("is_deadend_state", &StateSpaceImpl::is_deadend_state)
-        .def("sample_state_with_goal_distance", &StateSpaceImpl::sample_state_with_goal_distance, py::return_value_policy::reference);
+        .def("sample_state_with_goal_distance", &StateSpaceImpl::sample_state_with_goal_distance, py::return_value_policy::reference)
+        .def("get_aag", &StateSpaceImpl::get_aag)
+        .def("get_ssg", &StateSpaceImpl::get_ssg)
+        .def("get_pddl_parser", &StateSpaceImpl::get_pddl_parser, py::return_value_policy::reference)
+        .def("get_factories", &StateSpaceImpl::get_factories, py::return_value_policy::reference);
 }

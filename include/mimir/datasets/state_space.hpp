@@ -18,6 +18,8 @@
 #ifndef MIMIR_DATASETS_STATE_SPACE_HPP_
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
+#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/parser.hpp"
 #include "mimir/search/actions.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -143,6 +145,14 @@ public:
     bool is_deadend_state(const State& state) const;
 
     State sample_state_with_goal_distance(int goal_distance) const;
+
+    std::shared_ptr<GroundedAAG> get_aag() const;
+
+    std::shared_ptr<SuccessorStateGenerator> get_ssg() const;
+
+    const PDDLParser& get_pddl_parser() const;
+
+    PDDLFactories& get_factories();
 };
 
 using StateSpace = std::shared_ptr<StateSpaceImpl>;
