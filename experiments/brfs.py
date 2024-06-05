@@ -35,9 +35,10 @@ REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
 if REMOTE:
     ENV = TetralithEnvironment(
         setup=TetralithEnvironment.DEFAULT_SETUP,
+        memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2023-5-314")
     SUITE = utils.SUITE_OPTIMAL
-    TIME_LIMIT = 15 * 60  # 15 minutes
+    TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
@@ -59,7 +60,7 @@ ATTRIBUTES = [
     "invalid_plan_reported",
 ]
 
-MEMORY_LIMIT = 2500
+MEMORY_LIMIT = 8000
 
 # Create a new experiment.
 exp = Experiment(environment=ENV)

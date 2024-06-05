@@ -81,8 +81,6 @@ private:
     DenseGroundAxiomBuilder m_axiom_builder;
     std::unordered_map<Axiom, GroundingTable<DenseGroundAxiom>> m_axiom_groundings;
 
-    // std::unordered_map<Axiom, consistency_graph::StaticConsistencyGraph> m_static_consistency_graphs;
-
     std::unordered_map<Axiom, ConditionGrounder<PartiallyExtendedState>> m_condition_grounders;
 
     /* Implement IStaticAE interface */
