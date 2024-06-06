@@ -23,6 +23,7 @@ add_executable(${TEST_NAME}
     "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"
+    "search/algorithms/iw.cpp"
     "search/applicable_action_generators/dense-grounded.cpp"
     "search/applicable_action_generators/dense-lifted.cpp"
     "search/heuristics/blind.cpp"

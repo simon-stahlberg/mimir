@@ -27,6 +27,14 @@ namespace mimir
 {
 
 /**
+ * Large k for IW(k) is generally infeasible.
+ * Hence, we use a small constant values within feasible range
+ * allowing us to use stack allocated arrays.
+ */
+
+const int MAX_ARITY = 4;
+
+/**
  * Type aliases for readability
  */
 
@@ -43,33 +51,128 @@ private:
     int m_num_atoms;
     int m_arity;
 
-    std::vector<int> m_factors;
+    int m_factors[MAX_ARITY];
 
 public:
-    TupleIndexMapper(size_t num_atoms, size_t arity);
+    TupleIndexMapper(int num_atoms, int arity);
 
-    TupleIndex to_tuple_index(const AtomIndices& atom_indices);
+    TupleIndex to_tuple_index(const AtomIndices& atom_indices) const;
 
-    void to_atom_indices(const TupleIndex tuple_index, AtomIndices& out_atom_indices);
+    void to_atom_indices(TupleIndex tuple_index, AtomIndices& out_atom_indices) const;
+
+    std::string tuple_index_to_string(TupleIndex tuple_index) const;
+
+    /**
+     * Getters
+     */
+    int get_num_atoms() const;
+    int get_arity() const;
+    const int* get_factors() const;
 };
 
 /// @brief TupleIndexGenerator encapsulates logic to generate all combinations of tuple indices
 /// of size that is at most the arity defined in the TupleIndexMapper.
-class TupleIndexGenerator
+class SingleStateTupleIndexGenerator
 {
 private:
-    const TupleIndexMapper& m_tuple_index_mapper;
-    const AtomIndices& m_atom_indices;
-    const AtomIndices& m_add_atom_indices;
+    const TupleIndexMapper* m_tuple_index_mapper;
+    const AtomIndices* m_atom_indices;
 
 public:
-    TupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices);
-    TupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);
+    SingleStateTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices);
 
-    // TODO: add begin and end iterators
+    class const_iterator
+    {
+    private:
+        const TupleIndexMapper* m_tuple_index_mapper;
+        const AtomIndices* m_atom_indices;
+
+        int m_cur;
+
+        int m_indices[MAX_ARITY];
+
+        void next_tuple_index();
+
+    public:
+        using difference_type = int;
+        using value_type = TupleIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin() const;
+    const_iterator end() const;
+};
+
+/// @brief TupleIndexGenerator encapsulates logic to generate all combinations of tuple indices
+/// of size that is at most the arity defined in the TupleIndexMapper.
+class CombinedStateTupleIndexGenerator
+{
+private:
+    const TupleIndexMapper* m_tuple_index_mapper;
+    const AtomIndices* m_atom_indices;
+    const AtomIndices* m_add_atom_indices;
+
+public:
+    CombinedStateTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);
+
+    class const_iterator
+    {
+    private:
+        /* Data */
+        const TupleIndexMapper* m_tuple_index_mapper;
+        const AtomIndices* m_a_atom_indices[2];
+        int m_a_num_atom_indices[2];
+
+        /* Iterator positions */
+        bool m_end_inner;
+        int m_cur_inner;
+        bool m_end_outter;
+        int m_cur_outter;
+
+        /* Iterator positions explicit representation */
+        // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
+        int m_a[MAX_ARITY];
+        // m_a_geq[i][j] = k =>
+        int m_a_geq[2][MAX_ARITY];
+
+        int m_indices[MAX_ARITY];
+
+        bool next_outter_begin();
+
+        void next_tuple_index();
+
+    public:
+        using difference_type = int;
+        using value_type = TupleIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 /// @brief DynamicNoveltyTable encapsulates a table to test novelty of tuples of atoms of size at most arity.
+/// It automatically resizes when the atoms do not fit into the table anymore.
 class DynamicNoveltyTable
 {
 private:
@@ -78,11 +181,12 @@ private:
 public:
     explicit DynamicNoveltyTable(size_t arity);
 
-    TupleIndices compute_novel_tuple_indices(const AtomIndices& atom_indices) const;
+    bool test_novelty_and_update_table(const State state);
 
-    TupleIndices compute_novel_tuple_indices(const AtomIndices& atom_indices, const AtomIndices& add_atom_indices) const;
+    bool test_novelty_and_update_table(const State state, const State succ_state);
 };
 
+// We could in principle factor out some general functionality in BrFs, derive from BrFS, and override the functionality here.
 class IterativeWidthAlgorithm : public IAlgorithm
 {
 private:

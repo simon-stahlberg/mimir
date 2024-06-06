@@ -24,5 +24,6 @@
 #include "mimir/search/algorithms/astar.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
+#include "mimir/search/algorithms/iw.hpp"
 
 #endif  // MIMIR_SEARCH_ALGORITHM_HPP_
