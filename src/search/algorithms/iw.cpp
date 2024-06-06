@@ -211,14 +211,17 @@ CombinedStateTupleIndexGenerator::const_iterator::const_iterator(const TupleInde
     m_a_atom_indices({}),
     m_a_num_atom_indices({}),
     m_end_inner(begin ? false : true),
-    m_cur_inner(-1),
+    m_cur_inner(0),
     m_end_outter(begin ? false : true),
-    m_cur_outter(-1),
+    m_cur_outter(0),
     m_a({}),
-    m_a_geq({}),
+    m_a_index_jumper({}),
     m_indices({})
 {
-    assert(!atom_indices.empty() && !add_atom_indices.empty());
+    // atom_indices can never be empty, due to adding the place holder.
+    assert(!atom_indices.empty());
+    // if add_atom_indices is empty, the iterator should not be called.
+    assert(!add_atom_indices.empty());
     assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
     assert(std::is_sorted(add_atom_indices.begin(), add_atom_indices.end()));
 
@@ -230,44 +233,45 @@ CombinedStateTupleIndexGenerator::const_iterator::const_iterator(const TupleInde
         m_a_atom_indices[1] = &add_atom_indices;
         m_a_num_atom_indices[1] = add_atom_indices.size();
 
-        // Fetch some data.
-        const int arity = tuple_index_mapper.get_arity();
-
-        // Initialize m_a_geq to know the next large element in the opposite atom indices vector when iterating
-        for (int i = 0; i < m_a_num_atom_indices[0]; ++i)
-        {
-            m_a_geq[0][i] = std::numeric_limits<int>::max();
-        }
-        for (int i = 0; i < m_a_num_atom_indices[1]; ++i)
-        {
-            m_a_geq[1][i] = std::numeric_limits<int>::max();
-        }
-        int j = 0;
-        int i = 0;
-        while (j < m_a_num_atom_indices[0] && i < m_a_num_atom_indices[1])
-        {
-            if ((*m_a_atom_indices[0])[j] < (*m_a_atom_indices[1])[i])
-            {
-                m_a_geq[0][j] = i;
-                ++j;
-            }
-            else if ((*m_a_atom_indices[0])[j] > (*m_a_atom_indices[1])[i])
-            {
-                m_a_geq[1][i] = j;
-                ++i;
-            }
-            else
-            {
-                m_a_geq[1][i] = j;
-                m_a_geq[0][j] = i;
-                ++j;
-                ++i;
-            }
-        }
+        // Initialize m_a_index_jumper to know the next large element in the opposite atom indices vector when iterating
+        initialize_index_jumper();
 
         // Initialize m_cur_outter and m_cur_inner
-        m_cur_outter = 0;
         next_outter_begin();
+    }
+}
+
+void CombinedStateTupleIndexGenerator::const_iterator::initialize_index_jumper()
+{
+    for (int i = 0; i < m_a_num_atom_indices[0]; ++i)
+    {
+        m_a_index_jumper[0][i] = std::numeric_limits<int>::max();
+    }
+    for (int i = 0; i < m_a_num_atom_indices[1]; ++i)
+    {
+        m_a_index_jumper[1][i] = std::numeric_limits<int>::max();
+    }
+    int j = 0;
+    int i = 0;
+    while (j < m_a_num_atom_indices[0] && i < m_a_num_atom_indices[1])
+    {
+        if ((*m_a_atom_indices[0])[j] < (*m_a_atom_indices[1])[i])
+        {
+            m_a_index_jumper[0][j] = i;
+            ++j;
+        }
+        else if ((*m_a_atom_indices[0])[j] > (*m_a_atom_indices[1])[i])
+        {
+            m_a_index_jumper[1][i] = j;
+            ++i;
+        }
+        else
+        {
+            m_a_index_jumper[1][i] = j;
+            m_a_index_jumper[0][j] = i;
+            ++j;
+            ++i;
+        }
     }
 }
 
@@ -276,12 +280,16 @@ bool CombinedStateTupleIndexGenerator::const_iterator::next_outter_begin()
     const int arity = m_tuple_index_mapper->get_arity();
     const int* factors = m_tuple_index_mapper->get_factors();
 
-    // Advance
+    /* Advance outter iteration */
+
+    // In the constructor call, advance to 1, meaning that we would like to pick exactly one atom index from add_atom_index
     ++m_cur_outter;
 
-    // Initialize m_a to pick one element from add_atom_indices
     for (; m_cur_outter < std::pow(2, arity); ++m_cur_outter)
     {
+        // Create a binary representation, e,g., arity = 4 and m_cur_outter = 3 => [1,0,1,0] meaning that
+        // the first and third indices should be chosen from add_atom_indices, and
+        // the second and fourth indices should be chosen from atom_indices
         int tmp_cur_outter = m_cur_outter;
         for (int i = 0; i < arity; ++i)
         {
@@ -289,7 +297,10 @@ bool CombinedStateTupleIndexGenerator::const_iterator::next_outter_begin()
             tmp_cur_outter >>= 1;
         }
 
-        // Find the indices and set begin tuple index
+        /* Initialize inner iteration */
+
+        // Create the begin set of indices and its corresponding tuple_index
+        // If no such tuple_index exists, continue with next m_cur_outter.
         m_indices[0] = 0;
         m_cur_inner = (*m_a_atom_indices[m_a[0]])[0] * factors[0];
         bool has_valid_tuple_index = true;
@@ -297,7 +308,7 @@ bool CombinedStateTupleIndexGenerator::const_iterator::next_outter_begin()
         {
             const int prev_a = m_a[i - 1];
             const int prev_index = m_indices[i - 1];
-            const int cur_index = m_a_geq[prev_a][prev_index];
+            const int cur_index = m_a_index_jumper[prev_a][prev_index];
             if (cur_index == std::numeric_limits<int>::max())
             {
                 has_valid_tuple_index = false;
@@ -330,6 +341,8 @@ void CombinedStateTupleIndexGenerator::const_iterator::next_tuple_index()
         const int arity = m_tuple_index_mapper->get_arity();
         const int* factors = m_tuple_index_mapper->get_factors();
 
+        /* Advance outter iteration */
+
         if (m_end_inner)
         {
             next_outter_begin();
@@ -337,8 +350,9 @@ void CombinedStateTupleIndexGenerator::const_iterator::next_tuple_index()
             return;
         }
 
-        // Advance inner iteration
-        // Find the rightmost index to increment
+        /* Advance inner iteration */
+
+        // Find the rightmost index and increment it
         int i = arity - 1;
         while (i >= 0 && (m_indices[i] >= m_a_num_atom_indices[m_a[i]] - 1))
         {
@@ -352,6 +366,7 @@ void CombinedStateTupleIndexGenerator::const_iterator::next_tuple_index()
         }
         int index = ++m_indices[i];
         m_cur_inner += factors[i] * ((*m_a_atom_indices[m_a[i]])[index] - (*m_a_atom_indices[m_a[i]])[index - 1]);
+
         // Update indices right of the incremented rightmost index i.
         bool exhausted = false;
         for (int j = i + 1; j < arity; ++j)
@@ -371,13 +386,13 @@ void CombinedStateTupleIndexGenerator::const_iterator::next_tuple_index()
             }
             else
             {
-                if (m_a_geq[m_a[j - 1]][m_indices[j - 1]] == std::numeric_limits<int>::max())
+                if (m_a_index_jumper[m_a[j - 1]][m_indices[j - 1]] == std::numeric_limits<int>::max())
                 {
                     // Cannot increment index
                     exhausted = true;
                     break;
                 }
-                new_index = m_a_geq[m_a[j - 1]][m_indices[j - 1]];
+                new_index = m_a_index_jumper[m_a[j - 1]][m_indices[j - 1]];
             }
             assert(new_index >= 0);
 

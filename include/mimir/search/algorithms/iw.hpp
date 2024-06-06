@@ -142,10 +142,12 @@ public:
         /* Iterator positions explicit representation */
         // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
         int m_a[MAX_ARITY];
-        // m_a_geq[i][j] = k =>
-        int m_a_geq[2][MAX_ARITY];
+        // m_a_index_jumper[i][j] = k =>
+        int m_a_index_jumper[2][MAX_ARITY];
 
         int m_indices[MAX_ARITY];
+
+        void initialize_index_jumper();
 
         bool next_outter_begin();
 
@@ -178,6 +180,8 @@ class DynamicNoveltyTable
 private:
     TupleIndexMapper m_tuple_index_mapper;
 
+    std::vector<bool> m_table;
+
 public:
     explicit DynamicNoveltyTable(size_t arity);
 
@@ -200,7 +204,7 @@ public:
                             std::shared_ptr<IAlgorithmEventHandler> event_handler,
                             size_t max_arity);
 
-    SearchStatus find_solution(GroundActionList& out_plan) override {}
+    SearchStatus find_solution(GroundActionList& out_plan) override { return SearchStatus::EXHAUSTED; }
 };
 }
 
