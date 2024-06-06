@@ -24,17 +24,18 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc < 5)
+    if (argc != 7)
     {
-        std::cout << "Usage: planner <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout << "Usage: planner <domain:str> <problem:str> <plan:str> <arity:int> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
     const auto plan_file_name = argv[3];
-    const auto grounded = static_cast<bool>(std::atoi(argv[4]));
-    const auto debug = static_cast<bool>(std::atoi(argv[5]));
+    const auto arity = static_cast<int>(std::atoi(argv[4]));
+    const auto grounded = static_cast<bool>(std::atoi(argv[5]));
+    const auto debug = static_cast<bool>(std::atoi(argv[6]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -60,9 +61,9 @@ int main(int argc, char** argv)
     auto event_handler = (debug) ? std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DebugAlgorithmEventHandler>(false) } :
                                    std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DefaultAlgorithmEventHandler>(false) };
 
-    auto lifted_brfs = std::make_shared<BrFsAlgorithm>(applicable_action_generator, successor_state_generator, event_handler);
+    auto iw = std::make_shared<IterativeWidthAlgorithm>(applicable_action_generator, successor_state_generator, event_handler, arity);
 
-    auto planner = std::make_shared<SinglePlanner>(std::move(lifted_brfs));
+    auto planner = std::make_shared<SinglePlanner>(std::move(iw));
 
     auto [stats, plan] = planner->find_solution();
 

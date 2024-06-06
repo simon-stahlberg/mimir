@@ -214,7 +214,7 @@ public:
     explicit ArityZeroNoveltyPruning(State initial_state);
 
     bool test_prune_initial_state(const State state) override;
-    bool test_prune_successor_state(const State state, const State succ_state) override;
+    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
 };
 
 class ArityKNoveltyPruning : public IPruningStrategy
@@ -226,7 +226,7 @@ public:
     explicit ArityKNoveltyPruning(int arity, int num_atoms);
 
     bool test_prune_initial_state(const State state) override;
-    bool test_prune_successor_state(const State state, const State succ_state) override;
+    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
 };
 
 class IterativeWidthAlgorithm : public IAlgorithm
@@ -270,8 +270,11 @@ public:
         }
     }
 
-    SearchStatus find_solution(GroundActionList& out_plan) override
+    SearchStatus find_solution(GroundActionList& out_plan) override { return find_solution(m_initial_state, out_plan); }
+
+    SearchStatus find_solution(const State state, GroundActionList& out_plan) override
     {
+        std::cout << m_max_arity << std::endl;
         while (m_cur_arity <= m_max_arity)
         {
             if (m_cur_arity > 0)
@@ -293,6 +296,8 @@ public:
             }
 
             ++m_cur_arity;
+
+            std::cout << "Increase arity from " << m_cur_arity - 1 << " to " << m_cur_arity << std::endl;
         }
         return SearchStatus::FAILED;
     }

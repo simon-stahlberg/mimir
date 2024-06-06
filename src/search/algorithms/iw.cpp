@@ -109,7 +109,7 @@ SingleStateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index
 SingleStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, bool begin) :
     m_tuple_index_mapper(&tuple_index_mapper),
     m_atom_indices(&atom_indices),
-    m_cur(begin ? 0 : tuple_index_mapper.get_max_tuple_index() + 1),
+    m_cur(begin ? 0 : (std::pow(atom_indices.size(), tuple_index_mapper.get_arity() + 1) - 1) / 2),  // x^0 + ... + x^n = (x^{n+1} - 1) / 2
     m_indices({})
 {
     assert(!atom_indices.empty());
@@ -126,6 +126,7 @@ SingleStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexM
         }
         assert(std::is_sorted(m_indices, m_indices + tuple_index_mapper.get_arity()));
     }
+    std::cout << "m_cur: " << m_cur << std::endl;
 }
 
 void SingleStateTupleIndexGenerator::const_iterator::next_tuple_index()
@@ -532,16 +533,19 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
         m_tmp_atom_indices.push_back(atom_id);
     }
     assert(std::is_sorted(m_tmp_atom_indices.begin(), m_tmp_atom_indices.end()));
+    std::cout << m_tmp_add_atom_indices << std::endl;
 
     bool is_novel = false;
     for (const auto tuple_index : SingleStateTupleIndexGenerator(m_tuple_index_mapper, m_tmp_atom_indices))
     {
+        std::cout << tuple_index << " " << m_tuple_index_mapper.tuple_index_to_string(tuple_index) << std::endl;
         if (!is_novel && !m_table[tuple_index])
         {
             is_novel = true;
         }
         m_table[tuple_index] = true;
     }
+    std::cout << "IS_NOVEL: " << is_novel << std::endl;
     return is_novel;
 }
 
@@ -567,12 +571,14 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
     bool is_novel = false;
     for (const auto tuple_index : StatePairTupleIndexGenerator(m_tuple_index_mapper, m_tmp_atom_indices, m_tmp_add_atom_indices))
     {
+        std::cout << tuple_index << std::endl;
         if (!is_novel && !m_table[tuple_index])
         {
             is_novel = true;
         }
         m_table[tuple_index] = true;
     }
+    std::cout << "IS_NOVEL: " << is_novel << std::endl;
     return is_novel;
 }
 
@@ -584,14 +590,14 @@ ArityZeroNoveltyPruning::ArityZeroNoveltyPruning(State initial_state) : m_initia
 
 bool ArityZeroNoveltyPruning::test_prune_initial_state(const State state) { return false; }
 
-bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state) { return state != m_initial_state; }
+bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return state != m_initial_state; }
 
 ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms) : m_novelty_table(arity, num_atoms) {}
 
-bool ArityKNoveltyPruning::test_prune_initial_state(const State state) { return m_novelty_table.test_novelty_and_update_table(state); }
+bool ArityKNoveltyPruning::test_prune_initial_state(const State state) { return !m_novelty_table.test_novelty_and_update_table(state); }
 
-bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state)
+bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
-    return m_novelty_table.test_novelty_and_update_table(state, succ_state);
+    return !m_novelty_table.test_novelty_and_update_table(state, succ_state);
 }
 }
