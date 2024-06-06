@@ -476,17 +476,9 @@ private:
     /* Implement IView interface: */
     friend class IConstView<ConstView<ActionDispatcher<DenseStateTag>>>;
 
-    /// Return true iff two grounded actions are equal.
-    ///
-    /// For grounded actions in same AAG, we know they are already unique.
-    /// Hence, comparison of the buffer pointer suffices.
-    /// For grounded actions in different AAG, buffer pointers are always different.
-    /// Hence, comparison always returns false.
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
-
     /// @brief Return a hash value for the grounded action.
     ///
-    /// Same argument from are_equal_impl applies.
+    /// Same argument from operator== applies.
     [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(m_view.buffer()); }
 
     /* Implement IActionView interface */
@@ -500,6 +492,14 @@ private:
 public:
     /// @brief Create a view on a DefaultAction.
     explicit ConstView(FlatDenseAction view) : m_view(view) {}
+
+    /// Return true iff two grounded actions are equal.
+    ///
+    /// For grounded actions in same AAG, we know they are already unique.
+    /// Hence, comparison of the buffer pointer suffices.
+    /// For grounded actions in different AAG, buffer pointers are always different.
+    /// Hence, comparison always returns false.
+    [[nodiscard]] bool operator==(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
 
     /* STRIPS part */
     [[nodiscard]] FlatDenseStripsActionPrecondition get_strips_precondition() const { return m_view.get<4>(); }

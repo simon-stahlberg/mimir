@@ -134,17 +134,9 @@ private:
     /* Implement IView interface: */
     friend class IConstView<ConstView<AxiomDispatcher<DenseStateTag>>>;
 
-    /// Return true iff two grounded axioms are equal.
-    ///
-    /// For grounded axioms in same AE, we know they are already unique.
-    /// Hence, comparison of the buffer pointer suffices.
-    /// For grounded axioms in different AE, buffer pointers are always different.
-    /// Hence, comparison always returns false.
-    [[nodiscard]] bool are_equal_impl(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
-
     /// @brief Return a hash value for the grounded action.
     ///
-    /// Same argument from are_equal_impl applies.
+    /// Same argument from operator== applies.
     [[nodiscard]] size_t hash_impl() const { return loki::hash_combine(m_view.buffer()); }
 
     /* Implement IAxiomView interface */
@@ -157,6 +149,14 @@ private:
 public:
     /// @brief Create a view on a Axiom.
     explicit ConstView(FlatDenseAxiom view) : m_view(view) {}
+
+    /// Return true iff two grounded axioms are equal.
+    ///
+    /// For grounded axioms in same AE, we know they are already unique.
+    /// Hence, comparison of the buffer pointer suffices.
+    /// For grounded axioms in different AE, buffer pointers are always different.
+    /// Hence, comparison always returns false.
+    [[nodiscard]] bool operator==(const ConstView& other) const { return m_view.buffer() == other.m_view.buffer(); }
 
     /* STRIPS part */
     [[nodiscard]] FlatDenseStripsActionPrecondition get_strips_precondition() const { return m_view.get<3>(); }

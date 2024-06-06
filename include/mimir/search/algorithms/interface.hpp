@@ -37,12 +37,15 @@ enum SearchStatus
 /**
  * Interface class.
  */
+
 class IAlgorithm
 {
 public:
     virtual ~IAlgorithm() = default;
 
     virtual SearchStatus find_solution(GroundActionList& out_plan) = 0;
+
+    virtual SearchStatus find_solution(const State state, GroundActionList& out_plan) = 0;
 };
 
 }

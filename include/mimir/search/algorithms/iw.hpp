@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_HPP_
 
+#include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -48,13 +49,13 @@ using TupleIndices = std::vector<TupleIndex>;
 class TupleIndexMapper
 {
 private:
-    int m_num_atoms;
     int m_arity;
+    int m_num_atoms;
 
     int m_factors[MAX_ARITY];
 
 public:
-    TupleIndexMapper(int num_atoms, int arity);
+    TupleIndexMapper(int arity, int num_atoms);
 
     TupleIndex to_tuple_index(const AtomIndices& atom_indices) const;
 
@@ -68,10 +69,14 @@ public:
     int get_num_atoms() const;
     int get_arity() const;
     const int* get_factors() const;
+    int get_max_tuple_index() const;
 };
 
-/// @brief TupleIndexGenerator encapsulates logic to generate all combinations of tuple indices
-/// of size that is at most the arity defined in the TupleIndexMapper.
+/// @brief SingleStateTupleIndexGenerator encapsulates iterator logic to generate
+/// all combinations of tuple indices of size at most arity.
+///
+/// The underlying algorithm is an adaption of std::next_permutation
+/// with constant amortized cost to compute the next tuple index.
 class SingleStateTupleIndexGenerator
 {
 private:
@@ -113,9 +118,14 @@ public:
     const_iterator end() const;
 };
 
-/// @brief TupleIndexGenerator encapsulates logic to generate all combinations of tuple indices
-/// of size that is at most the arity defined in the TupleIndexMapper.
-class CombinedStateTupleIndexGenerator
+/// @brief StatePairTupleIndexGenerator encapsulates iterator logic to generate
+/// all combinations of tuple indices of size at most the arity
+/// such that at least one atom index is coming from add_atom_indices
+/// and the others from atom_indices.
+///
+/// The underlying algorithm is an adaption of std::next_permutation
+/// with constant amortized cost to compute the next tuple index.
+class StatePairTupleIndexGenerator
 {
 private:
     const TupleIndexMapper* m_tuple_index_mapper;
@@ -123,7 +133,7 @@ private:
     const AtomIndices* m_add_atom_indices;
 
 public:
-    CombinedStateTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);
+    StatePairTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);
 
     class const_iterator
     {
@@ -133,7 +143,7 @@ public:
         const AtomIndices* m_a_atom_indices[2];
         int m_a_num_atom_indices[2];
 
-        /* Iterator positions */
+        /* Iterator positions implict representation */
         bool m_end_inner;
         int m_cur_inner;
         bool m_end_outter;
@@ -142,7 +152,6 @@ public:
         /* Iterator positions explicit representation */
         // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
         int m_a[MAX_ARITY];
-        // m_a_index_jumper[i][j] = k =>
         int m_a_index_jumper[2][MAX_ARITY];
 
         int m_indices[MAX_ARITY];
@@ -182,29 +191,111 @@ private:
 
     std::vector<bool> m_table;
 
+    void resize_to_fit(int atom_index);
+
+    // Preallocated memory for reuse
+    AtomIndices m_tmp_atom_indices;
+    AtomIndices m_tmp_add_atom_indices;
+
 public:
-    explicit DynamicNoveltyTable(size_t arity);
+    DynamicNoveltyTable(int arity, int num_atoms = 64);
 
     bool test_novelty_and_update_table(const State state);
 
     bool test_novelty_and_update_table(const State state, const State succ_state);
 };
 
-// We could in principle factor out some general functionality in BrFs, derive from BrFS, and override the functionality here.
+class ArityZeroNoveltyPruning : public IPruningStrategy
+{
+private:
+    State m_initial_state;
+
+public:
+    explicit ArityZeroNoveltyPruning(State initial_state);
+
+    bool should_prune_initial_state(const State state) override;
+    bool should_prune_successor_state(const State state, const State succ_state) override;
+};
+
+class ArityKNoveltyPruning : public IPruningStrategy
+{
+private:
+    DynamicNoveltyTable m_novelty_table;
+
+public:
+    explicit ArityKNoveltyPruning(int arity, int num_atoms);
+
+    bool should_prune_initial_state(const State state) override;
+    bool should_prune_successor_state(const State state, const State succ_state) override;
+};
+
 class IterativeWidthAlgorithm : public IAlgorithm
 {
 private:
+    std::shared_ptr<IDynamicAAG> m_aag;
+    std::shared_ptr<IDynamicSSG> m_ssg;
+    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
+    int m_max_arity;
+
+    State m_initial_state;
+    int m_cur_arity;
+    BrFsAlgorithm m_brfs;
+
 public:
     /// @brief Simplest construction
-    IterativeWidthAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator, size_t max_arity);
+    IterativeWidthAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator, size_t max_arity) :
+        IterativeWidthAlgorithm(applicable_action_generator,
+                                std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
+                                std::make_shared<DebugAlgorithmEventHandler>(),
+                                max_arity)
+    {
+    }
 
     /// @brief Complete construction
     IterativeWidthAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
                             std::shared_ptr<IDynamicSSG> successor_state_generator,
                             std::shared_ptr<IAlgorithmEventHandler> event_handler,
-                            size_t max_arity);
+                            int max_arity) :
+        m_aag(applicable_action_generator),
+        m_ssg(successor_state_generator),
+        m_event_handler(event_handler),
+        m_max_arity(max_arity),
+        m_initial_state(m_ssg->get_or_create_initial_state()),
+        m_cur_arity(0),
+        m_brfs(applicable_action_generator, successor_state_generator, event_handler, nullptr)
+    {
+        if (max_arity < 0)
+        {
+            throw std::runtime_error("Arity must be greater of equal than 0.");
+        }
+    }
 
-    SearchStatus find_solution(GroundActionList& out_plan) override { return SearchStatus::EXHAUSTED; }
+    SearchStatus find_solution(GroundActionList& out_plan) override
+    {
+        while (m_cur_arity <= m_max_arity)
+        {
+            if (m_cur_arity > 0)
+            {
+                // TODO: getting num atoms directly would be beneficial in grounded case.
+                // However, DynamicNoveltyTable automatically resizes.
+                m_brfs.set_pruning_strategy(std::make_shared<ArityKNoveltyPruning>(m_cur_arity, 64));
+            }
+            else if (m_cur_arity == 0)
+            {
+                m_brfs.set_pruning_strategy(std::make_shared<ArityZeroNoveltyPruning>(m_initial_state));
+            }
+
+            auto search_status = m_brfs.find_solution(m_initial_state, out_plan);
+
+            if (search_status == SearchStatus::SOLVED)
+            {
+                return SearchStatus::SOLVED;
+            }
+
+            ++m_cur_arity;
+        }
+        return SearchStatus::FAILED;
+    }
 };
 }
 

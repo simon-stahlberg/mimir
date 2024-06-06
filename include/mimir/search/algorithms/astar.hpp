@@ -55,7 +55,7 @@ public:
     AStarAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
                    std::shared_ptr<IDynamicSSG> successor_state_generator,
                    std::shared_ptr<IDynamicHeuristic> heuristic,
-                   std::shared_ptr<IAlgorithmEventHandler> event_handler) :
+                   std::shared_ptr<IAlgorithmEventHandler> event_handler = std::make_shared<DefaultAlgorithmEventHandler>()) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),
@@ -64,7 +64,9 @@ public:
     {
     }
 
-    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override
+    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override { return find_solution(m_initial_state, out_plan); }
+
+    SearchStatus find_solution(const State state, std::vector<GroundAction>& out_plan) override
     {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;

@@ -37,6 +37,22 @@
 namespace mimir
 {
 
+class IPruningStrategy
+{
+public:
+    virtual ~IPruningStrategy() = default;
+
+    virtual bool should_prune_initial_state(const State state) = 0;
+    virtual bool should_prune_successor_state(const State state, const State succ_state) = 0;
+};
+
+class NoPruning : public IPruningStrategy
+{
+public:
+    bool should_prune_initial_state(const State state) override { return false; };
+    bool should_prune_successor_state(const State state, const State succ_state) override { return false; }
+};
+
 /**
  * Specialized implementation class.
  */
@@ -49,6 +65,7 @@ private:
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
     std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
+    std::shared_ptr<IPruningStrategy> m_pruning_strategy;
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions
     ///        and reversing them.
@@ -86,25 +103,27 @@ private:
 public:
     /// @brief Simplest construction
     explicit BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator) :
-        BrFsAlgorithm(applicable_action_generator,
-                      std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                      std::make_shared<DefaultAlgorithmEventHandler>())
+        BrFsAlgorithm(applicable_action_generator, std::make_shared<SuccessorStateGenerator>(applicable_action_generator))
     {
     }
 
     /// @brief Complete construction
     BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
                   std::shared_ptr<IDynamicSSG> successor_state_generator,
-                  std::shared_ptr<IAlgorithmEventHandler> event_handler) :
+                  std::shared_ptr<IAlgorithmEventHandler> event_handler = std::make_shared<DefaultAlgorithmEventHandler>(),
+                  std::shared_ptr<IPruningStrategy> pruning_strategy = std::make_shared<NoPruning>()) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
-        m_event_handler(std::move(event_handler))
+        m_event_handler(std::move(event_handler)),
+        m_pruning_strategy(std::move(pruning_strategy))
     {
     }
 
-    SearchStatus find_solution(GroundActionList& out_plan) override
+    SearchStatus find_solution(GroundActionList& out_plan) override { return find_solution(m_initial_state, out_plan); }
+
+    SearchStatus find_solution(const State state, GroundActionList& out_plan) override
     {
         const auto problem = m_successor_generator->get_problem();
         const auto& pddl_factories = m_successor_generator->get_pddl_factories();
@@ -125,6 +144,11 @@ public:
         const auto& derived_goal_ground_literals = problem->get_derived_goal_condition();
 
         auto applicable_actions = GroundActionList {};
+
+        if (m_pruning_strategy->should_prune_initial_state(m_initial_state))
+        {
+            return SearchStatus::FAILED;
+        }
 
         m_queue.emplace_back(m_initial_state);
 
@@ -172,7 +196,7 @@ public:
 
                 m_event_handler->on_generate_state(problem, action, successor_state, pddl_factories);
 
-                if (state_count != m_state_repository->get_state_count())
+                if (state_count != m_state_repository->get_state_count() && !m_pruning_strategy->should_prune_successor_state(state, successor_state))
                 {
                     auto successor_search_node = CostSearchNode(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
@@ -190,6 +214,8 @@ public:
 
         return SearchStatus::EXHAUSTED;
     }
+
+    void set_pruning_strategy(std::shared_ptr<IPruningStrategy> pruning_strategy) { m_pruning_strategy = pruning_strategy; }
 };
 
 }

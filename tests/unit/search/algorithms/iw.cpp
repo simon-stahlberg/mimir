@@ -16,7 +16,7 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
         3,  // placeholder to generate tuples of size less than arity
     });
 
-    const auto tuple_index_mapper = TupleIndexMapper(3, 1);
+    const auto tuple_index_mapper = TupleIndexMapper(1, 3);
 
     const auto tuple_index_generator = SingleStateTupleIndexGenerator(tuple_index_mapper, atom_indices);
 
@@ -37,7 +37,7 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
         3,  // placeholder to generate tuples of size less than arity
     });
 
-    const auto tuple_index_mapper = TupleIndexMapper(3, 2);
+    const auto tuple_index_mapper = TupleIndexMapper(2, 3);
 
     const auto tuple_index_generator = SingleStateTupleIndexGenerator(tuple_index_mapper, atom_indices);
 
@@ -64,9 +64,9 @@ TEST(MimirTests, SearchAlgorithmsIWCombinedStateTupleIndexGeneratorWidth1Test)
         3,
     });
 
-    const auto tuple_index_mapper = TupleIndexMapper(4, 1);
+    const auto tuple_index_mapper = TupleIndexMapper(1, 4);
 
-    const auto tuple_index_generator = CombinedStateTupleIndexGenerator(tuple_index_mapper, atom_indices, add_atom_indices);
+    const auto tuple_index_generator = StatePairTupleIndexGenerator(tuple_index_mapper, atom_indices, add_atom_indices);
 
     auto iter = tuple_index_generator.begin();
 
@@ -89,9 +89,9 @@ TEST(MimirTests, SearchAlgorithmsIWCombinedStateTupleIndexGeneratorWidth2Test)
         3,
     });
 
-    const auto tuple_index_mapper = TupleIndexMapper(4, 2);
+    const auto tuple_index_mapper = TupleIndexMapper(2, 4);
 
-    const auto tuple_index_generator = CombinedStateTupleIndexGenerator(tuple_index_mapper, atom_indices, add_atom_indices);
+    const auto tuple_index_generator = StatePairTupleIndexGenerator(tuple_index_mapper, atom_indices, add_atom_indices);
 
     auto iter = tuple_index_generator.begin();
 

@@ -22,7 +22,11 @@
 namespace mimir
 {
 
-TupleIndexMapper::TupleIndexMapper(int num_atoms, int arity) : m_num_atoms(num_atoms), m_arity(arity)
+/**
+ * TupleIndexMapper
+ */
+
+TupleIndexMapper::TupleIndexMapper(int arity, int num_atoms) : m_arity(arity), m_num_atoms(num_atoms)
 {
     if (!(arity > 0 && arity < MAX_ARITY))
     {
@@ -84,6 +88,16 @@ int TupleIndexMapper::get_arity() const { return m_arity; }
 
 const int* TupleIndexMapper::get_factors() const { return m_factors; }
 
+int TupleIndexMapper::get_max_tuple_index() const
+{
+    // x^0 + ... + x^n = (x^{n+1} - 1) / 2
+    return ((std::pow(get_num_atoms(), get_arity() + 1) - 1) / 2) - 1;
+}
+
+/**
+ * SingleStateTupleIndexGenerator
+ */
+
 SingleStateTupleIndexGenerator::SingleStateTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices) :
     m_tuple_index_mapper(&tuple_index_mapper),
     m_atom_indices(&atom_indices)
@@ -95,7 +109,7 @@ SingleStateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index
 SingleStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, bool begin) :
     m_tuple_index_mapper(&tuple_index_mapper),
     m_atom_indices(&atom_indices),
-    m_cur(begin ? 0 : (std::pow(tuple_index_mapper.get_num_atoms(), tuple_index_mapper.get_arity() + 1) - 1) / 2),  // x^0 + ... + x^n = (x^{n+1} - 1) / 2
+    m_cur(begin ? 0 : tuple_index_mapper.get_max_tuple_index() + 1),
     m_indices({})
 {
     assert(!atom_indices.empty());
@@ -192,21 +206,25 @@ SingleStateTupleIndexGenerator::const_iterator SingleStateTupleIndexGenerator::e
     return const_iterator(*m_tuple_index_mapper, *m_atom_indices, false);
 }
 
-CombinedStateTupleIndexGenerator::CombinedStateTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper,
-                                                                   const AtomIndices& atom_indices,
-                                                                   const AtomIndices& add_atom_indices) :
+/**
+ * StatePairTupleIndexGenerator
+ */
+
+StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper,
+                                                           const AtomIndices& atom_indices,
+                                                           const AtomIndices& add_atom_indices) :
     m_tuple_index_mapper(&tuple_index_mapper),
     m_atom_indices(&atom_indices),
     m_add_atom_indices(&add_atom_indices)
 {
 }
 
-CombinedStateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_a_atom_indices({}) {}
+StatePairTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_a_atom_indices({}) {}
 
-CombinedStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexMapper& tuple_index_mapper,
-                                                                 const AtomIndices& atom_indices,
-                                                                 const AtomIndices& add_atom_indices,
-                                                                 bool begin) :
+StatePairTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexMapper& tuple_index_mapper,
+                                                             const AtomIndices& atom_indices,
+                                                             const AtomIndices& add_atom_indices,
+                                                             bool begin) :
     m_tuple_index_mapper(&tuple_index_mapper),
     m_a_atom_indices({}),
     m_a_num_atom_indices({}),
@@ -241,7 +259,7 @@ CombinedStateTupleIndexGenerator::const_iterator::const_iterator(const TupleInde
     }
 }
 
-void CombinedStateTupleIndexGenerator::const_iterator::initialize_index_jumper()
+void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
 {
     for (int i = 0; i < m_a_num_atom_indices[0]; ++i)
     {
@@ -275,7 +293,7 @@ void CombinedStateTupleIndexGenerator::const_iterator::initialize_index_jumper()
     }
 }
 
-bool CombinedStateTupleIndexGenerator::const_iterator::next_outter_begin()
+bool StatePairTupleIndexGenerator::const_iterator::next_outter_begin()
 {
     const int arity = m_tuple_index_mapper->get_arity();
     const int* factors = m_tuple_index_mapper->get_factors();
@@ -334,7 +352,7 @@ bool CombinedStateTupleIndexGenerator::const_iterator::next_outter_begin()
     return false;
 }
 
-void CombinedStateTupleIndexGenerator::const_iterator::next_tuple_index()
+void StatePairTupleIndexGenerator::const_iterator::next_tuple_index()
 {
     while (true)
     {
@@ -410,7 +428,7 @@ void CombinedStateTupleIndexGenerator::const_iterator::next_tuple_index()
     }
 }
 
-SingleStateTupleIndexGenerator::const_iterator::value_type CombinedStateTupleIndexGenerator::const_iterator::operator*() const
+StatePairTupleIndexGenerator::const_iterator::value_type StatePairTupleIndexGenerator::const_iterator::operator*() const
 {
     assert(m_tuple_index_mapper && &m_a_atom_indices[0] && &m_a_atom_indices[1]);
     // Do not allow interpreting end as position.
@@ -419,20 +437,20 @@ SingleStateTupleIndexGenerator::const_iterator::value_type CombinedStateTupleInd
     return m_cur_inner;
 }
 
-CombinedStateTupleIndexGenerator::const_iterator& CombinedStateTupleIndexGenerator::const_iterator::operator++()
+StatePairTupleIndexGenerator::const_iterator& StatePairTupleIndexGenerator::const_iterator::operator++()
 {
     next_tuple_index();
     return *this;
 }
 
-CombinedStateTupleIndexGenerator::const_iterator CombinedStateTupleIndexGenerator::const_iterator::operator++(int)
+StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::const_iterator::operator++(int)
 {
     const_iterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
-bool CombinedStateTupleIndexGenerator::const_iterator::operator==(const const_iterator& other) const
+bool StatePairTupleIndexGenerator::const_iterator::operator==(const const_iterator& other) const
 {
     // Compare against end iterator
     if (m_end_inner == other.m_end_inner && m_end_outter == other.m_end_outter)
@@ -443,15 +461,137 @@ bool CombinedStateTupleIndexGenerator::const_iterator::operator==(const const_it
     return m_cur_outter == other.m_cur_outter && m_cur_inner == other.m_cur_inner;
 }
 
-bool CombinedStateTupleIndexGenerator::const_iterator::operator!=(const const_iterator& other) const { return !(*this == other); }
+bool StatePairTupleIndexGenerator::const_iterator::operator!=(const const_iterator& other) const { return !(*this == other); }
 
-CombinedStateTupleIndexGenerator::const_iterator CombinedStateTupleIndexGenerator::begin() const
+StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin() const
 {
     return const_iterator(*m_tuple_index_mapper, *m_atom_indices, *m_add_atom_indices, true);
 }
 
-CombinedStateTupleIndexGenerator::const_iterator CombinedStateTupleIndexGenerator::end() const
+StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end() const
 {
     return const_iterator(*m_tuple_index_mapper, *m_atom_indices, *m_add_atom_indices, false);
+}
+
+/**
+ * DynamicNoveltyTable
+ */
+
+DynamicNoveltyTable::DynamicNoveltyTable(int arity, int num_atoms) :
+    m_tuple_index_mapper(TupleIndexMapper(arity, num_atoms)),
+    m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false))
+{
+}
+
+void DynamicNoveltyTable::resize_to_fit(int atom_index)
+{
+    // Fetch data.
+    const auto arity = m_tuple_index_mapper.get_arity();
+    const auto old_placeholder = m_tuple_index_mapper.get_num_atoms();
+
+    // Compute size of new table
+    int new_size = m_tuple_index_mapper.get_num_atoms();
+    while (new_size < atom_index + 1 + 1)  // additional +1 for placeholder
+    {
+        // Use doubling strategy to get constant amortized cost of resize.
+        new_size *= 2;
+    }
+    const int new_placeholder = new_size;
+    auto new_tuple_index_mapper = TupleIndexMapper(arity, new_size);
+    auto new_table = std::vector<bool>(new_tuple_index_mapper.get_max_tuple_index() + 1, false);
+
+    // Convert tuple indices that are not novel from old to new table.
+    auto atom_indices = AtomIndices(arity);
+    for (int tuple_index = 0; tuple_index < static_cast<int>(m_table.size()); ++tuple_index)
+    {
+        if (m_table[tuple_index])
+        {
+            m_tuple_index_mapper.to_atom_indices(tuple_index, atom_indices);
+            for (int i = 0; i < arity; ++i)
+            {
+                if (atom_indices[i] == old_placeholder)
+                {
+                    atom_indices[i] = new_placeholder;
+                }
+            }
+            const int new_tuple_index = new_tuple_index_mapper.to_tuple_index(atom_indices);
+            new_table[new_tuple_index] = true;
+        }
+    }
+
+    // Swap old and new data.
+    m_tuple_index_mapper = std::move(new_tuple_index_mapper);
+    m_table = std::move(new_table);
+}
+
+bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
+{
+    m_tmp_atom_indices.clear();
+    for (const auto atom_id : state.get_atoms<Fluent>())
+    {
+        m_tmp_atom_indices.push_back(atom_id);
+    }
+    assert(std::is_sorted(m_tmp_atom_indices.begin(), m_tmp_atom_indices.end()));
+
+    bool is_novel = false;
+    for (const auto tuple_index : SingleStateTupleIndexGenerator(m_tuple_index_mapper, m_tmp_atom_indices))
+    {
+        if (!is_novel && !m_table[tuple_index])
+        {
+            is_novel = true;
+        }
+        m_table[tuple_index] = true;
+    }
+    return is_novel;
+}
+
+bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const State succ_state)
+{
+    m_tmp_atom_indices.clear();
+    for (const auto atom_id : state.get_atoms<Fluent>())
+    {
+        m_tmp_atom_indices.push_back(atom_id);
+    }
+    assert(std::is_sorted(m_tmp_atom_indices.begin(), m_tmp_atom_indices.end()));
+
+    m_tmp_add_atom_indices.clear();
+    for (const auto atom_id : succ_state.get_atoms<Fluent>())
+    {
+        if (!state.get_atoms<Fluent>().get(atom_id))
+        {
+            m_tmp_add_atom_indices.push_back(atom_id);
+        }
+    }
+    assert(std::is_sorted(m_tmp_add_atom_indices.begin(), m_tmp_add_atom_indices.end()));
+
+    bool is_novel = false;
+    for (const auto tuple_index : StatePairTupleIndexGenerator(m_tuple_index_mapper, m_tmp_atom_indices, m_tmp_add_atom_indices))
+    {
+        if (!is_novel && !m_table[tuple_index])
+        {
+            is_novel = true;
+        }
+        m_table[tuple_index] = true;
+    }
+    return is_novel;
+}
+
+/**
+ * NoveltyPruning
+ */
+
+ArityZeroNoveltyPruning::ArityZeroNoveltyPruning(State initial_state) : m_initial_state(initial_state) {}
+
+bool ArityZeroNoveltyPruning::should_prune_initial_state(const State state) { return false; }
+
+bool ArityZeroNoveltyPruning::should_prune_successor_state(const State state, const State succ_state) { return state != m_initial_state; }
+
+ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms) : m_novelty_table(arity, num_atoms) {}
+
+bool ArityKNoveltyPruning::should_prune_initial_state(const State state) { return m_novelty_table.test_novelty_and_update_table(state); }
+
+bool ArityKNoveltyPruning::should_prune_successor_state(const State state, const State succ_state)
+{
+    return m_novelty_table.test_novelty_and_update_table(state, succ_state);
 }
 }
