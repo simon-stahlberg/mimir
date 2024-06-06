@@ -1,4 +1,6 @@
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/predicate_category.hpp"
 
 #include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>
@@ -529,6 +531,10 @@ void init_pymimir(py::module_& m)
                  auto atoms = self.get_atoms<Derived>();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
+        .def("contains", py::overload_cast<const GroundAtom<Fluent>&>(&State::contains<Fluent>, py::const_))
+        .def("contains", py::overload_cast<const GroundAtom<Derived>&>(&State::contains<Derived>, py::const_))
+        .def("superset_of", py::overload_cast<const GroundAtomList<Fluent>&>(&State::superset_of<Fluent>, py::const_))
+        .def("superset_of", py::overload_cast<const GroundAtomList<Derived>&>(&State::superset_of<Derived>, py::const_))
         .def("literal_holds", py::overload_cast<const GroundLiteral<Fluent>&>(&State::literal_holds<Fluent>, py::const_))
         .def("literal_holds", py::overload_cast<const GroundLiteral<Derived>&>(&State::literal_holds<Derived>, py::const_))
         .def("literals_hold", py::overload_cast<const GroundLiteralList<Fluent>&>(&State::literals_hold<Fluent>, py::const_))

@@ -18,6 +18,9 @@
 #ifndef MIMIR_SEARCH_STATES_INTERFACE_HPP_
 #define MIMIR_SEARCH_STATES_INTERFACE_HPP_
 
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/predicate_category.hpp"
 #include "mimir/search/builder.hpp"
 #include "mimir/search/states/tags.hpp"
 #include "mimir/search/view_const.hpp"
@@ -76,6 +79,18 @@ public:
     /**
      * Extended
      */
+
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool contains(const GroundAtom<P>& atom) const
+    {
+        return self().contains_impl(atom);
+    }
+
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool superset_of(const GroundAtomList<P>& atoms) const
+    {
+        return self().superset_of_impl(atoms);
+    }
 
     template<DynamicPredicateCategory P>
     [[nodiscard]] bool literal_holds(const GroundLiteral<P>& literal) const

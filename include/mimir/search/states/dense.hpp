@@ -149,15 +149,29 @@ private:
      * Fluent and Derived
      */
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool contains(const GroundAtom<P>& ground_atom) const
+    [[nodiscard]] bool contains_impl(const GroundAtom<P>& atom) const
     {
-        return get_atoms<P>().get(ground_atom->get_identifier());
+        return get_atoms<P>().get(atom->get_identifier());
+    }
+
+    template<DynamicPredicateCategory P>
+    [[nodiscard]] bool superset_of_impl(const GroundAtomList<P>& atoms) const
+    {
+        for (const auto& atom : atoms)
+        {
+            if (!contains_impl(atom))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     template<DynamicPredicateCategory P>
     [[nodiscard]] bool literal_holds_impl(const GroundLiteral<P>& literal) const
     {
-        return literal->is_negated() != contains(literal->get_atom());
+        return literal->is_negated() != contains_impl(literal->get_atom());
     }
 
     template<DynamicPredicateCategory P>
