@@ -213,8 +213,8 @@ private:
 public:
     explicit ArityZeroNoveltyPruning(State initial_state);
 
-    bool should_prune_initial_state(const State state) override;
-    bool should_prune_successor_state(const State state, const State succ_state) override;
+    bool test_prune_initial_state(const State state) override;
+    bool test_prune_successor_state(const State state, const State succ_state) override;
 };
 
 class ArityKNoveltyPruning : public IPruningStrategy
@@ -225,8 +225,8 @@ private:
 public:
     explicit ArityKNoveltyPruning(int arity, int num_atoms);
 
-    bool should_prune_initial_state(const State state) override;
-    bool should_prune_successor_state(const State state, const State succ_state) override;
+    bool test_prune_initial_state(const State state) override;
+    bool test_prune_successor_state(const State state, const State succ_state) override;
 };
 
 class IterativeWidthAlgorithm : public IAlgorithm

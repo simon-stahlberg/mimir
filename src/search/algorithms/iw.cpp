@@ -582,15 +582,15 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
 
 ArityZeroNoveltyPruning::ArityZeroNoveltyPruning(State initial_state) : m_initial_state(initial_state) {}
 
-bool ArityZeroNoveltyPruning::should_prune_initial_state(const State state) { return false; }
+bool ArityZeroNoveltyPruning::test_prune_initial_state(const State state) { return false; }
 
-bool ArityZeroNoveltyPruning::should_prune_successor_state(const State state, const State succ_state) { return state != m_initial_state; }
+bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state) { return state != m_initial_state; }
 
 ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms) : m_novelty_table(arity, num_atoms) {}
 
-bool ArityKNoveltyPruning::should_prune_initial_state(const State state) { return m_novelty_table.test_novelty_and_update_table(state); }
+bool ArityKNoveltyPruning::test_prune_initial_state(const State state) { return m_novelty_table.test_novelty_and_update_table(state); }
 
-bool ArityKNoveltyPruning::should_prune_successor_state(const State state, const State succ_state)
+bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state)
 {
     return m_novelty_table.test_novelty_and_update_table(state, succ_state);
 }

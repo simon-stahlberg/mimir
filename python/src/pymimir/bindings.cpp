@@ -630,8 +630,8 @@ void init_pymimir(py::module_& m)
 
     // BrFs
     py::class_<IPruningStrategy, std::shared_ptr<IPruningStrategy>>(m, "IPruningStrategy")  //
-        .def("should_prune_initial_state", &IPruningStrategy::should_prune_initial_state)
-        .def("should_prune_successor_state", &IPruningStrategy::should_prune_successor_state);
+        .def("test_prune_initial_state", &IPruningStrategy::test_prune_initial_state)
+        .def("test_prune_successor_state", &IPruningStrategy::test_prune_successor_state);
 
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>>())

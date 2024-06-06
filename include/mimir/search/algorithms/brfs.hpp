@@ -42,15 +42,15 @@ class IPruningStrategy
 public:
     virtual ~IPruningStrategy() = default;
 
-    virtual bool should_prune_initial_state(const State state) = 0;
-    virtual bool should_prune_successor_state(const State state, const State succ_state) = 0;
+    virtual bool test_prune_initial_state(const State state) = 0;
+    virtual bool test_prune_successor_state(const State state, const State succ_state) = 0;
 };
 
 class NoPruning : public IPruningStrategy
 {
 public:
-    bool should_prune_initial_state(const State state) override { return false; };
-    bool should_prune_successor_state(const State state, const State succ_state) override { return false; }
+    bool test_prune_initial_state(const State state) override { return false; };
+    bool test_prune_successor_state(const State state, const State succ_state) override { return false; }
 };
 
 /**
@@ -145,7 +145,7 @@ public:
 
         auto applicable_actions = GroundActionList {};
 
-        if (m_pruning_strategy->should_prune_initial_state(m_initial_state))
+        if (m_pruning_strategy->test_prune_initial_state(m_initial_state))
         {
             return SearchStatus::FAILED;
         }
@@ -196,7 +196,7 @@ public:
 
                 m_event_handler->on_generate_state(problem, action, successor_state, pddl_factories);
 
-                if (state_count != m_state_repository->get_state_count() && !m_pruning_strategy->should_prune_successor_state(state, successor_state))
+                if (state_count != m_state_repository->get_state_count() && !m_pruning_strategy->test_prune_successor_state(state, successor_state))
                 {
                     auto successor_search_node = CostSearchNode(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
