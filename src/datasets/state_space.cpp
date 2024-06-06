@@ -135,8 +135,8 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
 
     auto states = StateList { initial_state };
     auto num_transitions = (size_t) 0;
-    auto forward_transitions = std::vector<Transitions> {};
-    auto backward_transitions = std::vector<Transitions> {};
+    auto forward_transitions = std::vector<Transitions>(1);
+    auto backward_transitions = std::vector<Transitions>(1);
     auto goal_states = StateSet {};
 
     auto applicable_actions = GroundActionList {};
