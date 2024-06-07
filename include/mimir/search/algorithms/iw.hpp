@@ -33,7 +33,7 @@ namespace mimir
  * allowing us to use stack allocated arrays.
  */
 
-const int MAX_ARITY = 4;
+const int MAX_ARITY = 10;
 
 /**
  * Type aliases for readability
@@ -72,12 +72,12 @@ public:
     int get_max_tuple_index() const;
 };
 
-/// @brief SingleStateTupleIndexGenerator encapsulates iterator logic to generate
+/// @brief StateTupleIndexGenerator encapsulates iterator logic to generate
 /// all combinations of tuple indices of size at most arity.
 ///
 /// The underlying algorithm is an adaption of std::next_permutation
 /// with constant amortized cost to compute the next tuple index.
-class SingleStateTupleIndexGenerator
+class StateTupleIndexGenerator
 {
 public:
     /// @brief IteratorData encapsulates containers for memory reuse.
@@ -87,18 +87,19 @@ public:
         AtomIndices atom_indices;
         std::vector<int> indices;
 
-        IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
+        IteratorData(int arity, std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
     };
 
 private:
     IteratorData& m_data;
 
 public:
-    explicit SingleStateTupleIndexGenerator(IteratorData& m_data);
+    explicit StateTupleIndexGenerator(IteratorData& m_data);
 
     class const_iterator
     {
     private:
+        /* Data */
         IteratorData* m_data;
 
         bool m_end;
@@ -135,35 +136,38 @@ public:
 /// with constant amortized cost to compute the next tuple index.
 class StatePairTupleIndexGenerator
 {
+public:
+    /// @brief IteratorData encapsulates containers for memory reuse.
+    struct IteratorData
+    {
+        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+        std::vector<int> a;
+        // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
+        std::array<std::vector<int>, 2> a_index_jumper;
+        std::array<AtomIndices, 2> a_atom_indices;
+        std::array<int, 2> a_num_atom_indices;
+        std::vector<int> indices;
+
+        IteratorData(int arity, std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
+    };
+
 private:
-    const TupleIndexMapper* m_tuple_index_mapper;
-    const AtomIndices* m_atom_indices;
-    const AtomIndices* m_add_atom_indices;
+    IteratorData& m_data;
 
 public:
-    StatePairTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);
+    StatePairTupleIndexGenerator(IteratorData& data);
 
     class const_iterator
     {
     private:
         /* Data */
-        const TupleIndexMapper* m_tuple_index_mapper;
-        const AtomIndices* m_a_atom_indices[2];
-        int m_a_num_atom_indices[2];
+        IteratorData* m_data;
 
         /* Iterator positions implict representation */
         bool m_end_inner;
         int m_cur_inner;
         bool m_end_outter;
         int m_cur_outter;
-
-        /* Iterator positions explicit representation */
-        // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
-        int m_a[MAX_ARITY];
-
-        std::array<std::vector<int>, 2> m_a_index_jumper;
-
-        int m_indices[MAX_ARITY];
 
         void initialize_index_jumper();
 
@@ -179,7 +183,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, const AtomIndices& add_atom_indices, bool begin);
+        const_iterator(IteratorData* data, bool begin);
         [[nodiscard]] value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
@@ -226,11 +230,12 @@ private:
 
     void resize_to_fit(int atom_index);
 
-    // Preallocated memory for reuse
-    AtomIndices m_tmp_atom_indices;
-    AtomIndices m_tmp_add_atom_indices;
-
-    SingleStateTupleIndexGenerator::IteratorData m_single_state_iterator_data;
+    // Preallocated memory that will be modified and reused.
+    // The constructors give a deeper understanding into
+    // what data must be fed into the iterators.
+    // There are also unit tests that illustrate correct usage.
+    StateTupleIndexGenerator::IteratorData m_single_state_iterator_data;
+    StatePairTupleIndexGenerator::IteratorData m_pair_state_iterator_data;
 
 public:
     DynamicNoveltyTable(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper);
