@@ -92,6 +92,7 @@ public:
         const TupleIndexMapper* m_tuple_index_mapper;
         const AtomIndices* m_atom_indices;
 
+        bool m_end;
         int m_cur;
 
         int m_indices[MAX_ARITY];
@@ -272,11 +273,12 @@ public:
 
     SearchStatus find_solution(GroundActionList& out_plan) override { return find_solution(m_initial_state, out_plan); }
 
-    SearchStatus find_solution(const State state, GroundActionList& out_plan) override
+    SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
     {
-        std::cout << m_max_arity << std::endl;
         while (m_cur_arity <= m_max_arity)
         {
+            std::cout << "[IterativeWidth] Run IW(" << m_cur_arity << ")" << std::endl;
+
             if (m_cur_arity > 0)
             {
                 // TODO: getting num atoms directly would be beneficial in grounded case.
@@ -285,10 +287,10 @@ public:
             }
             else if (m_cur_arity == 0)
             {
-                m_brfs.set_pruning_strategy(std::make_shared<ArityZeroNoveltyPruning>(m_initial_state));
+                m_brfs.set_pruning_strategy(std::make_shared<ArityZeroNoveltyPruning>(start_state));
             }
 
-            auto search_status = m_brfs.find_solution(m_initial_state, out_plan);
+            auto search_status = m_brfs.find_solution(start_state, out_plan);
 
             if (search_status == SearchStatus::SOLVED)
             {
@@ -296,8 +298,6 @@ public:
             }
 
             ++m_cur_arity;
-
-            std::cout << "Increase arity from " << m_cur_arity - 1 << " to " << m_cur_arity << std::endl;
         }
         return SearchStatus::FAILED;
     }

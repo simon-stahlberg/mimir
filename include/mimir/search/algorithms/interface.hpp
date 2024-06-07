@@ -45,7 +45,7 @@ public:
 
     virtual SearchStatus find_solution(GroundActionList& out_plan) = 0;
 
-    virtual SearchStatus find_solution(const State state, GroundActionList& out_plan) = 0;
+    virtual SearchStatus find_solution(const State start_state, GroundActionList& out_plan) = 0;
 };
 
 }

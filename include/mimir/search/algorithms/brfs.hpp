@@ -123,13 +123,17 @@ public:
 
     SearchStatus find_solution(GroundActionList& out_plan) override { return find_solution(m_initial_state, out_plan); }
 
-    SearchStatus find_solution(const State state, GroundActionList& out_plan) override
+    SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
     {
+        // Clear data structures
+        m_search_nodes.clear();
+        m_queue.clear();
+
         const auto problem = m_successor_generator->get_problem();
         const auto& pddl_factories = m_successor_generator->get_pddl_factories();
-        m_event_handler->on_start_search(problem, this->m_initial_state, pddl_factories);
+        m_event_handler->on_start_search(problem, start_state, pddl_factories);
 
-        auto initial_search_node = CostSearchNode(this->m_search_nodes[this->m_initial_state.get_id()]);
+        auto initial_search_node = CostSearchNode(this->m_search_nodes[start_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
@@ -145,12 +149,12 @@ public:
 
         auto applicable_actions = GroundActionList {};
 
-        if (m_pruning_strategy->test_prune_initial_state(m_initial_state))
+        if (m_pruning_strategy->test_prune_initial_state(start_state))
         {
             return SearchStatus::FAILED;
         }
 
-        m_queue.emplace_back(m_initial_state);
+        m_queue.emplace_back(start_state);
 
         auto g_value = uint64_t { 0 };
 
@@ -162,6 +166,7 @@ public:
             // We need this before goal test for correct statistics reporting.
             auto search_node = CostSearchNode(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
+
             if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
             {
                 g_value = search_node.get_g_value();
@@ -172,17 +177,11 @@ public:
             if (state.literals_hold(fluent_goal_ground_literals) && state.literals_hold(derived_goal_ground_literals))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
-
                 m_event_handler->on_end_search();
                 m_successor_generator->on_end_search();
                 m_event_handler->on_solved(out_plan);
 
                 return SearchStatus::SOLVED;
-            }
-
-            if (g_value == 1)
-            {
-                // return SearchStatus::FAILED;
             }
 
             m_event_handler->on_expand_state(problem, state, pddl_factories);

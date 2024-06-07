@@ -109,7 +109,8 @@ SingleStateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index
 SingleStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, bool begin) :
     m_tuple_index_mapper(&tuple_index_mapper),
     m_atom_indices(&atom_indices),
-    m_cur(begin ? 0 : (std::pow(atom_indices.size(), tuple_index_mapper.get_arity() + 1) - 1) / 2),  // x^0 + ... + x^n = (x^{n+1} - 1) / 2
+    m_end(!begin),
+    m_cur(0),
     m_indices({})
 {
     assert(!atom_indices.empty());
@@ -126,7 +127,6 @@ SingleStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexM
         }
         assert(std::is_sorted(m_indices, m_indices + tuple_index_mapper.get_arity()));
     }
-    std::cout << "m_cur: " << m_cur << std::endl;
 }
 
 void SingleStateTupleIndexGenerator::const_iterator::next_tuple_index()
@@ -150,6 +150,7 @@ void SingleStateTupleIndexGenerator::const_iterator::next_tuple_index()
     if (i < 0)
     {
         // Exit when all indices have reached their maximum values
+        m_end = true;
         ++m_cur;
         return;
     }
@@ -193,7 +194,17 @@ SingleStateTupleIndexGenerator::const_iterator SingleStateTupleIndexGenerator::c
     return tmp;
 }
 
-bool SingleStateTupleIndexGenerator::const_iterator::operator==(const const_iterator& other) const { return m_cur == other.m_cur; }
+bool SingleStateTupleIndexGenerator::const_iterator::operator==(const const_iterator& other) const
+{
+    // Compare against end iterator
+    if (m_end == other.m_end)
+    {
+        return true;
+    }
+
+    // Compare against cur position
+    return m_cur == other.m_cur;
+}
 
 bool SingleStateTupleIndexGenerator::const_iterator::operator!=(const const_iterator& other) const { return !(*this == other); }
 
@@ -322,23 +333,40 @@ bool StatePairTupleIndexGenerator::const_iterator::next_outter_begin()
         // If no such tuple_index exists, continue with next m_cur_outter.
         m_indices[0] = 0;
         m_cur_inner = (*m_a_atom_indices[m_a[0]])[0] * factors[0];
-        bool has_valid_tuple_index = true;
+        bool exhausted = false;
         for (int i = 1; i < arity; ++i)
         {
-            const int prev_a = m_a[i - 1];
             const int prev_index = m_indices[i - 1];
-            const int cur_index = m_a_index_jumper[prev_a][prev_index];
-            if (cur_index == std::numeric_limits<int>::max())
-            {
-                has_valid_tuple_index = false;
-                break;
-            }
+            const int prev_a = m_a[i - 1];
             const int cur_a = m_a[i];
-            const int cur_atom_index = (*m_a_atom_indices[cur_a])[cur_index];
-            m_indices[i] = cur_index;
-            m_cur_inner += cur_atom_index * factors[i];
+
+            int new_index = -1;
+            if (prev_a == cur_a)
+            {
+                if (prev_index == m_a_num_atom_indices[cur_a] - 1)
+                {
+                    // Cannot increment index
+                    exhausted = true;
+                    break;
+                }
+                new_index = prev_index + 1;
+            }
+            else
+            {
+                if (m_a_index_jumper[prev_a][prev_index] == std::numeric_limits<int>::max())
+                {
+                    // Cannot increment index
+                    exhausted = true;
+                    break;
+                }
+                new_index = m_a_index_jumper[prev_a][prev_index];
+            }
+            assert(new_index >= 0);
+
+            m_indices[i] = new_index;
+            m_cur_inner += factors[i] * (*m_a_atom_indices[cur_a])[new_index];
         }
-        if (has_valid_tuple_index)
+        if (!exhausted)
         {
             m_end_inner = false;
             m_end_outter = false;
@@ -373,7 +401,7 @@ void StatePairTupleIndexGenerator::const_iterator::next_tuple_index()
 
         // Find the rightmost index and increment it
         int i = arity - 1;
-        while (i >= 0 && (m_indices[i] >= m_a_num_atom_indices[m_a[i]] - 1))
+        while (i >= 0 && (m_indices[i] == m_a_num_atom_indices[m_a[i]] - 1))
         {
             --i;
         }
@@ -390,32 +418,37 @@ void StatePairTupleIndexGenerator::const_iterator::next_tuple_index()
         bool exhausted = false;
         for (int j = i + 1; j < arity; ++j)
         {
-            int old_index = m_indices[j];
-            int new_index = -1;
+            const int prev_index = m_indices[j - 1];
+            int prev_a = m_a[j - 1];
+            int cur_a = m_a[j];
 
-            if (m_a[j - 1] == m_a[j])
+            int old_index = m_indices[j];
+
+            int new_index = -1;
+            if (prev_a == cur_a)
             {
-                if (old_index == m_a_num_atom_indices[m_a[j]] - 1)
+                if (old_index == m_a_num_atom_indices[cur_a] - 1)
                 {
                     // Cannot increment index
                     exhausted = true;
                     break;
                 }
-                new_index = m_indices[j - 1] + 1;
+                new_index = prev_index + 1;
             }
             else
             {
-                if (m_a_index_jumper[m_a[j - 1]][m_indices[j - 1]] == std::numeric_limits<int>::max())
+                if (m_a_index_jumper[prev_a][prev_index] == std::numeric_limits<int>::max())
                 {
                     // Cannot increment index
                     exhausted = true;
                     break;
                 }
-                new_index = m_a_index_jumper[m_a[j - 1]][m_indices[j - 1]];
+                new_index = m_a_index_jumper[prev_a][prev_index];
             }
             assert(new_index >= 0);
 
-            m_cur_inner += factors[j] * ((*m_a_atom_indices[m_a[j]])[new_index] - (*m_a_atom_indices[m_a[j]])[old_index]);
+            m_indices[j] = new_index;
+            m_cur_inner += factors[j] * ((*m_a_atom_indices[cur_a])[new_index] - (*m_a_atom_indices[cur_a])[old_index]);
         }
         if (exhausted)
         {
@@ -494,7 +527,7 @@ void DynamicNoveltyTable::resize_to_fit(int atom_index)
     int new_size = m_tuple_index_mapper.get_num_atoms();
     while (new_size < atom_index + 1 + 1)  // additional +1 for placeholder
     {
-        // Use doubling strategy to get constant amortized cost of resize.
+        // Use doubling strategy to get amortized cost O(arity) for resize.
         new_size *= 2;
     }
     const int new_placeholder = new_size;
@@ -533,31 +566,22 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
         m_tmp_atom_indices.push_back(atom_id);
     }
     assert(std::is_sorted(m_tmp_atom_indices.begin(), m_tmp_atom_indices.end()));
-    std::cout << m_tmp_add_atom_indices << std::endl;
 
     bool is_novel = false;
     for (const auto tuple_index : SingleStateTupleIndexGenerator(m_tuple_index_mapper, m_tmp_atom_indices))
     {
-        std::cout << tuple_index << " " << m_tuple_index_mapper.tuple_index_to_string(tuple_index) << std::endl;
         if (!is_novel && !m_table[tuple_index])
         {
             is_novel = true;
         }
         m_table[tuple_index] = true;
     }
-    std::cout << "IS_NOVEL: " << is_novel << std::endl;
     return is_novel;
 }
 
 bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const State succ_state)
 {
     m_tmp_atom_indices.clear();
-    for (const auto atom_id : state.get_atoms<Fluent>())
-    {
-        m_tmp_atom_indices.push_back(atom_id);
-    }
-    assert(std::is_sorted(m_tmp_atom_indices.begin(), m_tmp_atom_indices.end()));
-
     m_tmp_add_atom_indices.clear();
     for (const auto atom_id : succ_state.get_atoms<Fluent>())
     {
@@ -565,20 +589,23 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
         {
             m_tmp_add_atom_indices.push_back(atom_id);
         }
+        else
+        {
+            m_tmp_atom_indices.push_back(atom_id);
+        }
     }
+    assert(std::is_sorted(m_tmp_atom_indices.begin(), m_tmp_atom_indices.end()));
     assert(std::is_sorted(m_tmp_add_atom_indices.begin(), m_tmp_add_atom_indices.end()));
 
     bool is_novel = false;
     for (const auto tuple_index : StatePairTupleIndexGenerator(m_tuple_index_mapper, m_tmp_atom_indices, m_tmp_add_atom_indices))
     {
-        std::cout << tuple_index << std::endl;
         if (!is_novel && !m_table[tuple_index])
         {
             is_novel = true;
         }
         m_table[tuple_index] = true;
     }
-    std::cout << "IS_NOVEL: " << is_novel << std::endl;
     return is_novel;
 }
 

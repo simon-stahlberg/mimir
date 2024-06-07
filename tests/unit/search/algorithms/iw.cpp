@@ -122,7 +122,7 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
     EXPECT_EQ(++iter, tuple_index_generator.end());
 }
 
-TEST(MimirTests, SearchAlgorithmsIWCombinedStateTupleIndexGeneratorWidth1Test)
+TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
 {
     const auto atom_indices = AtomIndices({
         0,
@@ -147,7 +147,7 @@ TEST(MimirTests, SearchAlgorithmsIWCombinedStateTupleIndexGeneratorWidth1Test)
     EXPECT_EQ(++iter, tuple_index_generator.end());
 }
 
-TEST(MimirTests, SearchAlgorithmsIWCombinedStateTupleIndexGeneratorWidth2Test)
+TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
 {
     const auto atom_indices = AtomIndices({
         0,
@@ -173,6 +173,31 @@ TEST(MimirTests, SearchAlgorithmsIWCombinedStateTupleIndexGeneratorWidth2Test)
     EXPECT_EQ("(0,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
     EXPECT_EQ("(2,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
     EXPECT_EQ("(1,3,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+
+    EXPECT_EQ(++iter, tuple_index_generator.end());
+}
+
+TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
+{
+    const auto atom_indices = AtomIndices({
+        1,
+        3,
+        64,  // placeholder to generate tuples of size less than arity
+    });
+
+    const auto add_atom_indices = AtomIndices({
+        2,
+    });
+
+    const auto tuple_index_mapper = TupleIndexMapper(2, 64);
+
+    const auto tuple_index_generator = StatePairTupleIndexGenerator(tuple_index_mapper, atom_indices, add_atom_indices);
+
+    auto iter = tuple_index_generator.begin();
+
+    EXPECT_EQ("(2,3,)", tuple_index_mapper.tuple_index_to_string(*iter));
+    EXPECT_EQ("(2,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
+    EXPECT_EQ("(1,2,)", tuple_index_mapper.tuple_index_to_string(*(++iter)));
 
     EXPECT_EQ(++iter, tuple_index_generator.end());
 }
