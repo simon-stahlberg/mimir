@@ -141,12 +141,12 @@ public:
     struct IteratorData
     {
         std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+        int indices[MAX_ARITY];
+        // a[i] = 0 => pick from atom_indices, a[i] = 1 => pick from add_atom_indices
         int a[MAX_ARITY];
-        // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
         std::array<std::vector<int>, 2> a_index_jumper;
         std::array<AtomIndices, 2> a_atom_indices;
         std::array<int, 2> a_num_atom_indices;
-        int indices[MAX_ARITY];
 
         explicit IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
     };
