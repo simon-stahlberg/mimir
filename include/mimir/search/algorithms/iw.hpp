@@ -79,23 +79,30 @@ public:
 /// with constant amortized cost to compute the next tuple index.
 class SingleStateTupleIndexGenerator
 {
+public:
+    /// @brief IteratorData encapsulates containers for memory reuse.
+    struct IteratorData
+    {
+        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+        AtomIndices atom_indices;
+        std::vector<int> indices;
+
+        IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
+    };
+
 private:
-    const TupleIndexMapper* m_tuple_index_mapper;
-    const AtomIndices* m_atom_indices;
+    IteratorData& m_data;
 
 public:
-    SingleStateTupleIndexGenerator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices);
+    explicit SingleStateTupleIndexGenerator(IteratorData& m_data);
 
     class const_iterator
     {
     private:
-        const TupleIndexMapper* m_tuple_index_mapper;
-        const AtomIndices* m_atom_indices;
+        IteratorData* m_data;
 
         bool m_end;
         int m_cur;
-
-        int m_indices[MAX_ARITY];
 
         void advance();
 
@@ -107,7 +114,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(const TupleIndexMapper& tuple_index_mapper, const AtomIndices& atom_indices, bool begin);
+        const_iterator(IteratorData* data, bool begin);
         [[nodiscard]] value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
@@ -213,7 +220,7 @@ class DynamicNoveltyTable
 private:
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
-    TupleIndexMapper m_tuple_index_mapper;
+    std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
 
     std::vector<bool> m_table;
 
@@ -222,6 +229,8 @@ private:
     // Preallocated memory for reuse
     AtomIndices m_tmp_atom_indices;
     AtomIndices m_tmp_add_atom_indices;
+
+    SingleStateTupleIndexGenerator::IteratorData m_single_state_iterator_data;
 
 public:
     DynamicNoveltyTable(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper);
