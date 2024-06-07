@@ -129,7 +129,7 @@ SingleStateTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexM
     }
 }
 
-void SingleStateTupleIndexGenerator::const_iterator::next_tuple_index()
+void SingleStateTupleIndexGenerator::const_iterator::advance()
 {
     // Increment indices from right to left until obtaining an
     // array of form {num_atoms,...,num_atoms} indicating the end
@@ -183,7 +183,7 @@ SingleStateTupleIndexGenerator::const_iterator::value_type SingleStateTupleIndex
 
 SingleStateTupleIndexGenerator::const_iterator& SingleStateTupleIndexGenerator::const_iterator::operator++()
 {
-    next_tuple_index();
+    advance();
     return *this;
 }
 
@@ -267,7 +267,7 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(const TupleIndexMap
         initialize_index_jumper();
 
         // Initialize m_cur_outter and m_cur_inner
-        next_outter_begin();
+        advance_outter();
     }
 }
 
@@ -305,7 +305,7 @@ void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
     }
 }
 
-bool StatePairTupleIndexGenerator::const_iterator::next_outter_begin()
+bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
 {
     const int arity = m_tuple_index_mapper->get_arity();
     const int* factors = m_tuple_index_mapper->get_factors();
@@ -381,7 +381,7 @@ bool StatePairTupleIndexGenerator::const_iterator::next_outter_begin()
     return false;
 }
 
-void StatePairTupleIndexGenerator::const_iterator::next_tuple_index()
+void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 {
     while (true)
     {
@@ -392,7 +392,7 @@ void StatePairTupleIndexGenerator::const_iterator::next_tuple_index()
 
         if (m_end_inner)
         {
-            next_outter_begin();
+            advance_outter();
             // Either points to next tuple index or m_outter_end and m_inner_end
             return;
         }
@@ -473,7 +473,7 @@ StatePairTupleIndexGenerator::const_iterator::value_type StatePairTupleIndexGene
 
 StatePairTupleIndexGenerator::const_iterator& StatePairTupleIndexGenerator::const_iterator::operator++()
 {
-    next_tuple_index();
+    advance_inner();
     return *this;
 }
 

@@ -629,18 +629,9 @@ void init_pymimir(py::module_& m)
              });
 
     // BrFs
-    py::class_<IPruningStrategy, std::shared_ptr<IPruningStrategy>>(m, "IPruningStrategy")  //
-        .def("test_prune_initial_state", &IPruningStrategy::test_prune_initial_state)
-        .def("test_prune_successor_state", &IPruningStrategy::test_prune_successor_state);
-    py::class_<NoPruning, IPruningStrategy, std::shared_ptr<NoPruning>>(m, "NoPruning");
-
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
         .def(py::init<std::shared_ptr<IDynamicAAG>>())
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IAlgorithmEventHandler>, std::shared_ptr<IPruningStrategy>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("successor_state_generator"),
-             py::arg("event_handler") = std::make_shared<DefaultAlgorithmEventHandler>(),
-             py::arg("pruning_strategy") = std::make_shared<NoPruning>());
+        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IAlgorithmEventHandler>>());
 
     // AStar
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //

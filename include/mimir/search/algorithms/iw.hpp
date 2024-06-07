@@ -97,7 +97,7 @@ public:
 
         int m_indices[MAX_ARITY];
 
-        void next_tuple_index();
+        void advance();
 
     public:
         using difference_type = int;
@@ -159,9 +159,9 @@ public:
 
         void initialize_index_jumper();
 
-        bool next_outter_begin();
+        bool advance_outter();
 
-        void next_tuple_index();
+        void advance_inner();
 
     public:
         using difference_type = int;
@@ -263,7 +263,7 @@ public:
         m_max_arity(max_arity),
         m_initial_state(m_ssg->get_or_create_initial_state()),
         m_cur_arity(0),
-        m_brfs(applicable_action_generator, successor_state_generator, event_handler, nullptr)
+        m_brfs(applicable_action_generator, successor_state_generator, event_handler)
     {
         if (max_arity < 0)
         {
@@ -279,18 +279,8 @@ public:
         {
             std::cout << "[IterativeWidth] Run IW(" << m_cur_arity << ")" << std::endl;
 
-            if (m_cur_arity > 0)
-            {
-                // TODO: getting num atoms directly would be beneficial in grounded case.
-                // However, DynamicNoveltyTable automatically resizes.
-                m_brfs.set_pruning_strategy(std::make_shared<ArityKNoveltyPruning>(m_cur_arity, 64));
-            }
-            else if (m_cur_arity == 0)
-            {
-                m_brfs.set_pruning_strategy(std::make_shared<ArityZeroNoveltyPruning>(start_state));
-            }
-
-            auto search_status = m_brfs.find_solution(start_state, out_plan);
+            auto search_status = (m_cur_arity > 0) ? m_brfs.find_solution(start_state, std::make_unique<ArityKNoveltyPruning>(m_cur_arity, 64), out_plan) :
+                                                     m_brfs.find_solution(start_state, std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan);
 
             if (search_status == SearchStatus::SOLVED)
             {

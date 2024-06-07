@@ -65,7 +65,6 @@ private:
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
     std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
-    std::shared_ptr<IPruningStrategy> m_pruning_strategy;
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions
     ///        and reversing them.
@@ -103,27 +102,32 @@ private:
 public:
     /// @brief Simplest construction
     explicit BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator) :
-        BrFsAlgorithm(applicable_action_generator, std::make_shared<SuccessorStateGenerator>(applicable_action_generator))
+        BrFsAlgorithm(applicable_action_generator,
+                      std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
+                      std::make_shared<DefaultAlgorithmEventHandler>())
     {
     }
 
     /// @brief Complete construction
     BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
                   std::shared_ptr<IDynamicSSG> successor_state_generator,
-                  std::shared_ptr<IAlgorithmEventHandler> event_handler = std::make_shared<DefaultAlgorithmEventHandler>(),
-                  std::shared_ptr<IPruningStrategy> pruning_strategy = std::make_shared<NoPruning>()) :
+                  std::shared_ptr<IAlgorithmEventHandler> event_handler) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),
         m_initial_state(m_state_repository->get_or_create_initial_state()),
         m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
-        m_event_handler(std::move(event_handler)),
-        m_pruning_strategy(std::move(pruning_strategy))
+        m_event_handler(std::move(event_handler))
     {
     }
 
     SearchStatus find_solution(GroundActionList& out_plan) override { return find_solution(m_initial_state, out_plan); }
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
+    {
+        return find_solution(start_state, std::make_unique<NoPruning>(), out_plan);
+    }
+
+    SearchStatus find_solution(const State start_state, std::unique_ptr<IPruningStrategy>&& pruning_strategy, GroundActionList& out_plan)
     {
         // Clear data structures
         m_search_nodes.clear();
@@ -149,7 +153,7 @@ public:
 
         auto applicable_actions = GroundActionList {};
 
-        if (m_pruning_strategy->test_prune_initial_state(start_state))
+        if (pruning_strategy->test_prune_initial_state(start_state))
         {
             return SearchStatus::FAILED;
         }
@@ -197,7 +201,7 @@ public:
 
                 bool is_new_successor_state = (state_count != m_state_repository->get_state_count());
 
-                if (!m_pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
+                if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
                 {
                     auto successor_search_node = CostSearchNode(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
@@ -215,8 +219,6 @@ public:
 
         return SearchStatus::EXHAUSTED;
     }
-
-    void set_pruning_strategy(std::shared_ptr<IPruningStrategy> pruning_strategy) { m_pruning_strategy = pruning_strategy; }
 };
 
 }
