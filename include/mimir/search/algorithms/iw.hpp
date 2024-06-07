@@ -153,7 +153,8 @@ public:
         /* Iterator positions explicit representation */
         // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
         int m_a[MAX_ARITY];
-        int m_a_index_jumper[2][MAX_ARITY];
+
+        std::array<std::vector<int>, 2> m_a_index_jumper;
 
         int m_indices[MAX_ARITY];
 
@@ -183,11 +184,35 @@ public:
     const_iterator end() const;
 };
 
+/// @brief FluentAndDerivedMapper encapsulates logic to combine
+/// reached fluent and derived atom indices into a common indexing scheme 0,1,...
+///
+/// This is needed to consider both fluent and derived atoms in the novelty test.
+/// Fluent atoms have their own indexing scheme 0,1,...
+/// Derived atoms have their own indexing scheme 0,1,...
+class FluentAndDerivedMapper
+{
+private:
+    std::vector<int> m_fluent_remap;
+    std::vector<int> m_derived_remap;
+    int m_num_atoms;
+
+    static const int UNDEFINED;
+
+public:
+    FluentAndDerivedMapper();
+
+    void remap_and_combine_and_sort(const State state, AtomIndices& out_atoms);
+    void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms);
+};
+
 /// @brief DynamicNoveltyTable encapsulates a table to test novelty of tuples of atoms of size at most arity.
 /// It automatically resizes when the atoms do not fit into the table anymore.
 class DynamicNoveltyTable
 {
 private:
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+
     TupleIndexMapper m_tuple_index_mapper;
 
     std::vector<bool> m_table;
@@ -199,7 +224,7 @@ private:
     AtomIndices m_tmp_add_atom_indices;
 
 public:
-    DynamicNoveltyTable(int arity, int num_atoms = 64);
+    DynamicNoveltyTable(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper);
 
     bool test_novelty_and_update_table(const State state);
 
@@ -223,8 +248,10 @@ class ArityKNoveltyPruning : public IPruningStrategy
 private:
     DynamicNoveltyTable m_novelty_table;
 
+    std::unordered_set<int> m_generated_states;
+
 public:
-    explicit ArityKNoveltyPruning(int arity, int num_atoms);
+    explicit ArityKNoveltyPruning(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper);
 
     bool test_prune_initial_state(const State state) override;
     bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
@@ -237,6 +264,8 @@ private:
     std::shared_ptr<IDynamicSSG> m_ssg;
     std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
     int m_max_arity;
+
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
     State m_initial_state;
     int m_cur_arity;
@@ -261,6 +290,7 @@ public:
         m_ssg(successor_state_generator),
         m_event_handler(event_handler),
         m_max_arity(max_arity),
+        m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
         m_cur_arity(0),
         m_brfs(applicable_action_generator, successor_state_generator, event_handler)
@@ -279,8 +309,9 @@ public:
         {
             std::cout << "[IterativeWidth] Run IW(" << m_cur_arity << ")" << std::endl;
 
-            auto search_status = (m_cur_arity > 0) ? m_brfs.find_solution(start_state, std::make_unique<ArityKNoveltyPruning>(m_cur_arity, 64), out_plan) :
-                                                     m_brfs.find_solution(start_state, std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan);
+            auto search_status = (m_cur_arity > 0) ?
+                                     m_brfs.find_solution(start_state, std::make_unique<ArityKNoveltyPruning>(m_cur_arity, 64, m_atom_index_mapper), out_plan) :
+                                     m_brfs.find_solution(start_state, std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan);
 
             if (search_status == SearchStatus::SOLVED)
             {
