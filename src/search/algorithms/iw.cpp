@@ -98,10 +98,9 @@ int TupleIndexMapper::get_max_tuple_index() const
  * StateTupleIndexGenerator
  */
 
-StateTupleIndexGenerator::IteratorData::IteratorData(int arity, std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
+StateTupleIndexGenerator::IteratorData::IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
     tuple_index_mapper(std::move(tuple_index_mapper_)),
-    atom_indices(),
-    indices(arity)
+    atom_indices()
 {
     assert(tuple_index_mapper);
 }
@@ -123,7 +122,6 @@ StateTupleIndexGenerator::const_iterator::const_iterator(IteratorData* data, boo
 
         assert(!atom_indices.empty());
         assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
-        assert(static_cast<int>(indices.size()) == arity);
 
         // Find the indices and set begin tuple index
         for (int i = 0; i < arity; ++i)
@@ -131,7 +129,6 @@ StateTupleIndexGenerator::const_iterator::const_iterator(IteratorData* data, boo
             indices[i] = i;
             m_cur += atom_indices[i] * factors[i];
         }
-        assert(std::is_sorted(indices.begin(), indices.end()));
     }
     else
     {
@@ -235,13 +232,11 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::end() const {
  * StatePairTupleIndexGenerator
  */
 
-StatePairTupleIndexGenerator::IteratorData::IteratorData(int arity, std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
+StatePairTupleIndexGenerator::IteratorData::IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
     tuple_index_mapper(std::move(tuple_index_mapper_)),
-    a(arity),
     a_index_jumper(),
     a_atom_indices(),
-    a_num_atom_indices(),
-    indices(arity)
+    a_num_atom_indices()
 {
     assert(tuple_index_mapper);
 }
@@ -264,9 +259,6 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(IteratorData* data,
         const auto& add_atom_indices = m_data->a_atom_indices[1];
         const auto& num_atom_indices = m_data->a_num_atom_indices[0];
         const auto& num_add_atom_indices = m_data->a_num_atom_indices[1];
-        auto& indices = m_data->indices;
-        const auto arity = m_data->tuple_index_mapper->get_arity();
-        const auto& a = m_data->a;
 
         // atom_indices can never be empty, due to adding the place holder.
         assert(!atom_indices.empty());
@@ -277,8 +269,6 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(IteratorData* data,
         assert(static_cast<int>(add_atom_indices.size()) == num_add_atom_indices);
         assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
         assert(std::is_sorted(add_atom_indices.begin(), add_atom_indices.end()));
-        assert(static_cast<int>(a.size()) == arity);
-        assert(static_cast<int>(indices.size()) == arity);
 
         // Initialize m_a_index_jumper to know the next large element in the opposite atom indices vector when iterating
         initialize_index_jumper();
@@ -672,8 +662,8 @@ DynamicNoveltyTable::DynamicNoveltyTable(int arity, int num_atoms, std::shared_p
     m_atom_index_mapper(std::move(atom_index_mapper)),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity, num_atoms)),
     m_table(std::vector<bool>(m_tuple_index_mapper->get_max_tuple_index() + 1, false)),
-    m_single_state_iterator_data(arity, m_tuple_index_mapper),
-    m_pair_state_iterator_data(arity, m_tuple_index_mapper)
+    m_single_state_iterator_data(m_tuple_index_mapper),
+    m_pair_state_iterator_data(m_tuple_index_mapper)
 {
 }
 

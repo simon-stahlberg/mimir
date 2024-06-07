@@ -85,7 +85,7 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
     const int num_atoms = 3;
 
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StateTupleIndexGenerator::IteratorData(arity, tuple_index_mapper);
+    auto iterator_data = StateTupleIndexGenerator::IteratorData(tuple_index_mapper);
     auto& atom_indices = iterator_data.atom_indices;
     atom_indices = AtomIndices({
         0,
@@ -110,7 +110,7 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
     const int num_atoms = 3;
 
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StateTupleIndexGenerator::IteratorData(arity, tuple_index_mapper);
+    auto iterator_data = StateTupleIndexGenerator::IteratorData(tuple_index_mapper);
     auto& atom_indices = iterator_data.atom_indices;
     atom_indices = AtomIndices({
         0,
@@ -136,7 +136,7 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
     const int num_atoms = 4;
 
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(arity, tuple_index_mapper);
+    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(tuple_index_mapper);
     auto& atom_indices = iterator_data.a_atom_indices[0];
     auto& add_atom_indices = iterator_data.a_atom_indices[1];
     atom_indices = AtomIndices({
@@ -165,7 +165,7 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     const int num_atoms = 4;
 
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(arity, tuple_index_mapper);
+    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(tuple_index_mapper);
     auto& atom_indices = iterator_data.a_atom_indices[0];
     auto& add_atom_indices = iterator_data.a_atom_indices[1];
     atom_indices = AtomIndices({
@@ -199,7 +199,7 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
     const int num_atoms = 64;
 
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(arity, tuple_index_mapper);
+    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(tuple_index_mapper);
     auto& atom_indices = iterator_data.a_atom_indices[0];
     auto& add_atom_indices = iterator_data.a_atom_indices[1];
     atom_indices = AtomIndices({

@@ -85,9 +85,9 @@ public:
     {
         std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
         AtomIndices atom_indices;
-        std::vector<int> indices;
+        int indices[MAX_ARITY];
 
-        IteratorData(int arity, std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
+        explicit IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
     };
 
 private:
@@ -141,14 +141,14 @@ public:
     struct IteratorData
     {
         std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
-        std::vector<int> a;
+        int a[MAX_ARITY];
         // m_a[i] = 0 => pick from atom_indices, m_a[i] = 1 => pick from add_atom_indices
         std::array<std::vector<int>, 2> a_index_jumper;
         std::array<AtomIndices, 2> a_atom_indices;
         std::array<int, 2> a_num_atom_indices;
-        std::vector<int> indices;
+        int indices[MAX_ARITY];
 
-        IteratorData(int arity, std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
+        explicit IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
     };
 
 private:
