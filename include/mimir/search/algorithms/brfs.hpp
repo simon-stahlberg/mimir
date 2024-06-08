@@ -31,6 +31,7 @@
 #include <deque>
 #include <flatmemory/flatmemory.hpp>
 #include <functional>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <vector>
@@ -109,13 +110,28 @@ public:
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
     {
-        return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), std::make_unique<DuplicateStatePruning>(), out_plan);
+        std::optional<State> unused_out_state = std::nullopt;
+        return find_solution(start_state,
+                             std::make_unique<ProblemGoal>(m_aag->get_problem()),
+                             std::make_unique<DuplicateStatePruning>(),
+                             out_plan,
+                             unused_out_state);
+    }
+
+    SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
+    {
+        return find_solution(start_state,
+                             std::make_unique<ProblemGoal>(m_aag->get_problem()),
+                             std::make_unique<DuplicateStatePruning>(),
+                             out_plan,
+                             out_goal_state);
     }
 
     SearchStatus find_solution(const State start_state,
                                std::unique_ptr<IGoalStrategy>&& goal_strategy,
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                               GroundActionList& out_plan)
+                               GroundActionList& out_plan,
+                               std::optional<State>& out_goal_state)
     {
         // Clear data structures
         m_search_nodes.clear();
@@ -166,6 +182,7 @@ public:
             if (goal_strategy->test_dynamic_goal(state))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
+                out_goal_state = state;
                 m_event_handler->on_end_search();
                 m_aag->on_end_search();
                 m_event_handler->on_solved(out_plan);

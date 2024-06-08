@@ -49,6 +49,9 @@ public:
 
     /// @brief Find a plan for a given state.
     virtual SearchStatus find_solution(const State start_state, GroundActionList& out_plan) = 0;
+
+    /// @brief Find a plan for a given state.
+    virtual SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) = 0;
 };
 
 }

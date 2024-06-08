@@ -41,7 +41,6 @@ private:
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
     State m_initial_state;
-    int m_cur_arity;
     BrFsAlgorithm m_brfs;
 
 public:
@@ -65,7 +64,6 @@ public:
         m_event_handler(event_handler),
         m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
-        m_cur_arity(0),
         m_brfs(applicable_action_generator, successor_state_generator, event_handler)
     {
         if (max_arity < 0)
@@ -78,26 +76,41 @@ public:
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
     {
-        while (m_cur_arity <= m_max_arity)
-        {
-            std::cout << "[IterativeWidth] Run IW(" << m_cur_arity << ")" << std::endl;
+        std::optional<State> unused_out_state = std::nullopt;
+        return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), out_plan, unused_out_state);
+    }
 
-            auto search_status = (m_cur_arity > 0) ?
+    SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
+    {
+        return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), out_plan, out_goal_state);
+    }
+
+    SearchStatus
+    find_solution(const State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, GroundActionList& out_plan, std::optional<State>& out_goal_state)
+    {
+        int cur_arity = 0;
+        while (cur_arity <= m_max_arity)
+        {
+            std::cout << "[IterativeWidth] Run IW(" << cur_arity << ")" << std::endl;
+
+            auto search_status = (cur_arity > 0) ?
                                      m_brfs.find_solution(start_state,
                                                           std::make_unique<ProblemGoal>(m_aag->get_problem()),
-                                                          std::make_unique<ArityKNoveltyPruning>(m_cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper),
-                                                          out_plan) :
+                                                          std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper),
+                                                          out_plan,
+                                                          out_goal_state) :
                                      m_brfs.find_solution(start_state,
                                                           std::make_unique<ProblemGoal>(m_aag->get_problem()),
                                                           std::make_unique<ArityZeroNoveltyPruning>(start_state),
-                                                          out_plan);
+                                                          out_plan,
+                                                          out_goal_state);
 
             if (search_status == SearchStatus::SOLVED)
             {
                 return SearchStatus::SOLVED;
             }
 
-            ++m_cur_arity;
+            ++cur_arity;
         }
         return SearchStatus::FAILED;
     }

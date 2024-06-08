@@ -71,6 +71,12 @@ public:
         // TODO (Dominik): implement
         return SearchStatus::FAILED;
     }
+
+    SearchStatus find_solution(const State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state) override
+    {
+        // TODO (Dominik): implement
+        return SearchStatus::FAILED;
+    }
 };
 
 }
