@@ -39,10 +39,7 @@ private:
 
     void resize_to_fit(int atom_index);
 
-    // Preallocated memory that will be modified and reused.
-    // The constructors give a deeper understanding into
-    // what data must be fed into the iterators.
-    // There are also unit tests that illustrate correct usage.
+    // Preallocated memory that will be modified.
     StateTupleIndexGenerator m_state_tuple_index_generator;
     StatePairTupleIndexGenerator m_state_pair_tuple_index_generator;
 

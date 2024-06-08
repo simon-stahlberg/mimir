@@ -135,6 +135,8 @@ public:
 
     void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
     {
+        m_statistics = AlgorithmStatistics();
+
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
         if (!m_quiet)

@@ -63,6 +63,7 @@ public:
         m_max_arity(max_arity),
         m_ssg(successor_state_generator),
         m_event_handler(event_handler),
+        m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
         m_cur_arity(0),
         m_brfs(applicable_action_generator, successor_state_generator, event_handler)

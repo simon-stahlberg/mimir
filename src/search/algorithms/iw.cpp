@@ -108,11 +108,8 @@ FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_r
 
 const int FluentAndDerivedMapper::UNDEFINED = -1;
 
-void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomIndices& out_atoms)
+void FluentAndDerivedMapper::remap_atoms(const State state)
 {
-    out_atoms.clear();
-
-    // Simultaneously remap and combine
     for (const auto& atom_id : state.get_atoms<Fluent>())
     {
         if (atom_id >= m_fluent_remap.size())
@@ -127,7 +124,6 @@ void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomI
                 m_fluent_remap[atom_id] = m_num_atoms++;
             }
         }
-        out_atoms.push_back(m_fluent_remap[atom_id]);
     }
 
     for (const auto& atom_id : state.get_atoms<Derived>())
@@ -144,6 +140,23 @@ void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomI
                 m_derived_remap[atom_id] = m_num_atoms++;
             }
         }
+    }
+}
+
+void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomIndices& out_atoms)
+{
+    // Remap
+    remap_atoms(state);
+
+    // Combine
+    out_atoms.clear();
+    for (const auto& atom_id : state.get_atoms<Fluent>())
+    {
+        out_atoms.push_back(m_fluent_remap[atom_id]);
+    }
+
+    for (const auto& atom_id : state.get_atoms<Derived>())
+    {
         out_atoms.push_back(m_derived_remap[atom_id]);
     }
 
@@ -155,56 +168,21 @@ void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomI
 
 void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms)
 {
+    // Remap
+    remap_atoms(state);
+    remap_atoms(succ_state);
+
+    // Combine
     out_atoms.clear();
     out_add_atoms.clear();
-
-    // Simultaneously remap and combine
     for (const auto& atom_id : succ_state.get_atoms<Fluent>())
     {
-        if (atom_id >= m_fluent_remap.size())
-        {
-            m_fluent_remap.resize(atom_id + 1, UNDEFINED);
-            m_fluent_remap[atom_id] = m_num_atoms++;
-        }
-        else
-        {
-            if (m_fluent_remap[atom_id] == UNDEFINED)
-            {
-                m_fluent_remap[atom_id] = m_num_atoms++;
-            }
-        }
-        if (state.get_atoms<Fluent>().get(atom_id))
-        {
-            out_atoms.push_back(m_fluent_remap[atom_id]);
-        }
-        else
-        {
-            out_add_atoms.push_back(m_fluent_remap[atom_id]);
-        }
+        state.get_atoms<Fluent>().get(atom_id) ? out_atoms.push_back(m_fluent_remap[atom_id]) : out_add_atoms.push_back(m_fluent_remap[atom_id]);
     }
 
     for (const auto& atom_id : succ_state.get_atoms<Derived>())
     {
-        if (atom_id >= m_derived_remap.size())
-        {
-            m_derived_remap.resize(atom_id + 1, UNDEFINED);
-            m_derived_remap[atom_id] = m_num_atoms++;
-        }
-        else
-        {
-            if (m_derived_remap[atom_id] == UNDEFINED)
-            {
-                m_derived_remap[atom_id] = m_num_atoms++;
-            }
-        }
-        if (state.get_atoms<Derived>().get(atom_id))
-        {
-            out_atoms.push_back(m_derived_remap[atom_id]);
-        }
-        else
-        {
-            out_add_atoms.push_back(m_derived_remap[atom_id]);
-        }
+        state.get_atoms<Derived>().get(atom_id) ? out_atoms.push_back(m_derived_remap[atom_id]) : out_add_atoms.push_back(m_derived_remap[atom_id]);
     }
 
     // Sort

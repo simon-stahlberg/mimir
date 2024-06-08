@@ -68,6 +68,8 @@ private:
 
     static const int UNDEFINED;
 
+    void remap_atoms(const State state);
+
 public:
     FluentAndDerivedMapper();
 
