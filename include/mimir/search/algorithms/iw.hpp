@@ -33,7 +33,13 @@ namespace mimir
  * allowing us to use stack allocated arrays.
  */
 
-const int MAX_ARITY = 10;
+const int MAX_ARITY = 6;
+
+/**
+ * Number of initial atoms in the DynamicNoveltyTable
+ */
+
+const int INITIAL_TABLE_ATOMS = 64;
 
 /**
  * Type aliases for readability
@@ -116,11 +122,11 @@ public:
     class const_iterator
     {
     private:
-        /* Data */
-        TupleIndexMapper* m_tuple_index_mapper;
+        /* External data */
+        const TupleIndexMapper* m_tuple_index_mapper;
         const AtomIndices* m_atom_indices;
 
-        /* Iterator state */
+        /* Internal data */
         std::array<int, MAX_ARITY> m_indices;
         bool m_end;
         int m_cur;
@@ -144,7 +150,7 @@ public:
     };
 
     const_iterator begin(const State state);
-    const_iterator begin(const AtomIndices& atom_indices);
+    const_iterator begin(const AtomIndices& atom_indices);  // for testing only
     const_iterator end() const;
 };
 
@@ -173,22 +179,35 @@ public:
     };
 
 private:
-    IteratorData& m_data;
+    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
+    std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+
+    // Preallocated memory for reuse
+    std::array<std::vector<int>, 2> a_index_jumper;
+    std::array<AtomIndices, 2> a_atom_indices;
+    std::array<int, 2> a_num_atom_indices;
+
+    friend class const_iterator;
 
 public:
-    StatePairTupleIndexGenerator(IteratorData& data);
+    StatePairTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
 
     class const_iterator
     {
     private:
-        /* Data */
-        IteratorData* m_data;
+        /* External data */
+        const TupleIndexMapper* m_tuple_index_mapper;
+        const std::array<AtomIndices, 2>* m_a_atom_indices;
+        const std::array<int, 2>* m_a_num_atom_indices;
+        std::array<std::vector<int>, 2>* m_a_index_jumper;
 
-        /* Iterator positions implict representation */
-        bool m_end_inner;
+        /* Internal data */
+        std::array<int, MAX_ARITY> m_indices;
+        std::array<int, MAX_ARITY> m_a;
+        int m_cur_outter;
         int m_cur_inner;
         bool m_end_outter;
-        int m_cur_outter;
+        bool m_end_inner;
 
         void initialize_index_jumper();
 
@@ -204,7 +223,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(IteratorData* data, bool begin);
+        const_iterator(StatePairTupleIndexGenerator* sptig, bool begin);
         [[nodiscard]] value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
@@ -212,7 +231,8 @@ public:
         [[nodiscard]] bool operator!=(const const_iterator& other) const;
     };
 
-    const_iterator begin() const;
+    const_iterator begin(const State state, const State succ_state);
+    const_iterator begin(const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);  // for testing only
     const_iterator end() const;
 };
 
@@ -234,7 +254,7 @@ private:
     // what data must be fed into the iterators.
     // There are also unit tests that illustrate correct usage.
     StateTupleIndexGenerator m_state_tuple_index_generator;
-    StatePairTupleIndexGenerator::IteratorData m_pair_state_iterator_data;
+    StatePairTupleIndexGenerator m_state_pair_tuple_index_generator;
 
 public:
     DynamicNoveltyTable(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper);
@@ -322,9 +342,10 @@ public:
         {
             std::cout << "[IterativeWidth] Run IW(" << m_cur_arity << ")" << std::endl;
 
-            auto search_status = (m_cur_arity > 0) ?
-                                     m_brfs.find_solution(start_state, std::make_unique<ArityKNoveltyPruning>(m_cur_arity, 64, m_atom_index_mapper), out_plan) :
-                                     m_brfs.find_solution(start_state, std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan);
+            auto search_status =
+                (m_cur_arity > 0) ?
+                    m_brfs.find_solution(start_state, std::make_unique<ArityKNoveltyPruning>(m_cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper), out_plan) :
+                    m_brfs.find_solution(start_state, std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan);
 
             if (search_status == SearchStatus::SOLVED)
             {

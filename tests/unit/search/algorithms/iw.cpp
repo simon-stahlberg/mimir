@@ -86,20 +86,20 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
 
     const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto state_tuple_index_generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
     const auto atom_indices = AtomIndices({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
 
-    auto iter = state_tuple_index_generator.begin(atom_indices);
+    auto iter = generator.begin(atom_indices);
 
     EXPECT_EQ("(0,)", tuple_index_mapper->tuple_index_to_string(*iter));
     EXPECT_EQ("(2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
     EXPECT_EQ("()", tuple_index_mapper->tuple_index_to_string(*(++iter)));
 
-    EXPECT_EQ(++iter, state_tuple_index_generator.end());
+    EXPECT_EQ(++iter, generator.end());
 }
 
 TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
@@ -109,21 +109,21 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
 
     const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto state_tuple_index_generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
     const auto atom_indices = AtomIndices({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
 
-    auto iter = state_tuple_index_generator.begin(atom_indices);
+    auto iter = generator.begin(atom_indices);
 
     EXPECT_EQ("(0,2,)", tuple_index_mapper->tuple_index_to_string(*iter));
     EXPECT_EQ("(0,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
     EXPECT_EQ("(2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
     EXPECT_EQ("()", tuple_index_mapper->tuple_index_to_string(*(++iter)));
 
-    EXPECT_EQ(++iter, state_tuple_index_generator.end());
+    EXPECT_EQ(++iter, generator.end());
 }
 
 TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
@@ -131,28 +131,25 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 4;
 
+    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(tuple_index_mapper);
-    auto& atom_indices = iterator_data.a_atom_indices[0];
-    auto& add_atom_indices = iterator_data.a_atom_indices[1];
-    atom_indices = AtomIndices({
+    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    const auto atom_indices = AtomIndices({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    add_atom_indices = AtomIndices({
+    const auto add_atom_indices = AtomIndices({
         1,
         3,
     });
 
-    const auto tuple_index_generator = StatePairTupleIndexGenerator(iterator_data);
-
-    auto iter = tuple_index_generator.begin();
+    auto iter = generator.begin(atom_indices, add_atom_indices);
 
     EXPECT_EQ("(1,)", tuple_index_mapper->tuple_index_to_string(*iter));
     EXPECT_EQ("(3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
 
-    EXPECT_EQ(++iter, tuple_index_generator.end());
+    EXPECT_EQ(++iter, generator.end());
 }
 
 TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
@@ -160,23 +157,20 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     const int arity = 2;
     const int num_atoms = 4;
 
+    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(tuple_index_mapper);
-    auto& atom_indices = iterator_data.a_atom_indices[0];
-    auto& add_atom_indices = iterator_data.a_atom_indices[1];
-    atom_indices = AtomIndices({
+    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    const auto atom_indices = AtomIndices({
         0,
         2,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    add_atom_indices = AtomIndices({
+    const auto add_atom_indices = AtomIndices({
         1,
         3,
     });
 
-    const auto tuple_index_generator = StatePairTupleIndexGenerator(iterator_data);
-
-    auto iter = tuple_index_generator.begin();
+    auto iter = generator.begin(atom_indices, add_atom_indices);
 
     EXPECT_EQ("(1,2,)", tuple_index_mapper->tuple_index_to_string(*iter));
     EXPECT_EQ("(1,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
@@ -186,7 +180,7 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     EXPECT_EQ("(2,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
     EXPECT_EQ("(1,3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
 
-    EXPECT_EQ(++iter, tuple_index_generator.end());
+    EXPECT_EQ(++iter, generator.end());
 }
 
 TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
@@ -194,28 +188,25 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
     const int arity = 2;
     const int num_atoms = 64;
 
+    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto iterator_data = StatePairTupleIndexGenerator::IteratorData(tuple_index_mapper);
-    auto& atom_indices = iterator_data.a_atom_indices[0];
-    auto& add_atom_indices = iterator_data.a_atom_indices[1];
-    atom_indices = AtomIndices({
+    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    const auto atom_indices = AtomIndices({
         1,
         3,
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
-    add_atom_indices = AtomIndices({
+    const auto add_atom_indices = AtomIndices({
         2,
     });
 
-    const auto tuple_index_generator = StatePairTupleIndexGenerator(iterator_data);
-
-    auto iter = tuple_index_generator.begin();
+    auto iter = generator.begin(atom_indices, add_atom_indices);
 
     EXPECT_EQ("(2,3,)", tuple_index_mapper->tuple_index_to_string(*iter));
     EXPECT_EQ("(2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
     EXPECT_EQ("(1,2,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
 
-    EXPECT_EQ(++iter, tuple_index_generator.end());
+    EXPECT_EQ(++iter, generator.end());
 }
 
 /**
