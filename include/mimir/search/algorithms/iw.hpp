@@ -293,8 +293,8 @@ public:
 class IterativeWidthAlgorithm : public IAlgorithm
 {
 private:
-    std::shared_ptr<IDynamicAAG> m_aag;
-    std::shared_ptr<IDynamicSSG> m_ssg;
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
     int m_max_arity;
 
@@ -306,7 +306,7 @@ private:
 
 public:
     /// @brief Simplest construction
-    IterativeWidthAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator, size_t max_arity) :
+    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, size_t max_arity) :
         IterativeWidthAlgorithm(applicable_action_generator,
                                 std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
                                 std::make_shared<DebugAlgorithmEventHandler>(),
@@ -315,8 +315,8 @@ public:
     }
 
     /// @brief Complete construction
-    IterativeWidthAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
-                            std::shared_ptr<IDynamicSSG> successor_state_generator,
+    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                            std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
                             std::shared_ptr<IAlgorithmEventHandler> event_handler,
                             int max_arity) :
         m_aag(applicable_action_generator),

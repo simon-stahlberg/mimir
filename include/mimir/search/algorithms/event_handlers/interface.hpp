@@ -19,9 +19,9 @@
 #define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/factories.hpp"
-#include "mimir/search/actions.hpp"
+#include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/event_handlers/statistics.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/state.hpp"
 
 #include <chrono>
 #include <concepts>

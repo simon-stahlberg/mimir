@@ -18,23 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_HPP_
 
-/**
- * Include all specializations here
- */
-
-#if defined(STATE_REPR_DENSE)
-
-#include "mimir/search/applicable_action_generators/dense_grounded.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted.hpp"
-
-namespace mimir
-{
-using LiftedAAG = LiftedDenseAAG;
-using GroundedAAG = GroundedDenseAAG;
-}
-
-#else
-#error "State representation undefined."
-#endif
+#include "mimir/search/applicable_action_generators/grounded.hpp"
+#include "mimir/search/applicable_action_generators/lifted.hpp"
 
 #endif  // MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_HPP_

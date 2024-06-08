@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_PLAN_HPP_
 #define MIMIR_SEARCH_PLAN_HPP_
 
-#include "mimir/search/actions.hpp"
+#include "mimir/search/action.hpp"
 
 #include <cstdint>
 #include <ostream>

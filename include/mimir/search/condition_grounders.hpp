@@ -25,8 +25,8 @@
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/assignment_set.hpp"
-#include "mimir/search/applicable_action_generators/dense_lifted/consistency_graph.hpp"
+#include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
+#include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/condition_grounders/event_handlers/default.hpp"
 #include "mimir/search/condition_grounders/event_handlers/interface.hpp"
 

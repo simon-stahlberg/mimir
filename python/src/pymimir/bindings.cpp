@@ -563,19 +563,19 @@ void init_pymimir(py::module_& m)
 
     /* AAGs */
 
-    py::class_<IDynamicAAG, std::shared_ptr<IDynamicAAG>>(m, "IAAG")  //
+    py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
         .def(
             "compute_applicable_actions",
-            [](IDynamicAAG& self, const State& state)
+            [](IAAG& self, const State& state)
             {
                 auto applicable_actions = GroundActionList {};
                 self.generate_applicable_actions(state, applicable_actions);
                 return applicable_actions;
             },
             py::return_value_policy::reference)
-        .def("get_action", &IDynamicAAG::get_action, py::return_value_policy::reference)
-        .def("get_problem", &IDynamicAAG::get_problem, py::return_value_policy::reference)
-        .def("get_pddl_factories", py::overload_cast<>(&IDynamicAAG::get_pddl_factories), py::return_value_policy::reference);
+        .def("get_action", &IAAG::get_action, py::return_value_policy::reference)
+        .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference)
+        .def("get_pddl_factories", py::overload_cast<>(&IAAG::get_pddl_factories), py::return_value_policy::reference);
 
     // Lifted
     py::class_<ILiftedAAGEventHandler, std::shared_ptr<ILiftedAAGEventHandler>>(m, "ILiftedAAGEventHandler");  //
@@ -584,7 +584,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<DebugLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DebugLiftedAAGEventHandler>>(m, "DebugLiftedAAGEventHandler")  //
         .def(py::init<>());
-    py::class_<LiftedAAG, IDynamicAAG, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
+    py::class_<LiftedAAG, IAAG, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
         .def(py::init<Problem, PDDLFactories&>())
         .def(py::init<Problem, PDDLFactories&, std::shared_ptr<ILiftedAAGEventHandler>>());
 
@@ -595,22 +595,22 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<DebugGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DebugGroundedAAGEventHandler>>(m, "DebugGroundedAAGEventHandler")  //
         .def(py::init<>());
-    py::class_<GroundedAAG, IDynamicAAG, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
+    py::class_<GroundedAAG, IAAG, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
         .def(py::init<Problem, PDDLFactories&>())
         .def(py::init<Problem, PDDLFactories&, std::shared_ptr<IGroundedAAGEventHandler>>());
 
     /* SSGs */
-    py::class_<IDynamicSSG, std::shared_ptr<IDynamicSSG>>(m, "ISSG")  //
-        .def("get_or_create_initial_state", &IDynamicSSG::get_or_create_initial_state)
-        .def("get_or_create_state", &IDynamicSSG::get_or_create_state)
-        .def("get_or_create_successor_state", &IDynamicSSG::get_or_create_successor_state)
-        .def("get_state_count", &IDynamicSSG::get_state_count);
-    py::class_<SuccessorStateGenerator, IDynamicSSG, std::shared_ptr<SuccessorStateGenerator>>(m, "SSG")  //
-        .def(py::init<std::shared_ptr<IDynamicAAG>>());
+    py::class_<ISSG, std::shared_ptr<ISSG>>(m, "ISSG")  //
+        .def("get_or_create_initial_state", &ISSG::get_or_create_initial_state)
+        .def("get_or_create_state", &ISSG::get_or_create_state)
+        .def("get_or_create_successor_state", &ISSG::get_or_create_successor_state)
+        .def("get_state_count", &ISSG::get_state_count);
+    py::class_<SuccessorStateGenerator, ISSG, std::shared_ptr<SuccessorStateGenerator>>(m, "SSG")  //
+        .def(py::init<std::shared_ptr<IAAG>>());
 
     /* Heuristics */
-    py::class_<IDynamicHeuristic, std::shared_ptr<IDynamicHeuristic>>(m, "IHeuristic");
-    py::class_<BlindHeuristic, IDynamicHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
+    py::class_<IHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic");
+    py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
 
     /* Algorithms */
     py::class_<IAlgorithmEventHandler, std::shared_ptr<IAlgorithmEventHandler>>(m, "IAlgorithmEventHandler");
@@ -630,16 +630,13 @@ void init_pymimir(py::module_& m)
 
     // BrFs
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
-        .def(py::init<std::shared_ptr<IDynamicAAG>>())
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicSSG>, std::shared_ptr<IAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IAAG>>())
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IAlgorithmEventHandler>>());
 
     // AStar
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IDynamicAAG>, std::shared_ptr<IDynamicHeuristic>>())
-        .def(py::init<std::shared_ptr<IDynamicAAG>,
-                      std::shared_ptr<IDynamicSSG>,
-                      std::shared_ptr<IDynamicHeuristic>,
-                      std::shared_ptr<IAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<IHeuristic>>())
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IHeuristic>, std::shared_ptr<IAlgorithmEventHandler>>());
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets

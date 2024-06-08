@@ -13,8 +13,8 @@ TEST(MimirTests, SearchSSGDenseTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
-    auto lifted_aag = std::make_shared<LiftedDenseAAG>(problem, parser.get_factories());
-    auto ssg = DenseSSG(lifted_aag);
+    auto lifted_aag = std::make_shared<LiftedAAG>(problem, parser.get_factories());
+    auto ssg = SSG(lifted_aag);
     [[maybe_unused]] const auto initial_state = ssg.get_or_create_initial_state();
 }
 

@@ -19,10 +19,10 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/formalism.hpp"
-#include "mimir/search/actions.hpp"
-#include "mimir/search/axioms.hpp"
+#include "mimir/search/action.hpp"
+#include "mimir/search/axiom.hpp"
 #include "mimir/search/flat_types.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {
@@ -30,45 +30,20 @@ namespace mimir
 /**
  * Dynamic interface class.
  */
-class IDynamicAE
+class IAxiomEvaluator
 {
 public:
-    virtual ~IDynamicAE() = default;
+    virtual ~IAxiomEvaluator() = default;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) = 0;
 };
 
 /**
- * Static interface class.
+ * Type aliases
  */
-template<typename Derived_>
-class IStaticAE : public IDynamicAE
-{
-private:
-    IStaticAE() = default;
-    friend Derived_;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-    constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-public:
-    void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override
-    {  //
-        self().generate_and_apply_axioms_impl(fluent_state_atoms, ref_derived_state_atoms);
-    }
-};
-
-/**
- * General implementation class.
- *
- * Specialize it with your dispatcher.
- */
-template<IsStateTag S>
-class AE : public IStaticAE<AE<S>>
-{
-};
+using IAE = IAxiomEvaluator;
 
 }
 

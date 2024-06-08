@@ -26,20 +26,11 @@ namespace mimir
 /**
  * Specialized implementation class.
  */
-template<>
-class Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>> : public IStaticHeuristic<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>
+class BlindHeuristic : public IHeuristic
 {
-private:
-    /* Implement IStaticHeuristic interface. */
-    friend class IStaticHeuristic<Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>>;
-
-    double compute_heuristic_impl(const DenseState& state) { return 0.; }
+public:
+    [[nodiscard]] double compute_heuristic(const State state) override { return 0.; }
 };
-
-/**
- * Types
- */
-using BlindDenseHeuristic = Heuristic<HeuristicDispatcher<BlindTag, DenseStateTag>>;
 
 }  // namespace mimir
 

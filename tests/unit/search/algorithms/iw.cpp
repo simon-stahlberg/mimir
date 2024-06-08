@@ -17,7 +17,7 @@ private:
 
     std::shared_ptr<ILiftedAAGEventHandler> m_aag_event_handler;
     std::shared_ptr<LiftedAAG> m_aag;
-    std::shared_ptr<IDynamicSSG> m_ssg;
+    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     std::shared_ptr<IAlgorithmEventHandler> m_algorithm_event_handler;
     std::unique_ptr<IAlgorithm> m_algorithm;
 
@@ -26,7 +26,7 @@ public:
         m_parser(PDDLParser(domain_file, problem_file)),
         m_aag_event_handler(std::make_shared<DefaultLiftedAAGEventHandler>()),
         m_aag(std::make_shared<LiftedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
-        m_ssg(std::make_shared<SuccessorStateGenerator>(m_aag)),
+        m_ssg(std::make_shared<SSG>(m_aag)),
         m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
         m_algorithm(std::make_unique<IterativeWidthAlgorithm>(m_aag, m_ssg, m_algorithm_event_handler, arity))
     {
@@ -52,7 +52,7 @@ private:
 
     std::shared_ptr<IGroundedAAGEventHandler> m_aag_event_handler;
     std::shared_ptr<GroundedAAG> m_aag;
-    std::shared_ptr<IDynamicSSG> m_ssg;
+    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     std::shared_ptr<IAlgorithmEventHandler> m_algorithm_event_handler;
     std::unique_ptr<IAlgorithm> m_algorithm;
 
@@ -61,7 +61,7 @@ public:
         m_parser(PDDLParser(domain_file, problem_file)),
         m_aag_event_handler(std::make_shared<DefaultGroundedAAGEventHandler>()),
         m_aag(std::make_shared<GroundedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
-        m_ssg(std::make_shared<SuccessorStateGenerator>(m_aag)),
+        m_ssg(std::make_shared<SSG>(m_aag)),
         m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
         m_algorithm(std::make_unique<IterativeWidthAlgorithm>(m_aag, m_ssg, m_algorithm_event_handler, arity))
     {

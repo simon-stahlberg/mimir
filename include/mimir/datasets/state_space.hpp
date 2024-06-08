@@ -20,10 +20,10 @@
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
-#include "mimir/search/actions.hpp"
+#include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/state.hpp"
 #include "mimir/search/successor_state_generators.hpp"
 
 #include <cstddef>
@@ -59,7 +59,7 @@ class StateSpaceImpl
 private:
     PDDLParser m_parser;
     std::shared_ptr<GroundedAAG> m_aag;
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+    std::shared_ptr<SSG> m_ssg;
 
     StateList m_states;
     State m_initial_state;
@@ -82,7 +82,7 @@ private:
     /// the code base to operate on the invariants in the implementation.
     StateSpaceImpl(PDDLParser parser,
                    std::shared_ptr<GroundedAAG> aag,
-                   std::shared_ptr<SuccessorStateGenerator> ssg,
+                   std::shared_ptr<SSG> ssg,
                    StateList states,
                    State initial_state,
                    size_t num_transitions,

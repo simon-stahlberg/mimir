@@ -13,8 +13,8 @@ TEST(MimirTests, SearchAAGsDenseLiftedTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultLiftedAAGEventHandler>();
-    auto aag = std::make_shared<LiftedDenseAAG>(parser.get_problem(), parser.get_factories(), aag_event_handler);
-    auto ssg = std::make_shared<DenseSSG>(aag);
+    auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), aag_event_handler);
+    auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
     auto algorithm_event_handler = std::make_shared<DefaultAlgorithmEventHandler>();
     auto brfs = BrFsAlgorithm(aag, ssg, algorithm_event_handler);
     auto ground_actions = GroundActionList {};

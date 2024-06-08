@@ -20,17 +20,14 @@ add_executable(${TEST_NAME}
     "formalism/translators/to_negation_normal_form.cpp"
     "formalism/translators/remove_types.cpp"
     "formalism/translators/remove_universal_quantifiers.cpp"
-    "search/actions/default.cpp"
     "search/algorithms/astar.cpp"
     "search/algorithms/brfs.cpp"
     "search/algorithms/iw.cpp"
     "search/applicable_action_generators/dense-grounded.cpp"
     "search/applicable_action_generators/dense-lifted.cpp"
-    "search/heuristics/blind.cpp"
     "search/openlists/priority_queue.cpp"
     "search/planners/single.cpp"
     "search/search_nodes/cost.cpp"
-    "search/states/bitset/bitset.cpp"
     "search/successor_state_generators/dense.cpp"
 )
 

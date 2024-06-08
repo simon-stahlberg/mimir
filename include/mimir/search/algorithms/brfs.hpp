@@ -59,8 +59,8 @@ public:
 class BrFsAlgorithm : public IAlgorithm
 {
 private:
-    std::shared_ptr<IDynamicAAG> m_successor_generator;
-    std::shared_ptr<IDynamicSSG> m_state_repository;
+    std::shared_ptr<IApplicableActionGenerator> m_successor_generator;
+    std::shared_ptr<ISuccessorStateGenerator> m_state_repository;
     State m_initial_state;
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
@@ -101,7 +101,7 @@ private:
 
 public:
     /// @brief Simplest construction
-    explicit BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator) :
+    explicit BrFsAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
         BrFsAlgorithm(applicable_action_generator,
                       std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
                       std::make_shared<DefaultAlgorithmEventHandler>())
@@ -109,8 +109,8 @@ public:
     }
 
     /// @brief Complete construction
-    BrFsAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
-                  std::shared_ptr<IDynamicSSG> successor_state_generator,
+    BrFsAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                  std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
                   std::shared_ptr<IAlgorithmEventHandler> event_handler) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),

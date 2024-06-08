@@ -19,8 +19,7 @@
 #define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
 #include "mimir/formalism/formalism.hpp"
-#include "mimir/search/heuristics/tags.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {
@@ -28,40 +27,12 @@ namespace mimir
 /**
  * Interface class
  */
-class IDynamicHeuristic
+class IHeuristic
 {
 public:
-    virtual ~IDynamicHeuristic() = default;
+    virtual ~IHeuristic() = default;
 
-    [[nodiscard]] virtual double compute_heuristic(State state) = 0;
-};
-
-/**
- * Interface class
- */
-template<typename Derived_>
-class IStaticHeuristic : public IDynamicHeuristic
-{
-private:
-    IStaticHeuristic() = default;
-    friend Derived_;
-
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-    constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-public:
-    [[nodiscard]] double compute_heuristic(State state) override { return self().compute_heuristic_impl(state); }
-};
-
-/**
- * General implementation class.
- *
- * Specialize it with your dispatcher.
- */
-template<IsHeuristicDispatcher T>
-class Heuristic : public IStaticHeuristic<Heuristic<T>>
-{
+    [[nodiscard]] virtual double compute_heuristic(const State state) = 0;
 };
 
 }

@@ -35,15 +35,15 @@ namespace mimir
 class AStarAlgorithm : public IAlgorithm
 {
 private:
-    std::shared_ptr<IDynamicAAG> m_successor_generator;
-    std::shared_ptr<IDynamicSSG> m_state_repository;
+    std::shared_ptr<IApplicableActionGenerator> m_successor_generator;
+    std::shared_ptr<ISuccessorStateGenerator> m_state_repository;
     State m_initial_state;
-    std::shared_ptr<IDynamicHeuristic> m_heuristic;
+    std::shared_ptr<IHeuristic> m_heuristic;
     std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
 
 public:
     /// @brief Simplest construction
-    AStarAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator, std::shared_ptr<IDynamicHeuristic> heuristic) :
+    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic) :
         AStarAlgorithm(applicable_action_generator,
                        std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
                        std::move(heuristic),
@@ -52,9 +52,9 @@ public:
     }
 
     /// @brief Complete construction
-    AStarAlgorithm(std::shared_ptr<IDynamicAAG> applicable_action_generator,
-                   std::shared_ptr<IDynamicSSG> successor_state_generator,
-                   std::shared_ptr<IDynamicHeuristic> heuristic,
+    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                   std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
+                   std::shared_ptr<IHeuristic> heuristic,
                    std::shared_ptr<IAlgorithmEventHandler> event_handler = std::make_shared<DefaultAlgorithmEventHandler>()) :
         m_successor_generator(std::move(applicable_action_generator)),
         m_state_repository(std::move(successor_state_generator)),
