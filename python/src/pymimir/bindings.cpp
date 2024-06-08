@@ -628,15 +628,20 @@ void init_pymimir(py::module_& m)
                  return std::make_tuple(search_status, out_actions);
              });
 
+    // AStar
+    py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<IHeuristic>>())
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IHeuristic>, std::shared_ptr<IAlgorithmEventHandler>>());
+
     // BrFs
     py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
         .def(py::init<std::shared_ptr<IAAG>>())
         .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IAlgorithmEventHandler>>());
 
-    // AStar
-    py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<IHeuristic>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IHeuristic>, std::shared_ptr<IAlgorithmEventHandler>>());
+    // IW
+    py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")  //
+        .def(py::init<std::shared_ptr<IAAG>, int>())
+        .def(py::init<std::shared_ptr<IAAG>, int, std::shared_ptr<ISSG>, std::shared_ptr<IAlgorithmEventHandler>>());
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets

@@ -294,9 +294,10 @@ class IterativeWidthAlgorithm : public IAlgorithm
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
+    int m_max_arity;
+
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
-    int m_max_arity;
 
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
@@ -306,23 +307,23 @@ private:
 
 public:
     /// @brief Simplest construction
-    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, size_t max_arity) :
+    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity) :
         IterativeWidthAlgorithm(applicable_action_generator,
+                                max_arity,
                                 std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                                std::make_shared<DebugAlgorithmEventHandler>(),
-                                max_arity)
+                                std::make_shared<DebugAlgorithmEventHandler>())
     {
     }
 
     /// @brief Complete construction
     IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                            int max_arity,
                             std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
-                            std::shared_ptr<IAlgorithmEventHandler> event_handler,
-                            int max_arity) :
+                            std::shared_ptr<IAlgorithmEventHandler> event_handler) :
         m_aag(applicable_action_generator),
+        m_max_arity(max_arity),
         m_ssg(successor_state_generator),
         m_event_handler(event_handler),
-        m_max_arity(max_arity),
         m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
         m_cur_arity(0),
@@ -357,6 +358,8 @@ public:
         return SearchStatus::FAILED;
     }
 };
+
+using IWAlgorithm = IterativeWidthAlgorithm;
 }
 
 #endif

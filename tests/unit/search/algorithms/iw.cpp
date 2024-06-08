@@ -28,7 +28,7 @@ public:
         m_aag(std::make_shared<LiftedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<SSG>(m_aag)),
         m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IterativeWidthAlgorithm>(m_aag, m_ssg, m_algorithm_event_handler, arity))
+        m_algorithm(std::make_unique<IWAlgorithm>(m_aag, arity, m_ssg, m_algorithm_event_handler))
     {
     }
 
@@ -63,7 +63,7 @@ public:
         m_aag(std::make_shared<GroundedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<SSG>(m_aag)),
         m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IterativeWidthAlgorithm>(m_aag, m_ssg, m_algorithm_event_handler, arity))
+        m_algorithm(std::make_unique<IWAlgorithm>(m_aag, arity, m_ssg, m_algorithm_event_handler))
     {
     }
 

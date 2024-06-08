@@ -76,6 +76,7 @@ from _pymimir import (
     IHeuristic,
     ILiftedAAGEventHandler,
     ISSG,
+    IWAlgorithm,
     LiftedAAG,
     SearchNodeStatus,
     SearchStatus,
