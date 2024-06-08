@@ -1,0 +1,169 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef MIMIR_SEARCH_ALGORITHMS_IW_TUPLE_INDEX_GENERATORS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_IW_TUPLE_INDEX_GENERATORS_HPP_
+
+#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/types.hpp"
+#include "mimir/search/state.hpp"
+
+#include <array>
+#include <memory>
+
+namespace mimir
+{
+
+/// @brief StateTupleIndexGenerator encapsulates iterator logic to generate
+/// all combinations of tuple indices of size at most arity.
+///
+/// The underlying algorithm is an adaption of std::next_permutation
+/// with constant amortized cost to compute the next tuple index.
+class StateTupleIndexGenerator
+{
+private:
+    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
+    std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+
+    // Preallocated memory for reuse
+    AtomIndices atom_indices;
+
+    friend class const_iterator;
+
+public:
+    StateTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+
+    class const_iterator
+    {
+    private:
+        /* External data */
+        const TupleIndexMapper* m_tuple_index_mapper;
+        const AtomIndices* m_atom_indices;
+
+        /* Internal data */
+        std::array<int, MAX_ARITY> m_indices;
+        bool m_end;
+        int m_cur;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = TupleIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(StateTupleIndexGenerator* data, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin(const State state);
+    const_iterator begin(const AtomIndices& atom_indices);  // for testing only
+    const_iterator end() const;
+};
+
+/// @brief StatePairTupleIndexGenerator encapsulates iterator logic to generate
+/// all combinations of tuple indices of size at most the arity
+/// such that at least one atom index is coming from add_atom_indices
+/// and the others from atom_indices.
+///
+/// The underlying algorithm is an adaption of std::next_permutation
+/// with constant amortized cost to compute the next tuple index.
+class StatePairTupleIndexGenerator
+{
+public:
+    /// @brief IteratorData encapsulates containers for memory reuse.
+    struct IteratorData
+    {
+        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+        int indices[MAX_ARITY];
+        // a[i] = 0 => pick from atom_indices, a[i] = 1 => pick from add_atom_indices
+        int a[MAX_ARITY];
+        std::array<std::vector<int>, 2> a_index_jumper;
+        std::array<AtomIndices, 2> a_atom_indices;
+        std::array<int, 2> a_num_atom_indices;
+
+        explicit IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
+    };
+
+private:
+    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
+    std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+
+    // Preallocated memory for reuse
+    std::array<std::vector<int>, 2> a_index_jumper;
+    std::array<AtomIndices, 2> a_atom_indices;
+    std::array<int, 2> a_num_atom_indices;
+
+    friend class const_iterator;
+
+public:
+    StatePairTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+
+    class const_iterator
+    {
+    private:
+        /* External data */
+        const TupleIndexMapper* m_tuple_index_mapper;
+        const std::array<AtomIndices, 2>* m_a_atom_indices;
+        const std::array<int, 2>* m_a_num_atom_indices;
+        std::array<std::vector<int>, 2>* m_a_index_jumper;
+
+        /* Internal data */
+        std::array<int, MAX_ARITY> m_indices;
+        std::array<int, MAX_ARITY> m_a;
+        int m_cur_outter;
+        int m_cur_inner;
+        bool m_end_outter;
+        bool m_end_inner;
+
+        void initialize_index_jumper();
+
+        bool advance_outter();
+
+        void advance_inner();
+
+    public:
+        using difference_type = int;
+        using value_type = TupleIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(StatePairTupleIndexGenerator* sptig, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin(const State state, const State succ_state);
+    const_iterator begin(const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);  // for testing only
+    const_iterator end() const;
+};
+
+}
+
+#endif

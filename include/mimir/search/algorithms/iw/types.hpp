@@ -15,41 +15,37 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_IW_TYPES_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_IW_TYPES_HPP_
 
-#include "mimir/search/action.hpp"
-#include "mimir/search/state.hpp"
+#include <vector>
 
 namespace mimir
 {
-
-enum SearchStatus
-{
-    IN_PROGRESS,
-    OUT_OF_TIME,
-    OUT_OF_MEMORY,
-    FAILED,
-    EXHAUSTED,
-    SOLVED,
-    UNSOLVABLE
-};
-
 /**
- * Interface class.
+ * Large k for IW(k) is generally infeasible.
+ * Hence, we use a small constant values within feasible range
+ * allowing us to use stack allocated arrays.
  */
 
-class IAlgorithm
-{
-public:
-    virtual ~IAlgorithm() = default;
+const int MAX_ARITY = 6;
 
-    /// @brief Find a plan for the initial state.
-    virtual SearchStatus find_solution(GroundActionList& out_plan) = 0;
+/**
+ * Number of initial atoms in the DynamicNoveltyTable
+ */
 
-    /// @brief Find a plan for a given state.
-    virtual SearchStatus find_solution(const State start_state, GroundActionList& out_plan) = 0;
-};
+const int INITIAL_TABLE_ATOMS = 64;
+
+/**
+ * Type aliases for readability
+ */
+
+using AtomIndex = int;
+using AtomIndices = std::vector<AtomIndex>;
+
+using TupleIndex = int;
+using TupleIndices = std::vector<TupleIndex>;
 
 }
+
 #endif

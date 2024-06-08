@@ -46,6 +46,9 @@ public:
     /// @brief React on expanding a state.
     virtual void on_expand_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) = 0;
 
+    /// @brief React on pruning a state.
+    virtual void on_prune_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) = 0;
+
     /// @brief React on starting a search.
     virtual void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) = 0;
 
@@ -117,6 +120,16 @@ public:
         if (!m_quiet)
         {
             self().on_expand_state_impl(problem, state, pddl_factories);
+        }
+    }
+
+    void on_prune_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) override
+    {
+        m_statistics.increment_num_pruned();
+
+        if (!m_quiet)
+        {
+            self().on_prune_state_impl(problem, state, pddl_factories);
         }
     }
 

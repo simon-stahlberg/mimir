@@ -37,6 +37,8 @@ void DefaultAlgorithmEventHandler::on_finish_f_layer_impl(uint64_t f_value, uint
 
 void DefaultAlgorithmEventHandler::on_expand_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const {}
 
+void DefaultAlgorithmEventHandler::on_prune_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const {}
+
 void DefaultAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const
 {  //
     std::cout << "[Algorithm] Search started." << std::endl;

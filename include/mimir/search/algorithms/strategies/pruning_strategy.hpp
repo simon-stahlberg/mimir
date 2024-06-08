@@ -15,41 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_STRATEGIES_PRUNING_STRATEGY_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_STRATEGIES_PRUNING_STRATEGY_HPP_
 
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
 {
 
-enum SearchStatus
-{
-    IN_PROGRESS,
-    OUT_OF_TIME,
-    OUT_OF_MEMORY,
-    FAILED,
-    EXHAUSTED,
-    SOLVED,
-    UNSOLVABLE
-};
-
 /**
- * Interface class.
+ * IPruningStrategy encapsulates logic to test whether a generated state must be pruned.
  */
-
-class IAlgorithm
+class IPruningStrategy
 {
 public:
-    virtual ~IAlgorithm() = default;
+    virtual ~IPruningStrategy() = default;
 
-    /// @brief Find a plan for the initial state.
-    virtual SearchStatus find_solution(GroundActionList& out_plan) = 0;
-
-    /// @brief Find a plan for a given state.
-    virtual SearchStatus find_solution(const State start_state, GroundActionList& out_plan) = 0;
+    virtual bool test_prune_initial_state(const State state) = 0;
+    virtual bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) = 0;
 };
 
+class NoPruning : public IPruningStrategy
+{
+public:
+    bool test_prune_initial_state(const State state) override { return false; };
+    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override { return !is_new_succ; }
+};
 }
+
 #endif

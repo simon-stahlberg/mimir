@@ -17,6 +17,12 @@
 
 #include "mimir/search/algorithms/iw.hpp"
 
+// Keep all implementations in the same translation unit
+#include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
+#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/pruning_strategy.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+
 #include <sstream>
 
 namespace mimir

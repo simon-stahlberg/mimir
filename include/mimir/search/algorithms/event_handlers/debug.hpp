@@ -40,6 +40,8 @@ private:
 
     void on_expand_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const;
 
+    void on_prune_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const;
+
     void on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const;
 
     void on_end_search_impl() const;

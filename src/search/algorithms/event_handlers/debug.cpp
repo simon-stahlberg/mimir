@@ -45,6 +45,8 @@ void DebugAlgorithmEventHandler::on_expand_state_impl(const Problem problem, con
               << std::endl;
 }
 
+void DebugAlgorithmEventHandler::on_prune_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const {}
+
 void DebugAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[Algorithm] Search started.\n"

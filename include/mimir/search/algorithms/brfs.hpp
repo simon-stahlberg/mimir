@@ -22,8 +22,9 @@
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
+#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
+#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/heuristics.hpp"
 #include "mimir/search/search_nodes/cost.hpp"
 #include "mimir/search/successor_state_generators.hpp"
 
@@ -36,22 +37,6 @@
 
 namespace mimir
 {
-
-class IPruningStrategy
-{
-public:
-    virtual ~IPruningStrategy() = default;
-
-    virtual bool test_prune_initial_state(const State state) = 0;
-    virtual bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) = 0;
-};
-
-class NoPruning : public IPruningStrategy
-{
-public:
-    bool test_prune_initial_state(const State state) override { return false; };
-    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override { return !is_new_succ; }
-};
 
 /**
  * Specialized implementation class.
@@ -210,6 +195,10 @@ public:
                     successor_search_node.get_creating_action_id() = action.get_id();
 
                     m_queue.emplace_back(successor_state);
+                }
+                else
+                {
+                    m_event_handler->on_prune_state(problem, successor_state, pddl_factories);
                 }
             }
         }
