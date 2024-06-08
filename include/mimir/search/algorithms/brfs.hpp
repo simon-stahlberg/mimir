@@ -44,8 +44,8 @@ namespace mimir
 class BrFsAlgorithm : public IAlgorithm
 {
 private:
-    std::shared_ptr<IApplicableActionGenerator> m_successor_generator;
-    std::shared_ptr<ISuccessorStateGenerator> m_state_repository;
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     State m_initial_state;
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
@@ -64,7 +64,7 @@ private:
 
         while (cur_view.get_parent_state_id() != -1)
         {
-            out_plan.push_back(m_successor_generator->get_action(cur_view.get_creating_action_id()));
+            out_plan.push_back(m_aag->get_action(cur_view.get_creating_action_id()));
 
             cur_view = ConstCostSearchNode(this->m_search_nodes[cur_view.get_parent_state_id()]);
         }
@@ -97,9 +97,9 @@ public:
     BrFsAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                   std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
                   std::shared_ptr<IAlgorithmEventHandler> event_handler) :
-        m_successor_generator(std::move(applicable_action_generator)),
-        m_state_repository(std::move(successor_state_generator)),
-        m_initial_state(m_state_repository->get_or_create_initial_state()),
+        m_aag(std::move(applicable_action_generator)),
+        m_ssg(std::move(successor_state_generator)),
+        m_initial_state(m_ssg->get_or_create_initial_state()),
         m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
         m_event_handler(std::move(event_handler))
     {
@@ -109,32 +109,32 @@ public:
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
     {
-        return find_solution(start_state, std::make_unique<NoPruning>(), out_plan);
+        return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), std::make_unique<DuplicateStatePruning>(), out_plan);
     }
 
-    SearchStatus find_solution(const State start_state, std::unique_ptr<IPruningStrategy>&& pruning_strategy, GroundActionList& out_plan)
+    SearchStatus find_solution(const State start_state,
+                               std::unique_ptr<IGoalStrategy>&& goal_strategy,
+                               std::unique_ptr<IPruningStrategy>&& pruning_strategy,
+                               GroundActionList& out_plan)
     {
         // Clear data structures
         m_search_nodes.clear();
         m_queue.clear();
 
-        const auto problem = m_successor_generator->get_problem();
-        const auto& pddl_factories = m_successor_generator->get_pddl_factories();
+        const auto problem = m_aag->get_problem();
+        const auto& pddl_factories = m_aag->get_pddl_factories();
         m_event_handler->on_start_search(problem, start_state, pddl_factories);
 
         auto initial_search_node = CostSearchNode(this->m_search_nodes[start_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
-        if (!problem->static_goal_holds())
+        if (!goal_strategy->test_static_goal())
         {
             m_event_handler->on_unsolvable();
 
             return SearchStatus::UNSOLVABLE;
         }
-
-        const auto& fluent_goal_ground_literals = problem->get_fluent_goal_condition();
-        const auto& derived_goal_ground_literals = problem->get_derived_goal_condition();
 
         auto applicable_actions = GroundActionList {};
 
@@ -159,15 +159,15 @@ public:
             if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
             {
                 g_value = search_node.get_g_value();
-                m_successor_generator->on_finish_f_layer();
+                m_aag->on_finish_f_layer();
                 m_event_handler->on_finish_f_layer();
             }
 
-            if (state.literals_hold(fluent_goal_ground_literals) && state.literals_hold(derived_goal_ground_literals))
+            if (goal_strategy->test_dynamic_goal(state))
             {
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
                 m_event_handler->on_end_search();
-                m_successor_generator->on_end_search();
+                m_aag->on_end_search();
                 m_event_handler->on_solved(out_plan);
 
                 return SearchStatus::SOLVED;
@@ -175,16 +175,16 @@ public:
 
             m_event_handler->on_expand_state(problem, state, pddl_factories);
 
-            this->m_successor_generator->generate_applicable_actions(state, applicable_actions);
+            this->m_aag->generate_applicable_actions(state, applicable_actions);
 
             for (const auto& action : applicable_actions)
             {
-                const auto state_count = m_state_repository->get_state_count();
-                const auto& successor_state = this->m_state_repository->get_or_create_successor_state(state, action);
+                const auto state_count = m_ssg->get_state_count();
+                const auto& successor_state = this->m_ssg->get_or_create_successor_state(state, action);
 
                 m_event_handler->on_generate_state(problem, action, successor_state, pddl_factories);
 
-                bool is_new_successor_state = (state_count != m_state_repository->get_state_count());
+                bool is_new_successor_state = (state_count != m_ssg->get_state_count());
 
                 if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
                 {

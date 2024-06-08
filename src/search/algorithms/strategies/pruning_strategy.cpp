@@ -15,38 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
-
-#include "mimir/formalism/formalism.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 
 namespace mimir
 {
+bool DuplicateStatePruning::test_prune_initial_state(const State state) { return false; };
 
-/**
- * IGoalStrategy encapsulates logic to test whether a state is a goal.
- */
-class IGoalStrategy
-{
-public:
-    virtual ~IGoalStrategy() = default;
-
-    virtual bool test_static_goal() = 0;
-    virtual bool test_dynamic_goal(const State state) = 0;
-};
-
-class ProblemGoal : public IGoalStrategy
-{
-private:
-    Problem m_problem;
-
-public:
-    explicit ProblemGoal(Problem problem);
-
-    bool test_static_goal() override;
-    bool test_dynamic_goal(const State state) override;
-};
+bool DuplicateStatePruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return !is_new_succ; }
 }
-
-#endif

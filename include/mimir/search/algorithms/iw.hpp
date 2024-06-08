@@ -81,10 +81,15 @@ public:
         {
             std::cout << "[IterativeWidth] Run IW(" << m_cur_arity << ")" << std::endl;
 
-            auto search_status =
-                (m_cur_arity > 0) ?
-                    m_brfs.find_solution(start_state, std::make_unique<ArityKNoveltyPruning>(m_cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper), out_plan) :
-                    m_brfs.find_solution(start_state, std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan);
+            auto search_status = (m_cur_arity > 0) ?
+                                     m_brfs.find_solution(start_state,
+                                                          std::make_unique<ProblemGoal>(m_aag->get_problem()),
+                                                          std::make_unique<ArityKNoveltyPruning>(m_cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper),
+                                                          out_plan) :
+                                     m_brfs.find_solution(start_state,
+                                                          std::make_unique<ProblemGoal>(m_aag->get_problem()),
+                                                          std::make_unique<ArityZeroNoveltyPruning>(start_state),
+                                                          out_plan);
 
             if (search_status == SearchStatus::SOLVED)
             {

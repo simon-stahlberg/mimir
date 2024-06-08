@@ -15,38 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
-
-#include "mimir/formalism/formalism.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 
 namespace mimir
 {
+ProblemGoal::ProblemGoal(Problem problem) : m_problem(problem) {}
 
-/**
- * IGoalStrategy encapsulates logic to test whether a state is a goal.
- */
-class IGoalStrategy
+bool ProblemGoal::test_static_goal() { return m_problem->static_goal_holds(); }
+
+bool ProblemGoal::test_dynamic_goal(const State state)
 {
-public:
-    virtual ~IGoalStrategy() = default;
-
-    virtual bool test_static_goal() = 0;
-    virtual bool test_dynamic_goal(const State state) = 0;
-};
-
-class ProblemGoal : public IGoalStrategy
-{
-private:
-    Problem m_problem;
-
-public:
-    explicit ProblemGoal(Problem problem);
-
-    bool test_static_goal() override;
-    bool test_dynamic_goal(const State state) override;
-};
+    return state.literals_hold(m_problem->get_fluent_goal_condition()) && state.literals_hold(m_problem->get_derived_goal_condition());
 }
-
-#endif
+}
