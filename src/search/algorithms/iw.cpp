@@ -86,7 +86,7 @@ int TupleIndexMapper::get_num_atoms() const { return m_num_atoms; }
 
 int TupleIndexMapper::get_arity() const { return m_arity; }
 
-const int* TupleIndexMapper::get_factors() const { return m_factors; }
+const std::array<int, MAX_ARITY>& TupleIndexMapper::get_factors() const { return m_factors; }
 
 int TupleIndexMapper::get_max_tuple_index() const
 {
@@ -95,44 +95,159 @@ int TupleIndexMapper::get_max_tuple_index() const
 }
 
 /**
+ * FluentAndDerivedMapper
+ */
+
+FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_num_atoms(0) {}
+
+const int FluentAndDerivedMapper::UNDEFINED = -1;
+
+void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomIndices& out_atoms)
+{
+    out_atoms.clear();
+
+    // Simultaneously remap and combine
+    for (const auto& atom_id : state.get_atoms<Fluent>())
+    {
+        if (atom_id >= m_fluent_remap.size())
+        {
+            m_fluent_remap.resize(atom_id + 1, UNDEFINED);
+            m_fluent_remap[atom_id] = m_num_atoms++;
+        }
+        else
+        {
+            if (m_fluent_remap[atom_id] == UNDEFINED)
+            {
+                m_fluent_remap[atom_id] = m_num_atoms++;
+            }
+        }
+        out_atoms.push_back(m_fluent_remap[atom_id]);
+    }
+
+    for (const auto& atom_id : state.get_atoms<Derived>())
+    {
+        if (atom_id >= m_derived_remap.size())
+        {
+            m_derived_remap.resize(atom_id + 1, UNDEFINED);
+            m_derived_remap[atom_id] = m_num_atoms++;
+        }
+        else
+        {
+            if (m_derived_remap[atom_id] == UNDEFINED)
+            {
+                m_derived_remap[atom_id] = m_num_atoms++;
+            }
+        }
+        out_atoms.push_back(m_derived_remap[atom_id]);
+    }
+
+    // Sort
+    std::sort(out_atoms.begin(), out_atoms.end());
+
+    assert(out_atoms.size() == state.get_atoms<Fluent>().count() + state.get_atoms<Derived>().count());
+}
+
+void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms)
+{
+    out_atoms.clear();
+    out_add_atoms.clear();
+
+    // Simultaneously remap and combine
+    for (const auto& atom_id : succ_state.get_atoms<Fluent>())
+    {
+        if (atom_id >= m_fluent_remap.size())
+        {
+            m_fluent_remap.resize(atom_id + 1, UNDEFINED);
+            m_fluent_remap[atom_id] = m_num_atoms++;
+        }
+        else
+        {
+            if (m_fluent_remap[atom_id] == UNDEFINED)
+            {
+                m_fluent_remap[atom_id] = m_num_atoms++;
+            }
+        }
+        if (state.get_atoms<Fluent>().get(atom_id))
+        {
+            out_atoms.push_back(m_fluent_remap[atom_id]);
+        }
+        else
+        {
+            out_add_atoms.push_back(m_fluent_remap[atom_id]);
+        }
+    }
+
+    for (const auto& atom_id : succ_state.get_atoms<Derived>())
+    {
+        if (atom_id >= m_derived_remap.size())
+        {
+            m_derived_remap.resize(atom_id + 1, UNDEFINED);
+            m_derived_remap[atom_id] = m_num_atoms++;
+        }
+        else
+        {
+            if (m_derived_remap[atom_id] == UNDEFINED)
+            {
+                m_derived_remap[atom_id] = m_num_atoms++;
+            }
+        }
+        if (state.get_atoms<Derived>().get(atom_id))
+        {
+            out_atoms.push_back(m_derived_remap[atom_id]);
+        }
+        else
+        {
+            out_add_atoms.push_back(m_derived_remap[atom_id]);
+        }
+    }
+
+    // Sort
+    std::sort(out_atoms.begin(), out_atoms.end());
+    std::sort(out_add_atoms.begin(), out_add_atoms.end());
+
+    assert(out_atoms.size() + out_add_atoms.size() == succ_state.get_atoms<Fluent>().count() + succ_state.get_atoms<Derived>().count());
+}
+
+/**
  * StateTupleIndexGenerator
  */
 
-StateTupleIndexGenerator::IteratorData::IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
+StateTupleIndexGenerator::StateTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper_,
+                                                   std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
+    atom_index_mapper(std::move(atom_index_mapper_)),
     tuple_index_mapper(std::move(tuple_index_mapper_)),
     atom_indices()
 {
     assert(tuple_index_mapper);
 }
 
-StateTupleIndexGenerator::StateTupleIndexGenerator(IteratorData& data) : m_data(data) {}
+StateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_atom_indices(nullptr) {}
 
-StateTupleIndexGenerator::const_iterator::const_iterator() : m_data(nullptr) {}
-
-StateTupleIndexGenerator::const_iterator::const_iterator(IteratorData* data, bool begin) : m_data(data), m_end(!begin), m_cur(begin ? 0 : -1)
+StateTupleIndexGenerator::const_iterator::const_iterator(StateTupleIndexGenerator* stig, bool begin) :
+    m_tuple_index_mapper(begin ? stig->tuple_index_mapper.get() : nullptr),
+    m_atom_indices(begin ? &stig->atom_indices : nullptr),
+    m_end(!begin),
+    m_cur(begin ? 0 : -1)
 {
     if (begin)
     {
         // Fetch data
-        const auto& tuple_index_mapper = *m_data->tuple_index_mapper;
-        const int arity = tuple_index_mapper.get_arity();
-        const int* factors = tuple_index_mapper.get_factors();
-        const auto& atom_indices = m_data->atom_indices;
-        auto& indices = m_data->indices;
+        const int arity = m_tuple_index_mapper->get_arity();
+        const auto& factors = m_tuple_index_mapper->get_factors();
 
-        assert(!atom_indices.empty());
-        assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
+        assert(!m_atom_indices->empty());
+        assert(std::is_sorted(m_atom_indices->begin(), m_atom_indices->end()));
 
         // Find the indices and set begin tuple index
         for (int i = 0; i < arity; ++i)
         {
-            indices[i] = i;
-            m_cur += atom_indices[i] * factors[i];
+            m_indices[i] = i;
+            m_cur += (*m_atom_indices)[i] * factors[i];
         }
     }
     else
     {
-        assert(!data);
+        assert(!stig);
     }
 }
 
@@ -143,16 +258,13 @@ void StateTupleIndexGenerator::const_iterator::advance()
     // Update the tuple index on the fly.
 
     // Fetch data
-    const auto& tuple_index_mapper = *m_data->tuple_index_mapper;
-    const int arity = tuple_index_mapper.get_arity();
-    const int* factors = tuple_index_mapper.get_factors();
-    const auto& atom_indices = m_data->atom_indices;
-    const int num_atoms = atom_indices.size();
-    auto& indices = m_data->indices;
+    const int arity = m_tuple_index_mapper->get_arity();
+    const auto& factors = m_tuple_index_mapper->get_factors();
+    const int num_atoms = m_atom_indices->size();
 
     // Find the rightmost index to increment, i.e., non place-holder.
     int i = arity - 1;
-    while (i >= 0 && (m_data->indices[i] == num_atoms - 1))
+    while (i >= 0 && (m_indices[i] == num_atoms - 1))
     {
         --i;
     }
@@ -165,19 +277,19 @@ void StateTupleIndexGenerator::const_iterator::advance()
     }
 
     // Advance and update cur based on the change
-    const int index = ++indices[i];
-    m_cur += factors[i] * (atom_indices[index] - atom_indices[index - 1]);
+    const int index = ++m_indices[i];
+    m_cur += factors[i] * ((*m_atom_indices)[index] - (*m_atom_indices)[index - 1]);
 
     // Update indices right of the incremented rightmost index i.
     for (int j = i + 1; j < arity; ++j)
     {
-        if (indices[j - 1] < indices[j])
+        if (m_indices[j - 1] < m_indices[j])
         {
             // Legal tuple state reached.
             return;
         }
 
-        int old_index = indices[j];
+        int old_index = m_indices[j];
         if (old_index == num_atoms - 1)
         {
             // Exit when index an update would result in an index larger than the place holder.
@@ -186,14 +298,14 @@ void StateTupleIndexGenerator::const_iterator::advance()
         }
 
         // Update and update cur based on the change
-        int new_index = indices[j] = indices[j - 1] + 1;
-        m_cur += factors[j] * (atom_indices[new_index] - atom_indices[old_index]);
+        int new_index = m_indices[j] = m_indices[j - 1] + 1;
+        m_cur += factors[j] * ((*m_atom_indices)[new_index] - (*m_atom_indices)[old_index]);
     }
 }
 
 StateTupleIndexGenerator::const_iterator::value_type StateTupleIndexGenerator::const_iterator::operator*() const
 {
-    assert(m_data->tuple_index_mapper && m_data);
+    assert(m_tuple_index_mapper && m_atom_indices);
     return m_cur;
 }
 
@@ -224,7 +336,21 @@ bool StateTupleIndexGenerator::const_iterator::operator==(const const_iterator& 
 
 bool StateTupleIndexGenerator::const_iterator::operator!=(const const_iterator& other) const { return !(*this == other); }
 
-StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin() const { return const_iterator(&m_data, true); }
+StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const AtomIndices& atom_indices_)
+{
+    atom_indices = atom_indices_;
+    assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
+
+    return const_iterator(this, true);
+}
+
+StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const State state)
+{
+    atom_index_mapper->remap_and_combine_and_sort(state, atom_indices);
+    assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
+
+    return const_iterator(this, true);
+}
 
 StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::end() const { return const_iterator(nullptr, false); }
 
@@ -323,7 +449,7 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
     // Fetch data
     const auto& tuple_index_mapper = *m_data->tuple_index_mapper;
     const int arity = tuple_index_mapper.get_arity();
-    const int* factors = tuple_index_mapper.get_factors();
+    const auto& factors = tuple_index_mapper.get_factors();
     auto& a = m_data->a;
     auto& indices = m_data->indices;
     const auto& a_atom_indices = m_data->a_atom_indices;
@@ -332,7 +458,7 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
 
     /* Advance outter iteration */
 
-    // In the constructor call, advance to 1, meaning that we would like to pick exactly one atom index from add_atom_index
+    // In the constructor call, advances to 1, meaning that we would like to pick exactly one atom index from add_atom_index
     ++m_cur_outter;
 
     for (; m_cur_outter < std::pow(2, arity); ++m_cur_outter)
@@ -408,7 +534,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
         // Fetch data
         const auto& tuple_index_mapper = *m_data->tuple_index_mapper;
         const int arity = tuple_index_mapper.get_arity();
-        const int* factors = tuple_index_mapper.get_factors();
+        const auto& factors = tuple_index_mapper.get_factors();
 
         /* Advance outter iteration */
 
@@ -541,120 +667,6 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
 StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end() const { return const_iterator(nullptr, false); }
 
 /**
- * FluentAndDerivedMapper
- */
-
-FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_num_atoms(0) {}
-
-const int FluentAndDerivedMapper::UNDEFINED = -1;
-
-void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomIndices& out_atoms)
-{
-    out_atoms.clear();
-
-    // Simultaneously remap and combine
-    for (const auto& atom_id : state.get_atoms<Fluent>())
-    {
-        if (atom_id >= m_fluent_remap.size())
-        {
-            m_fluent_remap.resize(atom_id + 1, UNDEFINED);
-            m_fluent_remap[atom_id] = m_num_atoms++;
-        }
-        else
-        {
-            if (m_fluent_remap[atom_id] == UNDEFINED)
-            {
-                m_fluent_remap[atom_id] = m_num_atoms++;
-            }
-        }
-        out_atoms.push_back(m_fluent_remap[atom_id]);
-    }
-
-    for (const auto& atom_id : state.get_atoms<Derived>())
-    {
-        if (atom_id >= m_derived_remap.size())
-        {
-            m_derived_remap.resize(atom_id + 1, UNDEFINED);
-            m_derived_remap[atom_id] = m_num_atoms++;
-        }
-        else
-        {
-            if (m_derived_remap[atom_id] == UNDEFINED)
-            {
-                m_derived_remap[atom_id] = m_num_atoms++;
-            }
-        }
-        out_atoms.push_back(m_derived_remap[atom_id]);
-    }
-
-    // Sort
-    std::sort(out_atoms.begin(), out_atoms.end());
-
-    assert(out_atoms.size() == state.get_atoms<Fluent>().count() + state.get_atoms<Derived>().count());
-}
-
-void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms)
-{
-    out_atoms.clear();
-    out_add_atoms.clear();
-
-    // Simultaneously remap and combine
-    for (const auto& atom_id : succ_state.get_atoms<Fluent>())
-    {
-        if (atom_id >= m_fluent_remap.size())
-        {
-            m_fluent_remap.resize(atom_id + 1, UNDEFINED);
-            m_fluent_remap[atom_id] = m_num_atoms++;
-        }
-        else
-        {
-            if (m_fluent_remap[atom_id] == UNDEFINED)
-            {
-                m_fluent_remap[atom_id] = m_num_atoms++;
-            }
-        }
-        if (state.get_atoms<Fluent>().get(atom_id))
-        {
-            out_atoms.push_back(m_fluent_remap[atom_id]);
-        }
-        else
-        {
-            out_add_atoms.push_back(m_fluent_remap[atom_id]);
-        }
-    }
-
-    for (const auto& atom_id : succ_state.get_atoms<Derived>())
-    {
-        if (atom_id >= m_derived_remap.size())
-        {
-            m_derived_remap.resize(atom_id + 1, UNDEFINED);
-            m_derived_remap[atom_id] = m_num_atoms++;
-        }
-        else
-        {
-            if (m_derived_remap[atom_id] == UNDEFINED)
-            {
-                m_derived_remap[atom_id] = m_num_atoms++;
-            }
-        }
-        if (state.get_atoms<Derived>().get(atom_id))
-        {
-            out_atoms.push_back(m_derived_remap[atom_id]);
-        }
-        else
-        {
-            out_add_atoms.push_back(m_derived_remap[atom_id]);
-        }
-    }
-
-    // Sort
-    std::sort(out_atoms.begin(), out_atoms.end());
-    std::sort(out_add_atoms.begin(), out_add_atoms.end());
-
-    assert(out_atoms.size() + out_add_atoms.size() == succ_state.get_atoms<Fluent>().count() + succ_state.get_atoms<Derived>().count());
-}
-
-/**
  * DynamicNoveltyTable
  */
 
@@ -662,7 +674,7 @@ DynamicNoveltyTable::DynamicNoveltyTable(int arity, int num_atoms, std::shared_p
     m_atom_index_mapper(std::move(atom_index_mapper)),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity, num_atoms)),
     m_table(std::vector<bool>(m_tuple_index_mapper->get_max_tuple_index() + 1, false)),
-    m_single_state_iterator_data(m_tuple_index_mapper),
+    m_state_tuple_index_generator(m_atom_index_mapper, m_tuple_index_mapper),
     m_pair_state_iterator_data(m_tuple_index_mapper)
 {
 }
@@ -710,12 +722,11 @@ void DynamicNoveltyTable::resize_to_fit(int atom_index)
 
 bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
 {
-    m_atom_index_mapper->remap_and_combine_and_sort(state, m_single_state_iterator_data.atom_indices);
-    assert(std::is_sorted(m_single_state_iterator_data.atom_indices.begin(), m_single_state_iterator_data.atom_indices.end()));
-
     bool is_novel = false;
-    for (const auto tuple_index : StateTupleIndexGenerator(m_single_state_iterator_data))
+    for (auto it = m_state_tuple_index_generator.begin(state); it != m_state_tuple_index_generator.end(); ++it)
     {
+        const int tuple_index = *it;
+
         if (!is_novel && !m_table[tuple_index])
         {
             is_novel = true;

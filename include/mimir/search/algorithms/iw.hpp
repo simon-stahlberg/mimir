@@ -52,7 +52,7 @@ private:
     int m_arity;
     int m_num_atoms;
 
-    int m_factors[MAX_ARITY];
+    std::array<int, MAX_ARITY> m_factors;
 
 public:
     TupleIndexMapper(int arity, int num_atoms);
@@ -68,8 +68,30 @@ public:
      */
     int get_num_atoms() const;
     int get_arity() const;
-    const int* get_factors() const;
+    const std::array<int, MAX_ARITY>& get_factors() const;
     int get_max_tuple_index() const;
+};
+
+/// @brief FluentAndDerivedMapper encapsulates logic to combine
+/// reached fluent and derived atom indices into a common indexing scheme 0,1,...
+///
+/// This is needed to consider both fluent and derived atoms in the novelty test.
+/// Fluent atoms have their own indexing scheme 0,1,...
+/// Derived atoms have their own indexing scheme 0,1,...
+class FluentAndDerivedMapper
+{
+private:
+    std::vector<int> m_fluent_remap;
+    std::vector<int> m_derived_remap;
+    int m_num_atoms;
+
+    static const int UNDEFINED;
+
+public:
+    FluentAndDerivedMapper();
+
+    void remap_and_combine_and_sort(const State state, AtomIndices& out_atoms);
+    void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms);
 };
 
 /// @brief StateTupleIndexGenerator encapsulates iterator logic to generate
@@ -79,29 +101,27 @@ public:
 /// with constant amortized cost to compute the next tuple index.
 class StateTupleIndexGenerator
 {
-public:
-    /// @brief IteratorData encapsulates containers for memory reuse.
-    struct IteratorData
-    {
-        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
-        AtomIndices atom_indices;
-        int indices[MAX_ARITY];
-
-        explicit IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
-    };
-
 private:
-    IteratorData& m_data;
+    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
+    std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+
+    // Preallocated memory for reuse
+    AtomIndices atom_indices;
+
+    friend class const_iterator;
 
 public:
-    explicit StateTupleIndexGenerator(IteratorData& m_data);
+    StateTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
 
     class const_iterator
     {
     private:
         /* Data */
-        IteratorData* m_data;
+        TupleIndexMapper* m_tuple_index_mapper;
+        const AtomIndices* m_atom_indices;
 
+        /* Iterator state */
+        std::array<int, MAX_ARITY> m_indices;
         bool m_end;
         int m_cur;
 
@@ -115,7 +135,7 @@ public:
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(IteratorData* data, bool begin);
+        const_iterator(StateTupleIndexGenerator* data, bool begin);
         [[nodiscard]] value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
@@ -123,7 +143,8 @@ public:
         [[nodiscard]] bool operator!=(const const_iterator& other) const;
     };
 
-    const_iterator begin() const;
+    const_iterator begin(const State state);
+    const_iterator begin(const AtomIndices& atom_indices);
     const_iterator end() const;
 };
 
@@ -195,28 +216,6 @@ public:
     const_iterator end() const;
 };
 
-/// @brief FluentAndDerivedMapper encapsulates logic to combine
-/// reached fluent and derived atom indices into a common indexing scheme 0,1,...
-///
-/// This is needed to consider both fluent and derived atoms in the novelty test.
-/// Fluent atoms have their own indexing scheme 0,1,...
-/// Derived atoms have their own indexing scheme 0,1,...
-class FluentAndDerivedMapper
-{
-private:
-    std::vector<int> m_fluent_remap;
-    std::vector<int> m_derived_remap;
-    int m_num_atoms;
-
-    static const int UNDEFINED;
-
-public:
-    FluentAndDerivedMapper();
-
-    void remap_and_combine_and_sort(const State state, AtomIndices& out_atoms);
-    void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms);
-};
-
 /// @brief DynamicNoveltyTable encapsulates a table to test novelty of tuples of atoms of size at most arity.
 /// It automatically resizes when the atoms do not fit into the table anymore.
 class DynamicNoveltyTable
@@ -234,7 +233,7 @@ private:
     // The constructors give a deeper understanding into
     // what data must be fed into the iterators.
     // There are also unit tests that illustrate correct usage.
-    StateTupleIndexGenerator::IteratorData m_single_state_iterator_data;
+    StateTupleIndexGenerator m_state_tuple_index_generator;
     StatePairTupleIndexGenerator::IteratorData m_pair_state_iterator_data;
 
 public:
