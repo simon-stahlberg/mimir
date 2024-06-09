@@ -113,15 +113,19 @@ public:
         std::array<std::vector<int>, 2>* m_a_index_jumper;
 
         /* Internal data */
-        std::array<int, 2> m_a_num_atom_indices;
         std::array<int, MAX_ARITY> m_indices;
-        std::array<int, MAX_ARITY> m_a;
+        std::array<bool, MAX_ARITY> m_a;
         int m_cur_outter;
         int m_cur_inner;
         bool m_end_outter;
         bool m_end_inner;
 
+        static const int UNDEFINED;
+
         void initialize_index_jumper();
+
+        int find_rightmost_incrementable_index();
+        int find_new_index(int i);
 
         bool advance_outter();
 

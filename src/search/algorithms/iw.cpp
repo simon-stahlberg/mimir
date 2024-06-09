@@ -353,7 +353,6 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator() :
     m_tuple_index_mapper(nullptr),
     m_a_atom_indices(nullptr),
     m_a_index_jumper(nullptr),
-    m_a_num_atom_indices(),
     m_indices(),
     m_a(),
     m_cur_outter(-1),
@@ -367,7 +366,6 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndex
     m_tuple_index_mapper(begin ? sptig->tuple_index_mapper.get() : nullptr),
     m_a_atom_indices(begin ? &sptig->a_atom_indices : nullptr),
     m_a_index_jumper(begin ? &sptig->a_index_jumper : nullptr),
-    m_a_num_atom_indices(),
     m_indices(),
     m_a(),
     m_cur_outter(begin ? 0 : -1),
@@ -385,9 +383,6 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndex
         assert(std::is_sorted((*m_a_atom_indices)[0].begin(), (*m_a_atom_indices)[0].end()));
         assert(std::is_sorted((*m_a_atom_indices)[1].begin(), (*m_a_atom_indices)[1].end()));
 
-        m_a_num_atom_indices[0] = (*m_a_atom_indices)[0].size();
-        m_a_num_atom_indices[1] = (*m_a_atom_indices)[1].size();
-
         // Initialize m_a_index_jumper to know the next large element in the opposite atom indices vector when iterating
         initialize_index_jumper();
 
@@ -400,16 +395,18 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndex
     }
 }
 
+const int StatePairTupleIndexGenerator::const_iterator::UNDEFINED = -1;
+
 void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
 {
     (*m_a_index_jumper)[0].clear();
     (*m_a_index_jumper)[1].clear();
-    (*m_a_index_jumper)[0].resize(m_a_num_atom_indices[0], std::numeric_limits<int>::max());
-    (*m_a_index_jumper)[1].resize(m_a_num_atom_indices[1], std::numeric_limits<int>::max());
+    (*m_a_index_jumper)[0].resize((*m_a_atom_indices)[0].size(), UNDEFINED);
+    (*m_a_index_jumper)[1].resize((*m_a_atom_indices)[1].size(), UNDEFINED);
 
     int j = 0;
     int i = 0;
-    while (j < m_a_num_atom_indices[0] && i < m_a_num_atom_indices[1])
+    while (j < static_cast<int>((*m_a_atom_indices)[0].size()) && i < static_cast<int>((*m_a_atom_indices)[1].size()))
     {
         if ((*m_a_atom_indices)[0][j] < (*m_a_atom_indices)[1][i])
         {
@@ -431,6 +428,48 @@ void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
     }
 }
 
+static void compute_binary_representation(int value, int arity, std::array<bool, MAX_ARITY>& output)
+{
+    for (int i = 0; i < arity; ++i)
+    {
+        output[i] = (value & (1 << i)) != 0;
+    }
+}
+
+int StatePairTupleIndexGenerator::const_iterator::find_rightmost_incrementable_index()
+{
+    const int arity = m_tuple_index_mapper->get_arity();
+    int i = arity - 1;
+    while (i >= 0 && (m_indices[i] == static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1))
+    {
+        --i;
+    }
+    return i;
+}
+
+int StatePairTupleIndexGenerator::const_iterator::find_new_index(int i)
+{
+    if (m_a[i - 1] == m_a[i])
+    {
+        if (m_indices[i - 1] == static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1)
+        {
+            // Cannot increment index
+            return UNDEFINED;
+        }
+        return m_indices[i - 1] + 1;
+    }
+    else
+    {
+        if ((*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]] == UNDEFINED)
+        {
+            // Cannot increment index
+            return UNDEFINED;
+        }
+        return (*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]];
+    }
+    return UNDEFINED;
+}
+
 bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
 {
     // Fetch data
@@ -442,17 +481,13 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
     // In the constructor call, advances to 1, meaning that we would like to pick exactly one atom index from add_atom_index
     ++m_cur_outter;
 
-    for (; m_cur_outter < std::pow(2, arity); ++m_cur_outter)
+    // 1 << arity == 2^arity
+    for (; m_cur_outter < (1 << arity); ++m_cur_outter)
     {
         // Create a binary representation, e,g., arity = 4 and m_cur_outter = 3 => [1,0,1,0] meaning that
         // the first and third indices should be chosen from add_atom_indices, and
         // the second and fourth indices should be chosen from atom_indices
-        int tmp_cur_outter = m_cur_outter;
-        for (int i = 0; i < arity; ++i)
-        {
-            m_a[i] = (tmp_cur_outter & 1) > 0;
-            tmp_cur_outter >>= 1;
-        }
+        compute_binary_representation(m_cur_outter, arity, m_a);
 
         /* Initialize inner iteration */
 
@@ -460,40 +495,25 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
         // If no such tuple_index exists, continue with next m_cur_outter.
         m_indices[0] = 0;
         m_cur_inner = (*m_a_atom_indices)[m_a[0]][0] * factors[0];
-        bool exhausted = false;
-        for (int i = 1; i < arity; ++i)
-        {
-            const int prev_index = m_indices[i - 1];
-            const int prev_a = m_a[i - 1];
-            const int cur_a = m_a[i];
 
-            int new_index = -1;
-            if (prev_a == cur_a)
+        bool failed = false;
+        for (int j = 1; j < arity; ++j)
+        {
+            int new_index = find_new_index(j);
+
+            if (new_index == UNDEFINED)
             {
-                if (prev_index == m_a_num_atom_indices[cur_a] - 1)
-                {
-                    // Cannot increment index
-                    exhausted = true;
-                    break;
-                }
-                new_index = prev_index + 1;
+                failed = true;
+                break;
             }
             else
             {
-                if ((*m_a_index_jumper)[prev_a][prev_index] == std::numeric_limits<int>::max())
-                {
-                    // Cannot increment index
-                    exhausted = true;
-                    break;
-                }
-                new_index = (*m_a_index_jumper)[prev_a][prev_index];
+                m_indices[j] = new_index;
+                // Initial update
+                m_cur_inner += factors[j] * (*m_a_atom_indices)[m_a[j]][new_index];
             }
-            assert(new_index >= 0);
-
-            m_indices[i] = new_index;
-            m_cur_inner += factors[i] * (*m_a_atom_indices)[cur_a][new_index];
         }
-        if (!exhausted)
+        if (!failed)
         {
             m_end_inner = false;
             m_end_outter = false;
@@ -510,12 +530,12 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
 
 void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 {
+    // Fetch data
+    const int arity = m_tuple_index_mapper->get_arity();
+    const auto& factors = m_tuple_index_mapper->get_factors();
+
     while (true)
     {
-        // Fetch data
-        const int arity = m_tuple_index_mapper->get_arity();
-        const auto& factors = m_tuple_index_mapper->get_factors();
-
         /* Advance outter iteration */
 
         if (m_end_inner)
@@ -528,11 +548,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
         /* Advance inner iteration */
 
         // Find the rightmost index and increment it
-        int i = arity - 1;
-        while (i >= 0 && (m_indices[i] == m_a_num_atom_indices[m_a[i]] - 1))
-        {
-            --i;
-        }
+        int i = find_rightmost_incrementable_index();
         if (i < 0)
         {
             // Continue to next outter loop when all indices have reached their maximum values
@@ -541,52 +557,34 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
         }
 
         int index = ++m_indices[i];
+        // Difference update
         m_cur_inner += factors[i] * ((*m_a_atom_indices)[m_a[i]][index] - (*m_a_atom_indices)[m_a[i]][index - 1]);
 
         // Update indices right of the incremented rightmost index i.
-        bool exhausted = false;
+        bool failed = false;
         for (int j = i + 1; j < arity; ++j)
         {
-            const int prev_index = m_indices[j - 1];
-            const int cur_index = m_indices[j];
-            int prev_a = m_a[j - 1];
-            int cur_a = m_a[j];
-
-            if ((*m_a_atom_indices)[prev_a][prev_index] < (*m_a_atom_indices)[cur_a][cur_index])
+            if ((*m_a_atom_indices)[m_a[j - 1]][m_indices[j - 1]] < (*m_a_atom_indices)[m_a[j]][m_indices[j]])
             {
                 // Legal tuple state reached.
                 return;
             }
 
             int old_index = m_indices[j];
-
-            int new_index = -1;
-            if (prev_a == cur_a)
+            int new_index = find_new_index(j);
+            if (new_index == UNDEFINED)
             {
-                if (old_index == m_a_num_atom_indices[cur_a] - 1)
-                {
-                    // Cannot increment index
-                    exhausted = true;
-                    break;
-                }
-                new_index = prev_index + 1;
+                failed = true;
+                break;
             }
             else
             {
-                if ((*m_a_index_jumper)[prev_a][prev_index] == std::numeric_limits<int>::max())
-                {
-                    // Cannot increment index
-                    exhausted = true;
-                    break;
-                }
-                new_index = (*m_a_index_jumper)[prev_a][prev_index];
+                m_indices[j] = new_index;
+                // Difference update
+                m_cur_inner += factors[j] * ((*m_a_atom_indices)[m_a[j]][new_index] - (*m_a_atom_indices)[m_a[j]][old_index]);
             }
-            assert(new_index >= 0);
-
-            m_indices[j] = new_index;
-            m_cur_inner += factors[j] * ((*m_a_atom_indices)[cur_a][new_index] - (*m_a_atom_indices)[cur_a][old_index]);
         }
-        if (exhausted)
+        if (failed)
         {
             // Continue to next outter loop when no tuple index can be constructed anymore
             m_end_inner = true;
