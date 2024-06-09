@@ -68,6 +68,7 @@ from _pymimir import (
     DefaultGroundedAAGEventHandler,
     DefaultIWAlgorithmEventHandler,
     DefaultLiftedAAGEventHandler,
+    DefaultSIWAlgorithmEventHandler,
     GroundAction,
     GroundedAAG,
     IAAG,
@@ -77,11 +78,13 @@ from _pymimir import (
     IGroundedAAGEventHandler,
     IHeuristic,
     ILiftedAAGEventHandler,
+    ISIWAlgorithmEventHandler,
     ISSG,
     IWAlgorithm,
     LiftedAAG,
     SearchNodeStatus,
     SearchStatus,
+    SIWAlgorithm,
     SSG,
     State
 )

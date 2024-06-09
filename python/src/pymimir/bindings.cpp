@@ -658,6 +658,14 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler, std::shared_ptr<DefaultSIWAlgorithmEventHandler>>(m,
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
+    py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
+        .def(py::init<std::shared_ptr<IAAG>, int>())
+        .def(py::init<std::shared_ptr<IAAG>,
+                      int,
+                      std::shared_ptr<ISSG>,
+                      std::shared_ptr<IBrFSAlgorithmEventHandler>,
+                      std::shared_ptr<IIWAlgorithmEventHandler>,
+                      std::shared_ptr<ISIWAlgorithmEventHandler>>());
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets
