@@ -95,12 +95,12 @@ public:
 
             auto search_status = (cur_arity > 0) ?
                                      m_brfs.find_solution(start_state,
-                                                          std::make_unique<ProblemGoal>(m_aag->get_problem()),
+                                                          std::move(goal_strategy),
                                                           std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper),
                                                           out_plan,
                                                           out_goal_state) :
                                      m_brfs.find_solution(start_state,
-                                                          std::make_unique<ProblemGoal>(m_aag->get_problem()),
+                                                          std::move(goal_strategy),
                                                           std::make_unique<ArityZeroNoveltyPruning>(start_state),
                                                           out_plan,
                                                           out_goal_state);

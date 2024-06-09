@@ -109,6 +109,7 @@ public:
 
             assert(goal_state.has_value());
             cur_state = goal_state.value();
+            out_plan.insert(out_plan.end(), partial_plan.begin(), partial_plan.end());
         }
 
         out_goal_state = goal_state;
