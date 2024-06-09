@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 {
     if (argc != 7)
     {
-        std::cout << "Usage: planner <domain:str> <problem:str> <plan:str> <arity:int> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout << "Usage: planner_iw <domain:str> <problem:str> <plan:str> <arity:int> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     auto event_handler = (debug) ? std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DebugAlgorithmEventHandler>(false) } :
                                    std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DefaultAlgorithmEventHandler>(false) };
 
-    auto iw = std::make_shared<IterativeWidthAlgorithm>(applicable_action_generator, arity, successor_state_generator, event_handler);
+    auto iw = std::make_shared<IWAlgorithm>(applicable_action_generator, arity, successor_state_generator, event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(iw));
 

@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 {
     if (argc != 6)
     {
-        std::cout << "Usage: planner <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 

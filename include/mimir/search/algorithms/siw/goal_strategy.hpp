@@ -28,7 +28,9 @@ class ProblemGoalCounter : public IGoalStrategy
 private:
     Problem m_problem;
 
-    int m_num_unsatisfied_goals;
+    int m_initial_num_unsatisfied_goals;
+
+    int count_unsatisfied_goals(const State state) const;
 
 public:
     explicit ProblemGoalCounter(Problem problem, State state);

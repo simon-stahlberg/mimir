@@ -25,17 +25,30 @@
 namespace mimir
 {
 
-ProblemGoalCounter::ProblemGoalCounter(Problem problem, State state)
+ProblemGoalCounter::ProblemGoalCounter(Problem problem, State state) : m_problem(problem), m_initial_num_unsatisfied_goals(count_unsatisfied_goals(state)) {}
+
+int ProblemGoalCounter::count_unsatisfied_goals(const State state) const
 {
-    // TODO
+    int num_unsatisfied_goals = 0;
+    for (const auto& literal : m_problem->get_fluent_goal_condition())
+    {
+        if (!state.literal_holds(literal))
+        {
+            ++num_unsatisfied_goals;
+        }
+    }
+    for (const auto& literal : m_problem->get_derived_goal_condition())
+    {
+        if (!state.literal_holds(literal))
+        {
+            ++num_unsatisfied_goals;
+        }
+    }
+    return num_unsatisfied_goals;
 }
 
 bool ProblemGoalCounter::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoalCounter::test_dynamic_goal(const State state)
-{
-    // TODO
-    return true;
-}
+bool ProblemGoalCounter::test_dynamic_goal(const State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 }

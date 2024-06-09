@@ -78,6 +78,12 @@ public:
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
     {
+        std::optional<State> unused_out_state = std::nullopt;
+        return find_solution(start_state, out_plan, unused_out_state);
+    }
+
+    SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
+    {
         auto problem_goal_test = std::make_unique<ProblemGoal>(m_aag->get_problem());
 
         if (!problem_goal_test->test_static_goal())
@@ -86,11 +92,12 @@ public:
         }
 
         auto cur_state = start_state;
+        std::optional<State> goal_state = std::nullopt;
 
         while (!problem_goal_test->test_dynamic_goal(cur_state))
         {
             // Run IW to decrease goal counter
-            std::optional<State> goal_state = std::nullopt;
+
             auto partial_plan = GroundActionList {};
 
             auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(m_aag->get_problem(), cur_state), partial_plan, goal_state);
@@ -104,6 +111,7 @@ public:
             cur_state = goal_state.value();
         }
 
+        out_goal_state = goal_state;
         return SearchStatus::SOLVED;
     }
 };

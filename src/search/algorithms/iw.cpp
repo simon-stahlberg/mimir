@@ -267,22 +267,13 @@ void StateTupleIndexGenerator::const_iterator::advance()
     // Update indices right of the incremented rightmost index i.
     for (int j = i + 1; j < arity; ++j)
     {
-        if (m_indices[j - 1] < m_indices[j])
-        {
-            // Legal tuple state reached.
-            return;
-        }
-
+        // Backup old_index for difference update
         int old_index = m_indices[j];
-        if (old_index == num_atoms - 1)
-        {
-            // Exit when index an update would result in an index larger than the place holder.
-            m_end = true;
-            return;
-        }
+
+        // Cap at placeholder index
+        int new_index = m_indices[j] = std::min(num_atoms - 1, m_indices[j - 1] + 1);
 
         // Update and update cur based on the change
-        int new_index = m_indices[j] = m_indices[j - 1] + 1;
         m_cur += factors[j] * ((*m_atom_indices)[new_index] - (*m_atom_indices)[old_index]);
     }
 }
@@ -331,6 +322,9 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const A
 StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const State state)
 {
     atom_index_mapper->remap_and_combine_and_sort(state, atom_indices);
+    // Add place holder to generate tuples if size < arity
+    atom_indices.push_back(tuple_index_mapper->get_num_atoms());
+
     assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
 
     return const_iterator(this, true);
@@ -451,21 +445,43 @@ int StatePairTupleIndexGenerator::const_iterator::find_new_index(int i)
 {
     if (m_a[i - 1] == m_a[i])
     {
-        if (m_indices[i - 1] == static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1)
+        if (m_a[i] == 0)
         {
-            // Cannot increment index
-            return UNDEFINED;
+            // Cap at placeholder index
+            return std::min(static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1, m_indices[i - 1] + 1);
         }
-        return m_indices[i - 1] + 1;
+        else
+        {
+            if (m_indices[i - 1] == static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1)
+            {
+                // Cannot increment index
+                return UNDEFINED;
+            }
+            else
+            {
+                return m_indices[i - 1] + 1;
+            }
+        }
     }
     else
     {
-        if ((*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]] == UNDEFINED)
+        if (m_a[i] == 0)
         {
-            // Cannot increment index
-            return UNDEFINED;
+            // Cap at placeholder index
+            return std::min(static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1, (*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]]);
         }
-        return (*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]];
+        else
+        {
+            if ((*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]] == UNDEFINED)
+            {
+                // Cannot increment index
+                return UNDEFINED;
+            }
+            else
+            {
+                return (*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]];
+            }
+        }
     }
     return UNDEFINED;
 }
@@ -536,7 +552,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 
     while (true)
     {
-        /* Advance outter iteration */
+        /* 1. Advance outter iteration */
 
         if (m_end_inner)
         {
@@ -545,9 +561,9 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
             return;
         }
 
-        /* Advance inner iteration */
+        /* 2. Advance inner iteration */
 
-        // Find the rightmost index and increment it
+        // 2.1. Find the rightmost index and increment it
         int i = find_rightmost_incrementable_index();
         if (i < 0)
         {
@@ -555,22 +571,18 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
             m_end_inner = true;
             continue;
         }
-
         int index = ++m_indices[i];
-        // Difference update
+
+        // 2.2. Difference update
         m_cur_inner += factors[i] * ((*m_a_atom_indices)[m_a[i]][index] - (*m_a_atom_indices)[m_a[i]][index - 1]);
 
-        // Update indices right of the incremented rightmost index i.
+        // 2.3. Update indices right of the incremented rightmost index i.
         bool failed = false;
         for (int j = i + 1; j < arity; ++j)
         {
-            if ((*m_a_atom_indices)[m_a[j - 1]][m_indices[j - 1]] < (*m_a_atom_indices)[m_a[j]][m_indices[j]])
-            {
-                // Legal tuple state reached.
-                return;
-            }
-
+            // Backup old_index for difference update
             int old_index = m_indices[j];
+
             int new_index = find_new_index(j);
             if (new_index == UNDEFINED)
             {
@@ -634,6 +646,9 @@ bool StatePairTupleIndexGenerator::const_iterator::operator!=(const const_iterat
 StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin(const State state, const State succ_state)
 {
     atom_index_mapper->remap_and_combine_and_sort(state, succ_state, a_atom_indices[0], a_atom_indices[1]);
+    // Add place holder to generate tuples if size < arity
+    a_atom_indices[0].push_back(tuple_index_mapper->get_num_atoms());
+
     assert(std::is_sorted(a_atom_indices[0].begin(), a_atom_indices[0].end()));
     assert(std::is_sorted(a_atom_indices[1].begin(), a_atom_indices[1].end()));
 
@@ -713,6 +728,8 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state)
     {
         const int tuple_index = *it;
 
+        // std::cout << tuple_index << " " << m_tuple_index_mapper->tuple_index_to_string(tuple_index) << std::endl;
+
         if (!is_novel && !m_table[tuple_index])
         {
             is_novel = true;
@@ -728,6 +745,8 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
     for (auto it = m_state_pair_tuple_index_generator.begin(state, succ_state); it != m_state_pair_tuple_index_generator.end(); ++it)
     {
         const int tuple_index = *it;
+
+        // std::cout << tuple_index << " " << m_tuple_index_mapper->tuple_index_to_string(tuple_index) << std::endl;
 
         if (!is_novel && !m_table[tuple_index])
         {
@@ -757,6 +776,7 @@ bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 {
     if (m_generated_states.count(state.get_id()))
     {
+        assert(!m_novelty_table.test_novelty_and_update_table(state));
         return true;
     }
     m_generated_states.insert(state.get_id());
@@ -768,6 +788,7 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 {
     if (m_generated_states.count(succ_state.get_id()))
     {
+        assert(!m_novelty_table.test_novelty_and_update_table(state, succ_state));
         return true;
     }
     m_generated_states.insert(succ_state.get_id());
