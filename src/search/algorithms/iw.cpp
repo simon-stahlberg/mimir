@@ -325,6 +325,8 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const S
     // Add place holder to generate tuples if size < arity
     atom_indices.push_back(tuple_index_mapper->get_num_atoms());
 
+    // std::cout << "atom_indices: " << atom_indices << std::endl;
+
     assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
 
     return const_iterator(this, true);
@@ -424,17 +426,31 @@ void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
 
 static void compute_binary_representation(int value, int arity, std::array<bool, MAX_ARITY>& output)
 {
+    // std::cout << "m_a [";
     for (int i = 0; i < arity; ++i)
     {
         output[i] = (value & (1 << i)) != 0;
+        // std::cout << output[i] << ",";
     }
+    // std::cout << "]" << std::endl;
 }
 
 int StatePairTupleIndexGenerator::const_iterator::find_rightmost_incrementable_index()
 {
     const int arity = m_tuple_index_mapper->get_arity();
     int i = arity - 1;
-    while (i >= 0 && (m_indices[i] == static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1))
+
+    // Rightmost check: new index must be within bounds
+    if (m_indices[i] < static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1)
+    {
+        return i;
+    }
+    --i;
+
+    // Inner check: new index must be within bounds and its increased value must be smaller than the value right to it.
+    while (i >= 0
+           && ((m_indices[i] == static_cast<int>((*m_a_atom_indices)[m_a[i]].size()) - 1)
+               || ((*m_a_atom_indices)[m_a[i]][m_indices[i] + 1] >= (*m_a_atom_indices)[m_a[i + 1]][m_indices[i + 1]])))
     {
         --i;
     }
@@ -517,6 +533,8 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
         {
             int new_index = find_new_index(j);
 
+            // std::cout << "j: " << j << " new_index: " << new_index << std::endl;
+
             if (new_index == UNDEFINED)
             {
                 failed = true;
@@ -565,6 +583,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 
         // 2.1. Find the rightmost index and increment it
         int i = find_rightmost_incrementable_index();
+        // std::cout << "i: " << i << std::endl;
         if (i < 0)
         {
             // Continue to next outter loop when all indices have reached their maximum values
@@ -648,6 +667,9 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
     atom_index_mapper->remap_and_combine_and_sort(state, succ_state, a_atom_indices[0], a_atom_indices[1]);
     // Add place holder to generate tuples if size < arity
     a_atom_indices[0].push_back(tuple_index_mapper->get_num_atoms());
+
+    // std::cout << "atom_indices: " << a_atom_indices[0] << std::endl;
+    // std::cout << "add_atom_indices: " << a_atom_indices[1] << std::endl;
 
     assert(std::is_sorted(a_atom_indices[0].begin(), a_atom_indices[0].end()));
     assert(std::is_sorted(a_atom_indices[1].begin(), a_atom_indices[1].end()));
