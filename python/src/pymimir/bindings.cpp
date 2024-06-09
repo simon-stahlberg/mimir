@@ -613,12 +613,6 @@ void init_pymimir(py::module_& m)
     py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
 
     /* Algorithms */
-    py::class_<IAlgorithmEventHandler, std::shared_ptr<IAlgorithmEventHandler>>(m, "IAlgorithmEventHandler");
-    py::class_<DefaultAlgorithmEventHandler, IAlgorithmEventHandler, std::shared_ptr<DefaultAlgorithmEventHandler>>(m, "DefaultAlgorithmEventHandler")  //
-        .def(py::init<>());
-    py::class_<DebugAlgorithmEventHandler, IAlgorithmEventHandler, std::shared_ptr<DebugAlgorithmEventHandler>>(m, "DebugAlgorithmEventHandler")  //
-        .def(py::init<>());
-
     py::class_<IAlgorithm, std::shared_ptr<IAlgorithm>>(m, "IAlgorithm")  //
         .def("find_solution",
              [](IAlgorithm& algorithm)
@@ -631,17 +625,34 @@ void init_pymimir(py::module_& m)
     // AStar
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
         .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<IHeuristic>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IHeuristic>, std::shared_ptr<IAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IHeuristic>>());
 
-    // BrFs
-    py::class_<BrFsAlgorithm, IAlgorithm, std::shared_ptr<BrFsAlgorithm>>(m, "BrFsAlgorithm")  //
+    // BrFS
+    py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler");
+    py::class_<DefaultBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler, std::shared_ptr<DefaultBrFSAlgorithmEventHandler>>(
+        m,
+        "DefaultBrFSAlgorithmEventHandler")  //
+        .def(py::init<>());
+    py::class_<DebugBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler, std::shared_ptr<DebugBrFSAlgorithmEventHandler>>(
+        m,
+        "DebugBrFSAlgorithmEventHandler")  //
+        .def(py::init<>());
+    py::class_<BrFSAlgorithm, IAlgorithm, std::shared_ptr<BrFSAlgorithm>>(m, "BrFSAlgorithm")  //
         .def(py::init<std::shared_ptr<IAAG>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
 
     // IW
+    py::class_<IIWAlgorithmEventHandler, std::shared_ptr<IIWAlgorithmEventHandler>>(m, "IIWAlgorithmEventHandler");
+    py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m,
+                                                                                                                          "DefaultIWAlgorithmEventHandler")  //
+        .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")  //
         .def(py::init<std::shared_ptr<IAAG>, int>())
-        .def(py::init<std::shared_ptr<IAAG>, int, std::shared_ptr<ISSG>, std::shared_ptr<IAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IAAG>,
+                      int,
+                      std::shared_ptr<ISSG>,
+                      std::shared_ptr<IBrFSAlgorithmEventHandler>,
+                      std::shared_ptr<IIWAlgorithmEventHandler>>());
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets

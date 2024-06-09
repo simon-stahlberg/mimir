@@ -1,6 +1,5 @@
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/algorithms.hpp"
-#include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/plan.hpp"
 
@@ -9,7 +8,7 @@
 namespace mimir::tests
 {
 
-/// @brief Instantiate a lifted BrFs
+/// @brief Instantiate a lifted IW search
 class LiftedIWPlanner
 {
 private:
@@ -18,7 +17,8 @@ private:
     std::shared_ptr<ILiftedAAGEventHandler> m_aag_event_handler;
     std::shared_ptr<LiftedAAG> m_aag;
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
-    std::shared_ptr<IAlgorithmEventHandler> m_algorithm_event_handler;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
+    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
@@ -27,8 +27,9 @@ public:
         m_aag_event_handler(std::make_shared<DefaultLiftedAAGEventHandler>()),
         m_aag(std::make_shared<LiftedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<SSG>(m_aag)),
-        m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IWAlgorithm>(m_aag, arity, m_ssg, m_algorithm_event_handler))
+        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
+        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
+        m_algorithm(std::make_unique<IWAlgorithm>(m_aag, arity, m_ssg, m_brfs_event_handler, m_iw_event_handler))
     {
     }
 
@@ -39,12 +40,12 @@ public:
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
-    const AlgorithmStatistics& get_algorithm_statistics() const { return m_algorithm_event_handler->get_statistics(); }
+    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
     const LiftedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };
 
-/// @brief Instantiate a grounded BrFs
+/// @brief Instantiate a grounded IW search
 class GroundedIWPlanner
 {
 private:
@@ -53,7 +54,8 @@ private:
     std::shared_ptr<IGroundedAAGEventHandler> m_aag_event_handler;
     std::shared_ptr<GroundedAAG> m_aag;
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
-    std::shared_ptr<IAlgorithmEventHandler> m_algorithm_event_handler;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
+    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
@@ -62,8 +64,9 @@ public:
         m_aag_event_handler(std::make_shared<DefaultGroundedAAGEventHandler>()),
         m_aag(std::make_shared<GroundedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<SSG>(m_aag)),
-        m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IWAlgorithm>(m_aag, arity, m_ssg, m_algorithm_event_handler))
+        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
+        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
+        m_algorithm(std::make_unique<IWAlgorithm>(m_aag, arity, m_ssg, m_brfs_event_handler, m_iw_event_handler))
     {
     }
 
@@ -74,7 +77,7 @@ public:
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
-    const AlgorithmStatistics& get_algorithm_statistics() const { return m_algorithm_event_handler->get_statistics(); }
+    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
     const GroundedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };

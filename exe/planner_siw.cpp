@@ -24,17 +24,18 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 6)
+    if (argc != 7)
     {
-        std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout << "Usage: planner_siw <domain:str> <problem:str> <plan:str> <arity:int> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
     const auto plan_file_name = argv[3];
-    const auto grounded = static_cast<bool>(std::atoi(argv[4]));
-    const auto debug = static_cast<bool>(std::atoi(argv[5]));
+    const auto arity = static_cast<int>(std::atoi(argv[4]));
+    const auto grounded = static_cast<bool>(std::atoi(argv[5]));
+    const auto debug = static_cast<bool>(std::atoi(argv[6]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -57,12 +58,14 @@ int main(int argc, char** argv)
 
     auto successor_state_generator = std::shared_ptr<ISSG> { std::make_shared<SSG>(applicable_action_generator) };
 
-    auto event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
-                                   std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
+    auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
+                                        std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
-    auto brfs = std::make_shared<BrFSAlgorithm>(applicable_action_generator, successor_state_generator, event_handler);
+    auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(false);
 
-    auto planner = std::make_shared<SinglePlanner>(std::move(brfs));
+    auto siw = std::make_shared<SIWAlgorithm>(applicable_action_generator, arity, successor_state_generator, brfs_event_handler, iw_event_handler);
+
+    auto planner = std::make_shared<SinglePlanner>(std::move(siw));
 
     auto [stats, plan] = planner->find_solution();
 

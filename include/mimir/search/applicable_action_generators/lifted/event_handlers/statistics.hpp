@@ -91,26 +91,25 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const LiftedAAGStatistics& statistics)
 {
-    os << "[LiftedAAGStatistics] Number of grounded action cache hits: " << statistics.get_num_ground_action_cache_hits() << std::endl
-       << "[LiftedAAGStatistics] Number of grounded action cache hits until last f-layer: "
+    os << "[LiftedAAG] Number of grounded action cache hits: " << statistics.get_num_ground_action_cache_hits() << std::endl
+       << "[LiftedAAG] Number of grounded action cache hits until last f-layer: "
        << (statistics.get_num_ground_action_cache_hits_until_f_value().empty() ? 0 : statistics.get_num_ground_action_cache_hits_until_f_value().back())
        << std::endl
-       << "[LiftedAAGStatistics] Number of grounded action cache misses: " << statistics.get_num_ground_action_cache_misses() << std::endl
-       << "[LiftedAAGStatistics] Number of grounded action cache misses until last f-layer: "
+       << "[LiftedAAG] Number of grounded action cache misses: " << statistics.get_num_ground_action_cache_misses() << std::endl
+       << "[LiftedAAG] Number of grounded action cache misses until last f-layer: "
        << (statistics.get_num_ground_action_cache_misses_until_f_value().empty() ? 0 : statistics.get_num_ground_action_cache_misses_until_f_value().back())
        << std::endl
-       << "[LiftedAAGStatistics] Number of generated inapplicable grounded actions until last f-layer: "
+       << "[LiftedAAG] Number of generated inapplicable grounded actions until last f-layer: "
        << (statistics.get_num_inapplicable_grounded_actions_until_f_value().empty() ? 0 :
                                                                                       statistics.get_num_inapplicable_grounded_actions_until_f_value().back())
        << std::endl
-       << "[LiftedAAGStatistics] Number of grounded axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << std::endl
-       << "[LiftedAAGStatistics] Number of grounded axiom cache hits until last f-layer: "
+       << "[LiftedAAG] Number of grounded axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << std::endl
+       << "[LiftedAAG] Number of grounded axiom cache hits until last f-layer: "
        << (statistics.get_num_ground_axiom_cache_hits_until_f_value().empty() ? 0 : statistics.get_num_ground_axiom_cache_hits_until_f_value().back())
        << std::endl
-       << "[LiftedAAGStatistics] Number of grounded axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << std::endl
-       << "[LiftedAAGStatistics] Number of grounded axiom cache misses until last f-layer: "
-       << (statistics.get_num_ground_axiom_cache_misses_until_f_value().empty() ? 0 : statistics.get_num_ground_axiom_cache_misses_until_f_value().back())
-       << std::endl;
+       << "[LiftedAAG] Number of grounded axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << std::endl
+       << "[LiftedAAG] Number of grounded axiom cache misses until last f-layer: "
+       << (statistics.get_num_ground_axiom_cache_misses_until_f_value().empty() ? 0 : statistics.get_num_ground_axiom_cache_misses_until_f_value().back());
 
     return os;
 }

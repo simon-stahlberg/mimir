@@ -16,9 +16,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ##############################################################
 
 # more options to the list of string, e.g., "Dense" "Sparse"
-set(STATE_REPR "Dense" CACHE STRING "Select the state representation type")
-set_property(CACHE STATE_REPR PROPERTY STRINGS "Dense")
-message("Use state representation compile flag: ${STATE_REPR}")
+#set(STATE_REPR "Dense" CACHE STRING "Select the state representation type")
+#set_property(CACHE STATE_REPR PROPERTY STRINGS "Dense")
+#message("Use state representation compile flag: ${STATE_REPR}")
 
 
 ##############################################################

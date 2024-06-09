@@ -15,15 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_HPP_
 
 /**
  * Include all specializations here
  */
-#include "mimir/search/algorithms/astar.hpp"
-#include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/algorithms/iw.hpp"
-#include "mimir/search/algorithms/siw.hpp"
+#include "mimir/search/algorithms/iw/event_handlers/default.hpp"
 
-#endif  // MIMIR_SEARCH_ALGORITHM_HPP_
+#endif

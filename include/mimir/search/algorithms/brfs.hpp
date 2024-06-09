@@ -20,7 +20,7 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/formalism.hpp"
-#include "mimir/search/algorithms/event_handlers.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
@@ -42,7 +42,7 @@ namespace mimir
 /**
  * Specialized implementation class.
  */
-class BrFsAlgorithm : public IAlgorithm
+class BrFSAlgorithm : public IAlgorithm
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
@@ -50,7 +50,7 @@ private:
     State m_initial_state;
     std::deque<State> m_queue;
     flat::CostSearchNodeVector m_search_nodes;
-    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions
     ///        and reversing them.
@@ -87,17 +87,17 @@ private:
 
 public:
     /// @brief Simplest construction
-    explicit BrFsAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
-        BrFsAlgorithm(applicable_action_generator,
+    explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
+        BrFSAlgorithm(applicable_action_generator,
                       std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                      std::make_shared<DefaultAlgorithmEventHandler>())
+                      std::make_shared<DefaultBrFSAlgorithmEventHandler>())
     {
     }
 
     /// @brief Complete construction
-    BrFsAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+    BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                   std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
-                  std::shared_ptr<IAlgorithmEventHandler> event_handler) :
+                  std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
         m_aag(std::move(applicable_action_generator)),
         m_ssg(std::move(successor_state_generator)),
         m_initial_state(m_ssg->get_or_create_initial_state()),
@@ -184,7 +184,10 @@ public:
                 set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
                 out_goal_state = state;
                 m_event_handler->on_end_search();
-                m_aag->on_end_search();
+                if (!m_event_handler->is_quiet())
+                {
+                    m_aag->on_end_search();
+                }
                 m_event_handler->on_solved(out_plan);
 
                 return SearchStatus::SOLVED;

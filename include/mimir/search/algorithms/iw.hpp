@@ -19,8 +19,9 @@
 #define MIMIR_SEARCH_ALGORITHMS_IW_HPP_
 
 #include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/algorithms/event_handlers.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
+#include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -36,12 +37,13 @@ private:
     int m_max_arity;
 
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
-    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
+    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
 
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
     State m_initial_state;
-    BrFsAlgorithm m_brfs;
+    BrFSAlgorithm m_brfs;
 
 public:
     /// @brief Simplest construction
@@ -49,7 +51,8 @@ public:
         IterativeWidthAlgorithm(applicable_action_generator,
                                 max_arity,
                                 std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                                std::make_shared<DebugAlgorithmEventHandler>())
+                                std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
+                                std::make_shared<DefaultIWAlgorithmEventHandler>())
     {
     }
 
@@ -57,14 +60,16 @@ public:
     IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                             int max_arity,
                             std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
-                            std::shared_ptr<IAlgorithmEventHandler> event_handler) :
+                            std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
+                            std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
         m_aag(applicable_action_generator),
         m_max_arity(max_arity),
         m_ssg(successor_state_generator),
-        m_event_handler(event_handler),
+        m_brfs_event_handler(brfs_event_handler),
+        m_iw_event_handler(iw_event_handler),
         m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
-        m_brfs(applicable_action_generator, successor_state_generator, event_handler)
+        m_brfs(applicable_action_generator, successor_state_generator, brfs_event_handler)
     {
         if (max_arity < 0)
         {
@@ -88,10 +93,12 @@ public:
     SearchStatus
     find_solution(const State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, GroundActionList& out_plan, std::optional<State>& out_goal_state)
     {
+        m_iw_event_handler->on_start_search(m_aag->get_problem(), start_state, m_aag->get_pddl_factories());
+
         int cur_arity = 0;
         while (cur_arity <= m_max_arity)
         {
-            std::cout << "[IterativeWidth] Run IW(" << cur_arity << ")" << std::endl;
+            m_iw_event_handler->on_start_arity_search(m_aag->get_problem(), start_state, m_aag->get_pddl_factories(), cur_arity);
 
             auto search_status = (cur_arity > 0) ?
                                      m_brfs.find_solution(start_state,
@@ -105,13 +112,27 @@ public:
                                                           out_plan,
                                                           out_goal_state);
 
+            m_iw_event_handler->on_end_arity_search(m_brfs_event_handler->get_statistics());
+
             if (search_status == SearchStatus::SOLVED)
             {
+                m_iw_event_handler->on_end_search();
+                if (!m_iw_event_handler->is_quiet())
+                {
+                    m_aag->on_end_search();
+                }
+                m_iw_event_handler->on_solved(out_plan);
                 return SearchStatus::SOLVED;
             }
             else if (search_status == SearchStatus::UNSOLVABLE)
             {
+                m_iw_event_handler->on_unsolvable();
                 return SearchStatus::UNSOLVABLE;
+            }
+            else if (search_status == SearchStatus::EXHAUSTED)
+            {
+                m_iw_event_handler->on_exhausted();
+                return SearchStatus::EXHAUSTED;
             }
 
             ++cur_arity;

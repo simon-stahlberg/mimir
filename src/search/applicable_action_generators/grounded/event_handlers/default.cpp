@@ -29,8 +29,8 @@ void DefaultGroundedAAGEventHandler::on_finish_delete_free_exploration_impl(cons
                                                                             const GroundActionList& instantiated_actions,
                                                                             const GroundAxiomList& instantiated_axioms)
 {
-    std::cout << "[Grounded AAG] Number of fluent grounded atoms reachable in delete-free problem: " << reached_fluent_atoms.size() << "\n"
-              << "[Grounded AAG] Number of derived grounded atoms reachable in delete-free problem: " << reached_derived_atoms.size() << "\n"
+    std::cout << "[GroundedAAG] Number of fluent grounded atoms reachable in delete-free problem: " << reached_fluent_atoms.size() << "\n"
+              << "[GroundedAAG] Number of derived grounded atoms reachable in delete-free problem: " << reached_derived_atoms.size() << "\n"
               << "[GroundedAAG] Number of delete-free grounded actions: " << instantiated_actions.size() << "\n"
               << "[GroundedAAG] Number of delete-free grounded axioms: " << instantiated_axioms.size() << std::endl;
 }

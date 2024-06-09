@@ -65,10 +65,10 @@ int main(int argc, char** argv)
 
     auto successor_state_generator = std::shared_ptr<ISSG> { std::make_shared<SSG>(applicable_action_generator) };
 
-    auto event_handler = (debug) ? std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DebugAlgorithmEventHandler>(false) } :
-                                   std::shared_ptr<IAlgorithmEventHandler> { std::make_shared<DefaultAlgorithmEventHandler>(false) };
+    auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
+                                        std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
-    auto brfs = std::make_shared<BrFsAlgorithm>(applicable_action_generator, successor_state_generator, event_handler);
+    auto brfs = std::make_shared<BrFSAlgorithm>(applicable_action_generator, successor_state_generator, brfs_event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(brfs));
 

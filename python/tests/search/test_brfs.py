@@ -1,5 +1,5 @@
 from pymimir import PDDLParser
-from pymimir import LiftedAAG, BrFsAlgorithm, SearchStatus
+from pymimir import LiftedAAG, BrFSAlgorithm, SearchStatus
 
 from pathlib import Path
 
@@ -13,7 +13,7 @@ def test_brfs():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     parser = PDDLParser(domain_filepath, problem_filepath)
     aag = LiftedAAG(parser.get_problem(), parser.get_factories())
-    brfs = BrFsAlgorithm(aag)
+    brfs = BrFSAlgorithm(aag)
     search_status, plan = brfs.find_solution()
 
     assert search_status == SearchStatus.SOLVED

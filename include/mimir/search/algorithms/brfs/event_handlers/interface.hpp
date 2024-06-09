@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/algorithms/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/state.hpp"
 
 #include <chrono>
@@ -32,10 +32,10 @@ namespace mimir
 /**
  * Interface class
  */
-class IAlgorithmEventHandler
+class IBrFSAlgorithmEventHandler
 {
 public:
-    virtual ~IAlgorithmEventHandler() = default;
+    virtual ~IBrFSAlgorithmEventHandler() = default;
 
     /// @brief React on generating a successor_state by applying an action.
     virtual void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) = 0;
@@ -64,7 +64,8 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const AlgorithmStatistics& get_statistics() const = 0;
+    virtual const BrFSAlgorithmStatistics& get_statistics() const = 0;
+    virtual bool is_quiet() const = 0;
 };
 
 /**
@@ -73,14 +74,14 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived>
-class AlgorithmEventHandlerBase : public IAlgorithmEventHandler
+class BrFSAlgorithmEventHandlerBase : public IBrFSAlgorithmEventHandler
 {
 protected:
-    AlgorithmStatistics m_statistics;
+    BrFSAlgorithmStatistics m_statistics;
     bool m_quiet;
 
 private:
-    AlgorithmEventHandlerBase() = default;
+    BrFSAlgorithmEventHandlerBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -88,7 +89,7 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    explicit AlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit BrFSAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) override
     {
@@ -135,7 +136,7 @@ public:
 
     void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
     {
-        m_statistics = AlgorithmStatistics();
+        m_statistics = BrFSAlgorithmStatistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
@@ -180,7 +181,8 @@ public:
     }
 
     /// @brief Get the statistics.
-    const AlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const BrFSAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    bool is_quiet() const override { return m_quiet; }
 };
 
 }

@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_DEBUG_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_EVENT_HANDLERS_DEBUG_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_DEBUG_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_DEBUG_HPP_
 
-#include "mimir/search/algorithms/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 
 #include <iostream>
 
@@ -28,11 +28,11 @@ namespace mimir
 /**
  * Implementation class
  */
-class DebugAlgorithmEventHandler : public AlgorithmEventHandlerBase<DebugAlgorithmEventHandler>
+class DebugBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>
 {
 private:
     /* Implement AlgorithmEventHandlerBase interface */
-    friend class AlgorithmEventHandlerBase<DebugAlgorithmEventHandler>;
+    friend class BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>;
 
     void on_generate_state_impl(const Problem problem, GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) const;
 
@@ -53,7 +53,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DebugAlgorithmEventHandler(bool quiet = true) : AlgorithmEventHandlerBase<DebugAlgorithmEventHandler>(quiet) {}
+    explicit DebugBrFSAlgorithmEventHandler(bool quiet = true) : BrFSAlgorithmEventHandlerBase<DebugBrFSAlgorithmEventHandler>(quiet) {}
 };
 
 }

@@ -26,7 +26,7 @@ Mimir supports the following PDDL requirements in the grounded and lifting setti
 ```python
 parser = PDDLParser("domain.pddl", "problem.pddl")
 aag = LiftedAAG(parser.get_problem(), parser.get_factories())
-brfs = BrFsAlgorithm(aag)
+brfs = BrFSAlgorithm(aag)
 status, plan = brfs.find_solution()
 ```
 
@@ -45,7 +45,7 @@ pip install pymimir
 ```cpp
 const auto parser = PDDLParser("domain.pddl", "problem.pddl")
 const auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories())
-const auto brfs = BrFsAlgorithm(aag)
+const auto brfs = BrFSAlgorithm(aag)
 const auto [status, plan] = brfs.find_solution()
 ```
 

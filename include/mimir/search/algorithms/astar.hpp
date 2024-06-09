@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
-#include "mimir/search/algorithms/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/heuristics.hpp"
@@ -39,28 +38,22 @@ private:
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     State m_initial_state;
     std::shared_ptr<IHeuristic> m_heuristic;
-    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
 
 public:
     /// @brief Simplest construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic) :
-        AStarAlgorithm(applicable_action_generator,
-                       std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                       std::move(heuristic),
-                       std::make_shared<DefaultAlgorithmEventHandler>())
+        AStarAlgorithm(applicable_action_generator, std::make_shared<SuccessorStateGenerator>(applicable_action_generator), std::move(heuristic))
     {
     }
 
     /// @brief Complete construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                    std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
-                   std::shared_ptr<IHeuristic> heuristic,
-                   std::shared_ptr<IAlgorithmEventHandler> event_handler = std::make_shared<DefaultAlgorithmEventHandler>()) :
+                   std::shared_ptr<IHeuristic> heuristic) :
         m_aag(std::move(applicable_action_generator)),
         m_ssg(std::move(successor_state_generator)),
         m_initial_state(m_ssg->get_or_create_initial_state()),
-        m_heuristic(std::move(heuristic)),
-        m_event_handler(std::move(event_handler))
+        m_heuristic(std::move(heuristic))
     {
     }
 

@@ -1,6 +1,6 @@
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/algorithms.hpp"
-#include "mimir/search/algorithms/event_handlers.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/plan.hpp"
@@ -10,8 +10,8 @@
 namespace mimir::tests
 {
 
-/// @brief Instantiate a lifted BrFs
-class LiftedBrFsPlanner
+/// @brief Instantiate a lifted BrFS
+class LiftedBrFSPlanner
 {
 private:
     PDDLParser m_parser;
@@ -19,17 +19,17 @@ private:
     std::shared_ptr<ILiftedAAGEventHandler> m_aag_event_handler;
     std::shared_ptr<LiftedAAG> m_aag;
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
-    std::shared_ptr<IAlgorithmEventHandler> m_algorithm_event_handler;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
-    LiftedBrFsPlanner(const fs::path& domain_file, const fs::path& problem_file) :
+    LiftedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_parser(PDDLParser(domain_file, problem_file)),
         m_aag_event_handler(std::make_shared<DefaultLiftedAAGEventHandler>()),
         m_aag(std::make_shared<LiftedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<SSG>(m_aag)),
-        m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<BrFsAlgorithm>(m_aag, m_ssg, m_algorithm_event_handler))
+        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
+        m_algorithm(std::make_unique<BrFSAlgorithm>(m_aag, m_ssg, m_brfs_event_handler))
     {
     }
 
@@ -40,13 +40,13 @@ public:
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
-    const AlgorithmStatistics& get_algorithm_statistics() const { return m_algorithm_event_handler->get_statistics(); }
+    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
     const LiftedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };
 
-/// @brief Instantiate a grounded BrFs
-class GroundedBrFsPlanner
+/// @brief Instantiate a grounded BrFS
+class GroundedBrFSPlanner
 {
 private:
     PDDLParser m_parser;
@@ -54,17 +54,17 @@ private:
     std::shared_ptr<IGroundedAAGEventHandler> m_aag_event_handler;
     std::shared_ptr<GroundedAAG> m_aag;
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
-    std::shared_ptr<IAlgorithmEventHandler> m_algorithm_event_handler;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
-    GroundedBrFsPlanner(const fs::path& domain_file, const fs::path& problem_file) :
+    GroundedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_parser(PDDLParser(domain_file, problem_file)),
         m_aag_event_handler(std::make_shared<DefaultGroundedAAGEventHandler>()),
         m_aag(std::make_shared<GroundedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<SuccessorStateGenerator>(m_aag)),
-        m_algorithm_event_handler(std::make_shared<DefaultAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<BrFsAlgorithm>(m_aag, m_ssg, m_algorithm_event_handler))
+        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
+        m_algorithm(std::make_unique<BrFSAlgorithm>(m_aag, m_ssg, m_brfs_event_handler))
     {
     }
 
@@ -75,37 +75,9 @@ public:
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
-    const AlgorithmStatistics& get_algorithm_statistics() const { return m_algorithm_event_handler->get_statistics(); }
+    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
 
     const GroundedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
-};
-
-/// @brief Instantiate a BrFs
-class BrFsPlanner
-{
-private:
-    PDDLParser m_parser;
-
-    std::unique_ptr<IAlgorithm> m_algorithm;
-
-public:
-    BrFsPlanner(const fs::path& domain_file, const fs::path& problem_file, bool grounded) :
-        m_parser(PDDLParser(domain_file, problem_file)),
-        m_algorithm(nullptr)
-    {
-        auto successor_generator =
-            (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedAAG>(m_parser.get_problem(), m_parser.get_factories()) } :
-                         std::shared_ptr<IApplicableActionGenerator> { std::make_shared<LiftedAAG>(m_parser.get_problem(), m_parser.get_factories()) };
-
-        m_algorithm = std::make_unique<BrFsAlgorithm>(successor_generator);
-    }
-
-    std::tuple<SearchStatus, Plan> find_solution()
-    {
-        auto action_view_list = GroundActionList {};
-        const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list));
-    }
 };
 
 /**
@@ -120,7 +92,7 @@ public:
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "airport/domain.pddl"), fs::path(std::string(DATA_DIR) + "airport/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "airport/domain.pddl"), fs::path(std::string(DATA_DIR) + "airport/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 8);
@@ -146,7 +118,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedAirportTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "airport/domain.pddl"), fs::path(std::string(DATA_DIR) + "airport/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "airport/domain.pddl"), fs::path(std::string(DATA_DIR) + "airport/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 8);
@@ -171,7 +143,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedAirportTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "barman/domain.pddl"), fs::path(std::string(DATA_DIR) + "barman/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "barman/domain.pddl"), fs::path(std::string(DATA_DIR) + "barman/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 11);
@@ -197,7 +169,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedBarmanTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "barman/domain.pddl"), fs::path(std::string(DATA_DIR) + "barman/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "barman/domain.pddl"), fs::path(std::string(DATA_DIR) + "barman/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 11);
@@ -222,7 +194,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedBarmanTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks3opsTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "blocks_3/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_3/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "blocks_3/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_3/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -248,7 +220,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks3opsTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks3opsTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "blocks_3/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_3/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "blocks_3/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_3/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -273,7 +245,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks3opsTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks4opsTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "blocks_4/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_4/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "blocks_4/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_4/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -299,7 +271,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks4opsTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks4opsTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "blocks_4/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_4/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "blocks_4/domain.pddl"), fs::path(std::string(DATA_DIR) + "blocks_4/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -325,7 +297,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks4opsTest)
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedChildsnackTest)
 {
     auto brfs =
-        GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "childsnack/domain.pddl"), fs::path(std::string(DATA_DIR) + "childsnack/test_problem.pddl"));
+        GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "childsnack/domain.pddl"), fs::path(std::string(DATA_DIR) + "childsnack/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -351,7 +323,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedChildsnackTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedChildsnackTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "childsnack/domain.pddl"), fs::path(std::string(DATA_DIR) + "childsnack/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "childsnack/domain.pddl"), fs::path(std::string(DATA_DIR) + "childsnack/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -376,7 +348,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedChildsnackTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedDeliveryTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -402,7 +374,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDeliveryTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedDeliveryTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -427,7 +399,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedDeliveryTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedDriverlogTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "driverlog/domain.pddl"), fs::path(std::string(DATA_DIR) + "driverlog/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "driverlog/domain.pddl"), fs::path(std::string(DATA_DIR) + "driverlog/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 9);
@@ -453,7 +425,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDriverlogTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedDriverlogTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "driverlog/domain.pddl"), fs::path(std::string(DATA_DIR) + "driverlog/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "driverlog/domain.pddl"), fs::path(std::string(DATA_DIR) + "driverlog/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 9);
@@ -478,7 +450,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedDriverlogTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "ferry/domain.pddl"), fs::path(std::string(DATA_DIR) + "ferry/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "ferry/domain.pddl"), fs::path(std::string(DATA_DIR) + "ferry/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 7);
@@ -504,7 +476,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedFerryTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "ferry/domain.pddl"), fs::path(std::string(DATA_DIR) + "ferry/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "ferry/domain.pddl"), fs::path(std::string(DATA_DIR) + "ferry/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 7);
@@ -529,7 +501,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedFerryTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "grid/domain.pddl"), fs::path(std::string(DATA_DIR) + "grid/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "grid/domain.pddl"), fs::path(std::string(DATA_DIR) + "grid/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -555,7 +527,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedGridTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "grid/domain.pddl"), fs::path(std::string(DATA_DIR) + "grid/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "grid/domain.pddl"), fs::path(std::string(DATA_DIR) + "grid/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -580,7 +552,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedGridTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 3);
@@ -606,7 +578,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedGripperTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 3);
@@ -631,7 +603,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedGripperTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedHikingTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "hiking/domain.pddl"), fs::path(std::string(DATA_DIR) + "hiking/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "hiking/domain.pddl"), fs::path(std::string(DATA_DIR) + "hiking/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -657,7 +629,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedHikingTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedHikingTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "hiking/domain.pddl"), fs::path(std::string(DATA_DIR) + "hiking/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "hiking/domain.pddl"), fs::path(std::string(DATA_DIR) + "hiking/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -682,7 +654,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedHikingTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "logistics/domain.pddl"), fs::path(std::string(DATA_DIR) + "logistics/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "logistics/domain.pddl"), fs::path(std::string(DATA_DIR) + "logistics/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -708,7 +680,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedLogisticsTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "logistics/domain.pddl"), fs::path(std::string(DATA_DIR) + "logistics/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "logistics/domain.pddl"), fs::path(std::string(DATA_DIR) + "logistics/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -733,7 +705,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedLogisticsTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic/domain.pddl"), fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic/domain.pddl"), fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 5);
@@ -759,7 +731,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic/domain.pddl"), fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic/domain.pddl"), fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 5);
@@ -784,7 +756,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
                                     fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
@@ -811,7 +783,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFullAdlTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
                                   fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
@@ -837,7 +809,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFullAdlTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleAdlTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
                                     fs::path(std::string(DATA_DIR) + "miconic-simpleadl/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
@@ -864,7 +836,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleAdlTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicSimpleAdlTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
                                   fs::path(std::string(DATA_DIR) + "miconic-simpleadl/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
@@ -891,7 +863,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicSimpleAdlTest)
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
 {
     auto brfs =
-        GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "philosophers/domain.pddl"), fs::path(std::string(DATA_DIR) + "philosophers/test_problem.pddl"));
+        GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "philosophers/domain.pddl"), fs::path(std::string(DATA_DIR) + "philosophers/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 18);
@@ -918,7 +890,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedPhilosophersTest)
 {
     auto brfs =
-        LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "philosophers/domain.pddl"), fs::path(std::string(DATA_DIR) + "philosophers/test_problem.pddl"));
+        LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "philosophers/domain.pddl"), fs::path(std::string(DATA_DIR) + "philosophers/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 18);
@@ -943,7 +915,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedPhilosophersTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedRewardTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "reward/domain.pddl"), fs::path(std::string(DATA_DIR) + "reward/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "reward/domain.pddl"), fs::path(std::string(DATA_DIR) + "reward/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -969,7 +941,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRewardTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedRewardTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "reward/domain.pddl"), fs::path(std::string(DATA_DIR) + "reward/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "reward/domain.pddl"), fs::path(std::string(DATA_DIR) + "reward/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -994,7 +966,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedRewardTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "rovers/domain.pddl"), fs::path(std::string(DATA_DIR) + "rovers/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "rovers/domain.pddl"), fs::path(std::string(DATA_DIR) + "rovers/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -1020,7 +992,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedRoversTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "rovers/domain.pddl"), fs::path(std::string(DATA_DIR) + "rovers/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "rovers/domain.pddl"), fs::path(std::string(DATA_DIR) + "rovers/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -1045,7 +1017,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedRoversTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "satellite/domain.pddl"), fs::path(std::string(DATA_DIR) + "satellite/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "satellite/domain.pddl"), fs::path(std::string(DATA_DIR) + "satellite/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 7);
@@ -1071,7 +1043,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedSatelliteTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "satellite/domain.pddl"), fs::path(std::string(DATA_DIR) + "satellite/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "satellite/domain.pddl"), fs::path(std::string(DATA_DIR) + "satellite/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 7);
@@ -1096,7 +1068,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedSatelliteTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedScheduleTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "schedule/domain.pddl"), fs::path(std::string(DATA_DIR) + "schedule/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "schedule/domain.pddl"), fs::path(std::string(DATA_DIR) + "schedule/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 2);
@@ -1122,7 +1094,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedScheduleTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedScheduleTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "schedule/domain.pddl"), fs::path(std::string(DATA_DIR) + "schedule/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "schedule/domain.pddl"), fs::path(std::string(DATA_DIR) + "schedule/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 2);
@@ -1147,7 +1119,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedScheduleTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedSpannerTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "spanner/domain.pddl"), fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "spanner/domain.pddl"), fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -1173,7 +1145,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSpannerTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedSpannerTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "spanner/domain.pddl"), fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "spanner/domain.pddl"), fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -1198,7 +1170,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedSpannerTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedTransportTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "transport/domain.pddl"), fs::path(std::string(DATA_DIR) + "transport/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "transport/domain.pddl"), fs::path(std::string(DATA_DIR) + "transport/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 5);
@@ -1224,7 +1196,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTransportTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedTransportTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "transport/domain.pddl"), fs::path(std::string(DATA_DIR) + "transport/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "transport/domain.pddl"), fs::path(std::string(DATA_DIR) + "transport/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 5);
@@ -1249,7 +1221,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTransportTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedVisitallTest)
 {
-    auto brfs = GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "visitall/domain.pddl"), fs::path(std::string(DATA_DIR) + "visitall/test_problem.pddl"));
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "visitall/domain.pddl"), fs::path(std::string(DATA_DIR) + "visitall/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 8);
@@ -1275,7 +1247,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedVisitallTest)
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedVisitallTest)
 {
-    auto brfs = LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "visitall/domain.pddl"), fs::path(std::string(DATA_DIR) + "visitall/test_problem.pddl"));
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "visitall/domain.pddl"), fs::path(std::string(DATA_DIR) + "visitall/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 8);
@@ -1301,7 +1273,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedVisitallTest)
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
 {
     auto brfs =
-        GroundedBrFsPlanner(fs::path(std::string(DATA_DIR) + "woodworking/domain.pddl"), fs::path(std::string(DATA_DIR) + "woodworking/test_problem.pddl"));
+        GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "woodworking/domain.pddl"), fs::path(std::string(DATA_DIR) + "woodworking/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 2);
@@ -1328,7 +1300,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedWoodworkingTest)
 {
     auto brfs =
-        LiftedBrFsPlanner(fs::path(std::string(DATA_DIR) + "woodworking/domain.pddl"), fs::path(std::string(DATA_DIR) + "woodworking/test_problem.pddl"));
+        LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "woodworking/domain.pddl"), fs::path(std::string(DATA_DIR) + "woodworking/test_problem.pddl"));
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 2);

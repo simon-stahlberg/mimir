@@ -18,9 +18,10 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_SIW_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_SIW_HPP_
 
-#include "mimir/search/algorithms/event_handlers.hpp"
+#include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/algorithms/iw.hpp"
+#include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/successor_state_generators.hpp"
@@ -38,7 +39,6 @@ private:
     int m_max_arity;
 
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
-    std::shared_ptr<IAlgorithmEventHandler> m_event_handler;
 
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
@@ -51,7 +51,8 @@ public:
         SerializedIterativeWidthAlgorithm(applicable_action_generator,
                                           max_arity,
                                           std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                                          std::make_shared<DebugAlgorithmEventHandler>())
+                                          std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
+                                          std::make_shared<DefaultIWAlgorithmEventHandler>())
     {
     }
 
@@ -59,14 +60,14 @@ public:
     SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                       int max_arity,
                                       std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
-                                      std::shared_ptr<IAlgorithmEventHandler> event_handler) :
+                                      std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
+                                      std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
         m_aag(applicable_action_generator),
         m_max_arity(max_arity),
         m_ssg(successor_state_generator),
-        m_event_handler(event_handler),
         m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
-        m_iw(applicable_action_generator, max_arity, successor_state_generator, event_handler)
+        m_iw(applicable_action_generator, max_arity, successor_state_generator, brfs_event_handler, iw_event_handler)
     {
         if (max_arity < 0)
         {

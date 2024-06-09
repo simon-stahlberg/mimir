@@ -12,9 +12,9 @@ set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 add_library(mimir::core ALIAS core)
 
 # Apply the compile definition based on the selected representation
-if(STATE_REPR STREQUAL "Dense")
-    target_compile_definitions(core PUBLIC STATE_REPR_DENSE=1)
-endif()
+#if(STATE_REPR STREQUAL "Dense")
+#    target_compile_definitions(core PUBLIC STATE_REPR_DENSE=1)
+#endif()
 
 target_link_libraries(core loki::parsers)
 target_link_libraries(core flatmemory::flatmemory)
