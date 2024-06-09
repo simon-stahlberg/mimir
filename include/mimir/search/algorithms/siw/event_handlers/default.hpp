@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_MINIMAL_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_MINIMAL_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_SIW_EVENT_HANDLERS_MINIMAL_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_SIW_EVENT_HANDLERS_MINIMAL_HPP_
 
-#include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
+#include "mimir/search/algorithms/siw/event_handlers/interface.hpp"
 
 #include <iostream>
 
@@ -28,17 +28,17 @@ namespace mimir
 /**
  * Implementation class
  */
-class DefaultIWAlgorithmEventHandler : public IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>
+class DefaultSIWAlgorithmEventHandler : public SIWAlgorithmEventHandlerBase<DefaultSIWAlgorithmEventHandler>
 {
 private:
-    /* Implement IWAlgorithmEventHandlerBase interface */
-    friend class IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>;
+    /* Implement SIWAlgorithmEventHandlerBase interface */
+    friend class SIWAlgorithmEventHandlerBase<DefaultSIWAlgorithmEventHandler>;
 
     void on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const;
 
-    void on_start_arity_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories, int arity) const;
+    void on_start_subproblem_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const;
 
-    void on_end_arity_search_impl(const BrFSAlgorithmStatistics& brfs_statistics) const;
+    void on_end_subproblem_search_impl(const IWAlgorithmStatistics& iw_statistics) const;
 
     void on_end_search_impl() const;
 
@@ -49,7 +49,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultIWAlgorithmEventHandler(bool quiet = true);
+    explicit DefaultSIWAlgorithmEventHandler(bool quiet = true);
 };
 
 }

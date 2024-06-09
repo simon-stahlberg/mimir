@@ -129,11 +129,6 @@ public:
                 m_iw_event_handler->on_unsolvable();
                 return SearchStatus::UNSOLVABLE;
             }
-            else if (search_status == SearchStatus::EXHAUSTED)
-            {
-                m_iw_event_handler->on_exhausted();
-                return SearchStatus::EXHAUSTED;
-            }
 
             ++cur_arity;
         }

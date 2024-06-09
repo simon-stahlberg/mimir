@@ -15,13 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_SIW_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_SIW_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
+#include "mimir/search/algorithms/siw/event_handlers/statistics.hpp"
 
 #include <chrono>
 #include <concepts>
@@ -32,19 +33,19 @@ namespace mimir
 /**
  * Interface class
  */
-class IIWAlgorithmEventHandler
+class ISIWAlgorithmEventHandler
 {
 public:
-    virtual ~IIWAlgorithmEventHandler() = default;
+    virtual ~ISIWAlgorithmEventHandler() = default;
 
     /// @brief React on starting a search.
     virtual void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_arity_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories, int arity) = 0;
+    virtual void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) = 0;
+    virtual void on_end_subproblem_search(const IWAlgorithmStatistics& iw_statistics) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
@@ -58,7 +59,7 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
-    virtual const IWAlgorithmStatistics& get_statistics() const = 0;
+    virtual const SIWAlgorithmStatistics& get_statistics() const = 0;
     virtual bool is_quiet() const = 0;
 };
 
@@ -68,14 +69,14 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived>
-class IWAlgorithmEventHandlerBase : public IIWAlgorithmEventHandler
+class SIWAlgorithmEventHandlerBase : public ISIWAlgorithmEventHandler
 {
 protected:
-    IWAlgorithmStatistics m_statistics;
+    SIWAlgorithmStatistics m_statistics;
     bool m_quiet;
 
 private:
-    IWAlgorithmEventHandlerBase() = default;
+    SIWAlgorithmEventHandlerBase() = default;
     friend Derived;
 
     /// @brief Helper to cast to Derived.
@@ -83,11 +84,11 @@ private:
     constexpr auto& self() { return static_cast<Derived&>(*this); }
 
 public:
-    explicit IWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit SIWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
     {
-        m_statistics = IWAlgorithmStatistics();
+        m_statistics = SIWAlgorithmStatistics();
 
         m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
 
@@ -97,21 +98,21 @@ public:
         }
     }
 
-    void on_start_arity_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories, int arity) override
+    void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            self().on_start_arity_search_impl(problem, initial_state, pddl_factories, arity);
+            self().on_start_subproblem_search_impl(problem, initial_state, pddl_factories);
         }
     }
 
-    void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) override
+    void on_end_subproblem_search(const IWAlgorithmStatistics& iw_statistics) override
     {
-        m_statistics.push_back_algorithm_statistics(brfs_statistics);
+        m_statistics.push_back_algorithm_statistics(iw_statistics);
 
         if (!m_quiet)
         {
-            self().on_end_arity_search_impl(brfs_statistics);
+            self().on_end_subproblem_search_impl(iw_statistics);
         }
     }
 
@@ -150,7 +151,7 @@ public:
     }
 
     /// @brief Get the statistics.
-    const IWAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    const SIWAlgorithmStatistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const override { return m_quiet; }
 };
 

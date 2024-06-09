@@ -22,6 +22,7 @@
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/algorithms/iw.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
+#include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/successor_state_generators.hpp"
@@ -39,6 +40,9 @@ private:
     int m_max_arity;
 
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
+    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
 
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
@@ -52,7 +56,8 @@ public:
                                           max_arity,
                                           std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
                                           std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
-                                          std::make_shared<DefaultIWAlgorithmEventHandler>())
+                                          std::make_shared<DefaultIWAlgorithmEventHandler>(),
+                                          std::make_shared<DefaultSIWAlgorithmEventHandler>())
     {
     }
 
@@ -61,10 +66,14 @@ public:
                                       int max_arity,
                                       std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
                                       std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
-                                      std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
+                                      std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
+                                      std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler) :
         m_aag(applicable_action_generator),
         m_max_arity(max_arity),
         m_ssg(successor_state_generator),
+        m_brfs_event_handler(brfs_event_handler),
+        m_iw_event_handler(iw_event_handler),
+        m_siw_event_handler(siw_event_handler),
         m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
         m_initial_state(m_ssg->get_or_create_initial_state()),
         m_iw(applicable_action_generator, max_arity, successor_state_generator, brfs_event_handler, iw_event_handler)
@@ -85,6 +94,8 @@ public:
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
     {
+        m_siw_event_handler->on_start_search(m_aag->get_problem(), start_state, m_aag->get_pddl_factories());
+
         auto problem_goal_test = std::make_unique<ProblemGoal>(m_aag->get_problem());
 
         if (!problem_goal_test->test_static_goal())
@@ -98,22 +109,32 @@ public:
         while (!problem_goal_test->test_dynamic_goal(cur_state))
         {
             // Run IW to decrease goal counter
+            m_siw_event_handler->on_start_subproblem_search(m_aag->get_problem(), cur_state, m_aag->get_pddl_factories());
 
             auto partial_plan = GroundActionList {};
 
             auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(m_aag->get_problem(), cur_state), partial_plan, goal_state);
 
-            if (search_status != SearchStatus::SOLVED)
+            if (search_status == SearchStatus::UNSOLVABLE)
             {
-                return search_status;
+                // m_iw_event_handler->on_unsolvable();
+                return SearchStatus::UNSOLVABLE;
             }
 
             assert(goal_state.has_value());
             cur_state = goal_state.value();
             out_plan.insert(out_plan.end(), partial_plan.begin(), partial_plan.end());
+
+            m_siw_event_handler->on_end_subproblem_search(m_iw_event_handler->get_statistics());
         }
 
         out_goal_state = goal_state;
+        m_siw_event_handler->on_end_search();
+        if (!m_siw_event_handler->is_quiet())
+        {
+            m_aag->on_end_search();
+        }
+        m_siw_event_handler->on_solved(out_plan);
         return SearchStatus::SOLVED;
     }
 };

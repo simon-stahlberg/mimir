@@ -31,7 +31,7 @@ void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(const Problem pr
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }
 
-void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorithmStatistics& algorithm_statistics) const {}
+void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorithmStatistics& brfs_statistics) const {}
 
 void DefaultIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 

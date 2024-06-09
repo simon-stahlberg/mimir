@@ -58,12 +58,15 @@ int main(int argc, char** argv)
 
     auto successor_state_generator = std::shared_ptr<ISSG> { std::make_shared<SSG>(applicable_action_generator) };
 
-    auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
-                                        std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
+    auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
+                                        std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>() };
 
-    auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(false);
+    auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>();
 
-    auto siw = std::make_shared<SIWAlgorithm>(applicable_action_generator, arity, successor_state_generator, brfs_event_handler, iw_event_handler);
+    auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(false);
+
+    auto siw =
+        std::make_shared<SIWAlgorithm>(applicable_action_generator, arity, successor_state_generator, brfs_event_handler, iw_event_handler, siw_event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(siw));
 

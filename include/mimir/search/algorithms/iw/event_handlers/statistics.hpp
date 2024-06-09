@@ -31,31 +31,34 @@ namespace mimir
 class IWAlgorithmStatistics
 {
 private:
-    BrFSAlgorithmStatisticsList m_brfs_algorithm_statistics_by_arity;
+    BrFSAlgorithmStatisticsList m_brfs_statistics_by_arity;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_start_time_point;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_end_time_point;
 
 public:
-    IWAlgorithmStatistics() : m_brfs_algorithm_statistics_by_arity() {}
+    IWAlgorithmStatistics() : m_brfs_statistics_by_arity() {}
 
-    void push_back_algorithm_statistics(BrFSAlgorithmStatistics algorithm_statistics)
-    {
-        m_brfs_algorithm_statistics_by_arity.push_back(std::move(algorithm_statistics));
-    }
+    void push_back_algorithm_statistics(BrFSAlgorithmStatistics algorithm_statistics) { m_brfs_statistics_by_arity.push_back(std::move(algorithm_statistics)); }
 
     void set_search_start_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point) { m_search_start_time_point = time_point; }
     void set_search_end_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point) { m_search_end_time_point = time_point; }
 
-    int get_effective_width() const { return m_brfs_algorithm_statistics_by_arity.size() - 1; }
+    int get_effective_width() const { return m_brfs_statistics_by_arity.size() - 1; }
 
     std::chrono::milliseconds get_search_time_ms() const
     {
         return std::chrono::duration_cast<std::chrono::milliseconds>(m_search_end_time_point - m_search_start_time_point);
     }
 
-    const BrFSAlgorithmStatisticsList& get_algorithm_statistics_by_arity() const { return m_brfs_algorithm_statistics_by_arity; }
+    const BrFSAlgorithmStatisticsList& get_brfs_statistics_by_arity() const { return m_brfs_statistics_by_arity; }
 };
+
+/**
+ * Types
+ */
+
+using IWAlgorithmStatisticsList = std::vector<IWAlgorithmStatistics>;
 
 /**
  * Pretty printing
@@ -66,23 +69,23 @@ inline std::ostream& operator<<(std::ostream& os, const IWAlgorithmStatistics& s
     os << "[IW] Search time: " << statistics.get_search_time_ms().count() << "ms"
        << "\n"
        << "[IW] Effective width: " << statistics.get_effective_width() << "\n"
-       << "[IW] Number of generated states: " << statistics.get_algorithm_statistics_by_arity().back().get_num_generated() << "\n"
-       << "[IW] Number of expanded states: " << statistics.get_algorithm_statistics_by_arity().back().get_num_expanded() << "\n"
-       << "[IW] Number of pruned states: " << statistics.get_algorithm_statistics_by_arity().back().get_num_pruned() << "\n"
+       << "[IW] Number of generated states: " << statistics.get_brfs_statistics_by_arity().back().get_num_generated() << "\n"
+       << "[IW] Number of expanded states: " << statistics.get_brfs_statistics_by_arity().back().get_num_expanded() << "\n"
+       << "[IW] Number of pruned states: " << statistics.get_brfs_statistics_by_arity().back().get_num_pruned() << "\n"
        << "[IW] Number of generated states until last f-layer: "
-       << (statistics.get_algorithm_statistics_by_arity().back().get_num_generated_until_f_value().empty() ?
+       << (statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().empty() ?
                0 :
-               statistics.get_algorithm_statistics_by_arity().back().get_num_generated_until_f_value().back())
+               statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back())
        << "\n"
        << "[IW] Number of expanded states until last f-layer: "
-       << (statistics.get_algorithm_statistics_by_arity().back().get_num_expanded_until_f_value().empty() ?
+       << (statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().empty() ?
                0 :
-               statistics.get_algorithm_statistics_by_arity().back().get_num_expanded_until_f_value().back())
+               statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back())
        << "\n"
        << "[IW] Number of pruned states until last f-layer: "
-       << (statistics.get_algorithm_statistics_by_arity().back().get_num_pruned_until_f_value().empty() ?
+       << (statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_f_value().empty() ?
                0 :
-               statistics.get_algorithm_statistics_by_arity().back().get_num_pruned_until_f_value().back());
+               statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_f_value().back());
 
     return os;
 }
