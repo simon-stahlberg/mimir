@@ -109,6 +109,10 @@ public:
             {
                 return SearchStatus::SOLVED;
             }
+            else if (search_status == SearchStatus::UNSOLVABLE)
+            {
+                return SearchStatus::UNSOLVABLE;
+            }
 
             ++cur_arity;
         }

@@ -91,21 +91,6 @@ public:
 /// with constant amortized cost to compute the next tuple index.
 class StatePairTupleIndexGenerator
 {
-public:
-    /// @brief IteratorData encapsulates containers for memory reuse.
-    struct IteratorData
-    {
-        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
-        int indices[MAX_ARITY];
-        // a[i] = 0 => pick from atom_indices, a[i] = 1 => pick from add_atom_indices
-        int a[MAX_ARITY];
-        std::array<std::vector<int>, 2> a_index_jumper;
-        std::array<AtomIndices, 2> a_atom_indices;
-        std::array<int, 2> a_num_atom_indices;
-
-        explicit IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_);
-    };
-
 private:
     std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
@@ -113,7 +98,6 @@ private:
     // Preallocated memory for reuse
     std::array<std::vector<int>, 2> a_index_jumper;
     std::array<AtomIndices, 2> a_atom_indices;
-    std::array<int, 2> a_num_atom_indices;
 
     friend class const_iterator;
 
@@ -126,10 +110,10 @@ public:
         /* External data */
         const TupleIndexMapper* m_tuple_index_mapper;
         const std::array<AtomIndices, 2>* m_a_atom_indices;
-        const std::array<int, 2>* m_a_num_atom_indices;
         std::array<std::vector<int>, 2>* m_a_index_jumper;
 
         /* Internal data */
+        std::array<int, 2> m_a_num_atom_indices;
         std::array<int, MAX_ARITY> m_indices;
         std::array<int, MAX_ARITY> m_a;
         int m_cur_outter;

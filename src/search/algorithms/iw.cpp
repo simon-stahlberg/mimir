@@ -342,15 +342,6 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::end() const {
  * StatePairTupleIndexGenerator
  */
 
-StatePairTupleIndexGenerator::IteratorData::IteratorData(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    tuple_index_mapper(std::move(tuple_index_mapper_)),
-    a_index_jumper(),
-    a_atom_indices(),
-    a_num_atom_indices()
-{
-    assert(tuple_index_mapper);
-}
-
 StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper_,
                                                            std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
     atom_index_mapper(std::move(atom_index_mapper_)),
@@ -361,8 +352,10 @@ StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<Fluen
 StatePairTupleIndexGenerator::const_iterator::const_iterator() :
     m_tuple_index_mapper(nullptr),
     m_a_atom_indices(nullptr),
-    m_a_num_atom_indices(nullptr),
     m_a_index_jumper(nullptr),
+    m_a_num_atom_indices(),
+    m_indices(),
+    m_a(),
     m_cur_outter(-1),
     m_cur_inner(-1),
     m_end_outter(false),
@@ -373,8 +366,10 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator() :
 StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndexGenerator* sptig, bool begin) :
     m_tuple_index_mapper(begin ? sptig->tuple_index_mapper.get() : nullptr),
     m_a_atom_indices(begin ? &sptig->a_atom_indices : nullptr),
-    m_a_num_atom_indices(begin ? &sptig->a_num_atom_indices : nullptr),
     m_a_index_jumper(begin ? &sptig->a_index_jumper : nullptr),
+    m_a_num_atom_indices(),
+    m_indices(),
+    m_a(),
     m_cur_outter(begin ? 0 : -1),
     m_cur_inner(begin ? 0 : -1),
     m_end_outter(begin ? false : true),
@@ -386,12 +381,12 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndex
         assert(!(*m_a_atom_indices)[0].empty());
         // Ensure that add_atom_indices is nonempty due to correct generation of tuples in previous states.
         assert(!(*m_a_atom_indices)[1].empty());
-        // Ensure that sizes are initialized properly
-        assert(static_cast<int>((*m_a_atom_indices)[0].size()) == (*m_a_num_atom_indices)[0]);
-        assert(static_cast<int>((*m_a_atom_indices)[1].size()) == (*m_a_num_atom_indices)[1]);
         // Ensure that atom indices are sorted
         assert(std::is_sorted((*m_a_atom_indices)[0].begin(), (*m_a_atom_indices)[0].end()));
         assert(std::is_sorted((*m_a_atom_indices)[1].begin(), (*m_a_atom_indices)[1].end()));
+
+        m_a_num_atom_indices[0] = (*m_a_atom_indices)[0].size();
+        m_a_num_atom_indices[1] = (*m_a_atom_indices)[1].size();
 
         // Initialize m_a_index_jumper to know the next large element in the opposite atom indices vector when iterating
         initialize_index_jumper();
@@ -409,12 +404,12 @@ void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
 {
     (*m_a_index_jumper)[0].clear();
     (*m_a_index_jumper)[1].clear();
-    (*m_a_index_jumper)[0].resize((*m_a_num_atom_indices)[0], std::numeric_limits<int>::max());
-    (*m_a_index_jumper)[1].resize((*m_a_num_atom_indices)[1], std::numeric_limits<int>::max());
+    (*m_a_index_jumper)[0].resize(m_a_num_atom_indices[0], std::numeric_limits<int>::max());
+    (*m_a_index_jumper)[1].resize(m_a_num_atom_indices[1], std::numeric_limits<int>::max());
 
     int j = 0;
     int i = 0;
-    while (j < (*m_a_num_atom_indices)[0] && i < (*m_a_num_atom_indices)[1])
+    while (j < m_a_num_atom_indices[0] && i < m_a_num_atom_indices[1])
     {
         if ((*m_a_atom_indices)[0][j] < (*m_a_atom_indices)[1][i])
         {
@@ -475,7 +470,7 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
             int new_index = -1;
             if (prev_a == cur_a)
             {
-                if (prev_index == (*m_a_num_atom_indices)[cur_a] - 1)
+                if (prev_index == m_a_num_atom_indices[cur_a] - 1)
                 {
                     // Cannot increment index
                     exhausted = true;
@@ -534,7 +529,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 
         // Find the rightmost index and increment it
         int i = arity - 1;
-        while (i >= 0 && (m_indices[i] == (*m_a_num_atom_indices)[m_a[i]] - 1))
+        while (i >= 0 && (m_indices[i] == m_a_num_atom_indices[m_a[i]] - 1))
         {
             --i;
         }
@@ -568,7 +563,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
             int new_index = -1;
             if (prev_a == cur_a)
             {
-                if (old_index == (*m_a_num_atom_indices)[cur_a] - 1)
+                if (old_index == m_a_num_atom_indices[cur_a] - 1)
                 {
                     // Cannot increment index
                     exhausted = true;
@@ -605,7 +600,7 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 
 StatePairTupleIndexGenerator::const_iterator::value_type StatePairTupleIndexGenerator::const_iterator::operator*() const
 {
-    assert(m_tuple_index_mapper && m_a_atom_indices && m_a_num_atom_indices && m_a_index_jumper);
+    assert(m_tuple_index_mapper && m_a_atom_indices && m_a_index_jumper);
     // Do not allow interpreting end as position.
     assert(!(m_end_inner && m_end_outter));
 
@@ -643,8 +638,6 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
     atom_index_mapper->remap_and_combine_and_sort(state, succ_state, a_atom_indices[0], a_atom_indices[1]);
     assert(std::is_sorted(a_atom_indices[0].begin(), a_atom_indices[0].end()));
     assert(std::is_sorted(a_atom_indices[1].begin(), a_atom_indices[1].end()));
-    a_num_atom_indices[0] = a_atom_indices[0].size();
-    a_num_atom_indices[1] = a_atom_indices[1].size();
 
     return const_iterator(this, true);
 }
@@ -655,8 +648,6 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
     a_atom_indices[1] = add_atom_indices;
     assert(std::is_sorted(a_atom_indices[0].begin(), a_atom_indices[0].end()));
     assert(std::is_sorted(a_atom_indices[1].begin(), a_atom_indices[1].end()));
-    a_num_atom_indices[0] = a_atom_indices[0].size();
-    a_num_atom_indices[1] = a_atom_indices[1].size();
 
     return const_iterator(this, true);
 }
