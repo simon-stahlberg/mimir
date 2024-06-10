@@ -425,4 +425,17 @@ Problem LiftedApplicableActionGenerator::get_problem() const { return m_problem;
 
 [[nodiscard]] const PDDLFactories& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_ref_pddl_factories; }
 
+std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag)
+{
+    out << "Lifted AAG:" << std::endl;
+
+    for (const auto& [action, grounder] : lifted_aag.m_action_precondition_grounders)
+    {
+        out << " - Action: " << action->get_name() << std::endl;
+        out << grounder << std::endl;
+    }
+
+    return out;
+}
+
 }

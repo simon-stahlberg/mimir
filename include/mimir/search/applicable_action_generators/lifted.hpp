@@ -102,7 +102,11 @@ public:
 
     /// @brief Return the action with the given id.
     [[nodiscard]] GroundAction get_action(size_t action_id) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag);
 };
+
+std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag);
 
 /**
  * Types

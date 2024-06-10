@@ -64,12 +64,19 @@ int main(int argc, char** argv)
     }
 
     auto applicable_action_generator =
-        (grounded) ? std::shared_ptr<IAAG> { std::make_shared<GroundedAAG>(parser.get_problem(),
-                                                                           parser.get_factories(),
-                                                                           std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
-                     std::shared_ptr<IAAG> {
-                         std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
-                     };
+        (grounded)
+        ?  std::shared_ptr<IAAG> { std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugGroundedAAGEventHandler>(false)) }
+        : std::shared_ptr<IAAG> { std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false)) };
+
+    if (debug)
+    {
+        std::shared_ptr<LiftedAAG> lifted_aag = std::dynamic_pointer_cast<LiftedAAG>(applicable_action_generator);
+
+        if (lifted_aag)
+        {
+            std::cout << *lifted_aag << std::endl;
+        }
+    }
 
     auto successor_state_generator = std::shared_ptr<ISSG> { std::make_shared<SSG>(applicable_action_generator) };
 

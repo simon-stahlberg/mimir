@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_ASSIGNMENT_SET_HPP_
 
 #include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/literal.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 
 #include <cassert>
@@ -95,7 +96,7 @@ public:
     /// 1. the assignment set, and 2. the edge of the consistency graph.
     ///
     /// The meaning of the result being true is that the edge remains consistent.
-    bool literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Edge& consistent_edge) const;
+    bool literal_all_consistent(const LiteralList<P>& literals, const consistency_graph::Edge& consistent_edge) const;
 
     /// @brief Return true iff all literals are consistent with
     /// 1. the assignment set, and 2. the vertex of the consistency graph.
@@ -105,7 +106,7 @@ public:
     /// @param literals
     /// @param consistent_vertex
     /// @return
-    bool literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Vertex& consistent_vertex) const;
+    bool literal_all_consistent(const LiteralList<P>& literals, const consistency_graph::Vertex& consistent_vertex) const;
 };
 
 template<PredicateCategory P>
@@ -176,7 +177,7 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 }
 
 template<PredicateCategory P>
-bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Edge& consistent_edge) const
+bool AssignmentSet<P>::literal_all_consistent(const LiteralList<P>& literals, const consistency_graph::Edge& consistent_edge) const
 {
     for (const auto& literal : literals)
     {
@@ -201,16 +202,17 @@ bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& lit
                 {
                     const auto parameter_index = term_variable->get_variable()->get_parameter_index();
 
-                    if (edge.get_src().get_param_index() == parameter_index)
+                    if (edge.get_src().get_parameter_index() == parameter_index)
                     {
-                        return std::make_pair(index, edge.get_src().get_object_index());
+                        return std::make_pair(index, edge.get_src().get_object_id());
                     }
-                    else if (edge.get_dst().get_param_index() == parameter_index)
+                    else if (edge.get_dst().get_parameter_index() == parameter_index)
                     {
-                        return std::make_pair(index, edge.get_dst().get_object_index());
+                        return std::make_pair(index, edge.get_dst().get_object_id());
                     }
                 }
             }
+
             return std::make_pair(MAX_VALUE, MAX_VALUE);
         };
 
@@ -256,61 +258,42 @@ bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& lit
 }
 
 template<PredicateCategory P>
-bool AssignmentSet<P>::literal_all_consistent(const std::vector<Literal<P>>& literals, const consistency_graph::Vertex& consistent_vertex) const
+bool AssignmentSet<P>::literal_all_consistent(const LiteralList<P>& literals, const consistency_graph::Vertex& vertex) const
 {
-    for (const auto& literal : literals)
+    const auto relevant_term = [&vertex](Term term)
     {
-        const auto arity = literal->get_atom()->get_predicate()->get_arity();
-
-        if (literal->is_negated() && arity != 1)
+        if (const auto term_object = std::get_if<TermObjectImpl>(term))
         {
-            continue;
+            return vertex.get_object_id() == term_object->get_object()->get_identifier();
+        }
+        else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
+        {
+            return vertex.get_parameter_index() == term_variable->get_variable()->get_parameter_index();
         }
 
-        const auto find_assignment = [arity](size_t index, const TermList& terms, const consistency_graph::Vertex& vertex)
+        return false;
+    };
+
+    const auto num_objects = m_problem->get_objects().size();
+
+    for (const auto& literal : literals)
+    {
+        const auto& atom = literal->get_atom();
+        const auto& predicate = atom->get_predicate();
+        const auto& assignment_set = m_f[predicate->get_identifier()];
+        const auto& terms = atom->get_terms();
+        const auto arity = predicate->get_arity();
+        const auto negated = literal->is_negated();
+        const auto relevant_literal = (arity == 1) && relevant_term(terms[0]);
+
+        if (relevant_literal)
         {
-            for (; index < arity; ++index)
-            {
-                const auto& term = terms[index];
-
-                if (const auto term_object = std::get_if<TermObjectImpl>(term))
-                {
-                    return std::make_pair(index, term_object->get_object()->get_identifier());
-                }
-                else if (const auto term_variable = std::get_if<TermVariableImpl>(term))
-                {
-                    const auto parameter_index = term_variable->get_variable()->get_parameter_index();
-
-                    if (vertex.get_param_index() == parameter_index)
-                    {
-                        return std::make_pair(index, vertex.get_object_index());
-                    }
-                }
-            }
-            return std::make_pair(MAX_VALUE, MAX_VALUE);
-        };
-
-        // Test all nonempty assignments
-        const auto& assignment_set = m_f[literal->get_atom()->get_predicate()->get_identifier()];
-        const auto& terms = literal->get_atom()->get_terms();
-        const auto num_objects = m_problem->get_objects().size();
-        for (size_t index = 0; index < arity; ++index)
-        {
-            const auto [position, object_id] = find_assignment(index, terms, consistent_vertex);
-            bool is_empty_assignment = (object_id == MAX_VALUE);
-            if (is_empty_assignment)
-            {
-                // Stop searching for nonempty assignments
-                break;
-            }
-
-            // Test assignment
-            const auto assignment_rank = get_assignment_position(Assignment { position, object_id, MAX_VALUE, MAX_VALUE }, arity, num_objects);
+            const auto assignment_rank = get_assignment_position(Assignment { 0, vertex.get_object_id(), MAX_VALUE, MAX_VALUE }, arity, num_objects);
             assert(assignment_rank < assignment_set.size());
-            const auto consistent_with_state = assignment_set[assignment_rank];
-            if (literal->is_negated() == consistent_with_state)
+            const auto atom_holds = assignment_set[assignment_rank];
+
+            if (negated == atom_holds)
             {
-                // Conflict of assignment represented by the given vertex was found.
                 return false;
             }
         }

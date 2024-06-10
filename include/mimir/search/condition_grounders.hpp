@@ -32,24 +32,23 @@
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 #include <memory>
+#include <ostream>
 #include <stdexcept>
+#include <tuple>
 #include <utility>
 
 namespace mimir
 {
 
 template<typename S>
-concept HasLiteralHolds = requires(S state, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal) {
-    {
-        state.literal_holds(fluent_literal)
-    } -> std::convertible_to<bool>;
-    {
-        state.literal_holds(derived_literal)
-    } -> std::convertible_to<bool>;
+concept HasLiteralHolds = requires(S state, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal)
+{
+    { state.literal_holds(fluent_literal) } -> std::convertible_to<bool>;
+    { state.literal_holds(derived_literal) } -> std::convertible_to<bool>;
 };
 
 template<typename State>
-    requires HasLiteralHolds<State>
+requires HasLiteralHolds<State>
 class ConditionGrounder
 {
 private:
@@ -122,8 +121,8 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(const Problem problem, const State state)
     {
-        return (nullary_literals_hold(m_fluent_conditions, problem, state, m_ref_pddl_factories))
-               && (nullary_literals_hold(m_derived_conditions, problem, state, m_ref_pddl_factories));
+        return nullary_literals_hold(m_fluent_conditions, problem, state, m_ref_pddl_factories)
+               && nullary_literals_hold(m_derived_conditions, problem, state, m_ref_pddl_factories);
     }
 
     void nullary_case(const State state, std::vector<ObjectList>& ref_bindings)
@@ -151,7 +150,7 @@ private:
             if (fluent_assignment_sets.literal_all_consistent(m_fluent_conditions, vertex)
                 && derived_assignment_sets.literal_all_consistent(m_derived_conditions, vertex))
             {
-                auto binding = ObjectList { m_ref_pddl_factories.get_object(vertex.get_object_index()) };
+                auto binding = ObjectList { m_ref_pddl_factories.get_object(vertex.get_object_id()) };
 
                 if (is_valid_binding(m_problem, state, binding))
                 {
@@ -210,8 +209,8 @@ private:
             for (std::size_t index = 0; index < clique.size(); ++index)
             {
                 const auto& vertex = vertices[clique[index]];
-                const auto param_index = vertex.get_param_index();
-                const auto object_id = vertex.get_object_index();
+                const auto param_index = vertex.get_parameter_index();
+                const auto object_id = vertex.get_object_id();
                 binding[param_index] = m_ref_pddl_factories.get_object(object_id);
             }
 
@@ -305,7 +304,19 @@ public:
             }
         }
     }
+
+    friend std::ostream& operator<<(std::ostream& out, const ConditionGrounder<State>& condition_grounder)
+    {
+        out << "Condition Grounder:" << std::endl;
+        out << " - Variables: " << condition_grounder.m_variables << std::endl;
+        out << " - Static Conditions: " << condition_grounder.m_static_conditions << std::endl;
+        out << " - Fluent Conditions: " << condition_grounder.m_fluent_conditions << std::endl;
+        out << " - Derived Conditions: " << condition_grounder.m_derived_conditions << std::endl;
+        out << " - Static Consistency Graph: " << std::tie(condition_grounder.m_static_consistency_graph, condition_grounder.m_ref_pddl_factories) << std::endl;
+        return out;
+    }
 };
+
 }
 
 #endif  // MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_

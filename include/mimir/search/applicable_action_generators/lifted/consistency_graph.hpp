@@ -51,8 +51,8 @@ public:
     bool operator==(const Vertex& other) const { return m_id == other.m_id; }
 
     VertexID get_id() const { return m_id; }
-    ParameterID get_param_index() const { return m_param; }
-    ObjectID get_object_index() const { return m_object; }
+    ParameterID get_parameter_index() const { return m_param; }
+    ObjectID get_object_id() const { return m_object; }
 };
 
 /// @brief An undirected edge {src,dst} in the consistency graph.

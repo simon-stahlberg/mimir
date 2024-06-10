@@ -73,10 +73,10 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
             const auto& second_vertex = m_vertices.at(second_vertex_id);
 
             // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
-            if (first_vertex.get_param_index() != second_vertex.get_param_index())
+            if (first_vertex.get_parameter_index() != second_vertex.get_parameter_index())
             {
-                auto edge = Edge(Vertex(first_vertex_id, first_vertex.get_param_index(), first_vertex.get_object_index()),
-                                 Vertex(second_vertex_id, second_vertex.get_param_index(), second_vertex.get_object_index()));
+                auto edge = Edge(Vertex(first_vertex_id, first_vertex.get_parameter_index(), first_vertex.get_object_id()),
+                                 Vertex(second_vertex_id, second_vertex.get_parameter_index(), second_vertex.get_object_id()));
 
                 if (static_assignment_set.literal_all_consistent(static_conditions, edge))
                 {
@@ -110,7 +110,7 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGr
     const auto& [graph, pddl_factories] = data;
 
     const auto create_node = [](const Vertex& vertex, const PDDLFactories& pddl_factories, std::ostream& out)
-    { out << "  \"" << vertex.get_id() << "\" [label=\"" << *pddl_factories.get_object(vertex.get_object_index()) << "\"];\n"; };
+    { out << "  \"" << vertex.get_id() << "\" [label=\"#" << vertex.get_parameter_index() << " <- " << *pddl_factories.get_object(vertex.get_object_id()) << "\"];\n"; };
 
     const auto create_edge = [](const Edge& edge, std::ostream& out)
     { out << "  \"" << edge.get_src().get_id() << "\" -- \"" << edge.get_dst().get_id() << "\";\n"; };
