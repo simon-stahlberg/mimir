@@ -19,6 +19,7 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
 
     // Negation normal form translator
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
+    problem = to_nnf_translator.run(*problem);
 
     // Rename quantified variables
     auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_factories());

@@ -122,13 +122,15 @@ public:
 
         static const int UNDEFINED;
 
+        // O(N)
         void initialize_index_jumper();
-
+        // O(K)
         int find_rightmost_incrementable_index();
+        // O(1)
         int find_new_index(int i);
-
+        // O(K*2^K)
         bool advance_outter();
-
+        // Outter iteration O(K*2^K), inner iteration amortized O(1) for O(N^K) iterations
         void advance_inner();
 
     public:

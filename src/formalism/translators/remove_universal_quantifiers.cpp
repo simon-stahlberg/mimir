@@ -119,12 +119,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, head_parameters);
     m_derived_predicates.insert(predicate);
     const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
-    // Pass parameters upwards through an existential
-    const auto substituted_condition =
-        head_parameters.empty() ? this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)) :
-                                  this->m_pddl_factories.get_or_create_condition_exists(
-                                      head_parameters,
-                                      this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom)));
+    const auto substituted_condition = this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom));
     const auto axiom = this->m_pddl_factories.get_or_create_axiom(axiom_name, axiom_parameters, axiom_condition, head_parameters.size());
 
     m_axioms.insert(axiom);

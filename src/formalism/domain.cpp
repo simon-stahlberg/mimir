@@ -115,7 +115,7 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
         }
         out << ")\n";
     }
-    if (!(m_static_predicates.empty() && m_fluent_predicates.empty()))
+    if (!(m_static_predicates.empty() && m_fluent_predicates.empty() && !m_derived_predicates.empty()))
     {
         out << string(nested_options.indent, ' ') << "(:predicates";
         for (const auto& predicate : m_static_predicates)
@@ -128,16 +128,10 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
             out << " ";
             predicate->str(out, nested_options);
         }
-        out << ")\n";
-    }
-    if (!m_derived_predicates.empty())
-    {
-        out << string(nested_options.indent, ' ') << "(:derived-predicates ";
-        for (size_t i = 0; i < m_derived_predicates.size(); ++i)
+        for (const auto& predicate : m_derived_predicates)
         {
-            if (i != 0)
-                out << " ";
-            m_derived_predicates[i]->str(out, nested_options);
+            out << " ";
+            predicate->str(out, nested_options);
         }
         out << ")\n";
     }

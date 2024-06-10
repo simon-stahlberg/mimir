@@ -98,15 +98,12 @@ private:
 
     /* Translate step */
 
-    // Track the number of times that each variable was quantified during the translation phase.
-    // Increment num_quantifications[var] when encountering a quantifier during the translation phase.
     std::unordered_map<loki::Variable, size_t> m_num_quantifications;
-    std::unordered_map<loki::Variable, loki::Variable> m_renamings;
 
     bool m_renaming_enabled;
 
-    /// @brief Renames variables during translation.
-    void rename_variables(const loki::ParameterList& parameters);
+    void increment_num_quantifications(const loki::ParameterList& parameters);
+    void decrement_num_quantifications(const loki::ParameterList& parameters);
 
     loki::Variable translate_impl(const loki::VariableImpl& variable);
 
