@@ -40,12 +40,28 @@ int main(int argc, char** argv)
 
     auto parser = PDDLParser(domain_file_path, problem_file_path);
 
-    std::cout << "Domain:" << std::endl;
-    std::cout << *parser.get_domain() << std::endl;
+    if (debug)
+    {
+        std::cout << "Domain:" << std::endl;
+        std::cout << *parser.get_domain() << std::endl;
 
-    std::cout << std::endl;
-    std::cout << "Problem:" << std::endl;
-    std::cout << *parser.get_problem() << std::endl;
+        std::cout << std::endl;
+        std::cout << "Problem:" << std::endl;
+        std::cout << *parser.get_problem() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Static Predicates:" << std::endl;
+        std::cout << parser.get_domain()->get_static_predicates() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Fluent Predicates:" << std::endl;
+        std::cout << parser.get_domain()->get_fluent_predicates() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Derived Predicates:" << std::endl;
+        std::cout << parser.get_domain()->get_derived_predicates() << std::endl;
+        std::cout << std::endl;
+    }
 
     auto applicable_action_generator =
         (grounded) ? std::shared_ptr<IAAG> { std::make_shared<GroundedAAG>(parser.get_problem(),

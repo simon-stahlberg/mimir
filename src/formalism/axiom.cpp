@@ -68,7 +68,7 @@ size_t AxiomImpl::hash_impl() const
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
-    out << std::string(options.indent, ' ') << "(:derived " << *m_literal << "\n";
+    out << std::string(options.indent, ' ') << "(:derived " << *m_literal << std::endl;
     out << std::string(nested_options.indent, ' ') << "(and";
     for (const auto& condition : m_static_conditions)
     {
@@ -82,7 +82,8 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
     {
         out << " " << *condition;
     }
-    out << " )\n";
+    out << ")" << std::endl;
+    out << std::string(options.indent, ' ') << ")" << std::endl;
 }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }

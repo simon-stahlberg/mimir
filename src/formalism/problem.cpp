@@ -140,14 +140,14 @@ size_t ProblemImpl::hash_impl() const
 
 void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
-    out << string(options.indent, ' ') << "(define (problem " << m_name << ")\n";
+    out << string(options.indent, ' ') << "(define (problem " << m_name << ")" << std::endl;
     auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
-    out << string(nested_options.indent, ' ') << "(:domain " << m_domain->get_name() << ")\n";
+    out << string(nested_options.indent, ' ') << "(:domain " << m_domain->get_name() << ")" << std::endl;
     if (!m_requirements->get_requirements().empty())
     {
         out << string(nested_options.indent, ' ');
         m_requirements->str(out, nested_options);
-        out << "\n";
+        out << std::endl;
     }
 
     if (!m_objects.empty())
@@ -159,7 +159,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
                 out << " ";
             out << *m_objects[i];
         }
-        out << ")\n";
+        out << ")" << std::endl;
     }
 
     if (!m_derived_predicates.empty())
@@ -171,7 +171,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
                 out << " ";
             m_derived_predicates[i]->str(out, nested_options);
         }
-        out << ")\n";
+        out << ")" << std::endl;
     }
 
     if (!(m_static_initial_literals.empty() && m_fluent_initial_literals.empty() && m_numeric_fluents.empty()))
@@ -194,7 +194,7 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
             m_numeric_fluents[i]->str(out, nested_options);
         }
     }
-    out << ")\n";
+    out << ")" << std::endl;
 
     if (!(m_static_goal_condition.empty() && m_fluent_goal_condition.empty() && m_derived_goal_condition.empty()))
     {
@@ -212,14 +212,14 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
         {
             out << " " << *literal;
         }
-        out << " )\n";
+        out << " ))";
     }
 
     if (m_optimization_metric.has_value())
     {
         out << string(nested_options.indent, ' ') << "(:metric ";
         m_optimization_metric.value()->str(out, nested_options);
-        out << ")\n";
+        out << ")" << std::endl;
     }
 
     for (const auto& axiom : m_axioms)
