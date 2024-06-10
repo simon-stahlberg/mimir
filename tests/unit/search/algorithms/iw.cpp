@@ -40,8 +40,7 @@ public:
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
-    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
-
+    const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
     const LiftedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };
 
@@ -77,8 +76,7 @@ public:
         return std::make_tuple(status, to_plan(action_view_list));
     }
 
-    const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
-
+    const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
     const GroundedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };
 
@@ -257,10 +255,9 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test3)
  * Delivery
  */
 
-/*
 TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
 {
-    auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 2);
+    auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 3);
     const auto [search_status, plan] = iw.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
@@ -278,31 +275,33 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
     EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
-    const auto& iw_statistics = iw.get_algorithm_statistics();
+    const auto& iw_statistics = iw.get_iw_statistics();
 
-    EXPECT_EQ(iw_statistics.get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(iw_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back(), 18);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_effective_width(), 2);
 }
 
 TEST(MimirTests, SearchAlgorithmsIWLiftedDeliveryTest)
 {
-    auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 2);
+    auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 3);
     const auto [search_status, plan] = iw.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);
 
     const auto& aag_statistics = iw.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 6);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 25);
     EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 12);
 
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
 
-    const auto& iw_statistics = iw.get_algorithm_statistics();
+    const auto& iw_statistics = iw.get_iw_statistics();
 
-    EXPECT_EQ(iw_statistics.get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(iw_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back(), 18);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_effective_width(), 2);
 }
-*/
+
 }
