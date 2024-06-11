@@ -164,6 +164,7 @@ static std::tuple<std::vector<int>, StateList> compute_next_layer(const StateSpa
     out_novel_tuple_indices.insert(out_novel_tuple_indices.end(), novel_tuple_indices_set.begin(), novel_tuple_indices_set.end());
 
     // Extend optimal plans for tuples at distance-1 to tuples at distance
+    return std::make_tuple(std::vector<int> {}, StateList {});
 }
 
 TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state)
