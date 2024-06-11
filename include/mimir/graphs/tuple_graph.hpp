@@ -101,6 +101,59 @@ private:
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
 
+    // Bookkeeping for memory reuse when building tuple graph of width greater 0
+    class TupleGraphArityKComputation
+    {
+    private:
+        std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
+        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+        std::shared_ptr<StateSpaceImpl> state_space;
+        State root_state;
+        bool prune_dominated_tuples;
+        TupleGraphVertexList vertices;
+        std::vector<std::vector<int>> forward_successors;
+        std::vector<std::vector<int>> backward_successors;
+        std::vector<std::vector<int>> vertex_indices_by_distances;
+        std::vector<StateList> states_by_distance;
+
+        // To compute novel tuples for a given state.
+        DynamicNoveltyTable novelty_table;
+
+        // To create next state layer
+        StateSet visited_states;
+        StateList cur_states;
+
+        // Novel tuple indices in next layer
+        TupleIndexSet novel_tuple_indices_set;
+        // To compute novel tuple indices for a state
+        TupleIndexList novel_tuple_indices;
+
+        // To compute extended vertices
+        std::unordered_map<TupleIndex, StateSet> cur_tuple_index_to_underlying_extendable_state;
+        std::unordered_map<TupleIndex, std::unordered_set<int>> extendable_tuple_index_to_prev_vertices;
+        std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
+        std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_state_indices;
+
+        // Tuples that make it into vertices
+        TupleIndexSet cur_extendable_tuple_indices;
+
+        // Extended vertices
+        std::vector<int> cur_vertices;
+
+    public:
+        TupleGraphArityKComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                    std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                    std::shared_ptr<StateSpaceImpl> state_space,
+                                    const State root_state,
+                                    bool prune_dominated_tuples);
+
+        void compute_root_state_layer();
+
+        bool compute_next_layer();
+
+        TupleGraph extract_tuple_graph();
+    };
+
     /// @brief Create tuple graph for the special case of width 0, i.e.,
     /// any state with distance at most 1 from the root_state is a subgoal state.
     TupleGraph create_for_arity_zero(const State root_state);
