@@ -90,6 +90,57 @@ public:
  * Airport
  */
 
+TEST(MimirTests, SearchAlgorithmsBrFSGroundedAssemblyTest)
+{
+    auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "assembly/domain.pddl"), fs::path(std::string(DATA_DIR) + "assembly/test_problem.pddl"));
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 1);
+
+    const auto& aag_statistics = brfs.get_aag_statistics();
+
+    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 7);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 3);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 6);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 3);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_actions(), 6);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 10);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 2);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 2);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 3);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 1);
+}
+
+TEST(MimirTests, SearchAlgorithmsBrFSLiftedAssemblyTest)
+{
+    auto brfs = LiftedBrFSPlanner(fs::path(std::string(DATA_DIR) + "assembly/domain.pddl"), fs::path(std::string(DATA_DIR) + "assembly/test_problem.pddl"));
+    const auto [search_status, plan] = brfs.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 1);
+
+    const auto& aag_statistics = brfs.get_aag_statistics();
+
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 3);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 4);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 2);
+
+    const auto& brfs_statistics = brfs.get_algorithm_statistics();
+
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 3);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 1);
+}
+
+/**
+ * Airport
+ */
+
 TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
 {
     auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "airport/domain.pddl"), fs::path(std::string(DATA_DIR) + "airport/test_problem.pddl"));
