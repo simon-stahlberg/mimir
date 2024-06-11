@@ -32,15 +32,21 @@ namespace mimir
  * TupleIndexMapper
  */
 
-TupleIndexMapper::TupleIndexMapper(int arity, int num_atoms) : m_arity(arity), m_num_atoms(num_atoms)
+TupleIndexMapper::TupleIndexMapper(int arity, int num_atoms) : m_arity(arity), m_num_atoms(num_atoms), m_empty_tuple_index(0)
 {
     if (!(arity > 0 && arity < MAX_ARITY))
     {
         throw std::runtime_error("TupleIndexMapper only works with arity > 0 and arity < " + std::to_string(MAX_ARITY) + ".");
     }
+    // Initialize factors
     for (int i = 0; i < m_arity; ++i)
     {
         m_factors[i] = std::pow(m_num_atoms, i);
+    }
+    // Initialize empty tuple index
+    for (int i = 0; i < m_arity; ++i)
+    {
+        m_empty_tuple_index += m_num_atoms * m_factors[i];
     }
 }
 
@@ -99,6 +105,8 @@ int TupleIndexMapper::get_max_tuple_index() const
     // x^0 + ... + x^n = (x^{n+1} - 1) / 2
     return ((std::pow(get_num_atoms(), get_arity() + 1) - 1) / 2) - 1;
 }
+
+TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tuple_index; }
 
 /**
  * FluentAndDerivedMapper

@@ -576,6 +576,27 @@ public:
         }
     }
 
+    template<PredicateCategory P>
+    size_t get_num_ground_atoms() const
+    {
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_ground_atoms.size();
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_ground_atoms.size();
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_ground_atoms.size();
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
+    }
+
     template<PredicateCategory P, std::ranges::forward_range Iterable>
     void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
     {

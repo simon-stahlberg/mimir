@@ -35,6 +35,8 @@ private:
 
     std::array<int, MAX_ARITY> m_factors;
 
+    int m_empty_tuple_index;
+
 public:
     TupleIndexMapper(int arity, int num_atoms);
 
@@ -51,6 +53,7 @@ public:
     int get_arity() const;
     const std::array<int, MAX_ARITY>& get_factors() const;
     int get_max_tuple_index() const;
+    TupleIndex get_empty_tuple_index() const;
 };
 
 /// @brief FluentAndDerivedMapper encapsulates logic to combine
