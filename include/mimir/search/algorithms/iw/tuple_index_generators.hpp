@@ -40,7 +40,7 @@ private:
     std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
 
     // Preallocated memory for reuse
-    AtomIndices atom_indices;
+    AtomIndexList atom_indices;
 
     friend class const_iterator;
 
@@ -52,7 +52,7 @@ public:
     private:
         /* External data */
         const TupleIndexMapper* m_tuple_index_mapper;
-        const AtomIndices* m_atom_indices;
+        const AtomIndexList* m_atom_indices;
 
         /* Internal data */
         std::array<int, MAX_ARITY> m_indices;
@@ -78,7 +78,7 @@ public:
     };
 
     const_iterator begin(const State state);
-    const_iterator begin(const AtomIndices& atom_indices);  // for testing only
+    const_iterator begin(const AtomIndexList& atom_indices);  // for testing only
     const_iterator end() const;
 };
 
@@ -97,7 +97,7 @@ private:
 
     // Preallocated memory for reuse
     std::array<std::vector<int>, 2> a_index_jumper;
-    std::array<AtomIndices, 2> a_atom_indices;
+    std::array<AtomIndexList, 2> a_atom_indices;
 
     friend class const_iterator;
 
@@ -109,7 +109,7 @@ public:
     private:
         /* External data */
         const TupleIndexMapper* m_tuple_index_mapper;
-        const std::array<AtomIndices, 2>* m_a_atom_indices;
+        const std::array<AtomIndexList, 2>* m_a_atom_indices;
         std::array<std::vector<int>, 2>* m_a_index_jumper;
 
         /* Internal data */
@@ -150,7 +150,7 @@ public:
     };
 
     const_iterator begin(const State state, const State succ_state);
-    const_iterator begin(const AtomIndices& atom_indices, const AtomIndices& add_atom_indices);  // for testing only
+    const_iterator begin(const AtomIndexList& atom_indices, const AtomIndexList& add_atom_indices);  // for testing only
     const_iterator end() const;
 };
 

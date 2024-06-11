@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_TYPES_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_TYPES_HPP_
 
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
@@ -41,10 +42,11 @@ const int INITIAL_TABLE_ATOMS = 64;
  */
 
 using AtomIndex = int;
-using AtomIndices = std::vector<AtomIndex>;
+using AtomIndexList = std::vector<AtomIndex>;
 
 using TupleIndex = int;
-using TupleIndices = std::vector<TupleIndex>;
+using TupleIndexList = std::vector<TupleIndex>;
+using TupleIndexSet = std::unordered_set<TupleIndex>;
 
 }
 

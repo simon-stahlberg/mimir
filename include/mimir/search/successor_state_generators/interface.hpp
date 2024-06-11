@@ -41,6 +41,12 @@ public:
     [[nodiscard]] virtual State get_or_create_successor_state(const State state, const GroundAction action) = 0;
 
     [[nodiscard]] virtual size_t get_state_count() const = 0;
+
+    [[nodiscard]] virtual const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const = 0;
+
+    [[nodiscard]] virtual const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const = 0;
+
+    [[nodiscard]] virtual std::shared_ptr<IAAG> get_aag() const = 0;
 };
 
 /**

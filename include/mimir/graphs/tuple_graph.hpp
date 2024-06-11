@@ -96,6 +96,9 @@ class TupleGraphFactory
 {
 private:
     std::shared_ptr<StateSpaceImpl> m_state_space;
+    bool m_prune_dominated_tuples;
+
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
 
     /// @brief Create tuple graph for the special case of width 0, i.e.,
@@ -105,7 +108,7 @@ private:
     TupleGraph create_for_arity_k(const State root_state);
 
 public:
-    TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity);
+    TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity, bool prune_dominated_tuples = false);
 
     TupleGraph create(const State root_state);
 

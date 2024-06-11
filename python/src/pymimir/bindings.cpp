@@ -604,9 +604,23 @@ void init_pymimir(py::module_& m)
         .def("get_or_create_initial_state", &ISSG::get_or_create_initial_state)
         .def("get_or_create_state", &ISSG::get_or_create_state)
         .def("get_or_create_successor_state", &ISSG::get_or_create_successor_state)
-        .def("get_state_count", &ISSG::get_state_count);
-    py::class_<SuccessorStateGenerator, ISSG, std::shared_ptr<SuccessorStateGenerator>>(m, "SSG")  //
-        .def(py::init<std::shared_ptr<IAAG>>());
+        .def("get_state_count", &ISSG::get_state_count)
+        .def("get_reached_fluent_ground_atoms", &ISSG::get_reached_fluent_ground_atoms)
+        .def("get_reached_derived_ground_atoms", &ISSG::get_reached_derived_ground_atoms);
+    py::class_<SSG, ISSG, std::shared_ptr<SSG>>(m, "SSG")  //
+        .def(py::init<std::shared_ptr<IAAG>>())
+        .def("get_reached_fluent_ground_atoms",
+             [](const SSG& self)
+             {
+                 const auto& atoms = self.get_reached_fluent_ground_atoms();
+                 return std::vector<size_t>(atoms.begin(), atoms.end());
+             })
+        .def("get_reached_derived_ground_atoms",
+             [](const SSG& self)
+             {
+                 const auto& atoms = self.get_reached_derived_ground_atoms();
+                 return std::vector<size_t>(atoms.begin(), atoms.end());
+             });
 
     /* Heuristics */
     py::class_<IHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic");

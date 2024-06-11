@@ -43,6 +43,9 @@ private:
     FlatStateSet m_states;
     StateBuilder m_state_builder;
 
+    FlatBitsetBuilder<Fluent> m_reached_fluent_atoms;
+    FlatBitsetBuilder<Derived> m_reached_derived_atoms;
+
 public:
     explicit SuccessorStateGenerator(std::shared_ptr<IApplicableActionGenerator> aag) : m_aag(std::move(aag)) {}
 
@@ -83,6 +86,7 @@ public:
         {
             fluent_state_atoms.set(atom->get_identifier());
         }
+        m_reached_fluent_atoms |= fluent_state_atoms;
 
         /* 3. Retrieve cached extended state */
 
@@ -102,6 +106,7 @@ public:
         /* 4. Construct extended state by evaluating Axioms */
 
         m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
+        m_reached_derived_atoms |= derived_state_atoms;
 
         /* 5. Cache extended state */
 
@@ -155,6 +160,7 @@ public:
                 }
             }
         }
+        m_reached_fluent_atoms |= fluent_state_atoms;
 
         /* 4. Retrieve cached extended state */
 
@@ -174,6 +180,7 @@ public:
         /* 5. Construct extended state by evaluating Axioms */
 
         m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
+        m_reached_derived_atoms |= derived_state_atoms;
 
         /* 6. Cache extended state */
 
@@ -186,6 +193,12 @@ public:
     }
 
     [[nodiscard]] size_t get_state_count() const override { return m_states.size(); }
+
+    [[nodiscard]] const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const override { return m_reached_fluent_atoms; }
+
+    [[nodiscard]] const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const override { return m_reached_derived_atoms; }
+
+    [[nodiscard]] std::shared_ptr<IAAG> get_aag() const override { return m_aag; }
 };
 
 /**

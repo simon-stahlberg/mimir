@@ -40,9 +40,9 @@ private:
 public:
     TupleIndexMapper(int arity, int num_atoms);
 
-    TupleIndex to_tuple_index(const AtomIndices& atom_indices) const;
+    TupleIndex to_tuple_index(const AtomIndexList& atom_indices) const;
 
-    void to_atom_indices(TupleIndex tuple_index, AtomIndices& out_atom_indices) const;
+    void to_atom_indices(TupleIndex tuple_index, AtomIndexList& out_atom_indices) const;
 
     std::string tuple_index_to_string(TupleIndex tuple_index) const;
 
@@ -76,8 +76,11 @@ private:
 public:
     FluentAndDerivedMapper();
 
-    void remap_and_combine_and_sort(const State state, AtomIndices& out_atoms);
-    void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndices& out_atoms, AtomIndices& out_add_atoms);
+    void remap_and_combine_and_sort(const State state, AtomIndexList& out_atoms);
+    void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndexList& out_atoms, AtomIndexList& out_add_atoms);
+
+    const std::vector<int>& get_fluent_remap() const;
+    const std::vector<int>& get_derived_remap() const;
 };
 
 }

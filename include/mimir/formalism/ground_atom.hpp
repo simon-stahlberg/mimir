@@ -76,6 +76,8 @@ template<PredicateCategory P>
 using GroundAtom = const GroundAtomImpl<P>*;
 template<PredicateCategory P>
 using GroundAtomList = std::vector<GroundAtom<P>>;
+template<PredicateCategory P>
+using GroundAtomSet = std::unordered_set<GroundAtom<P>>;
 
 /**
  * Implementation details

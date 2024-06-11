@@ -124,6 +124,48 @@ TupleGraph TupleGraphFactory::create_for_arity_zero(const State root_state)
                       std::move(states_by_distance));
 }
 
+static std::tuple<std::vector<int>, StateList> compute_next_layer(const StateSpaceImpl& state_space,
+                                                                  const std::vector<int>& prev_vertices,
+                                                                  const StateList& pref_states,
+                                                                  DynamicNoveltyTable& novelty_table,
+                                                                  TupleGraphVertexList& ref_vertices,
+                                                                  std::vector<std::vector<int>>& ref_forward_successors,
+                                                                  std::vector<std::vector<int>>& ref_backward_successors,
+                                                                  StateSet& ref_visited_states,
+                                                                  TupleIndexSet& out_novel_tuple_indices_set,
+                                                                  TupleIndexList& out_novel_tuple_indices,
+                                                                  std::vector<int>& out_cur_vertices,
+                                                                  StateList& out_cur_states)
+{
+    // Compute next state layer
+    for (const auto& state : pref_states)
+    {
+        for (const auto& transition : state_space.get_forward_transitions()[state.get_id()])
+        {
+            if (!ref_visited_states.count(transition.get_successor_state()))
+            {
+                out_cur_states.push_back(transition.get_successor_state());
+            }
+        }
+    }
+    if (out_cur_states.empty())
+    {
+        return std::make_tuple(std::vector<int> {}, StateList {});
+    }
+
+    // Compute novel tuples
+    auto novel_tuple_indices_set = std::unordered_set<TupleIndex> {};
+    for (const auto& state : out_cur_states)
+    {
+        novelty_table.compute_novel_tuple_indices(state, out_novel_tuple_indices);
+        novel_tuple_indices_set.insert(out_novel_tuple_indices.begin(), out_novel_tuple_indices.end());
+    }
+    out_novel_tuple_indices.clear();
+    out_novel_tuple_indices.insert(out_novel_tuple_indices.end(), novel_tuple_indices_set.begin(), novel_tuple_indices_set.end());
+
+    // Extend optimal plans for tuples at distance-1 to tuples at distance
+}
+
 TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state)
 {
     auto vertices = TupleGraphVertexList {};
@@ -132,7 +174,64 @@ TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state)
     auto vertex_indices_by_distances = std::vector<std::vector<int>> {};
     auto states_by_distance = std::vector<StateList> {};
 
-    // TODO: apply standard definition of width.
+    // Initialize temporary variables
+    auto novel_tuple_indices_set = TupleIndexSet {};
+    auto novel_tuple_indices = TupleIndexList {};
+    auto visited_states = StateSet {};
+
+    // 1. Initialize layer at distance 0.
+    auto novelty_table = DynamicNoveltyTable(m_atom_index_mapper, m_tuple_index_mapper);
+    novelty_table.compute_novel_tuple_indices(root_state, novel_tuple_indices);
+    assert(!novel_tuple_indices.empty());
+
+    auto vertices_i = std::vector<int> {};
+    auto states_i = StateList { root_state };
+    if (m_prune_dominated_tuples)
+    {
+        const int vertex_id = vertices.size();
+        vertices.emplace_back(vertex_id, novel_tuple_indices.front(), StateList { root_state });
+        vertices_i.push_back(vertex_id);
+    }
+    else
+    {
+        for (const auto& novel_tuple_index : novel_tuple_indices)
+        {
+            const int vertex_id = vertices.size();
+            vertices.emplace_back(vertex_id, novel_tuple_index, StateList { root_state });
+            vertices_i.push_back(vertex_id);
+        }
+    }
+    vertex_indices_by_distances.push_back(vertices_i);
+    states_by_distance.push_back(states_i);
+    novelty_table.insert_tuple_indices(novel_tuple_indices);
+
+    // 2. Initialize layers at distance > 0.
+    for (int dist = 0;; ++dist)
+    {
+        vertices_i.clear();
+        states_i.clear();
+
+        compute_next_layer(*m_state_space,
+                           vertex_indices_by_distances[dist],
+                           states_by_distance[dist],
+                           novelty_table,
+                           vertices,
+                           forward_successors,
+                           backward_successors,
+                           visited_states,
+                           novel_tuple_indices_set,
+                           novel_tuple_indices,
+                           vertices_i,
+                           states_i);
+
+        if (vertices_i.empty())
+        {
+            break;
+        }
+
+        vertex_indices_by_distances.push_back(vertices_i);
+        states_by_distance.push_back(states_i);
+    }
 
     return TupleGraph(m_state_space,
                       m_tuple_index_mapper,
@@ -144,11 +243,13 @@ TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state)
                       std::move(states_by_distance));
 }
 
-TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity) :
+TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity, bool prune_dominated_tuples) :
     m_state_space(std::move(state_space)),
+    m_prune_dominated_tuples(prune_dominated_tuples),
+    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity,
-                                                            m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Fluent>()
-                                                                + m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Derived>()))
+                                                            m_state_space->get_ssg()->get_reached_fluent_ground_atoms().count()
+                                                                + m_state_space->get_ssg()->get_reached_derived_ground_atoms().count()))
 {
 }
 
