@@ -52,7 +52,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
             const auto vertex_id = VertexID { m_vertices.size() };
             auto vertex = Vertex(vertex_id, parameter_index, object_id);
 
-            if (static_assignment_set.literal_all_consistent(static_conditions, vertex))
+            if (static_assignment_set.consistent_literals(static_conditions, vertex))
             {
                 vertex_partition.push_back(vertex_id);
                 object_partition.push_back(object_id);
@@ -78,7 +78,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
                 auto edge = Edge(Vertex(first_vertex_id, first_vertex.get_parameter_index(), first_vertex.get_object_id()),
                                  Vertex(second_vertex_id, second_vertex.get_parameter_index(), second_vertex.get_object_id()));
 
-                if (static_assignment_set.literal_all_consistent(static_conditions, edge))
+                if (static_assignment_set.consistent_literals(static_conditions, edge))
                 {
                     m_edges.push_back(std::move(edge));
                 }

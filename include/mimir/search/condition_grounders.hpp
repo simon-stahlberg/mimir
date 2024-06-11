@@ -147,8 +147,8 @@ private:
     {
         for (const auto& vertex : m_static_consistency_graph.get_vertices())
         {
-            if (fluent_assignment_sets.literal_all_consistent(m_fluent_conditions, vertex)
-                && derived_assignment_sets.literal_all_consistent(m_derived_conditions, vertex))
+            if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
+                && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
             {
                 auto binding = ObjectList { m_ref_pddl_factories.get_object(vertex.get_object_id()) };
 
@@ -182,8 +182,8 @@ private:
         //    and build the consistency graph as an adjacency matrix
         for (const auto& edge : m_static_consistency_graph.get_edges())
         {
-            if (fluent_assignment_sets.literal_all_consistent(m_fluent_conditions, edge)
-                && derived_assignment_sets.literal_all_consistent(m_derived_conditions, edge))
+            if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, edge)
+                && derived_assignment_sets.consistent_literals(m_derived_conditions, edge))
             {
                 const auto first_id = edge.get_src().get_id();
                 const auto second_id = edge.get_dst().get_id();
