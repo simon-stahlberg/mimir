@@ -101,6 +101,34 @@ private:
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
 
+    class TupleGraphArityZeroComputation
+    {
+    private:
+        std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+        std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+        std::shared_ptr<StateSpaceImpl> m_state_space;
+        State m_root_state;
+        bool m_prune_dominated_tuples;
+        TupleGraphVertexList m_vertices;
+        std::vector<std::vector<int>> m_forward_successors;
+        std::vector<std::vector<int>> m_backward_successors;
+        std::vector<std::vector<int>> m_vertex_indices_by_distances;
+        std::vector<StateList> m_states_by_distance;
+
+    public:
+        TupleGraphArityZeroComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                       std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                       std::shared_ptr<StateSpaceImpl> state_space,
+                                       const State root_state,
+                                       bool prune_dominated_tuples);
+
+        void compute_root_state_layer();
+
+        void compute_first_layer();
+
+        TupleGraph extract_tuple_graph();
+    };
+
     // Bookkeeping for memory reuse when building tuple graph of width greater 0
     class TupleGraphArityKComputation
     {
@@ -139,6 +167,14 @@ private:
 
         // Extended vertices
         std::vector<int> cur_vertices;
+
+        void compute_next_state_layer();
+
+        void compute_next_novel_tuple_indices();
+
+        void extend_optimal_plans_from_prev_layer();
+
+        void instantiate_next_layer();
 
     public:
         TupleGraphArityKComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,

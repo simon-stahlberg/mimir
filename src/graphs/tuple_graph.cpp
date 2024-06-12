@@ -80,48 +80,62 @@ const std::vector<StateList>& TupleGraph::get_states_by_distance() const { retur
  * TupleGraphFactory
  */
 
-TupleGraph TupleGraphFactory::create_for_arity_zero(const State root_state)
+TupleGraphFactory::TupleGraphArityZeroComputation::TupleGraphArityZeroComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                                                                  std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                                                                  std::shared_ptr<StateSpaceImpl> state_space,
+                                                                                  const State root_state,
+                                                                                  bool prune_dominated_tuples) :
+    m_atom_index_mapper(std::move(atom_index_mapper)),
+    m_tuple_index_mapper(std::move(tuple_index_mapper)),
+    m_state_space(std::move(state_space)),
+    m_root_state(root_state),
+    m_prune_dominated_tuples(prune_dominated_tuples)
 {
-    auto vertices = TupleGraphVertexList {};
-    auto forward_successors = std::vector<std::vector<int>> {};
-    auto backward_successors = std::vector<std::vector<int>> {};
-    auto vertex_indices_by_distances = std::vector<std::vector<int>> {};
-    auto states_by_distance = std::vector<StateList> {};
+}
 
-    // Initialize distance 0 layer.
+void TupleGraphFactory::TupleGraphArityZeroComputation::compute_root_state_layer()
+{
     const auto empty_tuple_index = m_tuple_index_mapper->get_empty_tuple_index();
-    const auto root_state_vertex_id = vertices.size();
-    vertices.emplace_back(root_state_vertex_id, empty_tuple_index, StateList { root_state });
-    vertex_indices_by_distances.push_back({ empty_tuple_index });
-    states_by_distance.push_back({ root_state });
+    const auto root_state_vertex_id = 0;
+    m_vertices.emplace_back(root_state_vertex_id, empty_tuple_index, StateList { m_root_state });
+    m_vertex_indices_by_distances.push_back({ empty_tuple_index });
+    m_states_by_distance.push_back({ m_root_state });
+}
 
-    // Initialize distance 1 layer.
-    const auto& transitions = m_state_space->get_forward_transitions()[root_state.get_id()];
-    forward_successors.resize(vertices.size() + transitions.size());
-    backward_successors.resize(vertices.size() + transitions.size());
+void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
+{
+    const auto empty_tuple_index = m_tuple_index_mapper->get_empty_tuple_index();
+    const auto root_state_vertex_id = 0;
+
+    const auto& transitions = m_state_space->get_forward_transitions()[m_root_state.get_id()];
+    m_forward_successors.resize(m_vertices.size() + transitions.size());
+    m_backward_successors.resize(m_vertices.size() + transitions.size());
     auto vertex_indices_layer = std::vector<int> {};
     auto states_layer = StateList {};
     for (const auto& transition : transitions)
     {
         const auto succ_state = transition.get_successor_state();
-        const auto succ_state_vertex_id = vertices.size();
-        vertices.emplace_back(succ_state_vertex_id, empty_tuple_index, StateList { succ_state });
-        forward_successors[root_state_vertex_id].push_back(succ_state_vertex_id);
-        backward_successors[succ_state_vertex_id].push_back(root_state_vertex_id);
+        const auto succ_state_vertex_id = m_vertices.size();
+        m_vertices.emplace_back(succ_state_vertex_id, empty_tuple_index, StateList { succ_state });
+        m_forward_successors[root_state_vertex_id].push_back(succ_state_vertex_id);
+        m_backward_successors[succ_state_vertex_id].push_back(root_state_vertex_id);
         vertex_indices_layer.push_back(succ_state_vertex_id);
         states_layer.push_back(succ_state);
     }
-    vertex_indices_by_distances.push_back(std::move(vertex_indices_layer));
-    states_by_distance.push_back(std::move(states_layer));
+    m_vertex_indices_by_distances.push_back(std::move(vertex_indices_layer));
+    m_states_by_distance.push_back(std::move(states_layer));
+}
 
-    return TupleGraph(m_state_space,
-                      m_tuple_index_mapper,
-                      root_state,
-                      std::move(vertices),
-                      std::move(forward_successors),
-                      std::move(backward_successors),
-                      std::move(vertex_indices_by_distances),
-                      std::move(states_by_distance));
+TupleGraph TupleGraphFactory::TupleGraphArityZeroComputation::extract_tuple_graph()
+{
+    return TupleGraph(std::move(m_state_space),
+                      std::move(m_tuple_index_mapper),
+                      m_root_state,
+                      std::move(m_vertices),
+                      std::move(m_forward_successors),
+                      std::move(m_backward_successors),
+                      std::move(m_vertex_indices_by_distances),
+                      std::move(m_states_by_distance));
 }
 
 TupleGraphFactory::TupleGraphArityKComputation::TupleGraphArityKComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper_,
@@ -142,6 +156,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer()
 {
     cur_vertices.clear();
     cur_states.clear();
+
     cur_states.push_back(root_state);
     if (prune_dominated_tuples)
     {
@@ -163,32 +178,32 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer()
     novelty_table.insert_tuple_indices(novel_tuple_indices);
 }
 
-bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
+void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
 {
-    // Compute next state layer
-    cur_vertices.clear();
     cur_states.clear();
+
     for (const auto& state : states_by_distance.back())
     {
         for (const auto& transition : state_space->get_forward_transitions()[state.get_id()])
         {
-            if (!visited_states.count(transition.get_successor_state()))
+            const auto succ_state = transition.get_successor_state();
+
+            if (!visited_states.count(succ_state))
             {
-                cur_states.push_back(transition.get_successor_state());
+                cur_states.push_back(succ_state);
             }
+            visited_states.insert(succ_state);
         }
     }
-    if (cur_states.empty())
-    {
-        return false;
-    }
-    states_by_distance.push_back(cur_states);
+}
 
-    // Compute novel tuples
+void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_indices()
+{
     novel_tuple_index_to_state_indices.clear();
     state_to_novel_tuple_indices.clear();
     novel_tuple_indices.clear();
     novel_tuple_indices_set.clear();
+
     for (const auto& state : cur_states)
     {
         novelty_table.compute_novel_tuple_indices(state, novel_tuple_indices);
@@ -201,8 +216,14 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
     }
     novel_tuple_indices.clear();
     novel_tuple_indices.insert(novel_tuple_indices.end(), novel_tuple_indices_set.begin(), novel_tuple_indices_set.end());
+    novelty_table.insert_tuple_indices(novel_tuple_indices);
+}
 
-    // Extend optimal plans for tuples at distance-1 to tuples at distance
+void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
+{
+    cur_extendable_tuple_indices.clear();
+    extendable_tuple_index_to_prev_vertices.clear();
+
     for (auto& prev_vertex : cur_vertices)
     {
         cur_tuple_index_to_underlying_extendable_state.clear();
@@ -239,8 +260,12 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
             }
         }
     }
+}
 
-    // Create vertices
+void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
+{
+    cur_vertices.clear();
+
     for (const auto& tuple_index : cur_extendable_tuple_indices)
     {
         auto cur_vertex_index = vertices.size();
@@ -258,11 +283,31 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
         }
     }
 
-    if (cur_vertices.empty())
+    states_by_distance.push_back(cur_states);
+    vertex_indices_by_distances.push_back(cur_vertices);
+}
+
+bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
+{
+    compute_next_state_layer();
+    if (cur_states.empty())
     {
         return false;
     }
-    vertex_indices_by_distances.push_back(cur_vertices);
+
+    compute_next_novel_tuple_indices();
+    if (novel_tuple_indices.empty())
+    {
+        return false;
+    }
+
+    extend_optimal_plans_from_prev_layer();
+    if (cur_extendable_tuple_indices.empty())
+    {
+        return false;
+    }
+
+    instantiate_next_layer();
 
     return true;
 }
@@ -277,6 +322,17 @@ TupleGraph TupleGraphFactory::TupleGraphArityKComputation::extract_tuple_graph()
                       std::move(backward_successors),
                       std::move(vertex_indices_by_distances),
                       std::move(states_by_distance));
+}
+
+TupleGraph TupleGraphFactory::create_for_arity_zero(const State root_state)
+{
+    auto computation = TupleGraphArityZeroComputation(m_atom_index_mapper, m_tuple_index_mapper, m_state_space, root_state, m_prune_dominated_tuples);
+
+    computation.compute_root_state_layer();
+
+    computation.compute_first_layer();
+
+    return computation.extract_tuple_graph();
 }
 
 TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state)
