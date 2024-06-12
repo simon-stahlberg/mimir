@@ -199,10 +199,10 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
 
 void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_indices()
 {
+    novel_tuple_indices_set.clear();
+    novel_tuple_indices.clear();
     novel_tuple_index_to_state_indices.clear();
     state_to_novel_tuple_indices.clear();
-    novel_tuple_indices.clear();
-    novel_tuple_indices_set.clear();
 
     for (const auto& state : cur_states)
     {
@@ -324,7 +324,7 @@ TupleGraph TupleGraphFactory::TupleGraphArityKComputation::extract_tuple_graph()
                       std::move(states_by_distance));
 }
 
-TupleGraph TupleGraphFactory::create_for_arity_zero(const State root_state)
+TupleGraph TupleGraphFactory::create_for_arity_zero(const State root_state) const
 {
     auto computation = TupleGraphArityZeroComputation(m_atom_index_mapper, m_tuple_index_mapper, m_state_space, root_state, m_prune_dominated_tuples);
 
@@ -335,7 +335,7 @@ TupleGraph TupleGraphFactory::create_for_arity_zero(const State root_state)
     return computation.extract_tuple_graph();
 }
 
-TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state)
+TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state) const
 {
     auto computation = TupleGraphArityKComputation(m_atom_index_mapper, m_tuple_index_mapper, m_state_space, root_state, m_prune_dominated_tuples);
 
@@ -364,7 +364,7 @@ TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space
 {
 }
 
-TupleGraph TupleGraphFactory::create(const State root_state)
+TupleGraph TupleGraphFactory::create(const State root_state) const
 {
     return (m_tuple_index_mapper->get_arity() > 0) ? create_for_arity_k(root_state) : create_for_arity_zero(root_state);
 }
@@ -372,5 +372,14 @@ TupleGraph TupleGraphFactory::create(const State root_state)
 std::shared_ptr<StateSpaceImpl> TupleGraphFactory::get_state_space() const { return m_state_space; }
 
 std::shared_ptr<TupleIndexMapper> TupleGraphFactory::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
+
+std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
+{
+    // TODO:
+    out << "digraph {\n";
+
+    out << "}";  // end digraph
+    return out;
+}
 
 }

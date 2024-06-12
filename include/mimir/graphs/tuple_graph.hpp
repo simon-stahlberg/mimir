@@ -144,35 +144,30 @@ private:
         std::vector<std::vector<int>> vertex_indices_by_distances;
         std::vector<StateList> states_by_distance;
 
-        // To compute novel tuples for a given state.
-        DynamicNoveltyTable novelty_table;
+        /**
+         * Four step procedure to compute the next layer in the graph.
+         */
 
-        // To create next state layer
         StateSet visited_states;
         StateList cur_states;
 
-        // Novel tuple indices in next layer
-        TupleIndexSet novel_tuple_indices_set;
-        // To compute novel tuple indices for a state
-        TupleIndexList novel_tuple_indices;
-
-        // To compute extended vertices
-        std::unordered_map<TupleIndex, StateSet> cur_tuple_index_to_underlying_extendable_state;
-        std::unordered_map<TupleIndex, std::unordered_set<int>> extendable_tuple_index_to_prev_vertices;
-        std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
-        std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_state_indices;
-
-        // Tuples that make it into vertices
-        TupleIndexSet cur_extendable_tuple_indices;
-
-        // Extended vertices
-        std::vector<int> cur_vertices;
-
         void compute_next_state_layer();
+
+        DynamicNoveltyTable novelty_table;
+        TupleIndexSet novel_tuple_indices_set;
+        TupleIndexList novel_tuple_indices;
+        std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_state_indices;
+        std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
 
         void compute_next_novel_tuple_indices();
 
+        std::unordered_map<TupleIndex, StateSet> cur_tuple_index_to_underlying_extendable_state;
+        std::unordered_map<TupleIndex, std::unordered_set<int>> extendable_tuple_index_to_prev_vertices;
+        TupleIndexSet cur_extendable_tuple_indices;
+
         void extend_optimal_plans_from_prev_layer();
+
+        std::vector<int> cur_vertices;
 
         void instantiate_next_layer();
 
@@ -192,14 +187,14 @@ private:
 
     /// @brief Create tuple graph for the special case of width 0, i.e.,
     /// any state with distance at most 1 from the root_state is a subgoal state.
-    TupleGraph create_for_arity_zero(const State root_state);
+    TupleGraph create_for_arity_zero(const State root_state) const;
 
-    TupleGraph create_for_arity_k(const State root_state);
+    TupleGraph create_for_arity_k(const State root_state) const;
 
 public:
     TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity, bool prune_dominated_tuples = false);
 
-    TupleGraph create(const State root_state);
+    TupleGraph create(const State root_state) const;
 
     /**
      * Getters.
@@ -213,7 +208,7 @@ public:
  * Pretty printing as dot representation
  */
 
-std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph);
+extern std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph);
 
 }
 
