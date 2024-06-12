@@ -156,17 +156,19 @@ private:
         DynamicNoveltyTable novelty_table;
         TupleIndexSet novel_tuple_indices_set;
         TupleIndexList novel_tuple_indices;
-        std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_state_indices;
+        std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_states;
         std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
 
         void compute_next_novel_tuple_indices();
 
-        std::unordered_map<TupleIndex, StateSet> cur_tuple_index_to_underlying_extendable_state;
-        std::unordered_map<TupleIndex, std::unordered_set<int>> extendable_tuple_index_to_prev_vertices;
-        TupleIndexSet cur_extendable_tuple_indices;
+        std::unordered_map<TupleIndex, StateSet> cur_novel_tuple_index_to_extended_state;
+        std::unordered_map<TupleIndex, std::unordered_set<int>> cur_extended_novel_tuple_index_to_prev_vertices;
+        TupleIndexSet cur_extended_novel_tuple_indices_set;
+        TupleIndexList cur_extended_novel_tuple_indices;
 
         void extend_optimal_plans_from_prev_layer();
 
+        std::unordered_map<TupleIndex, TupleIndexSet> tuple_index_to_dominating_tuple_indices;
         std::vector<int> cur_vertices;
 
         void instantiate_next_layer();

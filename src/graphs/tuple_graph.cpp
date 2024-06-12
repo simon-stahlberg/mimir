@@ -107,7 +107,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     const auto empty_tuple_index = m_tuple_index_mapper->get_empty_tuple_index();
     const auto root_state_vertex_id = 0;
 
-    const auto& transitions = m_state_space->get_forward_transitions()[m_root_state.get_id()];
+    const auto& transitions = m_state_space->get_forward_transitions().at(m_root_state.get_id());
     m_forward_successors.resize(m_vertices.size() + transitions.size());
     m_backward_successors.resize(m_vertices.size() + transitions.size());
     auto vertex_indices_layer = std::vector<int> {};
@@ -184,7 +184,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
 
     for (const auto& state : states_by_distance.back())
     {
-        for (const auto& transition : state_space->get_forward_transitions()[state.get_id()])
+        for (const auto& transition : state_space->get_forward_transitions().at(state.get_id()))
         {
             const auto succ_state = transition.get_successor_state();
 
@@ -201,7 +201,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_in
 {
     novel_tuple_indices_set.clear();
     novel_tuple_indices.clear();
-    novel_tuple_index_to_state_indices.clear();
+    novel_tuple_index_to_states.clear();
     state_to_novel_tuple_indices.clear();
 
     for (const auto& state : cur_states)
@@ -209,7 +209,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_in
         novelty_table.compute_novel_tuple_indices(state, novel_tuple_indices);
         for (const auto& tuple_index : novel_tuple_indices)
         {
-            novel_tuple_index_to_state_indices[tuple_index].insert(state);
+            novel_tuple_index_to_states[tuple_index].insert(state);
         }
         state_to_novel_tuple_indices.emplace(state, novel_tuple_indices);
         novel_tuple_indices_set.insert(novel_tuple_indices.begin(), novel_tuple_indices.end());
@@ -221,59 +221,104 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_in
 
 void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
 {
-    cur_extendable_tuple_indices.clear();
-    extendable_tuple_index_to_prev_vertices.clear();
+    cur_extended_novel_tuple_indices_set.clear();
+    cur_extended_novel_tuple_indices.clear();
+    cur_extended_novel_tuple_index_to_prev_vertices.clear();
+
+    const auto& forward_transitions = state_space->get_forward_transitions();
 
     for (auto& prev_vertex : cur_vertices)
     {
-        cur_tuple_index_to_underlying_extendable_state.clear();
+        cur_novel_tuple_index_to_extended_state.clear();
 
-        const auto& forward_transitions = state_space->get_forward_transitions();
-
-        for (const auto state : vertices[prev_vertex].get_states())
+        // Compute extended plans
+        for (const auto state : vertices.at(prev_vertex).get_states())
         {
-            const auto& transitions = forward_transitions[state.get_id()];
-
-            for (const auto& transition : transitions)
+            for (const auto& transition : forward_transitions.at(state.get_id()))
             {
-                const auto it = state_to_novel_tuple_indices.find(transition.get_successor_state());
+                const auto succ_state = transition.get_successor_state();
 
-                if (it != state_to_novel_tuple_indices.end())
+                if (state_to_novel_tuple_indices.count(succ_state))
                 {
-                    for (const auto target_tuple_index : it->second)
+                    for (const auto target_tuple_index : state_to_novel_tuple_indices.at(succ_state))
                     {
-                        cur_tuple_index_to_underlying_extendable_state[target_tuple_index].insert(state);
+                        cur_novel_tuple_index_to_extended_state[target_tuple_index].insert(state);
                     }
                 }
             }
         }
 
-        auto extended_tuple_indices = TupleIndexList {};
-        for (const auto& [cur_tuple_index, cur_states] : cur_tuple_index_to_underlying_extendable_state)
+        // Check whether all plans for tuple t_{i-1} were extended into optimal plan for tuple t_i.
+        for (const auto& [cur_novel_tuple_index, extended_states] : cur_novel_tuple_index_to_extended_state)
         {
-            // Check whether all optimal plans for cur_node_index can be extended into optimal plans for succ_tuple_index
-            if (novel_tuple_indices_set.count(cur_tuple_index) && cur_states.size() == vertices[prev_vertex].get_states().size())
-            {
-                cur_extendable_tuple_indices.insert(cur_tuple_index);
+            bool all_optimal_plans_extended = (extended_states.size() == vertices.at(prev_vertex).get_states().size());
 
-                extendable_tuple_index_to_prev_vertices[cur_tuple_index].insert(prev_vertex);
+            if (all_optimal_plans_extended)
+            {
+                cur_extended_novel_tuple_indices_set.insert(cur_novel_tuple_index);
+                cur_extended_novel_tuple_index_to_prev_vertices[cur_novel_tuple_index].insert(prev_vertex);
             }
         }
     }
+    cur_extended_novel_tuple_indices.insert(cur_extended_novel_tuple_indices.end(),
+                                            cur_extended_novel_tuple_indices_set.begin(),
+                                            cur_extended_novel_tuple_indices_set.end());
 }
 
 void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 {
+    tuple_index_to_dominating_tuple_indices.clear();
     cur_vertices.clear();
 
-    for (const auto& tuple_index : cur_extendable_tuple_indices)
+    if (prune_dominated_tuples)
+    {
+        for (size_t i = 0; i < cur_extended_novel_tuple_indices.size(); ++i)
+        {
+            const auto tuple_index_1 = cur_extended_novel_tuple_indices[i];
+
+            const auto& states_1 = novel_tuple_index_to_states.at(tuple_index_1);
+
+            for (size_t j = i + 1; j < cur_extended_novel_tuple_indices.size(); ++j)
+            {
+                const auto tuple_index_2 = cur_extended_novel_tuple_indices[j];
+
+                const auto& states_2 = novel_tuple_index_to_states.at(tuple_index_2);
+
+                if (states_1 == states_2)
+                {
+                    // Keep only one tuple_index with a specific set of underlying states.
+                    cur_extended_novel_tuple_indices_set.erase(tuple_index_2);
+                    continue;
+                }
+
+                const auto is_subseteq = std::all_of(states_2.begin(), states_2.end(), [&states_1](const auto& element) { return states_1.count(element); });
+
+                if (is_subseteq)
+                {
+                    // tuple_index_2 is dominated by tuple_index_1 because states_2 < states_1.
+                    tuple_index_to_dominating_tuple_indices[tuple_index_1].insert(tuple_index_2);
+                }
+            }
+        }
+
+        // Keep only tuple indices whose underlying states is a smallest subset.
+        for (const auto& [tuple_index, dominated_by_tuple_indices] : tuple_index_to_dominating_tuple_indices)
+        {
+            if (dominated_by_tuple_indices.empty())
+            {
+                cur_extended_novel_tuple_indices_set.erase(tuple_index);
+            }
+        }
+    }
+
+    for (const auto& tuple_index : cur_extended_novel_tuple_indices_set)
     {
         auto cur_vertex_index = vertices.size();
-        const auto& cur_states = novel_tuple_index_to_state_indices.at(tuple_index);
+        const auto& cur_states = novel_tuple_index_to_states.at(tuple_index);
         vertices.emplace_back(cur_vertex_index, tuple_index, StateList(cur_states.begin(), cur_states.end()));
         cur_vertices.push_back(cur_vertex_index);
 
-        for (const auto prev_vertex_index : extendable_tuple_index_to_prev_vertices[tuple_index])
+        for (const auto prev_vertex_index : cur_extended_novel_tuple_index_to_prev_vertices[tuple_index])
         {
             forward_successors.resize(cur_vertex_index);
             backward_successors.resize(cur_vertex_index);
@@ -302,7 +347,7 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
     }
 
     extend_optimal_plans_from_prev_layer();
-    if (cur_extendable_tuple_indices.empty())
+    if (cur_extended_novel_tuple_indices_set.empty())
     {
         return false;
     }
