@@ -1,5 +1,7 @@
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 
 #include <pybind11/detail/common.h>
@@ -552,6 +554,23 @@ void init_pymimir(py::module_& m)
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", &GroundAction::hash)
         .def("__eq__", &GroundAction::operator==)
+        .def("get_name",
+            [](const GroundAction& self)
+            {
+                return self.get_action()->get_name();
+            })
+        .def("get_terms",
+        [](const GroundAction& self)
+        {
+            ObjectList terms;
+
+            for (const auto& object : self.get_objects())
+            {
+                terms.emplace_back(object);
+            }
+
+            return terms;
+        })
         .def("to_string",
              [](const GroundAction& self, PDDLFactories& pddl_factories)
              {
