@@ -563,14 +563,12 @@ void init_pymimir(py::module_& m)
         [](const GroundAction& self)
         {
             ObjectList terms;
-
             for (const auto& object : self.get_objects())
             {
                 terms.emplace_back(object);
             }
-
             return terms;
-        })
+        }, py::return_value_policy::reference_internal)
         .def("to_string",
              [](const GroundAction& self, PDDLFactories& pddl_factories)
              {
@@ -578,7 +576,19 @@ void init_pymimir(py::module_& m)
                  ss << std::make_tuple(self, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("get_id", &GroundAction::get_id);
+        .def("get_id", &GroundAction::get_id)
+        .def("__repr__", [](const GroundAction& self)
+        {
+            std::stringstream ss;
+            ss << "(";
+            ss << self.get_action()->get_name();
+            for (const auto& object : self.get_objects())
+            {
+                ss << " " << object->get_name();
+            }
+            ss << ")";
+            return ss.str();
+        });
 
     /* AAGs */
 
