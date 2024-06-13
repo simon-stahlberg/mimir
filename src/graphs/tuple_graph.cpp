@@ -485,12 +485,13 @@ TupleGraph TupleGraphFactory::create(const State root_state) const
 
 std::shared_ptr<StateSpaceImpl> TupleGraphFactory::get_state_space() const { return m_state_space; }
 
+std::shared_ptr<FluentAndDerivedMapper> TupleGraphFactory::get_atom_index_mapper() const { return m_atom_index_mapper; }
+
 std::shared_ptr<TupleIndexMapper> TupleGraphFactory::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
 std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const Problem, const PDDLFactories&> data)
 {
     const auto& [tuple_graph, problem, pddl_factories] = data;
-    auto inverse_atom_index_mapper = InverseFluentAndDerivedMapper(*tuple_graph.get_atom_index_mapper());
     auto combined_atom_indices = AtomIndexList {};
     auto fluent_atom_indices = AtomIndexList {};
     auto derived_atom_indices = AtomIndexList {};
@@ -515,7 +516,7 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const 
             out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
 
             tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
-            inverse_atom_index_mapper.remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
+            tuple_graph.get_atom_index_mapper()->remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
             const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
             const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
             out << "fluent_atoms=" << fluent_atoms << ", derived_atoms=" << derived_atoms << "<BR/>";

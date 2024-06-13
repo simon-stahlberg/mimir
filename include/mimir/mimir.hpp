@@ -68,4 +68,10 @@
 
 #include "mimir/datasets/state_space.hpp"
 
+/**
+ * Graphs
+ */
+
+#include "mimir/graphs/tuple_graph.hpp"
+
 #endif  // MIMIR_MIMIR_HPP_

@@ -554,21 +554,19 @@ void init_pymimir(py::module_& m)
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", &GroundAction::hash)
         .def("__eq__", &GroundAction::operator==)
-        .def("get_name",
+        .def("get_name", [](const GroundAction& self) { return self.get_action()->get_name(); })
+        .def(
+            "get_terms",
             [](const GroundAction& self)
             {
-                return self.get_action()->get_name();
-            })
-        .def("get_terms",
-        [](const GroundAction& self)
-        {
-            ObjectList terms;
-            for (const auto& object : self.get_objects())
-            {
-                terms.emplace_back(object);
-            }
-            return terms;
-        }, py::return_value_policy::reference_internal)
+                ObjectList terms;
+                for (const auto& object : self.get_objects())
+                {
+                    terms.emplace_back(object);
+                }
+                return terms;
+            },
+            py::return_value_policy::reference_internal)
         .def("to_string",
              [](const GroundAction& self, PDDLFactories& pddl_factories)
              {
@@ -577,18 +575,19 @@ void init_pymimir(py::module_& m)
                  return ss.str();
              })
         .def("get_id", &GroundAction::get_id)
-        .def("__repr__", [](const GroundAction& self)
-        {
-            std::stringstream ss;
-            ss << "(";
-            ss << self.get_action()->get_name();
-            for (const auto& object : self.get_objects())
-            {
-                ss << " " << object->get_name();
-            }
-            ss << ")";
-            return ss.str();
-        });
+        .def("__repr__",
+             [](const GroundAction& self)
+             {
+                 std::stringstream ss;
+                 ss << "(";
+                 ss << self.get_action()->get_name();
+                 for (const auto& object : self.get_objects())
+                 {
+                     ss << " " << object->get_name();
+                 }
+                 ss << ")";
+                 return ss.str();
+             });
 
     /* AAGs */
 
@@ -685,6 +684,44 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
 
     // IW
+    py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
+        .def("to_tuple_index", &TupleIndexMapper::to_tuple_index)
+        .def("to_atom_indices",
+             [](const TupleIndexMapper self, const TupleIndex tuple_index)
+             {
+                 auto atom_indices = AtomIndexList {};
+                 self.to_atom_indices(tuple_index, atom_indices);
+                 return atom_indices;
+             })
+        .def("tuple_index_to_string", &TupleIndexMapper::tuple_index_to_string)
+        .def("get_num_atoms", &TupleIndexMapper::get_num_atoms)
+        .def("get_arity", &TupleIndexMapper::get_arity)
+        .def("get_factors", &TupleIndexMapper::get_factors, py::return_value_policy::reference)
+        .def("get_max_tuple_index", &TupleIndexMapper::get_max_tuple_index)
+        .def("get_empty_tuple_index", &TupleIndexMapper::get_empty_tuple_index);
+    py::class_<FluentAndDerivedMapper, std::shared_ptr<FluentAndDerivedMapper>>(m, "FluentAndDerivedMapper")  //
+        .def("combine_and_sort",
+
+             [](FluentAndDerivedMapper& self, const State state)
+             {
+                 auto atom_indices = AtomIndexList {};
+                 self.combine_and_sort(state, atom_indices);
+                 return atom_indices;
+             });
+    py::class_<FluentAndDerivedMapper, std::shared_ptr<FluentAndDerivedMapper>>(m, "FluentAndDerivedMapper")  //
+        .def("combine_and_sort",
+
+             [](FluentAndDerivedMapper& self, const State state, const State succ_state)
+             {
+                 auto atom_indices = AtomIndexList {};
+                 auto add_atom_indices = AtomIndexList {};
+                 self.combine_and_sort(state, succ_state, atom_indices, add_atom_indices);
+                 return std::make_tuple(atom_indices, add_atom_indices);
+             })
+        .def("get_fluent_remap", &FluentAndDerivedMapper::get_fluent_remap, py::return_value_policy::reference)
+        .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference)
+        .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference)
+        .def("get_inverse_remap", &FluentAndDerivedMapper::get_inverse_remap, py::return_value_policy::reference);
     py::class_<IIWAlgorithmEventHandler, std::shared_ptr<IIWAlgorithmEventHandler>>(m, "IIWAlgorithmEventHandler");
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
@@ -749,4 +786,34 @@ void init_pymimir(py::module_& m)
         .def("get_ssg", &StateSpaceImpl::get_ssg)
         .def("get_pddl_parser", &StateSpaceImpl::get_pddl_parser, py::return_value_policy::reference)
         .def("get_factories", &StateSpaceImpl::get_factories, py::return_value_policy::reference);
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Graphs
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    // TupleGraphVertex
+    py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
+        .def("get_identifier", &TupleGraphVertex::get_identifier)
+        .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
+        .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference);
+
+    // TupleGraph
+    py::class_<TupleGraph>(m, "TupleGraph")  //
+        .def("compute_admissible_chain", &TupleGraph::compute_admissible_chain)
+        .def("get_state_space", &TupleGraph::get_state_space)
+        .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
+        .def("get_root_state", &TupleGraph::get_root_state)
+        .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference)
+        .def("get_forward_successors", &TupleGraph::get_forward_successors, py::return_value_policy::reference)
+        .def("get_backward_successors", &TupleGraph::get_backward_successors, py::return_value_policy::reference)
+        .def("get_vertex_indices_by_distances", &TupleGraph::get_vertex_indices_by_distances, py::return_value_policy::reference)
+        .def("get_states_by_distance", &TupleGraph::get_states_by_distance, py::return_value_policy::reference);
+
+    // TupleGraphFactory
+    py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
+        .def(py::init<std::shared_ptr<StateSpaceImpl>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
+        .def("create", &TupleGraphFactory::create)
+        .def("get_state_space", &TupleGraphFactory::get_state_space)
+        .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
+        .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 }

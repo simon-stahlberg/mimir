@@ -65,8 +65,15 @@ public:
 class FluentAndDerivedMapper
 {
 private:
+    // Forward remapping
     std::vector<int> m_fluent_remap;
     std::vector<int> m_derived_remap;
+
+    // Inverse remapping
+    std::vector<bool> m_is_remapped_fluent;
+    std::vector<int> m_inverse_remap;
+
+    // Common
     int m_num_atoms;
 
     static const int UNDEFINED;
@@ -77,26 +84,27 @@ public:
     FluentAndDerivedMapper();
     FluentAndDerivedMapper(const FluentGroundAtomFactory& fluent_atoms, const DerivedGroundAtomFactory& derived_atoms);
 
+    /**
+     * Forward Remapping
+     */
+
     void remap_and_combine_and_sort(const State state, AtomIndexList& out_atoms);
     void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndexList& out_atoms, AtomIndexList& out_add_atoms);
 
+    void combine_and_sort(const State state, AtomIndexList& out_atoms);
+    void combine_and_sort(const State state, const State succ_state, AtomIndexList& out_atoms, AtomIndexList& out_add_atoms);
+
     const std::vector<int>& get_fluent_remap() const;
     const std::vector<int>& get_derived_remap() const;
-};
 
-/// @brief InverseFluentAndDerivedMapper encapsulates logic to map remapped fluent and derived atom indices
-/// back to their original index. Hence the output will be two sets of atom indices with indexing schemes 0,1,...
-/// This class is only needed for visualization purpose.
-class InverseFluentAndDerivedMapper
-{
-private:
-    std::vector<bool> m_is_fluent;
-    std::vector<int> m_inverse_remap;
-
-public:
-    explicit InverseFluentAndDerivedMapper(const FluentAndDerivedMapper& atom_index_mapper);
+    /**
+     * Inverse remapping
+     */
 
     void remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms);
+
+    const std::vector<bool>& get_is_remapped_fluent() const;
+    const std::vector<int>& get_inverse_remap() const;
 };
 
 }

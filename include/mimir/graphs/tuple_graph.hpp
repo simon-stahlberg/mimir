@@ -221,6 +221,7 @@ public:
      */
 
     std::shared_ptr<StateSpaceImpl> get_state_space() const;
+    std::shared_ptr<FluentAndDerivedMapper> get_atom_index_mapper() const;
     std::shared_ptr<TupleIndexMapper> get_tuple_index_mapper() const;
 };
 

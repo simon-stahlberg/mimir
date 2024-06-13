@@ -69,6 +69,7 @@ from _pymimir import (
     DefaultIWAlgorithmEventHandler,
     DefaultLiftedAAGEventHandler,
     DefaultSIWAlgorithmEventHandler,
+    FluentAndDerivedMapper,
     GroundAction,
     GroundedAAG,
     IAAG,
@@ -86,11 +87,20 @@ from _pymimir import (
     SearchStatus,
     SIWAlgorithm,
     SSG,
-    State
+    State,
+    TupleIndexMapper
 )
 
 # Dataset
 from _pymimir import (
     Transition,
     StateSpace
+)
+
+# Graphs
+
+from _pymimir import (
+    TupleGraphVertex,
+    TupleGraph,
+    TupleGraphFactory
 )
