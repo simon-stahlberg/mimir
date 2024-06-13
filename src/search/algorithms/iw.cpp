@@ -214,10 +214,10 @@ InverseFluentAndDerivedMapper::InverseFluentAndDerivedMapper(const FluentAndDeri
 {
     for (size_t i = 0; i < atom_index_mapper.get_fluent_remap().size(); ++i)
     {
-        m_is_fluent[atom_index_mapper.get_fluent_remap()[i]] = true;
-
         if (atom_index_mapper.get_fluent_remap()[i] != -1)
         {
+            m_is_fluent[atom_index_mapper.get_fluent_remap()[i]] = true;
+
             assert(m_inverse_remap[atom_index_mapper.get_fluent_remap()[i]] == -1);
             m_inverse_remap[atom_index_mapper.get_fluent_remap()[i]] = i;
         }
@@ -239,6 +239,8 @@ void InverseFluentAndDerivedMapper::remap_and_separate(const AtomIndexList& comb
 
     for (const auto atom_id : combined_atoms)
     {
+        // Ensure that we are not computing the inverse of an index
+        // that has never been mapped in the forward direction before.
         assert(m_inverse_remap[atom_id] != -1);
 
         if (m_is_fluent[atom_id])

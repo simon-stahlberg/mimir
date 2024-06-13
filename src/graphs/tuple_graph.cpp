@@ -159,10 +159,12 @@ TupleGraphFactory::TupleGraphArityKComputation::TupleGraphArityKComputation(std:
 
 void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer()
 {
+    // Clear data structures
     cur_vertices.clear();
     cur_states.clear();
 
     cur_states.push_back(root_state);
+    novelty_table.compute_novel_tuple_indices(root_state, novel_tuple_indices);
     if (prune_dominated_tuples)
     {
         const int vertex_id = vertices.size();
@@ -185,6 +187,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer()
 
 void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
 {
+    // Clear data structures
     cur_states.clear();
 
     for (const auto& state : states_by_distance.back())
@@ -204,6 +207,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
 
 void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_indices()
 {
+    // Clear data structures
     novel_tuple_indices_set.clear();
     novel_tuple_indices.clear();
     novel_tuple_index_to_states.clear();
@@ -226,6 +230,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_in
 
 void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
 {
+    // Clear data structures
     cur_extended_novel_tuple_indices_set.clear();
     cur_extended_novel_tuple_indices.clear();
     cur_extended_novel_tuple_index_to_prev_vertices.clear();
@@ -272,6 +277,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
 
 void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 {
+    // Clear data structures
     tuple_index_to_dominating_tuple_indices.clear();
     cur_vertices.clear();
 
@@ -325,8 +331,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 
         for (const auto prev_vertex_index : cur_extended_novel_tuple_index_to_prev_vertices[tuple_index])
         {
-            forward_successors.resize(cur_vertex_index);
-            backward_successors.resize(cur_vertex_index);
+            forward_successors.resize(cur_vertex_index + 1);
+            backward_successors.resize(cur_vertex_index + 1);
 
             forward_successors[prev_vertex_index].push_back(cur_vertex_index);
             backward_successors[cur_vertex_index].push_back(prev_vertex_index);
@@ -452,7 +458,6 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const 
             out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
 
             tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
-            std::cout << "combined_atom_indices: " << combined_atom_indices << std::endl;
             inverse_atom_index_mapper.remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
             const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
             const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
