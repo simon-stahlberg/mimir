@@ -77,7 +77,7 @@ State Transition::get_successor_state() const { return m_successor_state; }
 
 GroundAction Transition::get_creating_action() const { return m_creating_action; }
 
-StateSpaceImpl::StateSpaceImpl(PDDLParser parser,
+StateSpaceImpl::StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
                                std::shared_ptr<GroundedAAG> aag,
                                std::shared_ptr<SuccessorStateGenerator> ssg,
                                StateList states,
@@ -118,9 +118,9 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
 {
     auto stop_watch = StopWatch(timeout_ms);
 
-    auto pddl_parser = PDDLParser(domain_file_path, problem_file_path);
-    const auto problem = pddl_parser.get_problem();
-    auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser.get_factories());
+    auto pddl_parser = std::make_unique<PDDLParser>(domain_file_path, problem_file_path);
+    const auto problem = pddl_parser->get_problem();
+    auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser->get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
     auto initial_state = ssg->get_or_create_initial_state();
 
@@ -296,8 +296,8 @@ std::shared_ptr<GroundedAAG> StateSpaceImpl::get_aag() const { return m_aag; }
 
 std::shared_ptr<SuccessorStateGenerator> StateSpaceImpl::get_ssg() const { return m_ssg; }
 
-const PDDLParser& StateSpaceImpl::get_pddl_parser() const { return m_parser; }
+const PDDLParser& StateSpaceImpl::get_pddl_parser() const { return *m_parser; }
 
-PDDLFactories& StateSpaceImpl::get_factories() { return m_parser.get_factories(); }
+PDDLFactories& StateSpaceImpl::get_factories() { return m_parser->get_factories(); }
 
 }

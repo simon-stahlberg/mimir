@@ -205,6 +205,54 @@ const std::vector<int>& FluentAndDerivedMapper::get_fluent_remap() const { retur
 const std::vector<int>& FluentAndDerivedMapper::get_derived_remap() const { return m_derived_remap; }
 
 /**
+ * InverseFluentAndDerivedMapper
+ */
+
+InverseFluentAndDerivedMapper::InverseFluentAndDerivedMapper(const FluentAndDerivedMapper& atom_index_mapper) :
+    m_is_fluent(std::vector<bool>(atom_index_mapper.get_fluent_remap().size() + atom_index_mapper.get_derived_remap().size(), false)),
+    m_inverse_remap(std::vector<int>(atom_index_mapper.get_fluent_remap().size() + atom_index_mapper.get_derived_remap().size(), -1))
+{
+    for (size_t i = 0; i < atom_index_mapper.get_fluent_remap().size(); ++i)
+    {
+        m_is_fluent[atom_index_mapper.get_fluent_remap()[i]] = true;
+
+        if (atom_index_mapper.get_fluent_remap()[i] != -1)
+        {
+            assert(m_inverse_remap[atom_index_mapper.get_fluent_remap()[i]] == -1);
+            m_inverse_remap[atom_index_mapper.get_fluent_remap()[i]] = i;
+        }
+    }
+    for (size_t i = 0; i < atom_index_mapper.get_derived_remap().size(); ++i)
+    {
+        if (atom_index_mapper.get_derived_remap()[i] != -1)
+        {
+            assert(m_inverse_remap[atom_index_mapper.get_derived_remap()[i]] == -1);
+            m_inverse_remap[atom_index_mapper.get_derived_remap()[i]] = i;
+        }
+    }
+}
+
+void InverseFluentAndDerivedMapper::remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms)
+{
+    out_fluent_atoms.clear();
+    out_derived_atoms.clear();
+
+    for (const auto atom_id : combined_atoms)
+    {
+        assert(m_inverse_remap[atom_id] != -1);
+
+        if (m_is_fluent[atom_id])
+        {
+            out_fluent_atoms.push_back(m_inverse_remap[atom_id]);
+        }
+        else
+        {
+            out_derived_atoms.push_back(m_inverse_remap[atom_id]);
+        }
+    }
+}
+
+/**
  * StateTupleIndexGenerator
  */
 

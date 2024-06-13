@@ -56,6 +56,7 @@ class TupleGraph
 {
 private:
     std::shared_ptr<StateSpaceImpl> m_state_space;
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     State m_root_state;
 
@@ -68,6 +69,7 @@ private:
     std::vector<StateList> m_states_by_distance;
 
     TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
+               std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                State root_state,
                TupleGraphVertexList vertices,
@@ -83,6 +85,7 @@ public:
      */
 
     std::shared_ptr<StateSpaceImpl> get_state_space() const;
+    std::shared_ptr<FluentAndDerivedMapper> get_atom_index_mapper() const;
     std::shared_ptr<TupleIndexMapper> get_tuple_index_mapper() const;
     State get_root_state() const;
     const TupleGraphVertexList& get_vertices() const;
@@ -122,11 +125,18 @@ private:
                                        const State root_state,
                                        bool prune_dominated_tuples);
 
+        /// @brief Compute the root state layer.
         void compute_root_state_layer();
 
+        /// @brief Compute the layer at distance 1, assumes that the root state layer exists.
         void compute_first_layer();
 
+        /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
         TupleGraph extract_tuple_graph();
+
+        /// @brief Compute and return an admissible chain for a given tuple of ground atoms.
+        /// Return std::nullopt if no such admissible chain exists.
+        std::optional<std::vector<int>> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
     };
 
     // Bookkeeping for memory reuse when building tuple graph of width greater 0
@@ -180,10 +190,14 @@ private:
                                     const State root_state,
                                     bool prune_dominated_tuples);
 
+        /// @brief Compute the root state layer.
         void compute_root_state_layer();
 
+        /// @brief Compute the next layer, assumes that the root state layer exists
+        /// and return true iff the layer is nonempty.
         bool compute_next_layer();
 
+        /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
         TupleGraph extract_tuple_graph();
     };
 
@@ -210,7 +224,7 @@ public:
  * Pretty printing as dot representation
  */
 
-extern std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph);
+extern std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const Problem, const PDDLFactories&> data);
 
 }
 

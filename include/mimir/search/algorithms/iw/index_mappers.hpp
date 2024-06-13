@@ -83,6 +83,21 @@ public:
     const std::vector<int>& get_derived_remap() const;
 };
 
+/// @brief InverseFluentAndDerivedMapper encapsulates logic to map remapped fluent and derived atom indices
+/// back to their original index. Hence the output will be two sets of atom indices with indexing schemes 0,1,...
+/// This class is only needed for visualization purpose.
+class InverseFluentAndDerivedMapper
+{
+private:
+    std::vector<bool> m_is_fluent;
+    std::vector<int> m_inverse_remap;
+
+public:
+    explicit InverseFluentAndDerivedMapper(const FluentAndDerivedMapper& atom_index_mapper);
+
+    void remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms);
+};
+
 }
 
 #endif

@@ -42,6 +42,7 @@ const StateList& TupleGraphVertex::get_states() const { return m_states; }
  */
 
 TupleGraph::TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
+                       std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                        std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                        State root_state,
                        TupleGraphVertexList vertices,
@@ -50,6 +51,7 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
                        std::vector<std::vector<int>> vertex_indices_by_distance,
                        std::vector<StateList> states_by_distance) :
     m_state_space(std::move(state_space)),
+    m_atom_index_mapper(std::move(atom_index_mapper)),
     m_tuple_index_mapper(std::move(tuple_index_mapper)),
     m_root_state(root_state),
     m_vertices(std::move(vertices)),
@@ -61,6 +63,8 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
 }
 
 std::shared_ptr<StateSpaceImpl> TupleGraph::get_state_space() const { return m_state_space; }
+
+std::shared_ptr<FluentAndDerivedMapper> TupleGraph::get_atom_index_mapper() const { return m_atom_index_mapper; }
 
 std::shared_ptr<TupleIndexMapper> TupleGraph::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
@@ -129,6 +133,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
 TupleGraph TupleGraphFactory::TupleGraphArityZeroComputation::extract_tuple_graph()
 {
     return TupleGraph(std::move(m_state_space),
+                      std::move(m_atom_index_mapper),
                       std::move(m_tuple_index_mapper),
                       m_root_state,
                       std::move(m_vertices),
@@ -360,6 +365,7 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
 TupleGraph TupleGraphFactory::TupleGraphArityKComputation::extract_tuple_graph()
 {
     return TupleGraph(std::move(state_space),
+                      std::move(atom_index_mapper),
                       std::move(tuple_index_mapper),
                       root_state,
                       std::move(vertices),
@@ -404,8 +410,8 @@ TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space
     m_prune_dominated_tuples(prune_dominated_tuples),
     m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity,
-                                                            m_state_space->get_ssg()->get_reached_fluent_ground_atoms().count()
-                                                                + m_state_space->get_ssg()->get_reached_derived_ground_atoms().count()))
+                                                            m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Fluent>()
+                                                                + m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Derived>()))
 {
 }
 
@@ -418,12 +424,76 @@ std::shared_ptr<StateSpaceImpl> TupleGraphFactory::get_state_space() const { ret
 
 std::shared_ptr<TupleIndexMapper> TupleGraphFactory::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
-std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
+std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const Problem, const PDDLFactories&> data)
 {
-    // TODO:
-    out << "digraph {\n";
+    const auto& [tuple_graph, problem, pddl_factories] = data;
+    auto inverse_atom_index_mapper = InverseFluentAndDerivedMapper(*tuple_graph.get_atom_index_mapper());
+    auto combined_atom_indices = AtomIndexList {};
+    auto fluent_atom_indices = AtomIndexList {};
+    auto derived_atom_indices = AtomIndexList {};
 
-    out << "}";  // end digraph
+    out << "digraph {\n"
+        << "rankdir=\"LR\""
+        << "\n";
+
+    // 3. Tuple nodes.
+    for (int node_index : tuple_graph.get_vertex_indices_by_distances().front())
+    {
+        out << "Dangling" << node_index << " [ label = \"\", style = invis ]\n";
+    }
+    for (const auto& vertex_ids : tuple_graph.get_vertex_indices_by_distances())
+    {
+        for (int vertex_id : vertex_ids)
+        {
+            const auto& vertex = tuple_graph.get_vertices()[vertex_id];
+            out << "t" << vertex.get_identifier() << "[";
+            out << "label=<";
+            out << "index=" << vertex.get_identifier() << "<BR/>";
+            out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
+
+            tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
+            std::cout << "combined_atom_indices: " << combined_atom_indices << std::endl;
+            inverse_atom_index_mapper.remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
+            const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
+            const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
+            out << "fluent_atoms=" << fluent_atoms << ", derived_atoms=" << derived_atoms << "<BR/>";
+            out << "states=[";
+            for (size_t i = 0; i < vertex.get_states().size(); ++i)
+            {
+                const auto& state = vertex.get_states()[i];
+                if (i != 0)
+                {
+                    out << "<BR/>";
+                }
+                out << std::make_tuple(problem, state, std::cref(pddl_factories));
+            }
+            out << "]>]\n";
+        }
+    }
+    // 4. Group states with same distance together
+    // 5. Tuple edges
+    out << "{\n";
+    for (const auto& vertex_id : tuple_graph.get_vertex_indices_by_distances().front())
+    {
+        const auto& vertex = tuple_graph.get_vertices()[vertex_id];
+        out << "Dangling" << vertex.get_identifier() << "->t" << vertex.get_identifier() << "\n";
+    }
+    out << "}\n";
+    for (const auto& vertex_ids : tuple_graph.get_vertex_indices_by_distances())
+    {
+        out << "{\n";
+        for (const auto& vertex_id : vertex_ids)
+        {
+            for (const auto& succ_vertex_id : tuple_graph.get_forward_successors()[vertex_id])
+            {
+                out << "t" << vertex_id << "->"
+                    << "t" << succ_vertex_id << "\n";
+            }
+        }
+        out << "}\n";
+    }
+    out << "}\n";  // end digraph
+
     return out;
 }
 

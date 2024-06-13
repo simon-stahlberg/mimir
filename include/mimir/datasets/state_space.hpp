@@ -57,7 +57,7 @@ using Transitions = std::vector<Transition>;
 class StateSpaceImpl
 {
 private:
-    PDDLParser m_parser;
+    std::unique_ptr<PDDLParser> m_parser;
     std::shared_ptr<GroundedAAG> m_aag;
     std::shared_ptr<SSG> m_ssg;
 
@@ -80,7 +80,7 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    StateSpaceImpl(PDDLParser parser,
+    StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
                    std::shared_ptr<GroundedAAG> aag,
                    std::shared_ptr<SSG> ssg,
                    StateList states,
