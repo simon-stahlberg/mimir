@@ -24,16 +24,16 @@ namespace mimir
  * TupleGraphVertex
  */
 
-TupleGraphVertex::TupleGraphVertex(int identifier, int tuple_index, StateList states) :
+TupleGraphVertex::TupleGraphVertex(VertexIndex identifier, TupleIndex tuple_index, StateList states) :
     m_identifier(identifier),
     m_tuple_index(tuple_index),
     m_states(std::move(states))
 {
 }
 
-int TupleGraphVertex::get_identifier() const { return m_identifier; }
+VertexIndex TupleGraphVertex::get_identifier() const { return m_identifier; }
 
-int TupleGraphVertex::get_tuple_index() const { return m_tuple_index; }
+TupleIndex TupleGraphVertex::get_tuple_index() const { return m_tuple_index; }
 
 const StateList& TupleGraphVertex::get_states() const { return m_states; }
 
@@ -46,9 +46,9 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
                        std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                        State root_state,
                        TupleGraphVertexList vertices,
-                       std::vector<std::vector<int>> forward_successors,
-                       std::vector<std::vector<int>> backward_successors,
-                       std::vector<std::vector<int>> vertex_indices_by_distance,
+                       std::vector<VertexIndexList> forward_successors,
+                       std::vector<VertexIndexList> backward_successors,
+                       std::vector<VertexIndexList> vertex_indices_by_distance,
                        std::vector<StateList> states_by_distance) :
     m_state_space(std::move(state_space)),
     m_atom_index_mapper(std::move(atom_index_mapper)),
@@ -62,6 +62,62 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
 {
 }
 
+std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms)
+{
+    // Construct the explict tuple representation
+    auto atom_indices = AtomIndexList {};
+    for (const auto& atom : fluent_atoms)
+    {
+        const auto atom_index = atom->get_identifier();
+        assert(atom_index < m_atom_index_mapper->get_fluent_remap().size());
+
+        const auto remapped_atom_index = m_atom_index_mapper->get_fluent_remap()[atom_index];
+        assert(remapped_atom_index != -1);
+
+        atom_indices.push_back(remapped_atom_index);
+    }
+    for (const auto& atom : derived_atoms)
+    {
+        const auto atom_index = atom->get_identifier();
+        assert(atom_index < m_atom_index_mapper->get_derived_remap().size());
+
+        const auto remapped_atom_index = m_atom_index_mapper->get_derived_remap()[atom_index];
+        assert(remapped_atom_index != -1);
+
+        atom_indices.push_back(remapped_atom_index);
+    }
+    std::sort(atom_indices.begin(), atom_indices.end());
+
+    if (static_cast<int>(atom_indices.size()) > m_tuple_index_mapper->get_arity())
+    {
+        // Size of tuple exceeds width, hence, it cannot be in the tuple graph.
+        return std::nullopt;
+    }
+    // Construct the implicit tuple representation by adding placeholders and using the perfect hash function.
+    atom_indices.resize(m_tuple_index_mapper->get_arity(), m_tuple_index_mapper->get_num_atoms());
+    assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
+    const auto tuple_index = m_tuple_index_mapper->to_tuple_index(atom_indices);
+
+    for (const auto& vertex : m_vertices)
+    {
+        if (vertex.get_tuple_index() == tuple_index)
+        {
+            // Backtrack admissible chain until the root and return an admissible chain that proves the width.
+            auto cur_vertex_index = vertex.get_identifier();
+            auto admissible_chain = VertexIndexList { cur_vertex_index };
+            while (!m_backward_successors[cur_vertex_index].empty())
+            {
+                cur_vertex_index = m_backward_successors[cur_vertex_index].front();
+                admissible_chain.push_back(cur_vertex_index);
+            }
+            std::reverse(admissible_chain.begin(), admissible_chain.end());
+            return admissible_chain;
+        }
+    }
+    // Tuple was not found in the tuple graph.
+    return std::nullopt;
+}
+
 std::shared_ptr<StateSpaceImpl> TupleGraph::get_state_space() const { return m_state_space; }
 
 std::shared_ptr<FluentAndDerivedMapper> TupleGraph::get_atom_index_mapper() const { return m_atom_index_mapper; }
@@ -72,11 +128,11 @@ State TupleGraph::get_root_state() const { return m_root_state; }
 
 const TupleGraphVertexList& TupleGraph::get_vertices() const { return m_vertices; }
 
-const std::vector<std::vector<int>>& TupleGraph::get_forward_successors() const { return m_forward_successors; }
+const std::vector<VertexIndexList>& TupleGraph::get_forward_successors() const { return m_forward_successors; }
 
-const std::vector<std::vector<int>>& TupleGraph::get_backward_successors() const { return m_backward_successors; }
+const std::vector<VertexIndexList>& TupleGraph::get_backward_successors() const { return m_backward_successors; }
 
-const std::vector<std::vector<int>>& TupleGraph::get_vertex_indices_by_distances() const { return m_vertex_indices_by_distance; }
+const std::vector<VertexIndexList>& TupleGraph::get_vertex_indices_by_distances() const { return m_vertex_indices_by_distance; }
 
 const std::vector<StateList>& TupleGraph::get_states_by_distance() const { return m_states_by_distance; }
 
@@ -114,7 +170,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     const auto& transitions = m_state_space->get_forward_transitions().at(m_root_state.get_id());
     m_forward_successors.resize(m_vertices.size() + transitions.size());
     m_backward_successors.resize(m_vertices.size() + transitions.size());
-    auto vertex_indices_layer = std::vector<int> {};
+    auto vertex_indices_layer = VertexIndexList {};
     auto states_layer = StateList {};
     for (const auto& transition : transitions)
     {
@@ -412,9 +468,10 @@ TupleGraph TupleGraphFactory::create_for_arity_k(const State root_state) const
 }
 
 TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity, bool prune_dominated_tuples) :
-    m_state_space(std::move(state_space)),
+    m_state_space(state_space),
     m_prune_dominated_tuples(prune_dominated_tuples),
-    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
+    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>(m_state_space->get_aag()->get_pddl_factories().get_ground_atom_factory<Fluent>(),
+                                                                 m_state_space->get_aag()->get_pddl_factories().get_ground_atom_factory<Derived>())),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity,
                                                             m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Fluent>()
                                                                 + m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Derived>()))

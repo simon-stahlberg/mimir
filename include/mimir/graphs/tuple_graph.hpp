@@ -31,22 +31,26 @@ namespace mimir
 {
 class TupleGraphFactory;
 
+using VertexIndex = int;
+using VertexIndexList = std::vector<VertexIndex>;
+using VertexIndexSet = std::unordered_set<VertexIndex>;
+
 class TupleGraphVertex
 {
 private:
-    int m_identifier;
-    int m_tuple_index;
+    VertexIndex m_identifier;
+    TupleIndex m_tuple_index;
     StateList m_states;
 
 public:
-    TupleGraphVertex(int identifier, int tuple_index, StateList states);
+    TupleGraphVertex(VertexIndex identifier, TupleIndex tuple_index, StateList states);
 
     /**
      * Getters.
      */
 
-    int get_identifier() const;
-    int get_tuple_index() const;
+    VertexIndex get_identifier() const;
+    TupleIndex get_tuple_index() const;
     const StateList& get_states() const;
 };
 
@@ -62,10 +66,10 @@ private:
 
     TupleGraphVertexList m_vertices;
 
-    std::vector<std::vector<int>> m_forward_successors;
-    std::vector<std::vector<int>> m_backward_successors;
+    std::vector<VertexIndexList> m_forward_successors;
+    std::vector<VertexIndexList> m_backward_successors;
 
-    std::vector<std::vector<int>> m_vertex_indices_by_distance;
+    std::vector<VertexIndexList> m_vertex_indices_by_distance;
     std::vector<StateList> m_states_by_distance;
 
     TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
@@ -73,13 +77,17 @@ private:
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                State root_state,
                TupleGraphVertexList vertices,
-               std::vector<std::vector<int>> forward_successors,
-               std::vector<std::vector<int>> backward_successors,
-               std::vector<std::vector<int>> vertex_indices_by_distance,
+               std::vector<VertexIndexList> forward_successors,
+               std::vector<VertexIndexList> backward_successors,
+               std::vector<VertexIndexList> vertex_indices_by_distance,
                std::vector<StateList> states_by_distance);
     friend class TupleGraphFactory;
 
 public:
+    /// @brief Compute and return an admissible chain for a given tuple of ground atoms.
+    /// Return std::nullopt if no such admissible chain exists.
+    std::optional<VertexIndexList> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
+
     /**
      * Getters.
      */
@@ -89,9 +97,9 @@ public:
     std::shared_ptr<TupleIndexMapper> get_tuple_index_mapper() const;
     State get_root_state() const;
     const TupleGraphVertexList& get_vertices() const;
-    const std::vector<std::vector<int>>& get_forward_successors() const;
-    const std::vector<std::vector<int>>& get_backward_successors() const;
-    const std::vector<std::vector<int>>& get_vertex_indices_by_distances() const;
+    const std::vector<VertexIndexList>& get_forward_successors() const;
+    const std::vector<VertexIndexList>& get_backward_successors() const;
+    const std::vector<VertexIndexList>& get_vertex_indices_by_distances() const;
     const std::vector<StateList>& get_states_by_distance() const;
 };
 
@@ -113,9 +121,9 @@ private:
         State m_root_state;
         bool m_prune_dominated_tuples;
         TupleGraphVertexList m_vertices;
-        std::vector<std::vector<int>> m_forward_successors;
-        std::vector<std::vector<int>> m_backward_successors;
-        std::vector<std::vector<int>> m_vertex_indices_by_distances;
+        std::vector<VertexIndexList> m_forward_successors;
+        std::vector<VertexIndexList> m_backward_successors;
+        std::vector<VertexIndexList> m_vertex_indices_by_distances;
         std::vector<StateList> m_states_by_distance;
 
     public:
@@ -133,10 +141,6 @@ private:
 
         /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
         TupleGraph extract_tuple_graph();
-
-        /// @brief Compute and return an admissible chain for a given tuple of ground atoms.
-        /// Return std::nullopt if no such admissible chain exists.
-        std::optional<std::vector<int>> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
     };
 
     // Bookkeeping for memory reuse when building tuple graph of width greater 0
@@ -149,9 +153,9 @@ private:
         State root_state;
         bool prune_dominated_tuples;
         TupleGraphVertexList vertices;
-        std::vector<std::vector<int>> forward_successors;
-        std::vector<std::vector<int>> backward_successors;
-        std::vector<std::vector<int>> vertex_indices_by_distances;
+        std::vector<VertexIndexList> forward_successors;
+        std::vector<VertexIndexList> backward_successors;
+        std::vector<VertexIndexList> vertex_indices_by_distances;
         std::vector<StateList> states_by_distance;
 
         /**
@@ -172,14 +176,14 @@ private:
         void compute_next_novel_tuple_indices();
 
         std::unordered_map<TupleIndex, StateSet> cur_novel_tuple_index_to_extended_state;
-        std::unordered_map<TupleIndex, std::unordered_set<int>> cur_extended_novel_tuple_index_to_prev_vertices;
+        std::unordered_map<TupleIndex, VertexIndexSet> cur_extended_novel_tuple_index_to_prev_vertices;
         TupleIndexSet cur_extended_novel_tuple_indices_set;
         TupleIndexList cur_extended_novel_tuple_indices;
 
         void extend_optimal_plans_from_prev_layer();
 
         std::unordered_map<TupleIndex, TupleIndexSet> tuple_index_to_dominating_tuple_indices;
-        std::vector<int> cur_vertices;
+        VertexIndexList cur_vertices;
 
         void instantiate_next_layer();
 

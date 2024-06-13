@@ -577,6 +577,27 @@ public:
     }
 
     template<PredicateCategory P>
+    const loki::PDDLFactory<GroundAtomImpl<P>>& get_ground_atom_factory() const
+    {
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_ground_atoms;
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_ground_atoms;
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_ground_atoms;
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
+    }
+
+    template<PredicateCategory P>
     size_t get_num_ground_atoms() const
     {
         if constexpr (std::is_same_v<P, Static>)

@@ -75,6 +75,7 @@ private:
 
 public:
     FluentAndDerivedMapper();
+    FluentAndDerivedMapper(const FluentGroundAtomFactory& fluent_atoms, const DerivedGroundAtomFactory& derived_atoms);
 
     void remap_and_combine_and_sort(const State state, AtomIndexList& out_atoms);
     void remap_and_combine_and_sort(const State state, const State succ_state, AtomIndexList& out_atoms, AtomIndexList& out_add_atoms);

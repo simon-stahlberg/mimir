@@ -114,6 +114,22 @@ TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tupl
 
 FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_num_atoms(0) {}
 
+FluentAndDerivedMapper::FluentAndDerivedMapper(const FluentGroundAtomFactory& fluent_atoms, const DerivedGroundAtomFactory& derived_atoms) :
+    m_fluent_remap(fluent_atoms.size(), -1),
+    m_derived_remap(derived_atoms.size(), -1),
+    m_num_atoms(0)
+{
+    for (const auto& atom : fluent_atoms)
+    {
+        m_fluent_remap.at(atom.get_identifier()) = m_num_atoms++;
+    }
+    for (const auto& atom : derived_atoms)
+    {
+        m_derived_remap.at(atom.get_identifier()) = m_num_atoms++;
+    }
+    assert(m_num_atoms == fluent_atoms.size() + derived_atoms.size());
+}
+
 const int FluentAndDerivedMapper::UNDEFINED = -1;
 
 void FluentAndDerivedMapper::remap_atoms(const State state)
