@@ -707,8 +707,7 @@ void init_pymimir(py::module_& m)
                  auto atom_indices = AtomIndexList {};
                  self.combine_and_sort(state, atom_indices);
                  return atom_indices;
-             });
-    py::class_<FluentAndDerivedMapper, std::shared_ptr<FluentAndDerivedMapper>>(m, "FluentAndDerivedMapper")  //
+             })
         .def("combine_and_sort",
 
              [](FluentAndDerivedMapper& self, const State state, const State succ_state)

@@ -38,6 +38,14 @@ Mimir is available on [pypi](https://pypi.org/project/pymimir/).
 pip install pymimir
 ```
 
+### 2.3. Ownership Semantics
+
+<span style="color: red;">Important for Python Users</span>
+
+For simplicity and efficiency reasons, the Python bindings use the same ownership semantics as its underlying C++ code.
+The ownership semantics are very simple and it is extremely important to get them correct for avoiding segfaults.
+We provide an [example](https://github.com/simon-stahlberg/mimir/tree/dynamic/python/examples/ownership_semantics.py) that illustrates three rules for correct ownership semantics.
+
 ## 3. Getting Started (C++)
 
 ### 3.1. Example C++ API
