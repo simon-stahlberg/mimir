@@ -40,7 +40,7 @@ pip install pymimir
 
 ### 2.3. Ownership Semantics
 
-<span style="color: red;">Important for Python Users</span>
+! Important for Python Users
 
 For simplicity and efficiency reasons, the Python bindings use the same ownership semantics as its underlying C++ code.
 The ownership semantics are very simple and it is extremely important to get them correct for avoiding segfaults.
