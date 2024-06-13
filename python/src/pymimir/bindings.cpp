@@ -717,6 +717,15 @@ void init_pymimir(py::module_& m)
                  self.combine_and_sort(state, succ_state, atom_indices, add_atom_indices);
                  return std::make_tuple(atom_indices, add_atom_indices);
              })
+        .def("inverse_remap_and_separate",
+
+             [](FluentAndDerivedMapper& self, const AtomIndexList& fluent_and_derived_atom_indices)
+             {
+                 auto fluent_atom_indices = AtomIndexList {};
+                 auto derived_atom_indices = AtomIndexList {};
+                 self.inverse_remap_and_separate(fluent_and_derived_atom_indices, fluent_atom_indices, derived_atom_indices);
+                 return std::make_tuple(fluent_atom_indices, derived_atom_indices);
+             })
         .def("get_fluent_remap", &FluentAndDerivedMapper::get_fluent_remap, py::return_value_policy::reference)
         .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference)
         .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference)
@@ -798,8 +807,16 @@ void init_pymimir(py::module_& m)
 
     // TupleGraph
     py::class_<TupleGraph>(m, "TupleGraph")  //
+        .def("to_string",
+             [](const TupleGraph& self, const Problem problem, const PDDLFactories& pddl_factories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(std::cref(self), problem, std::cref(pddl_factories));
+                 return ss.str();
+             })
         .def("compute_admissible_chain", &TupleGraph::compute_admissible_chain)
         .def("get_state_space", &TupleGraph::get_state_space)
+        .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
         .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
         .def("get_root_state", &TupleGraph::get_root_state)
         .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference)

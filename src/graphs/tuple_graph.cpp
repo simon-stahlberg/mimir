@@ -69,9 +69,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
     for (const auto& atom : fluent_atoms)
     {
         const auto atom_index = atom->get_identifier();
-        assert(atom_index < m_atom_index_mapper->get_fluent_remap().size());
-
-        const auto remapped_atom_index = m_atom_index_mapper->get_fluent_remap()[atom_index];
+        const auto remapped_atom_index = m_atom_index_mapper->get_fluent_remap().at(atom_index);
         assert(remapped_atom_index != -1);
 
         atom_indices.push_back(remapped_atom_index);
@@ -79,9 +77,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
     for (const auto& atom : derived_atoms)
     {
         const auto atom_index = atom->get_identifier();
-        assert(atom_index < m_atom_index_mapper->get_derived_remap().size());
-
-        const auto remapped_atom_index = m_atom_index_mapper->get_derived_remap()[atom_index];
+        const auto remapped_atom_index = m_atom_index_mapper->get_derived_remap().at(atom_index);
         assert(remapped_atom_index != -1);
 
         atom_indices.push_back(remapped_atom_index);
@@ -105,9 +101,9 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
             // Backtrack admissible chain until the root and return an admissible chain that proves the width.
             auto cur_vertex_index = vertex.get_identifier();
             auto admissible_chain = VertexIndexList { cur_vertex_index };
-            while (!m_backward_successors[cur_vertex_index].empty())
+            while (!m_backward_successors.at(cur_vertex_index).empty())
             {
-                cur_vertex_index = m_backward_successors[cur_vertex_index].front();
+                cur_vertex_index = m_backward_successors.at(cur_vertex_index).front();
                 admissible_chain.push_back(cur_vertex_index);
             }
             std::reverse(admissible_chain.begin(), admissible_chain.end());
@@ -516,7 +512,7 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const 
             out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
 
             tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
-            tuple_graph.get_atom_index_mapper()->remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
+            tuple_graph.get_atom_index_mapper()->inverse_remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
             const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
             const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
             out << "fluent_atoms=" << fluent_atoms << ", derived_atoms=" << derived_atoms << "<BR/>";

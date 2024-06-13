@@ -112,20 +112,29 @@ TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tupl
  * FluentAndDerivedMapper
  */
 
-FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_num_atoms(0) {}
+FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_is_remapped_fluent(), m_inverse_remap(), m_num_atoms(0) {}
 
 FluentAndDerivedMapper::FluentAndDerivedMapper(const FluentGroundAtomFactory& fluent_atoms, const DerivedGroundAtomFactory& derived_atoms) :
     m_fluent_remap(fluent_atoms.size(), -1),
     m_derived_remap(derived_atoms.size(), -1),
+    m_is_remapped_fluent(fluent_atoms.size() + derived_atoms.size(), false),
+    m_inverse_remap(fluent_atoms.size() + derived_atoms.size(), UNDEFINED),
     m_num_atoms(0)
 {
     for (const auto& atom : fluent_atoms)
     {
-        m_fluent_remap.at(atom.get_identifier()) = m_num_atoms++;
+        const auto atom_id = atom.get_identifier();
+        const auto remapped_atom_id = m_num_atoms++;
+        m_fluent_remap.at(atom_id) = remapped_atom_id;
+        m_is_remapped_fluent.at(atom_id) = true;
+        m_inverse_remap.at(remapped_atom_id) = atom_id;
     }
     for (const auto& atom : derived_atoms)
     {
-        m_derived_remap.at(atom.get_identifier()) = m_num_atoms++;
+        const auto atom_id = atom.get_identifier();
+        const auto remapped_atom_id = m_num_atoms++;
+        m_derived_remap.at(atom_id) = remapped_atom_id;
+        m_inverse_remap.at(remapped_atom_id) = atom_id;
     }
     assert(m_num_atoms == static_cast<int>(fluent_atoms.size()) + static_cast<int>(derived_atoms.size()));
 }
@@ -142,15 +151,15 @@ void FluentAndDerivedMapper::remap_atoms(const State state)
             m_inverse_remap.resize(atom_id + 1, UNDEFINED);
             m_is_remapped_fluent.resize(atom_id + 1, false);
         }
-        if (m_fluent_remap[atom_id] != UNDEFINED)
+        if (m_fluent_remap.at(atom_id) != UNDEFINED)
         {
             continue;
         }
 
         const auto remapped_atom_id = m_num_atoms++;
-        m_fluent_remap[atom_id] = remapped_atom_id;
-        m_is_remapped_fluent[atom_id] = true;
-        m_inverse_remap[remapped_atom_id] = atom_id;
+        m_fluent_remap.at(atom_id) = remapped_atom_id;
+        m_is_remapped_fluent.at(atom_id) = true;
+        m_inverse_remap.at(remapped_atom_id) = atom_id;
     }
 
     for (const auto& atom_id : state.get_atoms<Derived>())
@@ -161,14 +170,14 @@ void FluentAndDerivedMapper::remap_atoms(const State state)
             m_inverse_remap.resize(atom_id + 1, UNDEFINED);
             m_is_remapped_fluent.resize(atom_id + 1, false);
         }
-        if (m_derived_remap[atom_id] != UNDEFINED)
+        if (m_derived_remap.at(atom_id) != UNDEFINED)
         {
             continue;
         }
 
         const auto remapped_atom_id = m_num_atoms++;
-        m_derived_remap[atom_id] = remapped_atom_id;
-        m_inverse_remap[remapped_atom_id] = atom_id;
+        m_derived_remap.at(atom_id) = remapped_atom_id;
+        m_inverse_remap.at(remapped_atom_id) = atom_id;
     }
 }
 
@@ -197,18 +206,16 @@ void FluentAndDerivedMapper::combine_and_sort(const State state, AtomIndexList& 
     out_atoms.clear();
     for (const auto& atom_id : state.get_atoms<Fluent>())
     {
-        assert(atom_id < m_fluent_remap.size());
-        assert(m_fluent_remap[atom_id] != UNDEFINED);
+        assert(m_fluent_remap.at(atom_id) != UNDEFINED);
 
-        out_atoms.push_back(m_fluent_remap[atom_id]);
+        out_atoms.push_back(m_fluent_remap.at(atom_id));
     }
 
     for (const auto& atom_id : state.get_atoms<Derived>())
     {
-        assert(atom_id < m_derived_remap.size());
-        assert(m_derived_remap[atom_id] != UNDEFINED);
+        assert(m_derived_remap.at(atom_id) != UNDEFINED);
 
-        out_atoms.push_back(m_derived_remap[atom_id]);
+        out_atoms.push_back(m_derived_remap.at(atom_id));
     }
 
     // Sort
@@ -224,18 +231,16 @@ void FluentAndDerivedMapper::combine_and_sort(const State state, const State suc
     out_add_atoms.clear();
     for (const auto& atom_id : succ_state.get_atoms<Fluent>())
     {
-        assert(atom_id < m_fluent_remap.size());
-        assert(m_fluent_remap[atom_id] != UNDEFINED);
+        assert(m_fluent_remap.at(atom_id) != UNDEFINED);
 
-        state.get_atoms<Fluent>().get(atom_id) ? out_atoms.push_back(m_fluent_remap[atom_id]) : out_add_atoms.push_back(m_fluent_remap[atom_id]);
+        state.get_atoms<Fluent>().get(atom_id) ? out_atoms.push_back(m_fluent_remap.at(atom_id)) : out_add_atoms.push_back(m_fluent_remap.at(atom_id));
     }
 
     for (const auto& atom_id : succ_state.get_atoms<Derived>())
     {
-        assert(atom_id < m_derived_remap.size());
-        assert(m_derived_remap[atom_id] != UNDEFINED);
+        assert(m_derived_remap.at(atom_id) != UNDEFINED);
 
-        state.get_atoms<Derived>().get(atom_id) ? out_atoms.push_back(m_derived_remap[atom_id]) : out_add_atoms.push_back(m_derived_remap[atom_id]);
+        state.get_atoms<Derived>().get(atom_id) ? out_atoms.push_back(m_derived_remap.at(atom_id)) : out_add_atoms.push_back(m_derived_remap.at(atom_id));
     }
 
     // Sort
@@ -249,7 +254,7 @@ const std::vector<int>& FluentAndDerivedMapper::get_fluent_remap() const { retur
 
 const std::vector<int>& FluentAndDerivedMapper::get_derived_remap() const { return m_derived_remap; }
 
-void FluentAndDerivedMapper::remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms)
+void FluentAndDerivedMapper::inverse_remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms)
 {
     out_fluent_atoms.clear();
     out_derived_atoms.clear();
@@ -258,16 +263,15 @@ void FluentAndDerivedMapper::remap_and_separate(const AtomIndexList& combined_at
     {
         // Ensure that we are not computing the inverse of an index
         // that has never been mapped in the forward direction before.
-        assert(atom_id < static_cast<int>(m_inverse_remap.size()));
-        assert(m_inverse_remap[atom_id] != -1);
+        assert(m_inverse_remap.at(atom_id) != UNDEFINED);
 
-        if (m_is_remapped_fluent[atom_id])
+        if (m_is_remapped_fluent.at(atom_id))
         {
-            out_fluent_atoms.push_back(m_inverse_remap[atom_id]);
+            out_fluent_atoms.push_back(m_inverse_remap.at(atom_id));
         }
         else
         {
-            out_derived_atoms.push_back(m_inverse_remap[atom_id]);
+            out_derived_atoms.push_back(m_inverse_remap.at(atom_id));
         }
     }
 }

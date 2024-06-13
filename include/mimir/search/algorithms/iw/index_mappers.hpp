@@ -101,7 +101,7 @@ public:
      * Inverse remapping
      */
 
-    void remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms);
+    void inverse_remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms);
 
     const std::vector<bool>& get_is_remapped_fluent() const;
     const std::vector<int>& get_inverse_remap() const;
