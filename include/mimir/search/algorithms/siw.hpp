@@ -117,8 +117,16 @@ public:
 
             if (search_status == SearchStatus::UNSOLVABLE)
             {
-                // m_iw_event_handler->on_unsolvable();
+                m_siw_event_handler->on_end_search();
+                m_siw_event_handler->on_unsolvable();
                 return SearchStatus::UNSOLVABLE;
+            }
+
+            if (search_status == SearchStatus::FAILED)
+            {
+                m_siw_event_handler->on_end_search();
+                m_siw_event_handler->on_exhausted();
+                return SearchStatus::FAILED;
             }
 
             assert(goal_state.has_value());
