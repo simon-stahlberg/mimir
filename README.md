@@ -91,7 +91,7 @@ cmake --install build --prefix=<path/to/installation-directory>
 
 ### 3.4. Creating your own Planner based on Mimir
 
-We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/mimir/tree/dynamic/tests/integration) that downloads, builds, and installs Mimir and all its dependencies. We recommend using it as a dependency project for your project, similar to how we handle Mimir's dependencies.
+We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/mimir/tree/dynamic/tests/integration) that downloads, builds, and installs Mimir and all its dependencies. We recommend using it as a dependency project for your project, similar to how we handle Mimir's dependencies. Furthermore, to ensure that your dependencies keep working even after changes to the dependencies repos, we recommend explicitly setting the `GIT_TAG` of each dependency to the commit hash that you started developing on.
 
 ## 4.For Developers
 
