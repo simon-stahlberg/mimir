@@ -560,15 +560,15 @@ public:
     {
         if constexpr (std::is_same_v<P, Static>)
         {
-            return static_ground_atoms.get(atom_id);
+            return static_ground_atoms.at(atom_id);
         }
         else if constexpr (std::is_same_v<P, Fluent>)
         {
-            return fluent_ground_atoms.get(atom_id);
+            return fluent_ground_atoms.at(atom_id);
         }
         else if constexpr (std::is_same_v<P, Derived>)
         {
-            return derived_ground_atoms.get(atom_id);
+            return derived_ground_atoms.at(atom_id);
         }
         else
         {
@@ -657,7 +657,7 @@ public:
         return result;
     }
 
-    Object get_object(size_t object_id) const { return objects.get(object_id); }
+    Object get_object(size_t object_id) const { return objects.at(object_id); }
 
     /* Grounding */
 
