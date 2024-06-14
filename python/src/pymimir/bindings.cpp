@@ -814,7 +814,9 @@ void init_pymimir(py::module_& m)
                  ss << std::make_tuple(std::cref(self), problem, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("compute_admissible_chain", &TupleGraph::compute_admissible_chain)
+        .def("compute_admissible_chain",
+             py::overload_cast<const GroundAtomList<Fluent>&, const GroundAtomList<Derived>&>(&TupleGraph::compute_admissible_chain))
+        .def("compute_admissible_chain", py::overload_cast<const StateList&>(&TupleGraph::compute_admissible_chain))
         .def("get_state_space", &TupleGraph::get_state_space)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
         .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)

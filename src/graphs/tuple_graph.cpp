@@ -114,6 +114,65 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
     return std::nullopt;
 }
 
+std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateList& states)
+{
+    if (states.empty())
+    {
+        // No tuple can optimally goal imply an empty set of states
+        return std::nullopt;
+    }
+
+    auto optimal_distance = std::numeric_limits<int>::max();
+    const auto distances = m_state_space->compute_shortest_distances_from_states(StateList { m_state_space->get_initial_state() });
+    for (const auto& state : states)
+    {
+        const auto state_distance = distances[state.get_id()];
+        // Unreachable states have distance -1
+        if (state_distance != -1)
+        {
+            optimal_distance = std::min(optimal_distance, state_distance);
+        }
+    }
+
+    auto optimal_states = StateSet {};
+    for (const auto& state : states)
+    {
+        if (distances[state.get_id()] == optimal_distance)
+        {
+            optimal_states.insert(state);
+        }
+    }
+
+    if (optimal_states.empty())
+    {
+        // No tuple can optimally goal imply an empty set of states
+        return std::nullopt;
+    }
+
+    for (const auto& vertex : m_vertices)
+    {
+        // Part 3 of definition of width
+        const auto tuple_optimally_goal_implies_states = std::all_of(vertex.get_states().begin(),
+                                                                     vertex.get_states().end(),
+                                                                     [&optimal_states](const auto& tuple_state) { return optimal_states.count(tuple_state); });
+
+        if (tuple_optimally_goal_implies_states)
+        {
+            // Backtrack admissible chain until the root and return an admissible chain that proves the width.
+            auto cur_vertex_index = vertex.get_identifier();
+            auto admissible_chain = VertexIndexList { cur_vertex_index };
+            while (!m_backward_successors.at(cur_vertex_index).empty())
+            {
+                cur_vertex_index = m_backward_successors.at(cur_vertex_index).front();
+                admissible_chain.push_back(cur_vertex_index);
+            }
+            std::reverse(admissible_chain.begin(), admissible_chain.end());
+            return admissible_chain;
+        }
+    }
+    return std::nullopt;
+}
+
 std::shared_ptr<StateSpaceImpl> TupleGraph::get_state_space() const { return m_state_space; }
 
 std::shared_ptr<FluentAndDerivedMapper> TupleGraph::get_atom_index_mapper() const { return m_atom_index_mapper; }

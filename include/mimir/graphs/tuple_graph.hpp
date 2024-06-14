@@ -88,6 +88,10 @@ public:
     /// Return std::nullopt if no such admissible chain exists.
     std::optional<VertexIndexList> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
 
+    /// @brief Compute and return an admissible chain for a given set of states.
+    /// Return std::nullopt if no such admissible chain exists.
+    std::optional<VertexIndexList> compute_admissible_chain(const StateList& states);
+
     /**
      * Getters.
      */
