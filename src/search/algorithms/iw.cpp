@@ -898,6 +898,8 @@ bool DynamicNoveltyTable::test_novelty_and_update_table(const State state, const
     return is_novel;
 }
 
+void DynamicNoveltyTable::reset() { std::fill(m_table.begin(), m_table.end(), false); }
+
 /**
  * NoveltyPruning
  */

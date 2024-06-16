@@ -17,12 +17,12 @@ TEST(MimirTests, GraphsTupleGraphTest)
 
     for (const auto& state : state_space->get_states())
     {
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
+        std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
-        const auto tuple_graph = tuple_graph_factory.create(state);
+        const auto& tuple_graph = tuple_graph_factory.create(state);
 
-        // std::cout << std::make_tuple(std::cref(tuple_graph), state_space->get_aag()->get_problem(), std::cref(state_space->get_aag()->get_pddl_factories()))
-        //           << std::endl;
+        std::cout << std::make_tuple(std::cref(tuple_graph), state_space->get_aag()->get_problem(), std::cref(state_space->get_aag()->get_pddl_factories()))
+                  << std::endl;
     }
 }
 }

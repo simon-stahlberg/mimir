@@ -62,7 +62,7 @@ private:
     std::shared_ptr<StateSpaceImpl> m_state_space;
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
-    State m_root_state;
+    bool m_prune_dominated_tuples;
 
     TupleGraphVertexList m_vertices;
 
@@ -75,12 +75,8 @@ private:
     TupleGraph(std::shared_ptr<StateSpaceImpl> state_space,
                std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-               State root_state,
-               TupleGraphVertexList vertices,
-               std::vector<VertexIndexList> forward_successors,
-               std::vector<VertexIndexList> backward_successors,
-               std::vector<VertexIndexList> vertex_indices_by_distance,
-               std::vector<StateList> states_by_distance);
+               bool prune_dominated_tuples);
+
     friend class TupleGraphFactory;
 
 public:
@@ -96,9 +92,9 @@ public:
      * Getters.
      */
 
-    std::shared_ptr<StateSpaceImpl> get_state_space() const;
-    std::shared_ptr<FluentAndDerivedMapper> get_atom_index_mapper() const;
-    std::shared_ptr<TupleIndexMapper> get_tuple_index_mapper() const;
+    const std::shared_ptr<StateSpaceImpl>& get_state_space() const;
+    const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
+    const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
     const TupleGraphVertexList& get_vertices() const;
     const std::vector<VertexIndexList>& get_forward_successors() const;
@@ -119,59 +115,40 @@ private:
     class TupleGraphArityZeroComputation
     {
     private:
-        std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
-        std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
-        std::shared_ptr<StateSpaceImpl> m_state_space;
-        State m_root_state;
-        bool m_prune_dominated_tuples;
-        TupleGraphVertexList m_vertices;
-        std::vector<VertexIndexList> m_forward_successors;
-        std::vector<VertexIndexList> m_backward_successors;
-        std::vector<VertexIndexList> m_vertex_indices_by_distances;
-        std::vector<StateList> m_states_by_distance;
+        TupleGraph m_tuple_graph;
 
     public:
         TupleGraphArityZeroComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                                        std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                                        std::shared_ptr<StateSpaceImpl> state_space,
-                                       const State root_state,
                                        bool prune_dominated_tuples);
 
         /// @brief Compute the root state layer.
-        void compute_root_state_layer();
+        void compute_root_state_layer(const State root_state);
 
         /// @brief Compute the layer at distance 1, assumes that the root state layer exists.
         void compute_first_layer();
 
         /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
-        TupleGraph extract_tuple_graph();
+        const TupleGraph& get_tuple_graph();
     };
 
     // Bookkeeping for memory reuse when building tuple graph of width greater 0
     class TupleGraphArityKComputation
     {
     private:
-        std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
-        std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
-        std::shared_ptr<StateSpaceImpl> state_space;
-        State root_state;
-        bool prune_dominated_tuples;
-        TupleGraphVertexList vertices;
-        std::vector<VertexIndexList> forward_successors;
-        std::vector<VertexIndexList> backward_successors;
-        std::vector<VertexIndexList> vertex_indices_by_distances;
-        std::vector<StateList> states_by_distance;
+        TupleGraph m_tuple_graph;
+        StateSet visited_states;
+        DynamicNoveltyTable novelty_table;
+        StateList cur_states;
+        VertexIndexList cur_vertices;
 
         /**
          * Four step procedure to compute the next layer in the graph.
          */
 
-        StateSet visited_states;
-        StateList cur_states;
-
         void compute_next_state_layer();
 
-        DynamicNoveltyTable novelty_table;
         TupleIndexSet novel_tuple_indices_set;
         TupleIndexList novel_tuple_indices;
         std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_states;
@@ -187,7 +164,6 @@ private:
         void extend_optimal_plans_from_prev_layer();
 
         std::unordered_map<TupleIndex, TupleIndexSet> tuple_index_to_dominating_tuple_indices;
-        VertexIndexList cur_vertices;
 
         void instantiate_next_layer();
 
@@ -195,38 +171,43 @@ private:
         TupleGraphArityKComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                                     std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                                     std::shared_ptr<StateSpaceImpl> state_space,
-                                    const State root_state,
                                     bool prune_dominated_tuples);
 
         /// @brief Compute the root state layer.
-        void compute_root_state_layer();
+        void compute_root_state_layer(const State root_state);
 
         /// @brief Compute the next layer, assumes that the root state layer exists
         /// and return true iff the layer is nonempty.
         bool compute_next_layer();
 
         /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
-        TupleGraph extract_tuple_graph();
+        const TupleGraph& get_tuple_graph();
     };
+
+    // Preallocated memory and construction logic.
+    TupleGraphArityZeroComputation m_arity_zero_computation;
+    TupleGraphArityKComputation m_arity_k_computation;
 
     /// @brief Create tuple graph for the special case of width 0, i.e.,
     /// any state with distance at most 1 from the root_state is a subgoal state.
-    TupleGraph create_for_arity_zero(const State root_state) const;
+    const TupleGraph& create_for_arity_zero(const State root_state);
 
-    TupleGraph create_for_arity_k(const State root_state) const;
+    /// @brief Create a tuple graph for width k > 0.
+    const TupleGraph& create_for_arity_k(const State root_state);
 
 public:
     TupleGraphFactory(std::shared_ptr<StateSpaceImpl> state_space, int arity, bool prune_dominated_tuples = false);
 
-    TupleGraph create(const State root_state) const;
+    /// @brief Create and return a reference to the tuple graph.
+    const TupleGraph& create(const State root_state);
 
     /**
      * Getters.
      */
 
-    std::shared_ptr<StateSpaceImpl> get_state_space() const;
-    std::shared_ptr<FluentAndDerivedMapper> get_atom_index_mapper() const;
-    std::shared_ptr<TupleIndexMapper> get_tuple_index_mapper() const;
+    const std::shared_ptr<StateSpaceImpl>& get_state_space() const;
+    const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
+    const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
 };
 
 /**

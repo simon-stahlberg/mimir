@@ -52,6 +52,8 @@ public:
     bool test_novelty_and_update_table(const State state);
 
     bool test_novelty_and_update_table(const State state, const State succ_state);
+
+    void reset();
 };
 
 }
