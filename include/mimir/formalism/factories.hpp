@@ -66,6 +66,8 @@ using DomainFactory = loki::PDDLFactory<DomainImpl>;
 using ProblemFactory = loki::PDDLFactory<ProblemImpl>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
+///
+/// TODO: we would like to use the pddl objects of the domain in the problem
 class PDDLFactories
 {
 private:
