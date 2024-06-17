@@ -78,7 +78,7 @@ class CMakeBuild(build_ext):
 
 
 setup(
-    name="pymimir-dzc-fork",
+    name="pymdzcf",
     version="0.1.0",
     author="Dillon Z. Chen",
     author_email="dillon.chen1@gmail.com",
