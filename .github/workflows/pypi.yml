@@ -17,8 +17,10 @@ jobs:
         python-version: ["3.10", "3.11", "3.12"]
 
     environment:
-      name: testpypi
-      url: https://test.pypi.org/p/pymimir-dzc-fork
+      name: pypi
+      url: https://pypi.org/p/pymdzcf
+
+    if: ${{ github.repository == 'DillonZChen/mimir' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +43,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           pip wheel .
-          export whl_file=$(find -name "pymimir*.whl" -type f)
+          export whl_file=$(find -name "pymdzcf*.whl" -type f)
           auditwheel repair $whl_file --plat manylinux_2_34_x86_64 -w wheelhouse/
           export whl_file_new=$(find wheelhouse/ -name "*.whl" -type f)
           echo $whl_file_new
