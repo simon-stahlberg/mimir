@@ -64,7 +64,10 @@ void Digraph::reset(int num_vertices, bool is_directed)
     m_num_vertices = num_vertices;
 }
 
-void Digraph::to_nauty_graph(nauty_wrapper::Graph& out) const {}
+void Digraph::to_nauty_graph(nauty_wrapper::Graph& out) const
+{
+    // TODO:
+}
 
 int Digraph::get_num_vertices() const { return m_num_vertices; }
 

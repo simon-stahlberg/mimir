@@ -16,6 +16,7 @@ message("CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/configure_boost.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/configure_loki.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/FindNauty.cmake")
 
 
 ##############################################################
@@ -51,6 +52,13 @@ if(flatmemory_FOUND)
   include_directories(${flatmemory_INCLUDE_DIRS})
   message(STATUS "Found flatmemory: ${flatmemory_DIR} (found version ${flatmemory_VERSION})")
 endif()
+
+
+# -----------
+# Nauty
+# -----------
+
+find_dependency(Nauty::Nauty REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
 
 ############

@@ -106,6 +106,8 @@ if(flatmemory_FOUND)
   message(STATUS "Found flatmemory: ${flatmemory_DIR} (found version ${flatmemory_VERSION})")
 endif()
 
+find_package(Nauty REQUIRED)
+
 ##############################################################
 # Add library and executable targets
 ##############################################################

@@ -18,7 +18,7 @@ add_library(mimir::core ALIAS core)
 
 target_link_libraries(core loki::parsers)
 target_link_libraries(core flatmemory::flatmemory)
-target_link_libraries(core "${CMAKE_PREFIX_PATH}/lib/libnauty.a")
+target_link_libraries(core Nauty::Nauty)
 
 # Use include depending on building or using from installed location
 target_include_directories(core
