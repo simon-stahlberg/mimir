@@ -20,6 +20,7 @@ add_executable(${TEST_NAME}
     "formalism/translators/to_negation_normal_form.cpp"
     "formalism/translators/remove_types.cpp"
     "formalism/translators/remove_universal_quantifiers.cpp"
+    "graphs/object_graph.cpp"
     "graphs/tuple_graph.cpp"
     "search/algorithms/brfs.cpp"
     "search/algorithms/iw.cpp"

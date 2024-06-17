@@ -29,9 +29,12 @@ class Digraph
 {
 private:
     int m_num_vertices;
+    bool m_is_directed;
+
     int m_num_edges;
 
-    std::vector<std::vector<int>> m_adjacency_lists;
+    std::vector<std::vector<int>> m_forward_successors;
+    std::vector<std::vector<int>> m_backward_successors;
 
 public:
     explicit Digraph(bool is_directed = false);
@@ -39,12 +42,21 @@ public:
 
     void add_edge(int src, int dst);
 
-    int get_num_vertices() const;
-    int get_num_edges() const;
-    const std::vector<std::vector<int>>& get_adjacency_lists() const;
+    /// @brief Reinitialize the graph.
+    ///
+    /// Does not deallocate the adjacency lists.
+    void reset(int num_vertices, bool is_directed = false);
 
     /// @brief Get a nauty graph representation.
     void to_nauty_graph(nauty_wrapper::Graph& out) const;
+
+    /**
+     * Getters
+     */
+    int get_num_vertices() const;
+    int get_num_edges() const;
+    const std::vector<std::vector<int>>& get_forward_successors() const;
+    const std::vector<std::vector<int>>& get_backward_successors() const;
 };
 
 }

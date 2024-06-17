@@ -102,6 +102,7 @@ public:
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
     bool static_goal_holds() const;
+    bool static_literal_holds(const GroundLiteral<Static> literal) const;
 };
 
 /**

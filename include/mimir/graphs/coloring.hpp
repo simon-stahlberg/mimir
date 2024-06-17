@@ -35,23 +35,29 @@ private:
     Problem m_problem;
     int m_num_objects;
     int m_num_predicates;
-    int m_max_predicate_arity;
 
-    std::unordered_map<std::string, int> m_lexicographically_sorted_predicate_names_to_index;
+    std::unordered_map<std::string, Color> m_name_to_color;
+    std::unordered_map<Color, std::string> m_color_to_name;
+
+    void initialize_predicates();
 
 public:
-    ProblemColorFunction(const Problem problem);
+    explicit ProblemColorFunction(Problem problem);
 
     /// @brief get color of object.
-    Color get_color(const Object object);
+    Color get_color(const Object& object);
 
     /// @brief Get unique color of state atom.
     template<PredicateCategory P>
-    Color get_color(const GroundAtom<P> atom, int pos);
+    Color get_color(const GroundAtom<P>& atom, int pos);
 
     /// @brief Get unique color of goal literal.
-    template<PredicateCategory P>
-    Color get_color(const State state, const GroundLiteral<P> literal, int pos, bool mark_true_goal_literal = false);
+    template<DynamicPredicateCategory P>
+    Color get_color(const State& state, const GroundLiteral<P>& literal, int pos, bool mark_true_goal_literal = false);
+
+    Color get_color(const State& state, const GroundLiteral<Static>& literal, int pos, bool mark_true_goal_literal = false);
+
+    const std::string& get_color_name(Color color) const;
 
     Problem get_problem() const;
 };
@@ -61,25 +67,18 @@ public:
  */
 
 template<PredicateCategory P>
-Color ProblemColorFunction::get_color(const GroundAtom<P> atom, int pos)
+Color ProblemColorFunction::get_color(const GroundAtom<P>& atom, int pos)
 {
-    const auto predicate_index = m_lexicographically_sorted_predicate_names_to_index.at(atom->get_predicate()->get_name());
-    const auto offset_objects = 1;
-    return offset_objects + m_max_predicate_arity * predicate_index + pos;
+    return m_name_to_color.at(atom->get_predicate()->get_name() + ":" + std::to_string(pos));
 }
 
-template<PredicateCategory P>
-Color ProblemColorFunction::get_color(const State state, const GroundLiteral<P> literal, int pos, bool mark_true_goal_literal)
+template<DynamicPredicateCategory P>
+Color ProblemColorFunction::get_color(const State& state, const GroundLiteral<P>& literal, int pos, bool mark_true_goal_literal)
 {
     bool is_satisfied_in_goal = state.literal_holds(literal);
-    const auto predicate_index = m_lexicographically_sorted_predicate_names_to_index.at(literal->get_atom()->get_predicate()->get_name());
-    const auto offset_objects = 1;
-    const auto offset_atoms = m_max_predicate_arity * m_num_predicates;
-    return offset_objects + offset_atoms + 3 * m_max_predicate_arity * predicate_index
-           + (mark_true_goal_literal ? (is_satisfied_in_goal ? 2 : 1) : 0) * m_max_predicate_arity + pos;
+    return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"
+                              + (mark_true_goal_literal ? (is_satisfied_in_goal ? ":true" : ":false") : "") + ":" + std::to_string(pos));
 }
-
-Problem ProblemColorFunction::get_problem() const { return m_problem; }
 
 }
 #endif

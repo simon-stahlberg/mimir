@@ -129,7 +129,7 @@ private:
         /// @brief Compute the layer at distance 1, assumes that the root state layer exists.
         void compute_first_layer();
 
-        /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
+        /// @brief Return a reference to the tuple graph.
         const TupleGraph& get_tuple_graph();
     };
 
@@ -180,7 +180,7 @@ private:
         /// and return true iff the layer is nonempty.
         bool compute_next_layer();
 
-        /// @brief Extract the resulting TupleGraph, leaving the class in an undefined state.
+        /// @brief Return a reference to the tuple graph.
         const TupleGraph& get_tuple_graph();
     };
 

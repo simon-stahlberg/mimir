@@ -265,4 +265,9 @@ const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
 bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 
+bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
+{
+    return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_identifier()));
+}
+
 }
