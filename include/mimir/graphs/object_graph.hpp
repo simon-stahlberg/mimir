@@ -35,6 +35,8 @@ private:
     std::shared_ptr<ProblemColorFunction> m_coloring_function;
 
     Digraph m_digraph;
+
+    std::vector<std::vector<int>> m_vertex_partitioning;
     ColorList m_vertex_colors;
     ColorList m_edge_colors;
 
@@ -45,6 +47,7 @@ public:
 
     const std::shared_ptr<ProblemColorFunction>& get_coloring_function() const;
     const Digraph& get_digraph() const;
+    const std::vector<std::vector<int>>& get_vertex_partitioning() const;
     const ColorList& get_vertex_colors() const;
     const ColorList& get_edge_colors() const;
 };
@@ -60,6 +63,8 @@ private:
     ObjectGraph m_object_graph;
 
     std::unordered_map<Object, int> m_object_to_vertex_id;
+    std::set<Color> m_colors;
+    std::unordered_map<int, int> m_color_to_surjective_l_color;
 
     int add_object_graph_structures(Object object, int num_vertices);
 

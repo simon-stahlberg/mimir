@@ -22,7 +22,13 @@ TEST(MimirTests, GraphsObjectGraphTest)
 
         const auto& object_graph = object_graph_factory.create(state, state_space->get_factories());
 
-        // std::cout << object_graph << std::endl;
+        std::cout << object_graph << std::endl;
+
+        auto nauty_graph = nauty_wrapper::Graph(object_graph.get_digraph().get_num_vertices());
+        object_graph.get_digraph().to_nauty_graph(nauty_graph);
+        const auto certificate = nauty_graph.compute_certificate(object_graph.get_vertex_partitioning());
+
+        std::cout << certificate << std::endl;
     }
 }
 }

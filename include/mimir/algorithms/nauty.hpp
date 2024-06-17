@@ -33,10 +33,11 @@ private:
 
 public:
     explicit Graph(int num_vertices);
+    ~Graph();
 
     void add_edge(int src, int dst);
 
-    std::string compute_certificate() const;
+    std::string compute_certificate(const std::vector<std::vector<int>>& vertex_partitioning) const;
 };
 }
 

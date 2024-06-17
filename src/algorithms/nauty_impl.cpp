@@ -35,10 +35,24 @@ void GraphImpl::add_edge(int src, int dst)
     ADDONEEDGE0(graph_, src, dst, m);
 }
 
-std::string GraphImpl::compute_certificate() const
+std::string GraphImpl::compute_certificate(const std::vector<std::vector<int>>& vertex_partitioning) const
 {
-    graph canon_graph[n * m];
+    graph canon_graph[m * n];
     int lab[n], ptn[n], orbits[n];
+
+    // Initialize vertex partitioning
+    int i = 0;
+    for (const auto& partition : vertex_partitioning)
+    {
+        for (size_t j = 0; j < partition.size(); ++j)
+        {
+            const int vertex_id = partition[j];
+            lab[i] = vertex_id;
+            ptn[i] = (j < partition.size() - 1) ? 1 : 0;
+            ++i;
+        }
+    }
+
     static DEFAULTOPTIONS_GRAPH(options);
     options.getcanon = TRUE;
     statsblk stats;

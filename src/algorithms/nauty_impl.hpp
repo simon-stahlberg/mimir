@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include "../../external/nauty2_8_8/nauty.h"
+#ifndef SRC_ALGORITHMS_NAUTY_IMPL_HPP_
+#define SRC_ALGORITHMS_NAUTY_IMPL_HPP_
 
+// Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
+#include <nauty.h>
 #include <string>
 #include <vector>
 
@@ -39,7 +41,9 @@ public:
 
     void add_edge(int src, int dst);
 
-    std::string compute_certificate() const;
+    std::string compute_certificate(const std::vector<std::vector<int>>& vertex_partitioning) const;
 };
 
 }
+
+#endif

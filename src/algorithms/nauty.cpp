@@ -24,8 +24,13 @@ namespace nauty_wrapper
 
 Graph::Graph(int num_vertices) : m_impl(std::make_unique<GraphImpl>(num_vertices)) {}
 
+Graph::~Graph() = default;
+
 void Graph::add_edge(int src, int dst) { m_impl->add_edge(src, dst); }
 
-std::string Graph::compute_certificate() const { return m_impl->compute_certificate(); }
+std::string Graph::compute_certificate(const std::vector<std::vector<int>>& vertex_partitioning) const
+{
+    return m_impl->compute_certificate(vertex_partitioning);
+}
 
 }

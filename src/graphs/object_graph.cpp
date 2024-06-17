@@ -114,6 +114,8 @@ const std::shared_ptr<ProblemColorFunction>& ObjectGraph::get_coloring_function(
 
 const Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
 
+const std::vector<std::vector<int>>& ObjectGraph::get_vertex_partitioning() const { return m_vertex_partitioning; }
+
 const ColorList& ObjectGraph::get_vertex_colors() const { return m_vertex_colors; }
 
 const ColorList& ObjectGraph::get_edge_colors() const { return m_edge_colors; }
@@ -203,6 +205,31 @@ const ObjectGraph& ObjectGraphFactory::create(State state, const PDDLFactories& 
     for (const auto& literal : m_problem->get_derived_goal_condition())
     {
         vertex_id = add_ground_literal_graph_structures(state, literal, vertex_id);
+    }
+
+    // Initialize surjective l-coloring
+    m_colors.clear();
+    m_colors.insert(m_object_graph.m_vertex_colors.begin(), m_object_graph.m_vertex_colors.end());
+    m_color_to_surjective_l_color.clear();
+    for (const auto& color : m_colors)
+    {
+        m_color_to_surjective_l_color.emplace(color, m_color_to_surjective_l_color.size());
+    }
+
+    for (size_t i = 0; i < m_object_graph.m_vertex_partitioning.size(); ++i)
+    {
+        m_object_graph.m_vertex_partitioning[i].clear();
+    }
+    if (m_colors.size() >= m_object_graph.m_vertex_partitioning.size())
+    {
+        m_object_graph.m_vertex_partitioning.resize(m_colors.size() + 1, std::vector<int>());
+    }
+
+    for (int vertex_id = 0; vertex_id < m_object_graph.get_digraph().get_num_vertices(); ++vertex_id)
+    {
+        const auto vertex_color = m_object_graph.m_vertex_colors.at(vertex_id);
+        const auto remapped_vertex_color = m_color_to_surjective_l_color.at(vertex_color);
+        m_object_graph.m_vertex_partitioning.at(remapped_vertex_color).push_back(vertex_id);
     }
 
     return m_object_graph;
