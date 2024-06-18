@@ -41,7 +41,9 @@ public:
 
     void add_edge(int src, int dst);
 
-    std::string compute_certificate(const std::vector<std::vector<int>>& vertex_partitioning) const;
+    std::string compute_certificate(const std::vector<int>& lab, const std::vector<int>& ptn) const;
+
+    void reset(int num_vertices);
 };
 
 }

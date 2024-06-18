@@ -21,6 +21,7 @@
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/state.hpp"
 
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -28,6 +29,7 @@ namespace mimir
 {
 using Color = int;
 using ColorList = std::vector<int>;
+using ColorSet = std::set<int>;
 
 class ProblemColorFunction
 {

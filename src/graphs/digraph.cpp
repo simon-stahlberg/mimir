@@ -39,12 +39,12 @@ void Digraph::add_edge(int src, int dst)
     {
         throw std::out_of_range("Source or destination vertex out of range");
     }
-    m_forward_successors[src].push_back(dst);
-    m_backward_successors[dst].push_back(src);
+    m_forward_successors.at(src).push_back(dst);
+    m_backward_successors.at(dst).push_back(src);
     if (!m_is_directed)
     {
-        m_forward_successors[dst].push_back(src);
-        m_backward_successors[src].push_back(dst);
+        m_forward_successors.at(dst).push_back(src);
+        m_backward_successors.at(src).push_back(dst);
     }
 }
 
@@ -56,7 +56,7 @@ void Digraph::reset(int num_vertices, bool is_directed)
         m_forward_successors[i].clear();
         m_backward_successors[i].clear();
     }
-    if (num_vertices >= m_num_vertices)
+    if (num_vertices > m_num_vertices)
     {
         m_forward_successors.resize(num_vertices, std::vector<int>());
         m_backward_successors.resize(num_vertices, std::vector<int>());
@@ -64,9 +64,17 @@ void Digraph::reset(int num_vertices, bool is_directed)
     m_num_vertices = num_vertices;
 }
 
-void Digraph::to_nauty_graph(nauty_wrapper::Graph& out) const
+void Digraph::to_nauty_graph(nauty_wrapper::Graph& out_graph) const
 {
-    // TODO:
+    out_graph.reset(m_num_vertices);
+
+    for (int src = 0; src < m_num_vertices; ++src)
+    {
+        for (const int dst : m_forward_successors.at(src))
+        {
+            out_graph.add_edge(src, dst);
+        }
+    }
 }
 
 int Digraph::get_num_vertices() const { return m_num_vertices; }

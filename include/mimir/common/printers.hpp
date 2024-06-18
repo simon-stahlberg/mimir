@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_PRINTERS_HPP_
 
 #include <ostream>
+#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -71,6 +72,22 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_set<const T*>& s
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set)
+{
+    os << "{";
+    size_t i = 0;
+    for (const auto& element : set)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "}";
+    return os;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::set<T>& set)
 {
     os << "{";
     size_t i = 0;

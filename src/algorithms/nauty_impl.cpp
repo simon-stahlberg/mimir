@@ -17,11 +17,17 @@
 
 #include "nauty_impl.hpp"
 
+#include "mimir/common/printers.hpp"
+
+#include <cassert>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 
 namespace nauty_wrapper
 {
+using mimir::operator<<;
+
 GraphImpl::GraphImpl(int num_vertices) : n(num_vertices), m(SETWORDSNEEDED(n)), graph_(new graph[m * n]) { EMPTYGRAPH0(graph_, m, n); }
 
 GraphImpl::~GraphImpl() { delete[] graph_; }
@@ -32,33 +38,31 @@ void GraphImpl::add_edge(int src, int dst)
     {
         throw std::out_of_range("Vertex index out of range");
     }
-    ADDONEEDGE0(graph_, src, dst, m);
+    ADDONEARC0(graph_, src, dst, m);
 }
 
-std::string GraphImpl::compute_certificate(const std::vector<std::vector<int>>& vertex_partitioning) const
+std::string GraphImpl::compute_certificate(const std::vector<int>& lab_, const std::vector<int>& ptn_) const
 {
-    graph canon_graph[m * n];
-    int lab[n], ptn[n], orbits[n];
-
-    // Initialize vertex partitioning
-    int i = 0;
-    for (const auto& partition : vertex_partitioning)
+    if (static_cast<int>(lab_.size()) != n || static_cast<int>(ptn_.size()) != n)
     {
-        for (size_t j = 0; j < partition.size(); ++j)
-        {
-            const int vertex_id = partition[j];
-            lab[i] = vertex_id;
-            ptn[i] = (j < partition.size() - 1) ? 1 : 0;
-            ++i;
-        }
+        throw std::out_of_range("lab_ or ptn_ is incompatibl with number of vertices in the graph.");
     }
 
-    static DEFAULTOPTIONS_GRAPH(options);
-    options.getcanon = TRUE;
-    statsblk stats;
-    setword workspace[2 * m * n];
+    graph canon_graph[m * n];
+    EMPTYGRAPH0(canon_graph, m, n);
 
-    nauty(graph_, lab, ptn, NULL, orbits, &options, &stats, workspace, 2 * m * n, m, n, canon_graph);
+    int lab[n], ptn[n], orbits[n];
+    std::copy(lab_.begin(), lab_.end(), lab);
+    std::copy(ptn_.begin(), ptn_.end(), ptn);
+
+    static DEFAULTOPTIONS_GRAPH(options);
+    options.defaultptn = FALSE;
+    options.getcanon = TRUE;
+    options.digraph = FALSE;
+    options.writeautoms = FALSE;
+    statsblk stats;
+
+    densenauty(graph_, lab, ptn, orbits, &options, &stats, m, n, canon_graph);
 
     std::ostringstream oss;
     for (int i = 0; i < n * m; ++i)
@@ -68,4 +72,19 @@ std::string GraphImpl::compute_certificate(const std::vector<std::vector<int>>& 
     return oss.str();
 }
 
+void GraphImpl::reset(int num_vertices)
+{
+    const auto n_new = num_vertices;
+    const auto m_new = SETWORDSNEEDED(n_new);
+
+    if (m_new * n_new >= m * n)
+    {
+        delete[] graph_;
+        graph_ = new graph[m_new * n_new];
+    }
+
+    m = m_new;
+    n = n_new;
+    EMPTYGRAPH0(graph_, m, n);
+}
 }
