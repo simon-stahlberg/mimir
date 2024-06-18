@@ -871,6 +871,6 @@ void init_pymimir(py::module_& m)
 
     // ObjectGraph
     py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
-        .def(py::init<Problem, bool>(), py::arg("problem"), py::arg("mark_true_goal_literals") = false)
+        .def(py::init<Problem, const PDDLFactories&, bool>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("mark_true_goal_literals") = false)
         .def("create", &ObjectGraphFactory::create, py::return_value_policy::copy);
 }

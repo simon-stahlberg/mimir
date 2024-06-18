@@ -68,7 +68,7 @@ Mimir depends on the following set of libraries:
 - [GoogleBenchmark](https://github.com/google/benchmark) for automated performance benchmarking, and
 - [GoogleTest](https://github.com/google/googletest) for unit testing.
 
-Run the following sequence of commands to commands to download, configure, build, and install all dependencies:
+Run the following sequence of commands to download, configure, build, and install all dependencies:
 
 ```console
 # Configure dependencies
@@ -118,4 +118,8 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 
 ### 4.3. Concepts
 
-- Use prefixes `Is` or `Has` to obtain more meaningful names. Every template parameter must be constrained using a suitable concept.
+- Every template parameter must be constrained using a suitable concept.
+
+### 4.4. Memory allocations
+
+- Reuse preallocated memory where possible, leave copying up to the user by returning const references to internal memory. For example, the `ObjectGraphFactory` returns a const reference to an `ObjectGraph`. The user can decide to copy it for persistent storage, or perform temporary operations such as computing a graph certificate.

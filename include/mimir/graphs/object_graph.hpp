@@ -62,6 +62,7 @@ class ObjectGraphFactory
 {
 private:
     Problem m_problem;
+    const PDDLFactories& m_pddl_factories;
     bool m_mark_true_goal_literals;
 
     std::shared_ptr<ProblemColorFunction> m_coloring_function;
@@ -81,10 +82,10 @@ private:
     int add_ground_literal_graph_structures(State state, GroundLiteral<P> atom, int num_vertices);
 
 public:
-    ObjectGraphFactory(Problem problem, bool mark_true_goal_literals = false);
+    ObjectGraphFactory(Problem problem, const PDDLFactories& pddl_factories, bool mark_true_goal_literals = false);
 
     /// @brief Create and return a reference to the object graph.
-    const ObjectGraph& create(State state, const PDDLFactories& pddl_factories);
+    const ObjectGraph& create(State state);
 };
 
 /**

@@ -14,7 +14,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
 
     const auto state_space = StateSpaceImpl::create(domain_file, problem_file, 10000, 10000);
 
-    auto object_graph_factory = ObjectGraphFactory(state_space->get_problem());
+    auto object_graph_factory = ObjectGraphFactory(state_space->get_problem(), state_space->get_factories());
 
     auto nauty_graph = nauty_wrapper::Graph();
 
@@ -24,7 +24,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
     {
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
-        const auto& object_graph = object_graph_factory.create(state, state_space->get_factories());
+        const auto& object_graph = object_graph_factory.create(state);
 
         // std::cout << object_graph << std::endl;
 
