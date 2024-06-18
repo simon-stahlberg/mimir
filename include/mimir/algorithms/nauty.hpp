@@ -38,6 +38,10 @@ public:
 
     void add_edge(int src, int dst);
 
+    /// @brief Compute a certificate for the graph and the given vertex partitioning as lab and ptn.
+    /// @param lab A permutation of the vertex ids.
+    /// @param ptn Groups subsequent ids in lab as group where the first n-1 vertex ids
+    /// of a group are marked as 1 and the last vertex id as 0, indicating the end of the group.
     std::string compute_certificate(const std::vector<int>& lab, const std::vector<int>& ptn) const;
 
     /// @brief Reinitialize the graph.
