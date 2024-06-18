@@ -66,6 +66,7 @@ private:
 
     TupleGraphVertexList m_vertices;
 
+    // TODO: avoid reallocations and return span to relevant parts.
     std::vector<VertexIndexList> m_forward_successors;
     std::vector<VertexIndexList> m_backward_successors;
 

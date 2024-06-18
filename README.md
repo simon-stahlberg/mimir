@@ -64,6 +64,7 @@ Mimir depends on the following set of libraries:
 - [Loki](https://github.com/drexlerd/Loki) for parsing PDDL files,
 - [Boost](https://www.boost.org/) header-only libraries (Fusion, Spirit x3, Container),
 - [Flatmemory](https://github.com/drexlerd/flatmemory) for flattening memory layouts of complex composite types,
+- [Nauty and Traces](https://users.cecs.anu.edu.au/~bdm/nauty/) for graph isomorphism testing,
 - [GoogleBenchmark](https://github.com/google/benchmark) for automated performance benchmarking, and
 - [GoogleTest](https://github.com/google/googletest) for unit testing.
 
