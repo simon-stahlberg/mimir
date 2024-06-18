@@ -156,6 +156,7 @@ public:
 };
 
 using StateSpace = std::shared_ptr<StateSpaceImpl>;
+using StateSpaceList = std::vector<StateSpace>;
 
 }
 

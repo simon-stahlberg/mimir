@@ -73,7 +73,6 @@ include("configure_boost")
 include("configure_ccache")
 include("configure_loki")
 
-
 ##############################################################
 # CCache
 ##############################################################
@@ -107,6 +106,10 @@ if(flatmemory_FOUND)
 endif()
 
 find_package(Nauty REQUIRED)
+if(Nauty_FOUND)
+  include_directories(${Nauty_INCLUDE_DIR})
+  message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
+endif()
 
 ##############################################################
 # Add library and executable targets
