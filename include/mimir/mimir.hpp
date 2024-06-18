@@ -72,6 +72,15 @@
  * Graphs
  */
 
+#include "mimir/graphs/coloring.hpp"
+#include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/object_graph.hpp"
 #include "mimir/graphs/tuple_graph.hpp"
+
+/**
+ * Algorithms
+ */
+
+#include "mimir/algorithms/nauty.hpp"
 
 #endif  // MIMIR_MIMIR_HPP_

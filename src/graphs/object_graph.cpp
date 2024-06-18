@@ -25,16 +25,7 @@ namespace mimir
  * ProblemColorFunction
  */
 
-ProblemColorFunction::ProblemColorFunction(Problem problem) :
-    m_problem(problem),
-    m_num_objects(problem->get_objects().size()),
-    m_num_predicates(m_problem->get_domain()->get_static_predicates().size() + m_problem->get_domain()->get_fluent_predicates().size()
-                     + m_problem->get_domain()->get_derived_predicates().size()),
-    m_name_to_color(),
-    m_color_to_name()
-{
-    initialize_predicates();
-}
+ProblemColorFunction::ProblemColorFunction(Problem problem) : m_problem(problem), m_name_to_color(), m_color_to_name() { initialize_predicates(); }
 
 void ProblemColorFunction::initialize_predicates()
 {
@@ -148,7 +139,7 @@ int ObjectGraphFactory::add_object_graph_structures(Object object, int num_verti
 const ObjectGraph& ObjectGraphFactory::create(State state, const PDDLFactories& pddl_factories)
 {
     // Reset data structures
-    auto num_vertices = m_problem->get_objects().size();
+    auto num_vertices = static_cast<int>(m_problem->get_objects().size());
     for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Static>(m_problem->get_static_initial_positive_atoms_bitset()))
     {
         num_vertices += atom->get_arity();
@@ -254,7 +245,7 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 
     for (int vertex_id = 0; vertex_id < object_graph.get_digraph().get_num_vertices(); ++vertex_id)
     {
-        for (const auto& succ_vertex_id : object_graph.get_digraph().get_forward_successors().at(vertex_id))
+        for (const auto& succ_vertex_id : object_graph.get_digraph().get_forward_successors()[vertex_id])
         {
             out << "t" << vertex_id << "->"
                 << "t" << succ_vertex_id << "\n";
@@ -265,5 +256,4 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 
     return out;
 }
-
 }

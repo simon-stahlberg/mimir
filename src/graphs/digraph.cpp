@@ -81,7 +81,14 @@ int Digraph::get_num_vertices() const { return m_num_vertices; }
 
 int Digraph::get_num_edges() const { return m_num_edges; }
 
-const std::vector<std::vector<int>>& Digraph::get_forward_successors() const { return m_forward_successors; }
+std::span<const std::vector<int>> Digraph::get_forward_successors() const
+{
+    return { m_forward_successors.begin(), m_forward_successors.begin() + get_num_vertices() };
+}
 
-const std::vector<std::vector<int>>& Digraph::get_backward_successors() const { return m_backward_successors; }
+std::span<const std::vector<int>> Digraph::get_backward_successors() const
+{
+    return { m_backward_successors.begin(), m_backward_successors.begin() + get_num_vertices() };
+}
+
 }

@@ -20,6 +20,7 @@
 
 #include "mimir/algorithms/nauty.hpp"
 
+#include <span>
 #include <vector>
 
 namespace mimir
@@ -33,6 +34,7 @@ private:
 
     int m_num_edges;
 
+    // Never deallocate memory, getters return a span on the relevant part.
     std::vector<std::vector<int>> m_forward_successors;
     std::vector<std::vector<int>> m_backward_successors;
 
@@ -40,23 +42,22 @@ public:
     explicit Digraph(bool is_directed = false);
     Digraph(int num_vertices, bool is_directed = false);
 
+    /// @brief Add an edge to the graph.
     void add_edge(int src, int dst);
 
-    /// @brief Reinitialize the graph.
-    ///
-    /// Does not deallocate the adjacency lists.
+    /// @brief Reinitialize the graph to an empty graph with num_vertices many vertices.
     void reset(int num_vertices, bool is_directed = false);
 
     /// @brief Get a nauty graph representation.
-    void to_nauty_graph(nauty_wrapper::Graph& out) const;
+    void to_nauty_graph(nauty_wrapper::Graph& out_graph) const;
 
     /**
      * Getters
      */
     int get_num_vertices() const;
     int get_num_edges() const;
-    const std::vector<std::vector<int>>& get_forward_successors() const;
-    const std::vector<std::vector<int>>& get_backward_successors() const;
+    std::span<const std::vector<int>> get_forward_successors() const;
+    std::span<const std::vector<int>> get_backward_successors() const;
 };
 
 }

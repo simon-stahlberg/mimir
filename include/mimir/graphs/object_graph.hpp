@@ -38,10 +38,10 @@ private:
     Digraph m_digraph;
     ColorList m_vertex_colors;
 
-    // Initial color histogram
+    // Initial color histogram, needed for equivalence test
+    // when using vertex partitioning to take color remapping into account.
     ColorList m_sorted_vertex_colors;
-
-    // Vertex partitioning, uses nauty's representation
+    // Vertex partitioning, uses nauty's representation, see their documentation.
     std::vector<int> m_lab;
     std::vector<int> m_ptn;
 
@@ -68,6 +68,7 @@ private:
 
     ObjectGraph m_object_graph;
 
+    // Temporaries for bookkeeping
     std::unordered_map<Object, int> m_object_to_vertex_id;
     std::vector<std::pair<int, int>> m_vertex_id_and_color;
 
@@ -99,7 +100,6 @@ extern std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_gra
 template<PredicateCategory P>
 int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int num_vertices)
 {
-    auto prev_vertex_id = -1;
     for (size_t pos = 0; pos < atom->get_arity(); ++pos)
     {
         const auto vertex_color = m_coloring_function->get_color(atom, pos);
@@ -108,10 +108,8 @@ int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int
         m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_id.at(atom->get_objects().at(pos)));
         if (pos > 0)
         {
-            m_object_graph.m_digraph.add_edge(prev_vertex_id, num_vertices);
+            m_object_graph.m_digraph.add_edge(num_vertices - 1, num_vertices);
         }
-
-        prev_vertex_id = num_vertices;
         ++num_vertices;
     }
     return num_vertices;
@@ -120,7 +118,6 @@ int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int
 template<PredicateCategory P>
 int ObjectGraphFactory::add_ground_literal_graph_structures(State state, GroundLiteral<P> literal, int num_vertices)
 {
-    auto prev_vertex_id = -1;
     for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
     {
         const auto vertex_color = m_coloring_function->get_color(state, literal, pos, m_mark_true_goal_literals);
@@ -129,10 +126,8 @@ int ObjectGraphFactory::add_ground_literal_graph_structures(State state, GroundL
         m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_id.at(literal->get_atom()->get_objects().at(pos)));
         if (pos > 0)
         {
-            m_object_graph.m_digraph.add_edge(prev_vertex_id, num_vertices);
+            m_object_graph.m_digraph.add_edge(num_vertices - 1, num_vertices);
         }
-
-        prev_vertex_id = num_vertices;
         ++num_vertices;
     }
     return num_vertices;

@@ -28,15 +28,12 @@
 namespace mimir
 {
 using Color = int;
-using ColorList = std::vector<int>;
-using ColorSet = std::set<int>;
+using ColorList = std::vector<Color>;
 
 class ProblemColorFunction
 {
 private:
     Problem m_problem;
-    int m_num_objects;
-    int m_num_predicates;
 
     std::unordered_map<std::string, Color> m_name_to_color;
     std::unordered_map<Color, std::string> m_color_to_name;
@@ -53,12 +50,14 @@ public:
     template<PredicateCategory P>
     Color get_color(const GroundAtom<P>& atom, int pos);
 
-    /// @brief Get unique color of goal literal.
+    /// @brief Get unique color of dynamic goal literal.
     template<DynamicPredicateCategory P>
     Color get_color(const State& state, const GroundLiteral<P>& literal, int pos, bool mark_true_goal_literal = false);
 
+    /// @brief Get unique color of static goal literal.
     Color get_color(const State& state, const GroundLiteral<Static>& literal, int pos, bool mark_true_goal_literal = false);
 
+    /// @brief Get name of color.
     const std::string& get_color_name(Color color) const;
 
     Problem get_problem() const;

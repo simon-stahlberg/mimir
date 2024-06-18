@@ -834,4 +834,43 @@ void init_pymimir(py::module_& m)
         .def("get_state_space", &TupleGraphFactory::get_state_space)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
+
+    // NautyGraph
+    py::class_<nauty_wrapper::Graph>(m, "NautyGraph")  //
+        .def(py::init<>())
+        .def(py::init<int>())
+        .def("add_edge", &nauty_wrapper::Graph::add_edge)
+        .def("compute_certificate", &nauty_wrapper::Graph::compute_certificate)
+        .def("reset", &nauty_wrapper::Graph::reset);
+
+    // Digraph
+    py::class_<Digraph>(m, "Digraph")  //
+        .def(py::init<bool>(), py::arg("is_directed") = false)
+        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &Digraph::add_edge)
+        .def("to_nauty_graph", &Digraph::to_nauty_graph)
+        .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("get_num_vertices", &Digraph::get_num_vertices)
+        .def("get_num_edges", &Digraph::get_num_edges)
+        .def("get_forward_successors", &Digraph::get_forward_successors)
+        .def("get_backward_successors", &Digraph::get_backward_successors);
+
+    // ProblemColorFunction
+    py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
+        .def(py::init<Problem>(), py::arg("problem"));
+
+    // ObjectGraph
+    py::class_<ObjectGraph>(m, "ObjectGraph")  //
+        .def(py::init<std::shared_ptr<ProblemColorFunction>>())
+        .def("get_coloring_function", &ObjectGraph::get_coloring_function)
+        .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference)
+        .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference)
+        .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference)
+        .def("get_lab", &ObjectGraph::get_lab, py::return_value_policy::reference)
+        .def("get_ptn", &ObjectGraph::get_ptn, py::return_value_policy::reference);
+
+    // ObjectGraph
+    py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
+        .def(py::init<Problem, bool>(), py::arg("problem"), py::arg("mark_true_goal_literals") = false)
+        .def("create", &ObjectGraphFactory::create, py::return_value_policy::copy);
 }
