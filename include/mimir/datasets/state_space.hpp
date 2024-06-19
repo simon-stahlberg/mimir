@@ -54,7 +54,7 @@ public:
 using Transitions = std::vector<Transition>;
 
 class StateSpaceImpl;
-using StateSpace = std::shared_ptr<StateSpaceImpl>;
+using StateSpace = std::shared_ptr<const StateSpaceImpl>;
 using StateSpaceList = std::vector<StateSpace>;
 
 /// @brief A StateSpace encapsulates the complete dynamics of a PDDL problem.
