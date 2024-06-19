@@ -25,7 +25,7 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/search_nodes/cost.hpp"
+#include "mimir/search/search_nodes/uninformed.hpp"
 #include "mimir/search/successor_state_generators.hpp"
 
 #include <deque>
@@ -49,7 +49,7 @@ private:
     std::shared_ptr<ISuccessorStateGenerator> m_ssg;
     State m_initial_state;
     std::deque<State> m_queue;
-    flat::CostSearchNodeVector m_search_nodes;
+    FlatUninformedSearchNodeVector m_search_nodes;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
 
     /// @brief Compute the plan consisting of ground actions by collecting the creating actions
@@ -58,7 +58,7 @@ private:
     ///             satisfied.
     /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
     ///                      the to the state underlying the search node.
-    void set_plan(const ConstCostSearchNode& view, GroundActionList& out_plan) const
+    void set_plan(const ConstUninformedCostSearchNode& view, GroundActionList& out_plan) const
     {
         out_plan.clear();
         auto cur_view = view;
@@ -67,7 +67,7 @@ private:
         {
             out_plan.push_back(m_aag->get_action(cur_view.get_creating_action_id()));
 
-            cur_view = ConstCostSearchNode(this->m_search_nodes[cur_view.get_parent_state_id()]);
+            cur_view = ConstUninformedCostSearchNode(this->m_search_nodes[cur_view.get_parent_state_id()]);
         }
 
         std::reverse(out_plan.begin(), out_plan.end());
@@ -76,7 +76,7 @@ private:
     /// @brief Creates a CostSearchNodeBuilderProxy whose attributes are default initialized.
     static auto create_default_search_node_builder()
     {
-        auto builder = CostSearchNodeBuilder();
+        auto builder = UninformedSearchNodeBuilder();
         builder.set_status(SearchNodeStatus::CLOSED);
         builder.set_g_value(-1);
         builder.set_parent_state_id(-1);
@@ -101,7 +101,7 @@ public:
         m_aag(std::move(applicable_action_generator)),
         m_ssg(std::move(successor_state_generator)),
         m_initial_state(m_ssg->get_or_create_initial_state()),
-        m_search_nodes(flat::CostSearchNodeVector(create_default_search_node_builder())),
+        m_search_nodes(FlatUninformedSearchNodeVector(create_default_search_node_builder())),
         m_event_handler(std::move(event_handler))
     {
     }
@@ -141,7 +141,7 @@ public:
         const auto& pddl_factories = m_aag->get_pddl_factories();
         m_event_handler->on_start_search(problem, start_state, pddl_factories);
 
-        auto initial_search_node = CostSearchNode(this->m_search_nodes[start_state.get_id()]);
+        auto initial_search_node = UninformedSearchNode(this->m_search_nodes[start_state.get_id()]);
         initial_search_node.get_g_value() = 0;
         initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
@@ -169,7 +169,7 @@ public:
             m_queue.pop_front();
 
             // We need this before goal test for correct statistics reporting.
-            auto search_node = CostSearchNode(this->m_search_nodes[state.get_id()]);
+            auto search_node = UninformedSearchNode(this->m_search_nodes[state.get_id()]);
             search_node.get_status() = SearchNodeStatus::CLOSED;
 
             if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
@@ -181,7 +181,7 @@ public:
 
             if (goal_strategy->test_dynamic_goal(state))
             {
-                set_plan(ConstCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
+                set_plan(ConstUninformedCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
                 out_goal_state = state;
                 m_event_handler->on_end_search();
                 if (!m_event_handler->is_quiet())
@@ -208,7 +208,7 @@ public:
 
                 if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
                 {
-                    auto successor_search_node = CostSearchNode(this->m_search_nodes[successor_state.get_id()]);
+                    auto successor_search_node = UninformedSearchNode(this->m_search_nodes[successor_state.get_id()]);
                     successor_search_node.get_status() = SearchNodeStatus::OPEN;
                     successor_search_node.get_g_value() = search_node.get_g_value() + 1;
                     successor_search_node.get_parent_state_id() = state.get_id();

@@ -15,12 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_SEARCH_NODES_HPP_
-#define MIMIR_SEARCH_SEARCH_NODES_HPP_
+#ifndef MIMIR_SEARCH_SEARCH_NODES_STATUS_HPP_
+#define MIMIR_SEARCH_SEARCH_NODES_STATUS_HPP_
 
-/**
- * Include all specializations here
- */
-#include "mimir/search/search_nodes/uninformed.hpp"
+namespace mimir
+{
+
+enum SearchNodeStatus
+{
+    NEW = 0,
+    OPEN = 1,
+    CLOSED = 2,
+    DEAD_END = 3
+};
+
+}
 
 #endif

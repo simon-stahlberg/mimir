@@ -28,7 +28,7 @@ add_executable(${TEST_NAME}
     "search/applicable_action_generators/dense-lifted.cpp"
     "search/openlists/priority_queue.cpp"
     "search/planners/single.cpp"
-    "search/search_nodes/cost.cpp"
+    "search/search_nodes/uninformed.cpp"
     "search/successor_state_generators/dense.cpp"
 )
 
