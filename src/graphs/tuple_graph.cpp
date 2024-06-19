@@ -121,7 +121,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
     const auto distances = m_state_space->compute_shortest_distances_from_states(StateList { m_state_space->get_initial_state() });
     for (const auto& state : states)
     {
-        const auto state_distance = distances[state.get_id()];
+        const auto state_distance = distances.at(state.get_id());
         // Unreachable states have distance -1
         if (state_distance != -1)
         {
@@ -132,7 +132,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
     auto optimal_states = StateSet {};
     for (const auto& state : states)
     {
-        if (distances[state.get_id()] == optimal_distance)
+        if (distances.at(state.get_id()) == optimal_distance)
         {
             optimal_states.insert(state);
         }
@@ -229,8 +229,8 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
         const auto succ_state = transition.get_successor_state();
         const auto succ_state_vertex_id = m_tuple_graph.m_vertices.size();
         m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_id, empty_tuple_index, StateList { succ_state });
-        m_tuple_graph.m_forward_successors[root_state_vertex_id].push_back(succ_state_vertex_id);
-        m_tuple_graph.m_backward_successors[succ_state_vertex_id].push_back(root_state_vertex_id);
+        m_tuple_graph.m_forward_successors.at(root_state_vertex_id).push_back(succ_state_vertex_id);
+        m_tuple_graph.m_backward_successors.at(succ_state_vertex_id).push_back(root_state_vertex_id);
         vertex_indices_layer.push_back(succ_state_vertex_id);
         states_layer.push_back(succ_state);
     }
@@ -398,13 +398,13 @@ void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
     {
         for (size_t i = 0; i < cur_extended_novel_tuple_indices.size(); ++i)
         {
-            const auto tuple_index_1 = cur_extended_novel_tuple_indices[i];
+            const auto tuple_index_1 = cur_extended_novel_tuple_indices.at(i);
 
             const auto& states_1 = novel_tuple_index_to_states.at(tuple_index_1);
 
             for (size_t j = i + 1; j < cur_extended_novel_tuple_indices.size(); ++j)
             {
-                const auto tuple_index_2 = cur_extended_novel_tuple_indices[j];
+                const auto tuple_index_2 = cur_extended_novel_tuple_indices.at(j);
 
                 const auto& states_2 = novel_tuple_index_to_states.at(tuple_index_2);
 
@@ -447,8 +447,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
             m_tuple_graph.m_forward_successors.resize(cur_vertex_index + 1);
             m_tuple_graph.m_backward_successors.resize(cur_vertex_index + 1);
 
-            m_tuple_graph.m_forward_successors[prev_vertex_index].push_back(cur_vertex_index);
-            m_tuple_graph.m_backward_successors[cur_vertex_index].push_back(prev_vertex_index);
+            m_tuple_graph.m_forward_successors.at(prev_vertex_index).push_back(cur_vertex_index);
+            m_tuple_graph.m_backward_successors.at(cur_vertex_index).push_back(prev_vertex_index);
         }
     }
 
@@ -554,7 +554,7 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const 
     {
         for (int vertex_id : vertex_ids)
         {
-            const auto& vertex = tuple_graph.get_vertices()[vertex_id];
+            const auto& vertex = tuple_graph.get_vertices().at(vertex_id);
             out << "t" << vertex.get_identifier() << "[";
             out << "label=<";
             out << "index=" << vertex.get_identifier() << "<BR/>";
@@ -583,7 +583,7 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const 
     out << "{\n";
     for (const auto& vertex_id : tuple_graph.get_vertex_indices_by_distances().front())
     {
-        const auto& vertex = tuple_graph.get_vertices()[vertex_id];
+        const auto& vertex = tuple_graph.get_vertices().at(vertex_id);
         out << "Dangling" << vertex.get_identifier() << "->t" << vertex.get_identifier() << "\n";
     }
     out << "}\n";
@@ -592,7 +592,7 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const 
         out << "{\n";
         for (const auto& vertex_id : vertex_ids)
         {
-            for (const auto& succ_vertex_id : tuple_graph.get_forward_successors()[vertex_id])
+            for (const auto& succ_vertex_id : tuple_graph.get_forward_successors().at(vertex_id))
             {
                 out << "t" << vertex_id << "->"
                     << "t" << succ_vertex_id << "\n";

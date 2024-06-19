@@ -53,8 +53,8 @@ void Digraph::reset(int num_vertices, bool is_directed)
     m_is_directed = is_directed;
     for (int i = 0; i < m_num_vertices; ++i)
     {
-        m_forward_successors[i].clear();
-        m_backward_successors[i].clear();
+        m_forward_successors.at(i).clear();
+        m_backward_successors.at(i).clear();
     }
     if (num_vertices > m_num_vertices)
     {

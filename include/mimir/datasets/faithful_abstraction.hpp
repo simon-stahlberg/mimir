@@ -26,6 +26,7 @@
 #include <loki/details/utils/filesystem.hpp>
 #include <memory>
 #include <thread>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
@@ -33,6 +34,7 @@ namespace mimir
 
 using AbstractStateId = int;
 using AbstractStateIdList = std::vector<AbstractStateId>;
+using AbstractStateIdSet = std::unordered_set<AbstractStateId>;
 
 using AbstractionId = int;
 
@@ -66,14 +68,32 @@ private:
     AbstractStateList m_abstract_states;
     std::unordered_map<std::string, AbstractStateId> m_abstract_states_by_certificate;
 
+    AbstractStateId m_abstract_initial_state;
+    size_t m_num_abstract_transitions;
     std::vector<AbstractStateIdList> m_forward_successors;
     std::vector<AbstractStateIdList> m_backward_successors;
 
-    AbstractStateId abstract_initial_state;
-    std::unordered_set<AbstractStateId> m_abstract_goal_states;
-    std::unordered_set<AbstractStateId> m_abstract_deadend_states;
+    AbstractStateIdSet m_abstract_goal_states;
+    AbstractStateIdSet m_abstract_deadend_states;
 
     std::vector<int> m_abstract_goal_distances;
+
+    /// @brief Constructs a state state from data.
+    /// The create function calls this constructor and ensures that
+    /// the state space is in a legal state allowing other parts of
+    /// the code base to operate on the invariants in the implementation.
+    FaithfulAbstractionImpl(std::unique_ptr<PDDLParser>&& parser,
+                            std::shared_ptr<GroundedAAG> aag,
+                            std::shared_ptr<SSG> ssg,
+                            AbstractStateList abstract_states,
+                            std::unordered_map<std::string, AbstractStateId> abstract_states_by_certificate,
+                            AbstractStateId abstract_initial_state,
+                            size_t num_abstract_transitions,
+                            std::vector<AbstractStateIdList> forward_successors,
+                            std::vector<AbstractStateIdList> backward_successors,
+                            AbstractStateIdSet abstract_goal_states,
+                            AbstractStateIdSet abstract_deadend_states,
+                            std::vector<int> abstract_goal_distances);
 
 public:
     /// @brief Perform BrFS from the initial state while pruning isomorphic states.
@@ -101,6 +121,8 @@ public:
                                                                         ObjectGraphFactory& out_object_graph_factory,
                                                                         nauty_wrapper::Graph& out_nauty_graph) const;
 
+    std::vector<int> compute_shortest_distances_from_states(const AbstractStateList& states, bool forward = true) const;
+
     /**
      * Getters.
      */
@@ -110,8 +132,8 @@ public:
     const std::vector<AbstractStateIdList>& get_forward_successors() const;
     const std::vector<AbstractStateIdList>& get_backward_successors() const;
     AbstractStateId get_abstract_initial_state() const;
-    const std::unordered_set<AbstractStateId>& get_abstract_goal_states() const;
-    const std::unordered_set<AbstractStateId>& get_abstract_deadend_states() const;
+    const AbstractStateIdSet& get_abstract_goal_states() const;
+    const AbstractStateIdSet& get_abstract_deadend_states() const;
     const std::vector<int>& get_abstract_goal_distances() const;
 };
 
@@ -124,8 +146,15 @@ public:
     /// information about the concrete underlying state such as Problem, PDDLFactories, SSG, AAG, etc.
     class CombinedAbstractState
     {
+    private:
         AbstractionId m_abstraction_id;
-        AbstractStateId m_state_id;
+        AbstractStateId m_abstract_state_id;
+
+    public:
+        CombinedAbstractState(AbstractionId abstraction_id, AbstractStateId abstract_state_id);
+
+        AbstractionId get_abstraction_id() const;
+        AbstractStateId get_abstract_state_id() const;
     };
 
     using CombinedAbstractStateList = std::vector<CombinedAbstractState>;
@@ -144,7 +173,7 @@ public:
 
     const FaithfulAbstractionList& get_abstractions() const;
     const std::vector<CombinedAbstractStateList>& get_states_by_abstraction() const;
-    const CombinedAbstractStateList& get_states(AbstractionId abstraction_id);
+    const CombinedAbstractStateList& get_states(AbstractionId abstraction_id) const;
 };
 
 }

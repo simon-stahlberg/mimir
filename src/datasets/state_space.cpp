@@ -34,7 +34,7 @@ compute_shortest_distances_from_states_impl(const size_t num_total_states, const
     auto fifo_queue = std::deque<int>();
     for (const auto& state : states)
     {
-        distances[state.get_id()] = 0;
+        distances.at(state.get_id()) = 0;
         fifo_queue.push_back(state.get_id());
     }
 
@@ -42,18 +42,18 @@ compute_shortest_distances_from_states_impl(const size_t num_total_states, const
     {
         const auto& state_id = fifo_queue.front();
         fifo_queue.pop_front();
-        const auto cost = distances[state_id];
+        const auto cost = distances.at(state_id);
 
-        for (const auto& transition : transitions[state_id])
+        for (const auto& transition : transitions.at(state_id))
         {
             const auto successor_state_id = transition.get_successor_state().get_id();
 
-            if (distances[successor_state_id] != -1)
+            if (distances.at(successor_state_id) != -1)
             {
                 continue;
             }
 
-            distances[successor_state_id] = cost + 1;
+            distances.at(successor_state_id) = cost + 1;
 
             fifo_queue.push_back(successor_state_id);
         }
@@ -109,8 +109,7 @@ StateSpaceImpl::StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
         m_state_indices.emplace(state, index);
 
         auto distance = m_goal_distances.at(index);
-        auto& states_with_distance = m_states_by_goal_distance[distance];
-        states_with_distance.emplace_back(state);
+        m_states_by_goal_distance[distance].push_back(state);
     }
 }
 
@@ -161,8 +160,8 @@ StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::pa
             forward_transitions.resize(ssg->get_state_count());
             backward_transitions.resize(ssg->get_state_count());
 
-            forward_transitions[state.get_id()].emplace_back(successor_state, action);
-            backward_transitions[successor_state.get_id()].emplace_back(state, action);
+            forward_transitions.at(state.get_id()).emplace_back(successor_state, action);
+            backward_transitions.at(successor_state.get_id()).emplace_back(state, action);
             ++num_transitions;
 
             if (successor_state.get_id() < states.size())
@@ -195,7 +194,7 @@ StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::pa
     auto deadend_states = StateSet {};
     for (const auto& state : states)
     {
-        if (goal_distances[state.get_id()] == -1)
+        if (goal_distances.at(state.get_id()) == -1)
         {
             deadend_states.insert(state);
         }
@@ -257,10 +256,10 @@ std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_di
     // Initialize distance adjacency matrix
     for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
     {
-        distances[state_id][state_id] = 0;
-        for (const auto& transition : transitions[state_id])
+        distances.at(state_id).at(state_id) = 0;
+        for (const auto& transition : transitions.at(state_id))
         {
-            distances[state_id][transition.get_successor_state().get_id()] = 1;
+            distances.at(state_id).at(transition.get_successor_state().get_id()) = 1;
         }
     }
 
@@ -271,9 +270,9 @@ std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_di
         {
             for (size_t state_j = 0; state_j < m_states.size(); ++state_j)
             {
-                if (distances[state_i][state_j] > distances[state_i][state_k] + distances[state_k][state_j])
+                if (distances.at(state_i).at(state_j) > distances.at(state_i).at(state_k) + distances.at(state_k).at(state_j))
                 {
-                    distances[state_i][state_j] = distances[state_i][state_k] + distances[state_k][state_j];
+                    distances.at(state_i).at(state_j) = distances.at(state_i).at(state_k) + distances.at(state_k).at(state_j);
                 }
             }
         }
@@ -317,7 +316,7 @@ State StateSpaceImpl::sample_state_with_goal_distance(int goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);
     const auto index = std::rand() % static_cast<int>(states.size());
-    return states[index];
+    return states.at(index);
 }
 
 std::shared_ptr<GroundedAAG> StateSpaceImpl::get_aag() const { return m_aag; }

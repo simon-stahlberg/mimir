@@ -228,10 +228,10 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     m_object_graph.m_ptn.resize(num_vertices);
     for (int i = 0; i < num_vertices; ++i)
     {
-        const auto& [vertex_id, color] = m_vertex_id_and_color[i];
+        const auto& [vertex_id, color] = m_vertex_id_and_color.at(i);
         const auto next_has_same_color = ((i < num_vertices - 1) && (color == m_vertex_id_and_color[i + 1].second));
-        m_object_graph.m_lab[i] = vertex_id;
-        m_object_graph.m_ptn[i] = (next_has_same_color) ? 1 : 0;
+        m_object_graph.m_lab.at(i) = vertex_id;
+        m_object_graph.m_ptn.at(i) = (next_has_same_color) ? 1 : 0;
     }
 
     return m_object_graph;
