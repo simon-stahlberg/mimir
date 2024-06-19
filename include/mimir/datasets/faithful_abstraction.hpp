@@ -135,6 +135,10 @@ public:
     const AbstractStateIdSet& get_abstract_goal_states() const;
     const AbstractStateIdSet& get_abstract_deadend_states() const;
     const std::vector<int>& get_abstract_goal_distances() const;
+    size_t get_num_abstract_states() const;
+    size_t get_num_abstract_transitions() const;
+    size_t get_num_abstract_goal_states() const;
+    size_t get_num_abstract_deadend_states() const;
 };
 
 /// @brief CombinedFaithfulAbstraction applies isomorphism reduction across instances.

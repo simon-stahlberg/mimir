@@ -132,7 +132,7 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
     abstract_states.push_back(abstract_initial_state);
     const auto& object_graph = object_graph_factory.create(abstract_initial_state.get_state());
     object_graph.get_digraph().to_nauty_graph(nauty_graph);
-    certificate_and_coloring.clear();
+    certificate_and_coloring.str("");  // clears the stringstream
     certificate_and_coloring << nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn());
     certificate_and_coloring << object_graph.get_sorted_vertex_colors();
     abstract_states_by_certificate.emplace(certificate_and_coloring.str(), abstract_initial_state_id);
@@ -173,8 +173,9 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
             if (concrete_state_exists)
             {
                 const auto& abstract_successor_state = abstract_states.at(concrete_to_abstract_state.at(successor_state));
-                forward_successors.at(abstract_state_id).push_back(abstract_successor_state.get_id());
-                backward_successors.at(abstract_successor_state.get_id()).push_back(abstract_state_id);
+                const auto abstract_successor_state_id = abstract_successor_state.get_id();
+                forward_successors.at(abstract_state_id).push_back(abstract_successor_state_id);
+                backward_successors.at(abstract_successor_state_id).push_back(abstract_state_id);
                 ++num_transitions;
                 continue;
             }
@@ -182,7 +183,7 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
             // Compute certificate of successor state
             const auto& object_graph = object_graph_factory.create(successor_state);
             object_graph.get_digraph().to_nauty_graph(nauty_graph);
-            certificate_and_coloring.clear();
+            certificate_and_coloring.str("");  // clears the stringstream
             certificate_and_coloring << nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn());
             certificate_and_coloring << object_graph.get_sorted_vertex_colors();
             const auto it = abstract_states_by_certificate.find(certificate_and_coloring.str());
@@ -192,8 +193,10 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
             if (abstract_state_exists)
             {
                 const auto& abstract_successor_state = abstract_states.at(it->second);
-                forward_successors.at(abstract_state_id).push_back(abstract_successor_state.get_id());
-                backward_successors.at(abstract_successor_state.get_id()).push_back(abstract_state_id);
+                const auto abstract_successor_state_id = abstract_successor_state.get_id();
+                concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_id);
+                forward_successors.at(abstract_state_id).push_back(abstract_successor_state_id);
+                backward_successors.at(abstract_successor_state_id).push_back(abstract_state_id);
                 ++num_transitions;
                 continue;
             }
@@ -300,6 +303,14 @@ const AbstractStateIdSet& FaithfulAbstractionImpl::get_abstract_goal_states() co
 const AbstractStateIdSet& FaithfulAbstractionImpl::get_abstract_deadend_states() const { return m_abstract_deadend_states; }
 
 const std::vector<int>& FaithfulAbstractionImpl::get_abstract_goal_distances() const { return m_abstract_goal_distances; }
+
+size_t FaithfulAbstractionImpl::get_num_abstract_states() const { return m_abstract_states.size(); }
+
+size_t FaithfulAbstractionImpl::get_num_abstract_transitions() const { return m_num_abstract_transitions; }
+
+size_t FaithfulAbstractionImpl::get_num_abstract_goal_states() const { return m_abstract_goal_states.size(); }
+
+size_t FaithfulAbstractionImpl::get_num_abstract_deadend_states() const { return m_abstract_deadend_states.size(); }
 
 /**
  * CombinedAbstractState
