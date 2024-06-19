@@ -215,6 +215,14 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
                                                               std::move(deadend_states)));
 }
 
+StateSpaceList StateSpaceImpl::create(const fs::path& domain_file_path,
+                                      const std::vector<fs::path>& problem_file_paths,
+                                      const size_t max_num_states,
+                                      const size_t timeout_ms,
+                                      const size_t num_threads = 1)
+{
+}
+
 /* Extended functionality */
 std::vector<int> StateSpaceImpl::compute_shortest_distances_from_states(const StateList& states, bool forward) const
 {

@@ -52,6 +52,10 @@ public:
 
 using Transitions = std::vector<Transition>;
 
+class StateSpaceImpl;
+using StateSpace = std::shared_ptr<StateSpaceImpl>;
+using StateSpaceList = std::vector<StateSpace>;
+
 /// @brief A StateSpace encapsulates the complete dynamics of a PDDL problem.
 /// To keep the memory consumption small, we do not store information dependent on the initial state.
 class StateSpaceImpl
@@ -93,14 +97,26 @@ private:
                    StateSet deadend_states);
 
 public:
-    /// @brief Try to create a StateSpace from the given input files with the given resource limits
+    /// @brief Try to create a StateSpace from the given input files with the given resource limits.
     /// @param domain_file_path The PDDL domain file.
     /// @param problem_file_path The PDDL problem file.
-    /// @param max_num_states The maximum number of states allowed
-    /// @param timeout_ms The maximum time spent on creating the StateSpace
-    /// @return StateSpace if construction is withing given resource limits, and otherwise nullptr.
-    static std::shared_ptr<StateSpaceImpl>
-    create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
+    /// @param max_num_states The maximum number of states allowed in the StateSpace.
+    /// @param timeout_ms The maximum time spent on creating the StateSpace.
+    /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
+    static StateSpace create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
+
+    /// @brief Try to create a StateSpaceList from the given input files with the given resource limits.
+    /// @param domain_file_path The PDDL domain file.
+    /// @param problem_file_paths The PDDL problem files.
+    /// @param max_num_states The maximum number of states allowed in a StateSpace.
+    /// @param timeout_ms The maximum time spent on creating a StateSpace.
+    /// @param num_threads The number of threads used for construction.
+    /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
+    static StateSpaceList create(const fs::path& domain_file_path,
+                                 const std::vector<fs::path>& problem_file_paths,
+                                 const size_t max_num_states,
+                                 const size_t timeout_ms,
+                                 const size_t num_threads = 1);
 
     /* Extended functionality */
 
@@ -154,9 +170,6 @@ public:
 
     PDDLFactories& get_factories();
 };
-
-using StateSpace = std::shared_ptr<StateSpaceImpl>;
-using StateSpaceList = std::vector<StateSpace>;
 
 }
 
