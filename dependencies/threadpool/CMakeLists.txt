@@ -13,15 +13,15 @@ list(APPEND CMAKE_ARGS
     -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX}
 )
 
-message(STATUS "Preparing external project \"loki\" with args:")
+message(STATUS "Preparing external project \"threadpool\" with args:")
 foreach(CMAKE_ARG ${CMAKE_ARGS})
     message(STATUS "-- ${CMAKE_ARG}")
 endforeach()
 
 ExternalProject_Add(
     threadpool
-    GIT_REPOSITORY https://github.com/DeveloperPaul123/thread-pool.git
-    GIT_TAG 0.6.2
+    GIT_REPOSITORY https://github.com/drexlerd/thread-pool.git
+    GIT_TAG master
     PREFIX ${CMAKE_BINARY_DIR}/threadpool
     CMAKE_ARGS ${CMAKE_ARGS}
 )

@@ -80,12 +80,6 @@ struct CastVisitor
     }
 };
 
-static std::shared_ptr<StateSpaceImpl>
-create_state_space_helper(const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
-{
-    return StateSpaceImpl::create(domain_filepath, problem_filepath, max_num_states, timeout_ms);
-}
-
 /**
  * Bindings
  */
@@ -768,7 +762,19 @@ void init_pymimir(py::module_& m)
 
     // StateSpace
     py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
-        .def_static("create", &create_state_space_helper)
+        .def_static("create",
+                    [](const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
+                    { return StateSpaceImpl::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
+        .def_static("create",
+                    [](const std::string& domain_filepath,
+                       const std::vector<std::string>& problem_filepaths,
+                       size_t max_num_states,
+                       size_t timeout_ms,
+                       size_t num_threads = std::thread::hardware_concurrency())
+                    {
+                        auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
+                        return StateSpaceImpl::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+                    })
         .def("compute_shortest_distances_from_states",
              &StateSpaceImpl::compute_shortest_distances_from_states,
              pybind11::arg("states"),

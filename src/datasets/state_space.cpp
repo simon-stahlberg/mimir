@@ -17,6 +17,7 @@
 
 #include "mimir/datasets/state_space.hpp"
 
+#include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
 
 #include <algorithm>
@@ -219,8 +220,28 @@ StateSpaceList StateSpaceImpl::create(const fs::path& domain_file_path,
                                       const std::vector<fs::path>& problem_file_paths,
                                       const size_t max_num_states,
                                       const size_t timeout_ms,
-                                      const size_t num_threads = 1)
+                                      const size_t num_threads)
 {
+    auto state_spaces = StateSpaceList {};
+    auto pool = BS::thread_pool(num_threads);
+    auto futures = std::vector<std::future<StateSpace>> {};
+
+    for (const auto& problem_file_path : problem_file_paths)
+    {
+        futures.push_back(pool.submit_task([domain_file_path, problem_file_path, max_num_states, timeout_ms]
+                                           { return StateSpaceImpl::create(domain_file_path, problem_file_path, max_num_states, timeout_ms); }));
+    }
+
+    for (auto& future : futures)
+    {
+        const auto state_space = future.get();
+        if (state_space)
+        {
+            state_spaces.push_back(state_space);
+        }
+    }
+
+    return state_spaces;
 }
 
 /* Extended functionality */

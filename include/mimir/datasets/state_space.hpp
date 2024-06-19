@@ -28,6 +28,7 @@
 
 #include <cstddef>
 #include <loki/loki.hpp>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -116,7 +117,7 @@ public:
                                  const std::vector<fs::path>& problem_file_paths,
                                  const size_t max_num_states,
                                  const size_t timeout_ms,
-                                 const size_t num_threads = 1);
+                                 const size_t num_threads = std::thread::hardware_concurrency());
 
     /* Extended functionality */
 
