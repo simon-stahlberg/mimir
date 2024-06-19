@@ -169,7 +169,7 @@ public:
 
     const PDDLParser& get_pddl_parser() const;
 
-    PDDLFactories& get_factories();
+    const PDDLFactories& get_factories() const;
 };
 
 }

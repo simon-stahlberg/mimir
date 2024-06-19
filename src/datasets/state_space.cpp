@@ -114,8 +114,7 @@ StateSpaceImpl::StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
     }
 }
 
-std::shared_ptr<StateSpaceImpl>
-StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
+StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
 {
     auto stop_watch = StopWatch(timeout_ms);
 
@@ -203,17 +202,17 @@ StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem
     }
 
     // Must explicitly call constructor since it is private
-    return std::shared_ptr<StateSpaceImpl>(new StateSpaceImpl(std::move(pddl_parser),
-                                                              std::move(aag),
-                                                              std::move(ssg),
-                                                              std::move(states),
-                                                              initial_state,
-                                                              num_transitions,
-                                                              std::move(forward_transitions),
-                                                              std::move(backward_transitions),
-                                                              std::move(goal_distances),
-                                                              std::move(goal_states),
-                                                              std::move(deadend_states)));
+    return StateSpace(new StateSpaceImpl(std::move(pddl_parser),
+                                         std::move(aag),
+                                         std::move(ssg),
+                                         std::move(states),
+                                         initial_state,
+                                         num_transitions,
+                                         std::move(forward_transitions),
+                                         std::move(backward_transitions),
+                                         std::move(goal_distances),
+                                         std::move(goal_states),
+                                         std::move(deadend_states)));
 }
 
 StateSpaceList StateSpaceImpl::create(const fs::path& domain_file_path,
@@ -327,6 +326,6 @@ std::shared_ptr<SuccessorStateGenerator> StateSpaceImpl::get_ssg() const { retur
 
 const PDDLParser& StateSpaceImpl::get_pddl_parser() const { return *m_parser; }
 
-PDDLFactories& StateSpaceImpl::get_factories() { return m_parser->get_factories(); }
+const PDDLFactories& StateSpaceImpl::get_factories() const { return m_parser->get_factories(); }
 
 }

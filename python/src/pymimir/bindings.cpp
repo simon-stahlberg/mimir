@@ -835,7 +835,7 @@ void init_pymimir(py::module_& m)
 
     // TupleGraphFactory
     py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
-        .def(py::init<std::shared_ptr<StateSpaceImpl>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
+        .def(py::init<StateSpace, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
         .def("create", &TupleGraphFactory::create, py::return_value_policy::copy)
         .def("get_state_space", &TupleGraphFactory::get_state_space)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
