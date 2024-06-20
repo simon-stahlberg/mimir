@@ -765,16 +765,22 @@ void init_pymimir(py::module_& m)
         .def_static("create",
                     [](const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
                     { return StateSpace::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
-        .def_static("create",
-                    [](const std::string& domain_filepath,
-                       const std::vector<std::string>& problem_filepaths,
-                       size_t max_num_states,
-                       size_t timeout_ms,
-                       size_t num_threads = std::thread::hardware_concurrency())
-                    {
-                        auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                        return StateSpace::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
-                    })
+        .def_static(
+            "create",
+            [](const std::string& domain_filepath,
+               const std::vector<std::string>& problem_filepaths,
+               size_t max_num_states,
+               size_t timeout_ms,
+               size_t num_threads)
+            {
+                auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
+                return StateSpace::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+            },
+            py::arg("domain_filepath"),
+            py::arg("problem_filepaths"),
+            py::arg("max_num_states") = std::numeric_limits<size_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
+            py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states",
              &StateSpace::compute_shortest_distances_from_states,
              pybind11::arg("states"),
@@ -801,6 +807,46 @@ void init_pymimir(py::module_& m)
         .def("get_ssg", &StateSpace::get_ssg)
         .def("get_pddl_parser", &StateSpace::get_pddl_parser, py::return_value_policy::reference)
         .def("get_factories", &StateSpace::get_factories, py::return_value_policy::reference);
+
+    // FaithfulAbstraction
+
+    py::class_<FaithfulAbstraction::AbstractState>(m, "FaithfulAbstractState")
+        .def("get_id", &FaithfulAbstraction::AbstractState::get_id)
+        .def("get_state", &FaithfulAbstraction::AbstractState::get_state);
+
+    py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
+        .def_static("create",
+                    [](const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
+                    { return FaithfulAbstraction::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
+        .def_static(
+            "create",
+            [](const std::string& domain_filepath,
+               const std::vector<std::string>& problem_filepaths,
+               size_t max_num_states,
+               size_t timeout_ms,
+               size_t num_threads)
+            {
+                auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
+                return FaithfulAbstraction::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+            },
+            py::arg("domain_filepath"),
+            py::arg("problem_filepaths"),
+            py::arg("max_num_states") = std::numeric_limits<size_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
+            py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
+        .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_states_by_certificate", &FaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
+        .def("get_forward_successors", &FaithfulAbstraction::get_forward_successors, py::return_value_policy::reference)
+        .def("get_backward_successors", &FaithfulAbstraction::get_backward_successors, py::return_value_policy::reference)
+        .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
+        .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
+        .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
+        .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference)
+        .def("get_num_states", &FaithfulAbstraction::get_num_states)
+        .def("get_num_transitions", &FaithfulAbstraction::get_num_transitions)
+        .def("get_num_goal_states", &FaithfulAbstraction::get_num_goal_states)
+        .def("get_num_deadend_states", &FaithfulAbstraction::get_num_deadend_states);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Graphs

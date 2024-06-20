@@ -75,7 +75,7 @@ State FaithfulAbstraction::AbstractState::get_state() const { return m_state; }
  */
 
 FaithfulAbstraction::FaithfulAbstraction(std::shared_ptr<PDDLParser> parser,
-                                         std::shared_ptr<GroundedAAG> aag,
+                                         std::shared_ptr<LiftedAAG> aag,
                                          std::shared_ptr<SSG> ssg,
                                          AbstractStateList abstract_states,
                                          std::unordered_map<std::string, AbstractStateId> abstract_states_by_certificate,
@@ -109,7 +109,7 @@ FaithfulAbstraction::create(const fs::path& domain_file_path, const fs::path& pr
     auto pddl_parser = std::make_shared<PDDLParser>(domain_file_path, problem_file_path);
     const auto problem = pddl_parser->get_problem();
     const auto& factories = pddl_parser->get_factories();
-    auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser->get_factories());
+    auto aag = std::make_shared<LiftedAAG>(problem, pddl_parser->get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
     auto initial_state = ssg->get_or_create_initial_state();
 
@@ -204,7 +204,7 @@ FaithfulAbstraction::create(const fs::path& domain_file_path, const fs::path& pr
             const auto abstract_successor_state_id = abstract_states.size();
             const auto abstract_successor_state = AbstractState(abstract_successor_state_id, successor_state);
             abstract_states.push_back(abstract_successor_state);
-            if (abstract_states.size() == max_num_states)
+            if (abstract_states.size() >= max_num_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
@@ -275,7 +275,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
 
     for (auto& future : futures)
     {
-        const auto abstraction = future.get();
+        auto abstraction = future.get();
         if (abstraction.has_value())
         {
             abstractions.push_back(std::move(abstraction.value()));

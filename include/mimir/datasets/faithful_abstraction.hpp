@@ -59,7 +59,7 @@ public:
 private:
     // Memory
     std::shared_ptr<PDDLParser> m_parser;
-    std::shared_ptr<GroundedAAG> m_aag;
+    std::shared_ptr<LiftedAAG> m_aag;
     std::shared_ptr<SSG> m_ssg;
 
     // States
@@ -82,7 +82,7 @@ private:
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
     FaithfulAbstraction(std::shared_ptr<PDDLParser> parser,
-                        std::shared_ptr<GroundedAAG> aag,
+                        std::shared_ptr<LiftedAAG> aag,
                         std::shared_ptr<SSG> ssg,
                         AbstractStateList states,
                         std::unordered_map<std::string, AbstractStateId> states_by_certificate,

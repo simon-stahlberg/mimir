@@ -93,6 +93,8 @@ from _pymimir import (
 
 # Dataset
 from _pymimir import (
+    FaithfulAbstractState,
+    FaithfulAbstraction,
     Transition,
     StateSpace
 )
@@ -100,6 +102,11 @@ from _pymimir import (
 # Graphs
 
 from _pymimir import (
+    Digraph,
+    NautyGraph,
+    ObjectGraph,
+    ObjectGraphFactory,
+    ProblemColorFunction,
     TupleGraphVertex,
     TupleGraph,
     TupleGraphFactory

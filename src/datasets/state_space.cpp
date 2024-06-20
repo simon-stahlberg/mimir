@@ -170,7 +170,7 @@ StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_fil
                 continue;
             }
 
-            if (states.size() == max_num_states)
+            if (states.size() >= max_num_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
@@ -233,10 +233,10 @@ StateSpaceList StateSpace::create(const fs::path& domain_file_path,
 
     for (auto& future : futures)
     {
-        const auto state_space = future.get();
+        auto state_space = future.get();
         if (state_space.has_value())
         {
-            state_spaces.push_back(state_space.value());
+            state_spaces.push_back(std::move(state_space.value()));
         }
     }
 
