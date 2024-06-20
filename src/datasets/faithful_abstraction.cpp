@@ -64,45 +64,45 @@ static std::vector<int> compute_shortest_distances_from_states_impl(const size_t
  * AbstractState
  */
 
-FaithfulAbstractionImpl::AbstractState::AbstractState(AbstractStateId id, State state) : m_id(id), m_state(state) {}
+FaithfulAbstraction::AbstractState::AbstractState(AbstractStateId id, State state) : m_id(id), m_state(state) {}
 
-AbstractStateId FaithfulAbstractionImpl::AbstractState::get_id() const { return m_id; }
+AbstractStateId FaithfulAbstraction::AbstractState::get_id() const { return m_id; }
 
-State FaithfulAbstractionImpl::AbstractState::get_state() const { return m_state; }
+State FaithfulAbstraction::AbstractState::get_state() const { return m_state; }
 
 /**
  * FaithfulAbstraction
  */
 
-FaithfulAbstractionImpl::FaithfulAbstractionImpl(std::unique_ptr<PDDLParser>&& parser,
-                                                 std::shared_ptr<GroundedAAG> aag,
-                                                 std::shared_ptr<SSG> ssg,
-                                                 AbstractStateList abstract_states,
-                                                 std::unordered_map<std::string, AbstractStateId> abstract_states_by_certificate,
-                                                 AbstractStateId abstract_initial_state,
-                                                 AbstractStateIdSet abstract_goal_states,
-                                                 AbstractStateIdSet abstract_deadend_states,
-                                                 size_t num_abstract_transitions,
-                                                 std::vector<AbstractStateIdList> forward_successors,
-                                                 std::vector<AbstractStateIdList> backward_successors,
-                                                 std::vector<int> abstract_goal_distances) :
+FaithfulAbstraction::FaithfulAbstraction(std::shared_ptr<PDDLParser> parser,
+                                         std::shared_ptr<GroundedAAG> aag,
+                                         std::shared_ptr<SSG> ssg,
+                                         AbstractStateList abstract_states,
+                                         std::unordered_map<std::string, AbstractStateId> abstract_states_by_certificate,
+                                         AbstractStateId abstract_initial_state,
+                                         AbstractStateIdSet abstract_goal_states,
+                                         AbstractStateIdSet abstract_deadend_states,
+                                         size_t num_abstract_transitions,
+                                         std::vector<AbstractStateIdList> forward_successors,
+                                         std::vector<AbstractStateIdList> backward_successors,
+                                         std::vector<int> abstract_goal_distances) :
     m_parser(std::move(parser)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
-    m_abstract_states(std::move(abstract_states)),
-    m_abstract_states_by_certificate(std::move(abstract_states_by_certificate)),
-    m_abstract_initial_state(abstract_initial_state),
-    m_abstract_goal_states(std::move(abstract_goal_states)),
-    m_abstract_deadend_states(std::move(abstract_deadend_states)),
-    m_num_abstract_transitions(num_abstract_transitions),
+    m_states(std::move(abstract_states)),
+    m_states_by_certificate(std::move(abstract_states_by_certificate)),
+    m_initial_state(abstract_initial_state),
+    m_goal_states(std::move(abstract_goal_states)),
+    m_deadend_states(std::move(abstract_deadend_states)),
+    m_num_transitions(num_abstract_transitions),
     m_forward_successors(std::move(forward_successors)),
     m_backward_successors(std::move(backward_successors)),
-    m_abstract_goal_distances(std::move(abstract_goal_distances))
+    m_goal_distances(std::move(abstract_goal_distances))
 {
 }
 
-FaithfulAbstraction
-FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
+std::optional<FaithfulAbstraction>
+FaithfulAbstraction::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
 {
     auto stop_watch = StopWatch(timeout_ms);
 
@@ -116,7 +116,7 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
     if (!problem->static_goal_holds())
     {
         // Unsolvable
-        return nullptr;
+        return std::nullopt;
     }
 
     auto nauty_graph = nauty_wrapper::Graph();
@@ -207,7 +207,7 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
             if (abstract_states.size() == max_num_states)
             {
                 // Ran out of state resources
-                return nullptr;
+                return std::nullopt;
             }
             abstract_states_by_certificate.emplace(certificate_and_coloring.str(), abstract_successor_state_id);
             concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_id);
@@ -227,7 +227,7 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
     if (stop_watch.has_finished())
     {
         // Ran out of time
-        return nullptr;
+        return std::nullopt;
     }
 
     auto abstract_goal_distances = compute_shortest_distances_from_states_impl(abstract_states.size(),
@@ -243,79 +243,76 @@ FaithfulAbstractionImpl::create(const fs::path& domain_file_path, const fs::path
         }
     }
 
-    return FaithfulAbstraction(new FaithfulAbstractionImpl(std::move(pddl_parser),
-                                                           std::move(aag),
-                                                           std::move(ssg),
-                                                           std::move(abstract_states),
-                                                           std::move(abstract_states_by_certificate),
-                                                           abstract_initial_state_id,
-                                                           std::move(abstract_goal_states),
-                                                           std::move(abstract_deadend_states),
-                                                           num_transitions,
-                                                           std::move(forward_successors),
-                                                           std::move(backward_successors),
-                                                           std::move(abstract_goal_distances)));
+    return FaithfulAbstraction(std::move(pddl_parser),
+                               std::move(aag),
+                               std::move(ssg),
+                               std::move(abstract_states),
+                               std::move(abstract_states_by_certificate),
+                               abstract_initial_state_id,
+                               std::move(abstract_goal_states),
+                               std::move(abstract_deadend_states),
+                               num_transitions,
+                               std::move(forward_successors),
+                               std::move(backward_successors),
+                               std::move(abstract_goal_distances));
 }
 
-FaithfulAbstractionList FaithfulAbstractionImpl::create(const fs::path& domain_file_path,
-                                                        const std::vector<fs::path>& problem_file_paths,
-                                                        const size_t max_num_states,
-                                                        const size_t timeout_ms,
-                                                        const size_t num_threads)
+std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& domain_file_path,
+                                                             const std::vector<fs::path>& problem_file_paths,
+                                                             const size_t max_num_states,
+                                                             const size_t timeout_ms,
+                                                             const size_t num_threads)
 {
-    auto abstractions = FaithfulAbstractionList {};
+    auto abstractions = std::vector<FaithfulAbstraction> {};
     auto pool = BS::thread_pool(num_threads);
-    auto futures = std::vector<std::future<FaithfulAbstraction>> {};
+    auto futures = std::vector<std::future<std::optional<FaithfulAbstraction>>> {};
 
     for (const auto& problem_file_path : problem_file_paths)
     {
         futures.push_back(pool.submit_task([domain_file_path, problem_file_path, max_num_states, timeout_ms]
-                                           { return FaithfulAbstractionImpl::create(domain_file_path, problem_file_path, max_num_states, timeout_ms); }));
+                                           { return FaithfulAbstraction::create(domain_file_path, problem_file_path, max_num_states, timeout_ms); }));
     }
 
     for (auto& future : futures)
     {
         const auto abstraction = future.get();
-        if (abstraction)
+        if (abstraction.has_value())
         {
-            abstractions.push_back(abstraction);
+            abstractions.push_back(std::move(abstraction.value()));
         }
     }
 
     return abstractions;
 }
 
-std::vector<int> FaithfulAbstractionImpl::compute_shortest_distances_from_states(const AbstractStateIdList& abstract_states, bool forward) const
+std::vector<int> FaithfulAbstraction::compute_shortest_distances_from_states(const AbstractStateIdList& abstract_states, bool forward) const
 {
-    return compute_shortest_distances_from_states_impl(m_abstract_states.size(), abstract_states, forward ? m_forward_successors : m_backward_successors);
+    return compute_shortest_distances_from_states_impl(m_states.size(), abstract_states, forward ? m_forward_successors : m_backward_successors);
 }
 
-const FaithfulAbstractionImpl::AbstractStateList& FaithfulAbstractionImpl::get_abstract_states() const { return m_abstract_states; }
+const FaithfulAbstraction::AbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }
 
-const std::unordered_map<std::string, AbstractStateId>& FaithfulAbstractionImpl::get_abstract_states_by_certificate() const
-{
-    return m_abstract_states_by_certificate;
-}
+const std::unordered_map<std::string, AbstractStateId>& FaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
 
-const std::vector<AbstractStateIdList>& FaithfulAbstractionImpl::get_forward_successors() const { return m_forward_successors; }
+const std::vector<AbstractStateIdList>& FaithfulAbstraction::get_forward_successors() const { return m_forward_successors; }
 
-const std::vector<AbstractStateIdList>& FaithfulAbstractionImpl::get_backward_successors() const { return m_backward_successors; }
+const std::vector<AbstractStateIdList>& FaithfulAbstraction::get_backward_successors() const { return m_backward_successors; }
 
-AbstractStateId FaithfulAbstractionImpl::get_abstract_initial_state() const { return m_abstract_initial_state; }
+AbstractStateId FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
 
-const AbstractStateIdSet& FaithfulAbstractionImpl::get_abstract_goal_states() const { return m_abstract_goal_states; }
+const AbstractStateIdSet& FaithfulAbstraction::get_goal_states() const { return m_goal_states; }
 
-const AbstractStateIdSet& FaithfulAbstractionImpl::get_abstract_deadend_states() const { return m_abstract_deadend_states; }
+const AbstractStateIdSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
-const std::vector<int>& FaithfulAbstractionImpl::get_abstract_goal_distances() const { return m_abstract_goal_distances; }
+const std::vector<int>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
 
-size_t FaithfulAbstractionImpl::get_num_abstract_states() const { return m_abstract_states.size(); }
+size_t FaithfulAbstraction::get_num_states() const { return m_states.size(); }
 
-size_t FaithfulAbstractionImpl::get_num_abstract_transitions() const { return m_num_abstract_transitions; }
+size_t FaithfulAbstraction::get_num_transitions() const { return m_num_transitions; }
 
-size_t FaithfulAbstractionImpl::get_num_abstract_goal_states() const { return m_abstract_goal_states.size(); }
+size_t FaithfulAbstraction::get_num_goal_states() const { return m_goal_states.size(); }
 
-size_t FaithfulAbstractionImpl::get_num_abstract_deadend_states() const { return m_abstract_deadend_states.size(); }
+size_t FaithfulAbstraction::get_num_deadend_states() const { return m_deadend_states.size(); }
 
 /**
  * CombinedAbstractState
