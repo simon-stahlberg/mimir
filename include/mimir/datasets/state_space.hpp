@@ -62,22 +62,26 @@ using StateSpaceList = std::vector<StateSpace>;
 class StateSpaceImpl
 {
 private:
+    // Memory
     std::unique_ptr<PDDLParser> m_parser;
     std::shared_ptr<GroundedAAG> m_aag;
     std::shared_ptr<SSG> m_ssg;
 
+    // States
     StateList m_states;
     State m_initial_state;
+    StateSet m_goal_states;
+    StateSet m_deadend_states;
 
+    // Transitions
     size_t m_num_transitions;
     std::vector<Transitions> m_forward_transitions;
     std::vector<Transitions> m_backward_transitions;
 
+    // Distances
     std::vector<int> m_goal_distances;
 
-    StateSet m_goal_states;
-    StateSet m_deadend_states;
-
+    // Additional
     StateMap<size_t> m_state_indices;
     std::unordered_map<int, StateList> m_states_by_goal_distance;
 
@@ -90,12 +94,12 @@ private:
                    std::shared_ptr<SSG> ssg,
                    StateList states,
                    State initial_state,
+                   StateSet goal_states,
+                   StateSet deadend_states,
                    size_t num_transitions,
                    std::vector<Transitions> forward_transitions,
                    std::vector<Transitions> backward_transitions,
-                   std::vector<int> goal_distances,
-                   StateSet goal_states,
-                   StateSet deadend_states);
+                   std::vector<int> goal_distances);
 
 public:
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.
@@ -131,45 +135,35 @@ public:
     std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /* Getters */
+    // Memory
+    const PDDLParser& get_pddl_parser() const;
+    std::shared_ptr<GroundedAAG> get_aag() const;
+    std::shared_ptr<SuccessorStateGenerator> get_ssg() const;
+    const PDDLFactories& get_factories() const;
     Problem get_problem() const;
 
+    // States
     const StateList& get_states() const;
-
     State get_initial_state() const;
-
-    const std::vector<Transitions>& get_forward_transitions() const;
-
-    const std::vector<Transitions>& get_backward_transitions() const;
-
-    const std::vector<int>& get_goal_distances() const;
-
-    int get_goal_distance(const State& state) const;
-
-    int get_max_goal_distance() const;
-
     const StateSet& get_goal_states() const;
-
     const StateSet& get_deadend_states() const;
-
     size_t get_num_states() const;
-
-    size_t get_num_transitions() const;
-
     size_t get_num_goal_states() const;
-
     size_t get_num_deadend_states() const;
-
     bool is_deadend_state(const State& state) const;
 
+    // Transitions
+    size_t get_num_transitions() const;
+    const std::vector<Transitions>& get_forward_transitions() const;
+    const std::vector<Transitions>& get_backward_transitions() const;
+
+    // Distances
+    const std::vector<int>& get_goal_distances() const;
+    int get_goal_distance(const State& state) const;
+    int get_max_goal_distance() const;
+
+    // Additional
     State sample_state_with_goal_distance(int goal_distance) const;
-
-    std::shared_ptr<GroundedAAG> get_aag() const;
-
-    std::shared_ptr<SuccessorStateGenerator> get_ssg() const;
-
-    const PDDLParser& get_pddl_parser() const;
-
-    const PDDLFactories& get_factories() const;
 };
 
 }
