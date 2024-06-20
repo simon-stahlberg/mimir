@@ -70,7 +70,7 @@ class AxiomEvaluator : public IAxiomEvaluator
 {
 private:
     Problem m_problem;
-    PDDLFactories& m_ref_pddl_factories;
+    std::shared_ptr<PDDLFactories> m_pddl_factories;
     std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
@@ -84,7 +84,7 @@ private:
 
 public:
     /// @brief Simplest construction, expects the event handler from the lifted aag.
-    AxiomEvaluator(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
+    AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
     /// @brief Generate and apply all applicable axioms.
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;

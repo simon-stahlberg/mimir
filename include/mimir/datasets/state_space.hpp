@@ -28,6 +28,7 @@
 
 #include <cstddef>
 #include <loki/loki.hpp>
+#include <optional>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -53,17 +54,13 @@ public:
 
 using Transitions = std::vector<Transition>;
 
-class StateSpaceImpl;
-using StateSpace = std::shared_ptr<const StateSpaceImpl>;
-using StateSpaceList = std::vector<StateSpace>;
-
 /// @brief A StateSpace encapsulates the complete dynamics of a PDDL problem.
 /// To keep the memory consumption small, we do not store information dependent on the initial state.
-class StateSpaceImpl
+class StateSpace
 {
 private:
     // Memory
-    std::unique_ptr<PDDLParser> m_parser;
+    std::shared_ptr<PDDLParser> m_parser;
     std::shared_ptr<GroundedAAG> m_aag;
     std::shared_ptr<SSG> m_ssg;
 
@@ -89,17 +86,17 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
-                   std::shared_ptr<GroundedAAG> aag,
-                   std::shared_ptr<SSG> ssg,
-                   StateList states,
-                   State initial_state,
-                   StateSet goal_states,
-                   StateSet deadend_states,
-                   size_t num_transitions,
-                   std::vector<Transitions> forward_transitions,
-                   std::vector<Transitions> backward_transitions,
-                   std::vector<int> goal_distances);
+    StateSpace(std::shared_ptr<PDDLParser> parser,
+               std::shared_ptr<GroundedAAG> aag,
+               std::shared_ptr<SSG> ssg,
+               StateList states,
+               State initial_state,
+               StateSet goal_states,
+               StateSet deadend_states,
+               size_t num_transitions,
+               std::vector<Transitions> forward_transitions,
+               std::vector<Transitions> backward_transitions,
+               std::vector<int> goal_distances);
 
 public:
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.
@@ -108,7 +105,8 @@ public:
     /// @param max_num_states The maximum number of states allowed in the StateSpace.
     /// @param timeout_ms The maximum time spent on creating the StateSpace.
     /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
-    static StateSpace create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
+    static std::optional<StateSpace>
+    create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
 
     /// @brief Try to create a StateSpaceList from the given input files with the given resource limits.
     /// @param domain_file_path The PDDL domain file.
@@ -117,11 +115,11 @@ public:
     /// @param timeout_ms The maximum time spent on creating a StateSpace.
     /// @param num_threads The number of threads used for construction.
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
-    static StateSpaceList create(const fs::path& domain_file_path,
-                                 const std::vector<fs::path>& problem_file_paths,
-                                 const size_t max_num_states,
-                                 const size_t timeout_ms,
-                                 const size_t num_threads = std::thread::hardware_concurrency());
+    static std::vector<StateSpace> create(const fs::path& domain_file_path,
+                                          const std::vector<fs::path>& problem_file_paths,
+                                          const size_t max_num_states,
+                                          const size_t timeout_ms,
+                                          const size_t num_threads = std::thread::hardware_concurrency());
 
     /* Extended functionality */
 
@@ -137,9 +135,10 @@ public:
     /* Getters */
     // Memory
     const PDDLParser& get_pddl_parser() const;
-    std::shared_ptr<GroundedAAG> get_aag() const;
-    std::shared_ptr<SuccessorStateGenerator> get_ssg() const;
-    const PDDLFactories& get_factories() const;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
+    const std::shared_ptr<GroundedAAG>& get_aag() const;
+    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+    const std::shared_ptr<PDDLFactories>& get_factories() const;
     Problem get_problem() const;
 
     // States
@@ -165,6 +164,8 @@ public:
     // Additional
     State sample_state_with_goal_distance(int goal_distance) const;
 };
+
+using StateSpaceList = std::vector<StateSpace>;
 
 }
 

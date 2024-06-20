@@ -51,8 +51,7 @@ public:
 
     /* Getters */
     [[nodiscard]] virtual Problem get_problem() const = 0;
-    [[nodiscard]] virtual PDDLFactories& get_pddl_factories() = 0;
-    [[nodiscard]] virtual const PDDLFactories& get_pddl_factories() const = 0;
+    [[nodiscard]] virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
 };
 
 /**

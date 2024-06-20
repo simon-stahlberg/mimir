@@ -119,9 +119,9 @@ const std::vector<int>& ObjectGraph::get_ptn() const { return m_ptn; }
  * ObjectGraphFactory
  */
 
-ObjectGraphFactory::ObjectGraphFactory(Problem problem, const PDDLFactories& pddl_factories, bool mark_true_goal_literals) :
+ObjectGraphFactory::ObjectGraphFactory(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, bool mark_true_goal_literals) :
     m_problem(problem),
-    m_pddl_factories(pddl_factories),
+    m_pddl_factories(std::move(pddl_factories)),
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_coloring_function(std::make_shared<ProblemColorFunction>(m_problem)),
     m_object_graph(m_coloring_function)
@@ -170,7 +170,7 @@ static int compute_num_vertices(const Problem problem, const PDDLFactories& pddl
 const ObjectGraph& ObjectGraphFactory::create(State state)
 {
     // Reset data structures
-    auto num_vertices = compute_num_vertices(m_problem, m_pddl_factories, state);
+    auto num_vertices = compute_num_vertices(m_problem, *m_pddl_factories, state);
     m_object_graph.m_digraph.reset(num_vertices, false);
     m_object_graph.m_vertex_colors.clear();
     m_object_graph.m_sorted_vertex_colors.clear();
@@ -184,15 +184,15 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     }
 
     // Initialize atom vertices and edges
-    for (const auto& atom : m_pddl_factories.get_ground_atoms_from_ids<Static>(m_problem->get_static_initial_positive_atoms_bitset()))
+    for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Static>(m_problem->get_static_initial_positive_atoms_bitset()))
     {
         vertex_id = add_ground_atom_graph_structures(atom, vertex_id);
     }
-    for (const auto& atom : m_pddl_factories.get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()))
+    for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()))
     {
         vertex_id = add_ground_atom_graph_structures(atom, vertex_id);
     }
-    for (const auto& atom : m_pddl_factories.get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()))
+    for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()))
     {
         vertex_id = add_ground_atom_graph_structures(atom, vertex_id);
     }

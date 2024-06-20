@@ -10,7 +10,8 @@ namespace mimir
 {
 PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem_file_path) :
     m_loki_domain_parser(loki::DomainParser(domain_file_path)),
-    m_loki_problem_parser(loki::ProblemParser(problem_file_path, m_loki_domain_parser))
+    m_loki_problem_parser(loki::ProblemParser(problem_file_path, m_loki_domain_parser)),
+    m_factories(std::make_shared<PDDLFactories>())
 {
     // Parse the loki domain and problem structures using a separate parser to free intermediate results after translation
     auto domain_parser = loki::DomainParser(domain_file_path);
@@ -59,12 +60,12 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     m_problem = to_mimir_structures_translator.run(*problem);
     m_domain = m_problem->get_domain();
 
-    auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(m_factories);
+    auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);
     m_problem = encode_parameter_index_in_variables.run(*m_problem);
     m_domain = m_problem->get_domain();
 }
 
-PDDLFactories& PDDLParser::get_factories() { return m_factories; }
+const std::shared_ptr<PDDLFactories>& PDDLParser::get_factories() { return m_factories; }
 
 const loki::Domain PDDLParser::get_original_domain() const { return m_loki_domain_parser.get_domain(); }
 

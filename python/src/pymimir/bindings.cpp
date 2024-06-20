@@ -467,7 +467,7 @@ void init_pymimir(py::module_& m)
         .def("get_fluent_goal_condition", &ProblemImpl::get_fluent_goal_condition, py::return_value_policy::reference)
         .def("get_derived_goal_condition", &ProblemImpl::get_derived_goal_condition, py::return_value_policy::reference);
 
-    py::class_<PDDLFactories>(m, "PDDLFactories")  //
+    py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
         .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference)
         .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>, py::return_value_policy::reference)
         .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>, py::return_value_policy::reference)
@@ -597,7 +597,7 @@ void init_pymimir(py::module_& m)
             py::return_value_policy::reference)
         .def("get_action", &IAAG::get_action, py::return_value_policy::reference)
         .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference)
-        .def("get_pddl_factories", py::overload_cast<>(&IAAG::get_pddl_factories), py::return_value_policy::reference);
+        .def("get_pddl_factories", &IAAG::get_pddl_factories);
 
     // Lifted
     py::class_<ILiftedAAGEventHandler, std::shared_ptr<ILiftedAAGEventHandler>>(m, "ILiftedAAGEventHandler");  //
@@ -607,8 +607,8 @@ void init_pymimir(py::module_& m)
     py::class_<DebugLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DebugLiftedAAGEventHandler>>(m, "DebugLiftedAAGEventHandler")  //
         .def(py::init<>());
     py::class_<LiftedAAG, IAAG, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
-        .def(py::init<Problem, PDDLFactories&>())
-        .def(py::init<Problem, PDDLFactories&, std::shared_ptr<ILiftedAAGEventHandler>>());
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedAAGEventHandler>>());
 
     // Grounded
     py::class_<IGroundedAAGEventHandler, std::shared_ptr<IGroundedAAGEventHandler>>(m, "IGroundedAAGEventHandler");  //
@@ -618,8 +618,8 @@ void init_pymimir(py::module_& m)
     py::class_<DebugGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DebugGroundedAAGEventHandler>>(m, "DebugGroundedAAGEventHandler")  //
         .def(py::init<>());
     py::class_<GroundedAAG, IAAG, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
-        .def(py::init<Problem, PDDLFactories&>())
-        .def(py::init<Problem, PDDLFactories&, std::shared_ptr<IGroundedAAGEventHandler>>());
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedAAGEventHandler>>());
 
     /* SSGs */
     py::class_<ISSG, std::shared_ptr<ISSG>>(m, "ISSG")  //
@@ -761,10 +761,10 @@ void init_pymimir(py::module_& m)
         .def("get_creating_action", &Transition::get_creating_action);
 
     // StateSpace
-    py::class_<StateSpaceImpl, std::shared_ptr<StateSpaceImpl>>(m, "StateSpace")  //
+    py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
         .def_static("create",
                     [](const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
-                    { return StateSpaceImpl::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
+                    { return StateSpace::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
         .def_static("create",
                     [](const std::string& domain_filepath,
                        const std::vector<std::string>& problem_filepaths,
@@ -773,33 +773,34 @@ void init_pymimir(py::module_& m)
                        size_t num_threads = std::thread::hardware_concurrency())
                     {
                         auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                        return StateSpaceImpl::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+                        return StateSpace::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
                     })
         .def("compute_shortest_distances_from_states",
-             &StateSpaceImpl::compute_shortest_distances_from_states,
+             &StateSpace::compute_shortest_distances_from_states,
              pybind11::arg("states"),
              pybind11::arg("forward") = true)
-        .def("compute_pairwise_shortest_state_distances", &StateSpaceImpl::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
-        .def("get_states", &StateSpaceImpl::get_states, py::return_value_policy::reference)
-        .def("get_initial_state", &StateSpaceImpl::get_initial_state)
-        .def("get_forward_transitions", &StateSpaceImpl::get_forward_transitions, py::return_value_policy::reference)
-        .def("get_backward_transitions", &StateSpaceImpl::get_backward_transitions, py::return_value_policy::reference)
-        .def("get_problem", &StateSpaceImpl::get_problem, py::return_value_policy::reference)
-        .def("get_goal_distances", &StateSpaceImpl::get_goal_distances, py::return_value_policy::reference)
-        .def("get_goal_states", &StateSpaceImpl::get_goal_states, py::return_value_policy::reference)
-        .def("get_deadend_states", &StateSpaceImpl::get_deadend_states, py::return_value_policy::reference)
-        .def("get_num_states", &StateSpaceImpl::get_num_states)
-        .def("get_num_transitions", &StateSpaceImpl::get_num_transitions)
-        .def("get_num_goal_states", &StateSpaceImpl::get_num_goal_states)
-        .def("get_num_deadend_states", &StateSpaceImpl::get_num_deadend_states)
-        .def("get_goal_distance", &StateSpaceImpl::get_goal_distance)
-        .def("get_max_goal_distance", &StateSpaceImpl::get_max_goal_distance)
-        .def("is_deadend_state", &StateSpaceImpl::is_deadend_state)
-        .def("sample_state_with_goal_distance", &StateSpaceImpl::sample_state_with_goal_distance, py::return_value_policy::reference)
-        .def("get_aag", &StateSpaceImpl::get_aag)
-        .def("get_ssg", &StateSpaceImpl::get_ssg)
-        .def("get_pddl_parser", &StateSpaceImpl::get_pddl_parser, py::return_value_policy::reference)
-        .def("get_factories", &StateSpaceImpl::get_factories, py::return_value_policy::reference);
+        .def("compute_pairwise_shortest_state_distances", &StateSpace::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
+        .def("get_states", &StateSpace::get_states, py::return_value_policy::reference)
+        .def("get_initial_state", &StateSpace::get_initial_state)
+        .def("get_forward_transitions", &StateSpace::get_forward_transitions, py::return_value_policy::reference)
+        .def("get_backward_transitions", &StateSpace::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference)
+        .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference)
+        .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference)
+        .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference)
+        .def("get_num_states", &StateSpace::get_num_states)
+        .def("get_num_transitions", &StateSpace::get_num_transitions)
+        .def("get_num_goal_states", &StateSpace::get_num_goal_states)
+        .def("get_num_deadend_states", &StateSpace::get_num_deadend_states)
+        .def("get_goal_distance", &StateSpace::get_goal_distance)
+        .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
+        .def("is_deadend_state", &StateSpace::is_deadend_state)
+        .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference)
+        .def("get_pddl_factories", &StateSpace::get_pddl_factories)
+        .def("get_aag", &StateSpace::get_aag)
+        .def("get_ssg", &StateSpace::get_ssg)
+        .def("get_pddl_parser", &StateSpace::get_pddl_parser, py::return_value_policy::reference)
+        .def("get_factories", &StateSpace::get_factories, py::return_value_policy::reference);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Graphs
@@ -813,11 +814,11 @@ void init_pymimir(py::module_& m)
 
     // TupleGraph
     py::class_<TupleGraph>(m, "TupleGraph")  //
-        .def("to_string",
-             [](const TupleGraph& self, const Problem problem, const PDDLFactories& pddl_factories)
+        .def("__str__",
+             [](const TupleGraph& self)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(std::cref(self), problem, std::cref(pddl_factories));
+                 ss << self;
                  return ss.str();
              })
         .def("compute_admissible_chain",
@@ -835,7 +836,7 @@ void init_pymimir(py::module_& m)
 
     // TupleGraphFactory
     py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
-        .def(py::init<StateSpace, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
+        .def(py::init<std::shared_ptr<StateSpace>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
         .def("create", &TupleGraphFactory::create, py::return_value_policy::copy)
         .def("get_state_space", &TupleGraphFactory::get_state_space)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
@@ -877,6 +878,9 @@ void init_pymimir(py::module_& m)
 
     // ObjectGraph
     py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
-        .def(py::init<Problem, const PDDLFactories&, bool>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("mark_true_goal_literals") = false)
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, bool>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("mark_true_goal_literals") = false)
         .def("create", &ObjectGraphFactory::create, py::return_value_policy::copy);
 }

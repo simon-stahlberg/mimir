@@ -40,13 +40,13 @@ class GroundAndEvaluateFunctionExpressionVisitor
 private:
     const GroundFunctionToValue& m_ground_function_value_costs;
     const ObjectList& m_binding;
-    PDDLFactories& m_ref_pddl_factories;
+    PDDLFactories& m_pddl_factories;
 
     GroundFunction ground_function(const Function& function)
     {
         auto grounded_terms = ObjectList {};
-        m_ref_pddl_factories.ground_variables(function->get_terms(), m_binding, grounded_terms);
-        return m_ref_pddl_factories.get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
+        m_pddl_factories.ground_variables(function->get_terms(), m_binding, grounded_terms);
+        return m_pddl_factories.get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
     }
 
 public:
@@ -56,7 +56,7 @@ public:
 
         m_ground_function_value_costs(ground_function_value_costs),
         m_binding(binding),
-        m_ref_pddl_factories(ref_pddl_factories)
+        m_pddl_factories(ref_pddl_factories)
     {
     }
 
@@ -128,7 +128,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
 
     const auto fill_effect = [this](const Literal<Fluent>& literal, FlatSimpleEffect& ref_effect, const auto& binding)
     {
-        const auto grounded_literal = m_ref_pddl_factories.ground_literal(literal, binding);
+        const auto grounded_literal = m_pddl_factories->ground_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
         ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
     };
@@ -136,8 +136,8 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
     /* Header */
 
     m_action_builder.get_id() = m_flat_actions.size();
-    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, this->m_ref_pddl_factories),
-                                             *action->get_function_expression());
+    m_action_builder.get_cost() =
+        std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_factories), *action->get_function_expression());
     m_action_builder.get_action() = action;
     auto& objects = m_action_builder.get_objects();
     objects.clear();
@@ -160,9 +160,9 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_ref_pddl_factories.ground_and_fill_bitset(action->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_ref_pddl_factories.ground_and_fill_bitset(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
-    m_ref_pddl_factories.ground_and_fill_bitset(action->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(action->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(action->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
     auto strips_effect_proxy = StripsActionEffectBuilderProxy(m_action_builder.get_strips_effect());
@@ -175,7 +175,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
     {
         effect_literals.push_back(effect->get_effect());
     }
-    m_ref_pddl_factories.ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
+    m_pddl_factories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
 
     /* Conditional effects */
     // Fetch data
@@ -203,18 +203,18 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
             cond_negative_static_precondition_i.unset_all();
             cond_positive_derived_precondition_i.unset_all();
             cond_negative_derived_precondition_i.unset_all();
-            m_ref_pddl_factories.ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_fluent_conditions(),
-                                                        cond_positive_fluent_precondition_i,
-                                                        cond_negative_fluent_precondition_i,
-                                                        binding);
-            m_ref_pddl_factories.ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_static_conditions(),
-                                                        cond_positive_static_precondition_i,
-                                                        cond_negative_static_precondition_i,
-                                                        binding);
-            m_ref_pddl_factories.ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_derived_conditions(),
-                                                        cond_positive_derived_precondition_i,
-                                                        cond_negative_derived_precondition_i,
-                                                        binding);
+            m_pddl_factories->ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_fluent_conditions(),
+                                                     cond_positive_fluent_precondition_i,
+                                                     cond_negative_fluent_precondition_i,
+                                                     binding);
+            m_pddl_factories->ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_static_conditions(),
+                                                     cond_positive_static_precondition_i,
+                                                     cond_negative_static_precondition_i,
+                                                     binding);
+            m_pddl_factories->ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_derived_conditions(),
+                                                     cond_positive_derived_precondition_i,
+                                                     cond_negative_derived_precondition_i,
+                                                     binding);
 
             fill_effect(action->get_conditional_effects().at(i)->get_effect(), cond_simple_effect_i, binding);
         }
@@ -255,7 +255,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
                 for (size_t pos = 0; pos < universal_effect->get_arity(); ++pos)
                 {
                     const auto object_id = *combination[pos];
-                    binding_ext[binding_ext_size + pos] = m_ref_pddl_factories.get_object(object_id);
+                    binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
                 }
 
                 auto cond_effect_proxy_j = ConditionalEffectBuilderProxy(conditional_effects[j]);
@@ -272,18 +272,18 @@ GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action
                 cond_negative_static_precondition_j.unset_all();
                 cond_positive_derived_precondition_j.unset_all();
                 cond_negative_derived_precondition_j.unset_all();
-                m_ref_pddl_factories.ground_and_fill_bitset(universal_effect->get_fluent_conditions(),
-                                                            cond_positive_fluent_precondition_j,
-                                                            cond_negative_fluent_precondition_j,
-                                                            binding_ext);
-                m_ref_pddl_factories.ground_and_fill_bitset(universal_effect->get_static_conditions(),
-                                                            cond_positive_static_precondition_j,
-                                                            cond_negative_static_precondition_j,
-                                                            binding_ext);
-                m_ref_pddl_factories.ground_and_fill_bitset(universal_effect->get_derived_conditions(),
-                                                            cond_positive_derived_precondition_j,
-                                                            cond_negative_derived_precondition_j,
-                                                            binding_ext);
+                m_pddl_factories->ground_and_fill_bitset(universal_effect->get_fluent_conditions(),
+                                                         cond_positive_fluent_precondition_j,
+                                                         cond_negative_fluent_precondition_j,
+                                                         binding_ext);
+                m_pddl_factories->ground_and_fill_bitset(universal_effect->get_static_conditions(),
+                                                         cond_positive_static_precondition_j,
+                                                         cond_negative_static_precondition_j,
+                                                         binding_ext);
+                m_pddl_factories->ground_and_fill_bitset(universal_effect->get_derived_conditions(),
+                                                         cond_positive_derived_precondition_j,
+                                                         cond_negative_derived_precondition_j,
+                                                         binding_ext);
 
                 fill_effect(universal_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
@@ -323,11 +323,11 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     // Create the assignment sets that are shared by all action schemas.
 
     auto& fluent_predicates = m_problem->get_domain()->get_fluent_predicates();
-    auto fluent_atoms = m_ref_pddl_factories.get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>());
+    auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>());
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
-    auto derived_atoms = m_ref_pddl_factories.get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>());
+    auto derived_atoms = m_pddl_factories->get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
 
     // Get all applicable ground actions.
@@ -345,7 +345,7 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
         }
     }
 
-    m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, m_ref_pddl_factories);
+    m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_factories);
 }
 
 void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
@@ -359,18 +359,18 @@ void LiftedApplicableActionGenerator::on_finish_f_layer() const { m_event_handle
 
 void LiftedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, PDDLFactories& pddl_factories) :
-    LiftedApplicableActionGenerator(problem, pddl_factories, std::make_shared<DefaultLiftedAAGEventHandler>())
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories) :
+    LiftedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultLiftedAAGEventHandler>())
 {
 }
 
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem,
-                                                                 PDDLFactories& ref_pddl_factories,
+                                                                 std::shared_ptr<PDDLFactories> pddl_factories,
                                                                  std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
     m_problem(problem),
-    m_ref_pddl_factories(ref_pddl_factories),
+    m_pddl_factories(std::move(pddl_factories)),
     m_event_handler(std::move(event_handler)),
-    m_axiom_evaluator(problem, ref_pddl_factories, m_event_handler),
+    m_axiom_evaluator(problem, m_pddl_factories, m_event_handler),
     m_action_precondition_grounders(),
     m_action_universal_effects(),
     m_ground_function_value_costs()
@@ -396,7 +396,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
                                                                          action->get_fluent_conditions(),
                                                                          action->get_derived_conditions(),
                                                                          static_assignment_set,
-                                                                         m_ref_pddl_factories));
+                                                                         m_pddl_factories));
         auto universal_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         universal_effects.reserve(action->get_universal_effects().size());
 
@@ -421,9 +421,7 @@ GroundAction LiftedApplicableActionGenerator::get_action(size_t action_id) const
 
 Problem LiftedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-[[nodiscard]] PDDLFactories& LiftedApplicableActionGenerator::get_pddl_factories() { return m_ref_pddl_factories; }
-
-[[nodiscard]] const PDDLFactories& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_ref_pddl_factories; }
+[[nodiscard]] const std::shared_ptr<PDDLFactories>& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
 
 std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag)
 {

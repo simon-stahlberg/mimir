@@ -46,7 +46,9 @@ class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
     Problem m_problem;
-    PDDLFactories& m_ref_pddl_factories;
+
+    // Memory
+    std::shared_ptr<PDDLFactories> m_pddl_factories;
     std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
 
     AxiomEvaluator m_axiom_evaluator;
@@ -66,10 +68,10 @@ private:
 
 public:
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(Problem problem, PDDLFactories& ref_pddl_factories);
+    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(Problem problem, PDDLFactories& ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
+    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
     void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) override;
 
@@ -81,9 +83,7 @@ public:
 
     [[nodiscard]] Problem get_problem() const override;
 
-    [[nodiscard]] PDDLFactories& get_pddl_factories() override;
-
-    [[nodiscard]] const PDDLFactories& get_pddl_factories() const override;
+    [[nodiscard]] const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
 
     /// @brief Return the axiom partitioning.
     [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;

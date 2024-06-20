@@ -93,12 +93,14 @@ public:
     SearchStatus
     find_solution(const State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, GroundActionList& out_plan, std::optional<State>& out_goal_state)
     {
-        m_iw_event_handler->on_start_search(m_aag->get_problem(), start_state, m_aag->get_pddl_factories());
+        const auto problem = m_aag->get_problem();
+        const auto& pddl_factories = *m_aag->get_pddl_factories();
+        m_iw_event_handler->on_start_search(problem, start_state, pddl_factories);
 
         int cur_arity = 0;
         while (cur_arity <= m_max_arity)
         {
-            m_iw_event_handler->on_start_arity_search(m_aag->get_problem(), start_state, m_aag->get_pddl_factories(), cur_arity);
+            m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_factories, cur_arity);
 
             auto search_status = (cur_arity > 0) ?
                                      m_brfs.find_solution(start_state,

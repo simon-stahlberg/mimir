@@ -138,7 +138,7 @@ public:
         m_queue.clear();
 
         const auto problem = m_aag->get_problem();
-        const auto& pddl_factories = m_aag->get_pddl_factories();
+        const auto& pddl_factories = *m_aag->get_pddl_factories();
         m_event_handler->on_start_search(problem, start_state, pddl_factories);
 
         auto initial_search_node = UninformedSearchNode(this->m_search_nodes[start_state.get_id()]);

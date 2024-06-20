@@ -12,15 +12,15 @@ TEST(MimirTests, GraphsObjectGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto state_space = StateSpaceImpl::create(domain_file, problem_file, 10000, 10000);
+    const auto state_space = StateSpace::create(domain_file, problem_file, 10000, 10000).value();
 
-    auto object_graph_factory = ObjectGraphFactory(state_space->get_problem(), state_space->get_factories());
+    auto object_graph_factory = ObjectGraphFactory(state_space.get_problem(), state_space.get_factories());
 
     auto nauty_graph = nauty_wrapper::Graph();
 
     auto certificates = std::unordered_set<std::string> {};
 
-    for (const auto& state : state_space->get_states())
+    for (const auto& state : state_space.get_states())
     {
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
@@ -38,7 +38,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
         certificates.insert(ss.str());
     }
 
-    EXPECT_EQ(state_space->get_states().size(), 28);
+    EXPECT_EQ(state_space.get_states().size(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
 }

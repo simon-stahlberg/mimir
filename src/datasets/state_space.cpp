@@ -78,17 +78,17 @@ State Transition::get_successor_state() const { return m_successor_state; }
 
 GroundAction Transition::get_creating_action() const { return m_creating_action; }
 
-StateSpaceImpl::StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
-                               std::shared_ptr<GroundedAAG> aag,
-                               std::shared_ptr<SuccessorStateGenerator> ssg,
-                               StateList states,
-                               State initial_state,
-                               StateSet goal_states,
-                               StateSet deadend_states,
-                               size_t num_transitions,
-                               std::vector<Transitions> forward_transitions,
-                               std::vector<Transitions> backward_transitions,
-                               std::vector<int> goal_distances) :
+StateSpace::StateSpace(std::shared_ptr<PDDLParser> parser,
+                       std::shared_ptr<GroundedAAG> aag,
+                       std::shared_ptr<SuccessorStateGenerator> ssg,
+                       StateList states,
+                       State initial_state,
+                       StateSet goal_states,
+                       StateSet deadend_states,
+                       size_t num_transitions,
+                       std::vector<Transitions> forward_transitions,
+                       std::vector<Transitions> backward_transitions,
+                       std::vector<int> goal_distances) :
     m_parser(std::move(parser)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
@@ -113,11 +113,12 @@ StateSpaceImpl::StateSpaceImpl(std::unique_ptr<PDDLParser>&& parser,
     }
 }
 
-StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
+std::optional<StateSpace>
+StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
 {
     auto stop_watch = StopWatch(timeout_ms);
 
-    auto pddl_parser = std::make_unique<PDDLParser>(domain_file_path, problem_file_path);
+    auto pddl_parser = std::make_shared<PDDLParser>(domain_file_path, problem_file_path);
     const auto problem = pddl_parser->get_problem();
     auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser->get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
@@ -126,7 +127,7 @@ StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::pa
     if (!problem->static_goal_holds())
     {
         // Unsolvable
-        return nullptr;
+        return std::nullopt;
     }
 
     auto lifo_queue = std::deque<State>();
@@ -172,7 +173,7 @@ StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::pa
             if (states.size() == max_num_states)
             {
                 // Ran out of state resources
-                return nullptr;
+                return std::nullopt;
             }
 
             states.push_back(successor_state);
@@ -185,7 +186,7 @@ StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::pa
     if (stop_watch.has_finished())
     {
         // Ran out of time
-        return nullptr;
+        return std::nullopt;
     }
 
     auto goal_distances =
@@ -201,41 +202,41 @@ StateSpace StateSpaceImpl::create(const fs::path& domain_file_path, const fs::pa
     }
 
     // Must explicitly call constructor since it is private
-    return StateSpace(new StateSpaceImpl(std::move(pddl_parser),
-                                         std::move(aag),
-                                         std::move(ssg),
-                                         std::move(states),
-                                         initial_state,
-                                         std::move(goal_states),
-                                         std::move(deadend_states),
-                                         num_transitions,
-                                         std::move(forward_transitions),
-                                         std::move(backward_transitions),
-                                         std::move(goal_distances)));
+    return StateSpace(std::move(pddl_parser),
+                      std::move(aag),
+                      std::move(ssg),
+                      std::move(states),
+                      initial_state,
+                      std::move(goal_states),
+                      std::move(deadend_states),
+                      num_transitions,
+                      std::move(forward_transitions),
+                      std::move(backward_transitions),
+                      std::move(goal_distances));
 }
 
-StateSpaceList StateSpaceImpl::create(const fs::path& domain_file_path,
-                                      const std::vector<fs::path>& problem_file_paths,
-                                      const size_t max_num_states,
-                                      const size_t timeout_ms,
-                                      const size_t num_threads)
+StateSpaceList StateSpace::create(const fs::path& domain_file_path,
+                                  const std::vector<fs::path>& problem_file_paths,
+                                  const size_t max_num_states,
+                                  const size_t timeout_ms,
+                                  const size_t num_threads)
 {
     auto state_spaces = StateSpaceList {};
     auto pool = BS::thread_pool(num_threads);
-    auto futures = std::vector<std::future<StateSpace>> {};
+    auto futures = std::vector<std::future<std::optional<StateSpace>>> {};
 
     for (const auto& problem_file_path : problem_file_paths)
     {
         futures.push_back(pool.submit_task([domain_file_path, problem_file_path, max_num_states, timeout_ms]
-                                           { return StateSpaceImpl::create(domain_file_path, problem_file_path, max_num_states, timeout_ms); }));
+                                           { return StateSpace::create(domain_file_path, problem_file_path, max_num_states, timeout_ms); }));
     }
 
     for (auto& future : futures)
     {
         const auto state_space = future.get();
-        if (state_space)
+        if (state_space.has_value())
         {
-            state_spaces.push_back(state_space);
+            state_spaces.push_back(state_space.value());
         }
     }
 
@@ -243,12 +244,12 @@ StateSpaceList StateSpaceImpl::create(const fs::path& domain_file_path,
 }
 
 /* Extended functionality */
-std::vector<int> StateSpaceImpl::compute_shortest_distances_from_states(const StateList& states, bool forward) const
+std::vector<int> StateSpace::compute_shortest_distances_from_states(const StateList& states, bool forward) const
 {
     return compute_shortest_distances_from_states_impl(m_states.size(), states, (forward) ? m_forward_transitions : m_backward_transitions);
 }
 
-std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_distances(bool forward) const
+std::vector<std::vector<int>> StateSpace::compute_pairwise_shortest_state_distances(bool forward) const
 {
     auto distances = std::vector<std::vector<int>> { m_states.size(), std::vector<int>(m_states.size(), -1) };
     const auto& transitions = (forward) ? m_forward_transitions : m_backward_transitions;
@@ -283,49 +284,51 @@ std::vector<std::vector<int>> StateSpaceImpl::compute_pairwise_shortest_state_di
 
 /* Getters */
 // Memory
-const PDDLParser& StateSpaceImpl::get_pddl_parser() const { return *m_parser; }
+const PDDLParser& StateSpace::get_pddl_parser() const { return *m_parser; }
 
-std::shared_ptr<GroundedAAG> StateSpaceImpl::get_aag() const { return m_aag; }
+const std::shared_ptr<PDDLFactories>& StateSpace::get_pddl_factories() const { return m_parser->get_factories(); }
 
-std::shared_ptr<SuccessorStateGenerator> StateSpaceImpl::get_ssg() const { return m_ssg; }
+const std::shared_ptr<GroundedAAG>& StateSpace::get_aag() const { return m_aag; }
 
-const PDDLFactories& StateSpaceImpl::get_factories() const { return m_parser->get_factories(); }
+const std::shared_ptr<SuccessorStateGenerator>& StateSpace::get_ssg() const { return m_ssg; }
 
-Problem StateSpaceImpl::get_problem() const { return m_aag->get_problem(); }
+const std::shared_ptr<PDDLFactories>& StateSpace::get_factories() const { return m_parser->get_factories(); }
+
+Problem StateSpace::get_problem() const { return m_aag->get_problem(); }
 
 // States
-const StateList& StateSpaceImpl::get_states() const { return m_states; }
+const StateList& StateSpace::get_states() const { return m_states; }
 
-State StateSpaceImpl::get_initial_state() const { return m_initial_state; }
+State StateSpace::get_initial_state() const { return m_initial_state; }
 
-const StateSet& StateSpaceImpl::get_goal_states() const { return m_goal_states; }
+const StateSet& StateSpace::get_goal_states() const { return m_goal_states; }
 
-const StateSet& StateSpaceImpl::get_deadend_states() const { return m_deadend_states; }
+const StateSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
-size_t StateSpaceImpl::get_num_states() const { return m_states.size(); }
+size_t StateSpace::get_num_states() const { return m_states.size(); }
 
-size_t StateSpaceImpl::get_num_goal_states() const { return m_goal_states.size(); }
+size_t StateSpace::get_num_goal_states() const { return m_goal_states.size(); }
 
-size_t StateSpaceImpl::get_num_deadend_states() const { return m_deadend_states.size(); }
+size_t StateSpace::get_num_deadend_states() const { return m_deadend_states.size(); }
 
-bool StateSpaceImpl::is_deadend_state(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)) < 0; }
+bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)) < 0; }
 
 // Transitions
-size_t StateSpaceImpl::get_num_transitions() const { return m_num_transitions; }
+size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
 
-const std::vector<Transitions>& StateSpaceImpl::get_forward_transitions() const { return m_forward_transitions; }
+const std::vector<Transitions>& StateSpace::get_forward_transitions() const { return m_forward_transitions; }
 
-const std::vector<Transitions>& StateSpaceImpl::get_backward_transitions() const { return m_backward_transitions; }
+const std::vector<Transitions>& StateSpace::get_backward_transitions() const { return m_backward_transitions; }
 
 // Distances
-const std::vector<int>& StateSpaceImpl::get_goal_distances() const { return m_goal_distances; }
+const std::vector<int>& StateSpace::get_goal_distances() const { return m_goal_distances; }
 
-int StateSpaceImpl::get_goal_distance(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)); }
+int StateSpace::get_goal_distance(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)); }
 
-int StateSpaceImpl::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
+int StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
 // Additional
-State StateSpaceImpl::sample_state_with_goal_distance(int goal_distance) const
+State StateSpace::sample_state_with_goal_distance(int goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);
     const auto index = std::rand() % static_cast<int>(states.size());

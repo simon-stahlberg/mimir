@@ -34,7 +34,7 @@ private:
     loki::ProblemParser m_loki_problem_parser;
 
     // The translated representation
-    PDDLFactories m_factories;
+    std::shared_ptr<PDDLFactories> m_factories;
     Domain m_domain;
     Problem m_problem;
 
@@ -48,7 +48,7 @@ public:
     const loki::Problem get_original_problem() const;
 
     /// @brief Get the factories to create additional PDDL objects.
-    PDDLFactories& get_factories();
+    const std::shared_ptr<PDDLFactories>& get_factories();
 
     /// @brief Get the translated domain.
     const Domain& get_domain() const;

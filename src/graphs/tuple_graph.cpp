@@ -41,7 +41,7 @@ const StateList& TupleGraphVertex::get_states() const { return m_states; }
  * TupleGraph
  */
 
-TupleGraph::TupleGraph(StateSpace state_space,
+TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
                        std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                        std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                        bool prune_dominated_tuples) :
@@ -168,7 +168,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
     return std::nullopt;
 }
 
-const StateSpace& TupleGraph::get_state_space() const { return m_state_space; }
+const std::shared_ptr<StateSpace>& TupleGraph::get_state_space() const { return m_state_space; }
 
 const std::shared_ptr<FluentAndDerivedMapper>& TupleGraph::get_atom_index_mapper() const { return m_atom_index_mapper; }
 
@@ -190,9 +190,9 @@ const std::vector<StateList>& TupleGraph::get_states_by_distance() const { retur
  * TupleGraphFactory
  */
 
-TupleGraphFactory::TupleGraphArityZeroComputation::TupleGraphArityZeroComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+TupleGraphFactory::TupleGraphArityZeroComputation::TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
+                                                                                  std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                                                                                   std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                                                                  StateSpace state_space,
                                                                                   bool prune_dominated_tuples) :
     m_tuple_graph(std::move(state_space), std::move(atom_index_mapper), std::move(tuple_index_mapper), prune_dominated_tuples)
 {
@@ -240,9 +240,9 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
 
 const TupleGraph& TupleGraphFactory::TupleGraphArityZeroComputation::get_tuple_graph() { return m_tuple_graph; }
 
-TupleGraphFactory::TupleGraphArityKComputation::TupleGraphArityKComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+TupleGraphFactory::TupleGraphArityKComputation::TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
+                                                                            std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                                                                             std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                                                            StateSpace state_space,
                                                                             bool prune_dominated_tuples) :
     m_tuple_graph(std::move(state_space), std::move(atom_index_mapper), std::move(tuple_index_mapper), prune_dominated_tuples),
     visited_states(),
@@ -509,17 +509,16 @@ const TupleGraph& TupleGraphFactory::create_for_arity_k(const State root_state)
     return m_arity_k_computation.get_tuple_graph();
 }
 
-TupleGraphFactory::TupleGraphFactory(StateSpace state_space, int arity, bool prune_dominated_tuples) :
-    m_state_space(state_space),
-    m_prune_dominated_tuples(prune_dominated_tuples),
-    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>(m_state_space->get_aag()->get_pddl_factories().get_ground_atom_factory<Fluent>(),
-                                                                 m_state_space->get_aag()->get_pddl_factories().get_ground_atom_factory<Derived>())),
+TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpace> state_space, int arity, bool prune_dominated_tuples) :
+    m_state_space(std::move(state_space)),
+    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>(m_state_space->get_aag()->get_pddl_factories()->get_ground_atom_factory<Fluent>(),
+                                                                 m_state_space->get_aag()->get_pddl_factories()->get_ground_atom_factory<Derived>())),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity,
-                                                            m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Fluent>()
-                                                                + m_state_space->get_aag()->get_pddl_factories().get_num_ground_atoms<Derived>())),
-    m_arity_zero_computation(m_atom_index_mapper, m_tuple_index_mapper, m_state_space, m_prune_dominated_tuples),
-    m_arity_k_computation(m_atom_index_mapper, m_tuple_index_mapper, m_state_space, m_prune_dominated_tuples)
-
+                                                            m_state_space->get_aag()->get_pddl_factories()->get_num_ground_atoms<Fluent>()
+                                                                + m_state_space->get_aag()->get_pddl_factories()->get_num_ground_atoms<Derived>())),
+    m_prune_dominated_tuples(prune_dominated_tuples),
+    m_arity_zero_computation(m_state_space, m_atom_index_mapper, m_tuple_index_mapper, m_prune_dominated_tuples),
+    m_arity_k_computation(m_state_space, m_atom_index_mapper, m_tuple_index_mapper, m_prune_dominated_tuples)
 {
 }
 
@@ -528,15 +527,16 @@ const TupleGraph& TupleGraphFactory::create(const State root_state)
     return (m_tuple_index_mapper->get_arity() > 0) ? create_for_arity_k(root_state) : create_for_arity_zero(root_state);
 }
 
-const StateSpace& TupleGraphFactory::get_state_space() const { return m_state_space; }
+const std::shared_ptr<StateSpace>& TupleGraphFactory::get_state_space() const { return m_state_space; }
 
 const std::shared_ptr<FluentAndDerivedMapper>& TupleGraphFactory::get_atom_index_mapper() const { return m_atom_index_mapper; }
 
 const std::shared_ptr<TupleIndexMapper>& TupleGraphFactory::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
-std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const Problem, const PDDLFactories&> data)
+std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
-    const auto& [tuple_graph, problem, pddl_factories] = data;
+    const auto problem = tuple_graph.get_state_space()->get_problem();
+    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_factories();
     auto combined_atom_indices = AtomIndexList {};
     auto fluent_atom_indices = AtomIndexList {};
     auto derived_atom_indices = AtomIndexList {};

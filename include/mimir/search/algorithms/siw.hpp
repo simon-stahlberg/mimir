@@ -94,9 +94,11 @@ public:
 
     SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
     {
-        m_siw_event_handler->on_start_search(m_aag->get_problem(), start_state, m_aag->get_pddl_factories());
+        const auto problem = m_aag->get_problem();
+        const auto& pddl_factories = *m_aag->get_pddl_factories();
+        m_siw_event_handler->on_start_search(m_aag->get_problem(), start_state, pddl_factories);
 
-        auto problem_goal_test = std::make_unique<ProblemGoal>(m_aag->get_problem());
+        auto problem_goal_test = std::make_unique<ProblemGoal>(problem);
 
         if (!problem_goal_test->test_static_goal())
         {
@@ -109,11 +111,11 @@ public:
         while (!problem_goal_test->test_dynamic_goal(cur_state))
         {
             // Run IW to decrease goal counter
-            m_siw_event_handler->on_start_subproblem_search(m_aag->get_problem(), cur_state, m_aag->get_pddl_factories());
+            m_siw_event_handler->on_start_subproblem_search(problem, cur_state, pddl_factories);
 
             auto partial_plan = GroundActionList {};
 
-            auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(m_aag->get_problem(), cur_state), partial_plan, goal_state);
+            auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state), partial_plan, goal_state);
 
             if (search_status == SearchStatus::UNSOLVABLE)
             {

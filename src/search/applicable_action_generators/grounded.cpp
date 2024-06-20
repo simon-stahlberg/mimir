@@ -77,21 +77,21 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
     return ground_atoms_order;
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, PDDLFactories& pddl_factories) :
-    GroundedApplicableActionGenerator(problem, pddl_factories, std::make_shared<DefaultGroundedAAGEventHandler>())
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories) :
+    GroundedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultGroundedAAGEventHandler>())
 {
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
-                                                                     PDDLFactories& pddl_factories,
+                                                                     std::shared_ptr<PDDLFactories> pddl_factories,
                                                                      std::shared_ptr<IGroundedAAGEventHandler> event_handler) :
     m_problem(problem),
-    m_pddl_factories(pddl_factories),
+    m_pddl_factories(std::move(pddl_factories)),
     m_event_handler(std::move(event_handler)),
     m_lifted_aag(m_problem, m_pddl_factories)
 {
     /* 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects. */
-    auto delete_relax_transformer = DeleteRelaxTransformer(m_pddl_factories, false);
+    auto delete_relax_transformer = DeleteRelaxTransformer(*m_pddl_factories, false);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
     auto delete_free_lifted_aag = std::make_shared<LiftedAAG>(delete_free_problem, m_pddl_factories);
     auto delete_free_ssg = SuccessorStateGenerator(delete_free_lifted_aag);
@@ -138,13 +138,13 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms),
-                                                       m_pddl_factories.get_ground_atoms_from_ids<Derived>(derived_state_atoms),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories->get_ground_atoms_from_ids<Fluent>(fluent_state_atoms),
+                                                       m_pddl_factories->get_ground_atoms_from_ids<Derived>(derived_state_atoms),
                                                        delete_free_lifted_aag->get_ground_actions(),
                                                        delete_free_lifted_aag->get_ground_axioms());
 
-    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_state_atoms), m_pddl_factories);
-    auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories.get_ground_atoms_from_ids<Derived>(derived_state_atoms), m_pddl_factories);
+    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_ids<Fluent>(fluent_state_atoms), *m_pddl_factories);
+    auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_ids<Derived>(derived_state_atoms), *m_pddl_factories);
 
     // 2. Create ground actions
     auto ground_actions = GroundActionList {};
@@ -257,8 +257,6 @@ void GroundedApplicableActionGenerator::on_end_search() const { m_event_handler-
 
 Problem GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-[[nodiscard]] PDDLFactories& GroundedApplicableActionGenerator::get_pddl_factories() { return m_pddl_factories; }
-
-[[nodiscard]] const PDDLFactories& GroundedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
+[[nodiscard]] const std::shared_ptr<PDDLFactories>& GroundedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
 
 }

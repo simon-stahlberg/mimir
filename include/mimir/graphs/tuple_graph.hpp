@@ -59,7 +59,7 @@ using TupleGraphVertexList = std::vector<TupleGraphVertex>;
 class TupleGraph
 {
 private:
-    StateSpace m_state_space;
+    std::shared_ptr<StateSpace> m_state_space;
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
@@ -73,7 +73,7 @@ private:
     std::vector<VertexIndexList> m_vertex_indices_by_distance;
     std::vector<StateList> m_states_by_distance;
 
-    TupleGraph(StateSpace state_space,
+    TupleGraph(std::shared_ptr<StateSpace> state_space,
                std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                bool prune_dominated_tuples);
@@ -93,7 +93,7 @@ public:
      * Getters.
      */
 
-    const StateSpace& get_state_space() const;
+    const std::shared_ptr<StateSpace>& get_state_space() const;
     const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
@@ -107,11 +107,10 @@ public:
 class TupleGraphFactory
 {
 private:
-    StateSpace m_state_space;
-    bool m_prune_dominated_tuples;
-
+    std::shared_ptr<StateSpace> m_state_space;
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+    bool m_prune_dominated_tuples;
 
     class TupleGraphArityZeroComputation
     {
@@ -119,9 +118,9 @@ private:
         TupleGraph m_tuple_graph;
 
     public:
-        TupleGraphArityZeroComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+        TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
+                                       std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                                        std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                       StateSpace state_space,
                                        bool prune_dominated_tuples);
 
         /// @brief Compute the root state layer.
@@ -169,9 +168,9 @@ private:
         void instantiate_next_layer();
 
     public:
-        TupleGraphArityKComputation(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+        TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
+                                    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                                     std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                    StateSpace state_space,
                                     bool prune_dominated_tuples);
 
         /// @brief Compute the root state layer.
@@ -197,7 +196,7 @@ private:
     const TupleGraph& create_for_arity_k(const State root_state);
 
 public:
-    TupleGraphFactory(StateSpace state_space, int arity, bool prune_dominated_tuples = false);
+    TupleGraphFactory(std::shared_ptr<StateSpace> state_space, int arity, bool prune_dominated_tuples = false);
 
     /// @brief Create and return a reference to the tuple graph.
     const TupleGraph& create(const State root_state);
@@ -206,7 +205,7 @@ public:
      * Getters.
      */
 
-    const StateSpace& get_state_space() const;
+    const std::shared_ptr<StateSpace>& get_state_space() const;
     const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
 };
@@ -215,7 +214,7 @@ public:
  * Pretty printing as dot representation
  */
 
-extern std::ostream& operator<<(std::ostream& out, std::tuple<const TupleGraph&, const Problem, const PDDLFactories&> data);
+extern std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph);
 
 }
 

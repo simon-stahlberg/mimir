@@ -106,7 +106,7 @@ FaithfulAbstraction::create(const fs::path& domain_file_path, const fs::path& pr
 {
     auto stop_watch = StopWatch(timeout_ms);
 
-    auto pddl_parser = std::make_unique<PDDLParser>(domain_file_path, problem_file_path);
+    auto pddl_parser = std::make_shared<PDDLParser>(domain_file_path, problem_file_path);
     const auto problem = pddl_parser->get_problem();
     const auto& factories = pddl_parser->get_factories();
     auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser->get_factories());

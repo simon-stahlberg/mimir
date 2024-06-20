@@ -36,7 +36,9 @@ class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
     Problem m_problem;
-    PDDLFactories& m_pddl_factories;
+
+    // Memory
+    std::shared_ptr<PDDLFactories> m_pddl_factories;
     std::shared_ptr<IGroundedAAGEventHandler> m_event_handler;
 
     LiftedAAG m_lifted_aag;
@@ -46,10 +48,10 @@ private:
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(Problem problem, PDDLFactories& pddl_factories);
+    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(Problem problem, PDDLFactories& pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler);
+    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler);
 
     void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) override;
 
@@ -61,9 +63,7 @@ public:
 
     [[nodiscard]] Problem get_problem() const override;
 
-    [[nodiscard]] PDDLFactories& get_pddl_factories() override;
-
-    [[nodiscard]] const PDDLFactories& get_pddl_factories() const override;
+    [[nodiscard]] const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
 
     /// @brief Return all actions.
     [[nodiscard]] const GroundActionList& get_ground_actions() const;
