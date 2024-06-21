@@ -18,10 +18,21 @@
 #ifndef MIMIR_DATASETS_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_ABSTRACTION_HPP_
 
+#include "mimir/search/state.hpp"
+
+#include <concepts>
+
 namespace mimir
 {
 
 using AbstractionId = int;
+
+template<typename T>
+concept IsAbstraction = requires(T a, State concrete_state) {
+    {
+        a.get_goal_distance(concrete_state)
+    } -> std::convertible_to<double>;
+};
 
 }
 

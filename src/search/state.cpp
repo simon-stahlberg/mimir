@@ -26,7 +26,7 @@
 namespace mimir
 {
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<const Problem, const State, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLFactories&>& data)
 {
     const auto [problem, state, pddl_factories] = data;
 

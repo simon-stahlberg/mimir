@@ -11,7 +11,7 @@ def test_faithful_abstraction():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
 
-    abstraction = FaithfulAbstraction.create(domain_filepath, problem_filepath, 10000, 10000)
+    abstraction = FaithfulAbstraction.create(domain_filepath, problem_filepath)
 
     assert abstraction.get_num_states() == 12
     assert abstraction.get_num_transitions() == 46
@@ -27,7 +27,7 @@ def test_faithful_abstraction_parallel():
     problem_filepath_2 = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
     problem_filepaths = [problem_filepath_1, problem_filepath_2]
 
-    abstractions = FaithfulAbstraction.create(domain_filepath, problem_filepaths, 10000, 10000, 2)
+    abstractions = FaithfulAbstraction.create(domain_filepath, problem_filepaths)
 
     assert len(abstractions) == 2
 

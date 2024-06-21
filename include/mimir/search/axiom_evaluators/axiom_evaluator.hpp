@@ -93,7 +93,7 @@ public:
     [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 
     /// @brief Ground an axiom and return a view onto it.
-    [[nodiscard]] GroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
+    [[nodiscard]] GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
 
     /// @brief Return all axioms.
     [[nodiscard]] const GroundAxiomList& get_ground_axioms() const;

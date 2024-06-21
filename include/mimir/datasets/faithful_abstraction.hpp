@@ -20,6 +20,7 @@
 
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/transition_system.hpp"
+#include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/state.hpp"
@@ -41,17 +42,18 @@ class FaithfulAbstractState
 private:
     StateId m_id;
     State m_state;
-    std::string m_certificate;
+    Certificate m_certificate;
 
 public:
-    FaithfulAbstractState(StateId id, State state, std::string certificate);
+    FaithfulAbstractState(StateId id, State state, Certificate certificate);
 
     StateId get_id() const;
     State get_state() const;
-    const std::string& get_certificate() const;
+    const Certificate& get_certificate() const;
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
+using CertificateToStateIdMap = std::unordered_map<Certificate, StateId, loki::Hash<Certificate>, loki::EqualTo<Certificate>>;
 
 /// @brief FaithfulAbstraction implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
@@ -61,6 +63,8 @@ private:
     // Meta data
     fs::path m_domain_filepath;
     fs::path m_problem_filepath;
+    bool m_mark_true_goal_atoms;
+    bool m_use_unit_cost_one;
 
     // Memory
     std::shared_ptr<PDDLParser> m_parser;
@@ -69,6 +73,7 @@ private:
 
     // States
     FaithfulAbstractStateList m_states;
+    CertificateToStateIdMap m_states_by_certificate;
     StateId m_initial_state;
     StateIdSet m_goal_states;
     StateIdSet m_deadend_states;
@@ -79,7 +84,11 @@ private:
     std::vector<TransitionList> m_backward_transitions;
 
     // Distances
-    std::vector<int> m_goal_distances;
+    std::vector<double> m_goal_distances;
+
+    // Preallocated memory to compute distance of concrete state.
+    nauty_wrapper::Graph m_nauty_graph;
+    ObjectGraphFactory m_object_graph_factory;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -87,17 +96,20 @@ private:
     /// the code base to operate on the invariants in the implementation.
     FaithfulAbstraction(fs::path domain_filepath,
                         fs::path problem_filepath,
+                        bool mark_true_goal_atoms,
+                        bool use_unit_cost_one,
                         std::shared_ptr<PDDLParser> parser,
                         std::shared_ptr<LiftedAAG> aag,
                         std::shared_ptr<SSG> ssg,
                         FaithfulAbstractStateList states,
+                        CertificateToStateIdMap states_by_certificate,
                         StateId initial_state,
                         StateIdSet goal_states,
                         StateIdSet deadend_states,
                         size_t num_transitions,
                         std::vector<TransitionList> forward_transitions,
                         std::vector<TransitionList> backward_transitions,
-                        std::vector<int> goal_distances);
+                        std::vector<double> goal_distances);
 
 public:
     /// @brief Perform BrFS from the initial state while pruning isomorphic states.
@@ -108,22 +120,32 @@ public:
     /// @return
     static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                      const fs::path& problem_filepath,
-                                                     const size_t max_num_states = std::numeric_limits<size_t>::max(),
-                                                     const size_t timeout_ms = std::numeric_limits<size_t>::max());
+                                                     bool mark_true_goal_atoms = false,
+                                                     bool use_unit_cost_one = true,
+                                                     uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
     static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                    const std::vector<fs::path>& problem_filepaths,
-                                                   const size_t max_num_states = std::numeric_limits<size_t>::max(),
-                                                   const size_t timeout_ms = std::numeric_limits<size_t>::max(),
-                                                   const size_t num_threads = std::thread::hardware_concurrency());
+                                                   bool mark_true_goal_atoms = false,
+                                                   bool use_unit_cost_one = true,
+                                                   uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                   uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+                                                   uint32_t num_threads = std::thread::hardware_concurrency());
+
+    /**
+     * Abstraction functionality
+     */
+
+    double get_goal_distance(State concrete_state);
 
     /**
      * Extended functionality
      */
 
-    std::vector<int> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+    std::vector<double> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
 
-    std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(bool forward = true) const;
+    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /**
      * Getters.
@@ -141,6 +163,7 @@ public:
 
     // States
     const FaithfulAbstractStateList& get_states() const;
+    const CertificateToStateIdMap& get_states_by_certificate() const;
     StateId get_initial_state() const;
     const StateIdSet& get_goal_states() const;
     const StateIdSet& get_deadend_states() const;
@@ -154,10 +177,18 @@ public:
     const std::vector<TransitionList>& get_backward_transitions() const;
 
     // Distances
-    const std::vector<int>& get_goal_distances() const;
+    const std::vector<double>& get_goal_distances() const;
 };
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
+
+/**
+ * Static assertions
+ */
+
+static_assert(IsTransitionSystem<FaithfulAbstraction>);
+static_assert(IsAbstraction<FaithfulAbstraction>);
+
 }
 
 #endif

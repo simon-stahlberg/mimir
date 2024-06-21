@@ -38,7 +38,7 @@ public:
     /// The user must ensure that the atoms are part of the problem from the applicable action generator.
     [[nodiscard]] virtual State get_or_create_state(const GroundAtomList<Fluent>& atoms) = 0;
 
-    [[nodiscard]] virtual State get_or_create_successor_state(const State state, const GroundAction action) = 0;
+    [[nodiscard]] virtual State get_or_create_successor_state(State state, GroundAction action) = 0;
 
     [[nodiscard]] virtual size_t get_state_count() const = 0;
 

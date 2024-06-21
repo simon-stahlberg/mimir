@@ -40,21 +40,21 @@ public:
 
     virtual void on_start_generating_applicable_actions() = 0;
 
-    virtual void on_ground_action(const Action action, const ObjectList& binding) = 0;
+    virtual void on_ground_action(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_ground_action_cache_hit(const Action action, const ObjectList& binding) = 0;
+    virtual void on_ground_action_cache_hit(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_ground_action_cache_miss(const Action action, const ObjectList& binding) = 0;
+    virtual void on_ground_action_cache_miss(Action action, const ObjectList& binding) = 0;
 
     virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) = 0;
 
     virtual void on_start_generating_applicable_axioms() = 0;
 
-    virtual void on_ground_axiom(const Axiom axiom, const ObjectList& binding) = 0;
+    virtual void on_ground_axiom(Axiom axiom, const ObjectList& binding) = 0;
 
-    virtual void on_ground_axiom_cache_hit(const Axiom axiom, const ObjectList& binding) = 0;
+    virtual void on_ground_axiom_cache_hit(Axiom axiom, const ObjectList& binding) = 0;
 
-    virtual void on_ground_axiom_cache_miss(const Axiom axiom, const ObjectList& binding) = 0;
+    virtual void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) = 0;
 
     virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) = 0;
 
@@ -96,7 +96,7 @@ public:
         }
     }
 
-    void on_ground_action(const Action action, const ObjectList& binding) override
+    void on_ground_action(Action action, const ObjectList& binding) override
     {
         if (!m_quiet)
         {
@@ -104,7 +104,7 @@ public:
         }
     }
 
-    void on_ground_action_cache_hit(const Action action, const ObjectList& binding) override
+    void on_ground_action_cache_hit(Action action, const ObjectList& binding) override
     {
         m_statistics.increment_num_ground_action_cache_hits();
 
@@ -114,7 +114,7 @@ public:
         }
     }
 
-    void on_ground_action_cache_miss(const Action action, const ObjectList& binding) override
+    void on_ground_action_cache_miss(Action action, const ObjectList& binding) override
     {
         m_statistics.increment_num_ground_action_cache_misses();
 
@@ -140,7 +140,7 @@ public:
         }
     }
 
-    void on_ground_axiom(const Axiom axiom, const ObjectList& binding) override
+    void on_ground_axiom(Axiom axiom, const ObjectList& binding) override
     {
         if (!m_quiet)
         {
@@ -148,7 +148,7 @@ public:
         }
     }
 
-    void on_ground_axiom_cache_hit(const Axiom axiom, const ObjectList& binding) override
+    void on_ground_axiom_cache_hit(Axiom axiom, const ObjectList& binding) override
     {
         m_statistics.increment_num_ground_axiom_cache_hits();
 
@@ -158,7 +158,7 @@ public:
         }
     }
 
-    void on_ground_axiom_cache_miss(const Axiom axiom, const ObjectList& binding) override
+    void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) override
     {
         m_statistics.increment_num_ground_axiom_cache_misses();
 

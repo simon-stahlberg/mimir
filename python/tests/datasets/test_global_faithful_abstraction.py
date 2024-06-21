@@ -14,7 +14,7 @@ def test_global_faithful_abstraction():
     problem_filepath_3 = str(ROOT_DIR / "data" / "gripper" / "p-2-0.pddl")
     problem_filepaths = [problem_filepath_1, problem_filepath_2, problem_filepath_3]
 
-    abstractions = GlobalFaithfulAbstraction.create(domain_filepath, problem_filepaths, 10000, 10000, 3)
+    abstractions = GlobalFaithfulAbstraction.create(domain_filepath, problem_filepaths)
 
     # Problem 1 was pruned because it has 0 global non isomorphic states.
     assert len(abstractions) == 2

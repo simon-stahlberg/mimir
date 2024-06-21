@@ -25,15 +25,15 @@ void DebugLiftedAAGEventHandler::on_start_generating_applicable_actions_impl() c
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_action_impl(const Action action, const ObjectList& binding) const
+void DebugLiftedAAGEventHandler::on_ground_action_impl(Action action, const ObjectList& binding) const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_action_cache_hit_impl(const Action action, const ObjectList& binding) const
+void DebugLiftedAAGEventHandler::on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_action_cache_miss_impl(const Action action, const ObjectList& binding) const
+void DebugLiftedAAGEventHandler::on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const
 {  //
 }
 
@@ -46,17 +46,17 @@ void DebugLiftedAAGEventHandler::on_start_generating_applicable_axioms_impl() co
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_axiom_impl(const Axiom axiom, const ObjectList& binding) const
+void DebugLiftedAAGEventHandler::on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_axiom_cache_hit_impl(const Axiom axiom, const ObjectList& binding) const
+void DebugLiftedAAGEventHandler::on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_axiom_cache_miss_impl(const Axiom axiom, const ObjectList& binding) const
+void DebugLiftedAAGEventHandler::on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const
 {
     //
 }

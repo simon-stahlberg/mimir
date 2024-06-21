@@ -169,7 +169,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const GroundAction& action)
+std::ostream& operator<<(std::ostream& os, GroundAction action)
 {
     os << "(" << action.get_action()->get_name();
     // Only take objects w.r.t. to the original action parameters

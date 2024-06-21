@@ -45,6 +45,7 @@ private:
     // Meta data
     fs::path m_domain_filepath;
     fs::path m_problem_filepath;
+    bool m_use_unit_cost_one;
 
     // Memory
     std::shared_ptr<PDDLParser> m_parser;
@@ -63,10 +64,10 @@ private:
     std::vector<TransitionList> m_backward_transitions;
 
     // Distances
-    std::vector<int> m_goal_distances;
+    std::vector<double> m_goal_distances;
 
     // Additional
-    std::unordered_map<int, StateIdList> m_states_by_goal_distance;
+    std::unordered_map<double, StateIdList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -74,6 +75,7 @@ private:
     /// the code base to operate on the invariants in the implementation.
     StateSpace(fs::path domain_filepath,
                fs::path problem_filepath,
+               bool use_unit_cost_one,
                std::shared_ptr<PDDLParser> parser,
                std::shared_ptr<GroundedAAG> aag,
                std::shared_ptr<SSG> ssg,
@@ -84,7 +86,7 @@ private:
                size_t num_transitions,
                std::vector<TransitionList> forward_transitions,
                std::vector<TransitionList> backward_transitions,
-               std::vector<int> goal_distances);
+               std::vector<double> goal_distances);
 
 public:
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.
@@ -95,8 +97,9 @@ public:
     /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
     static std::optional<StateSpace> create(const fs::path& domain_filepath,
                                             const fs::path& problem_filepath,
-                                            const size_t max_num_states = std::numeric_limits<size_t>::max(),
-                                            const size_t timeout_ms = std::numeric_limits<size_t>::max());
+                                            bool use_unit_cost_one = true,
+                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
     /// @brief Try to create a StateSpaceList from the given input files with the given resource limits.
     /// @param domain_filepath The PDDL domain file.
@@ -107,20 +110,21 @@ public:
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
     static std::vector<StateSpace> create(const fs::path& domain_filepath,
                                           const std::vector<fs::path>& problem_filepaths,
-                                          const size_t max_num_states = std::numeric_limits<size_t>::max(),
-                                          const size_t timeout_ms = std::numeric_limits<size_t>::max(),
-                                          const size_t num_threads = std::thread::hardware_concurrency());
+                                          bool use_unit_cost_one = true,
+                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+                                          uint32_t num_threads = std::thread::hardware_concurrency());
 
     /* Extended functionality */
 
     /// @brief Compute shortest distances from the given states computed using BrFS.
     /// @param states A list of states from which shortest distances are computed.
     /// @param forward If true, forward transitions are used, and otherwise, backward transitions
-    std::vector<int> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+    std::vector<double> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
 
     /// @brief Compute pairwise state distances using Floyd-Warshall.
     /// @param forward If true, forward transitions are used, and otherwise, backward transitions
-    std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(bool forward = true) const;
+    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /* Getters */
     // Meta data
@@ -150,15 +154,19 @@ public:
     const std::vector<TransitionList>& get_backward_transitions() const;
 
     // Distances
-    const std::vector<int>& get_goal_distances() const;
-    int get_goal_distance(const State& state) const;
-    int get_max_goal_distance() const;
+    const std::vector<double>& get_goal_distances() const;
+    double get_goal_distance(State state) const;
+    double get_max_goal_distance() const;
 
     // Additional
-    StateId sample_state_with_goal_distance(int goal_distance) const;
+    StateId sample_state_with_goal_distance(double goal_distance) const;
 };
 
 using StateSpaceList = std::vector<StateSpace>;
+
+/**
+ * Static assertions
+ */
 
 static_assert(IsTransitionSystem<StateSpace>);
 

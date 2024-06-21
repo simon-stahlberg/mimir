@@ -60,29 +60,56 @@ using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>
 
 class GlobalFaithfulAbstraction
 {
-public:
 private:
+    // Meta data
+    bool m_mark_true_goal_atoms;
+    bool m_use_unit_cost_one;
+
     // Memory
     AbstractionId m_id;
     std::shared_ptr<FaithfulAbstractionList> m_abstractions;
 
     // States
     GlobalFaithfulAbstractStateList m_states;
+    CertificateToStateIdMap m_states_by_certificate;
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
-    GlobalFaithfulAbstraction(AbstractionId id,
+    // Preallocated memory to compute distance of concrete state.
+    nauty_wrapper::Graph m_nauty_graph;
+    ObjectGraphFactory m_object_graph_factory;
+
+    GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
+                              bool use_unit_cost_one,
+                              AbstractionId id,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
+                              CertificateToStateIdMap states_by_certificate,
                               size_t num_isomorphic_states,
                               size_t num_non_isomorphic_states);
 
 public:
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
                                                          const std::vector<fs::path>& problem_filepaths,
-                                                         const size_t max_num_states = std::numeric_limits<size_t>::max(),
-                                                         const size_t timeout_ms = std::numeric_limits<size_t>::max(),
-                                                         const size_t num_threads = std::thread::hardware_concurrency());
+                                                         bool mark_true_goal_atoms = false,
+                                                         bool use_unit_cost_one = true,
+                                                         uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                         uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+                                                         uint32_t num_threads = std::thread::hardware_concurrency());
+
+    /**
+     * Abstraction functionality
+     */
+
+    double get_goal_distance(State concrete_state);
+
+    /**
+     * Extended functionality
+     */
+
+    std::vector<double> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+
+    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /**
      * Getters
@@ -97,6 +124,7 @@ public:
 
     // States
     const GlobalFaithfulAbstractStateList& get_states() const;
+    const CertificateToStateIdMap& get_states_by_certificate() const;
     StateId get_initial_state() const;
     const StateIdSet& get_goal_states() const;
     const StateIdSet& get_deadend_states() const;
@@ -112,8 +140,15 @@ public:
     const std::vector<TransitionList>& get_backward_transitions() const;
 
     // Distances
-    const std::vector<int>& get_goal_distances() const;
+    const std::vector<double>& get_goal_distances() const;
 };
+
+/**
+ * Static assertions
+ */
+
+static_assert(IsTransitionSystem<GlobalFaithfulAbstraction>);
+static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
 
 }
 

@@ -48,18 +48,20 @@ private:
     /* Implement IOpenList interface */
     friend class IOpenList<OpenList<OpenListDispatcher<PriorityQueueTag<T>>>>;
 
-    void insert_impl(const T& item, double priority) { priority_queue_.emplace(priority, item); }
+    void insert_impl(double priority, const T& item) { priority_queue_.emplace(priority, item); }
 
-    T pop_impl()
-    {
-        T item = priority_queue_.top().second;
-        priority_queue_.pop();
-        return item;
-    }
+    const T& top_impl() const { return priority_queue_.top().second; }
 
-    std::size_t size_impl() { return priority_queue_.size(); }
+    void pop_impl() { priority_queue_.pop(); }
+
+    bool empty_impl() const { return priority_queue_.empty(); }
+
+    std::size_t size_impl() const { return priority_queue_.size(); }
 };
+
+template<typename T>
+using PriorityQueue = OpenList<OpenListDispatcher<PriorityQueueTag<T>>>;
 
 }  // namespace mimir
 
-#endif  // MIMIR_SEARCH_OPENLISTS_PRIORITY_QUEUE_HPP_
+#endif

@@ -59,13 +59,13 @@ public:
 
     SearchStatus find_solution(std::vector<GroundAction>& out_plan) override { return find_solution(m_initial_state, out_plan); }
 
-    SearchStatus find_solution(const State start_state, std::vector<GroundAction>& out_plan) override
+    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan) override
     {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;
     }
 
-    SearchStatus find_solution(const State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state) override
+    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state) override
     {
         // TODO (Dominik): implement
         return SearchStatus::FAILED;

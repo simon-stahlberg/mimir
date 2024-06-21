@@ -189,7 +189,7 @@ AxiomEvaluator::AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> p
 
 const std::vector<AxiomPartition>& AxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
 
-GroundAxiom AxiomEvaluator::ground_axiom(const Axiom& axiom, ObjectList&& binding)
+GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
 {
     /* 1. Check if grounding is cached */
 

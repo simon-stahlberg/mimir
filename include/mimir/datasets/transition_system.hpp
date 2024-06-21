@@ -19,6 +19,7 @@
 #define MIMIR_DATASETS_TRANSITION_SYSTEM_HPP_
 
 #include "mimir/search/action.hpp"
+#include "mimir/search/openlists.hpp"
 #include "mimir/search/state.hpp"
 
 #include <concepts>
@@ -85,80 +86,58 @@ concept IsTransitionSystem = requires(T a) {
     // Distances
     {
         a.get_goal_distances()
-    } -> std::convertible_to<const std::vector<int>&>;
+    } -> std::convertible_to<const std::vector<double>&>;
 };
 
 /**
  * Declarations
  */
 
-extern std::vector<int>
-compute_shortest_distances_from_states(const size_t num_total_states, const StateIdList& states, const std::vector<TransitionList>& transitions);
+/// @brief Compute shortest distances from the given states using Dijkstra.
+extern std::vector<double> compute_shortest_distances_from_states(size_t num_total_states,
+                                                                  const StateIdList& states,
+                                                                  const std::vector<TransitionList>& transitions,
+                                                                  bool use_unit_cost_one = true);
 
+/// @brief Compute shortest distances from the given states using Dijkstra.
 template<IsTransitionSystem TransitionSystem>
-std::vector<int> compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIdList& states, bool forward = true);
+std::vector<double>
+compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIdList& states, bool use_unit_cost_one = true, bool forward = true);
 
+/// @brief Compute shortest distances from the given states using Floyd-Warshall.
 template<IsTransitionSystem TransitionSystem>
-std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(const TransitionSystem& ts, bool forward = true);
+std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(const TransitionSystem& ts, bool use_unit_cost_one = true, bool forward = true);
 
 /**
  * Implementations
  */
 
 template<IsTransitionSystem TransitionSystem>
-std::vector<int> compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIdList& states, bool forward)
+std::vector<double> compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIdList& states, bool use_unit_cost_one, bool forward)
 {
     // Fetch data
     const auto num_states = ts.get_num_states();
     const auto& transitions = (forward) ? ts.get_forward_transitions() : ts.get_backward_transitions();
 
-    auto distances = std::vector<int>(num_states, -1);
-    auto fifo_queue = std::deque<int>();
-    for (const auto& state : states)
-    {
-        distances.at(state) = 0;
-        fifo_queue.push_back(state);
-    }
-
-    while (!fifo_queue.empty())
-    {
-        const auto& state = fifo_queue.front();
-        fifo_queue.pop_front();
-        const auto cost = distances.at(state);
-
-        for (const auto& transition : transitions.at(state))
-        {
-            const auto successor_state = transition.get_successor_state();
-
-            if (distances.at(successor_state) != -1)
-            {
-                continue;
-            }
-
-            distances.at(successor_state) = cost + 1;
-
-            fifo_queue.push_back(successor_state);
-        }
-    }
-    return distances;
+    return compute_shortest_distances_from_states(num_states, states, transitions, use_unit_cost_one);
 }
 
 template<IsTransitionSystem TransitionSystem>
-std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(const TransitionSystem& ts, bool forward)
+std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(const TransitionSystem& ts, bool use_unit_cost_one, bool forward)
 {
     // Fetch data
     const auto num_states = ts.get_num_states();
     const auto& transitions = (forward) ? ts.get_forward_transitions() : ts.get_backward_transitions();
 
-    auto distances = std::vector<std::vector<int>> { num_states, std::vector<int>(num_states, -1) };
+    auto distances = std::vector<std::vector<double>> { num_states, std::vector<double>(num_states, std::numeric_limits<double>::max()) };
 
     // Initialize distance adjacency matrix
     for (size_t state = 0; state < num_states; ++state)
     {
-        distances.at(state).at(state) = 0;
+        distances.at(state).at(state) = 0.;
         for (const auto& transition : transitions.at(state))
         {
-            distances.at(state).at(transition.get_successor_state()) = 1;
+            distances.at(state).at(transition.get_successor_state()) = (use_unit_cost_one) ? 1. : transition.get_creating_action().get_cost();
         }
     }
 

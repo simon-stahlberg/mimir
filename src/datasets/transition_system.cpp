@@ -45,37 +45,48 @@ GroundAction Transition::get_creating_action() const { return m_creating_action;
  * Distance computations
  */
 
-std::vector<int>
-compute_shortest_distances_from_states(const size_t num_total_states, const StateIdList& states, const std::vector<TransitionList>& transitions)
+std::vector<double> compute_shortest_distances_from_states(const size_t num_total_states,
+                                                           const StateIdList& states,
+                                                           const std::vector<TransitionList>& transitions,
+                                                           bool use_unit_cost_one)
 {
-    auto distances = std::vector<int>(num_total_states, -1);
-    auto fifo_queue = std::deque<int>();
+    auto distances = std::vector<double>(num_total_states, std::numeric_limits<double>::max());
+    auto closed = std::vector<bool>(num_total_states, false);
+    auto priority_queue = PriorityQueue<int>();
     for (const auto& state : states)
     {
-        distances.at(state) = 0;
-        fifo_queue.push_back(state);
+        distances.at(state) = 0.;
+        priority_queue.insert(0., state);
     }
 
-    while (!fifo_queue.empty())
+    while (!priority_queue.empty())
     {
-        const auto& state = fifo_queue.front();
-        fifo_queue.pop_front();
+        const auto state = priority_queue.top();
+        priority_queue.pop();
         const auto cost = distances.at(state);
+
+        if (closed.at(state))
+        {
+            continue;
+        }
+        closed.at(state) = true;
 
         for (const auto& transition : transitions.at(state))
         {
             const auto successor_state = transition.get_successor_state();
 
-            if (distances.at(successor_state) != -1)
+            auto succ_cost = distances.at(successor_state);
+            auto new_succ_cost = cost + ((use_unit_cost_one) ? 1. : transition.get_creating_action().get_cost());
+
+            if (new_succ_cost < succ_cost)
             {
-                continue;
+                distances.at(successor_state) = new_succ_cost;
+                // decrease priority
+                priority_queue.insert(new_succ_cost, successor_state);
             }
-
-            distances.at(successor_state) = cost + 1;
-
-            fifo_queue.push_back(successor_state);
         }
     }
+
     return distances;
 }
 }

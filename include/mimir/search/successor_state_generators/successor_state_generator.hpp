@@ -118,7 +118,7 @@ public:
         return State(*iter2);
     }
 
-    [[nodiscard]] State get_or_create_successor_state(const State state, const GroundAction action) override
+    [[nodiscard]] State get_or_create_successor_state(State state, GroundAction action) override
     {
         /* Fetch member references for non extended construction. */
 

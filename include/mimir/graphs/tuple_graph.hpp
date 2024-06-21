@@ -29,6 +29,11 @@
 
 namespace mimir
 {
+/**
+ * Implementation of TupleGraphs (Lipovetzky and Geffner ECAI2012)
+ * Source: https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf
+ */
+
 class TupleGraphFactory;
 
 using VertexIndex = int;

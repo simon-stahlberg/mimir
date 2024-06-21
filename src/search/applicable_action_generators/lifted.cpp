@@ -102,12 +102,12 @@ public:
 
 const std::vector<AxiomPartition>& LiftedApplicableActionGenerator::get_axiom_partitioning() const { return m_axiom_evaluator.get_axiom_partitioning(); }
 
-GroundAxiom LiftedApplicableActionGenerator::ground_axiom(const Axiom& axiom, ObjectList&& binding)
+GroundAxiom LiftedApplicableActionGenerator::ground_axiom(Axiom axiom, ObjectList&& binding)
 {
     return m_axiom_evaluator.ground_axiom(axiom, std::move(binding));
 }
 
-GroundAction LiftedApplicableActionGenerator::ground_action(const Action& action, ObjectList&& binding)
+GroundAction LiftedApplicableActionGenerator::ground_action(Action action, ObjectList&& binding)
 {
     /* 1. Check if grounding is cached */
 

@@ -20,13 +20,13 @@
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/predicate_category.hpp"
-#include "mimir/search/states.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {
 
 template<PredicateCategory P>
-bool ground_and_test_nullary_literals(const LiteralList<P>& literals, const State state, PDDLFactories& pddl_factories)
+bool ground_and_test_nullary_literals(const LiteralList<P>& literals, State state, PDDLFactories& pddl_factories)
 {
     for (const auto& literal : literals)
     {

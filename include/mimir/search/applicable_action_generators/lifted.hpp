@@ -64,7 +64,7 @@ private:
     GroundFunctionToValue m_ground_function_value_costs;
 
     /// @brief Ground the precondition of an action and return a view onto it.
-    [[nodiscard]] GroundAction ground_action_precondition(const Action& action, const ObjectList& binding);
+    [[nodiscard]] GroundAction ground_action_precondition(Action action, const ObjectList& binding);
 
 public:
     /// @brief Simplest construction
@@ -73,7 +73,7 @@ public:
     /// @brief Complete construction
     LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
-    void generate_applicable_actions(const State state, GroundActionList& out_applicable_actions) override;
+    void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
 
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
 
@@ -89,10 +89,10 @@ public:
     [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 
     /// @brief Ground an axiom and return a view onto it.
-    [[nodiscard]] GroundAxiom ground_axiom(const Axiom& axiom, ObjectList&& binding);
+    [[nodiscard]] GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
 
     /// @brief Ground an action and return a view onto it.
-    [[nodiscard]] GroundAction ground_action(const Action& action, ObjectList&& binding);
+    [[nodiscard]] GroundAction ground_action(Action action, ObjectList&& binding);
 
     /// @brief Return all axioms.
     [[nodiscard]] const GroundAxiomList& get_ground_axioms() const;

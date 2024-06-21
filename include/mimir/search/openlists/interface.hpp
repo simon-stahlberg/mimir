@@ -29,26 +29,29 @@ namespace mimir
 /**
  * Interface class
  */
-template<typename Derived>
+template<typename Derived_>
 class IOpenList
 {
 private:
     IOpenList() = default;
-    friend Derived;
+    friend Derived_;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     template<typename T>
-    void insert(const T& item, double priority)
+    void insert(double priority, const T& item)
     {
-        return self().insert_impl(item, priority);
+        return self().insert_impl(priority, item);
     }
 
-    [[nodiscard]] auto pop() { return self().pop_impl(); }
+    [[nodiscard]] decltype(auto) top() const { return self().top_impl(); }
 
+    void pop() { self().pop_impl(); }
+
+    [[nodiscard]] bool empty() const { return self().empty_impl(); }
     [[nodiscard]] std::size_t size() const { return self().size_impl(); }
 };
 

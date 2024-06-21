@@ -108,7 +108,7 @@ public:
 
     SearchStatus find_solution(GroundActionList& out_plan) override { return find_solution(m_initial_state, out_plan); }
 
-    SearchStatus find_solution(const State start_state, GroundActionList& out_plan) override
+    SearchStatus find_solution(State start_state, GroundActionList& out_plan) override
     {
         std::optional<State> unused_out_state = std::nullopt;
         return find_solution(start_state,
@@ -118,7 +118,7 @@ public:
                              unused_out_state);
     }
 
-    SearchStatus find_solution(const State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
+    SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override
     {
         return find_solution(start_state,
                              std::make_unique<ProblemGoal>(m_aag->get_problem()),
@@ -127,7 +127,7 @@ public:
                              out_goal_state);
     }
 
-    SearchStatus find_solution(const State start_state,
+    SearchStatus find_solution(State start_state,
                                std::unique_ptr<IGoalStrategy>&& goal_strategy,
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
                                GroundActionList& out_plan,

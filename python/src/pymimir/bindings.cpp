@@ -516,27 +516,27 @@ void init_pymimir(py::module_& m)
         .def("__hash__", &State::hash)
         .def("__eq__", &State::operator==)
         .def("get_fluent_atoms",
-             [](const State& self)
+             [](State self)
              {
                  auto atoms = self.get_atoms<Fluent>();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
         .def("get_derived_atoms",
-             [](const State& self)
+             [](State self)
              {
                  auto atoms = self.get_atoms<Derived>();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("contains", py::overload_cast<const GroundAtom<Fluent>&>(&State::contains<Fluent>, py::const_))
-        .def("contains", py::overload_cast<const GroundAtom<Derived>&>(&State::contains<Derived>, py::const_))
+        .def("contains", py::overload_cast<GroundAtom<Fluent>>(&State::contains<Fluent>, py::const_))
+        .def("contains", py::overload_cast<GroundAtom<Derived>>(&State::contains<Derived>, py::const_))
         .def("superset_of", py::overload_cast<const GroundAtomList<Fluent>&>(&State::superset_of<Fluent>, py::const_))
         .def("superset_of", py::overload_cast<const GroundAtomList<Derived>&>(&State::superset_of<Derived>, py::const_))
-        .def("literal_holds", py::overload_cast<const GroundLiteral<Fluent>&>(&State::literal_holds<Fluent>, py::const_))
-        .def("literal_holds", py::overload_cast<const GroundLiteral<Derived>&>(&State::literal_holds<Derived>, py::const_))
+        .def("literal_holds", py::overload_cast<GroundLiteral<Fluent>>(&State::literal_holds<Fluent>, py::const_))
+        .def("literal_holds", py::overload_cast<GroundLiteral<Derived>>(&State::literal_holds<Derived>, py::const_))
         .def("literals_hold", py::overload_cast<const GroundLiteralList<Fluent>&>(&State::literals_hold<Fluent>, py::const_))
         .def("literals_hold", py::overload_cast<const GroundLiteralList<Derived>&>(&State::literals_hold<Derived>, py::const_))
         .def("to_string",
-             [](const State& self, const Problem& problem, const PDDLFactories& pddl_factories)
+             [](const State& self, Problem problem, const PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(problem, self, std::cref(pddl_factories));
@@ -548,10 +548,10 @@ void init_pymimir(py::module_& m)
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", &GroundAction::hash)
         .def("__eq__", &GroundAction::operator==)
-        .def("get_name", [](const GroundAction& self) { return self.get_action()->get_name(); })
+        .def("get_name", [](GroundAction self) { return self.get_action()->get_name(); })
         .def(
             "get_terms",
-            [](const GroundAction& self)
+            [](GroundAction self)
             {
                 ObjectList terms;
                 for (const auto& object : self.get_objects())
@@ -562,7 +562,7 @@ void init_pymimir(py::module_& m)
             },
             py::return_value_policy::reference_internal)
         .def("to_string",
-             [](const GroundAction& self, PDDLFactories& pddl_factories)
+             [](GroundAction self, PDDLFactories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(self, std::cref(pddl_factories));
@@ -570,7 +570,7 @@ void init_pymimir(py::module_& m)
              })
         .def("get_id", &GroundAction::get_id)
         .def("__repr__",
-             [](const GroundAction& self)
+             [](GroundAction self)
              {
                  std::stringstream ss;
                  ss << "(";
@@ -762,24 +762,32 @@ void init_pymimir(py::module_& m)
 
     // StateSpace
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
-        .def_static("create",
-                    [](const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
-                    { return StateSpace::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
+        .def_static(
+            "create",
+            [](const std::string& domain_filepath, const std::string& problem_filepath, bool use_unit_cost_one, uint32_t max_num_states, uint32_t timeout_ms)
+            { return StateSpace::create(domain_filepath, problem_filepath, use_unit_cost_one, max_num_states, timeout_ms); },
+            py::arg("domain_filepath"),
+            py::arg("problem_filepaths"),
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
             "create",
             [](const std::string& domain_filepath,
                const std::vector<std::string>& problem_filepaths,
-               size_t max_num_states,
-               size_t timeout_ms,
-               size_t num_threads)
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms,
+               uint32_t num_threads)
             {
                 auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                return StateSpace::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+                return StateSpace::create(domain_filepath, problem_filepaths_, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("max_num_states") = std::numeric_limits<size_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states",
              &StateSpace::compute_shortest_distances_from_states,
@@ -817,24 +825,46 @@ void init_pymimir(py::module_& m)
         .def("get_certificate", &FaithfulAbstractState::get_certificate);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
-        .def_static("create",
-                    [](const std::string& domain_filepath, const std::string& problem_filepath, size_t max_num_states, size_t timeout_ms)
-                    { return FaithfulAbstraction::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); })
+        .def_static(
+            "create",
+            [](const std::string& domain_filepath,
+               const std::string& problem_filepath,
+               bool mark_true_goal_atoms,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms)
+            { return FaithfulAbstraction::create(domain_filepath, problem_filepath, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); },
+            py::arg("domain_filepath"),
+            py::arg("problem_filepath"),
+            py::arg("mark_true_goal_atoms") = false,
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
             "create",
             [](const std::string& domain_filepath,
                const std::vector<std::string>& problem_filepaths,
-               size_t max_num_states,
-               size_t timeout_ms,
-               size_t num_threads)
+               bool mark_true_goal_atoms,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms,
+               uint32_t num_threads)
             {
                 auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                return FaithfulAbstraction::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+                return FaithfulAbstraction::create(domain_filepath,
+                                                   problem_filepaths_,
+                                                   mark_true_goal_atoms,
+                                                   use_unit_cost_one,
+                                                   max_num_states,
+                                                   timeout_ms,
+                                                   num_threads);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("max_num_states") = std::numeric_limits<size_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
+            py::arg("mark_true_goal_atoms") = false,
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
         .def("get_domain_filepath", &FaithfulAbstraction::get_domain_filepath)
@@ -844,6 +874,7 @@ void init_pymimir(py::module_& m)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_states_by_certificate", &FaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_forward_transitions", &FaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
         .def("get_backward_transitions", &FaithfulAbstraction::get_backward_transitions, py::return_value_policy::reference)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
@@ -869,22 +900,33 @@ void init_pymimir(py::module_& m)
             "create",
             [](const std::string& domain_filepath,
                const std::vector<std::string>& problem_filepaths,
-               size_t max_num_states,
-               size_t timeout_ms,
-               size_t num_threads)
+               bool mark_true_goal_atoms,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms,
+               uint32_t num_threads)
             {
                 std::vector<fs::path> problem_filepaths_(problem_filepaths.begin(), problem_filepaths.end());
-                return GlobalFaithfulAbstraction::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+                return GlobalFaithfulAbstraction::create(domain_filepath,
+                                                         problem_filepaths_,
+                                                         mark_true_goal_atoms,
+                                                         use_unit_cost_one,
+                                                         max_num_states,
+                                                         timeout_ms,
+                                                         num_threads);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("max_num_states") = std::numeric_limits<size_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
+            py::arg("mark_true_goal_atoms") = false,
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("get_domain_filepath", &GlobalFaithfulAbstraction::get_domain_filepath)
         .def("get_problem_filepath", &GlobalFaithfulAbstraction::get_problem_filepath)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_states_by_certificate", &GlobalFaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
@@ -937,6 +979,14 @@ void init_pymimir(py::module_& m)
         .def("get_state_space", &TupleGraphFactory::get_state_space)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
+
+    // Certificate
+    py::class_<Certificate>(m, "Certificate")
+        .def(py::init<std::string, ColorList>())
+        .def("__eq__", &Certificate::operator==)
+        .def("__hash__", &Certificate::hash)
+        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference)
+        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference);
 
     // NautyGraph
     py::class_<nauty_wrapper::Graph>(m, "NautyGraph")  //

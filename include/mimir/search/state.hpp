@@ -41,7 +41,7 @@ using FlatState = flatmemory::ConstView<FlatStateLayout>;
 // The extended portion is computed automatically, when calling ssg.create_state(...)
 struct FlatStateHash
 {
-    size_t operator()(const FlatState& view) const
+    size_t operator()(FlatState view) const
     {
         const auto fluent_atoms = view.get<1>();
         return loki::hash_combine(fluent_atoms.hash());
@@ -50,7 +50,7 @@ struct FlatStateHash
 
 struct FlatStateEqual
 {
-    bool operator()(const FlatState& view_left, const FlatState& view_right) const
+    bool operator()(FlatState view_left, FlatState view_right) const
     {
         const auto fluent_atoms_left = view_left.get<1>();
         const auto fluent_atoms_right = view_right.get<1>();
@@ -110,7 +110,7 @@ public:
     /// Hence, comparison of the buffer pointer suffices.
     /// For states in different SSG, buffer pointers are always different.
     /// Hence, comparison always returns false.
-    [[nodiscard]] bool operator==(const State& other) const { return m_view.buffer() == other.m_view.buffer(); }
+    [[nodiscard]] bool operator==(State other) const { return m_view.buffer() == other.m_view.buffer(); }
 
     /// @brief Return a hash value for the state.
     ///
@@ -128,7 +128,7 @@ public:
      * Fluent and Derived
      */
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool contains(const GroundAtom<P>& atom) const
+    [[nodiscard]] bool contains(GroundAtom<P> atom) const
     {
         return get_atoms<P>().get(atom->get_identifier());
     }
@@ -148,7 +148,7 @@ public:
     }
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool literal_holds(const GroundLiteral<P>& literal) const
+    [[nodiscard]] bool literal_holds(GroundLiteral<P> literal) const
     {
         return literal->is_negated() != contains(literal->get_atom());
     }
@@ -193,7 +193,7 @@ using StateList = std::vector<State>;
 
 struct StateHash
 {
-    size_t operator()(const State& view) const { return view.hash(); }
+    size_t operator()(State view) const { return view.hash(); }
 };
 
 template<typename T>
@@ -204,7 +204,7 @@ using StateSet = std::unordered_set<State, StateHash>;
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Problem, const State, const PDDLFactories&>& data);
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLFactories&>& data);
 }
 
 #endif

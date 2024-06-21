@@ -117,13 +117,13 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
         return std::nullopt;
     }
 
-    auto optimal_distance = std::numeric_limits<int>::max();
+    auto optimal_distance = std::numeric_limits<double>::max();
     const auto distances = m_state_space->compute_shortest_distances_from_states(StateIdList { m_state_space->get_initial_state() });
     for (const auto& state : states)
     {
         const auto state_distance = distances.at(state.get_id());
-        // Unreachable states have distance -1
-        if (state_distance != -1)
+        // Unreachable states have distance std::numeric_limits<double>::max()
+        if (state_distance != std::numeric_limits<double>::max())
         {
             optimal_distance = std::min(optimal_distance, state_distance);
         }

@@ -102,8 +102,8 @@ from _pymimir import (
 )
 
 # Graphs
-
 from _pymimir import (
+    Certificate,
     Digraph,
     NautyGraph,
     ObjectGraph,

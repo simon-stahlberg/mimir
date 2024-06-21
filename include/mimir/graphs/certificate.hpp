@@ -15,26 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
-#define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
+#ifndef MIMIR_GRAPHS_CERTIFICATE_HPP_
+#define MIMIR_GRAPHS_CERTIFICATE_HPP_
 
-#include "mimir/formalism/formalism.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/graphs/coloring.hpp"
+
+#include <loki/loki.hpp>
+#include <string>
+#include <vector>
 
 namespace mimir
 {
-
-/**
- * Interface class
- */
-class IHeuristic
+class Certificate
 {
-public:
-    virtual ~IHeuristic() = default;
+private:
+    std::string m_nauty_certificate;
+    ColorList m_canonical_initial_coloring;
 
-    [[nodiscard]] virtual double compute_heuristic(State state) = 0;
+public:
+    Certificate(std::string nauty_certificate, ColorList canonical_initial_coloring);
+
+    [[nodiscard]] bool operator==(const Certificate& other) const;
+    [[nodiscard]] size_t hash() const;
+
+    const std::string get_nauty_certificate() const;
+    const ColorList& get_canonical_initial_coloring() const;
 };
 
 }
-
 #endif

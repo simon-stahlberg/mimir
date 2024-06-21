@@ -92,7 +92,7 @@ using FlatActionVector = flatmemory::VariableSizedTypeVector<FlatActionLayout>;
 
 struct FlatActionHash
 {
-    size_t operator()(const FlatAction& view) const
+    size_t operator()(FlatAction view) const
     {
         const auto action = view.get<2>();
         const auto objects = view.get<3>();
@@ -102,7 +102,7 @@ struct FlatActionHash
 
 struct FlatActionEqual
 {
-    bool operator()(const FlatAction& view_left, const FlatAction& view_right) const
+    bool operator()(FlatAction view_left, FlatAction view_right) const
     {
         const auto action_left = view_left.get<2>();
         const auto objects_left = view_left.get<3>();
@@ -222,7 +222,7 @@ public:
     }
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool is_applicable(const State state) const
+    [[nodiscard]] bool is_applicable(State state) const
     {
         const auto state_atoms = state.get_atoms<P>();
 
@@ -230,18 +230,18 @@ public:
                && state_atoms.are_disjoint(get_negative_precondition<P>());
     }
 
-    [[nodiscard]] bool is_dynamically_applicable(const State state) const
+    [[nodiscard]] bool is_dynamically_applicable(State state) const
     {  //
         return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
     }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_atoms) const
+    [[nodiscard]] bool is_statically_applicable(const Bitset& static_positive_atoms) const
     {
         return is_applicable<Static>(static_positive_atoms);
     }
 
-    [[nodiscard]] bool is_applicable(const Problem problem, const State state) const
+    [[nodiscard]] bool is_applicable(Problem problem, State state) const
     {
         return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
     }
@@ -255,7 +255,7 @@ public:
     }
 
     template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2, flatmemory::IsBitset Bitset3>
-    [[nodiscard]] bool is_applicable(const Bitset1 fluent_state_atoms, const Bitset2 derived_state_atoms, const Bitset3 static_positive_bitset) const
+    [[nodiscard]] bool is_applicable(const Bitset1& fluent_state_atoms, const Bitset2& derived_state_atoms, const Bitset3& static_positive_bitset) const
     {
         return is_applicable<Fluent>(fluent_state_atoms) && is_applicable<Static>(static_positive_bitset) && is_applicable<Derived>(derived_state_atoms);
     }
@@ -398,7 +398,7 @@ public:
     [[nodiscard]] const FlatSimpleEffect& get_simple_effect() const { return m_view.get<6>(); }
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool is_applicable(const State state) const
+    [[nodiscard]] bool is_applicable(State state) const
     {
         const auto state_atoms = state.get_atoms<P>();
 
@@ -406,12 +406,12 @@ public:
                && state_atoms.are_disjoint(get_negative_precondition<P>());
     }
 
-    [[nodiscard]] bool is_dynamically_applicable(const State state) const
+    [[nodiscard]] bool is_dynamically_applicable(State state) const
     {  //
         return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
     }
 
-    [[nodiscard]] bool is_statically_applicable(const Problem problem) const
+    [[nodiscard]] bool is_statically_applicable(Problem problem) const
     {
         const auto static_initial_atoms = problem->get_static_initial_positive_atoms_bitset();
 
@@ -419,10 +419,7 @@ public:
                && static_initial_atoms.are_disjoint(get_negative_precondition<Static>());
     }
 
-    [[nodiscard]] bool is_applicable(const Problem problem, const State state) const
-    {
-        return is_dynamically_applicable(state) && is_statically_applicable(problem);
-    }
+    [[nodiscard]] bool is_applicable(Problem problem, State state) const { return is_dynamically_applicable(state) && is_statically_applicable(problem); }
 };
 
 class GroundActionBuilder
@@ -476,7 +473,7 @@ public:
     /// Hence, comparison of the buffer pointer suffices.
     /// For grounded actions in different AAG, buffer pointers are always different.
     /// Hence, comparison always returns false.
-    [[nodiscard]] bool operator==(const GroundAction& other) const { return m_view.buffer() == other.m_view.buffer(); }
+    [[nodiscard]] bool operator==(GroundAction other) const { return m_view.buffer() == other.m_view.buffer(); }
 
     /* STRIPS part */
     [[nodiscard]] FlatStripsActionPrecondition get_strips_precondition() const { return m_view.get<4>(); }
@@ -484,18 +481,18 @@ public:
     /* Conditional effects */
     [[nodiscard]] FlatConditionalEffects get_conditional_effects() const { return m_view.get<6>(); }
 
-    [[nodiscard]] bool is_dynamically_applicable(const State state) const
+    [[nodiscard]] bool is_dynamically_applicable(State state) const
     {  //
         return StripsActionPrecondition(get_strips_precondition()).is_dynamically_applicable(state);
     }
 
     template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset static_positive_bitset) const
+    [[nodiscard]] bool is_statically_applicable(const Bitset& static_positive_bitset) const
     {  //
         return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
     }
 
-    [[nodiscard]] bool is_applicable(const Problem problem, const State state) const
+    [[nodiscard]] bool is_applicable(Problem problem, State state) const
     {  //
         return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
     }
@@ -522,7 +519,7 @@ extern std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEf
 
 extern std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const GroundAction& action);
+extern std::ostream& operator<<(std::ostream& os, GroundAction action);
 
 }
 

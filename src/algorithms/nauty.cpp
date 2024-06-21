@@ -26,6 +26,17 @@ Graph::Graph() : m_impl(std::make_unique<GraphImpl>(0)) {}
 
 Graph::Graph(int num_vertices) : m_impl(std::make_unique<GraphImpl>(num_vertices)) {}
 
+Graph::Graph(Graph&& other) : m_impl(std::move(other.m_impl)) {}
+
+Graph& Graph::operator=(Graph&& other)
+{
+    if (this != &other)
+    {
+        std::swap(m_impl, other.m_impl);
+    }
+    return *this;
+}
+
 Graph::~Graph() = default;
 
 void Graph::add_edge(int src, int dst) { m_impl->add_edge(src, dst); }

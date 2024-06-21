@@ -29,7 +29,7 @@ namespace mimir
 class BlindHeuristic : public IHeuristic
 {
 public:
-    [[nodiscard]] double compute_heuristic(const State state) override { return 0.; }
+    [[nodiscard]] double compute_heuristic(State state) override { return 0.; }
 };
 
 }  // namespace mimir
