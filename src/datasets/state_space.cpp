@@ -27,68 +27,21 @@
 namespace mimir
 {
 
-static std::vector<int>
-compute_shortest_distances_from_states_impl(const size_t num_total_states, const StateList& states, const std::vector<Transitions>& transitions)
-{
-    auto distances = std::vector<int>(num_total_states, -1);
-    auto fifo_queue = std::deque<int>();
-    for (const auto& state : states)
-    {
-        distances.at(state.get_id()) = 0;
-        fifo_queue.push_back(state.get_id());
-    }
-
-    while (!fifo_queue.empty())
-    {
-        const auto& state_id = fifo_queue.front();
-        fifo_queue.pop_front();
-        const auto cost = distances.at(state_id);
-
-        for (const auto& transition : transitions.at(state_id))
-        {
-            const auto successor_state_id = transition.get_successor_state().get_id();
-
-            if (distances.at(successor_state_id) != -1)
-            {
-                continue;
-            }
-
-            distances.at(successor_state_id) = cost + 1;
-
-            fifo_queue.push_back(successor_state_id);
-        }
-    }
-    return distances;
-}
-
-Transition::Transition(State successor_state, GroundAction creating_action) : m_successor_state(successor_state), m_creating_action(creating_action) {}
-
-bool Transition::operator==(const Transition& other) const
-{
-    if (this != &other)
-    {
-        return (m_successor_state.get_id() == other.m_successor_state.get_id()) && (m_creating_action.get_id() == other.m_creating_action.get_id());
-    }
-    return true;
-}
-
-size_t Transition::hash() const { return loki::hash_combine(m_successor_state.get_id(), m_creating_action.get_id()); }
-
-State Transition::get_successor_state() const { return m_successor_state; }
-
-GroundAction Transition::get_creating_action() const { return m_creating_action; }
-
-StateSpace::StateSpace(std::shared_ptr<PDDLParser> parser,
+StateSpace::StateSpace(fs::path domain_filepath,
+                       fs::path problem_filepath,
+                       std::shared_ptr<PDDLParser> parser,
                        std::shared_ptr<GroundedAAG> aag,
                        std::shared_ptr<SuccessorStateGenerator> ssg,
                        StateList states,
-                       State initial_state,
-                       StateSet goal_states,
-                       StateSet deadend_states,
+                       StateId initial_state,
+                       StateIdSet goal_states,
+                       StateIdSet deadend_states,
                        size_t num_transitions,
-                       std::vector<Transitions> forward_transitions,
-                       std::vector<Transitions> backward_transitions,
+                       std::vector<TransitionList> forward_transitions,
+                       std::vector<TransitionList> backward_transitions,
                        std::vector<int> goal_distances) :
+    m_domain_filepath(std::move(domain_filepath)),
+    m_problem_filepath(std::move(problem_filepath)),
     m_parser(std::move(parser)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
@@ -114,11 +67,11 @@ StateSpace::StateSpace(std::shared_ptr<PDDLParser> parser,
 }
 
 std::optional<StateSpace>
-StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms)
+StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const size_t max_num_states, const size_t timeout_ms)
 {
     auto stop_watch = StopWatch(timeout_ms);
 
-    auto pddl_parser = std::make_shared<PDDLParser>(domain_file_path, problem_file_path);
+    auto pddl_parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
     const auto problem = pddl_parser->get_problem();
     auto aag = std::make_shared<GroundedAAG>(problem, pddl_parser->get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
@@ -135,9 +88,9 @@ StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_fil
 
     auto states = StateList { initial_state };
     auto num_transitions = (size_t) 0;
-    auto forward_transitions = std::vector<Transitions>(1);
-    auto backward_transitions = std::vector<Transitions>(1);
-    auto goal_states = StateSet {};
+    auto forward_transitions = std::vector<TransitionList>(1);
+    auto backward_transitions = std::vector<TransitionList>(1);
+    auto goal_states = StateIdSet {};
 
     auto applicable_actions = GroundActionList {};
     stop_watch.start();
@@ -149,7 +102,7 @@ StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_fil
 
         if (state.literals_hold(problem->get_fluent_goal_condition()) && state.literals_hold(problem->get_derived_goal_condition()))
         {
-            goal_states.insert(state);
+            goal_states.insert(state.get_id());
         }
 
         aag->generate_applicable_actions(state, applicable_actions);
@@ -161,8 +114,8 @@ StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_fil
             forward_transitions.resize(ssg->get_state_count());
             backward_transitions.resize(ssg->get_state_count());
 
-            forward_transitions.at(state.get_id()).emplace_back(successor_state, action);
-            backward_transitions.at(successor_state.get_id()).emplace_back(state, action);
+            forward_transitions.at(state.get_id()).emplace_back(successor_state.get_id(), action);
+            backward_transitions.at(successor_state.get_id()).emplace_back(state.get_id(), action);
             ++num_transitions;
 
             if (successor_state.get_id() < states.size())
@@ -190,23 +143,25 @@ StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_fil
     }
 
     auto goal_distances =
-        compute_shortest_distances_from_states_impl(states.size(), StateList { goal_states.begin(), goal_states.end() }, backward_transitions);
+        mimir::compute_shortest_distances_from_states(states.size(), StateIdList { goal_states.begin(), goal_states.end() }, backward_transitions);
 
-    auto deadend_states = StateSet {};
+    auto deadend_states = StateIdSet {};
     for (const auto& state : states)
     {
         if (goal_distances.at(state.get_id()) == -1)
         {
-            deadend_states.insert(state);
+            deadend_states.insert(state.get_id());
         }
     }
 
     // Must explicitly call constructor since it is private
-    return StateSpace(std::move(pddl_parser),
+    return StateSpace(domain_filepath,
+                      problem_filepath,
+                      std::move(pddl_parser),
                       std::move(aag),
                       std::move(ssg),
                       std::move(states),
-                      initial_state,
+                      initial_state.get_id(),
                       std::move(goal_states),
                       std::move(deadend_states),
                       num_transitions,
@@ -215,7 +170,7 @@ StateSpace::create(const fs::path& domain_file_path, const fs::path& problem_fil
                       std::move(goal_distances));
 }
 
-StateSpaceList StateSpace::create(const fs::path& domain_file_path,
+StateSpaceList StateSpace::create(const fs::path& domain_filepath,
                                   const std::vector<fs::path>& problem_file_paths,
                                   const size_t max_num_states,
                                   const size_t timeout_ms,
@@ -225,10 +180,10 @@ StateSpaceList StateSpace::create(const fs::path& domain_file_path,
     auto pool = BS::thread_pool(num_threads);
     auto futures = std::vector<std::future<std::optional<StateSpace>>> {};
 
-    for (const auto& problem_file_path : problem_file_paths)
+    for (const auto& problem_filepath : problem_file_paths)
     {
-        futures.push_back(pool.submit_task([domain_file_path, problem_file_path, max_num_states, timeout_ms]
-                                           { return StateSpace::create(domain_file_path, problem_file_path, max_num_states, timeout_ms); }));
+        futures.push_back(pool.submit_task([domain_filepath, problem_filepath, max_num_states, timeout_ms]
+                                           { return StateSpace::create(domain_filepath, problem_filepath, max_num_states, timeout_ms); }));
     }
 
     for (auto& future : futures)
@@ -244,45 +199,22 @@ StateSpaceList StateSpace::create(const fs::path& domain_file_path,
 }
 
 /* Extended functionality */
-std::vector<int> StateSpace::compute_shortest_distances_from_states(const StateList& states, bool forward) const
+std::vector<int> StateSpace::compute_shortest_distances_from_states(const StateIdList& states, bool forward) const
 {
-    return compute_shortest_distances_from_states_impl(m_states.size(), states, (forward) ? m_forward_transitions : m_backward_transitions);
+    return mimir::compute_shortest_distances_from_states(*this, states, forward);
 }
 
 std::vector<std::vector<int>> StateSpace::compute_pairwise_shortest_state_distances(bool forward) const
 {
-    auto distances = std::vector<std::vector<int>> { m_states.size(), std::vector<int>(m_states.size(), -1) };
-    const auto& transitions = (forward) ? m_forward_transitions : m_backward_transitions;
-
-    // Initialize distance adjacency matrix
-    for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
-    {
-        distances.at(state_id).at(state_id) = 0;
-        for (const auto& transition : transitions.at(state_id))
-        {
-            distances.at(state_id).at(transition.get_successor_state().get_id()) = 1;
-        }
-    }
-
-    // Compute transitive closure
-    for (size_t state_k = 0; state_k < m_states.size(); ++state_k)
-    {
-        for (size_t state_i = 0; state_i < m_states.size(); ++state_i)
-        {
-            for (size_t state_j = 0; state_j < m_states.size(); ++state_j)
-            {
-                if (distances.at(state_i).at(state_j) > distances.at(state_i).at(state_k) + distances.at(state_k).at(state_j))
-                {
-                    distances.at(state_i).at(state_j) = distances.at(state_i).at(state_k) + distances.at(state_k).at(state_j);
-                }
-            }
-        }
-    }
-
-    return distances;
+    return mimir::compute_pairwise_shortest_state_distances(*this, forward);
 }
 
 /* Getters */
+// Meta data
+const fs::path& StateSpace::get_domain_filepath() const { return m_domain_filepath; }
+
+const fs::path& StateSpace::get_problem_filepath() const { return m_problem_filepath; }
+
 // Memory
 const PDDLParser& StateSpace::get_pddl_parser() const { return *m_parser; }
 
@@ -299,11 +231,11 @@ Problem StateSpace::get_problem() const { return m_aag->get_problem(); }
 // States
 const StateList& StateSpace::get_states() const { return m_states; }
 
-State StateSpace::get_initial_state() const { return m_initial_state; }
+StateId StateSpace::get_initial_state() const { return m_initial_state; }
 
-const StateSet& StateSpace::get_goal_states() const { return m_goal_states; }
+const StateIdSet& StateSpace::get_goal_states() const { return m_goal_states; }
 
-const StateSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
+const StateIdSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
 size_t StateSpace::get_num_states() const { return m_states.size(); }
 
@@ -316,9 +248,9 @@ bool StateSpace::is_deadend_state(const State& state) const { return m_goal_dist
 // Transitions
 size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
 
-const std::vector<Transitions>& StateSpace::get_forward_transitions() const { return m_forward_transitions; }
+const std::vector<TransitionList>& StateSpace::get_forward_transitions() const { return m_forward_transitions; }
 
-const std::vector<Transitions>& StateSpace::get_backward_transitions() const { return m_backward_transitions; }
+const std::vector<TransitionList>& StateSpace::get_backward_transitions() const { return m_backward_transitions; }
 
 // Distances
 const std::vector<int>& StateSpace::get_goal_distances() const { return m_goal_distances; }

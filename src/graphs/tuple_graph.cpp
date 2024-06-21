@@ -118,7 +118,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
     }
 
     auto optimal_distance = std::numeric_limits<int>::max();
-    const auto distances = m_state_space->compute_shortest_distances_from_states(StateList { m_state_space->get_initial_state() });
+    const auto distances = m_state_space->compute_shortest_distances_from_states(StateIdList { m_state_space->get_initial_state() });
     for (const auto& state : states)
     {
         const auto state_distance = distances.at(state.get_id());
@@ -226,7 +226,8 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     auto states_layer = StateList {};
     for (const auto& transition : transitions)
     {
-        const auto succ_state = transition.get_successor_state();
+        const auto succ_state_id = transition.get_successor_state();
+        const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
         const auto succ_state_vertex_id = m_tuple_graph.m_vertices.size();
         m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_id, empty_tuple_index, StateList { succ_state });
         m_tuple_graph.m_forward_successors.at(root_state_vertex_id).push_back(succ_state_vertex_id);
@@ -307,7 +308,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
     {
         for (const auto& transition : m_tuple_graph.m_state_space->get_forward_transitions().at(state.get_id()))
         {
-            const auto succ_state = transition.get_successor_state();
+            const auto succ_state_id = transition.get_successor_state();
+            const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
 
             if (!visited_states.count(succ_state))
             {
@@ -359,7 +361,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
         {
             for (const auto& transition : forward_transitions.at(state.get_id()))
             {
-                const auto succ_state = transition.get_successor_state();
+                const auto succ_state_id = transition.get_successor_state();
+                const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
 
                 if (state_to_novel_tuple_indices.count(succ_state))
                 {

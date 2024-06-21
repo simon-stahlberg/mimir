@@ -810,9 +810,9 @@ void init_pymimir(py::module_& m)
 
     // FaithfulAbstraction
 
-    py::class_<FaithfulAbstraction::AbstractState>(m, "FaithfulAbstractState")
-        .def("get_id", &FaithfulAbstraction::AbstractState::get_id)
-        .def("get_state", &FaithfulAbstraction::AbstractState::get_state);
+    py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
+        .def("get_id", &FaithfulAbstractState::get_id)
+        .def("get_state", &FaithfulAbstractState::get_state);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def_static("create",
@@ -837,8 +837,8 @@ void init_pymimir(py::module_& m)
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
         .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
         .def("get_states_by_certificate", &FaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
-        .def("get_forward_successors", &FaithfulAbstraction::get_forward_successors, py::return_value_policy::reference)
-        .def("get_backward_successors", &FaithfulAbstraction::get_backward_successors, py::return_value_policy::reference)
+        .def("get_forward_transitions", &FaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
+        .def("get_backward_transitions", &FaithfulAbstraction::get_backward_transitions, py::return_value_policy::reference)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)

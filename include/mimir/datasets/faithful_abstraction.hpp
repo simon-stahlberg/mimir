@@ -18,6 +18,8 @@
 #ifndef MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 
+#include "mimir/datasets/abstraction.hpp"
+#include "mimir/datasets/transition_system.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/state.hpp"
@@ -32,47 +34,47 @@
 
 namespace mimir
 {
-using AbstractStateId = int;
-using AbstractStateIdList = std::vector<AbstractStateId>;
-using AbstractStateIdSet = std::unordered_set<AbstractStateId>;
+/// @brief FaithfulAbstractState encapsulates data of an abstract state in a faithful abstraction.
+class FaithfulAbstractState
+{
+private:
+    StateId m_id;
+    State m_state;
 
-using AbstractionId = int;
+public:
+    FaithfulAbstractState(StateId id, State state);
 
+    StateId get_id() const;
+    State get_state() const;
+};
+
+using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
+
+/// @brief FaithfulAbstraction implements abstractions based on isomorphism testing.
+/// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
 class FaithfulAbstraction
 {
-public:
-    class AbstractState
-    {
-    private:
-        AbstractStateId m_id;
-        State m_state;
-
-    public:
-        AbstractState(AbstractStateId id, State state);
-
-        AbstractStateId get_id() const;
-        State get_state() const;
-    };
-
-    using AbstractStateList = std::vector<AbstractState>;
-
 private:
+    // Meta data
+    fs::path m_domain_filepath;
+    fs::path m_problem_filepath;
+
     // Memory
     std::shared_ptr<PDDLParser> m_parser;
     std::shared_ptr<LiftedAAG> m_aag;
     std::shared_ptr<SSG> m_ssg;
 
     // States
-    AbstractStateList m_states;
-    std::unordered_map<std::string, AbstractStateId> m_states_by_certificate;
-    AbstractStateId m_initial_state;
-    AbstractStateIdSet m_goal_states;
-    AbstractStateIdSet m_deadend_states;
+    FaithfulAbstractStateList m_states;
+    std::unordered_map<std::string, StateId> m_states_by_certificate;
+    StateId m_initial_state;
+    StateIdSet m_goal_states;
+    StateIdSet m_deadend_states;
 
     // Transitions
     size_t m_num_transitions;
-    std::vector<AbstractStateIdList> m_forward_successors;
-    std::vector<AbstractStateIdList> m_backward_successors;
+    std::vector<TransitionList> m_forward_transitions;
+    std::vector<TransitionList> m_backward_transitions;
 
     // Distances
     std::vector<int> m_goal_distances;
@@ -81,17 +83,19 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    FaithfulAbstraction(std::shared_ptr<PDDLParser> parser,
+    FaithfulAbstraction(fs::path domain_filepath,
+                        fs::path problem_filepath,
+                        std::shared_ptr<PDDLParser> parser,
                         std::shared_ptr<LiftedAAG> aag,
                         std::shared_ptr<SSG> ssg,
-                        AbstractStateList states,
-                        std::unordered_map<std::string, AbstractStateId> states_by_certificate,
-                        AbstractStateId initial_state,
-                        AbstractStateIdSet goal_states,
-                        AbstractStateIdSet deadend_states,
+                        FaithfulAbstractStateList states,
+                        std::unordered_map<std::string, StateId> states_by_certificate,
+                        StateId initial_state,
+                        StateIdSet goal_states,
+                        StateIdSet deadend_states,
                         size_t num_transitions,
-                        std::vector<AbstractStateIdList> forward_successors,
-                        std::vector<AbstractStateIdList> backward_successors,
+                        std::vector<TransitionList> forward_transitions,
+                        std::vector<TransitionList> backward_transitions,
                         std::vector<int> goal_distances);
 
 public:
@@ -101,39 +105,47 @@ public:
     /// @param max_num_states
     /// @param timeout_ms
     /// @return
-    static std::optional<FaithfulAbstraction>
-    create(const fs::path& domain_file_path, const fs::path& problem_file_path, const size_t max_num_states, const size_t timeout_ms);
+    static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
+                                                     const fs::path& problem_filepath,
+                                                     const size_t max_num_states = std::numeric_limits<size_t>::max(),
+                                                     const size_t timeout_ms = std::numeric_limits<size_t>::max());
 
-    static std::vector<FaithfulAbstraction> create(const fs::path& domain_file_path,
-                                                   const std::vector<fs::path>& problem_file_paths,
-                                                   const size_t max_num_states,
-                                                   const size_t timeout_ms,
+    static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
+                                                   const std::vector<fs::path>& problem_filepaths,
+                                                   const size_t max_num_states = std::numeric_limits<size_t>::max(),
+                                                   const size_t timeout_ms = std::numeric_limits<size_t>::max(),
                                                    const size_t num_threads = std::thread::hardware_concurrency());
 
     /**
      * Extended functionality
      */
 
-    std::vector<int> compute_shortest_distances_from_states(const AbstractStateIdList& states, bool forward = true) const;
+    std::vector<int> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+
+    std::vector<std::vector<int>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
     /**
      * Getters.
      */
 
+    // Meta data
+    const fs::path& get_domain_filepath() const;
+    const fs::path& get_problem_filepath() const;
+
     // States
-    const AbstractStateList& get_states() const;
-    const std::unordered_map<std::string, AbstractStateId>& get_states_by_certificate() const;
-    AbstractStateId get_initial_state() const;
-    const AbstractStateIdSet& get_goal_states() const;
-    const AbstractStateIdSet& get_deadend_states() const;
+    const FaithfulAbstractStateList& get_states() const;
+    const std::unordered_map<std::string, StateId>& get_states_by_certificate() const;
+    StateId get_initial_state() const;
+    const StateIdSet& get_goal_states() const;
+    const StateIdSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
 
     // Transitions
     size_t get_num_transitions() const;
-    const std::vector<AbstractStateIdList>& get_forward_successors() const;
-    const std::vector<AbstractStateIdList>& get_backward_successors() const;
+    const std::vector<TransitionList>& get_forward_transitions() const;
+    const std::vector<TransitionList>& get_backward_transitions() const;
 
     // Distances
     const std::vector<int>& get_goal_distances() const;
@@ -141,9 +153,9 @@ public:
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
 
-using CombinedAbstractStateId = int;
-using CombinedAbstractStateIdList = std::vector<CombinedAbstractStateId>;
-using CombinedAbstractStateIdSet = std::unordered_set<CombinedAbstractStateId>;
+using CombinedStateId = int;
+using CombinedStateIdList = std::vector<CombinedStateId>;
+using CombinedStateIdSet = std::unordered_set<CombinedStateId>;
 
 class CombinedFaithfulAbstraction
 {
@@ -153,42 +165,42 @@ public:
     class CombinedAbstractState
     {
     private:
-        CombinedAbstractStateId m_id;
+        CombinedStateId m_id;
         AbstractionId m_abstraction_id;
-        AbstractStateId m_abstract_state_id;
+        StateId m_abstract_state_id;
 
     public:
-        CombinedAbstractState(CombinedAbstractStateId id, AbstractionId abstraction_id, AbstractStateId abstract_state_id);
+        CombinedAbstractState(CombinedStateId id, AbstractionId abstraction_id, StateId abstract_state_id);
 
-        CombinedAbstractStateId get_id() const;
+        CombinedStateId get_id() const;
         AbstractionId get_abstraction_id() const;
-        AbstractStateId get_abstract_state_id() const;
+        StateId get_abstract_state_id() const;
     };
 
     using CombinedAbstractStateList = std::vector<CombinedAbstractState>;
 
 private:
     // States
-    CombinedAbstractStateIdList m_states;
-    CombinedAbstractStateId m_initial_state;
-    CombinedAbstractStateIdSet m_goal_states;
-    CombinedAbstractStateIdSet m_deadend_states;
+    CombinedStateIdList m_states;
+    CombinedStateId m_initial_state;
+    CombinedStateIdSet m_goal_states;
+    CombinedStateIdSet m_deadend_states;
 
     // Transitions
     size_t m_num_transitions;
-    std::vector<CombinedAbstractStateIdList> m_forward_successors;
-    std::vector<CombinedAbstractStateIdList> m_backward_successors;
+    std::vector<CombinedStateIdList> m_forward_successors;
+    std::vector<CombinedStateIdList> m_backward_successors;
 
     // Distances
     std::vector<int> m_goal_distances;
 
-    CombinedFaithfulAbstraction(CombinedAbstractStateIdList states,
-                                CombinedAbstractStateId initial_state,
-                                CombinedAbstractStateIdSet goal_states,
-                                CombinedAbstractStateIdSet deadend_states,
+    CombinedFaithfulAbstraction(CombinedStateIdList states,
+                                CombinedStateId initial_state,
+                                CombinedStateIdSet goal_states,
+                                CombinedStateIdSet deadend_states,
                                 size_t num_transitions,
-                                std::vector<CombinedAbstractStateIdList> forward_successors,
-                                std::vector<CombinedAbstractStateIdList> backward_successors,
+                                std::vector<CombinedStateIdList> forward_successors,
+                                std::vector<CombinedStateIdList> backward_successors,
                                 std::vector<int> goal_distances);
 
     friend class CombinedFaithfulAbstractions;
@@ -199,18 +211,18 @@ public:
      */
 
     // States
-    const CombinedAbstractStateIdList& get_states() const;
-    CombinedAbstractStateId get_initial_state() const;
-    const CombinedAbstractStateIdSet& get_goal_states() const;
-    const CombinedAbstractStateIdSet& get_deadend_states() const;
+    const CombinedStateIdList& get_states() const;
+    CombinedStateId get_initial_state() const;
+    const CombinedStateIdSet& get_goal_states() const;
+    const CombinedStateIdSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
 
     // Transitions
     size_t get_num_transitions() const;
-    const std::vector<CombinedAbstractStateIdList>& get_forward_successors() const;
-    const std::vector<CombinedAbstractStateIdList>& get_backward_successors() const;
+    const std::vector<CombinedStateIdList>& get_forward_successors() const;
+    const std::vector<CombinedStateIdList>& get_backward_successors() const;
 
     // Distances
     const std::vector<int>& get_goal_distances() const;
@@ -220,6 +232,7 @@ using CombinedFaithfulAbstractionList = std::vector<CombinedFaithfulAbstraction>
 
 /// @brief CombinedFaithfulAbstractions applies isomorphism reduction across instances.
 /// Faithful abstractions with no novel states get pruned.
+/// The result depends on the order in which the abstractions were given.
 class CombinedFaithfulAbstractions
 {
 private:
