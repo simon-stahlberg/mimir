@@ -588,7 +588,7 @@ void init_pymimir(py::module_& m)
     py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
         .def(
             "compute_applicable_actions",
-            [](IAAG& self, const State& state)
+            [](IAAG& self, State state)
             {
                 auto applicable_actions = GroundActionList {};
                 self.generate_applicable_actions(state, applicable_actions);
@@ -681,7 +681,7 @@ void init_pymimir(py::module_& m)
     py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
         .def("to_tuple_index", &TupleIndexMapper::to_tuple_index)
         .def("to_atom_indices",
-             [](const TupleIndexMapper self, const TupleIndex tuple_index)
+             [](const TupleIndexMapper& self, const TupleIndex tuple_index)
              {
                  auto atom_indices = AtomIndexList {};
                  self.to_atom_indices(tuple_index, atom_indices);
