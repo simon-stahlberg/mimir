@@ -10,7 +10,7 @@ TEST(MimirTests, DatasetsFaithfulAbstractionCreateTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto abstraction = FaithfulAbstraction::create(domain_file, problem_file, 10000, 10000).value();
+    const auto abstraction = FaithfulAbstraction::create(domain_file, problem_file).value();
 
     EXPECT_EQ(abstraction.get_num_states(), 12);
     EXPECT_EQ(abstraction.get_num_transitions(), 46);
@@ -25,7 +25,7 @@ TEST(MimirTests, DatasetsFaithfulAbstractionCreateParallelTest)
     const auto problem_file_2 = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
     const auto problem_files = std::vector<fs::path> { problem_file_1, problem_file_2 };
 
-    const auto abstractions = FaithfulAbstraction::create(domain_file, problem_files, 10000, 10000, 2);
+    const auto abstractions = FaithfulAbstraction::create(domain_file, problem_files);
 
     EXPECT_EQ(abstractions.size(), 2);
 

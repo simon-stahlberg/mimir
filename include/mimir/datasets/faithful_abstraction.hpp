@@ -28,6 +28,7 @@
 #include <loki/details/utils/filesystem.hpp>
 #include <memory>
 #include <optional>
+#include <string>
 #include <thread>
 #include <unordered_set>
 #include <vector>
@@ -40,12 +41,14 @@ class FaithfulAbstractState
 private:
     StateId m_id;
     State m_state;
+    std::string m_certificate;
 
 public:
-    FaithfulAbstractState(StateId id, State state);
+    FaithfulAbstractState(StateId id, State state, std::string certificate);
 
     StateId get_id() const;
     State get_state() const;
+    const std::string& get_certificate() const;
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
@@ -66,7 +69,6 @@ private:
 
     // States
     FaithfulAbstractStateList m_states;
-    std::unordered_map<std::string, StateId> m_states_by_certificate;
     StateId m_initial_state;
     StateIdSet m_goal_states;
     StateIdSet m_deadend_states;
@@ -89,7 +91,6 @@ private:
                         std::shared_ptr<LiftedAAG> aag,
                         std::shared_ptr<SSG> ssg,
                         FaithfulAbstractStateList states,
-                        std::unordered_map<std::string, StateId> states_by_certificate,
                         StateId initial_state,
                         StateIdSet goal_states,
                         StateIdSet deadend_states,
@@ -132,9 +133,14 @@ public:
     const fs::path& get_domain_filepath() const;
     const fs::path& get_problem_filepath() const;
 
+    // Memory
+    const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
+    const std::shared_ptr<LiftedAAG>& get_aag() const;
+    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+
     // States
     const FaithfulAbstractStateList& get_states() const;
-    const std::unordered_map<std::string, StateId>& get_states_by_certificate() const;
     StateId get_initial_state() const;
     const StateIdSet& get_goal_states() const;
     const StateIdSet& get_deadend_states() const;

@@ -786,6 +786,12 @@ void init_pymimir(py::module_& m)
              pybind11::arg("states"),
              pybind11::arg("forward") = true)
         .def("compute_pairwise_shortest_state_distances", &StateSpace::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
+        .def("get_domain_filepath", &StateSpace::get_domain_filepath)
+        .def("get_problem_filepath", &StateSpace::get_problem_filepath)
+        .def("get_pddl_parser", &StateSpace::get_pddl_parser)
+        .def("get_pddl_factories", &StateSpace::get_pddl_factories)
+        .def("get_aag", &StateSpace::get_aag)
+        .def("get_ssg", &StateSpace::get_ssg)
         .def("get_states", &StateSpace::get_states, py::return_value_policy::reference)
         .def("get_initial_state", &StateSpace::get_initial_state)
         .def("get_forward_transitions", &StateSpace::get_forward_transitions, py::return_value_policy::reference)
@@ -801,18 +807,14 @@ void init_pymimir(py::module_& m)
         .def("get_goal_distance", &StateSpace::get_goal_distance)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
         .def("is_deadend_state", &StateSpace::is_deadend_state)
-        .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference)
-        .def("get_pddl_factories", &StateSpace::get_pddl_factories)
-        .def("get_aag", &StateSpace::get_aag)
-        .def("get_ssg", &StateSpace::get_ssg)
-        .def("get_pddl_parser", &StateSpace::get_pddl_parser, py::return_value_policy::reference)
-        .def("get_factories", &StateSpace::get_factories, py::return_value_policy::reference);
+        .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference);
 
     // FaithfulAbstraction
 
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_id", &FaithfulAbstractState::get_id)
-        .def("get_state", &FaithfulAbstractState::get_state);
+        .def("get_state", &FaithfulAbstractState::get_state)
+        .def("get_certificate", &FaithfulAbstractState::get_certificate);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def_static("create",
@@ -835,8 +837,13 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
+        .def("get_domain_filepath", &FaithfulAbstraction::get_domain_filepath)
+        .def("get_problem_filepath", &FaithfulAbstraction::get_problem_filepath)
+        .def("get_pddl_parser", &FaithfulAbstraction::get_pddl_parser)
+        .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
+        .def("get_aag", &FaithfulAbstraction::get_aag)
+        .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
-        .def("get_states_by_certificate", &FaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_forward_transitions", &FaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
         .def("get_backward_transitions", &FaithfulAbstraction::get_backward_transitions, py::return_value_policy::reference)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
@@ -847,6 +854,49 @@ void init_pymimir(py::module_& m)
         .def("get_num_transitions", &FaithfulAbstraction::get_num_transitions)
         .def("get_num_goal_states", &FaithfulAbstraction::get_num_goal_states)
         .def("get_num_deadend_states", &FaithfulAbstraction::get_num_deadend_states);
+
+    // GlobalFaithfulAbstraction
+
+    py::class_<GlobalFaithfulAbstractState>(m, "GlobalFaithfulAbstractState")
+        .def("__eq__", &GlobalFaithfulAbstractState::operator==)
+        .def("__hash__", &GlobalFaithfulAbstractState::hash)
+        .def("get_id", &GlobalFaithfulAbstractState::get_id)
+        .def("get_abstraction_id", &GlobalFaithfulAbstractState::get_abstraction_id)
+        .def("get_abstract_state_id", &GlobalFaithfulAbstractState::get_abstract_state_id);
+
+    py::class_<GlobalFaithfulAbstraction, std::shared_ptr<GlobalFaithfulAbstraction>>(m, "GlobalFaithfulAbstraction")
+        .def_static(
+            "create",
+            [](const std::string& domain_filepath,
+               const std::vector<std::string>& problem_filepaths,
+               size_t max_num_states,
+               size_t timeout_ms,
+               size_t num_threads)
+            {
+                std::vector<fs::path> problem_filepaths_(problem_filepaths.begin(), problem_filepaths.end());
+                return GlobalFaithfulAbstraction::create(domain_filepath, problem_filepaths_, max_num_states, timeout_ms, num_threads);
+            },
+            py::arg("domain_filepath"),
+            py::arg("problem_filepaths"),
+            py::arg("max_num_states") = std::numeric_limits<size_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<size_t>::max(),
+            py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def("get_domain_filepath", &GlobalFaithfulAbstraction::get_domain_filepath)
+        .def("get_problem_filepath", &GlobalFaithfulAbstraction::get_problem_filepath)
+        .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
+        .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
+        .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
+        .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
+        .def("get_num_states", &GlobalFaithfulAbstraction::get_num_states)
+        .def("get_num_goal_states", &GlobalFaithfulAbstraction::get_num_goal_states)
+        .def("get_num_deadend_states", &GlobalFaithfulAbstraction::get_num_deadend_states)
+        .def("get_num_isomorphic_states", &GlobalFaithfulAbstraction::get_num_isomorphic_states)
+        .def("get_num_non_isomorphic_states", &GlobalFaithfulAbstraction::get_num_non_isomorphic_states)
+        .def("get_num_transitions", &GlobalFaithfulAbstraction::get_num_transitions)
+        .def("get_forward_transitions", &GlobalFaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
+        .def("get_backward_transitions", &GlobalFaithfulAbstraction::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Graphs

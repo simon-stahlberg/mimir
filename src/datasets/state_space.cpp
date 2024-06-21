@@ -53,16 +53,12 @@ StateSpace::StateSpace(fs::path domain_filepath,
     m_forward_transitions(std::move(forward_transitions)),
     m_backward_transitions(std::move(backward_transitions)),
     m_goal_distances(std::move(goal_distances)),
-    m_state_indices(),
     m_states_by_goal_distance()
 {
-    for (size_t index = 0; index < m_states.size(); ++index)
+    for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
     {
-        auto state = m_states.at(index);
-        m_state_indices.emplace(state, index);
-
-        auto distance = m_goal_distances.at(index);
-        m_states_by_goal_distance[distance].push_back(state);
+        auto distance = m_goal_distances.at(state_id);
+        m_states_by_goal_distance[distance].push_back(state_id);
     }
 }
 
@@ -224,8 +220,6 @@ const std::shared_ptr<GroundedAAG>& StateSpace::get_aag() const { return m_aag; 
 
 const std::shared_ptr<SuccessorStateGenerator>& StateSpace::get_ssg() const { return m_ssg; }
 
-const std::shared_ptr<PDDLFactories>& StateSpace::get_factories() const { return m_parser->get_factories(); }
-
 Problem StateSpace::get_problem() const { return m_aag->get_problem(); }
 
 // States
@@ -243,7 +237,7 @@ size_t StateSpace::get_num_goal_states() const { return m_goal_states.size(); }
 
 size_t StateSpace::get_num_deadend_states() const { return m_deadend_states.size(); }
 
-bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)) < 0; }
+bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(state.get_id()) < 0; }
 
 // Transitions
 size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
@@ -255,12 +249,12 @@ const std::vector<TransitionList>& StateSpace::get_backward_transitions() const 
 // Distances
 const std::vector<int>& StateSpace::get_goal_distances() const { return m_goal_distances; }
 
-int StateSpace::get_goal_distance(const State& state) const { return m_goal_distances.at(m_state_indices.at(state)); }
+int StateSpace::get_goal_distance(const State& state) const { return m_goal_distances.at(state.get_id()); }
 
 int StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
 // Additional
-State StateSpace::sample_state_with_goal_distance(int goal_distance) const
+StateId StateSpace::sample_state_with_goal_distance(int goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);
     const auto index = std::rand() % static_cast<int>(states.size());

@@ -36,21 +36,24 @@
 namespace mimir
 {
 
-/// @brief CombinedAbstractState encodes information necessary to retrieve
-/// information about the concrete underlying state such as Problem, PDDLFactories, SSG, AAG, etc.
+/// @brief GlobalFaithfulAbstractState encapsulates data to access
+/// the representative abstract state of a faithful abstraction.
 class GlobalFaithfulAbstractState
 {
 private:
     StateId m_id;
     AbstractionId m_abstraction_id;
-    FaithfulAbstractState m_abstract_state;
+    StateId m_abstract_state_id;
 
 public:
-    GlobalFaithfulAbstractState(StateId id, AbstractionId abstraction_id, FaithfulAbstractState abstract_state);
+    GlobalFaithfulAbstractState(StateId id, AbstractionId abstraction_id, StateId abstract_state_id);
+
+    [[nodiscard]] bool operator==(const GlobalFaithfulAbstractState& other) const;
+    [[nodiscard]] size_t hash() const;
 
     StateId get_id() const;
     AbstractionId get_abstraction_id() const;
-    FaithfulAbstractState get_abstract_state() const;
+    StateId get_abstract_state_id() const;
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
@@ -60,30 +63,19 @@ class GlobalFaithfulAbstraction
 public:
 private:
     // Memory
+    AbstractionId m_id;
     std::shared_ptr<FaithfulAbstractionList> m_abstractions;
 
     // States
     GlobalFaithfulAbstractStateList m_states;
-    StateId m_initial_state;
-    StateIdSet m_goal_states;
-    StateIdSet m_deadend_states;
+    size_t m_num_isomorphic_states;
+    size_t m_num_non_isomorphic_states;
 
-    // Transitions
-    size_t m_num_transitions;
-    std::vector<TransitionList> m_forward_transitions;
-    std::vector<TransitionList> m_backward_transitions;
-
-    // Distances
-    std::vector<int> m_goal_distances;
-
-    GlobalFaithfulAbstraction(GlobalFaithfulAbstractStateList states,
-                              StateId initial_state,
-                              StateIdSet goal_states,
-                              StateIdSet deadend_states,
-                              size_t num_transitions,
-                              std::vector<TransitionList> forward_transitions,
-                              std::vector<TransitionList> backward_transitions,
-                              std::vector<int> goal_distances);
+    GlobalFaithfulAbstraction(AbstractionId id,
+                              std::shared_ptr<FaithfulAbstractionList> abstractions,
+                              GlobalFaithfulAbstractStateList states,
+                              size_t num_isomorphic_states,
+                              size_t num_non_isomorphic_states);
 
 public:
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
@@ -96,6 +88,13 @@ public:
      * Getters
      */
 
+    // Meta data
+    const fs::path& get_domain_filepath() const;
+    const fs::path& get_problem_filepath() const;
+
+    // Memory
+    const FaithfulAbstractionList& get_abstractions() const;
+
     // States
     const GlobalFaithfulAbstractStateList& get_states() const;
     StateId get_initial_state() const;
@@ -104,6 +103,8 @@ public:
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
+    size_t get_num_isomorphic_states() const;
+    size_t get_num_non_isomorphic_states() const;
 
     // Transitions
     size_t get_num_transitions() const;

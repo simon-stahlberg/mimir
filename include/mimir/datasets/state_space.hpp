@@ -66,8 +66,7 @@ private:
     std::vector<int> m_goal_distances;
 
     // Additional
-    StateMap<size_t> m_state_indices;
-    std::unordered_map<int, StateList> m_states_by_goal_distance;
+    std::unordered_map<int, StateIdList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -133,7 +132,6 @@ public:
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
     const std::shared_ptr<GroundedAAG>& get_aag() const;
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
-    const std::shared_ptr<PDDLFactories>& get_factories() const;
     Problem get_problem() const;
 
     // States
@@ -157,7 +155,7 @@ public:
     int get_max_goal_distance() const;
 
     // Additional
-    State sample_state_with_goal_distance(int goal_distance) const;
+    StateId sample_state_with_goal_distance(int goal_distance) const;
 };
 
 using StateSpaceList = std::vector<StateSpace>;

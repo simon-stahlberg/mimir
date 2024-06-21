@@ -95,6 +95,8 @@ from _pymimir import (
 from _pymimir import (
     FaithfulAbstractState,
     FaithfulAbstraction,
+    GlobalFaithfulAbstractState,
+    GlobalFaithfulAbstraction,
     Transition,
     StateSpace
 )

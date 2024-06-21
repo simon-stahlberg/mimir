@@ -29,6 +29,8 @@ def test_faithful_abstraction_parallel():
 
     abstractions = FaithfulAbstraction.create(domain_filepath, problem_filepaths, 10000, 10000, 2)
 
+    assert len(abstractions) == 2
+
     # Reduced from 8 to 6 abstract states.
     assert abstractions[0].get_num_states() == 6
     # Reduced from 28 to 12 abstract states.
