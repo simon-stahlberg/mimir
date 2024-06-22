@@ -57,28 +57,30 @@ public:
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
+template<typename T>
+using GlobalFaithfulAbstractStateMap = std::unordered_map<GlobalFaithfulAbstractState, T, loki::Hash<GlobalFaithfulAbstractState>>;
 
 class GlobalFaithfulAbstraction
 {
 private:
-    // Meta data
+    /* Meta data */
     bool m_mark_true_goal_atoms;
     bool m_use_unit_cost_one;
-
-    // Memory
     AbstractionId m_id;
+
+    /* Memory */
     std::shared_ptr<FaithfulAbstractionList> m_abstractions;
 
-    // States
+    /* States */
+    // Note that state.get_id() does not yield the index within the abstraction.
+    // Use abstraction.get_state_id instead.
     GlobalFaithfulAbstractStateList m_states;
+    GlobalFaithfulAbstractStateMap<StateId> m_state_to_index;
     CertificateToStateIdMap m_states_by_certificate;
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
-    // Additional
-    StateMap<StateId> m_state_to_index;
-
-    // Preallocated memory to compute distance of concrete state.
+    /* Preallocated memory to compute distance of concrete state. */
     nauty_wrapper::Graph m_nauty_graph;
     ObjectGraphFactory m_object_graph_factory;
 
@@ -87,6 +89,7 @@ private:
                               AbstractionId id,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
+                              GlobalFaithfulAbstractStateMap<StateId> state_to_index,
                               CertificateToStateIdMap states_by_certificate,
                               size_t num_isomorphic_states,
                               size_t num_non_isomorphic_states);
@@ -126,15 +129,17 @@ public:
      * Getters
      */
 
-    // Meta data
+    /* Meta data */
     bool get_mark_true_goal_atoms() const;
     bool get_use_unit_cost_one() const;
+    AbstractionId get_id() const;
 
-    // Memory
+    /* Memory */
     const FaithfulAbstractionList& get_abstractions() const;
 
-    // States
+    /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
+    StateId get_state_id(const GlobalFaithfulAbstractState& state) const;
     const CertificateToStateIdMap& get_states_by_certificate() const;
     StateId get_initial_state() const;
     const StateIdSet& get_goal_states() const;
@@ -145,12 +150,12 @@ public:
     size_t get_num_isomorphic_states() const;
     size_t get_num_non_isomorphic_states() const;
 
-    // Transitions
+    /* Transitions */
     size_t get_num_transitions() const;
     const std::vector<TransitionList>& get_forward_transitions() const;
     const std::vector<TransitionList>& get_backward_transitions() const;
 
-    // Distances
+    /* Distances */
     const std::vector<double>& get_goal_distances() const;
 };
 

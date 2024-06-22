@@ -489,7 +489,7 @@ void init_pymimir(py::module_& m)
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_),
              py::return_value_policy::reference);
 
-    py::class_<PDDLParser>(m, "PDDLParser")  //
+    py::class_<PDDLParser, std::shared_ptr<PDDLParser>>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
         .def("get_domain_filepath", [](const PDDLParser& self) { return std::string(self.get_domain_filepath()); })
         .def("get_problem_filepath", [](const PDDLParser& self) { return std::string(self.get_problem_filepath()); })
@@ -830,6 +830,7 @@ void init_pymimir(py::module_& m)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
         .def("get_states", &StateSpace::get_states, py::return_value_policy::reference)
+        .def("get_state_id", &StateSpace::get_state_id)
         .def("get_initial_state", &StateSpace::get_initial_state)
         .def("get_forward_transitions", &StateSpace::get_forward_transitions, py::return_value_policy::reference)
         .def("get_backward_transitions", &StateSpace::get_backward_transitions, py::return_value_policy::reference)
@@ -995,9 +996,11 @@ void init_pymimir(py::module_& m)
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def("get_id", &GlobalFaithfulAbstraction::get_id)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
         .def("get_abstract_state_id", &GlobalFaithfulAbstraction::get_abstract_state_id)
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_state_id", &GlobalFaithfulAbstraction::get_state_id)
         .def("get_states_by_certificate", &GlobalFaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)

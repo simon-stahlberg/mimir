@@ -42,29 +42,32 @@ namespace mimir
 class StateSpace
 {
 private:
-    // Meta data
+    /* Meta data */
     bool m_use_unit_cost_one;
 
-    // Memory
+    /* Memory */
     std::shared_ptr<PDDLParser> m_parser;
     std::shared_ptr<IAAG> m_aag;
     std::shared_ptr<ISSG> m_ssg;
 
-    // States
+    /* States */
+    // Note that state.get_id() does not yield the index within the state_space.
+    // Use state_space.get_state_id instead.
     StateList m_states;
+    StateMap<StateId> m_state_to_index;
     StateId m_initial_state;
     StateIdSet m_goal_states;
     StateIdSet m_deadend_states;
 
-    // Transitions
+    /* Transitions */
     size_t m_num_transitions;
     std::vector<TransitionList> m_forward_transitions;
     std::vector<TransitionList> m_backward_transitions;
 
-    // Distances
+    /* Distances */
     std::vector<double> m_goal_distances;
 
-    // Additional
+    /* Additional */
     std::unordered_map<double, StateIdList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
@@ -76,6 +79,7 @@ private:
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<ISSG> ssg,
                StateList states,
+               StateMap<StateId> state_to_index,
                StateId initial_state,
                StateIdSet goal_states,
                StateIdSet deadend_states,
@@ -128,7 +132,9 @@ public:
                                           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                           uint32_t num_threads = std::thread::hardware_concurrency());
 
-    /* Extended functionality */
+    /**
+     * Extended functionality
+     */
 
     /// @brief Compute shortest distances from the given states computed using BrFS.
     /// @param states A list of states from which shortest distances are computed.
@@ -139,18 +145,21 @@ public:
     /// @param forward If true, forward transitions are used, and otherwise, backward transitions
     std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
-    /* Getters */
-    // Meta data
+    /**
+     *  Getters
+     */
+
+    /* Meta data */
     bool get_use_unit_cost_one() const;
 
-    // Memory
+    /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<ISSG>& get_ssg() const;
-    Problem get_problem() const;
 
-    // States
+    /* States */
     const StateList& get_states() const;
+    StateId get_state_id(State state) const;
     StateId get_initial_state() const;
     const StateIdSet& get_goal_states() const;
     const StateIdSet& get_deadend_states() const;
@@ -159,17 +168,17 @@ public:
     size_t get_num_deadend_states() const;
     bool is_deadend_state(const State& state) const;
 
-    // Transitions
+    /* Transitions */
     size_t get_num_transitions() const;
     const std::vector<TransitionList>& get_forward_transitions() const;
     const std::vector<TransitionList>& get_backward_transitions() const;
 
-    // Distances
+    /* Distances */
     const std::vector<double>& get_goal_distances() const;
     double get_goal_distance(State state) const;
     double get_max_goal_distance() const;
 
-    // Additional
+    /* Additional */
     StateId sample_state_with_goal_distance(double goal_distance) const;
 };
 

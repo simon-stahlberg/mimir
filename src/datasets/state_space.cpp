@@ -32,6 +32,7 @@ StateSpace::StateSpace(bool use_unit_cost_one,
                        std::shared_ptr<IAAG> aag,
                        std::shared_ptr<ISSG> ssg,
                        StateList states,
+                       StateMap<StateId> state_to_index,
                        StateId initial_state,
                        StateIdSet goal_states,
                        StateIdSet deadend_states,
@@ -44,6 +45,7 @@ StateSpace::StateSpace(bool use_unit_cost_one,
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
     m_states(std::move(states)),
+    m_state_to_index(std::move(state_to_index)),
     m_initial_state(std::move(initial_state)),
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
@@ -90,7 +92,10 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     auto lifo_queue = std::deque<State>();
     lifo_queue.push_back(initial_state);
 
+    const auto initial_state_id = 0;
     auto states = StateList { initial_state };
+    auto state_to_index = StateMap<StateId> {};
+    state_to_index[initial_state] = initial_state_id;
     auto num_transitions = (size_t) 0;
     auto forward_transitions = std::vector<TransitionList>(1);
     auto backward_transitions = std::vector<TransitionList>(1);
@@ -101,42 +106,44 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
         const auto state = lifo_queue.back();
-
+        const auto state_id = state_to_index.at(state);
         lifo_queue.pop_back();
-
         if (state.literals_hold(problem->get_fluent_goal_condition()) && state.literals_hold(problem->get_derived_goal_condition()))
         {
-            goal_states.insert(state.get_id());
+            goal_states.insert(state_id);
         }
 
         aag->generate_applicable_actions(state, applicable_actions);
-
         for (const auto& action : applicable_actions)
         {
             const auto successor_state = ssg->get_or_create_successor_state(state, action);
-
-            forward_transitions.resize(ssg->get_state_count());
-            backward_transitions.resize(ssg->get_state_count());
-
-            forward_transitions.at(state.get_id()).emplace_back(successor_state.get_id(), action);
-            backward_transitions.at(successor_state.get_id()).emplace_back(state.get_id(), action);
-            ++num_transitions;
-
-            if (successor_state.get_id() < states.size())
+            const auto it = state_to_index.find(successor_state);
+            const bool exists = (it != state_to_index.end());
+            if (exists)
             {
+                const auto successor_state_id = it->second;
+                forward_transitions.at(state_id).emplace_back(successor_state_id, action);
+                backward_transitions.at(successor_state_id).emplace_back(state_id, action);
+                ++num_transitions;
                 continue;
             }
 
-            if (states.size() >= max_num_states)
+            const auto successor_state_id = states.size();
+            if (successor_state_id >= max_num_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
             }
 
+            forward_transitions.resize(states.size() + 1);
+            backward_transitions.resize(states.size() + 1);
+            forward_transitions.at(state_id).emplace_back(successor_state_id, action);
+            backward_transitions.at(successor_state_id).emplace_back(state_id, action);
+            ++num_transitions;
+
             states.push_back(successor_state);
+            state_to_index[successor_state] = successor_state_id;
             lifo_queue.push_back(successor_state);
-            // States are stored by index
-            assert(states.back().get_id() == states.size() - 1);
         }
     }
 
@@ -152,11 +159,11 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                                                                         use_unit_cost_one);
 
     auto deadend_states = StateIdSet {};
-    for (const auto& state : states)
+    for (StateId state_id = 0; state_id < states.size(); ++state_id)
     {
-        if (goal_distances.at(state.get_id()) == std::numeric_limits<double>::max())
+        if (goal_distances.at(state_id) == std::numeric_limits<double>::max())
         {
-            deadend_states.insert(state.get_id());
+            deadend_states.insert(state_id);
         }
     }
 
@@ -166,7 +173,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                       std::move(aag),
                       std::move(ssg),
                       std::move(states),
-                      initial_state.get_id(),
+                      std::move(state_to_index),
+                      initial_state_id,
                       std::move(goal_states),
                       std::move(deadend_states),
                       num_transitions,
@@ -222,7 +230,10 @@ std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::sha
     return state_spaces;
 }
 
-/* Extended functionality */
+/**
+ * Extended functionality
+ */
+
 std::vector<double> StateSpace::compute_shortest_distances_from_states(const StateIdList& states, const bool forward) const
 {
     return mimir::compute_shortest_distances_from_states(*this, states, forward, m_use_unit_cost_one);
@@ -233,19 +244,24 @@ std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_dis
     return mimir::compute_pairwise_shortest_state_distances(*this, forward, m_use_unit_cost_one);
 }
 
-/* Getters */
-// Meta data
+/**
+ *  Getters
+ */
+
+/* Meta data */
 bool StateSpace::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
-// Memory
+/* Memory */
 const std::shared_ptr<PDDLParser>& StateSpace::get_pddl_parser() const { return m_parser; }
 
 const std::shared_ptr<IAAG>& StateSpace::get_aag() const { return m_aag; }
 
 const std::shared_ptr<ISSG>& StateSpace::get_ssg() const { return m_ssg; }
 
-// States
+/* States */
 const StateList& StateSpace::get_states() const { return m_states; }
+
+StateId StateSpace::get_state_id(State state) const { return m_state_to_index.at(state); }
 
 StateId StateSpace::get_initial_state() const { return m_initial_state; }
 
@@ -259,23 +275,23 @@ size_t StateSpace::get_num_goal_states() const { return m_goal_states.size(); }
 
 size_t StateSpace::get_num_deadend_states() const { return m_deadend_states.size(); }
 
-bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(state.get_id()) < 0; }
+bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(get_state_id(state)) == std::numeric_limits<double>::max(); }
 
-// Transitions
+/* Transitions */
 size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
 
 const std::vector<TransitionList>& StateSpace::get_forward_transitions() const { return m_forward_transitions; }
 
 const std::vector<TransitionList>& StateSpace::get_backward_transitions() const { return m_backward_transitions; }
 
-// Distances
+/* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }
 
-double StateSpace::get_goal_distance(State state) const { return m_goal_distances.at(state.get_id()); }
+double StateSpace::get_goal_distance(State state) const { return m_goal_distances.at(get_state_id(state)); }
 
 double StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
-// Additional
+/* Additional */
 StateId StateSpace::sample_state_with_goal_distance(double goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);

@@ -35,6 +35,22 @@ FaithfulAbstractState::FaithfulAbstractState(StateId id, State state, Certificat
 {
 }
 
+bool FaithfulAbstractState::operator==(const FaithfulAbstractState& other) const
+{
+    if (this != &other)
+    {
+        // FaithfulAbstractStates are unique by id within a FaithfulAbstraction;
+        return (m_id == other.m_id);
+    }
+    return true;
+}
+
+size_t FaithfulAbstractState::hash() const
+{
+    // FaithfulAbstractStates are unique by id within a FaithfulAbstraction;
+    return loki::hash_combine(m_id);
+}
+
 StateId FaithfulAbstractState::get_id() const { return m_id; }
 
 State FaithfulAbstractState::get_state() const { return m_state; }
@@ -260,7 +276,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
+        auto aag = std::make_shared<GroundedAAG>(parser->get_problem(), parser->get_factories());
         auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
@@ -329,19 +345,19 @@ std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_
  * Getters
  */
 
-// Meta data
+/* Meta data */
 bool FaithfulAbstraction::get_mark_true_goal_atoms() const { return m_mark_true_goal_atoms; }
 
 bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
-// Memory
+/* Memory */
 const std::shared_ptr<PDDLParser>& FaithfulAbstraction::get_pddl_parser() const { return m_parser; }
 
 const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag; }
 
 const std::shared_ptr<ISSG>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
-// States
+/* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }
 
 const CertificateToStateIdMap& FaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
@@ -358,14 +374,14 @@ const StateIdSet& FaithfulAbstraction::get_deadend_states() const { return m_dea
 
 size_t FaithfulAbstraction::get_num_states() const { return m_states.size(); }
 
-// Transitions
+/* Transitions */
 size_t FaithfulAbstraction::get_num_transitions() const { return m_num_transitions; }
 
 size_t FaithfulAbstraction::get_num_goal_states() const { return m_goal_states.size(); }
 
 size_t FaithfulAbstraction::get_num_deadend_states() const { return m_deadend_states.size(); }
 
-// Distances
+/* Distances */
 const std::vector<double>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
 
 }

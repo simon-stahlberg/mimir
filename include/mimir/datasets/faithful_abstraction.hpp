@@ -47,12 +47,17 @@ private:
 public:
     FaithfulAbstractState(StateId id, State state, Certificate certificate);
 
+    [[nodiscard]] bool operator==(const FaithfulAbstractState& other) const;
+    [[nodiscard]] size_t hash() const;
+
     StateId get_id() const;
     State get_state() const;
     const Certificate& get_certificate() const;
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
+template<typename T>
+using FaithfulAbstractStateMap = std::unordered_map<FaithfulAbstractState, T, loki::Hash<FaithfulAbstractState>, loki::EqualTo<FaithfulAbstractState>>;
 using CertificateToStateIdMap = std::unordered_map<Certificate, StateId, loki::Hash<Certificate>, loki::EqualTo<Certificate>>;
 
 /// @brief FaithfulAbstraction implements abstractions based on isomorphism testing.
@@ -60,31 +65,31 @@ using CertificateToStateIdMap = std::unordered_map<Certificate, StateId, loki::H
 class FaithfulAbstraction
 {
 private:
-    // Meta data
+    /* Meta data */
     bool m_mark_true_goal_atoms;
     bool m_use_unit_cost_one;
 
-    // Memory
+    /* Memory */
     std::shared_ptr<PDDLParser> m_parser;
     std::shared_ptr<IAAG> m_aag;
     std::shared_ptr<ISSG> m_ssg;
 
-    // States
+    /* States */
     FaithfulAbstractStateList m_states;
     CertificateToStateIdMap m_states_by_certificate;
     StateId m_initial_state;
     StateIdSet m_goal_states;
     StateIdSet m_deadend_states;
 
-    // Transitions
+    /* Transitions */
     size_t m_num_transitions;
     std::vector<TransitionList> m_forward_transitions;
     std::vector<TransitionList> m_backward_transitions;
 
-    // Distances
+    /* Distances */
     std::vector<double> m_goal_distances;
 
-    // Preallocated memory to compute distance of concrete state.
+    /* Preallocated memory to compute distance of concrete state. */
     nauty_wrapper::Graph m_nauty_graph;
     ObjectGraphFactory m_object_graph_factory;
 
@@ -157,16 +162,16 @@ public:
      * Getters.
      */
 
-    // Meta data
+    /* Meta data */
     bool get_mark_true_goal_atoms() const;
     bool get_use_unit_cost_one() const;
 
-    // Memory
+    /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<ISSG>& get_ssg() const;
 
-    // States
+    /* States */
     const FaithfulAbstractStateList& get_states() const;
     const CertificateToStateIdMap& get_states_by_certificate() const;
     StateId get_initial_state() const;
@@ -176,12 +181,12 @@ public:
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
 
-    // Transitions
+    /* Transitions */
     size_t get_num_transitions() const;
     const std::vector<TransitionList>& get_forward_transitions() const;
     const std::vector<TransitionList>& get_backward_transitions() const;
 
-    // Distances
+    /* Distances */
     const std::vector<double>& get_goal_distances() const;
 };
 

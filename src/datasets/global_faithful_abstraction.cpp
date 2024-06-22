@@ -41,7 +41,7 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
 {
     if (this != &other)
     {
-        // same id implies same abstraction_id and abstract_state_id
+        // GlobalFaithfulAbstractStates are unique by id within a GlobalFaithfulAbstraction;
         return (m_id == other.m_id);
     }
     return true;
@@ -49,7 +49,7 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
 
 size_t GlobalFaithfulAbstractState::hash() const
 {
-    // same id implies same abstraction_id and abstract_state_id
+    // GlobalFaithfulAbstractStates are unique by id within a GlobalFaithfulAbstraction;
     return loki::hash_combine(m_id);
 }
 
@@ -68,6 +68,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
                                                      AbstractionId id,
                                                      std::shared_ptr<FaithfulAbstractionList> abstractions,
                                                      GlobalFaithfulAbstractStateList states,
+                                                     GlobalFaithfulAbstractStateMap<StateId> state_to_index,
                                                      CertificateToStateIdMap states_by_certificate,
                                                      size_t num_isomorphic_states,
                                                      size_t num_non_isomorphic_states) :
@@ -76,6 +77,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
     m_id(id),
     m_abstractions(std::move(abstractions)),
     m_states(std::move(states)),
+    m_state_to_index(std::move(state_to_index)),
     m_states_by_certificate(std::move(states_by_certificate)),
     m_num_isomorphic_states(num_isomorphic_states),
     m_num_non_isomorphic_states(num_non_isomorphic_states),
@@ -98,7 +100,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
+        auto aag = std::make_shared<GroundedAAG>(parser->get_problem(), parser->get_factories());
         auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
@@ -149,6 +151,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
         auto states = GlobalFaithfulAbstractStateList(
             faithful_abstraction.get_num_states(),
             GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
+        auto state_to_index = GlobalFaithfulAbstractStateMap<StateId> {};
         auto states_by_certificate = CertificateToStateIdMap {};
         for (size_t state_id = 0; state_id < faithful_abstraction.get_num_states(); ++state_id)
         {
@@ -159,6 +162,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
             {
                 // Copy existing global state
                 states.at(state_id) = it->second;
+                state_to_index.emplace(it->second, state_id);
                 states_by_certificate.emplace(it->first, state_id);
                 ++num_isomorphic_states;
             }
@@ -169,6 +173,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
                 auto new_global_state = GlobalFaithfulAbstractState(new_global_state_id, abstraction_id, state_id);
                 certificate_to_global_state.emplace(state.get_certificate(), new_global_state);
                 states.at(state_id) = new_global_state;
+                state_to_index.emplace(new_global_state, state_id);
                 states_by_certificate.emplace(state.get_certificate(), new_global_state_id);
                 ++num_non_isomorphic_states;
             }
@@ -192,6 +197,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
                                                          abstraction_id,
                                                          relevant_faithful_abstractions,
                                                          std::move(states),
+                                                         std::move(state_to_index),
                                                          std::move(states_by_certificate),
                                                          num_isomorphic_states,
                                                          num_non_isomorphic_states));
@@ -231,16 +237,20 @@ std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_sho
  * Getters
  */
 
-// Meta data
+/* Meta data */
 bool GlobalFaithfulAbstraction::get_mark_true_goal_atoms() const { return m_mark_true_goal_atoms; }
 
 bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
-// Memory
+AbstractionId GlobalFaithfulAbstraction::get_id() const { return m_id; }
+
+/* Memory */
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 
-// States
+/* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
+
+StateId GlobalFaithfulAbstraction::get_state_id(const GlobalFaithfulAbstractState& state) const { return m_state_to_index.at(state); }
 
 const CertificateToStateIdMap& GlobalFaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
 
@@ -260,14 +270,14 @@ size_t GlobalFaithfulAbstraction::get_num_isomorphic_states() const { return m_n
 
 size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return m_num_non_isomorphic_states; }
 
-// Transitions
+/* Transitions */
 size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstractions->at(m_id).get_num_transitions(); }
 
 const std::vector<TransitionList>& GlobalFaithfulAbstraction::get_forward_transitions() const { return m_abstractions->at(m_id).get_forward_transitions(); }
 
 const std::vector<TransitionList>& GlobalFaithfulAbstraction::get_backward_transitions() const { return m_abstractions->at(m_id).get_backward_transitions(); }
 
-// Distances
+/* Distances */
 const std::vector<double>& GlobalFaithfulAbstraction::get_goal_distances() const { return m_abstractions->at(m_id).get_goal_distances(); }
 
 }

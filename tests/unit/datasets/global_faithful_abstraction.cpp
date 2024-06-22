@@ -1,5 +1,7 @@
 #include "mimir/datasets/global_faithful_abstraction.hpp"
 
+#include "mimir/datasets/state_space.hpp"
+
 #include <gtest/gtest.h>
 
 namespace mimir::tests
@@ -28,5 +30,12 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateTest)
     EXPECT_EQ(abstraction_1.get_num_states(), 12);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 12);
+
+    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>> {};
+    for (const auto& abstraction : abstractions.at(0).get_abstractions())
+    {
+        memories.emplace_back(abstraction.get_pddl_parser(), abstraction.get_aag(), abstraction.get_ssg());
+    }
+    auto state_spaces = StateSpace::create(memories);
 }
 }
