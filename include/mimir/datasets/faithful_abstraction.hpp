@@ -89,7 +89,7 @@ private:
     /* Distances */
     std::vector<double> m_goal_distances;
 
-    /* Preallocated memory to compute distance of concrete state. */
+    /* Preallocated memory to compute abstract state of concrete state. */
     nauty_wrapper::Graph m_nauty_graph;
     ObjectGraphFactory m_object_graph_factory;
 
