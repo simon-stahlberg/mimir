@@ -14,7 +14,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
 
     const auto state_space = StateSpace::create(domain_file, problem_file, 10000, 10000).value();
 
-    auto object_graph_factory = ObjectGraphFactory(state_space.get_problem(), state_space.get_pddl_factories());
+    auto object_graph_factory = ObjectGraphFactory(state_space.get_pddl_parser()->get_problem(), state_space.get_pddl_parser()->get_factories());
 
     auto nauty_graph = nauty_wrapper::Graph();
 

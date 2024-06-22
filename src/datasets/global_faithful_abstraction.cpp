@@ -80,7 +80,9 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
     m_num_isomorphic_states(num_isomorphic_states),
     m_num_non_isomorphic_states(num_non_isomorphic_states),
     m_nauty_graph(),
-    m_object_graph_factory(m_abstractions->at(m_id).get_aag()->get_problem(), m_abstractions->at(m_id).get_pddl_factories(), m_mark_true_goal_atoms)
+    m_object_graph_factory(m_abstractions->at(m_id).get_pddl_parser()->get_problem(),
+                           m_abstractions->at(m_id).get_pddl_parser()->get_factories(),
+                           m_mark_true_goal_atoms)
 {
 }
 
@@ -92,9 +94,28 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                                                          uint32_t timeout_ms,
                                                                          uint32_t num_threads)
 {
+    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>> {};
+    for (const auto& problem_filepath : problem_filepaths)
+    {
+        auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
+        auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
+        auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+        memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
+    }
+
+    return GlobalFaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+}
+
+std::vector<GlobalFaithfulAbstraction>
+GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+                                  bool mark_true_goal_atoms,
+                                  bool use_unit_cost_one,
+                                  uint32_t max_num_states,
+                                  uint32_t timeout_ms,
+                                  uint32_t num_threads)
+{
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
-    auto faithful_abstractions =
-        FaithfulAbstraction::create(domain_filepath, problem_filepaths, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+    auto faithful_abstractions = FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
 
     auto certificate_to_global_state = std::unordered_map<Certificate, GlobalFaithfulAbstractState, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
@@ -125,7 +146,9 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
 
         auto num_isomorphic_states = 0;
         auto num_non_isomorphic_states = 0;
-        auto states = GlobalFaithfulAbstractStateList(faithful_abstraction.get_num_states(), GlobalFaithfulAbstractState(-1, -1, -1));
+        auto states = GlobalFaithfulAbstractStateList(
+            faithful_abstraction.get_num_states(),
+            GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
         auto states_by_certificate = CertificateToStateIdMap {};
         for (size_t state_id = 0; state_id < faithful_abstraction.get_num_states(); ++state_id)
         {
@@ -155,7 +178,11 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
         assert(std::all_of(states.begin(),
                            states.end(),
                            [](const GlobalFaithfulAbstractState& global_state)
-                           { return global_state.get_id() != -1 && global_state.get_abstraction_id() != -1 && global_state.get_abstract_state_id() != -1; }));
+                           {
+                               return global_state.get_id() != std::numeric_limits<StateId>::max()
+                                      && global_state.get_abstraction_id() != std::numeric_limits<StateId>::max()
+                                      && global_state.get_abstract_state_id() != std::numeric_limits<StateId>::max();
+                           }));
 
         // Constructor of GlobalFaithfulAbstraction requires this to come first.
         relevant_faithful_abstractions->push_back(std::move(faithful_abstraction));
@@ -178,12 +205,12 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
  * Abstraction functionality
  */
 
-double GlobalFaithfulAbstraction::get_goal_distance(State concrete_state)
+StateId GlobalFaithfulAbstraction::get_abstract_state_id(State concrete_state)
 {
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
-    return get_goal_distances().at(m_states_by_certificate.at(
-        Certificate(m_nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors())));
+    return m_states_by_certificate.at(
+        Certificate(m_nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors()));
 }
 
 /**
@@ -205,9 +232,9 @@ std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_sho
  */
 
 // Meta data
-const fs::path& GlobalFaithfulAbstraction::get_domain_filepath() const { return m_abstractions->at(m_id).get_domain_filepath(); }
+bool GlobalFaithfulAbstraction::get_mark_true_goal_atoms() const { return m_mark_true_goal_atoms; }
 
-const fs::path& GlobalFaithfulAbstraction::get_problem_filepath() const { return m_abstractions->at(m_id).get_problem_filepath(); }
+bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 // Memory
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }

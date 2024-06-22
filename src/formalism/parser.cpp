@@ -8,14 +8,16 @@
 
 namespace mimir
 {
-PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem_file_path) :
-    m_loki_domain_parser(loki::DomainParser(domain_file_path)),
-    m_loki_problem_parser(loki::ProblemParser(problem_file_path, m_loki_domain_parser)),
+PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_filepath) :
+    m_domain_filepath(domain_filepath),
+    m_problem_filepath(problem_filepath),
+    m_loki_domain_parser(loki::DomainParser(domain_filepath)),
+    m_loki_problem_parser(loki::ProblemParser(problem_filepath, m_loki_domain_parser)),
     m_factories(std::make_shared<PDDLFactories>())
 {
     // Parse the loki domain and problem structures using a separate parser to free intermediate results after translation
-    auto domain_parser = loki::DomainParser(domain_file_path);
-    auto problem_parser = loki::ProblemParser(problem_file_path, domain_parser);
+    auto domain_parser = loki::DomainParser(domain_filepath);
+    auto problem_parser = loki::ProblemParser(problem_filepath, domain_parser);
     auto problem = problem_parser.get_problem();
 
     // Negation normal form translator
@@ -64,6 +66,10 @@ PDDLParser::PDDLParser(const fs::path& domain_file_path, const fs::path& problem
     m_problem = encode_parameter_index_in_variables.run(*m_problem);
     m_domain = m_problem->get_domain();
 }
+
+const fs::path& PDDLParser::get_domain_filepath() const { return m_domain_filepath; }
+
+const fs::path& PDDLParser::get_problem_filepath() const { return m_problem_filepath; }
 
 const std::shared_ptr<PDDLFactories>& PDDLParser::get_factories() { return m_factories; }
 

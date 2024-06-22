@@ -168,19 +168,22 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Static>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Static>::get_identifier)
         .def("get_name", &PredicateImpl<Static>::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl<Static>::get_parameters, py::return_value_policy::reference);
+        .def("get_parameters", &PredicateImpl<Static>::get_parameters, py::return_value_policy::reference)
+        .def("get_arity", &PredicateImpl<Static>::get_arity);
 
     py::class_<PredicateImpl<Fluent>>(m, "FluentPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Fluent>::get_identifier)
         .def("get_name", &PredicateImpl<Fluent>::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl<Fluent>::get_parameters, py::return_value_policy::reference);
+        .def("get_parameters", &PredicateImpl<Fluent>::get_parameters, py::return_value_policy::reference)
+        .def("get_arity", &PredicateImpl<Fluent>::get_arity);
 
     py::class_<PredicateImpl<Derived>>(m, "DerivedPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Derived>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Derived>::get_identifier)
         .def("get_name", &PredicateImpl<Derived>::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl<Derived>::get_parameters, py::return_value_policy::reference);
+        .def("get_parameters", &PredicateImpl<Derived>::get_parameters, py::return_value_policy::reference)
+        .def("get_arity", &PredicateImpl<Derived>::get_arity);
 
     py::class_<AtomImpl<Static>>(m, "StaticAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Static>>::str, py::const_))
@@ -423,14 +426,14 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<ActionImpl>::str, py::const_))
         .def("get_identifier", &ActionImpl::get_identifier)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
-        .def("get_arity", &ActionImpl::get_arity)
         .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
         .def("get_static_conditions", &ActionImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &ActionImpl::get_fluent_conditions, py::return_value_policy::reference)
         .def("get_derived_conditions", &ActionImpl::get_derived_conditions, py::return_value_policy::reference)
         .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference)
         .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference)
-        .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference);
+        .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference)
+        .def("get_arity", &ActionImpl::get_arity);
 
     py::class_<AxiomImpl>(m, "Axiom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
@@ -438,7 +441,8 @@ void init_pymimir(py::module_& m)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
         .def("get_static_conditions", &AxiomImpl::get_static_conditions, py::return_value_policy::reference)
         .def("get_fluent_conditions", &AxiomImpl::get_fluent_conditions, py::return_value_policy::reference)
-        .def("get_derived_conditions", &AxiomImpl::get_derived_conditions, py::return_value_policy::reference);
+        .def("get_derived_conditions", &AxiomImpl::get_derived_conditions, py::return_value_policy::reference)
+        .def("get_arity", &AxiomImpl::get_arity);
 
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
@@ -487,6 +491,8 @@ void init_pymimir(py::module_& m)
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
+        .def("get_domain_filepath", [](const PDDLParser& self) { return std::string(self.get_domain_filepath()); })
+        .def("get_problem_filepath", [](const PDDLParser& self) { return std::string(self.get_problem_filepath()); })
         .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference)
         .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference);
@@ -773,6 +779,20 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
             "create",
+            [](std::shared_ptr<PDDLParser> parser,
+               std::shared_ptr<IAAG> aag,
+               std::shared_ptr<ISSG> ssg,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms) { return StateSpace::create(parser, aag, ssg, use_unit_cost_one, max_num_states, timeout_ms); },
+            py::arg("parser"),
+            py::arg("aag"),
+            py::arg("ssg"),
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+        .def_static(
+            "create",
             [](const std::string& domain_filepath,
                const std::vector<std::string>& problem_filepaths,
                bool use_unit_cost_one,
@@ -789,15 +809,24 @@ void init_pymimir(py::module_& m)
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def_static(
+            "create",
+            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms,
+               uint32_t num_threads) { return StateSpace::create(memories, use_unit_cost_one, max_num_states, timeout_ms, num_threads); },
+            py::arg("memories"),
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
+            py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states",
              &StateSpace::compute_shortest_distances_from_states,
              pybind11::arg("states"),
              pybind11::arg("forward") = true)
         .def("compute_pairwise_shortest_state_distances", &StateSpace::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
-        .def("get_domain_filepath", [](const StateSpace& self) { return std::string(self.get_domain_filepath()); })
-        .def("get_problem_filepath", [](const StateSpace& self) { return std::string(self.get_problem_filepath()); })
         .def("get_pddl_parser", &StateSpace::get_pddl_parser)
-        .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
         .def("get_states", &StateSpace::get_states, py::return_value_policy::reference)
@@ -842,6 +871,23 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
             "create",
+            [](std::shared_ptr<PDDLParser> parser,
+               std::shared_ptr<IAAG> aag,
+               std::shared_ptr<ISSG> ssg,
+               bool mark_true_goal_atoms,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms)
+            { return FaithfulAbstraction::create(parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); },
+            py::arg("parser"),
+            py::arg("aag"),
+            py::arg("ssg"),
+            py::arg("mark_true_goal_atoms") = false,
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+        .def_static(
+            "create",
             [](const std::string& domain_filepath,
                const std::vector<std::string>& problem_filepaths,
                bool mark_true_goal_atoms,
@@ -866,13 +912,26 @@ void init_pymimir(py::module_& m)
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def_static(
+            "create",
+            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+               bool mark_true_goal_atoms,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms,
+               uint32_t num_threads)
+            { return FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads); },
+            py::arg("memories"),
+            py::arg("mark_true_goal_atoms") = false,
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
+            py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
-        .def("get_domain_filepath", [](const FaithfulAbstraction& self) { return std::string(self.get_domain_filepath()); })
-        .def("get_problem_filepath", [](const FaithfulAbstraction& self) { return std::string(self.get_problem_filepath()); })
         .def("get_pddl_parser", &FaithfulAbstraction::get_pddl_parser)
-        .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
+        .def("get_abstract_state_id", &FaithfulAbstraction::get_abstract_state_id)
         .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
         .def("get_states_by_certificate", &FaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_forward_transitions", &FaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
@@ -922,9 +981,23 @@ void init_pymimir(py::module_& m)
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
-        .def("get_domain_filepath", [](const GlobalFaithfulAbstraction& self) { return std::string(self.get_domain_filepath()); })
-        .def("get_problem_filepath", [](const GlobalFaithfulAbstraction& self) { return std::string(self.get_problem_filepath()); })
+        .def_static(
+            "create",
+            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+               bool mark_true_goal_atoms,
+               bool use_unit_cost_one,
+               uint32_t max_num_states,
+               uint32_t timeout_ms,
+               uint32_t num_threads)
+            { return GlobalFaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads); },
+            py::arg("memories"),
+            py::arg("mark_true_goal_atoms") = false,
+            py::arg("use_unit_cost_one") = true,
+            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
+            py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
+        .def("get_abstract_state_id", &GlobalFaithfulAbstraction::get_abstract_state_id)
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
         .def("get_states_by_certificate", &GlobalFaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)

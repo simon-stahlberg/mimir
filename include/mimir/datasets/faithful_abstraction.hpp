@@ -61,15 +61,13 @@ class FaithfulAbstraction
 {
 private:
     // Meta data
-    fs::path m_domain_filepath;
-    fs::path m_problem_filepath;
     bool m_mark_true_goal_atoms;
     bool m_use_unit_cost_one;
 
     // Memory
     std::shared_ptr<PDDLParser> m_parser;
-    std::shared_ptr<LiftedAAG> m_aag;
-    std::shared_ptr<SSG> m_ssg;
+    std::shared_ptr<IAAG> m_aag;
+    std::shared_ptr<ISSG> m_ssg;
 
     // States
     FaithfulAbstractStateList m_states;
@@ -94,13 +92,11 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    FaithfulAbstraction(fs::path domain_filepath,
-                        fs::path problem_filepath,
-                        bool mark_true_goal_atoms,
+    FaithfulAbstraction(bool mark_true_goal_atoms,
                         bool use_unit_cost_one,
                         std::shared_ptr<PDDLParser> parser,
-                        std::shared_ptr<LiftedAAG> aag,
-                        std::shared_ptr<SSG> ssg,
+                        std::shared_ptr<IAAG> aag,
+                        std::shared_ptr<ISSG> ssg,
                         FaithfulAbstractStateList states,
                         CertificateToStateIdMap states_by_certificate,
                         StateId initial_state,
@@ -112,14 +108,16 @@ private:
                         std::vector<double> goal_distances);
 
 public:
-    /// @brief Perform BrFS from the initial state while pruning isomorphic states.
-    /// @param domain_filepath
-    /// @param problem_filpath
-    /// @param max_num_states
-    /// @param timeout_ms
-    /// @return
     static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                      const fs::path& problem_filepath,
+                                                     bool mark_true_goal_atoms = false,
+                                                     bool use_unit_cost_one = true,
+                                                     uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+
+    static std::optional<FaithfulAbstraction> create(std::shared_ptr<PDDLParser> parser,
+                                                     std::shared_ptr<IAAG> aag,
+                                                     std::shared_ptr<ISSG> ssg,
                                                      bool mark_true_goal_atoms = false,
                                                      bool use_unit_cost_one = true,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
@@ -133,11 +131,19 @@ public:
                                                    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                                    uint32_t num_threads = std::thread::hardware_concurrency());
 
+    static std::vector<FaithfulAbstraction>
+    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+           bool mark_true_goal_atoms = false,
+           bool use_unit_cost_one = true,
+           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+           uint32_t num_threads = std::thread::hardware_concurrency());
+
     /**
      * Abstraction functionality
      */
 
-    double get_goal_distance(State concrete_state);
+    StateId get_abstract_state_id(State concrete_state);
 
     /**
      * Extended functionality
@@ -152,14 +158,13 @@ public:
      */
 
     // Meta data
-    const fs::path& get_domain_filepath() const;
-    const fs::path& get_problem_filepath() const;
+    bool get_mark_true_goal_atoms() const;
+    bool get_use_unit_cost_one() const;
 
     // Memory
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
-    const std::shared_ptr<LiftedAAG>& get_aag() const;
-    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+    const std::shared_ptr<IAAG>& get_aag() const;
+    const std::shared_ptr<ISSG>& get_ssg() const;
 
     // States
     const FaithfulAbstractStateList& get_states() const;

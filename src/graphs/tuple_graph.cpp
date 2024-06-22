@@ -538,8 +538,8 @@ const std::shared_ptr<TupleIndexMapper>& TupleGraphFactory::get_tuple_index_mapp
 
 std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
-    const auto problem = tuple_graph.get_state_space()->get_problem();
-    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_factories();
+    const auto problem = tuple_graph.get_state_space()->get_pddl_parser()->get_problem();
+    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_parser()->get_factories();
     auto combined_atom_indices = AtomIndexList {};
     auto fluent_atom_indices = AtomIndexList {};
     auto derived_atom_indices = AtomIndexList {};

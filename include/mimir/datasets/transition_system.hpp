@@ -27,10 +27,6 @@
 namespace mimir
 {
 
-using StateId = int;
-using StateIdList = std::vector<StateId>;
-using StateIdSet = std::unordered_set<StateId>;
-
 /// @brief Transition encapsulates data of a transition in a transition system.
 class Transition
 {

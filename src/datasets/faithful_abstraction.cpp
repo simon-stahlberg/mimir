@@ -45,13 +45,11 @@ const Certificate& FaithfulAbstractState::get_certificate() const { return m_cer
  * FaithfulAbstraction
  */
 
-FaithfulAbstraction::FaithfulAbstraction(fs::path domain_filepath,
-                                         fs::path problem_filepath,
-                                         bool mark_true_goal_atoms,
+FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
                                          bool use_unit_cost_one,
                                          std::shared_ptr<PDDLParser> parser,
-                                         std::shared_ptr<LiftedAAG> aag,
-                                         std::shared_ptr<SSG> ssg,
+                                         std::shared_ptr<IAAG> aag,
+                                         std::shared_ptr<ISSG> ssg,
                                          FaithfulAbstractStateList states,
                                          CertificateToStateIdMap states_by_certificate,
                                          StateId initial_state,
@@ -61,8 +59,6 @@ FaithfulAbstraction::FaithfulAbstraction(fs::path domain_filepath,
                                          std::vector<TransitionList> forward_transitions,
                                          std::vector<TransitionList> backward_transitions,
                                          std::vector<double> goal_distances) :
-    m_domain_filepath(std::move(domain_filepath)),
-    m_problem_filepath(std::move(problem_filepath)),
     m_mark_true_goal_atoms(mark_true_goal_atoms),
     m_use_unit_cost_one(use_unit_cost_one),
     m_parser(std::move(parser)),
@@ -89,13 +85,25 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
                                                                uint32_t max_num_states,
                                                                uint32_t timeout_ms)
 {
+    auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
+    auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
+    auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+
+    return FaithfulAbstraction::create(std::move(parser), std::move(aag), std::move(ssg), mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms);
+}
+
+std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<PDDLParser> parser,
+                                                               std::shared_ptr<IAAG> aag,
+                                                               std::shared_ptr<ISSG> ssg,
+                                                               bool mark_true_goal_atoms,
+                                                               bool use_unit_cost_one,
+                                                               uint32_t max_num_states,
+                                                               uint32_t timeout_ms)
+{
     auto stop_watch = StopWatch(timeout_ms);
 
-    auto pddl_parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-    const auto problem = pddl_parser->get_problem();
-    const auto& factories = pddl_parser->get_factories();
-    auto aag = std::make_shared<LiftedAAG>(problem, pddl_parser->get_factories());
-    auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+    const auto problem = parser->get_problem();
+    const auto& factories = parser->get_factories();
     auto initial_state = ssg->get_or_create_initial_state();
 
     if (!problem->static_goal_holds())
@@ -201,7 +209,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
 
             lifo_queue.push_back(abstract_successor_state);
             // Abstract states are stored by index
-            assert(abstract_states.back().get_id() == static_cast<int>(abstract_states.size()) - 1);
+            assert(abstract_states.back().get_id() == abstract_states.size() - 1);
         }
     }
 
@@ -224,11 +232,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
         }
     }
 
-    return FaithfulAbstraction(domain_filepath,
-                               problem_filepath,
-                               mark_true_goal_atoms,
+    return FaithfulAbstraction(mark_true_goal_atoms,
                                use_unit_cost_one,
-                               std::move(pddl_parser),
+                               std::move(parser),
                                std::move(aag),
                                std::move(ssg),
                                std::move(abstract_states),
@@ -250,15 +256,35 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
                                                              uint32_t timeout_ms,
                                                              uint32_t num_threads)
 {
+    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>> {};
+    for (const auto& problem_filepath : problem_filepaths)
+    {
+        auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
+        auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
+        auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+        memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
+    }
+
+    return FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+}
+
+std::vector<FaithfulAbstraction>
+FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+                            bool mark_true_goal_atoms,
+                            bool use_unit_cost_one,
+                            uint32_t max_num_states,
+                            uint32_t timeout_ms,
+                            uint32_t num_threads)
+{
     auto abstractions = std::vector<FaithfulAbstraction> {};
     auto pool = BS::thread_pool(num_threads);
     auto futures = std::vector<std::future<std::optional<FaithfulAbstraction>>> {};
 
-    for (const auto& problem_filepath : problem_filepaths)
+    for (const auto& [parser, aag, ssg] : memories)
     {
-        futures.push_back(pool.submit_task(
-            [domain_filepath, problem_filepath, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms]
-            { return FaithfulAbstraction::create(domain_filepath, problem_filepath, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); }));
+        futures.push_back(
+            pool.submit_task([parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms]
+                             { return FaithfulAbstraction::create(parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); }));
     }
 
     for (auto& future : futures)
@@ -277,12 +303,12 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
  * Abstraction functionality
  */
 
-double FaithfulAbstraction::get_goal_distance(State concrete_state)
+StateId FaithfulAbstraction::get_abstract_state_id(State concrete_state)
 {
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
-    return m_goal_distances.at(m_states_by_certificate.at(
-        Certificate(m_nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors())));
+    return m_states_by_certificate.at(
+        Certificate(m_nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors()));
 }
 
 /**
@@ -304,18 +330,16 @@ std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_
  */
 
 // Meta data
-const fs::path& FaithfulAbstraction::get_domain_filepath() const { return m_domain_filepath; }
+bool FaithfulAbstraction::get_mark_true_goal_atoms() const { return m_mark_true_goal_atoms; }
 
-const fs::path& FaithfulAbstraction::get_problem_filepath() const { return m_problem_filepath; }
+bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 // Memory
 const std::shared_ptr<PDDLParser>& FaithfulAbstraction::get_pddl_parser() const { return m_parser; }
 
-const std::shared_ptr<PDDLFactories>& FaithfulAbstraction::get_pddl_factories() const { return m_parser->get_factories(); }
+const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag; }
 
-const std::shared_ptr<LiftedAAG>& FaithfulAbstraction::get_aag() const { return m_aag; }
-
-const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
+const std::shared_ptr<ISSG>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
 // States
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }

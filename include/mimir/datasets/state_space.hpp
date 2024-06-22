@@ -43,14 +43,12 @@ class StateSpace
 {
 private:
     // Meta data
-    fs::path m_domain_filepath;
-    fs::path m_problem_filepath;
     bool m_use_unit_cost_one;
 
     // Memory
     std::shared_ptr<PDDLParser> m_parser;
-    std::shared_ptr<GroundedAAG> m_aag;
-    std::shared_ptr<SSG> m_ssg;
+    std::shared_ptr<IAAG> m_aag;
+    std::shared_ptr<ISSG> m_ssg;
 
     // States
     StateList m_states;
@@ -73,12 +71,10 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    StateSpace(fs::path domain_filepath,
-               fs::path problem_filepath,
-               bool use_unit_cost_one,
+    StateSpace(bool use_unit_cost_one,
                std::shared_ptr<PDDLParser> parser,
-               std::shared_ptr<GroundedAAG> aag,
-               std::shared_ptr<SSG> ssg,
+               std::shared_ptr<IAAG> aag,
+               std::shared_ptr<ISSG> ssg,
                StateList states,
                StateId initial_state,
                StateIdSet goal_states,
@@ -89,27 +85,44 @@ private:
                std::vector<double> goal_distances);
 
 public:
-    /// @brief Try to create a StateSpace from the given input files with the given resource limits.
-    /// @param domain_filepath The PDDL domain file.
-    /// @param problem_filepath The PDDL problem file.
-    /// @param max_num_states The maximum number of states allowed in the StateSpace.
-    /// @param timeout_ms The maximum time spent on creating the StateSpace.
-    /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
+    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::optional<StateSpace> create(const fs::path& domain_filepath,
                                             const fs::path& problem_filepath,
                                             bool use_unit_cost_one = true,
                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                             uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
-    /// @brief Try to create a StateSpaceList from the given input files with the given resource limits.
+    /// @brief Try to create a StateSpace from the given input files with the given resource limits.
+    /// @param parser External memory to parser.
+    /// @param aag External memory to aag.
+    /// @param ssg External memory to ssg.
+    /// @param max_num_states The maximum number of states allowed in the StateSpace.
+    /// @param timeout_ms The maximum time spent on creating the StateSpace.
+    /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
+    static std::optional<StateSpace> create(std::shared_ptr<PDDLParser> parser,
+                                            std::shared_ptr<IAAG> aag,
+                                            std::shared_ptr<ISSG> ssg,
+                                            bool use_unit_cost_one = true,
+                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+
+    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
+    static std::vector<StateSpace> create(const fs::path& domain_filepath,
+                                          const std::vector<fs::path>& problem_filepaths,
+                                          bool use_unit_cost_one = true,
+                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+                                          uint32_t num_threads = std::thread::hardware_concurrency());
+
+    /// @brief Try to create a StateSpaceList from the given data and the given resource limits.
+    /// @param memories External memory to parsers, aags, ssgs.
     /// @param domain_filepath The PDDL domain file.
     /// @param problem_filepaths The PDDL problem files.
     /// @param max_num_states The maximum number of states allowed in a StateSpace.
     /// @param timeout_ms The maximum time spent on creating a StateSpace.
     /// @param num_threads The number of threads used for construction.
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
-    static std::vector<StateSpace> create(const fs::path& domain_filepath,
-                                          const std::vector<fs::path>& problem_filepaths,
+    static std::vector<StateSpace> create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                                           bool use_unit_cost_one = true,
                                           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -128,14 +141,12 @@ public:
 
     /* Getters */
     // Meta data
-    const fs::path& get_domain_filepath() const;
-    const fs::path& get_problem_filepath() const;
+    bool get_use_unit_cost_one() const;
 
     // Memory
-    const PDDLParser& get_pddl_parser() const;
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
-    const std::shared_ptr<GroundedAAG>& get_aag() const;
-    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+    const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
+    const std::shared_ptr<IAAG>& get_aag() const;
+    const std::shared_ptr<ISSG>& get_ssg() const;
     Problem get_problem() const;
 
     // States

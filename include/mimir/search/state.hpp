@@ -30,10 +30,14 @@
 
 namespace mimir
 {
+using StateId = uint32_t;
+using StateIdList = std::vector<StateId>;
+using StateIdSet = std::unordered_set<StateId>;
+
 /**
  * Flatmemory types
  */
-using FlatStateLayout = flatmemory::Tuple<uint32_t, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
+using FlatStateLayout = flatmemory::Tuple<StateId, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
 using FlatStateBuilder = flatmemory::Builder<FlatStateLayout>;
 using FlatState = flatmemory::ConstView<FlatStateLayout>;
 
@@ -73,7 +77,7 @@ public:
     [[nodiscard]] FlatStateBuilder& get_flatmemory_builder() { return m_builder; }
     [[nodiscard]] const FlatStateBuilder& get_flatmemory_builder() const { return m_builder; }
 
-    [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
+    [[nodiscard]] StateId& get_id() { return m_builder.get<0>(); }
 
     template<DynamicPredicateCategory P>
     [[nodiscard]] FlatBitsetBuilder<P>& get_atoms()
@@ -117,7 +121,7 @@ public:
     /// Same argument from operator== applies.
     [[nodiscard]] size_t hash() const { return loki::hash_combine(m_view.buffer()); }
 
-    [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
+    [[nodiscard]] StateId get_id() const { return m_view.get<0>(); }
 
     [[nodiscard]] auto begin_fluent_ground_atoms() const { return m_view.get<1>().begin(); }
     [[nodiscard]] auto end_fluent_ground_atoms() const { return m_view.get<1>().end(); }

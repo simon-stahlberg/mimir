@@ -75,6 +75,9 @@ private:
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
+    // Additional
+    StateMap<StateId> m_state_to_index;
+
     // Preallocated memory to compute distance of concrete state.
     nauty_wrapper::Graph m_nauty_graph;
     ObjectGraphFactory m_object_graph_factory;
@@ -97,11 +100,19 @@ public:
                                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                                          uint32_t num_threads = std::thread::hardware_concurrency());
 
+    static std::vector<GlobalFaithfulAbstraction>
+    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+           bool mark_true_goal_atoms = false,
+           bool use_unit_cost_one = true,
+           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+           uint32_t num_threads = std::thread::hardware_concurrency());
+
     /**
      * Abstraction functionality
      */
 
-    double get_goal_distance(State concrete_state);
+    StateId get_abstract_state_id(State concrete_state);
 
     /**
      * Extended functionality
@@ -116,8 +127,8 @@ public:
      */
 
     // Meta data
-    const fs::path& get_domain_filepath() const;
-    const fs::path& get_problem_filepath() const;
+    bool get_mark_true_goal_atoms() const;
+    bool get_use_unit_cost_one() const;
 
     // Memory
     const FaithfulAbstractionList& get_abstractions() const;
