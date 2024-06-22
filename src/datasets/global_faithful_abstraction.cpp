@@ -174,7 +174,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
                 certificate_to_global_state.emplace(state.get_certificate(), new_global_state);
                 states.at(state_id) = new_global_state;
                 state_to_index.emplace(new_global_state, state_id);
-                states_by_certificate.emplace(state.get_certificate(), new_global_state_id);
+                states_by_certificate.emplace(state.get_certificate(), state_id);
                 ++num_non_isomorphic_states;
             }
         }
