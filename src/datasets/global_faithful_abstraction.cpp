@@ -260,11 +260,17 @@ const StateIndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return
 
 const StateIndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_id).get_deadend_states(); }
 
-size_t GlobalFaithfulAbstraction::get_num_states() const { return m_states.size(); }
+size_t GlobalFaithfulAbstraction::get_num_states() const { return get_states().size(); }
 
-size_t GlobalFaithfulAbstraction::get_num_goal_states() const { return m_abstractions->at(m_id).get_num_goal_states(); }
+size_t GlobalFaithfulAbstraction::get_num_goal_states() const { return get_goal_states().size(); }
 
-size_t GlobalFaithfulAbstraction::get_num_deadend_states() const { return m_abstractions->at(m_id).get_num_deadend_states(); }
+size_t GlobalFaithfulAbstraction::get_num_deadend_states() const { return get_deadend_states().size(); }
+
+bool GlobalFaithfulAbstraction::is_goal_state(StateIndex state) const { return get_goal_states().count(state); }
+
+bool GlobalFaithfulAbstraction::is_deadend_state(StateIndex state) const { return get_deadend_states().count(state); }
+
+bool GlobalFaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) && get_deadend_states().count(state)); }
 
 size_t GlobalFaithfulAbstraction::get_num_isomorphic_states() const { return m_num_isomorphic_states; }
 

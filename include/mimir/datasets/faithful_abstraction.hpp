@@ -182,6 +182,9 @@ public:
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
+    bool is_goal_state(StateIndex state) const;
+    bool is_deadend_state(StateIndex state) const;
+    bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
     size_t get_num_transitions() const;

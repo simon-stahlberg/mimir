@@ -371,24 +371,30 @@ const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { retur
 
 const CertificateToStateIndexMap& FaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
 
-const std::vector<TransitionList>& FaithfulAbstraction::get_forward_transitions() const { return m_forward_transitions; }
-
-const std::vector<TransitionList>& FaithfulAbstraction::get_backward_transitions() const { return m_backward_transitions; }
-
 StateIndex FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
 
 const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goal_states; }
 
 const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
-size_t FaithfulAbstraction::get_num_states() const { return m_states.size(); }
+size_t FaithfulAbstraction::get_num_states() const { return get_states().size(); }
+
+size_t FaithfulAbstraction::get_num_goal_states() const { return get_goal_states().size(); }
+
+size_t FaithfulAbstraction::get_num_deadend_states() const { return get_deadend_states().size(); }
+
+bool FaithfulAbstraction::is_goal_state(StateIndex state) const { return get_goal_states().count(state); }
+
+bool FaithfulAbstraction::is_deadend_state(StateIndex state) const { return get_deadend_states().count(state); }
+
+bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) && get_deadend_states().count(state)); }
 
 /* Transitions */
 size_t FaithfulAbstraction::get_num_transitions() const { return m_num_transitions; }
 
-size_t FaithfulAbstraction::get_num_goal_states() const { return m_goal_states.size(); }
+const std::vector<TransitionList>& FaithfulAbstraction::get_forward_transitions() const { return m_forward_transitions; }
 
-size_t FaithfulAbstraction::get_num_deadend_states() const { return m_deadend_states.size(); }
+const std::vector<TransitionList>& FaithfulAbstraction::get_backward_transitions() const { return m_backward_transitions; }
 
 /* Distances */
 const std::vector<double>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }

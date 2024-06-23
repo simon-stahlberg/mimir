@@ -47,7 +47,7 @@ public:
 using TransitionList = std::vector<Transition>;
 
 template<typename T>
-concept IsTransitionSystem = requires(T a) {
+concept IsTransitionSystem = requires(T a, StateIndex state_index) {
     // States
     {
         a.get_initial_state()
@@ -67,6 +67,15 @@ concept IsTransitionSystem = requires(T a) {
     {
         a.get_num_deadend_states()
     } -> std::convertible_to<size_t>;
+    {
+        a.is_goal_state(state_index)
+    } -> std::convertible_to<bool>;
+    {
+        a.is_deadend_state(state_index)
+    } -> std::convertible_to<bool>;
+    {
+        a.is_alive_state(state_index)
+    } -> std::convertible_to<bool>;
 
     // Transitions
     {

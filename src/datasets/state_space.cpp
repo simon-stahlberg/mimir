@@ -269,13 +269,17 @@ const StateIndexSet& StateSpace::get_goal_states() const { return m_goal_states;
 
 const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
-size_t StateSpace::get_num_states() const { return m_states.size(); }
+size_t StateSpace::get_num_states() const { return get_states().size(); }
 
-size_t StateSpace::get_num_goal_states() const { return m_goal_states.size(); }
+size_t StateSpace::get_num_goal_states() const { return get_goal_states().size(); }
 
-size_t StateSpace::get_num_deadend_states() const { return m_deadend_states.size(); }
+size_t StateSpace::get_num_deadend_states() const { return get_deadend_states().size(); }
 
-bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(get_state_index(state)) == std::numeric_limits<double>::max(); }
+bool StateSpace::is_goal_state(StateIndex state) const { return get_goal_states().count(state); }
+
+bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_states().count(state); }
+
+bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) && get_deadend_states().count(state)); }
 
 /* Transitions */
 size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
