@@ -805,6 +805,7 @@ void init_pymimir(py::module_& m)
                const std::vector<std::string>& problem_filepaths,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
+               bool sort_ascending_by_num_states,
                uint32_t max_num_states,
                uint32_t timeout_ms,
                uint32_t num_threads)
@@ -814,6 +815,7 @@ void init_pymimir(py::module_& m)
                                           problem_filepaths_,
                                           use_unit_cost_one,
                                           remove_if_unsolvable,
+                                          sort_ascending_by_num_states,
                                           max_num_states,
                                           timeout_ms,
                                           num_threads);
@@ -822,6 +824,7 @@ void init_pymimir(py::module_& m)
             py::arg("problem_filepaths"),
             py::arg("use_unit_cost_one") = true,
             py::arg("remove_if_unsolvable") = true,
+            py::arg("sort_ascending_by_num_states") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -830,12 +833,22 @@ void init_pymimir(py::module_& m)
             [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
+               bool sort_ascending_by_num_states,
                uint32_t max_num_states,
                uint32_t timeout_ms,
-               uint32_t num_threads) { return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads); },
+               uint32_t num_threads) {
+                return StateSpace::create(memories,
+                                          use_unit_cost_one,
+                                          remove_if_unsolvable,
+                                          sort_ascending_by_num_states,
+                                          max_num_states,
+                                          timeout_ms,
+                                          num_threads);
+            },
             py::arg("memories"),
             py::arg("use_unit_cost_one") = true,
             py::arg("remove_if_unsolvable") = true,
+            py::arg("sort_ascending_by_num_states") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -927,6 +940,7 @@ void init_pymimir(py::module_& m)
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
+               bool sort_ascending_by_num_states,
                uint32_t max_num_states,
                uint32_t timeout_ms,
                uint32_t num_threads)
@@ -937,6 +951,7 @@ void init_pymimir(py::module_& m)
                                                    mark_true_goal_atoms,
                                                    use_unit_cost_one,
                                                    remove_if_unsolvable,
+                                                   sort_ascending_by_num_states,
                                                    max_num_states,
                                                    timeout_ms,
                                                    num_threads);
@@ -946,6 +961,7 @@ void init_pymimir(py::module_& m)
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
             py::arg("remove_if_unsolvable") = true,
+            py::arg("sort_ascending_by_num_states") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -955,13 +971,16 @@ void init_pymimir(py::module_& m)
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
+               bool sort_ascending_by_num_states,
                uint32_t max_num_states,
                uint32_t timeout_ms,
-               uint32_t num_threads) {
+               uint32_t num_threads)
+            {
                 return FaithfulAbstraction::create(memories,
                                                    mark_true_goal_atoms,
                                                    use_unit_cost_one,
                                                    remove_if_unsolvable,
+                                                   sort_ascending_by_num_states,
                                                    max_num_states,
                                                    timeout_ms,
                                                    num_threads);
@@ -970,6 +989,7 @@ void init_pymimir(py::module_& m)
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
             py::arg("remove_if_unsolvable") = true,
+            py::arg("sort_ascending_by_num_states") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -1011,6 +1031,7 @@ void init_pymimir(py::module_& m)
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
+               bool sort_ascending_by_num_states,
                uint32_t max_num_states,
                uint32_t timeout_ms,
                uint32_t num_threads)
@@ -1021,6 +1042,7 @@ void init_pymimir(py::module_& m)
                                                          mark_true_goal_atoms,
                                                          use_unit_cost_one,
                                                          remove_if_unsolvable,
+                                                         sort_ascending_by_num_states,
                                                          max_num_states,
                                                          timeout_ms,
                                                          num_threads);
@@ -1030,6 +1052,7 @@ void init_pymimir(py::module_& m)
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
             py::arg("remove_if_unsolvable") = true,
+            py::arg("sort_ascending_by_num_states") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -1039,13 +1062,16 @@ void init_pymimir(py::module_& m)
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
+               bool sort_ascending_by_num_states,
                uint32_t max_num_states,
                uint32_t timeout_ms,
-               uint32_t num_threads) {
+               uint32_t num_threads)
+            {
                 return GlobalFaithfulAbstraction::create(memories,
                                                          mark_true_goal_atoms,
                                                          use_unit_cost_one,
                                                          remove_if_unsolvable,
+                                                         sort_ascending_by_num_states,
                                                          max_num_states,
                                                          timeout_ms,
                                                          num_threads);
@@ -1054,6 +1080,7 @@ void init_pymimir(py::module_& m)
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
             py::arg("remove_if_unsolvable") = true,
+            py::arg("sort_ascending_by_num_states") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())

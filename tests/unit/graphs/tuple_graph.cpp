@@ -21,8 +21,7 @@ TEST(MimirTests, GraphsTupleGraphTest)
 
         const auto& tuple_graph = tuple_graph_factory.create(state);
 
-        // std::cout << std::make_tuple(std::cref(tuple_graph), state_space->get_aag()->get_problem(), std::cref(state_space->get_aag()->get_pddl_factories()))
-        //           << std::endl;
+        // std::cout << tuple_graph << std::endl;
     }
 }
 }

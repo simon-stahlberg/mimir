@@ -198,6 +198,7 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
                                   const std::vector<fs::path>& problem_filepaths,
                                   bool use_unit_cost_one,
                                   bool remove_if_unsolvable,
+                                  bool sort_ascending_by_num_states,
                                   uint32_t max_num_states,
                                   uint32_t timeout_ms,
                                   uint32_t num_threads)
@@ -211,12 +212,13 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
 
-    return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads);
+    return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, sort_ascending_by_num_states, max_num_states, timeout_ms, num_threads);
 }
 
 std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                                            bool use_unit_cost_one,
                                            bool remove_if_unsolvable,
+                                           bool sort_ascending_by_num_states,
                                            uint32_t max_num_states,
                                            uint32_t timeout_ms,
                                            uint32_t num_threads)
@@ -239,6 +241,11 @@ std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::sha
         {
             state_spaces.push_back(std::move(state_space.value()));
         }
+    }
+
+    if (sort_ascending_by_num_states)
+    {
+        std::sort(state_spaces.begin(), state_spaces.end(), [](const auto& l, const auto& r) { return l.get_num_states() < r.get_num_states(); });
     }
 
     return state_spaces;

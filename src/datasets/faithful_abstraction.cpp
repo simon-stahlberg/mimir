@@ -293,6 +293,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
                                                              bool mark_true_goal_atoms,
                                                              bool use_unit_cost_one,
                                                              bool remove_if_unsolvable,
+                                                             bool sort_ascending_by_num_states,
                                                              uint32_t max_num_states,
                                                              uint32_t timeout_ms,
                                                              uint32_t num_threads)
@@ -306,7 +307,14 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
 
-    return FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads);
+    return FaithfulAbstraction::create(memories,
+                                       mark_true_goal_atoms,
+                                       use_unit_cost_one,
+                                       remove_if_unsolvable,
+                                       sort_ascending_by_num_states,
+                                       max_num_states,
+                                       timeout_ms,
+                                       num_threads);
 }
 
 std::vector<FaithfulAbstraction>
@@ -314,6 +322,7 @@ FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLPar
                             bool mark_true_goal_atoms,
                             bool use_unit_cost_one,
                             bool remove_if_unsolvable,
+                            bool sort_ascending_by_num_states,
                             uint32_t max_num_states,
                             uint32_t timeout_ms,
                             uint32_t num_threads)
@@ -337,6 +346,11 @@ FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLPar
         {
             abstractions.push_back(std::move(abstraction.value()));
         }
+    }
+
+    if (sort_ascending_by_num_states)
+    {
+        std::sort(abstractions.begin(), abstractions.end(), [](const auto& l, const auto& r) { return l.get_num_states() < r.get_num_states(); });
     }
 
     return abstractions;

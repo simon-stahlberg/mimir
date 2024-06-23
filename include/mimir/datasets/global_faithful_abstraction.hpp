@@ -100,6 +100,7 @@ public:
                                                          bool mark_true_goal_atoms = false,
                                                          bool use_unit_cost_one = true,
                                                          bool remove_if_unsolvable = true,
+                                                         bool sort_ascending_by_num_states = true,
                                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                                          uint32_t num_threads = std::thread::hardware_concurrency());
@@ -109,6 +110,7 @@ public:
            bool mark_true_goal_atoms = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
+           bool sort_ascending_by_num_states = true,
            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
            uint32_t num_threads = std::thread::hardware_concurrency());
