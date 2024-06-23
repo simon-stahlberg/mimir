@@ -770,11 +770,17 @@ void init_pymimir(py::module_& m)
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
         .def_static(
             "create",
-            [](const std::string& domain_filepath, const std::string& problem_filepath, bool use_unit_cost_one, uint32_t max_num_states, uint32_t timeout_ms)
-            { return StateSpace::create(domain_filepath, problem_filepath, use_unit_cost_one, max_num_states, timeout_ms); },
+            [](const std::string& domain_filepath,
+               const std::string& problem_filepath,
+               bool use_unit_cost_one,
+               bool remove_if_unsolvable,
+               uint32_t max_num_states,
+               uint32_t timeout_ms)
+            { return StateSpace::create(domain_filepath, problem_filepath, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
@@ -783,12 +789,14 @@ void init_pymimir(py::module_& m)
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<ISSG> ssg,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
-               uint32_t timeout_ms) { return StateSpace::create(parser, aag, ssg, use_unit_cost_one, max_num_states, timeout_ms); },
+               uint32_t timeout_ms) { return StateSpace::create(parser, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); },
             py::arg("parser"),
             py::arg("aag"),
             py::arg("ssg"),
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
@@ -796,16 +804,24 @@ void init_pymimir(py::module_& m)
             [](const std::string& domain_filepath,
                const std::vector<std::string>& problem_filepaths,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms,
                uint32_t num_threads)
             {
                 auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                return StateSpace::create(domain_filepath, problem_filepaths_, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+                return StateSpace::create(domain_filepath,
+                                          problem_filepaths_,
+                                          use_unit_cost_one,
+                                          remove_if_unsolvable,
+                                          max_num_states,
+                                          timeout_ms,
+                                          num_threads);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -813,11 +829,13 @@ void init_pymimir(py::module_& m)
             "create",
             [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms,
-               uint32_t num_threads) { return StateSpace::create(memories, use_unit_cost_one, max_num_states, timeout_ms, num_threads); },
+               uint32_t num_threads) { return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads); },
             py::arg("memories"),
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -863,13 +881,23 @@ void init_pymimir(py::module_& m)
                const std::string& problem_filepath,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms)
-            { return FaithfulAbstraction::create(domain_filepath, problem_filepath, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); },
+            {
+                return FaithfulAbstraction::create(domain_filepath,
+                                                   problem_filepath,
+                                                   mark_true_goal_atoms,
+                                                   use_unit_cost_one,
+                                                   remove_if_unsolvable,
+                                                   max_num_states,
+                                                   timeout_ms);
+            },
             py::arg("domain_filepath"),
             py::arg("problem_filepath"),
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
@@ -879,14 +907,17 @@ void init_pymimir(py::module_& m)
                std::shared_ptr<ISSG> ssg,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
-               uint32_t timeout_ms)
-            { return FaithfulAbstraction::create(parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); },
+               uint32_t timeout_ms) {
+                return FaithfulAbstraction::create(parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
+            },
             py::arg("parser"),
             py::arg("aag"),
             py::arg("ssg"),
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
@@ -895,6 +926,7 @@ void init_pymimir(py::module_& m)
                const std::vector<std::string>& problem_filepaths,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms,
                uint32_t num_threads)
@@ -904,6 +936,7 @@ void init_pymimir(py::module_& m)
                                                    problem_filepaths_,
                                                    mark_true_goal_atoms,
                                                    use_unit_cost_one,
+                                                   remove_if_unsolvable,
                                                    max_num_states,
                                                    timeout_ms,
                                                    num_threads);
@@ -912,6 +945,7 @@ void init_pymimir(py::module_& m)
             py::arg("problem_filepaths"),
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -920,13 +954,22 @@ void init_pymimir(py::module_& m)
             [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms,
-               uint32_t num_threads)
-            { return FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads); },
+               uint32_t num_threads) {
+                return FaithfulAbstraction::create(memories,
+                                                   mark_true_goal_atoms,
+                                                   use_unit_cost_one,
+                                                   remove_if_unsolvable,
+                                                   max_num_states,
+                                                   timeout_ms,
+                                                   num_threads);
+            },
             py::arg("memories"),
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -967,6 +1010,7 @@ void init_pymimir(py::module_& m)
                const std::vector<std::string>& problem_filepaths,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms,
                uint32_t num_threads)
@@ -976,6 +1020,7 @@ void init_pymimir(py::module_& m)
                                                          problem_filepaths_,
                                                          mark_true_goal_atoms,
                                                          use_unit_cost_one,
+                                                         remove_if_unsolvable,
                                                          max_num_states,
                                                          timeout_ms,
                                                          num_threads);
@@ -984,6 +1029,7 @@ void init_pymimir(py::module_& m)
             py::arg("problem_filepaths"),
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
@@ -992,13 +1038,22 @@ void init_pymimir(py::module_& m)
             [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
+               bool remove_if_unsolvable,
                uint32_t max_num_states,
                uint32_t timeout_ms,
-               uint32_t num_threads)
-            { return GlobalFaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads); },
+               uint32_t num_threads) {
+                return GlobalFaithfulAbstraction::create(memories,
+                                                         mark_true_goal_atoms,
+                                                         use_unit_cost_one,
+                                                         remove_if_unsolvable,
+                                                         max_num_states,
+                                                         timeout_ms,
+                                                         num_threads);
+            },
             py::arg("memories"),
             py::arg("mark_true_goal_atoms") = false,
             py::arg("use_unit_cost_one") = true,
+            py::arg("remove_if_unsolvable") = true,
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())

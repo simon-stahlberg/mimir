@@ -119,6 +119,7 @@ public:
                                                      const fs::path& problem_filepath,
                                                      bool mark_true_goal_atoms = false,
                                                      bool use_unit_cost_one = true,
+                                                     bool remove_if_unsolvable = true,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
@@ -127,6 +128,7 @@ public:
                                                      std::shared_ptr<ISSG> ssg,
                                                      bool mark_true_goal_atoms = false,
                                                      bool use_unit_cost_one = true,
+                                                     bool remove_if_unsolvable = true,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
@@ -134,6 +136,7 @@ public:
                                                    const std::vector<fs::path>& problem_filepaths,
                                                    bool mark_true_goal_atoms = false,
                                                    bool use_unit_cost_one = true,
+                                                   bool remove_if_unsolvable = true,
                                                    uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                                    uint32_t num_threads = std::thread::hardware_concurrency());
@@ -142,6 +145,7 @@ public:
     create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
            bool mark_true_goal_atoms = false,
            bool use_unit_cost_one = true,
+           bool remove_if_unsolvable = true,
            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
            uint32_t num_threads = std::thread::hardware_concurrency());

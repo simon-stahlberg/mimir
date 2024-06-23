@@ -61,20 +61,25 @@ StateSpace::StateSpace(bool use_unit_cost_one,
     }
 }
 
-std::optional<StateSpace>
-StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, bool use_unit_cost_one, uint32_t max_num_states, uint32_t timeout_ms)
+std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath,
+                                             const fs::path& problem_filepath,
+                                             bool use_unit_cost_one,
+                                             bool remove_if_unsolvable,
+                                             uint32_t max_num_states,
+                                             uint32_t timeout_ms)
 {
     auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
     const auto problem = parser->get_problem();
     auto aag = std::make_shared<GroundedAAG>(problem, parser->get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-    return StateSpace::create(std::move(parser), std::move(aag), std::move(ssg), use_unit_cost_one, max_num_states, timeout_ms);
+    return StateSpace::create(std::move(parser), std::move(aag), std::move(ssg), use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
 }
 
 std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                                              std::shared_ptr<IAAG> aag,
                                              std::shared_ptr<ISSG> ssg,
                                              bool use_unit_cost_one,
+                                             bool remove_if_unsolvable,
                                              uint32_t max_num_states,
                                              uint32_t timeout_ms)
 {
@@ -83,7 +88,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     const auto problem = parser->get_problem();
     auto initial_state = ssg->get_or_create_initial_state();
 
-    if (!problem->static_goal_holds())
+    if (remove_if_unsolvable && !problem->static_goal_holds())
     {
         // Unsolvable
         return std::nullopt;
@@ -153,6 +158,12 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         return std::nullopt;
     }
 
+    if (remove_if_unsolvable && goal_states.empty())
+    {
+        // Skip: unsolvable
+        return std::nullopt;
+    }
+
     auto goal_distances = mimir::compute_shortest_distances_from_states(states.size(),
                                                                         StateIndexList { goal_states.begin(), goal_states.end() },
                                                                         backward_transitions,
@@ -185,7 +196,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
 
 StateSpaceList StateSpace::create(const fs::path& domain_filepath,
                                   const std::vector<fs::path>& problem_filepaths,
-                                  const bool use_unit_cost_one,
+                                  bool use_unit_cost_one,
+                                  bool remove_if_unsolvable,
                                   uint32_t max_num_states,
                                   uint32_t timeout_ms,
                                   uint32_t num_threads)
@@ -199,11 +211,12 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
 
-    return StateSpace::create(memories, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+    return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads);
 }
 
 std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                                            bool use_unit_cost_one,
+                                           bool remove_if_unsolvable,
                                            uint32_t max_num_states,
                                            uint32_t timeout_ms,
                                            uint32_t num_threads)
@@ -214,8 +227,9 @@ std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::sha
 
     for (const auto& [parser, aag, ssg] : memories)
     {
-        futures.push_back(pool.submit_task([parser, aag, ssg, use_unit_cost_one, max_num_states, timeout_ms]
-                                           { return StateSpace::create(parser, aag, ssg, use_unit_cost_one, max_num_states, timeout_ms); }));
+        futures.push_back(
+            pool.submit_task([parser, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms]
+                             { return StateSpace::create(parser, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); }));
     }
 
     for (auto& future : futures)

@@ -104,6 +104,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
                                                                const fs::path& problem_filepath,
                                                                bool mark_true_goal_atoms,
                                                                bool use_unit_cost_one,
+                                                               bool remove_if_unsolvable,
                                                                uint32_t max_num_states,
                                                                uint32_t timeout_ms)
 {
@@ -111,7 +112,14 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
     auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
 
-    return FaithfulAbstraction::create(std::move(parser), std::move(aag), std::move(ssg), mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms);
+    return FaithfulAbstraction::create(std::move(parser),
+                                       std::move(aag),
+                                       std::move(ssg),
+                                       mark_true_goal_atoms,
+                                       use_unit_cost_one,
+                                       remove_if_unsolvable,
+                                       max_num_states,
+                                       timeout_ms);
 }
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<PDDLParser> parser,
@@ -119,6 +127,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                                                std::shared_ptr<ISSG> ssg,
                                                                bool mark_true_goal_atoms,
                                                                bool use_unit_cost_one,
+                                                               bool remove_if_unsolvable,
                                                                uint32_t max_num_states,
                                                                uint32_t timeout_ms)
 {
@@ -128,7 +137,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     const auto& factories = parser->get_factories();
     auto initial_state = ssg->get_or_create_initial_state();
 
-    if (!problem->static_goal_holds())
+    if (remove_if_unsolvable && !problem->static_goal_holds())
     {
         // Unsolvable
         return std::nullopt;
@@ -244,6 +253,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
         return std::nullopt;
     }
 
+    if (remove_if_unsolvable && abstract_goal_states.empty())
+    {
+        // Skip: unsolvable
+        return std::nullopt;
+    }
+
     auto abstract_goal_distances = mimir::compute_shortest_distances_from_states(abstract_states.size(),
                                                                                  StateIndexList { abstract_goal_states.begin(), abstract_goal_states.end() },
                                                                                  backward_successors);
@@ -277,6 +292,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
                                                              const std::vector<fs::path>& problem_filepaths,
                                                              bool mark_true_goal_atoms,
                                                              bool use_unit_cost_one,
+                                                             bool remove_if_unsolvable,
                                                              uint32_t max_num_states,
                                                              uint32_t timeout_ms,
                                                              uint32_t num_threads)
@@ -290,13 +306,14 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
 
-    return FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+    return FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads);
 }
 
 std::vector<FaithfulAbstraction>
 FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                             bool mark_true_goal_atoms,
                             bool use_unit_cost_one,
+                            bool remove_if_unsolvable,
                             uint32_t max_num_states,
                             uint32_t timeout_ms,
                             uint32_t num_threads)
@@ -307,9 +324,10 @@ FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLPar
 
     for (const auto& [parser, aag, ssg] : memories)
     {
-        futures.push_back(
-            pool.submit_task([parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms]
-                             { return FaithfulAbstraction::create(parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms); }));
+        futures.push_back(pool.submit_task(
+            [parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms] {
+                return FaithfulAbstraction::create(parser, aag, ssg, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
+            }));
     }
 
     for (auto& future : futures)

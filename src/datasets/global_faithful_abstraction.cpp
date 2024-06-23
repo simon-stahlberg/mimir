@@ -92,6 +92,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                                                          const std::vector<fs::path>& problem_filepaths,
                                                                          bool mark_true_goal_atoms,
                                                                          bool use_unit_cost_one,
+                                                                         bool remove_if_unsolvable,
                                                                          uint32_t max_num_states,
                                                                          uint32_t timeout_ms,
                                                                          uint32_t num_threads)
@@ -105,19 +106,21 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
         memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
     }
 
-    return GlobalFaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+    return GlobalFaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads);
 }
 
 std::vector<GlobalFaithfulAbstraction>
 GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                                   bool mark_true_goal_atoms,
                                   bool use_unit_cost_one,
+                                  bool remove_if_unsolvable,
                                   uint32_t max_num_states,
                                   uint32_t timeout_ms,
                                   uint32_t num_threads)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
-    auto faithful_abstractions = FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, max_num_states, timeout_ms, num_threads);
+    auto faithful_abstractions =
+        FaithfulAbstraction::create(memories, mark_true_goal_atoms, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms, num_threads);
 
     auto certificate_to_global_state = std::unordered_map<Certificate, GlobalFaithfulAbstractState, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
@@ -143,6 +146,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
 
         if (!is_relevant)
         {
+            // Skip: no non-isomorphic state
             continue;
         }
 

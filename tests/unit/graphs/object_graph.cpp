@@ -12,7 +12,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto state_space = StateSpace::create(domain_file, problem_file, 10000, 10000).value();
+    const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
     auto object_graph_factory = ObjectGraphFactory(state_space.get_pddl_parser()->get_problem(), state_space.get_pddl_parser()->get_factories());
 

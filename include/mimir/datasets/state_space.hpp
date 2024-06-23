@@ -93,6 +93,7 @@ public:
     static std::optional<StateSpace> create(const fs::path& domain_filepath,
                                             const fs::path& problem_filepath,
                                             bool use_unit_cost_one = true,
+                                            bool remove_if_unsolvable = true,
                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                             uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
@@ -107,6 +108,7 @@ public:
                                             std::shared_ptr<IAAG> aag,
                                             std::shared_ptr<ISSG> ssg,
                                             bool use_unit_cost_one = true,
+                                            bool remove_if_unsolvable = true,
                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                             uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
@@ -114,20 +116,22 @@ public:
     static std::vector<StateSpace> create(const fs::path& domain_filepath,
                                           const std::vector<fs::path>& problem_filepaths,
                                           bool use_unit_cost_one = true,
+                                          bool remove_if_unsolvable = true,
                                           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                           uint32_t num_threads = std::thread::hardware_concurrency());
 
     /// @brief Try to create a StateSpaceList from the given data and the given resource limits.
     /// @param memories External memory to parsers, aags, ssgs.
-    /// @param domain_filepath The PDDL domain file.
-    /// @param problem_filepaths The PDDL problem files.
+    /// @param use_unit_cost_one whether to use unit cost one or action costs.
+    /// @param remove_if_unsolvable whether to remove state spaces of unsolvable problems.
     /// @param max_num_states The maximum number of states allowed in a StateSpace.
     /// @param timeout_ms The maximum time spent on creating a StateSpace.
     /// @param num_threads The number of threads used for construction.
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
     static std::vector<StateSpace> create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
                                           bool use_unit_cost_one = true,
+                                          bool remove_if_unsolvable = true,
                                           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                           uint32_t num_threads = std::thread::hardware_concurrency());

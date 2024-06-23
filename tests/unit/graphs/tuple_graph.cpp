@@ -11,7 +11,7 @@ TEST(MimirTests, GraphsTupleGraphTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
 
-    const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(domain_file, problem_file, 10000, 10000).value()));
+    const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(domain_file, problem_file).value()));
 
     auto tuple_graph_factory = TupleGraphFactory(state_space, 2, false);
 
