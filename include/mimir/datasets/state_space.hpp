@@ -52,7 +52,7 @@ private:
 
     /* States */
     // Note that state.get_id() does not yield the index within the state_space.
-    // Use state_space.get_state_id instead.
+    // Use state_space.get_state_index(state) instead.
     StateList m_states;
     StateMap<StateIndex> m_state_to_index;
     StateIndex m_initial_state;

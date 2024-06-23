@@ -228,6 +228,11 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     {
         const auto succ_state_id = transition.get_successor_state();
         const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
+        if (succ_state == m_tuple_graph.get_root_state())
+        {
+            // Root state was already visited
+            continue;
+        }
         const auto succ_state_vertex_id = m_tuple_graph.m_vertices.size();
         m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_id, empty_tuple_index, StateList { succ_state });
         m_tuple_graph.m_forward_successors.at(root_state_vertex_id).push_back(succ_state_vertex_id);

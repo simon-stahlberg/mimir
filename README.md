@@ -123,3 +123,12 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 ### 4.4. Memory allocations
 
 - Reuse preallocated memory where possible, leave copying up to the user by returning const references to internal memory. For example, the `ObjectGraphFactory` returns a const reference to an `ObjectGraph`. The user can decide to copy it for persistent storage, or perform temporary operations such as computing a graph certificate.
+
+### 4.5. Constructors
+
+- Arguments passed to the constructor should be passed by value to avoid having to write duplicate constructors. Users have the responsibility to move arguments into the constructors. Exceptions to the rules are types that cannot be copied, e.g., `std::unique_ptr<T>`
+
+### 4.6. Keyword "auto"
+
+- Use the keyword `auto` as much as possible to avoid automatic conversations and flexibility.
+- Use left-to-right notation for readability, e.g., `auto vec = std::vector<int>{};`

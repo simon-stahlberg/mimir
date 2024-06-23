@@ -73,7 +73,7 @@ private:
 
     /* States */
     // Note that state.get_id() does not yield the index within the abstraction.
-    // Use abstraction.get_state_id instead.
+    // Use abstraction.get_state_index(state) instead.
     GlobalFaithfulAbstractStateList m_states;
     GlobalFaithfulAbstractStateMap<StateIndex> m_state_to_index;
     CertificateToStateIndexMap m_states_by_certificate;
