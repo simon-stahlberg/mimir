@@ -279,7 +279,7 @@ bool StateSpace::is_goal_state(StateIndex state) const { return get_goal_states(
 
 bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_states().count(state); }
 
-bool StateSpace::is_alive_state(StateIndex state) const { return (get_goal_states().count(state) || get_deadend_states().count(state)); }
+bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
 size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
