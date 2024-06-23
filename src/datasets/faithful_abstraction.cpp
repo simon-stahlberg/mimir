@@ -387,7 +387,7 @@ bool FaithfulAbstraction::is_goal_state(StateIndex state) const { return get_goa
 
 bool FaithfulAbstraction::is_deadend_state(StateIndex state) const { return get_deadend_states().count(state); }
 
-bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) && get_deadend_states().count(state)); }
+bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
 size_t FaithfulAbstraction::get_num_transitions() const { return m_num_transitions; }
