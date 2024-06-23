@@ -1030,7 +1030,7 @@ void init_pymimir(py::module_& m)
 
     // TupleGraphVertex
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
-        .def("get_identifier", &TupleGraphVertex::get_identifier)
+        .def("get_identifier", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
         .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference);
 

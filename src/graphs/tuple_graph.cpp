@@ -24,14 +24,14 @@ namespace mimir
  * TupleGraphVertex
  */
 
-TupleGraphVertex::TupleGraphVertex(VertexIndex identifier, TupleIndex tuple_index, StateList states) :
-    m_identifier(identifier),
+TupleGraphVertex::TupleGraphVertex(VertexIndex index, TupleIndex tuple_index, StateList states) :
+    m_index(index),
     m_tuple_index(tuple_index),
     m_states(std::move(states))
 {
 }
 
-VertexIndex TupleGraphVertex::get_identifier() const { return m_identifier; }
+VertexIndex TupleGraphVertex::get_index() const { return m_index; }
 
 TupleIndex TupleGraphVertex::get_tuple_index() const { return m_tuple_index; }
 
@@ -94,7 +94,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
         if (vertex.get_tuple_index() == tuple_index)
         {
             // Backtrack admissible chain until the root and return an admissible chain that proves the width.
-            auto cur_vertex_index = vertex.get_identifier();
+            auto cur_vertex_index = vertex.get_index();
             auto admissible_chain = VertexIndexList { cur_vertex_index };
             while (!m_backward_successors.at(cur_vertex_index).empty())
             {
@@ -121,7 +121,8 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
     const auto distances = m_state_space->compute_shortest_distances_from_states(StateIdList { m_state_space->get_initial_state() });
     for (const auto& state : states)
     {
-        const auto state_distance = distances.at(state.get_id());
+        const auto state_index = m_state_space->get_state_index(state);
+        const auto state_distance = distances.at(state_index);
         // Unreachable states have distance std::numeric_limits<double>::max()
         if (state_distance != std::numeric_limits<double>::max())
         {
@@ -132,7 +133,8 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
     auto optimal_states = StateSet {};
     for (const auto& state : states)
     {
-        if (distances.at(state.get_id()) == optimal_distance)
+        const auto state_index = m_state_space->get_state_index(state);
+        if (distances.at(state_index) == optimal_distance)
         {
             optimal_states.insert(state);
         }
@@ -154,7 +156,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
         if (tuple_optimally_goal_implies_states)
         {
             // Backtrack admissible chain until the root and return an admissible chain that proves the width.
-            auto cur_vertex_index = vertex.get_identifier();
+            auto cur_vertex_index = vertex.get_index();
             auto admissible_chain = VertexIndexList { cur_vertex_index };
             while (!m_backward_successors.at(cur_vertex_index).empty())
             {
@@ -208,8 +210,8 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_root_state_layer
     m_tuple_graph.m_states_by_distance.clear();
 
     const auto empty_tuple_index = m_tuple_graph.m_tuple_index_mapper->get_empty_tuple_index();
-    const auto root_state_vertex_id = 0;
-    m_tuple_graph.m_vertices.emplace_back(root_state_vertex_id, empty_tuple_index, StateList { root_state });
+    const auto root_state_vertex_index = 0;
+    m_tuple_graph.m_vertices.emplace_back(root_state_vertex_index, empty_tuple_index, StateList { root_state });
     m_tuple_graph.m_vertex_indices_by_distance.push_back({ empty_tuple_index });
     m_tuple_graph.m_states_by_distance.push_back({ root_state });
 }
@@ -217,27 +219,27 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_root_state_layer
 void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
 {
     const auto empty_tuple_index = m_tuple_graph.m_tuple_index_mapper->get_empty_tuple_index();
-    const auto root_state_vertex_id = 0;
-
-    const auto& transitions = m_tuple_graph.m_state_space->get_forward_transitions().at(m_tuple_graph.get_root_state().get_id());
+    const auto root_state_vertex_index = 0;
+    const auto root_state_index = m_tuple_graph.m_state_space->get_state_index(m_tuple_graph.get_root_state());
+    const auto& transitions = m_tuple_graph.m_state_space->get_forward_transitions().at(root_state_index);
     m_tuple_graph.m_forward_successors.resize(m_tuple_graph.m_vertices.size() + transitions.size());
     m_tuple_graph.m_backward_successors.resize(m_tuple_graph.m_vertices.size() + transitions.size());
     auto vertex_indices_layer = VertexIndexList {};
     auto states_layer = StateList {};
     for (const auto& transition : transitions)
     {
-        const auto succ_state_id = transition.get_successor_state();
-        const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
+        const auto succ_state_index = transition.get_successor_state();
+        const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
         if (succ_state == m_tuple_graph.get_root_state())
         {
             // Root state was already visited
             continue;
         }
-        const auto succ_state_vertex_id = m_tuple_graph.m_vertices.size();
-        m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_id, empty_tuple_index, StateList { succ_state });
-        m_tuple_graph.m_forward_successors.at(root_state_vertex_id).push_back(succ_state_vertex_id);
-        m_tuple_graph.m_backward_successors.at(succ_state_vertex_id).push_back(root_state_vertex_id);
-        vertex_indices_layer.push_back(succ_state_vertex_id);
+        const auto succ_state_vertex_index = m_tuple_graph.m_vertices.size();
+        m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_index, empty_tuple_index, StateList { succ_state });
+        m_tuple_graph.m_forward_successors.at(root_state_vertex_index).push_back(succ_state_vertex_index);
+        m_tuple_graph.m_backward_successors.at(succ_state_vertex_index).push_back(root_state_vertex_index);
+        vertex_indices_layer.push_back(succ_state_vertex_index);
         states_layer.push_back(succ_state);
     }
     m_tuple_graph.m_vertex_indices_by_distance.push_back(std::move(vertex_indices_layer));
@@ -286,17 +288,17 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer(co
     novelty_table.compute_novel_tuple_indices(root_state, novel_tuple_indices);
     if (m_tuple_graph.m_prune_dominated_tuples)
     {
-        const int vertex_id = m_tuple_graph.m_vertices.size();
-        m_tuple_graph.m_vertices.emplace_back(vertex_id, novel_tuple_indices.front(), StateList { root_state });
-        cur_vertices.push_back(vertex_id);
+        const int vertex_index = m_tuple_graph.m_vertices.size();
+        m_tuple_graph.m_vertices.emplace_back(vertex_index, novel_tuple_indices.front(), StateList { root_state });
+        cur_vertices.push_back(vertex_index);
     }
     else
     {
         for (const auto& novel_tuple_index : novel_tuple_indices)
         {
-            const int vertex_id = m_tuple_graph.m_vertices.size();
-            m_tuple_graph.m_vertices.emplace_back(vertex_id, novel_tuple_index, StateList { root_state });
-            cur_vertices.push_back(vertex_id);
+            const int vertex_index = m_tuple_graph.m_vertices.size();
+            m_tuple_graph.m_vertices.emplace_back(vertex_index, novel_tuple_index, StateList { root_state });
+            cur_vertices.push_back(vertex_index);
         }
     }
     m_tuple_graph.m_vertex_indices_by_distance.push_back(cur_vertices);
@@ -311,10 +313,11 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
 
     for (const auto& state : m_tuple_graph.m_states_by_distance.back())
     {
-        for (const auto& transition : m_tuple_graph.m_state_space->get_forward_transitions().at(state.get_id()))
+        const auto state_index = m_tuple_graph.m_state_space->get_state_index(state);
+        for (const auto& transition : m_tuple_graph.m_state_space->get_forward_transitions().at(state_index))
         {
-            const auto succ_state_id = transition.get_successor_state();
-            const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
+            const auto succ_state_index = transition.get_successor_state();
+            const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
 
             if (!visited_states.count(succ_state))
             {
@@ -364,10 +367,11 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
         // Compute extended plans
         for (const auto state : m_tuple_graph.m_vertices.at(prev_vertex).get_states())
         {
-            for (const auto& transition : forward_transitions.at(state.get_id()))
+            const auto state_index = m_tuple_graph.m_state_space->get_state_index(state);
+            for (const auto& transition : forward_transitions.at(state_index))
             {
-                const auto succ_state_id = transition.get_successor_state();
-                const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_id);
+                const auto succ_state_index = transition.get_successor_state();
+                const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
 
                 if (state_to_novel_tuple_indices.count(succ_state))
                 {
@@ -558,14 +562,14 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
     {
         out << "Dangling" << node_index << " [ label = \"\", style = invis ]\n";
     }
-    for (const auto& vertex_ids : tuple_graph.get_vertex_indices_by_distances())
+    for (const auto& vertex_indices : tuple_graph.get_vertex_indices_by_distances())
     {
-        for (int vertex_id : vertex_ids)
+        for (int vertex_index : vertex_indices)
         {
-            const auto& vertex = tuple_graph.get_vertices().at(vertex_id);
-            out << "t" << vertex.get_identifier() << "[";
+            const auto& vertex = tuple_graph.get_vertices().at(vertex_index);
+            out << "t" << vertex.get_index() << "[";
             out << "label=<";
-            out << "index=" << vertex.get_identifier() << "<BR/>";
+            out << "index=" << vertex.get_index() << "<BR/>";
             out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
 
             tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
@@ -589,21 +593,21 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
     // 4. Group states with same distance together
     // 5. Tuple edges
     out << "{\n";
-    for (const auto& vertex_id : tuple_graph.get_vertex_indices_by_distances().front())
+    for (const auto& vertex_index : tuple_graph.get_vertex_indices_by_distances().front())
     {
-        const auto& vertex = tuple_graph.get_vertices().at(vertex_id);
-        out << "Dangling" << vertex.get_identifier() << "->t" << vertex.get_identifier() << "\n";
+        const auto& vertex = tuple_graph.get_vertices().at(vertex_index);
+        out << "Dangling" << vertex.get_index() << "->t" << vertex.get_index() << "\n";
     }
     out << "}\n";
-    for (const auto& vertex_ids : tuple_graph.get_vertex_indices_by_distances())
+    for (const auto& vertex_indices : tuple_graph.get_vertex_indices_by_distances())
     {
         out << "{\n";
-        for (const auto& vertex_id : vertex_ids)
+        for (const auto& vertex_index : vertex_indices)
         {
-            for (const auto& succ_vertex_id : tuple_graph.get_forward_successors().at(vertex_id))
+            for (const auto& succ_vertex_index : tuple_graph.get_forward_successors().at(vertex_index))
             {
-                out << "t" << vertex_id << "->"
-                    << "t" << succ_vertex_id << "\n";
+                out << "t" << vertex_index << "->"
+                    << "t" << succ_vertex_index << "\n";
             }
         }
         out << "}\n";

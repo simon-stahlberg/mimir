@@ -70,8 +70,8 @@ private:
     ObjectGraph m_object_graph;
 
     // Temporaries for bookkeeping
-    std::unordered_map<Object, int> m_object_to_vertex_id;
-    std::vector<std::pair<int, int>> m_vertex_id_and_color;
+    std::unordered_map<Object, int> m_object_to_vertex_index;
+    std::vector<std::pair<int, int>> m_vertex_index_and_color;
 
     int add_object_graph_structures(Object object, int num_vertices);
 
@@ -106,7 +106,7 @@ int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int
         const auto vertex_color = m_coloring_function->get_color(atom, pos);
         m_object_graph.m_vertex_colors.push_back(vertex_color);
         m_object_graph.m_sorted_vertex_colors.push_back(vertex_color);
-        m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_id.at(atom->get_objects().at(pos)));
+        m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_index.at(atom->get_objects().at(pos)));
         if (pos > 0)
         {
             m_object_graph.m_digraph.add_edge(num_vertices - 1, num_vertices);
@@ -124,7 +124,7 @@ int ObjectGraphFactory::add_ground_literal_graph_structures(State state, GroundL
         const auto vertex_color = m_coloring_function->get_color(state, literal, pos, m_mark_true_goal_literals);
         m_object_graph.m_vertex_colors.push_back(vertex_color);
         m_object_graph.m_sorted_vertex_colors.push_back(vertex_color);
-        m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_id.at(literal->get_atom()->get_objects().at(pos)));
+        m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
         if (pos > 0)
         {
             m_object_graph.m_digraph.add_edge(num_vertices - 1, num_vertices);

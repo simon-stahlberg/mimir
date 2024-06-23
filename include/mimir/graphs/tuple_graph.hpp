@@ -43,7 +43,7 @@ using VertexIndexSet = std::unordered_set<VertexIndex>;
 class TupleGraphVertex
 {
 private:
-    VertexIndex m_identifier;
+    VertexIndex m_index;
     TupleIndex m_tuple_index;
     StateList m_states;
 
@@ -54,7 +54,7 @@ public:
      * Getters.
      */
 
-    VertexIndex get_identifier() const;
+    VertexIndex get_index() const;
     TupleIndex get_tuple_index() const;
     const StateList& get_states() const;
 };

@@ -133,7 +133,7 @@ int ObjectGraphFactory::add_object_graph_structures(Object object, int num_verti
     const auto vertex_color = m_coloring_function->get_color(object);
     m_object_graph.m_vertex_colors.push_back(vertex_color);
     m_object_graph.m_sorted_vertex_colors.push_back(vertex_color);
-    m_object_to_vertex_id.emplace(object, num_vertices);
+    m_object_to_vertex_index.emplace(object, num_vertices);
     return ++num_vertices;
 }
 
@@ -174,53 +174,53 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     m_object_graph.m_digraph.reset(num_vertices, false);
     m_object_graph.m_vertex_colors.clear();
     m_object_graph.m_sorted_vertex_colors.clear();
-    m_object_to_vertex_id.clear();
+    m_object_to_vertex_index.clear();
 
     // Initialize object vertices
-    auto vertex_id = 0;
+    auto vertex_index = 0;
     for (const auto& object : m_problem->get_objects())
     {
-        vertex_id = add_object_graph_structures(object, vertex_id);
+        vertex_index = add_object_graph_structures(object, vertex_index);
     }
 
     // Initialize atom vertices and edges
     for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Static>(m_problem->get_static_initial_positive_atoms_bitset()))
     {
-        vertex_id = add_ground_atom_graph_structures(atom, vertex_id);
+        vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
     }
     for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()))
     {
-        vertex_id = add_ground_atom_graph_structures(atom, vertex_id);
+        vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
     }
     for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()))
     {
-        vertex_id = add_ground_atom_graph_structures(atom, vertex_id);
+        vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
     }
 
     // Initialize goal literal vertices and edges
     for (const auto& literal : m_problem->get_static_goal_condition())
     {
-        vertex_id = add_ground_literal_graph_structures(state, literal, vertex_id);
+        vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
     }
     for (const auto& literal : m_problem->get_fluent_goal_condition())
     {
-        vertex_id = add_ground_literal_graph_structures(state, literal, vertex_id);
+        vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
     }
     for (const auto& literal : m_problem->get_derived_goal_condition())
     {
-        vertex_id = add_ground_literal_graph_structures(state, literal, vertex_id);
+        vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
     }
 
     // Initialize histogram
     std::sort(m_object_graph.m_sorted_vertex_colors.begin(), m_object_graph.m_sorted_vertex_colors.end());
 
     // Initialize partitioning
-    m_vertex_id_and_color.clear();
-    for (int vertex_id = 0; vertex_id < num_vertices; ++vertex_id)
+    m_vertex_index_and_color.clear();
+    for (int vertex_index = 0; vertex_index < num_vertices; ++vertex_index)
     {
-        m_vertex_id_and_color.emplace_back(vertex_id, m_object_graph.m_vertex_colors.at(vertex_id));
+        m_vertex_index_and_color.emplace_back(vertex_index, m_object_graph.m_vertex_colors.at(vertex_index));
     }
-    std::sort(m_vertex_id_and_color.begin(), m_vertex_id_and_color.end(), [](const auto& l, const auto& r) { return l.second < r.second; });
+    std::sort(m_vertex_index_and_color.begin(), m_vertex_index_and_color.end(), [](const auto& l, const auto& r) { return l.second < r.second; });
 
     m_object_graph.m_lab.clear();
     m_object_graph.m_ptn.clear();
@@ -228,9 +228,9 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     m_object_graph.m_ptn.resize(num_vertices);
     for (int i = 0; i < num_vertices; ++i)
     {
-        const auto& [vertex_id, color] = m_vertex_id_and_color.at(i);
-        const auto next_has_same_color = ((i < num_vertices - 1) && (color == m_vertex_id_and_color[i + 1].second));
-        m_object_graph.m_lab.at(i) = vertex_id;
+        const auto& [vertex_index, color] = m_vertex_index_and_color.at(i);
+        const auto next_has_same_color = ((i < num_vertices - 1) && (color == m_vertex_index_and_color[i + 1].second));
+        m_object_graph.m_lab.at(i) = vertex_index;
         m_object_graph.m_ptn.at(i) = (next_has_same_color) ? 1 : 0;
     }
 
@@ -241,21 +241,21 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 {
     out << "digraph {\n";
 
-    for (int vertex_id = 0; vertex_id < object_graph.get_digraph().get_num_vertices(); ++vertex_id)
+    for (int vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
     {
-        const auto color = object_graph.get_vertex_colors().at(vertex_id);
+        const auto color = object_graph.get_vertex_colors().at(vertex_index);
         const auto& color_name = object_graph.get_coloring_function()->get_color_name(color);
-        out << "t" << vertex_id << "[";
+        out << "t" << vertex_index << "[";
         out << "label=\"" << color_name << " (" << color << ")"
             << "\"]\n";
     }
 
-    for (int vertex_id = 0; vertex_id < object_graph.get_digraph().get_num_vertices(); ++vertex_id)
+    for (int vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
     {
-        for (const auto& succ_vertex_id : object_graph.get_digraph().get_forward_successors()[vertex_id])
+        for (const auto& succ_vertex_index : object_graph.get_digraph().get_forward_successors()[vertex_index])
         {
-            out << "t" << vertex_id << "->"
-                << "t" << succ_vertex_id << "\n";
+            out << "t" << vertex_index << "->"
+                << "t" << succ_vertex_index << "\n";
         }
     }
 
