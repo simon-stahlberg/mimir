@@ -41,16 +41,18 @@ class FaithfulAbstractState
 {
 private:
     StateId m_id;
+    StateIndex m_index;
     State m_state;
     Certificate m_certificate;
 
 public:
-    FaithfulAbstractState(StateId id, State state, Certificate certificate);
+    FaithfulAbstractState(StateId id, StateIndex index, State state, Certificate certificate);
 
     [[nodiscard]] bool operator==(const FaithfulAbstractState& other) const;
     [[nodiscard]] size_t hash() const;
 
     StateId get_id() const;
+    StateIndex get_index() const;
     State get_state() const;
     const Certificate& get_certificate() const;
 };
@@ -58,7 +60,7 @@ public:
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
 template<typename T>
 using FaithfulAbstractStateMap = std::unordered_map<FaithfulAbstractState, T, loki::Hash<FaithfulAbstractState>, loki::EqualTo<FaithfulAbstractState>>;
-using CertificateToStateIdMap = std::unordered_map<Certificate, StateId, loki::Hash<Certificate>, loki::EqualTo<Certificate>>;
+using CertificateToStateIndexMap = std::unordered_map<Certificate, StateIndex, loki::Hash<Certificate>, loki::EqualTo<Certificate>>;
 
 /// @brief FaithfulAbstraction implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
@@ -76,10 +78,10 @@ private:
 
     /* States */
     FaithfulAbstractStateList m_states;
-    CertificateToStateIdMap m_states_by_certificate;
-    StateId m_initial_state;
-    StateIdSet m_goal_states;
-    StateIdSet m_deadend_states;
+    CertificateToStateIndexMap m_states_by_certificate;
+    StateIndex m_initial_state;
+    StateIndexSet m_goal_states;
+    StateIndexSet m_deadend_states;
 
     /* Transitions */
     size_t m_num_transitions;
@@ -103,10 +105,10 @@ private:
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<ISSG> ssg,
                         FaithfulAbstractStateList states,
-                        CertificateToStateIdMap states_by_certificate,
-                        StateId initial_state,
-                        StateIdSet goal_states,
-                        StateIdSet deadend_states,
+                        CertificateToStateIndexMap states_by_certificate,
+                        StateIndex initial_state,
+                        StateIndexSet goal_states,
+                        StateIndexSet deadend_states,
                         size_t num_transitions,
                         std::vector<TransitionList> forward_transitions,
                         std::vector<TransitionList> backward_transitions,
@@ -148,13 +150,13 @@ public:
      * Abstraction functionality
      */
 
-    StateId get_abstract_state_id(State concrete_state);
+    StateIndex get_abstract_state_index(State concrete_state);
 
     /**
      * Extended functionality
      */
 
-    std::vector<double> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states, bool forward = true) const;
 
     std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
@@ -173,10 +175,10 @@ public:
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
-    const CertificateToStateIdMap& get_states_by_certificate() const;
-    StateId get_initial_state() const;
-    const StateIdSet& get_goal_states() const;
-    const StateIdSet& get_deadend_states() const;
+    const CertificateToStateIndexMap& get_states_by_certificate() const;
+    StateIndex get_initial_state() const;
+    const StateIndexSet& get_goal_states() const;
+    const StateIndexSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;

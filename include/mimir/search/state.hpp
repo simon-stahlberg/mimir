@@ -30,9 +30,16 @@
 
 namespace mimir
 {
+
 using StateId = uint32_t;
 using StateIdList = std::vector<StateId>;
 using StateIdSet = std::unordered_set<StateId>;
+
+// StateIndex is a stronger notion of a StateId,
+// indicating that there is an underlying indexing scheme 0,1,2,...
+using StateIndex = uint32_t;
+using StateIndexList = std::vector<StateIndex>;
+using StateIndexSet = std::unordered_set<StateIndex>;
 
 /**
  * Flatmemory types

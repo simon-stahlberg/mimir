@@ -32,10 +32,10 @@ StateSpace::StateSpace(bool use_unit_cost_one,
                        std::shared_ptr<IAAG> aag,
                        std::shared_ptr<ISSG> ssg,
                        StateList states,
-                       StateMap<StateId> state_to_index,
-                       StateId initial_state,
-                       StateIdSet goal_states,
-                       StateIdSet deadend_states,
+                       StateMap<StateIndex> state_to_index,
+                       StateIndex initial_state,
+                       StateIndexSet goal_states,
+                       StateIndexSet deadend_states,
                        size_t num_transitions,
                        std::vector<TransitionList> forward_transitions,
                        std::vector<TransitionList> backward_transitions,
@@ -94,12 +94,12 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
 
     const auto initial_state_id = 0;
     auto states = StateList { initial_state };
-    auto state_to_index = StateMap<StateId> {};
+    auto state_to_index = StateMap<StateIndex> {};
     state_to_index[initial_state] = initial_state_id;
     auto num_transitions = (size_t) 0;
     auto forward_transitions = std::vector<TransitionList>(1);
     auto backward_transitions = std::vector<TransitionList>(1);
-    auto goal_states = StateIdSet {};
+    auto goal_states = StateIndexSet {};
 
     auto applicable_actions = GroundActionList {};
     stop_watch.start();
@@ -154,12 +154,12 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     }
 
     auto goal_distances = mimir::compute_shortest_distances_from_states(states.size(),
-                                                                        StateIdList { goal_states.begin(), goal_states.end() },
+                                                                        StateIndexList { goal_states.begin(), goal_states.end() },
                                                                         backward_transitions,
                                                                         use_unit_cost_one);
 
-    auto deadend_states = StateIdSet {};
-    for (StateId state_id = 0; state_id < states.size(); ++state_id)
+    auto deadend_states = StateIndexSet {};
+    for (StateIndex state_id = 0; state_id < states.size(); ++state_id)
     {
         if (goal_distances.at(state_id) == std::numeric_limits<double>::max())
         {
@@ -234,7 +234,7 @@ std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::sha
  * Extended functionality
  */
 
-std::vector<double> StateSpace::compute_shortest_distances_from_states(const StateIdList& states, const bool forward) const
+std::vector<double> StateSpace::compute_shortest_distances_from_states(const StateIndexList& states, const bool forward) const
 {
     return mimir::compute_shortest_distances_from_states(*this, states, forward, m_use_unit_cost_one);
 }
@@ -261,13 +261,13 @@ const std::shared_ptr<ISSG>& StateSpace::get_ssg() const { return m_ssg; }
 /* States */
 const StateList& StateSpace::get_states() const { return m_states; }
 
-StateId StateSpace::get_state_id(State state) const { return m_state_to_index.at(state); }
+StateIndex StateSpace::get_state_index(State state) const { return m_state_to_index.at(state); }
 
-StateId StateSpace::get_initial_state() const { return m_initial_state; }
+StateIndex StateSpace::get_initial_state() const { return m_initial_state; }
 
-const StateIdSet& StateSpace::get_goal_states() const { return m_goal_states; }
+const StateIndexSet& StateSpace::get_goal_states() const { return m_goal_states; }
 
-const StateIdSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
+const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
 size_t StateSpace::get_num_states() const { return m_states.size(); }
 
@@ -275,7 +275,7 @@ size_t StateSpace::get_num_goal_states() const { return m_goal_states.size(); }
 
 size_t StateSpace::get_num_deadend_states() const { return m_deadend_states.size(); }
 
-bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(get_state_id(state)) == std::numeric_limits<double>::max(); }
+bool StateSpace::is_deadend_state(const State& state) const { return m_goal_distances.at(get_state_index(state)) == std::numeric_limits<double>::max(); }
 
 /* Transitions */
 size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
@@ -287,12 +287,12 @@ const std::vector<TransitionList>& StateSpace::get_backward_transitions() const 
 /* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }
 
-double StateSpace::get_goal_distance(State state) const { return m_goal_distances.at(get_state_id(state)); }
+double StateSpace::get_goal_distance(State state) const { return m_goal_distances.at(get_state_index(state)); }
 
 double StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
 /* Additional */
-StateId StateSpace::sample_state_with_goal_distance(double goal_distance) const
+StateIndex StateSpace::sample_state_with_goal_distance(double goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);
     const auto index = std::rand() % static_cast<int>(states.size());

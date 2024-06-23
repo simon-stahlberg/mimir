@@ -30,8 +30,8 @@ using AbstractionId = uint32_t;
 template<typename T>
 concept IsAbstraction = requires(T a, State concrete_state) {
     {
-        a.get_abstract_state_id(concrete_state)
-    } -> std::convertible_to<StateId>;
+        a.get_abstract_state_index(concrete_state)
+    } -> std::convertible_to<StateIndex>;
 };
 
 }

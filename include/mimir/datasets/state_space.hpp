@@ -54,10 +54,10 @@ private:
     // Note that state.get_id() does not yield the index within the state_space.
     // Use state_space.get_state_id instead.
     StateList m_states;
-    StateMap<StateId> m_state_to_index;
-    StateId m_initial_state;
-    StateIdSet m_goal_states;
-    StateIdSet m_deadend_states;
+    StateMap<StateIndex> m_state_to_index;
+    StateIndex m_initial_state;
+    StateIndexSet m_goal_states;
+    StateIndexSet m_deadend_states;
 
     /* Transitions */
     size_t m_num_transitions;
@@ -68,7 +68,7 @@ private:
     std::vector<double> m_goal_distances;
 
     /* Additional */
-    std::unordered_map<double, StateIdList> m_states_by_goal_distance;
+    std::unordered_map<double, StateIndexList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -79,10 +79,10 @@ private:
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<ISSG> ssg,
                StateList states,
-               StateMap<StateId> state_to_index,
-               StateId initial_state,
-               StateIdSet goal_states,
-               StateIdSet deadend_states,
+               StateMap<StateIndex> state_to_index,
+               StateIndex initial_state,
+               StateIndexSet goal_states,
+               StateIndexSet deadend_states,
                size_t num_transitions,
                std::vector<TransitionList> forward_transitions,
                std::vector<TransitionList> backward_transitions,
@@ -139,7 +139,7 @@ public:
     /// @brief Compute shortest distances from the given states computed using BrFS.
     /// @param states A list of states from which shortest distances are computed.
     /// @param forward If true, forward transitions are used, and otherwise, backward transitions
-    std::vector<double> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states, bool forward = true) const;
 
     /// @brief Compute pairwise state distances using Floyd-Warshall.
     /// @param forward If true, forward transitions are used, and otherwise, backward transitions
@@ -158,11 +158,13 @@ public:
     const std::shared_ptr<ISSG>& get_ssg() const;
 
     /* States */
+    // We cannot ensure that states are having an indexing scheme because
+    // users might have created custom states using the successor state generator.
     const StateList& get_states() const;
-    StateId get_state_id(State state) const;
-    StateId get_initial_state() const;
-    const StateIdSet& get_goal_states() const;
-    const StateIdSet& get_deadend_states() const;
+    StateIndex get_state_index(State state) const;
+    StateIndex get_initial_state() const;
+    const StateIndexSet& get_goal_states() const;
+    const StateIndexSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -179,7 +181,7 @@ public:
     double get_max_goal_distance() const;
 
     /* Additional */
-    StateId sample_state_with_goal_distance(double goal_distance) const;
+    StateIndex sample_state_with_goal_distance(double goal_distance) const;
 };
 
 using StateSpaceList = std::vector<StateSpace>;

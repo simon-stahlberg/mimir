@@ -31,7 +31,11 @@ namespace mimir
  * FaithfulAbstractState
  */
 
-FaithfulAbstractState::FaithfulAbstractState(StateId id, State state, Certificate certificate) : m_id(id), m_state(state), m_certificate(std::move(certificate))
+FaithfulAbstractState::FaithfulAbstractState(StateId id, StateIndex index, State state, Certificate certificate) :
+    m_id(id),
+    m_index(index),
+    m_state(state),
+    m_certificate(std::move(certificate))
 {
 }
 
@@ -53,6 +57,8 @@ size_t FaithfulAbstractState::hash() const
 
 StateId FaithfulAbstractState::get_id() const { return m_id; }
 
+StateIndex FaithfulAbstractState::get_index() const { return m_index; }
+
 State FaithfulAbstractState::get_state() const { return m_state; }
 
 const Certificate& FaithfulAbstractState::get_certificate() const { return m_certificate; }
@@ -67,10 +73,10 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
                                          std::shared_ptr<IAAG> aag,
                                          std::shared_ptr<ISSG> ssg,
                                          FaithfulAbstractStateList states,
-                                         CertificateToStateIdMap states_by_certificate,
-                                         StateId initial_state,
-                                         StateIdSet goal_states,
-                                         StateIdSet deadend_states,
+                                         CertificateToStateIndexMap states_by_certificate,
+                                         StateIndex initial_state,
+                                         StateIndexSet goal_states,
+                                         StateIndexSet deadend_states,
                                          size_t num_transitions,
                                          std::vector<TransitionList> forward_transitions,
                                          std::vector<TransitionList> backward_transitions,
@@ -130,18 +136,19 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
 
     auto nauty_graph = nauty_wrapper::Graph();
     auto object_graph_factory = ObjectGraphFactory(problem, factories);
-    auto concrete_to_abstract_state = std::unordered_map<State, StateId, StateHash> {};
+    auto concrete_to_abstract_state = StateMap<StateIndex> {};
 
     auto abstract_states = FaithfulAbstractStateList {};
-    auto abstract_states_by_certificate = CertificateToStateIdMap {};
+    auto abstract_states_by_certificate = CertificateToStateIndexMap {};
 
-    auto abstract_initial_state_id = abstract_states.size();
+    const auto abstract_initial_state_id = abstract_states.size();
+    const auto abstract_initial_state_index = abstract_states.size();
     const auto& object_graph = object_graph_factory.create(initial_state);
     object_graph.get_digraph().to_nauty_graph(nauty_graph);
     auto certificate = Certificate(nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors());
     abstract_states_by_certificate.emplace(certificate, abstract_initial_state_id);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_id);
-    auto abstract_initial_state = FaithfulAbstractState(abstract_initial_state_id, initial_state, certificate);
+    auto abstract_initial_state = FaithfulAbstractState(abstract_initial_state_id, abstract_initial_state_index, initial_state, certificate);
     abstract_states.push_back(abstract_initial_state);
 
     auto lifo_queue = std::deque<FaithfulAbstractState>();
@@ -150,7 +157,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     auto num_transitions = (size_t) 0;
     auto forward_successors = std::vector<TransitionList>(1);
     auto backward_successors = std::vector<TransitionList>(1);
-    auto abstract_goal_states = StateIdSet {};
+    auto abstract_goal_states = StateIndexSet {};
 
     auto applicable_actions = GroundActionList {};
     stop_watch.start();
@@ -207,7 +214,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             }
 
             const auto abstract_successor_state_id = abstract_states.size();
-            const auto abstract_successor_state = FaithfulAbstractState(abstract_successor_state_id, successor_state, certificate);
+            const auto abstract_successor_state_index = abstract_states.size();
+            const auto abstract_successor_state =
+                FaithfulAbstractState(abstract_successor_state_id, abstract_successor_state_index, successor_state, certificate);
             abstract_states.push_back(abstract_successor_state);
             if (abstract_states.size() >= max_num_states)
             {
@@ -236,10 +245,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     }
 
     auto abstract_goal_distances = mimir::compute_shortest_distances_from_states(abstract_states.size(),
-                                                                                 StateIdList { abstract_goal_states.begin(), abstract_goal_states.end() },
+                                                                                 StateIndexList { abstract_goal_states.begin(), abstract_goal_states.end() },
                                                                                  backward_successors);
 
-    auto abstract_deadend_states = StateIdSet {};
+    auto abstract_deadend_states = StateIndexSet {};
     for (const auto& state : abstract_states)
     {
         if (abstract_goal_distances.at(state.get_id()) == std::numeric_limits<double>::max())
@@ -319,7 +328,7 @@ FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLPar
  * Abstraction functionality
  */
 
-StateId FaithfulAbstraction::get_abstract_state_id(State concrete_state)
+StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state)
 {
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
@@ -331,7 +340,7 @@ StateId FaithfulAbstraction::get_abstract_state_id(State concrete_state)
  * Extended functionality
  */
 
-std::vector<double> FaithfulAbstraction::compute_shortest_distances_from_states(const StateIdList& abstract_states, bool forward) const
+std::vector<double> FaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& abstract_states, bool forward) const
 {
     return mimir::compute_shortest_distances_from_states(*this, abstract_states, forward);
 }
@@ -360,17 +369,17 @@ const std::shared_ptr<ISSG>& FaithfulAbstraction::get_ssg() const { return m_ssg
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }
 
-const CertificateToStateIdMap& FaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
+const CertificateToStateIndexMap& FaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
 
 const std::vector<TransitionList>& FaithfulAbstraction::get_forward_transitions() const { return m_forward_transitions; }
 
 const std::vector<TransitionList>& FaithfulAbstraction::get_backward_transitions() const { return m_backward_transitions; }
 
-StateId FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
+StateIndex FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
 
-const StateIdSet& FaithfulAbstraction::get_goal_states() const { return m_goal_states; }
+const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goal_states; }
 
-const StateIdSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
+const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
 size_t FaithfulAbstraction::get_num_states() const { return m_states.size(); }
 

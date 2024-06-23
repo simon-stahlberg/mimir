@@ -24,7 +24,7 @@ namespace mimir
  * Transition
  */
 
-Transition::Transition(StateId successor_state, GroundAction creating_action) : m_successor_state(successor_state), m_creating_action(creating_action) {}
+Transition::Transition(StateIndex successor_state, GroundAction creating_action) : m_successor_state(successor_state), m_creating_action(creating_action) {}
 
 bool Transition::operator==(const Transition& other) const
 {
@@ -37,7 +37,7 @@ bool Transition::operator==(const Transition& other) const
 
 size_t Transition::hash() const { return loki::hash_combine(m_successor_state, m_creating_action.hash()); }
 
-StateId Transition::get_successor_state() const { return m_successor_state; }
+StateIndex Transition::get_successor_state() const { return m_successor_state; }
 
 GroundAction Transition::get_creating_action() const { return m_creating_action; }
 
@@ -46,7 +46,7 @@ GroundAction Transition::get_creating_action() const { return m_creating_action;
  */
 
 std::vector<double> compute_shortest_distances_from_states(const size_t num_total_states,
-                                                           const StateIdList& states,
+                                                           const StateIndexList& states,
                                                            const std::vector<TransitionList>& transitions,
                                                            bool use_unit_cost_one)
 {

@@ -68,8 +68,8 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
                                                      AbstractionId id,
                                                      std::shared_ptr<FaithfulAbstractionList> abstractions,
                                                      GlobalFaithfulAbstractStateList states,
-                                                     GlobalFaithfulAbstractStateMap<StateId> state_to_index,
-                                                     CertificateToStateIdMap states_by_certificate,
+                                                     GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
+                                                     CertificateToStateIndexMap states_by_certificate,
                                                      size_t num_isomorphic_states,
                                                      size_t num_non_isomorphic_states) :
     m_mark_true_goal_atoms(mark_true_goal_atoms),
@@ -151,8 +151,8 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
         auto states = GlobalFaithfulAbstractStateList(
             faithful_abstraction.get_num_states(),
             GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
-        auto state_to_index = GlobalFaithfulAbstractStateMap<StateId> {};
-        auto states_by_certificate = CertificateToStateIdMap {};
+        auto state_to_index = GlobalFaithfulAbstractStateMap<StateIndex> {};
+        auto states_by_certificate = CertificateToStateIndexMap {};
         for (size_t state_id = 0; state_id < faithful_abstraction.get_num_states(); ++state_id)
         {
             const auto& state = faithful_abstraction.get_states().at(state_id);
@@ -211,7 +211,7 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<P
  * Abstraction functionality
  */
 
-StateId GlobalFaithfulAbstraction::get_abstract_state_id(State concrete_state)
+StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_state)
 {
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
@@ -223,7 +223,7 @@ StateId GlobalFaithfulAbstraction::get_abstract_state_id(State concrete_state)
  * Extended functionality
  */
 
-std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const StateIdList& abstract_states, bool forward) const
+std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& abstract_states, bool forward) const
 {
     return mimir::compute_shortest_distances_from_states(*this, abstract_states, forward);
 }
@@ -250,15 +250,15 @@ const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() con
 /* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
 
-StateId GlobalFaithfulAbstraction::get_state_id(const GlobalFaithfulAbstractState& state) const { return m_state_to_index.at(state); }
+StateIndex GlobalFaithfulAbstraction::get_state_index(const GlobalFaithfulAbstractState& state) const { return m_state_to_index.at(state); }
 
-const CertificateToStateIdMap& GlobalFaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
+const CertificateToStateIndexMap& GlobalFaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
 
-StateId GlobalFaithfulAbstraction::get_initial_state() const { return m_abstractions->at(m_id).get_initial_state(); }
+StateIndex GlobalFaithfulAbstraction::get_initial_state() const { return m_abstractions->at(m_id).get_initial_state(); }
 
-const StateIdSet& GlobalFaithfulAbstraction::get_goal_states() const { return m_abstractions->at(m_id).get_goal_states(); }
+const StateIndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return m_abstractions->at(m_id).get_goal_states(); }
 
-const StateIdSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_id).get_deadend_states(); }
+const StateIndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_id).get_deadend_states(); }
 
 size_t GlobalFaithfulAbstraction::get_num_states() const { return m_states.size(); }
 

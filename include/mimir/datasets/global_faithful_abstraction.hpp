@@ -75,8 +75,8 @@ private:
     // Note that state.get_id() does not yield the index within the abstraction.
     // Use abstraction.get_state_id instead.
     GlobalFaithfulAbstractStateList m_states;
-    GlobalFaithfulAbstractStateMap<StateId> m_state_to_index;
-    CertificateToStateIdMap m_states_by_certificate;
+    GlobalFaithfulAbstractStateMap<StateIndex> m_state_to_index;
+    CertificateToStateIndexMap m_states_by_certificate;
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
@@ -89,8 +89,8 @@ private:
                               AbstractionId id,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
-                              GlobalFaithfulAbstractStateMap<StateId> state_to_index,
-                              CertificateToStateIdMap states_by_certificate,
+                              GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
+                              CertificateToStateIndexMap states_by_certificate,
                               size_t num_isomorphic_states,
                               size_t num_non_isomorphic_states);
 
@@ -115,13 +115,13 @@ public:
      * Abstraction functionality
      */
 
-    StateId get_abstract_state_id(State concrete_state);
+    StateIndex get_abstract_state_index(State concrete_state);
 
     /**
      * Extended functionality
      */
 
-    std::vector<double> compute_shortest_distances_from_states(const StateIdList& states, bool forward = true) const;
+    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states, bool forward = true) const;
 
     std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 
@@ -139,11 +139,11 @@ public:
 
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
-    StateId get_state_id(const GlobalFaithfulAbstractState& state) const;
-    const CertificateToStateIdMap& get_states_by_certificate() const;
-    StateId get_initial_state() const;
-    const StateIdSet& get_goal_states() const;
-    const StateIdSet& get_deadend_states() const;
+    StateIndex get_state_index(const GlobalFaithfulAbstractState& state) const;
+    const CertificateToStateIndexMap& get_states_by_certificate() const;
+    StateIndex get_initial_state() const;
+    const StateIndexSet& get_goal_states() const;
+    const StateIndexSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;

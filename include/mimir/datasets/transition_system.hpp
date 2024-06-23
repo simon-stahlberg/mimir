@@ -31,16 +31,16 @@ namespace mimir
 class Transition
 {
 private:
-    StateId m_successor_state;
+    StateIndex m_successor_state;
     GroundAction m_creating_action;
 
 public:
-    Transition(StateId successor_state, GroundAction creating_action);
+    Transition(StateIndex successor_state, GroundAction creating_action);
 
     [[nodiscard]] bool operator==(const Transition& other) const;
     [[nodiscard]] size_t hash() const;
 
-    StateId get_successor_state() const;
+    StateIndex get_successor_state() const;
     GroundAction get_creating_action() const;
 };
 
@@ -51,13 +51,13 @@ concept IsTransitionSystem = requires(T a) {
     // States
     {
         a.get_initial_state()
-    } -> std::convertible_to<StateId>;
+    } -> std::convertible_to<StateIndex>;
     {
         a.get_goal_states()
-    } -> std::convertible_to<const StateIdSet&>;
+    } -> std::convertible_to<const StateIndexSet&>;
     {
         a.get_deadend_states()
-    } -> std::convertible_to<const StateIdSet&>;
+    } -> std::convertible_to<const StateIndexSet&>;
     {
         a.get_num_states()
     } -> std::convertible_to<size_t>;
@@ -91,14 +91,14 @@ concept IsTransitionSystem = requires(T a) {
 
 /// @brief Compute shortest distances from the given states using Dijkstra.
 extern std::vector<double> compute_shortest_distances_from_states(size_t num_total_states,
-                                                                  const StateIdList& states,
+                                                                  const StateIndexList& states,
                                                                   const std::vector<TransitionList>& transitions,
                                                                   bool use_unit_cost_one = true);
 
 /// @brief Compute shortest distances from the given states using Dijkstra.
 template<IsTransitionSystem TransitionSystem>
 std::vector<double>
-compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIdList& states, bool use_unit_cost_one = true, bool forward = true);
+compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIndexList& states, bool use_unit_cost_one = true, bool forward = true);
 
 /// @brief Compute shortest distances from the given states using Floyd-Warshall.
 template<IsTransitionSystem TransitionSystem>
@@ -109,7 +109,7 @@ std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(const
  */
 
 template<IsTransitionSystem TransitionSystem>
-std::vector<double> compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIdList& states, bool use_unit_cost_one, bool forward)
+std::vector<double> compute_shortest_distances_from_states(const TransitionSystem& ts, const StateIndexList& states, bool use_unit_cost_one, bool forward)
 {
     // Fetch data
     const auto num_states = ts.get_num_states();
@@ -128,7 +128,7 @@ std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(const
     auto distances = std::vector<std::vector<double>> { num_states, std::vector<double>(num_states, std::numeric_limits<double>::max()) };
 
     // Initialize distance adjacency matrix
-    for (size_t state = 0; state < num_states; ++state)
+    for (StateIndex state = 0; state < num_states; ++state)
     {
         distances.at(state).at(state) = 0.;
         for (const auto& transition : transitions.at(state))
@@ -138,11 +138,11 @@ std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(const
     }
 
     // Compute transitive closure
-    for (size_t state_k = 0; state_k < num_states; ++state_k)
+    for (StateIndex state_k = 0; state_k < num_states; ++state_k)
     {
-        for (size_t state_i = 0; state_i < num_states; ++state_i)
+        for (StateIndex state_i = 0; state_i < num_states; ++state_i)
         {
-            for (size_t state_j = 0; state_j < num_states; ++state_j)
+            for (StateIndex state_j = 0; state_j < num_states; ++state_j)
             {
                 if (distances.at(state_i).at(state_j) > distances.at(state_i).at(state_k) + distances.at(state_k).at(state_j))
                 {
