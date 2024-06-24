@@ -86,6 +86,13 @@ public:
     /// @brief Simplest construction, expects the event handler from the lifted aag.
     AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
+    // Uncopyable
+    AxiomEvaluator(const AxiomEvaluator& other) = delete;
+    AxiomEvaluator& operator=(const AxiomEvaluator& other) = delete;
+    // Unmovable
+    AxiomEvaluator(AxiomEvaluator&& other) = delete;
+    AxiomEvaluator& operator=(AxiomEvaluator&& other) = delete;
+
     /// @brief Generate and apply all applicable axioms.
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
 

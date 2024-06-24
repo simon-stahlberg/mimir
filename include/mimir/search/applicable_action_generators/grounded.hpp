@@ -53,6 +53,13 @@ public:
     /// @brief Complete construction
     GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler);
 
+    // Uncopyable
+    GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;
+    GroundedApplicableActionGenerator& operator=(const GroundedApplicableActionGenerator& other) = delete;
+    // Unmovable
+    GroundedApplicableActionGenerator(GroundedApplicableActionGenerator&& other) = delete;
+    GroundedApplicableActionGenerator& operator=(GroundedApplicableActionGenerator&& other) = delete;
+
     void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
 
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;

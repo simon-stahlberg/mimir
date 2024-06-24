@@ -27,7 +27,7 @@
 namespace mimir
 {
 
-using AbstractionId = uint32_t;
+using AbstractionIndex = uint32_t;
 
 /**
  * Internal concept
@@ -137,7 +137,9 @@ public:
     Abstraction(const Abstraction& other) : m_pimpl { other.m_pimpl->clone() } {}
     Abstraction& operator=(const Abstraction& other)
     {
-        m_pimpl = other.m_pimpl->clone();
+        // Copy-and-swap idiom
+        Abstraction tmp(other);
+        std::swap(m_pimpl, tmp.m_pimpl);
         return *this;
     }
 

@@ -48,6 +48,13 @@ private:
 public:
     explicit SuccessorStateGenerator(std::shared_ptr<IApplicableActionGenerator> aag) : m_aag(std::move(aag)) {}
 
+    // Uncopyable
+    SuccessorStateGenerator(const SuccessorStateGenerator& other) = delete;
+    SuccessorStateGenerator& operator=(const SuccessorStateGenerator& other) = delete;
+    // Unmovable
+    SuccessorStateGenerator(SuccessorStateGenerator&& other) = delete;
+    SuccessorStateGenerator& operator=(SuccessorStateGenerator&& other) = delete;
+
     [[nodiscard]] State get_or_create_initial_state()
     {
         auto ground_atoms = GroundAtomList<Fluent> {};

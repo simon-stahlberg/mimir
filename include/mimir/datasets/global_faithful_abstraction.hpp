@@ -42,17 +42,17 @@ class GlobalFaithfulAbstractState
 {
 private:
     StateId m_id;
-    AbstractionId m_abstraction_id;
+    AbstractionIndex m_abstraction_id;
     StateId m_abstract_state_id;
 
 public:
-    GlobalFaithfulAbstractState(StateId id, AbstractionId abstraction_id, StateId abstract_state_id);
+    GlobalFaithfulAbstractState(StateId id, AbstractionIndex abstraction_index, StateId abstract_state_id);
 
     [[nodiscard]] bool operator==(const GlobalFaithfulAbstractState& other) const;
     [[nodiscard]] size_t hash() const;
 
     StateId get_id() const;
-    AbstractionId get_abstraction_id() const;
+    AbstractionIndex get_abstraction_index() const;
     StateId get_abstract_state_id() const;
 };
 
@@ -66,7 +66,7 @@ private:
     /* Meta data */
     bool m_mark_true_goal_atoms;
     bool m_use_unit_cost_one;
-    AbstractionId m_id;
+    AbstractionIndex m_index;
 
     /* Memory */
     std::shared_ptr<FaithfulAbstractionList> m_abstractions;
@@ -86,7 +86,7 @@ private:
 
     GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
                               bool use_unit_cost_one,
-                              AbstractionId id,
+                              AbstractionIndex index,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
                               GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
@@ -136,7 +136,7 @@ public:
     /* Meta data */
     bool get_mark_true_goal_atoms() const;
     bool get_use_unit_cost_one() const;
-    AbstractionId get_id() const;
+    AbstractionIndex get_index() const;
 
     /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const;

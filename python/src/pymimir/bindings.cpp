@@ -1038,7 +1038,7 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &GlobalFaithfulAbstractState::operator==)
         .def("__hash__", &GlobalFaithfulAbstractState::hash)
         .def("get_id", &GlobalFaithfulAbstractState::get_id)
-        .def("get_abstraction_id", &GlobalFaithfulAbstractState::get_abstraction_id)
+        .def("get_abstraction_index", &GlobalFaithfulAbstractState::get_abstraction_index)
         .def("get_abstract_state_id", &GlobalFaithfulAbstractState::get_abstract_state_id);
 
     py::class_<GlobalFaithfulAbstraction, std::shared_ptr<GlobalFaithfulAbstraction>>(m, "GlobalFaithfulAbstraction")
@@ -1102,7 +1102,7 @@ void init_pymimir(py::module_& m)
             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
-        .def("get_id", &GlobalFaithfulAbstraction::get_id)
+        .def("get_index", &GlobalFaithfulAbstraction::get_index)
         .def("get_pddl_parser", &GlobalFaithfulAbstraction::get_pddl_parser)
         .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)

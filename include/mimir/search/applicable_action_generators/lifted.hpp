@@ -73,6 +73,13 @@ public:
     /// @brief Complete construction
     LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
 
+    // Uncopyable
+    LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
+    LiftedApplicableActionGenerator& operator=(const LiftedApplicableActionGenerator& other) = delete;
+    // Unmovable
+    LiftedApplicableActionGenerator(LiftedApplicableActionGenerator&& other) = delete;
+    LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
+
     void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
 
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
