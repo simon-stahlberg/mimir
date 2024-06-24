@@ -42,7 +42,7 @@ class GlobalFaithfulAbstractState
 {
 private:
     StateId m_id;
-    AbstractionIndex m_abstraction_id;
+    AbstractionIndex m_abstraction_index;
     StateId m_abstract_state_id;
 
 public:

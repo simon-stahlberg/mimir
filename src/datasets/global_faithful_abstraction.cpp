@@ -32,7 +32,7 @@ namespace mimir
 
 GlobalFaithfulAbstractState::GlobalFaithfulAbstractState(StateId id, AbstractionIndex abstraction_index, StateId abstract_state_id) :
     m_id(id),
-    m_abstraction_id(abstraction_index),
+    m_abstraction_index(abstraction_index),
     m_abstract_state_id(abstract_state_id)
 {
 }
@@ -55,7 +55,7 @@ size_t GlobalFaithfulAbstractState::hash() const
 
 StateId GlobalFaithfulAbstractState::get_id() const { return m_id; }
 
-AbstractionIndex GlobalFaithfulAbstractState::get_abstraction_index() const { return m_abstraction_id; }
+AbstractionIndex GlobalFaithfulAbstractState::get_abstraction_index() const { return m_abstraction_index; }
 
 StateId GlobalFaithfulAbstractState::get_abstract_state_id() const { return m_abstract_state_id; }
 
