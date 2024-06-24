@@ -22,12 +22,12 @@
 
 namespace mimir
 {
-Digraph::Digraph(bool is_directed) : m_num_vertices(0), m_is_directed(is_directed), m_num_edges(0), m_forward_successors(), m_backward_successors() {}
+Digraph::Digraph(bool is_directed) : m_num_vertices(0), m_num_edges(0), m_is_directed(is_directed), m_forward_successors(), m_backward_successors() {}
 
 Digraph::Digraph(int num_vertices, bool is_directed) :
     m_num_vertices(num_vertices),
-    m_is_directed(is_directed),
     m_num_edges(0),
+    m_is_directed(is_directed),
     m_forward_successors(std::vector<std::vector<int>>(m_num_vertices, std::vector<int>())),
     m_backward_successors(std::vector<std::vector<int>>(m_num_vertices, std::vector<int>()))
 {
@@ -50,18 +50,22 @@ void Digraph::add_edge(int src, int dst)
 
 void Digraph::reset(int num_vertices, bool is_directed)
 {
-    m_is_directed = is_directed;
     for (int i = 0; i < m_num_vertices; ++i)
     {
         m_forward_successors.at(i).clear();
         m_backward_successors.at(i).clear();
     }
+    // The '.resize' procedure calls the destructor on the truncated vectors,
+    // which frees memory. To avoid memory allocations in the future, we keep
+    // track of the intended size of these two vectors via 'm_num_vertices'.
     if (num_vertices > m_num_vertices)
     {
         m_forward_successors.resize(num_vertices, std::vector<int>());
         m_backward_successors.resize(num_vertices, std::vector<int>());
     }
     m_num_vertices = num_vertices;
+    m_num_edges = 0;
+    m_is_directed = is_directed;
 }
 
 void Digraph::to_nauty_graph(nauty_wrapper::Graph& out_graph) const

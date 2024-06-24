@@ -30,9 +30,9 @@ class Digraph
 {
 private:
     int m_num_vertices;
-    bool m_is_directed;
 
     int m_num_edges;
+    bool m_is_directed;
 
     // Never deallocate memory, getters return a span on the relevant part.
     std::vector<std::vector<int>> m_forward_successors;
