@@ -25,7 +25,7 @@
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <cstddef>
 #include <loki/loki.hpp>
@@ -48,7 +48,7 @@ private:
     /* Memory */
     std::shared_ptr<PDDLParser> m_parser;
     std::shared_ptr<IAAG> m_aag;
-    std::shared_ptr<ISSG> m_ssg;
+    std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     /* States */
     // Note that state.get_id() does not yield the index within the state_space.
@@ -77,7 +77,7 @@ private:
     StateSpace(bool use_unit_cost_one,
                std::shared_ptr<PDDLParser> parser,
                std::shared_ptr<IAAG> aag,
-               std::shared_ptr<ISSG> ssg,
+               std::shared_ptr<SuccessorStateGenerator> ssg,
                StateList states,
                StateMap<StateIndex> state_to_index,
                StateIndex initial_state,
@@ -106,7 +106,7 @@ public:
     /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
     static std::optional<StateSpace> create(std::shared_ptr<PDDLParser> parser,
                                             std::shared_ptr<IAAG> aag,
-                                            std::shared_ptr<ISSG> ssg,
+                                            std::shared_ptr<SuccessorStateGenerator> ssg,
                                             bool use_unit_cost_one = true,
                                             bool remove_if_unsolvable = true,
                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
@@ -130,13 +130,14 @@ public:
     /// @param timeout_ms The maximum time spent on creating a StateSpace.
     /// @param num_threads The number of threads used for construction.
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
-    static std::vector<StateSpace> create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
-                                          bool use_unit_cost_one = true,
-                                          bool remove_if_unsolvable = true,
-                                          bool sort_ascending_by_num_states = true,
-                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-                                          uint32_t num_threads = std::thread::hardware_concurrency());
+    static std::vector<StateSpace>
+    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+           bool use_unit_cost_one = true,
+           bool remove_if_unsolvable = true,
+           bool sort_ascending_by_num_states = true,
+           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+           uint32_t num_threads = std::thread::hardware_concurrency());
 
     /**
      * Extended functionality
@@ -161,7 +162,7 @@ public:
     /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
     const std::shared_ptr<IAAG>& get_aag() const;
-    const std::shared_ptr<ISSG>& get_ssg() const;
+    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
     /* States */
     // We cannot ensure that states are having an indexing scheme because

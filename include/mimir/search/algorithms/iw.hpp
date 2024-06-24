@@ -25,7 +25,7 @@
 #include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 namespace mimir
 {
@@ -36,7 +36,7 @@ private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     int m_max_arity;
 
-    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
+    std::shared_ptr<SuccessorStateGenerator> m_ssg;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
 
@@ -59,7 +59,7 @@ public:
     /// @brief Complete construction
     IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                             int max_arity,
-                            std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
+                            std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
                             std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                             std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
         m_aag(applicable_action_generator),

@@ -627,24 +627,21 @@ void init_pymimir(py::module_& m)
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedAAGEventHandler>>());
 
-    /* SSGs */
-    py::class_<ISSG, std::shared_ptr<ISSG>>(m, "ISSG")  //
-        .def("get_or_create_initial_state", &ISSG::get_or_create_initial_state)
-        .def("get_or_create_state", &ISSG::get_or_create_state)
-        .def("get_or_create_successor_state", &ISSG::get_or_create_successor_state)
-        .def("get_state_count", &ISSG::get_state_count)
-        .def("get_reached_fluent_ground_atoms", &ISSG::get_reached_fluent_ground_atoms)
-        .def("get_reached_derived_ground_atoms", &ISSG::get_reached_derived_ground_atoms);
-    py::class_<SSG, ISSG, std::shared_ptr<SSG>>(m, "SSG")  //
+    /* SuccessorStateGenerator */
+    py::class_<SuccessorStateGenerator, std::shared_ptr<SuccessorStateGenerator>>(m, "SuccessorStateGenerator")  //
         .def(py::init<std::shared_ptr<IAAG>>())
+        .def("get_or_create_initial_state", &SuccessorStateGenerator::get_or_create_initial_state)
+        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state)
+        .def("get_or_create_successor_state", &SuccessorStateGenerator::get_or_create_successor_state)
+        .def("get_state_count", &SuccessorStateGenerator::get_state_count)
         .def("get_reached_fluent_ground_atoms",
-             [](const SSG& self)
+             [](const SuccessorStateGenerator& self)
              {
                  const auto& atoms = self.get_reached_fluent_ground_atoms();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
         .def("get_reached_derived_ground_atoms",
-             [](const SSG& self)
+             [](const SuccessorStateGenerator& self)
              {
                  const auto& atoms = self.get_reached_derived_ground_atoms();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
@@ -667,7 +664,7 @@ void init_pymimir(py::module_& m)
     // AStar
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
         .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<IHeuristic>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IHeuristic>>());
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>, std::shared_ptr<IHeuristic>>());
 
     // BrFS
     py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler");
@@ -681,7 +678,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<BrFSAlgorithm, IAlgorithm, std::shared_ptr<BrFSAlgorithm>>(m, "BrFSAlgorithm")
         .def(py::init<std::shared_ptr<IAAG>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<ISSG>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
 
     // IW
     py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
@@ -737,7 +734,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::shared_ptr<IAAG>, int>())
         .def(py::init<std::shared_ptr<IAAG>,
                       int,
-                      std::shared_ptr<ISSG>,
+                      std::shared_ptr<SuccessorStateGenerator>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>>());
 
@@ -750,7 +747,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::shared_ptr<IAAG>, int>())
         .def(py::init<std::shared_ptr<IAAG>,
                       int,
-                      std::shared_ptr<ISSG>,
+                      std::shared_ptr<SuccessorStateGenerator>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,
                       std::shared_ptr<ISIWAlgorithmEventHandler>>());
@@ -787,7 +784,7 @@ void init_pymimir(py::module_& m)
             "create",
             [](std::shared_ptr<PDDLParser> parser,
                std::shared_ptr<IAAG> aag,
-               std::shared_ptr<ISSG> ssg,
+               std::shared_ptr<SuccessorStateGenerator> ssg,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
                uint32_t max_num_states,
@@ -830,7 +827,7 @@ void init_pymimir(py::module_& m)
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
                bool sort_ascending_by_num_states,
@@ -938,7 +935,7 @@ void init_pymimir(py::module_& m)
             "create",
             [](std::shared_ptr<PDDLParser> parser,
                std::shared_ptr<IAAG> aag,
-               std::shared_ptr<ISSG> ssg,
+               std::shared_ptr<SuccessorStateGenerator> ssg,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
@@ -988,7 +985,7 @@ void init_pymimir(py::module_& m)
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
@@ -1079,7 +1076,7 @@ void init_pymimir(py::module_& m)
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
                bool mark_true_goal_atoms,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,

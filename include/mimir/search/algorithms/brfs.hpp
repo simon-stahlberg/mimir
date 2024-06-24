@@ -26,7 +26,7 @@
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/search_nodes/uninformed.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <deque>
 #include <flatmemory/flatmemory.hpp>
@@ -46,7 +46,7 @@ class BrFSAlgorithm : public IAlgorithm
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
+    std::shared_ptr<SuccessorStateGenerator> m_ssg;
     State m_initial_state;
     std::deque<State> m_queue;
     FlatUninformedSearchNodeVector m_search_nodes;
@@ -96,7 +96,7 @@ public:
 
     /// @brief Complete construction
     BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                  std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
+                  std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
                   std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
         m_aag(std::move(applicable_action_generator)),
         m_ssg(std::move(successor_state_generator)),

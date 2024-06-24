@@ -24,7 +24,7 @@
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <loki/details/utils/filesystem.hpp>
 #include <memory>
@@ -74,7 +74,7 @@ private:
     /* Memory */
     std::shared_ptr<PDDLParser> m_parser;
     std::shared_ptr<IAAG> m_aag;
-    std::shared_ptr<ISSG> m_ssg;
+    std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     /* States */
     FaithfulAbstractStateList m_states;
@@ -103,7 +103,7 @@ private:
                         bool use_unit_cost_one,
                         std::shared_ptr<PDDLParser> parser,
                         std::shared_ptr<IAAG> aag,
-                        std::shared_ptr<ISSG> ssg,
+                        std::shared_ptr<SuccessorStateGenerator> ssg,
                         FaithfulAbstractStateList states,
                         CertificateToStateIndexMap states_by_certificate,
                         StateIndex initial_state,
@@ -125,7 +125,7 @@ public:
 
     static std::optional<FaithfulAbstraction> create(std::shared_ptr<PDDLParser> parser,
                                                      std::shared_ptr<IAAG> aag,
-                                                     std::shared_ptr<ISSG> ssg,
+                                                     std::shared_ptr<SuccessorStateGenerator> ssg,
                                                      bool mark_true_goal_atoms = false,
                                                      bool use_unit_cost_one = true,
                                                      bool remove_if_unsolvable = true,
@@ -143,7 +143,7 @@ public:
                                                    uint32_t num_threads = std::thread::hardware_concurrency());
 
     static std::vector<FaithfulAbstraction>
-    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
+    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            bool mark_true_goal_atoms = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
@@ -177,7 +177,7 @@ public:
     /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
     const std::shared_ptr<IAAG>& get_aag() const;
-    const std::shared_ptr<ISSG>& get_ssg() const;
+    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;

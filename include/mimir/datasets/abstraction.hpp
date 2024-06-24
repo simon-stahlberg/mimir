@@ -59,7 +59,7 @@ private:
         /* Memory */
         virtual const std::shared_ptr<PDDLParser>& get_pddl_parser() const = 0;
         virtual const std::shared_ptr<IAAG>& get_aag() const = 0;
-        virtual const std::shared_ptr<ISSG>& get_ssg() const = 0;
+        virtual const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const = 0;
 
         /* States */
         virtual StateIndex get_initial_state() const = 0;
@@ -99,7 +99,7 @@ private:
         /* Memory */
         const std::shared_ptr<PDDLParser>& get_pddl_parser() const override { return m_abstraction.get_pddl_parser(); }
         const std::shared_ptr<IAAG>& get_aag() const override { return m_abstraction.get_aag(); }
-        const std::shared_ptr<ISSG>& get_ssg() const override { return m_abstraction.get_ssg(); }
+        const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const override { return m_abstraction.get_ssg(); }
 
         /* States */
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
@@ -135,7 +135,6 @@ public:
 
     // Copy operations
     Abstraction(const Abstraction& other) : m_pimpl { other.m_pimpl->clone() } {}
-
     Abstraction& operator=(const Abstraction& other)
     {
         m_pimpl = other.m_pimpl->clone();
@@ -143,13 +142,8 @@ public:
     }
 
     // Move operations
-    Abstraction(Abstraction&& other) : m_pimpl { std::move(other.m_pimpl) } {}
-
-    Abstraction& operator=(Abstraction&& other)
-    {
-        m_pimpl = std::move(other.m_pimpl);
-        return *this;
-    }
+    Abstraction(Abstraction&& other) noexcept = default;
+    Abstraction& operator=(Abstraction&& other) noexcept = default;
 
     /* Abstraction */
     StateIndex get_abstract_state_index(State concrete_state) { return m_pimpl->get_abstract_state_index(concrete_state); }
@@ -157,7 +151,7 @@ public:
     /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const { return m_pimpl->get_pddl_parser(); }
     const std::shared_ptr<IAAG>& get_aag() const { return m_pimpl->get_aag(); }
-    const std::shared_ptr<ISSG>& get_ssg() const { return m_pimpl->get_ssg(); }
+    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const { return m_pimpl->get_ssg(); }
 
     /* States */
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }

@@ -21,7 +21,7 @@
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/heuristics.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <vector>
 
@@ -35,7 +35,7 @@ class AStarAlgorithm : public IAlgorithm
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<ISuccessorStateGenerator> m_ssg;
+    std::shared_ptr<SuccessorStateGenerator> m_ssg;
     State m_initial_state;
     std::shared_ptr<IHeuristic> m_heuristic;
 
@@ -48,7 +48,7 @@ public:
 
     /// @brief Complete construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                   std::shared_ptr<ISuccessorStateGenerator> successor_state_generator,
+                   std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
                    std::shared_ptr<IHeuristic> heuristic) :
         m_aag(std::move(applicable_action_generator)),
         m_ssg(std::move(successor_state_generator)),

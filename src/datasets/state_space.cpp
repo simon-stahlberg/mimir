@@ -30,7 +30,7 @@ namespace mimir
 StateSpace::StateSpace(bool use_unit_cost_one,
                        std::shared_ptr<PDDLParser> parser,
                        std::shared_ptr<IAAG> aag,
-                       std::shared_ptr<ISSG> ssg,
+                       std::shared_ptr<SuccessorStateGenerator> ssg,
                        StateList states,
                        StateMap<StateIndex> state_to_index,
                        StateIndex initial_state,
@@ -77,7 +77,7 @@ std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath,
 
 std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                                              std::shared_ptr<IAAG> aag,
-                                             std::shared_ptr<ISSG> ssg,
+                                             std::shared_ptr<SuccessorStateGenerator> ssg,
                                              bool use_unit_cost_one,
                                              bool remove_if_unsolvable,
                                              uint32_t max_num_states,
@@ -203,7 +203,7 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
                                   uint32_t timeout_ms,
                                   uint32_t num_threads)
 {
-    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
@@ -215,13 +215,14 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
     return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, sort_ascending_by_num_states, max_num_states, timeout_ms, num_threads);
 }
 
-std::vector<StateSpace> StateSpace::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
-                                           bool use_unit_cost_one,
-                                           bool remove_if_unsolvable,
-                                           bool sort_ascending_by_num_states,
-                                           uint32_t max_num_states,
-                                           uint32_t timeout_ms,
-                                           uint32_t num_threads)
+std::vector<StateSpace>
+StateSpace::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+                   bool use_unit_cost_one,
+                   bool remove_if_unsolvable,
+                   bool sort_ascending_by_num_states,
+                   uint32_t max_num_states,
+                   uint32_t timeout_ms,
+                   uint32_t num_threads)
 {
     auto state_spaces = StateSpaceList {};
     auto pool = BS::thread_pool(num_threads);
@@ -277,7 +278,7 @@ const std::shared_ptr<PDDLParser>& StateSpace::get_pddl_parser() const { return 
 
 const std::shared_ptr<IAAG>& StateSpace::get_aag() const { return m_aag; }
 
-const std::shared_ptr<ISSG>& StateSpace::get_ssg() const { return m_ssg; }
+const std::shared_ptr<SuccessorStateGenerator>& StateSpace::get_ssg() const { return m_ssg; }
 
 /* States */
 const StateList& StateSpace::get_states() const { return m_states; }

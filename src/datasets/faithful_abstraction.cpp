@@ -71,7 +71,7 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
                                          bool use_unit_cost_one,
                                          std::shared_ptr<PDDLParser> parser,
                                          std::shared_ptr<IAAG> aag,
-                                         std::shared_ptr<ISSG> ssg,
+                                         std::shared_ptr<SuccessorStateGenerator> ssg,
                                          FaithfulAbstractStateList states,
                                          CertificateToStateIndexMap states_by_certificate,
                                          StateIndex initial_state,
@@ -124,7 +124,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<PDDLParser> parser,
                                                                std::shared_ptr<IAAG> aag,
-                                                               std::shared_ptr<ISSG> ssg,
+                                                               std::shared_ptr<SuccessorStateGenerator> ssg,
                                                                bool mark_true_goal_atoms,
                                                                bool use_unit_cost_one,
                                                                bool remove_if_unsolvable,
@@ -298,7 +298,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
                                                              uint32_t timeout_ms,
                                                              uint32_t num_threads)
 {
-    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
@@ -317,15 +317,15 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
                                        num_threads);
 }
 
-std::vector<FaithfulAbstraction>
-FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
-                            bool mark_true_goal_atoms,
-                            bool use_unit_cost_one,
-                            bool remove_if_unsolvable,
-                            bool sort_ascending_by_num_states,
-                            uint32_t max_num_states,
-                            uint32_t timeout_ms,
-                            uint32_t num_threads)
+std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
+    const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    bool mark_true_goal_atoms,
+    bool use_unit_cost_one,
+    bool remove_if_unsolvable,
+    bool sort_ascending_by_num_states,
+    uint32_t max_num_states,
+    uint32_t timeout_ms,
+    uint32_t num_threads)
 {
     auto abstractions = std::vector<FaithfulAbstraction> {};
     auto pool = BS::thread_pool(num_threads);
@@ -396,7 +396,7 @@ const std::shared_ptr<PDDLParser>& FaithfulAbstraction::get_pddl_parser() const 
 
 const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag; }
 
-const std::shared_ptr<ISSG>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
+const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }

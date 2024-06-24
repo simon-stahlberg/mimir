@@ -1,5 +1,5 @@
 #include "mimir/formalism/formalism.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <gtest/gtest.h>
 
@@ -14,7 +14,7 @@ TEST(MimirTests, SearchSSGDenseTest)
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
     auto lifted_aag = std::make_shared<LiftedAAG>(problem, parser.get_factories());
-    auto ssg = SSG(lifted_aag);
+    auto ssg = SuccessorStateGenerator(lifted_aag);
     [[maybe_unused]] const auto initial_state = ssg.get_or_create_initial_state();
 }
 

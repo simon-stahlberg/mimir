@@ -22,7 +22,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generators.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <concepts>
 
@@ -59,7 +59,7 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index) {
     } -> std::convertible_to<const std::shared_ptr<IAAG>&>;
     {
         a.get_ssg()
-    } -> std::convertible_to<const std::shared_ptr<ISSG>&>;
+    } -> std::convertible_to<const std::shared_ptr<SuccessorStateGenerator>&>;
 
     /* States */
     {

@@ -80,19 +80,19 @@ from _pymimir import (
     IHeuristic,
     ILiftedAAGEventHandler,
     ISIWAlgorithmEventHandler,
-    ISSG,
     IWAlgorithm,
     LiftedAAG,
     SearchNodeStatus,
     SearchStatus,
     SIWAlgorithm,
-    SSG,
+    SuccessorStateGenerator,
     State,
     TupleIndexMapper
 )
 
 # Dataset
 from _pymimir import (
+    Abstraction,
     FaithfulAbstractState,
     FaithfulAbstraction,
     GlobalFaithfulAbstractState,

@@ -15,15 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_SUCCESSOR_STATE_GENERATOR_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATORS_SUCCESSOR_STATE_GENERATOR_HPP_
+#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
+#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
 
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generators/interface.hpp"
 
 #include <cstddef>
 #include <flatmemory/flatmemory.hpp>
@@ -35,7 +34,7 @@ namespace mimir
 /**
  * Implementation class
  */
-class SuccessorStateGenerator : public ISuccessorStateGenerator
+class SuccessorStateGenerator
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
@@ -49,7 +48,7 @@ private:
 public:
     explicit SuccessorStateGenerator(std::shared_ptr<IApplicableActionGenerator> aag) : m_aag(std::move(aag)) {}
 
-    [[nodiscard]] State get_or_create_initial_state() override
+    [[nodiscard]] State get_or_create_initial_state()
     {
         auto ground_atoms = GroundAtomList<Fluent> {};
 
@@ -66,7 +65,7 @@ public:
         return get_or_create_state(ground_atoms);
     }
 
-    [[nodiscard]] State get_or_create_state(const GroundAtomList<Fluent>& atoms) override
+    [[nodiscard]] State get_or_create_state(const GroundAtomList<Fluent>& atoms)
     {
         /* Fetch member references for non extended construction. */
 
@@ -118,7 +117,7 @@ public:
         return State(*iter2);
     }
 
-    [[nodiscard]] State get_or_create_successor_state(State state, GroundAction action) override
+    [[nodiscard]] State get_or_create_successor_state(State state, GroundAction action)
     {
         /* Fetch member references for non extended construction. */
 
@@ -192,20 +191,14 @@ public:
         return State(*iter2);
     }
 
-    [[nodiscard]] size_t get_state_count() const override { return m_states.size(); }
+    [[nodiscard]] size_t get_state_count() const { return m_states.size(); }
 
-    [[nodiscard]] const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const override { return m_reached_fluent_atoms; }
+    [[nodiscard]] const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
 
-    [[nodiscard]] const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const override { return m_reached_derived_atoms; }
+    [[nodiscard]] const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
 
-    [[nodiscard]] std::shared_ptr<IAAG> get_aag() const override { return m_aag; }
+    [[nodiscard]] std::shared_ptr<IAAG> get_aag() const { return m_aag; }
 };
-
-/**
- * Types
- */
-
-using SSG = SuccessorStateGenerator;
 
 }
 

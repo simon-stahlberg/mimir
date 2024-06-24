@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from pymimir import PDDLParser, LiftedAAG, SSG
+from pymimir import PDDLParser, LiftedAAG, SuccessorStateGenerator
 
 from pathlib import Path
 
@@ -16,11 +16,11 @@ if __name__ == "__main__":
     # Ownership semantics rule 2: do not unintentionally free memory of ApplicableActionGenerator (AAG)
     # You should assign it to a variable and do not reassign it.
     lifted_aag = LiftedAAG(pddl_parser.get_problem(), pddl_parser.get_factories())
-    # Ownership semantics rule 3: do not unintentionally free memory of SuccessorStateGenerator (SSG)
+    # Ownership semantics rule 3: do not unintentionally free memory of SuccessorStateGenerator (SuccessorStateGenerator)
     # You should assign it to a variable and do not reassign it.
-    ssg = SSG(lifted_aag)
+    ssg = SuccessorStateGenerator(lifted_aag)
 
-    # Do some work and access data from PDDLParser, AAG, and SSG
+    # Do some work and access data from PDDLParser, AAG, and SuccessorStateGenerator
     initial_state = ssg.get_or_create_initial_state()
     actions = lifted_aag.compute_applicable_actions(initial_state)
 

@@ -56,7 +56,7 @@ int main(int argc, char** argv)
                          std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
                      };
 
-    auto successor_state_generator = std::shared_ptr<ISSG> { std::make_shared<SSG>(applicable_action_generator) };
+    auto successor_state_generator = std::make_shared<SuccessorStateGenerator>(applicable_action_generator);
 
     auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
                                         std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>() };

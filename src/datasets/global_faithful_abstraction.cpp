@@ -98,7 +98,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                                                          uint32_t timeout_ms,
                                                                          uint32_t num_threads)
 {
-    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
@@ -117,15 +117,15 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                              num_threads);
 }
 
-std::vector<GlobalFaithfulAbstraction>
-GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<ISSG>>>& memories,
-                                  bool mark_true_goal_atoms,
-                                  bool use_unit_cost_one,
-                                  bool remove_if_unsolvable,
-                                  bool sort_ascending_by_num_states,
-                                  uint32_t max_num_states,
-                                  uint32_t timeout_ms,
-                                  uint32_t num_threads)
+std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
+    const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    bool mark_true_goal_atoms,
+    bool use_unit_cost_one,
+    bool remove_if_unsolvable,
+    bool sort_ascending_by_num_states,
+    uint32_t max_num_states,
+    uint32_t timeout_ms,
+    uint32_t num_threads)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
     auto faithful_abstractions = FaithfulAbstraction::create(memories,
@@ -268,7 +268,7 @@ const std::shared_ptr<PDDLParser>& GlobalFaithfulAbstraction::get_pddl_parser() 
 
 const std::shared_ptr<IAAG>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_id).get_aag(); }
 
-const std::shared_ptr<ISSG>& GlobalFaithfulAbstraction::get_ssg() const { return m_abstractions->at(m_id).get_ssg(); }
+const std::shared_ptr<SuccessorStateGenerator>& GlobalFaithfulAbstraction::get_ssg() const { return m_abstractions->at(m_id).get_ssg(); }
 
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 

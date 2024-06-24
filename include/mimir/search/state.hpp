@@ -117,9 +117,9 @@ public:
 
     /// @brief Return true iff two states are equal.
     ///
-    /// For states in same SSG, we know they are already unique.
+    /// For states in same SuccessorStateGenerator, we know they are already unique.
     /// Hence, comparison of the buffer pointer suffices.
-    /// For states in different SSG, buffer pointers are always different.
+    /// For states in different SuccessorStateGenerator, buffer pointers are always different.
     /// Hence, comparison always returns false.
     [[nodiscard]] bool operator==(State other) const { return m_view.buffer() == other.m_view.buffer(); }
 
