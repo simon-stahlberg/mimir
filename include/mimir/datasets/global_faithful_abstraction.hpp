@@ -139,6 +139,9 @@ public:
     AbstractionId get_id() const;
 
     /* Memory */
+    const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
+    const std::shared_ptr<IAAG>& get_aag() const;
+    const std::shared_ptr<ISSG>& get_ssg() const;
     const FaithfulAbstractionList& get_abstractions() const;
 
     /* States */
@@ -170,7 +173,6 @@ public:
  * Static assertions
  */
 
-static_assert(IsTransitionSystem<GlobalFaithfulAbstraction>);
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
 
 }

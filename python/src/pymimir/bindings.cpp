@@ -879,8 +879,29 @@ void init_pymimir(py::module_& m)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
         .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference);
 
-    // FaithfulAbstraction
+    // Abstraction
+    py::class_<Abstraction, std::shared_ptr<Abstraction>>(m, "Abstraction")  //
+        .def(py::init<FaithfulAbstraction>())
+        .def(py::init<GlobalFaithfulAbstraction>())
+        .def("get_pddl_parser", &Abstraction::get_pddl_parser)
+        .def("get_aag", &Abstraction::get_aag)
+        .def("get_ssg", &Abstraction::get_ssg)
+        .def("get_abstract_state_index", &Abstraction::get_abstract_state_index)
+        .def("get_initial_state", &Abstraction::get_initial_state)
+        .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference)
+        .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference)
+        .def("get_num_states", &Abstraction::get_num_states)
+        .def("get_num_goal_states", &Abstraction::get_num_goal_states)
+        .def("get_num_deadend_states", &Abstraction::get_num_deadend_states)
+        .def("is_goal_state", &Abstraction::is_goal_state)
+        .def("is_deadend_state", &Abstraction::is_deadend_state)
+        .def("is_alive_state", &Abstraction::is_alive_state)
+        .def("get_num_transitions", &Abstraction::get_num_transitions)
+        .def("get_forward_transitions", &Abstraction::get_forward_transitions, py::return_value_policy::reference)
+        .def("get_backward_transitions", &Abstraction::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference);
 
+    // FaithfulAbstraction
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_id", &FaithfulAbstractState::get_id)
         .def("get_index", &FaithfulAbstractState::get_index)
@@ -1085,6 +1106,9 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("get_id", &GlobalFaithfulAbstraction::get_id)
+        .def("get_pddl_parser", &GlobalFaithfulAbstraction::get_pddl_parser)
+        .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
+        .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
         .def("get_abstract_state_index", &GlobalFaithfulAbstraction::get_abstract_state_index)
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)

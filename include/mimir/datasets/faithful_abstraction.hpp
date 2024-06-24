@@ -207,7 +207,6 @@ using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
  * Static assertions
  */
 
-static_assert(IsTransitionSystem<FaithfulAbstraction>);
 static_assert(IsAbstraction<FaithfulAbstraction>);
 
 }

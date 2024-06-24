@@ -264,6 +264,12 @@ bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_uni
 AbstractionId GlobalFaithfulAbstraction::get_id() const { return m_id; }
 
 /* Memory */
+const std::shared_ptr<PDDLParser>& GlobalFaithfulAbstraction::get_pddl_parser() const { return m_abstractions->at(m_id).get_pddl_parser(); }
+
+const std::shared_ptr<IAAG>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_id).get_aag(); }
+
+const std::shared_ptr<ISSG>& GlobalFaithfulAbstraction::get_ssg() const { return m_abstractions->at(m_id).get_ssg(); }
+
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 
 /* States */

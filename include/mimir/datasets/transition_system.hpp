@@ -19,8 +19,10 @@
 #define MIMIR_DATASETS_TRANSITION_SYSTEM_HPP_
 
 #include "mimir/search/action.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/successor_state_generators.hpp"
 
 #include <concepts>
 
@@ -48,7 +50,18 @@ using TransitionList = std::vector<Transition>;
 
 template<typename T>
 concept IsTransitionSystem = requires(T a, StateIndex state_index) {
-    // States
+    /* Memory */
+    {
+        a.get_pddl_parser()
+    } -> std::convertible_to<const std::shared_ptr<PDDLParser>&>;
+    {
+        a.get_aag()
+    } -> std::convertible_to<const std::shared_ptr<IAAG>&>;
+    {
+        a.get_ssg()
+    } -> std::convertible_to<const std::shared_ptr<ISSG>&>;
+
+    /* States */
     {
         a.get_initial_state()
     } -> std::convertible_to<StateIndex>;
@@ -77,7 +90,7 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index) {
         a.is_alive_state(state_index)
     } -> std::convertible_to<bool>;
 
-    // Transitions
+    /* Transitions */
     {
         a.get_num_transitions()
     } -> std::convertible_to<size_t>;

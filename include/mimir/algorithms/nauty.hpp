@@ -34,8 +34,10 @@ private:
 public:
     Graph();
     explicit Graph(int num_vertices);
-    Graph(Graph&& other);
-    Graph& operator=(Graph&& other);
+    Graph(const Graph& other);
+    Graph& operator=(const Graph& other);
+    Graph(Graph&& other) noexcept;
+    Graph& operator=(Graph&& other) noexcept;
     ~Graph();
 
     void add_edge(int src, int dst);

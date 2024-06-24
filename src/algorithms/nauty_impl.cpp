@@ -28,7 +28,53 @@ namespace nauty_wrapper
 {
 using mimir::operator<<;
 
-GraphImpl::GraphImpl(int num_vertices) : n(num_vertices), m(SETWORDSNEEDED(n)), graph_(new graph[m * n]) { EMPTYGRAPH0(graph_, m, n); }
+void GraphImpl::allocate_graph()
+{
+    graph_ = new graph[m * n];
+    EMPTYGRAPH0(graph_, m, n);
+}
+
+void GraphImpl::deallocate_graph()
+{
+    delete[] graph_;
+    graph_ = nullptr;
+}
+
+GraphImpl::GraphImpl(int num_vertices) : n(num_vertices), m(SETWORDSNEEDED(n)), graph_() { allocate_graph(); }
+
+GraphImpl::GraphImpl(const GraphImpl& other) : n(other.n), m(other.m), graph_(nullptr)
+{
+    allocate_graph();
+    std::copy(other.graph_, other.graph_ + m * n, graph_);
+}
+
+GraphImpl& GraphImpl::operator=(const GraphImpl& other)
+{
+    if (this != &other)
+    {
+        deallocate_graph();
+        n = other.n;
+        m = other.m;
+        allocate_graph();
+        std::copy(other.graph_, other.graph_ + m * n, graph_);
+    }
+    return *this;
+}
+
+GraphImpl::GraphImpl(GraphImpl&& other) noexcept : n(other.n), m(other.m), graph_(other.graph_) { other.graph_ = nullptr; }
+
+GraphImpl& GraphImpl::operator=(GraphImpl&& other) noexcept
+{
+    if (this != &other)
+    {
+        deallocate_graph();
+        n = other.n;
+        m = other.m;
+        graph_ = other.graph_;
+        other.graph_ = nullptr;
+    }
+    return *this;
+}
 
 GraphImpl::~GraphImpl() { delete[] graph_; }
 

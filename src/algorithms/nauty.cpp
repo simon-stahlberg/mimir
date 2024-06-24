@@ -26,9 +26,20 @@ Graph::Graph() : m_impl(std::make_unique<GraphImpl>(0)) {}
 
 Graph::Graph(int num_vertices) : m_impl(std::make_unique<GraphImpl>(num_vertices)) {}
 
-Graph::Graph(Graph&& other) : m_impl(std::move(other.m_impl)) {}
+Graph::Graph(const Graph& other) : m_impl(std::make_unique<GraphImpl>(*other.m_impl)) {}
 
-Graph& Graph::operator=(Graph&& other)
+Graph& Graph::operator=(const Graph& other)
+{
+    if (this != &other)
+    {
+        m_impl = std::make_unique<GraphImpl>(*other.m_impl);
+    }
+    return *this;
+}
+
+Graph::Graph(Graph&& other) noexcept : m_impl(std::move(other.m_impl)) {}
+
+Graph& Graph::operator=(Graph&& other) noexcept
 {
     if (this != &other)
     {

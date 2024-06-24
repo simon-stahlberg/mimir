@@ -35,8 +35,15 @@ private:
 
     graph* graph_;
 
+    void allocate_graph();
+    void deallocate_graph();
+
 public:
     explicit GraphImpl(int num_vertices);
+    GraphImpl(const GraphImpl& other);
+    GraphImpl& operator=(const GraphImpl& other);
+    GraphImpl(GraphImpl&& other) noexcept;
+    GraphImpl& operator=(GraphImpl&& other) noexcept;
     ~GraphImpl();
 
     void add_edge(int src, int dst);
