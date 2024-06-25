@@ -18,7 +18,9 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_INDEX_MAPPERS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_INDEX_MAPPERS_HPP_
 
+#include "mimir/formalism/factories.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
+#include "mimir/search/state.hpp"
 
 #include <array>
 #include <string>

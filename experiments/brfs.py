@@ -67,7 +67,7 @@ exp = Experiment(environment=ENV)
 # Add custom parser for FF.
 exp.add_parser(BrfsParser())
 
-PLANNER_DIR = REPO / "build" / "exe" / "planner"
+PLANNER_DIR = REPO / "build" / "exe" / "planner_brfs"
 
 exp.add_resource("planner_exe", PLANNER_DIR)
 exp.add_resource("run_planner", DIR / "run_planner.sh")
