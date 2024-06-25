@@ -132,3 +132,8 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 
 - Use the keyword `auto` as much as possible to avoid automatic conversations and flexibility.
 - Use left-to-right notation for readability, e.g., `auto vec = std::vector<int>{};`
+
+### 4.7. Interfaces
+
+- Use pure virtual interfaces if a type is only used through a pointer to the interface.
+- Use more expressive external inheritance hierarchies through type erasure if a type is used either through its concrete type or its abstract type.
