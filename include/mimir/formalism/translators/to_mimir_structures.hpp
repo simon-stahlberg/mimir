@@ -47,9 +47,8 @@ private:
     // Derived predicates
     std::unordered_set<std::string> m_derived_predicates;
 
-    /* Computed during translate step
-      TODO: a scoping mechanism would make this easier to understand
-    */
+    // Whether action costs are enabled
+    bool m_action_costs_enabled;
 
     // Equality predicate that does not occur in predicates section
     std::unordered_map<std::string, Predicate<Derived>> m_derived_predicates_by_name;

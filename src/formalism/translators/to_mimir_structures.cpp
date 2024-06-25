@@ -25,7 +25,7 @@
 
 namespace mimir
 {
-void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) {}
+void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) { m_action_costs_enabled = requirements.test(loki::RequirementEnum::ACTION_COSTS); }
 void ToMimirStructures::prepare(const loki::TypeImpl& type) { prepare(type.get_bases()); }
 void ToMimirStructures::prepare(const loki::ObjectImpl& object) { prepare(object.get_bases()); }
 void ToMimirStructures::prepare(const loki::VariableImpl& variable) {}
@@ -588,10 +588,10 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
 
     // If more than one action cost effects are given then we take their sum,
     // If one action cost is given then we take it,
-    // and otherwise, we take cost 1.
+    // and otherwise, we take cost 0 if action costs are enabled, and otherwise, we take cost 1.
     auto cost_function_expression =
         (result_function_expressions.empty()) ?
-            this->m_pddl_factories.get_or_create_function_expression_number(1) :
+            this->m_pddl_factories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1) :
         result_function_expressions.size() > 1 ?
             this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions) :
             result_function_expressions.front();
