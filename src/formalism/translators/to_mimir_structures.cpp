@@ -540,7 +540,7 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
                 ref_universal_effects.push_back(
                     m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, derived_literals, fluent_effect));
             }
-            else if (!(static_literals.empty() && fluent_literals.empty()))
+            else if (!(static_literals.empty() && fluent_literals.empty() && derived_literals.empty()))
             {
                 ref_conditional_effects.push_back(
                     m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, derived_literals, fluent_effect));
@@ -720,11 +720,11 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
 
     return m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                  requirements,
-                                                 constants,
-                                                 static_predicates,
-                                                 fluent_predicates,
-                                                 derived_predicates,
-                                                 functions,
+                                                 uniquify_elements(constants),
+                                                 uniquify_elements(static_predicates),
+                                                 uniquify_elements(fluent_predicates),
+                                                 uniquify_elements(derived_predicates),
+                                                 uniquify_elements(functions),
                                                  uniquify_elements(actions),
                                                  uniquify_elements(axioms));
 }
@@ -987,15 +987,15 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     return m_pddl_factories.get_or_create_problem(translated_domain,
                                                   problem.get_name(),
                                                   translate_common(*problem.get_requirements()),
-                                                  objects,
-                                                  derived_predicates,
-                                                  problem_and_domain_derived_predicates,
-                                                  static_initial_literals,
-                                                  fluent_initial_literals,
-                                                  translate_grounded(problem.get_numeric_fluents()),
-                                                  static_goal_literals,
-                                                  fluent_goal_literals,
-                                                  derived_goal_literals,
+                                                  uniquify_elements(objects),
+                                                  uniquify_elements(derived_predicates),
+                                                  uniquify_elements(problem_and_domain_derived_predicates),
+                                                  uniquify_elements(static_initial_literals),
+                                                  uniquify_elements(fluent_initial_literals),
+                                                  uniquify_elements(translate_grounded(problem.get_numeric_fluents())),
+                                                  uniquify_elements(static_goal_literals),
+                                                  uniquify_elements(fluent_goal_literals),
+                                                  uniquify_elements(derived_goal_literals),
                                                   (problem.get_optimization_metric().has_value() ?
                                                        std::optional<OptimizationMetric>(translate_grounded(*problem.get_optimization_metric().value())) :
                                                        std::nullopt),
