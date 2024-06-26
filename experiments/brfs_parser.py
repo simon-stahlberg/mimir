@@ -15,17 +15,17 @@ def invalid_plan_reported(content, props):
 class BrfsParser(Parser):
     """
     Successful Run:
-    [AlgorithmStatistics] Search time: 135ms
-    [AlgorithmStatistics] Number of generated states: 18119
-    [AlgorithmStatistics] Number of expanded states: 1756
-    [AlgorithmStatistics] Number of generated states until last f-layer: 17938
-    [AlgorithmStatistics] Number of expanded states until last f-layer: 1741
-    [Algorithm] Plan found.
-    [Algorithm] Plan cost: 15
-    [Algorithm] Plan length: 5
+    [BrFS] Search time: 135ms
+    [BrFS] Number of generated states: 18119
+    [BrFS] Number of expanded states: 1756
+    [BrFS] Number of generated states until last f-layer: 17938
+    [BrFS] Number of expanded states until last f-layer: 1741
+    [BrFS] Plan found.
+    [BrFS] Plan cost: 15
+    [BrFS] Plan length: 5
 
     Unsolvable Run:
-    [Algorithm] Exhausted!
+    [BrFS] Exhausted!
 
     Validate output:
     Plan executed successfully - checking goal
@@ -38,14 +38,14 @@ class BrfsParser(Parser):
     """
     def __init__(self):
         super().__init__()
-        self.add_pattern("search_time", r"\[AlgorithmStatistics\] Search time: (\d+)ms", type=int)
-        self.add_pattern("num_expanded", r"\[AlgorithmStatistics\] Number of expanded states: (\d+)", type=int)
-        self.add_pattern("num_generated", r"\[AlgorithmStatistics\] Number of generated states: (\d+)", type=int)
-        self.add_pattern("num_expanded_until_last_f_layer", r"\[AlgorithmStatistics\] Number of expanded states until last f-layer: (\d+)", type=int)
-        self.add_pattern("num_generated_until_last_f_layer", r"\[AlgorithmStatistics\] Number of generated states until last f-layer: (\d+)", type=int)
-        self.add_pattern("cost", r"\[Algorithm\] Plan cost: (.+)", type=float)
-        self.add_pattern("length", r"\[Algorithm\] Plan length: (.+)", type=float)
-        self.add_pattern("exhausted", r"(\[Algorithm\] Exhausted!)", type=str)
+        self.add_pattern("search_time", r"\[BrFS\] Search time: (\d+)ms", type=int)
+        self.add_pattern("num_expanded", r"\[BrFS\] Number of expanded states: (\d+)", type=int)
+        self.add_pattern("num_generated", r"\[BrFS\] Number of generated states: (\d+)", type=int)
+        self.add_pattern("num_expanded_until_last_f_layer", r"\[BrFS\] Number of expanded states until last f-layer: (\d+)", type=int)
+        self.add_pattern("num_generated_until_last_f_layer", r"\[BrFS\] Number of generated states until last f-layer: (\d+)", type=int)
+        self.add_pattern("cost", r"\[BrFS\] Plan cost: (.+)", type=float)
+        self.add_pattern("length", r"\[BrFS\] Plan length: (.+)", type=float)
+        self.add_pattern("exhausted", r"(\[BrFS\] Exhausted!)", type=str)
         self.add_pattern("val_plan_invalid", r"(Plan invalid)", type=str)
 
         self.add_function(coverage)
