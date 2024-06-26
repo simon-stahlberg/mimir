@@ -18,10 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 
-namespace mimir::dl
-{
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/repositories.hpp"
-}
 
 #endif
