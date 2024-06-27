@@ -15,88 +15,65 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONCEPTS_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONCEPTS_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
+
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/visitors_interface.hpp"
 
 #include <concepts>
 #include <cstddef>
+#include <memory>
+#include <vector>
 
 namespace mimir::dl
 {
-
-struct EvaluationContext;
-
-template<typename T>
-concept IsDLConstructor = requires(const T a, EvaluationContext& context) {
-    {
-        a.evaluate(context)
-    };
-};
 
 /**
  * Concepts
  */
 
-class Concept
-{
-protected:
-    size_t m_identifier;
-
-public:
-    virtual ~Concept() {}
-
-    virtual void evaluate(EvaluationContext& context) const = 0;
-};
-
-class PrimitiveConcept : public Concept
+template<PredicateCategory P>
+class ConceptPredicate : public Concept
 {
 private:
-    // TODO: add predicate
+    Predicate<P> m_predicate;
 
 public:
-    PrimitiveConcept(/* TODO add predicate */);
+    ConceptPredicate(Predicate<P> predicate);
 
-    void evaluate(EvaluationContext& context) const override {}
+    void evaluate(EvaluationContext& context) const override;
+
+    bool accept(const ConceptVisitor& symbols) const override;
 };
 
-class AllConcept : public Concept
+class ConceptAll : public Concept
 {
 private:
     const Role* m_role;
     const Concept* m_concept;
 
 public:
-    AllConcept(const Role* role, const Concept* concept_);
+    ConceptAll(const Role* role, const Concept* concept_);
 
-    void evaluate(EvaluationContext& context) const override {}
+    void evaluate(EvaluationContext& context) const override;
+
+    bool accept(const ConceptVisitor& symbols) const override;
 };
 
-class SomeConcept : public Concept
-{
-private:
-    const Role* m_role;
-    const Concept* m_concept;
+/**
+ * Static asserts
+ */
 
-public:
-    SomeConcept(const Role* role, const Concept* concept_);
-
-    void evaluate(EvaluationContext& context) const override {}
-};
+static_assert(IsDLConstructor<ConceptPredicate<Static>>);
+static_assert(IsDLConstructor<ConceptPredicate<Fluent>>);
+static_assert(IsDLConstructor<ConceptPredicate<Derived>>);
+static_assert(IsDLConstructor<ConceptAll>);
 
 /**
  * Roles
  */
-
-class Role
-{
-protected:
-    size_t m_identifier;
-
-public:
-    virtual ~Role() {}
-
-    virtual void evaluate(EvaluationContext& context) const = 0;
-};
 
 }
 
