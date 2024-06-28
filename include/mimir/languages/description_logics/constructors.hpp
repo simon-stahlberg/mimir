@@ -18,8 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/visitors_interface.hpp"
 
 #include <concepts>
@@ -29,10 +27,44 @@
 
 namespace mimir::dl
 {
+struct EvaluationContext;
+class Concept;
+class ConceptVisitor;
+class Role;
+class RoleVisitor;
 
 /**
  * Concepts
  */
+
+template<typename T>
+concept IsDLConstructor = requires(const T a, EvaluationContext& context) {
+    {
+        a.evaluate(context)
+    };
+};
+
+/**
+ * Concepts
+ */
+
+class Concept
+{
+protected:
+    size_t m_identifier;
+
+public:
+    virtual ~Concept() {}
+
+    /// @brief Evaluate the dl constructor on the evaluation context.
+    virtual void evaluate(EvaluationContext& context) const = 0;
+
+    /// @brief Return true iff the symbols match the data in the dl constructor.
+    /// Uses double dispatch.
+    virtual bool accept(const ConceptVisitor& visitor) const = 0;
+};
+
+using ConceptList = std::vector<const Concept*>;
 
 template<PredicateCategory P>
 class ConceptPredicate : public Concept
@@ -45,35 +77,65 @@ public:
 
     void evaluate(EvaluationContext& context) const override;
 
-    bool accept(const ConceptVisitor& symbols) const override;
+    bool accept(const ConceptVisitor& visitor) const override;
 };
 
-class ConceptAll : public Concept
+class ConceptAnd : public Concept
 {
 private:
-    const Role* m_role;
-    const Concept* m_concept;
+    const Concept* m_concept_left;
+    const Concept* m_concept_right;
 
 public:
-    ConceptAll(const Role* role, const Concept* concept_);
+    ConceptAnd(const Concept* concept_left, const Concept* concept_right);
 
     void evaluate(EvaluationContext& context) const override;
 
-    bool accept(const ConceptVisitor& symbols) const override;
+    bool accept(const ConceptVisitor& visitor) const override;
 };
-
-/**
- * Static asserts
- */
-
-static_assert(IsDLConstructor<ConceptPredicate<Static>>);
-static_assert(IsDLConstructor<ConceptPredicate<Fluent>>);
-static_assert(IsDLConstructor<ConceptPredicate<Derived>>);
-static_assert(IsDLConstructor<ConceptAll>);
 
 /**
  * Roles
  */
+
+class Role
+{
+protected:
+    size_t m_identifier;
+
+public:
+    virtual ~Role() {}
+
+    /// @brief Evaluate the dl constructor on the evaluation context.
+    virtual void evaluate(EvaluationContext& context) const = 0;
+
+    /// @brief Return true iff the symbols match the data in the dl constructor.
+    virtual bool accept(const RoleVisitor& visitor) const = 0;
+};
+
+using RoleList = std::vector<const Role*>;
+
+/**
+ * Implementations
+ */
+
+/* ConceptPredicate */
+template<PredicateCategory P>
+ConceptPredicate<P>::ConceptPredicate(Predicate<P> predicate) : m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+void ConceptPredicate<P>::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<PredicateCategory P>
+bool ConceptPredicate<P>::accept(const ConceptVisitor& visitor) const
+{
+    return visitor.accept(*this);
+}
 
 }
 

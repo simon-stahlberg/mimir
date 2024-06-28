@@ -32,10 +32,10 @@ namespace mimir::dl
  * Forward declarations
  */
 class NonTerminalSymbolConceptPredicate;
-class NonTerminalSymbolConceptAll;
+class NonTerminalSymbolConceptAnd;
 
 /**
- * Visitors
+ * ConceptVisitors
  */
 
 class ConceptPredicateVisitor : public ConceptVisitor
@@ -51,16 +51,20 @@ public:
     bool accept(const ConceptPredicate<Derived>& constructor) const override;
 };
 
-class AllConceptVisitor : public ConceptVisitor
+class ConceptAndVisitor : public ConceptVisitor
 {
 private:
-    const NonTerminalSymbolConceptAll* m_symbol;
+    const NonTerminalSymbolConceptAnd* m_symbol;
 
 public:
-    explicit AllConceptVisitor(const NonTerminalSymbolConceptAll& symbol) : m_symbol(&symbol) {}
+    explicit ConceptAndVisitor(const NonTerminalSymbolConceptAnd& symbol) : m_symbol(&symbol) {}
 
-    bool accept(const ConceptAll& constructor) const override;
+    bool accept(const ConceptAnd& constructor) const override;
 };
+
+/**
+ * RoleVisitors
+ */
 
 }
 

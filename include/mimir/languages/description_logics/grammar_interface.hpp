@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_INTERFACE_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/constructors.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -37,10 +37,6 @@ class TerminalSymbol;
 
 template<IsDLConstructor D>
 class DerivationRule;
-
-template<PredicateCategory P>
-class ConceptPredicate;
-class ConceptAll;
 
 /**
  * Symbol
@@ -84,7 +80,7 @@ public:
  * Sequence rule represents recipe
  */
 template<IsDLConstructor D>
-class SequenceRule
+class Sequence
 {
 private:
     std::vector<std::unique_ptr<Symbol>> m_sequence;
@@ -98,10 +94,10 @@ public:
 };
 
 template<IsDLConstructor D>
-class ChoiceRule
+class Choice
 {
 private:
-    std::vector<SequenceRule<D>> m_choices;
+    std::vector<Sequence<D>> m_choices;
 
 public:
     /// @brief Test whether the arguments of a concept matche the grammar specification of one of the choice rules.
@@ -116,7 +112,7 @@ class DerivationRule
 {
 private:
     std::unique_ptr<NonTerminalSymbol<D>> m_head;
-    std::unique_ptr<ChoiceRule<D>> m_body;
+    std::unique_ptr<Choice<D>> m_body;
 
 public:
     /// @brief Test whether a concept matches the grammar specification.

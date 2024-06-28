@@ -15,11 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
+#include <mimir/languages/description_logics/grammar.hpp>
 
-#include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/repositories.hpp"
-#include "mimir/languages/description_logics/visitors.hpp"
+namespace mimir::dl
+{
 
-#endif
+}

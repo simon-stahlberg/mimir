@@ -74,16 +74,6 @@ public:
     const D* register_uniquely(D constructor);
 };
 
-struct EvaluationContext
-{
-    Problem problem;
-    State state;
-    DenotationBuilder<Concept> concept_denotation;
-    DenotationRepository<Concept> concept_denotation_repository;
-    DenotationBuilder<Role> role_denotation;
-    DenotationRepository<Role> role_denotation_repository;
-};
-
 }
 
 #endif

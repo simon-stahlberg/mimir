@@ -20,11 +20,6 @@
 
 #include "mimir/formalism/predicate.hpp"
 
-#include <functional>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-
 namespace mimir::dl
 {
 
@@ -34,7 +29,7 @@ namespace mimir::dl
 
 template<PredicateCategory P>
 class ConceptPredicate;
-class ConceptAll;
+class ConceptAnd;
 
 /**
  * Visitors
@@ -51,15 +46,17 @@ public:
     virtual bool accept(const ConceptPredicate<Static>& constructor) const { return false; }
     virtual bool accept(const ConceptPredicate<Fluent>& constructor) const { return false; }
     virtual bool accept(const ConceptPredicate<Derived>& constructor) const { return false; }
-    virtual bool accept(const ConceptAll& constructor) const { return false; }
-
-    /* Roles */
+    virtual bool accept(const ConceptAnd& constructor) const { return false; }
 };
 
 class RoleVisitor
 {
 public:
-    // TODO
+    virtual ~RoleVisitor() {}
+
+    // Default implementations always return false
+
+    /* Roles */
 };
 
 }

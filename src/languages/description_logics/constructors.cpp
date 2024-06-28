@@ -15,11 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
+#include <mimir/languages/description_logics/constructors.hpp>
 
-#include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/repositories.hpp"
-#include "mimir/languages/description_logics/visitors.hpp"
+namespace mimir::dl
+{
 
-#endif
+/**
+ * ConceptAnd
+ */
+ConceptAnd::ConceptAnd(const Concept* concept_left, const Concept* concept_right) : m_concept_left(concept_left), m_concept_right(concept_right) {}
+
+void ConceptAnd::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.accept(*this); }
+}
