@@ -140,7 +140,7 @@ struct RoleNonTerminal : x3::position_tagged
     std::string name;
 };
 
-struct RoleChoice : x3::position_tagged, x3::variant<RoleNonTerminal, Concept>
+struct RoleChoice : x3::position_tagged, x3::variant<RoleNonTerminal, Role>
 {
     using base_type::base_type;
     using base_type::operator=;
@@ -156,9 +156,15 @@ struct RoleDerivationRule : x3::position_tagged
  * Grammar
  */
 
+struct DerivationRule : x3::position_tagged, x3::variant<ConceptDerivationRule, RoleDerivationRule>
+{
+    using base_type::base_type;
+    using base_type::operator=;
+};
+
 struct Grammar : x3::position_tagged
 {
-    std::vector<x3::variant<ConceptDerivationRule, RoleDerivationRule>> rules;
+    std::vector<DerivationRule> rules;
 };
 
 }

@@ -56,6 +56,8 @@ struct RoleNonTerminalClass;
 struct RoleChoiceClass;
 struct RoleDerivationRuleClass;
 
+struct DerivationRuleClass;
+
 typedef x3::rule<ConceptClass, ast::Concept> concept_type;
 typedef x3::rule<ConceptPredicateStateClass, ast::ConceptPredicateState> concept_predicate_state_type;
 typedef x3::rule<ConceptPredicateGoalClass, ast::ConceptPredicateGoal> concept_predicate_goal_type;
@@ -72,6 +74,8 @@ typedef x3::rule<RoleNonTerminalClass, ast::RoleNonTerminal> role_non_terminal_t
 typedef x3::rule<RoleChoiceClass, ast::RoleChoice> role_choice_type;
 typedef x3::rule<RoleDerivationRuleClass, ast::RoleDerivationRule> role_derivation_rule_type;
 
+typedef x3::rule<DerivationRuleClass, ast::DerivationRule> derivation_rule_type;
+
 BOOST_SPIRIT_DECLARE(concept_type,
                      concept_predicate_state_type,
                      concept_predicate_goal_type,
@@ -87,6 +91,8 @@ BOOST_SPIRIT_DECLARE(role_type,
                      role_non_terminal_type,
                      role_choice_type,
                      role_derivation_rule_type)
+
+BOOST_SPIRIT_DECLARE(derivation_rule_type)
 
 }
 
@@ -105,6 +111,8 @@ parser::role_and_type const& role_and();
 parser::role_non_terminal_type const& role_non_terminal();
 parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();
+
+parser::derivation_rule_type const& derivation_rule();
 }
 
 #endif

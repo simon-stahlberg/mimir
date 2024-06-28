@@ -71,6 +71,7 @@ role_non_terminal_type const role_non_terminal = "role_non_terminal";
 role_choice_type const role_choice = "role_choice";
 role_derivation_rule_type const role_derivation_rule = "role_derivation_rule";
 
+derivation_rule_type const derivation_rule = "derivation_rule";
 grammar_type const grammar = "grammar";
 
 ///////////////////////////////////////////////////////////////////////////
@@ -78,33 +79,34 @@ grammar_type const grammar = "grammar";
 ///////////////////////////////////////////////////////////////////////////
 
 inline auto separator_parser() { return (ascii::space | x3::eol | x3::eoi); }
-inline auto concept_non_terminal_parser() { return raw[lexeme["concept_" >> *(alnum | char_('-') | char_('_'))]]; }
-inline auto role_non_terminal_parser() { return raw[lexeme["role_" >> *(alnum | char_('-') | char_('_'))]]; }
-inline auto predicate_name_parser() { return raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]]; }
+inline auto concept_non_terminal_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
+inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
+inline auto predicate_name_parser() { return raw[lexeme["\"" > alpha >> *(alnum | char_('-') | char_('_')) > "\""]]; }
 
 const auto concept__def = concept_non_terminal | concept_predicate_state | concept_predicate_goal | concept_and;
-const auto concept_predicate_state_def = lit("@concept_predicate_state") > no_skip[&separator_parser()] > predicate_name_parser();
-const auto concept_predicate_goal_def = lit("@concept_predicate_goal") > no_skip[&separator_parser()] > predicate_name_parser();
+const auto concept_predicate_state_def = lit("@concept_predicate_state") > predicate_name_parser();
+const auto concept_predicate_goal_def = lit("@concept_predicate_goal") > predicate_name_parser();
 const auto concept_and_def = lit("@concept_and") > concept_ > concept_;
-const auto concept_non_terminal_def = lit("<") > concept_non_terminal_parser() > lit(">");
+const auto concept_non_terminal_def = concept_non_terminal_parser();
 const auto concept_choice_def = concept_non_terminal | concept_;
 const auto concept_derivation_rule_def = concept_non_terminal > "::=" > (concept_choice % lit("|"));
 
 const auto role_def = role_non_terminal | role_predicate_state | role_predicate_goal | role_and;
-const auto role_predicate_state_def = lit("@role_predicate_state") > no_skip[&separator_parser()] > predicate_name_parser();
-const auto role_predicate_goal_def = lit("@role_predicate_goal") > no_skip[&separator_parser()] > predicate_name_parser();
+const auto role_predicate_state_def = lit("@role_predicate_state") > predicate_name_parser();
+const auto role_predicate_goal_def = lit("@role_predicate_goal") > predicate_name_parser();
 const auto role_and_def = lit("@role_and") > role > role;
-const auto role_non_terminal_def = lit("<") > role_non_terminal_parser() > lit(">");
+const auto role_non_terminal_def = role_non_terminal_parser();
 const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
 
-const auto grammar_def = *(concept_derivation_rule_def);
+const auto derivation_rule_def = (concept_derivation_rule | role_derivation_rule);
+const auto grammar_def = *derivation_rule;
 
 BOOST_SPIRIT_DEFINE(concept_, concept_predicate_state, concept_predicate_goal, concept_and, concept_non_terminal, concept_choice, concept_derivation_rule)
 
 BOOST_SPIRIT_DEFINE(role, role_predicate_state, role_predicate_goal, role_and, role_non_terminal, role_choice, role_derivation_rule)
 
-BOOST_SPIRIT_DEFINE(grammar)
+BOOST_SPIRIT_DEFINE(derivation_rule, grammar)
 
 ///////////////////////////////////////////////////////////////////////////
 // Annotation and Error handling
@@ -154,6 +156,9 @@ struct RoleDerivationRuleClass : x3::annotate_on_success
 {
 };
 
+struct DerivationRuleClass : x3::annotate_on_success
+{
+};
 struct GrammarClass : x3::annotate_on_success, error_handler_base
 {
 };
@@ -176,6 +181,9 @@ parser::role_and_type const& role_and() { return parser::role_and; }
 parser::role_non_terminal_type const& role_non_terminal() { return parser::role_non_terminal; }
 parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
+
+parser::derivation_rule_type const& derivation_rule() { return parser::derivation_rule; }
+parser::grammar_type const& grammar() { return parser::grammar; }
 }
 
 #endif

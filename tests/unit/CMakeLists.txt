@@ -24,6 +24,7 @@ add_executable(${TEST_NAME}
     "formalism/translators/remove_universal_quantifiers.cpp"
     "graphs/object_graph.cpp"
     "graphs/tuple_graph.cpp"
+    "languages/description_logics/parser.cpp"
     "search/algorithms/brfs.cpp"
     "search/algorithms/iw.cpp"
     "search/applicable_action_generators/dense-grounded.cpp"
