@@ -39,6 +39,9 @@ public:
     virtual size_t get_id() const = 0;
 };
 
+using Concept = Constructor<dl::Concept>;
+using Role = Constructor<dl::Role>;
+
 }
 
 #endif

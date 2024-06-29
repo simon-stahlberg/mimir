@@ -32,7 +32,7 @@ namespace mimir::dl
  * Forward declarations
  */
 
-template<IsConcreteConceptOrRole D>
+template<typename T>
 class ConstructorRepository;
 
 /**
@@ -48,10 +48,13 @@ private:
 
     ConceptPredicateState(size_t id, Predicate<P> predicate);
 
-    template<IsConcreteConceptOrRole D>
+    template<typename T>
     friend class ConstructorRepository;
 
 public:
+    bool operator==(const ConceptPredicateState& other) const;
+    size_t hash() const;
+
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
@@ -70,10 +73,13 @@ private:
 
     ConceptPredicateGoal(size_t id, Predicate<P> predicate);
 
-    template<IsConcreteConceptOrRole D>
+    template<typename T>
     friend class ConstructorRepository;
 
 public:
+    bool operator==(const ConceptPredicateGoal& other) const;
+    size_t hash() const;
+
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
@@ -87,15 +93,18 @@ class ConceptAnd : public Concept
 {
 private:
     size_t m_id;
-    const Concept& m_concept_left;
-    const Concept& m_concept_right;
+    const Concept* m_concept_left;
+    const Concept* m_concept_right;
 
     ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right);
 
-    template<IsConcreteConceptOrRole D>
+    template<typename T>
     friend class ConstructorRepository;
 
 public:
+    bool operator==(const ConceptAnd& other) const;
+    size_t hash() const;
+
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
@@ -119,10 +128,13 @@ private:
 
     RolePredicateState(size_t id, Predicate<P> predicate);
 
-    template<IsConcreteConceptOrRole D>
+    template<typename T>
     friend class ConstructorRepository;
 
 public:
+    bool operator==(const RolePredicateState& other) const;
+    size_t hash() const;
+
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const RoleVisitor& visitor) const override;
@@ -141,10 +153,13 @@ private:
 
     RolePredicateGoal(size_t id, Predicate<P> predicate);
 
-    template<IsConcreteConceptOrRole D>
+    template<typename T>
     friend class ConstructorRepository;
 
 public:
+    bool operator==(const RolePredicateGoal& other) const;
+    size_t hash() const;
+
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const RoleVisitor& visitor) const override;
@@ -158,15 +173,18 @@ class RoleAnd : public Role
 {
 private:
     size_t m_id;
-    const Role& m_role_left;
-    const Role& m_role_right;
+    const Role* m_role_left;
+    const Role* m_role_right;
 
     RoleAnd(size_t id, const Role& role_left, const Role& role_right);
 
-    template<IsConcreteConceptOrRole D>
+    template<typename T>
     friend class ConstructorRepository;
 
 public:
+    bool operator==(const RoleAnd& other) const;
+    size_t hash() const;
+
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const RoleVisitor& visitor) const override;

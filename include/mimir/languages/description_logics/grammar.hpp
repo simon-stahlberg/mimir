@@ -43,7 +43,7 @@ class NonTerminal
 {
 private:
     size_t m_id;
-    const DerivationRule<D>& m_rule;
+    const DerivationRule<D>* m_rule;
 
 public:
     NonTerminal(size_t id, const DerivationRule<D>& rule);
@@ -51,20 +51,22 @@ public:
     bool test_match(const D& constructor) const;
 
     size_t get_id() const;
+
+    const DerivationRule<D>& get_rule() const;
 };
 
-using ConceptNonTerminal = NonTerminal<Concept>;
-using RoleNonTerminal = NonTerminal<Role>;
+using ConceptNonTerminal = NonTerminal<dl::Concept>;
+using RoleNonTerminal = NonTerminal<dl::Role>;
 
 /**
  * Choice
  */
 
 template<dl::IsConceptOrRole D>
-using Choice = std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>>;
+using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
 
-using ConceptChoice = Choice<Concept>;
-using RoleChoice = Choice<Role>;
+using ConceptChoice = Choice<dl::Concept>;
+using RoleChoice = Choice<dl::Role>;
 
 /**
  * DerivationRule
@@ -85,8 +87,8 @@ public:
     size_t get_id() const;
 };
 
-using ConceptDerivationRule = DerivationRule<Concept>;
-using RoleDerivationRule = DerivationRule<Role>;
+using ConceptDerivationRule = DerivationRule<dl::Concept>;
+using RoleDerivationRule = DerivationRule<dl::Role>;
 
 /**
  * Grammar
@@ -96,13 +98,19 @@ using GrammarConstructorRepositories = VariadicConstructorRepository<ConceptNonT
                                                                      ConceptDerivationRule,
                                                                      ConceptPredicateState<Static>,
                                                                      ConceptPredicateState<Fluent>,
-                                                                     ConceptPredicateState<Fluent>,
+                                                                     ConceptPredicateState<Derived>,
+                                                                     ConceptPredicateGoal<Static>,
+                                                                     ConceptPredicateGoal<Fluent>,
+                                                                     ConceptPredicateGoal<Derived>,
                                                                      ConceptAnd,
                                                                      RoleNonTerminal,
                                                                      RoleDerivationRule,
                                                                      RolePredicateState<Static>,
                                                                      RolePredicateState<Fluent>,
-                                                                     RolePredicateState<Fluent>,
+                                                                     RolePredicateState<Derived>,
+                                                                     RolePredicateGoal<Static>,
+                                                                     RolePredicateGoal<Fluent>,
+                                                                     RolePredicateGoal<Derived>,
                                                                      RoleAnd>;
 
 class Grammar
@@ -117,8 +125,7 @@ private:
 
 public:
     /// @brief Create a grammar from a BNF description.
-    /// @param text
-    explicit Grammar(std::string bnf_description);
+    Grammar(std::string bnf_description, Domain domain);
 
     /// @brief Tests whether a dl concept constructor satisfies the grammar specification.
     /// @param constructor is the dl concept constructor to test.

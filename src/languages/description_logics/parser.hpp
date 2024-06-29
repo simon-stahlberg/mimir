@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/domain.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
 #include <tuple>
@@ -23,6 +24,6 @@ namespace mimir::dl::grammar
 {
 
 extern std::tuple<std::vector<const ConceptDerivationRule*>, std::vector<const RoleDerivationRule*>>
-parse(const std::string& bnf_grammar_description, GrammarConstructorRepositories& ref_grammar_constructor_repos);
+parse(const std::string& bnf_grammar_description, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos);
 
 }

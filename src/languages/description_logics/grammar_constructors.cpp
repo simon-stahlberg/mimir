@@ -32,6 +32,22 @@ ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicat
 }
 
 template<PredicateCategory P>
+bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateState<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
 bool ConceptPredicateState<P>::test_match(const dl::Concept& constructor) const
 {
     return constructor.accept(ConceptPredicateStateVisitor(this));
@@ -58,6 +74,22 @@ ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate)
 }
 
 template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateGoal<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
 bool ConceptPredicateGoal<P>::test_match(const dl::Concept& constructor) const
 {
     return constructor.accept(ConceptPredicateGoalVisitor(this));
@@ -77,18 +109,29 @@ size_t ConceptPredicateGoal<P>::get_id() const
 /**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right) :
+ConceptAnd::ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right) :
     m_id(id),
-    m_concept_left(concept_left),
-    m_concept_right(concept_right)
+    m_concept_left(&concept_left),
+    m_concept_right(&concept_right)
 {
 }
 
+bool ConceptAnd::operator==(const ConceptAnd& other) const
+{
+    if (this != &other)
+    {
+        return (m_concept_left == other.m_concept_left) && (m_concept_right == other.m_concept_right);
+    }
+    return true;
+}
+
+size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left, m_concept_right); }
+
 bool ConceptAnd::test_match(const dl::Concept& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
 
-const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left; }
+const Concept& ConceptAnd::get_concept_left() const { return *m_concept_left; }
 
-const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right; }
+const Concept& ConceptAnd::get_concept_right() const { return *m_concept_right; }
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
@@ -99,6 +142,22 @@ size_t ConceptAnd::get_id() const { return m_id; }
 template<PredicateCategory P>
 RolePredicateState<P>::RolePredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t RolePredicateState<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -128,6 +187,22 @@ RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : m_i
 }
 
 template<PredicateCategory P>
+bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t RolePredicateGoal<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
 bool RolePredicateGoal<P>::test_match(const dl::Role& constructor) const
 {
     return constructor.accept(RolePredicateGoalVisitor(this));
@@ -147,18 +222,24 @@ size_t RolePredicateGoal<P>::get_id() const
 /**
  * RoleAnd
  */
-RoleAnd::RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right) :
-    m_id(id),
-    m_role_left(role_left),
-    m_role_right(role_right)
+RoleAnd::RoleAnd(size_t id, const Role& role_left, const Role& role_right) : m_id(id), m_role_left(&role_left), m_role_right(&role_right) {}
+
+bool RoleAnd::operator==(const RoleAnd& other) const
 {
+    if (this != &other)
+    {
+        return (m_role_left == other.m_role_left) && (m_role_right == other.m_role_right);
+    }
+    return true;
 }
+
+size_t RoleAnd::hash() const { return loki::hash_combine(m_role_left, m_role_right); }
 
 bool RoleAnd::test_match(const dl::Role& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
 
-const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left; }
+const Role& RoleAnd::get_role_left() const { return *m_role_left; }
 
-const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right; }
+const Role& RoleAnd::get_role_right() const { return *m_role_right; }
 
 size_t RoleAnd::get_id() const { return m_id; }
 

@@ -54,15 +54,31 @@ DomainImpl::DomainImpl(int identifier,
     m_derived_predicates(std::move(derived_predicates)),
     m_functions(std::move(functions)),
     m_actions(std::move(actions)),
-    m_axioms(std::move(axioms))
+    m_axioms(std::move(axioms)),
+    m_name_to_static_predicate(),
+    m_name_to_fluent_predicate(),
+    m_name_to_derived_predicate()
 {
     assert(is_all_unique(m_constants));
-    assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_static_predicates));
     assert(is_all_unique(m_fluent_predicates));
+    assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_functions));
     assert(is_all_unique(m_actions));
     assert(is_all_unique(m_axioms));
+
+    for (const auto& predicate : m_static_predicates)
+    {
+        m_name_to_static_predicate.emplace(predicate->get_name(), predicate);
+    }
+    for (const auto& predicate : m_fluent_predicates)
+    {
+        m_name_to_fluent_predicate.emplace(predicate->get_name(), predicate);
+    }
+    for (const auto& predicate : m_derived_predicates)
+    {
+        m_name_to_derived_predicate.emplace(predicate->get_name(), predicate);
+    }
 }
 
 bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) const
@@ -176,5 +192,11 @@ const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functio
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
+
+const ToPredicateMap<std::string, Static>& DomainImpl::get_name_to_static_predicate() const { return m_name_to_static_predicate; }
+
+const ToPredicateMap<std::string, Fluent>& DomainImpl::get_name_to_fluent_predicate() const { return m_name_to_fluent_predicate; }
+
+const ToPredicateMap<std::string, Derived>& DomainImpl::get_name_to_derived_predicate() const { return m_name_to_derived_predicate; }
 
 }

@@ -22,22 +22,19 @@
 #include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructors_interface.hpp"
 
-namespace mimir::dl::grammar
+namespace mimir::dl
 {
-
-/**
- * Forward declarations
- */
-
-template<IsConcreteConceptOrRole D>
+template<typename T>
 class ConstructorRepository;
 
+namespace grammar
+{
 /**
  * Concepts
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public Constructor<Concept>
+class ConceptPredicateState : public Constructor<dl::Concept>
 {
 private:
     size_t m_id;
@@ -45,10 +42,13 @@ private:
 
     ConceptPredicateState(size_t id, Predicate<P> predicate);
 
-    template<IsConcreteConceptOrRole D>
-    friend class ConstructorRepository;
+    template<typename T>
+    friend class dl::ConstructorRepository;
 
 public:
+    bool operator==(const ConceptPredicateState& other) const;
+    size_t hash() const;
+
     bool test_match(const dl::Concept& constructor) const override;
 
     Predicate<P> get_predicate() const;
@@ -57,7 +57,7 @@ public:
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoal : public Constructor<Concept>
+class ConceptPredicateGoal : public Constructor<dl::Concept>
 {
 private:
     size_t m_id;
@@ -65,10 +65,13 @@ private:
 
     ConceptPredicateGoal(size_t id, Predicate<P> predicate);
 
-    template<IsConcreteConceptOrRole D>
-    friend class ConstructorRepository;
+    template<typename T>
+    friend class dl::ConstructorRepository;
 
 public:
+    bool operator==(const ConceptPredicateGoal& other) const;
+    size_t hash() const;
+
     bool test_match(const dl::Concept& constructor) const override;
 
     Predicate<P> get_predicate() const;
@@ -76,23 +79,26 @@ public:
     size_t get_id() const override;
 };
 
-class ConceptAnd : public Constructor<Concept>
+class ConceptAnd : public Constructor<dl::Concept>
 {
 private:
     size_t m_id;
-    const Constructor<Concept>& m_concept_left;
-    const Constructor<Concept>& m_concept_right;
+    const Concept* m_concept_left;
+    const Concept* m_concept_right;
 
-    ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right);
+    ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right);
 
-    template<IsConcreteConceptOrRole D>
-    friend class ConstructorRepository;
+    template<typename T>
+    friend class dl::ConstructorRepository;
 
 public:
+    bool operator==(const ConceptAnd& other) const;
+    size_t hash() const;
+
     bool test_match(const dl::Concept& constructor) const override;
 
-    const Constructor<Concept>& get_concept_left() const;
-    const Constructor<Concept>& get_concept_right() const;
+    const Concept& get_concept_left() const;
+    const Concept& get_concept_right() const;
 
     size_t get_id() const override;
 };
@@ -102,14 +108,20 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateState : public Constructor<Role>
+class RolePredicateState : public Constructor<dl::Role>
 {
 private:
     size_t m_id;
     Predicate<P> m_predicate;
 
+    RolePredicateState(size_t id, Predicate<P> predicate);
+
+    template<typename T>
+    friend class dl::ConstructorRepository;
+
 public:
-    explicit RolePredicateState(size_t id, Predicate<P> predicate);
+    bool operator==(const RolePredicateState& other) const;
+    size_t hash() const;
 
     bool test_match(const dl::Role& constructor) const override;
 
@@ -119,14 +131,20 @@ public:
 };
 
 template<PredicateCategory P>
-class RolePredicateGoal : public Constructor<Role>
+class RolePredicateGoal : public Constructor<dl::Role>
 {
 private:
     size_t m_id;
     Predicate<P> m_predicate;
 
+    RolePredicateGoal(size_t id, Predicate<P> predicate);
+
+    template<typename T>
+    friend class dl::ConstructorRepository;
+
 public:
-    explicit RolePredicateGoal(size_t id, Predicate<P> predicate);
+    bool operator==(const RolePredicateGoal& other) const;
+    size_t hash() const;
 
     bool test_match(const dl::Role& constructor) const override;
 
@@ -135,24 +153,31 @@ public:
     size_t get_id() const override;
 };
 
-class RoleAnd : public Constructor<Role>
+class RoleAnd : public Constructor<dl::Role>
 {
 private:
     size_t m_id;
-    const Constructor<Role>& m_role_left;
-    const Constructor<Role>& m_role_right;
+    const Role* m_role_left;
+    const Role* m_role_right;
+
+    RoleAnd(size_t id, const Role& role_left, const Role& role_right);
+
+    template<typename T>
+    friend class dl::ConstructorRepository;
 
 public:
-    RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right);
+    bool operator==(const RoleAnd& other) const;
+    size_t hash() const;
 
     bool test_match(const dl::Role& constructor) const override;
 
-    const Constructor<Role>& get_role_left() const;
-    const Constructor<Role>& get_role_right() const;
+    const Role& get_role_left() const;
+    const Role& get_role_right() const;
 
     size_t get_id() const override;
 };
 
+}
 }
 
 #endif

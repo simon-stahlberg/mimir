@@ -137,6 +137,8 @@ template<PredicateCategory P>
 using PredicateList = std::vector<Predicate<P>>;
 template<PredicateCategory P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
+template<typename Key, PredicateCategory P, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 
 }
 

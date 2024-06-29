@@ -30,6 +30,22 @@ ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicat
 }
 
 template<PredicateCategory P>
+bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateState<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
 void ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
 {
     // TODO
@@ -63,6 +79,22 @@ ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate)
 }
 
 template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateGoal<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
 void ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
 {
     // TODO
@@ -92,10 +124,21 @@ Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
 
 ConceptAnd::ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right) :
     m_id(id),
-    m_concept_left(concept_left),
-    m_concept_right(concept_right)
+    m_concept_left(&concept_left),
+    m_concept_right(&concept_right)
 {
 }
+
+bool ConceptAnd::operator==(const ConceptAnd& other) const
+{
+    if (this != &other)
+    {
+        return (m_concept_left == other.m_concept_left) && (m_concept_right == other.m_concept_right);
+    }
+    return true;
+}
+
+size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left, m_concept_right); }
 
 void ConceptAnd::evaluate(EvaluationContext& context) const
 {
@@ -106,28 +149,9 @@ bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.vi
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
-const Concept& ConceptAnd::get_concept_left() const { return m_concept_left; }
+const Concept& ConceptAnd::get_concept_left() const { return *m_concept_left; }
 
-const Concept& ConceptAnd::get_concept_right() const { return m_concept_right; }
-
-/**
- * RoleAnd
- */
-
-RoleAnd::RoleAnd(size_t id, const Role& role_left, const Role& role_right) : m_id(id), m_role_left(role_left), m_role_right(role_right) {}
-
-void RoleAnd::evaluate(EvaluationContext& context) const
-{
-    // TODO
-}
-
-bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*this); }
-
-size_t RoleAnd::get_id() const { return m_id; }
-
-const Role& RoleAnd::get_role_left() const { return m_role_left; }
-
-const Role& RoleAnd::get_role_right() const { return m_role_right; }
+const Concept& ConceptAnd::get_concept_right() const { return *m_concept_right; }
 
 /**
  * RolePredicateState
@@ -136,6 +160,22 @@ const Role& RoleAnd::get_role_right() const { return m_role_right; }
 template<PredicateCategory P>
 RolePredicateState<P>::RolePredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t RolePredicateState<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -167,8 +207,24 @@ Predicate<P> RolePredicateState<P>::get_predicate() const
  */
 
 template<PredicateCategory P>
-RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : Role(id), m_predicate(predicate)
+RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+size_t RolePredicateGoal<P>::hash() const
+{
+    return loki::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -194,5 +250,35 @@ Predicate<P> RolePredicateGoal<P>::get_predicate() const
 {
     return m_predicate;
 }
+
+/**
+ * RoleAnd
+ */
+
+RoleAnd::RoleAnd(size_t id, const Role& role_left, const Role& role_right) : m_id(id), m_role_left(&role_left), m_role_right(&role_right) {}
+
+bool RoleAnd::operator==(const RoleAnd& other) const
+{
+    if (this != &other)
+    {
+        return (m_role_left == other.m_role_left) && (m_role_right == other.m_role_right);
+    }
+    return true;
+}
+
+size_t RoleAnd::hash() const { return loki::hash_combine(m_role_left, m_role_right); }
+
+void RoleAnd::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*this); }
+
+size_t RoleAnd::get_id() const { return m_id; }
+
+const Role& RoleAnd::get_role_left() const { return *m_role_left; }
+
+const Role& RoleAnd::get_role_right() const { return *m_role_right; }
 
 }

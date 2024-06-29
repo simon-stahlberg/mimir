@@ -47,7 +47,8 @@ public:
         const auto index = m_count;
         assert(index == m_persistent_vector.size());
 
-        const auto& element = m_persistent_vector.emplace_back(index, std::forward<Args>(args)...);
+        m_persistent_vector.push_back(T(index, std::forward<Args>(args)...));
+        const auto& element = m_persistent_vector.back();
         const auto* element_ptr = &element;
 
         auto it = m_uniqueness.find(element_ptr);
