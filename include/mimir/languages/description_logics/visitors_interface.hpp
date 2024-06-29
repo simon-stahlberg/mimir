@@ -41,13 +41,13 @@ public:
     // Default implementations always return false
 
     /* Concepts */
-    virtual bool accept(const ConceptPredicateState<Static>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicateState<Fluent>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicateState<Derived>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicateGoal<Static>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicateGoal<Fluent>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicateGoal<Derived>& constructor) const { return false; }
-    virtual bool accept(const ConceptAnd& constructor) const { return false; }
+    virtual bool visit(const ConceptPredicateState<Static>& constructor) const { return false; }
+    virtual bool visit(const ConceptPredicateState<Fluent>& constructor) const { return false; }
+    virtual bool visit(const ConceptPredicateState<Derived>& constructor) const { return false; }
+    virtual bool visit(const ConceptPredicateGoal<Static>& constructor) const { return false; }
+    virtual bool visit(const ConceptPredicateGoal<Fluent>& constructor) const { return false; }
+    virtual bool visit(const ConceptPredicateGoal<Derived>& constructor) const { return false; }
+    virtual bool visit(const ConceptAnd& constructor) const { return false; }
 };
 
 /**
@@ -68,13 +68,13 @@ public:
     // Default implementations always return false
 
     /* Roles */
-    virtual bool accept(const RolePredicateState<Static>& constructor) const { return false; }
-    virtual bool accept(const RolePredicateState<Fluent>& constructor) const { return false; }
-    virtual bool accept(const RolePredicateState<Derived>& constructor) const { return false; }
-    virtual bool accept(const RolePredicateGoal<Static>& constructor) const { return false; }
-    virtual bool accept(const RolePredicateGoal<Fluent>& constructor) const { return false; }
-    virtual bool accept(const RolePredicateGoal<Derived>& constructor) const { return false; }
-    virtual bool accept(const RoleAnd& constructor) const { return false; }
+    virtual bool visit(const RolePredicateState<Static>& constructor) const { return false; }
+    virtual bool visit(const RolePredicateState<Fluent>& constructor) const { return false; }
+    virtual bool visit(const RolePredicateState<Derived>& constructor) const { return false; }
+    virtual bool visit(const RolePredicateGoal<Static>& constructor) const { return false; }
+    virtual bool visit(const RolePredicateGoal<Fluent>& constructor) const { return false; }
+    virtual bool visit(const RolePredicateGoal<Derived>& constructor) const { return false; }
+    virtual bool visit(const RoleAnd& constructor) const { return false; }
 };
 
 }

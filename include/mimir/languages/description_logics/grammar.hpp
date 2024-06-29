@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/grammar_constructors.hpp"
 
 #include <functional>
 #include <memory>
@@ -30,60 +31,13 @@ namespace mimir::dl::grammar
 {
 
 /**
- * Grammar constructor hierarchy parallel to dl constructors.
- */
-
-template<IsConceptOrRole D>
-class Constructor
-{
-public:
-    virtual bool test_match(const D& constructor) const = 0;
-};
-
-template<PredicateCategory P>
-class ConceptPredicateState : public Constructor<Concept>
-{
-private:
-    Predicate<P> m_predicate;
-
-public:
-    explicit ConceptPredicateState(Predicate<P> predicate);
-
-    bool test_match(const dl::Concept& constructor) const override;
-};
-
-template<PredicateCategory P>
-class ConceptPredicateGoal : public Constructor<Concept>
-{
-private:
-    Predicate<P> m_predicate;
-
-public:
-    explicit ConceptPredicateGoal(Predicate<P> predicate);
-
-    bool test_match(const dl::Concept& constructor) const override;
-};
-
-class ConceptAnd : public Constructor<Concept>
-{
-private:
-    const Constructor<Concept>* m_concept_left;
-    const Constructor<Concept>* m_concept_right;
-
-public:
-    ConceptAnd(const Constructor<Concept>* concept_left, const Constructor<Concept>* concept_right);
-
-    bool test_match(const dl::Concept& constructor) const override;
-};
-
-/**
  * NonTerminal
  */
 
-template<IsConceptOrRole D>
+template<dl::IsConceptOrRole D>
 class DerivationRule;
 
-template<IsConceptOrRole D>
+template<dl::IsConceptOrRole D>
 class NonTerminal
 {
 protected:
@@ -97,14 +51,14 @@ public:
  * Choice
  */
 
-template<IsConceptOrRole D>
+template<dl::IsConceptOrRole D>
 using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
 
 /**
  * DerivationRule
  */
 
-template<IsConceptOrRole D>
+template<dl::IsConceptOrRole D>
 class DerivationRule
 {
 protected:

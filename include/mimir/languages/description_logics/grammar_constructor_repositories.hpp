@@ -15,16 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTOR_REPOSITORIES_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTOR_REPOSITORIES_HPP_
 
-#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/grammar_constructors_interface.hpp"
 
 #include <loki/loki.hpp>
 #include <unordered_set>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
 
 template<IsConcreteConceptOrRole D>
@@ -36,16 +36,11 @@ private:
 
     std::unordered_set<const D*, loki::Hash<D*>, loki::EqualTo<D*>> m_uniqueness;
 
-    size_t m_count = 0;
-
 public:
     template<typename... Args>
     const D& create(Args&&... args)
     {
-        const auto index = m_count;
-        assert(index == m_persistent_vector.size());
-
-        const auto& element = m_persistent_vector.emplace_back(index, std::forward<Args>(args)...);
+        const auto& element = m_persistent_vector.emplace_back(std::forward<Args>(args)...);
         const auto* element_ptr = &element;
 
         auto it = m_uniqueness.find(element_ptr);
@@ -55,8 +50,6 @@ public:
             /* Element is unique! */
 
             m_uniqueness_set.emplace(element_ptr);
-            // Validate the element by increasing the identifier to the next free position
-            ++m_count;
         }
         else
         {

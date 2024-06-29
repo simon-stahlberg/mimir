@@ -37,11 +37,7 @@ class RoleVisitor;
 
 class Concept
 {
-protected:
-    size_t m_id;
-
 public:
-    explicit Concept(size_t id) : m_id(id) {}
     virtual ~Concept() {}
 
     /// @brief Evaluate the dl constructor on the evaluation context.
@@ -50,6 +46,8 @@ public:
     /// @brief Return true iff the symbols match the data in the dl constructor.
     /// Uses double dispatch.
     virtual bool accept(const ConceptVisitor& visitor) const = 0;
+
+    virtual size_t get_id() const = 0;
 };
 
 using ConceptList = std::vector<const Concept*>;
@@ -60,11 +58,7 @@ using ConceptList = std::vector<const Concept*>;
 
 class Role
 {
-protected:
-    size_t m_id;
-
 public:
-    explicit Role(size_t id) : m_id(id) {}
     virtual ~Role() {}
 
     /// @brief Evaluate the dl constructor on the evaluation context.
@@ -72,6 +66,8 @@ public:
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
     virtual bool accept(const RoleVisitor& visitor) const = 0;
+
+    virtual size_t get_id() const = 0;
 };
 
 using RoleList = std::vector<const Role*>;

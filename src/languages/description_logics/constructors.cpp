@@ -21,10 +21,77 @@ namespace mimir::dl
 {
 
 /**
+ * ConceptPredicateState
+ */
+
+template<PredicateCategory P>
+ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+void ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateState<P>::accept(const ConceptVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateState<P>::get_id() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> ConceptPredicateState<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+/**
+ * ConceptPredicateGoal
+ */
+
+template<PredicateCategory P>
+ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : Concept(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+void ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::accept(const ConceptVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateGoal<P>::get_id() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+/**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(size_t id, const Concept* concept_left, const Concept* concept_right) :
-    Concept(id),
+
+ConceptAnd::ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right) :
+    m_id(id),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
 {
@@ -35,5 +102,97 @@ void ConceptAnd::evaluate(EvaluationContext& context) const
     // TODO
 }
 
-bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.accept(*this); }
+bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.visit(*this); }
+
+size_t ConceptAnd::get_id() const { return m_id; }
+
+const Concept& ConceptAnd::get_concept_left() const { return m_concept_left; }
+
+const Concept& ConceptAnd::get_concept_right() const { return m_concept_right; }
+
+/**
+ * RoleAnd
+ */
+
+RoleAnd::RoleAnd(size_t id, const Role& role_left, const Role& role_right) : m_id(id), m_role_left(role_left), m_role_right(role_right) {}
+
+void RoleAnd::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*this); }
+
+size_t RoleAnd::get_id() const { return m_id; }
+
+const Role& RoleAnd::get_role_left() const { return m_role_left; }
+
+const Role& RoleAnd::get_role_right() const { return m_role_right; }
+
+/**
+ * RolePredicateState
+ */
+
+template<PredicateCategory P>
+RolePredicateState<P>::RolePredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+void RolePredicateState<P>::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::accept(const RoleVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t RolePredicateState<P>::get_id() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> RolePredicateState<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+/**
+ * RolePredicateGoal
+ */
+
+template<PredicateCategory P>
+RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : Role(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+void RolePredicateGoal<P>::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoal<P>::accept(const RoleVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t RolePredicateGoal<P>::get_id() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> RolePredicateGoal<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
 }

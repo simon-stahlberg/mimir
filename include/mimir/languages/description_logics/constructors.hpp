@@ -29,6 +29,13 @@ namespace mimir::dl
 {
 
 /**
+ * Forward declarations
+ */
+
+template<IsConcreteConceptOrRole D>
+class ConstructorRepository;
+
+/**
  * Concepts
  */
 
@@ -36,87 +43,139 @@ template<PredicateCategory P>
 class ConceptPredicateState : public Concept
 {
 private:
+    size_t m_id;
     Predicate<P> m_predicate;
 
-public:
     ConceptPredicateState(size_t id, Predicate<P> predicate);
 
+    template<IsConcreteConceptOrRole D>
+    friend class ConstructorRepository;
+
+public:
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
+
+    size_t get_id() const override;
+
+    Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
 class ConceptPredicateGoal : public Concept
 {
 private:
+    size_t m_id;
     Predicate<P> m_predicate;
 
-public:
     ConceptPredicateGoal(size_t id, Predicate<P> predicate);
 
+    template<IsConcreteConceptOrRole D>
+    friend class ConstructorRepository;
+
+public:
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
+
+    size_t get_id() const override;
+
+    Predicate<P> get_predicate() const;
 };
 
 class ConceptAnd : public Concept
 {
 private:
-    const Concept* m_concept_left;
-    const Concept* m_concept_right;
+    size_t m_id;
+    const Concept& m_concept_left;
+    const Concept& m_concept_right;
+
+    ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right);
+
+    template<IsConcreteConceptOrRole D>
+    friend class ConstructorRepository;
 
 public:
-    ConceptAnd(size_t id, const Concept* concept_left, const Concept* concept_right);
-
     void evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
+
+    size_t get_id() const override;
+
+    const Concept& get_concept_left() const;
+    const Concept& get_concept_right() const;
 };
 
 /**
  * Roles
  */
 
-/**
- * Implementations
- */
-
-/* ConceptPredicateState */
 template<PredicateCategory P>
-ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicate) : Concept(id), m_predicate(predicate)
+class RolePredicateState : public Role
 {
-}
+private:
+    size_t m_id;
+    Predicate<P> m_predicate;
 
-template<PredicateCategory P>
-void ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
-{
-    // TODO
-}
+    RolePredicateState(size_t id, Predicate<P> predicate);
 
-template<PredicateCategory P>
-bool ConceptPredicateState<P>::accept(const ConceptVisitor& visitor) const
-{
-    return visitor.accept(*this);
-}
+    template<IsConcreteConceptOrRole D>
+    friend class ConstructorRepository;
 
-/* ConceptPredicateGoal */
-template<PredicateCategory P>
-ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : Concept(id), m_predicate(predicate)
-{
-}
+public:
+    void evaluate(EvaluationContext& context) const override;
+
+    bool accept(const RoleVisitor& visitor) const override;
+
+    size_t get_id() const override;
+
+    Predicate<P> get_predicate() const;
+};
 
 template<PredicateCategory P>
-void ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
+class RolePredicateGoal : public Role
 {
-    // TODO
-}
+private:
+    size_t m_id;
+    Predicate<P> m_predicate;
 
-template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::accept(const ConceptVisitor& visitor) const
+    RolePredicateGoal(size_t id, Predicate<P> predicate);
+
+    template<IsConcreteConceptOrRole D>
+    friend class ConstructorRepository;
+
+public:
+    void evaluate(EvaluationContext& context) const override;
+
+    bool accept(const RoleVisitor& visitor) const override;
+
+    size_t get_id() const override;
+
+    Predicate<P> get_predicate() const;
+};
+
+class RoleAnd : public Role
 {
-    return visitor.accept(*this);
-}
+private:
+    size_t m_id;
+    const Role& m_role_left;
+    const Role& m_role_right;
+
+    RoleAnd(size_t id, const Role& role_left, const Role& role_right);
+
+    template<IsConcreteConceptOrRole D>
+    friend class ConstructorRepository;
+
+public:
+    void evaluate(EvaluationContext& context) const override;
+
+    bool accept(const RoleVisitor& visitor) const override;
+
+    size_t get_id() const override;
+
+    const Role& get_role_left() const;
+    const Role& get_role_right() const;
+};
 
 }
 

@@ -20,4 +20,89 @@
 namespace mimir::dl
 {
 
+/**
+ * ConceptPredicateStateVisitor
+ */
+
+template<PredicateCategory P>
+ConceptPredicateStateVisitor<P>::ConceptPredicateStateVisitor(const grammar::ConceptPredicateState<P>& grammar_constructor) :
+    m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateStateVisitor<P>::visit(const ConceptPredicateState<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor->get_predicate();
+}
+
+/**
+ * ConceptPredicateGoalVisitor
+ */
+
+template<PredicateCategory P>
+ConceptPredicateGoalVisitor<P>::ConceptPredicateGoalVisitor(const grammar::ConceptPredicateGoal<P>& grammar_constructor) :
+    m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoalVisitor<P>::visit(const ConceptPredicateGoal<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor->get_predicate();
+}
+
+/**
+ * ConceptAndVisitor
+ */
+
+ConceptAndVisitor::ConceptAndVisitor(const grammar::ConceptAnd& grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+
+bool ConceptAndVisitor::visit(const ConceptAnd& constructor) const
+{
+    return m_grammar_constructor.get_concept_left().test_match(constructor.get_concept_left())
+           && m_grammar_constructor.get_concept_right().test_match(constructor.get_concept_right());
+}
+
+/**
+ * RolePredicateStateVisitor
+ */
+
+template<PredicateCategory P>
+RolePredicateStateVisitor<P>::RolePredicateStateVisitor(const grammar::RolePredicateState<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateStateVisitor<P>::visit(const RolePredicateState<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor->get_predicate();
+}
+
+/**
+ * RolePredicateGoalVisitor
+ */
+
+template<PredicateCategory P>
+RolePredicateGoalVisitor<P>::RolePredicateGoalVisitor(const grammar::RolePredicateGoal<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoalVisitor<P>::visit(const RolePredicateGoal<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor->get_predicate();
+}
+
+/**
+ * RoleAndVisitor
+ */
+
+RoleAndVisitor::RoleAndVisitor(const grammar::RoleAnd& grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+
+bool RoleAndVisitor::visit(const RoleAnd& constructor) const
+{
+    return m_grammar_constructor.get_role_left().test_match(constructor.get_role_left())
+           && m_grammar_constructor.get_role_right().test_match(constructor.get_role_right());
+}
 }
