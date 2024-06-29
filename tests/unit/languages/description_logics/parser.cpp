@@ -22,7 +22,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsParserTest)
 <role> ::= <role_predicate1_state> | <role_predicate1_goal> | <role_and>
 )");
 
-    EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar(), ast));
+    EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));
 }
 
 TEST(MimirTests, LanguagesDescriptionLogicsParser2Test)
@@ -38,7 +38,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsParser2Test)
         @concept_predicate_state "predicate2"
 )");
 
-    EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar(), ast));
+    EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));
 }
 
 }

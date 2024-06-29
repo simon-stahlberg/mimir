@@ -27,7 +27,7 @@ namespace mimir::dl::grammar
  */
 
 template<PredicateCategory P>
-ConceptPredicateState<P>::ConceptPredicateState(Predicate<P> predicate) : m_predicate(predicate)
+ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
 }
 
@@ -42,12 +42,18 @@ Predicate<P> ConceptPredicateState<P>::get_predicate() const
 {
 }
 
+template<PredicateCategory P>
+size_t ConceptPredicateState<P>::get_id() const
+{
+    return m_id;
+}
+
 /**
  * ConceptPredicateGoal
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoal<P>::ConceptPredicateGoal(Predicate<P> predicate) : m_predicate(predicate)
+ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
 }
 
@@ -62,10 +68,17 @@ Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
 {
 }
 
+template<PredicateCategory P>
+size_t ConceptPredicateGoal<P>::get_id() const
+{
+    return m_id;
+}
+
 /**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right) :
+ConceptAnd::ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right) :
+    m_id(id),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
 {
@@ -77,12 +90,14 @@ const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_conc
 
 const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right; }
 
+size_t ConceptAnd::get_id() const { return m_id; }
+
 /**
  * RolePredicateState
  */
 
 template<PredicateCategory P>
-RolePredicateState<P>::RolePredicateState(Predicate<P> predicate) : m_predicate(predicate)
+RolePredicateState<P>::RolePredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
 }
 
@@ -97,12 +112,18 @@ Predicate<P> RolePredicateState<P>::get_predicate() const
 {
 }
 
+template<PredicateCategory P>
+size_t RolePredicateState<P>::get_id() const
+{
+    return m_id;
+}
+
 /**
  * RolePredicateGoal
  */
 
 template<PredicateCategory P>
-RolePredicateGoal<P>::RolePredicateGoal(Predicate<P> predicate) : m_predicate(predicate)
+RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
 }
 
@@ -117,15 +138,28 @@ Predicate<P> RolePredicateGoal<P>::get_predicate() const
 {
 }
 
+template<PredicateCategory P>
+size_t RolePredicateGoal<P>::get_id() const
+{
+    return m_id;
+}
+
 /**
  * RoleAnd
  */
-RoleAnd::RoleAnd(const Constructor<Role>& role_left, const Constructor<Role>& role_right) : m_role_left(role_left), m_role_right(role_right) {}
+RoleAnd::RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right) :
+    m_id(id),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
 
 bool RoleAnd::test_match(const dl::Role& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
 
 const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left; }
 
 const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right; }
+
+size_t RoleAnd::get_id() const { return m_id; }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Dominik Drexler
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,31 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_PARSER_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 
-#include "mimir/languages/description_logics/parser/ast.hpp"
-
-#include <boost/spirit/home/x3.hpp>
+#include "mimir/languages/description_logics/grammar.hpp"
 
 namespace mimir::dl
 {
-namespace x3 = boost::spirit::x3;
-
-///////////////////////////////////////////////////////////////////////////
-// parser public interface
-///////////////////////////////////////////////////////////////////////////
-namespace parser
+class Generator
 {
-struct GrammarClass;
-
-typedef x3::rule<GrammarClass, ast::Grammar> grammar_type;
-
-BOOST_SPIRIT_DECLARE(grammar_type)
-}
-
-parser::grammar_type const& grammar_parser();
-
+private:
+public:
+    Generator(grammar::Grammar grammar);
+};
 }
 
 #endif

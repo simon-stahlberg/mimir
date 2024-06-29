@@ -58,7 +58,7 @@ Predicate<P> ConceptPredicateState<P>::get_predicate() const
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : Concept(id), m_predicate(predicate)
+ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
 {
 }
 

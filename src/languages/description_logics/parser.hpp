@@ -15,30 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
+#include "mimir/languages/description_logics/grammar.hpp"
 
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
-
-#include <concepts>
+#include <tuple>
 
 namespace mimir::dl::grammar
 {
 
-/**
- * Grammar constructor hierarchy parallel to dl constructors.
- */
-
-template<dl::IsConceptOrRole D>
-class Constructor
-{
-public:
-    virtual bool test_match(const D& constructor) const = 0;
-
-    virtual size_t get_id() const = 0;
-};
+extern std::tuple<std::vector<const ConceptDerivationRule*>, std::vector<const RoleDerivationRule*>>
+parse(const std::string& bnf_grammar_description, GrammarConstructorRepositories& ref_grammar_constructor_repos);
 
 }
-
-#endif

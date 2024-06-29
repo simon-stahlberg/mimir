@@ -27,20 +27,22 @@
 namespace mimir::dl
 {
 
-template<IsConcreteConceptOrRole D>
+template<typename T>
 class ConstructorRepository
 {
 private:
-    // Persistent storage of concrete dl constructors to avoid frequent allocations.
-    loki::SegmentedVector<D> m_persistent_vector;
+    // Persistent storage of constructors to avoid frequent allocations.
+    loki::SegmentedVector<T> m_persistent_vector;
 
-    std::unordered_set<const D*, loki::Hash<D*>, loki::EqualTo<D*>> m_uniqueness;
+    std::unordered_set<const T*, loki::Hash<T*>, loki::EqualTo<T*>> m_uniqueness;
 
     size_t m_count = 0;
 
 public:
+    ConstructorRepository(size_t elements_per_segment) : m_persistent_vector(loki::SegmentedVector<T>(elements_per_segment)) {}
+
     template<typename... Args>
-    const D& create(Args&&... args)
+    const T& create(Args&&... args)
     {
         const auto index = m_count;
         assert(index == m_persistent_vector.size());
@@ -50,11 +52,11 @@ public:
 
         auto it = m_uniqueness.find(element_ptr);
 
-        if (it == m_uniquenes.end())
+        if (it == m_uniqueness.end())
         {
             /* Element is unique! */
 
-            m_uniqueness_set.emplace(element_ptr);
+            m_uniqueness.emplace(element_ptr);
             // Validate the element by increasing the identifier to the next free position
             ++m_count;
         }
@@ -68,9 +70,25 @@ public:
         }
 
         // Ensure that indexing matches size of uniqueness set.
-        assert(m_uniqueness_set.size() == m_count);
+        assert(m_uniqueness.size() == m_count);
 
         return element;
+    }
+};
+
+template<typename... Ts>
+class VariadicConstructorRepository
+{
+private:
+    std::tuple<ConstructorRepository<Ts>...> m_repositories;
+
+public:
+    VariadicConstructorRepository() : m_repositories(std::make_tuple(ConstructorRepository<Ts>(1000)...)) {}
+
+    template<typename T, typename... Args>
+    const T& create(Args&&... args)
+    {
+        return std::get<ConstructorRepository<T>>(m_repositories).create(std::forward<Args>(args)...);
     }
 };
 

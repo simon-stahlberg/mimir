@@ -15,30 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
+#include "parser.hpp"
 
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
-
-#include <concepts>
+#include <mimir/languages/description_logics/parser/ast.hpp>
+#include <mimir/languages/description_logics/parser/parser.hpp>
+#include <mimir/languages/description_logics/parser/parser_wrapper.hpp>
 
 namespace mimir::dl::grammar
 {
 
-/**
- * Grammar constructor hierarchy parallel to dl constructors.
- */
-
-template<dl::IsConceptOrRole D>
-class Constructor
+std::tuple<std::vector<const ConceptDerivationRule*>, std::vector<const RoleDerivationRule*>>
+parse(const std::string& bnf_grammar_description, GrammarConstructorRepositories& ref_grammar_constructor_repos)
 {
-public:
-    virtual bool test_match(const D& constructor) const = 0;
+    auto ast = dl::ast::Grammar();
+    dl::parse_ast(bnf_grammar_description, dl::grammar_parser(), ast);
 
-    virtual size_t get_id() const = 0;
-};
+    auto concept_rules = std::vector<const ConceptDerivationRule*> {};
+    auto role_rules = std::vector<const RoleDerivationRule*> {};
 
+    return std::make_tuple(concept_rules, role_rules);
 }
 
-#endif
+}

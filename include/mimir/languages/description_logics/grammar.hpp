@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 
@@ -40,19 +41,30 @@ class DerivationRule;
 template<dl::IsConceptOrRole D>
 class NonTerminal
 {
-protected:
-    const DerivationRule<D>* m_rule;
+private:
+    size_t m_id;
+    const DerivationRule<D>& m_rule;
 
 public:
-    bool test_match(const D& constructor) const { return m_rule->test_match(constructor); }
+    NonTerminal(size_t id, const DerivationRule<D>& rule);
+
+    bool test_match(const D& constructor) const;
+
+    size_t get_id() const;
 };
+
+using ConceptNonTerminal = NonTerminal<Concept>;
+using RoleNonTerminal = NonTerminal<Role>;
 
 /**
  * Choice
  */
 
 template<dl::IsConceptOrRole D>
-using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
+using Choice = std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>>;
+
+using ConceptChoice = Choice<Concept>;
+using RoleChoice = Choice<Role>;
 
 /**
  * DerivationRule
@@ -62,62 +74,62 @@ template<dl::IsConceptOrRole D>
 class DerivationRule
 {
 protected:
+    size_t m_id;
     std::vector<Choice<D>> m_choices;
 
 public:
-    bool test_match(const D& constructor) const
-    {
-        return std::any_of(m_choices.begin(),
-                           m_choices.end(),
-                           [&constructor](const Choice<D>& choice)
-                           { return std::visit([&constructor](const auto& arg) -> bool { return arg->test_match(constructor); }, choice); });
-    }
+    DerivationRule(size_t id, std::vector<Choice<D>> choices);
+
+    bool test_match(const D& constructor) const;
+
+    size_t get_id() const;
 };
+
+using ConceptDerivationRule = DerivationRule<Concept>;
+using RoleDerivationRule = DerivationRule<Role>;
 
 /**
  * Grammar
  */
 
+using GrammarConstructorRepositories = VariadicConstructorRepository<ConceptNonTerminal,
+                                                                     ConceptDerivationRule,
+                                                                     ConceptPredicateState<Static>,
+                                                                     ConceptPredicateState<Fluent>,
+                                                                     ConceptPredicateState<Fluent>,
+                                                                     ConceptAnd,
+                                                                     RoleNonTerminal,
+                                                                     RoleDerivationRule,
+                                                                     RolePredicateState<Static>,
+                                                                     RolePredicateState<Fluent>,
+                                                                     RolePredicateState<Fluent>,
+                                                                     RoleAnd>;
+
 class Grammar
 {
 private:
-    // Memory, the components cannot be shared due to cycles in grammars.
-    std::vector<std::unique_ptr<Constructor<Concept>>> m_concept_storage;
-    std::vector<std::unique_ptr<Constructor<Role>>> m_role_storage;
-    std::vector<std::unique_ptr<NonTerminal<Concept>>> m_concept_non_terminal_storage;
-    std::vector<std::unique_ptr<NonTerminal<Role>>> m_role_non_terminal_storage;
-    std::vector<std::unique_ptr<DerivationRule<Concept>>> m_concept_rules_storage;
-    std::vector<std::unique_ptr<DerivationRule<Role>>> m_role_rules_storage;
+    /* Memory */
+    GrammarConstructorRepositories m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
-    std::vector<const DerivationRule<Concept>*> m_concept_rules;
-    std::vector<const DerivationRule<Role>*> m_role_rules;
+    std::vector<const ConceptDerivationRule*> m_concept_rules;
+    std::vector<const RoleDerivationRule*> m_role_rules;
 
 public:
+    /// @brief Create a grammar from a BNF description.
+    /// @param text
+    explicit Grammar(std::string bnf_description);
+
     /// @brief Tests whether a dl concept constructor satisfies the grammar specification.
     /// @param constructor is the dl concept constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(const dl::Concept& constructor) const
-    {
-        return std::any_of(m_concept_rules.begin(),
-                           m_concept_rules.end(),
-                           [&constructor](const DerivationRule<Concept>* rule) { return rule->test_match(constructor); });
-    }
+    bool test_match(const dl::Concept& constructor) const;
 
     /// @brief Tests whether a dl role constructor satisfies the grammar specfication.
     /// @param constructor is the dl role constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(const dl::Role& constructor) const
-    {
-        return std::any_of(m_role_rules.begin(),
-                           m_role_rules.end(),
-                           [&constructor](const DerivationRule<Role>* rule) { return rule->test_match(constructor); });
-    }
+    bool test_match(const dl::Role& constructor) const;
 };
-
-/**
- * Implementations
- */
 }
 
 #endif

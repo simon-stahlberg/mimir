@@ -183,7 +183,7 @@ parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
 
 parser::derivation_rule_type const& derivation_rule() { return parser::derivation_rule; }
-parser::grammar_type const& grammar() { return parser::grammar; }
+parser::grammar_type const& grammar_parser() { return parser::grammar; }
 }
 
 #endif
