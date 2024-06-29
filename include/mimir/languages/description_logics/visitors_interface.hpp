@@ -24,16 +24,14 @@ namespace mimir::dl
 {
 
 /**
- * Forward declarations
+ * ConceptVisitor
  */
 
 template<PredicateCategory P>
-class ConceptPredicate;
+class ConceptPredicateState;
+template<PredicateCategory P>
+class ConceptPredicateGoal;
 class ConceptAnd;
-
-/**
- * Visitors
- */
 
 class ConceptVisitor
 {
@@ -43,11 +41,24 @@ public:
     // Default implementations always return false
 
     /* Concepts */
-    virtual bool accept(const ConceptPredicate<Static>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicate<Fluent>& constructor) const { return false; }
-    virtual bool accept(const ConceptPredicate<Derived>& constructor) const { return false; }
+    virtual bool accept(const ConceptPredicateState<Static>& constructor) const { return false; }
+    virtual bool accept(const ConceptPredicateState<Fluent>& constructor) const { return false; }
+    virtual bool accept(const ConceptPredicateState<Derived>& constructor) const { return false; }
+    virtual bool accept(const ConceptPredicateGoal<Static>& constructor) const { return false; }
+    virtual bool accept(const ConceptPredicateGoal<Fluent>& constructor) const { return false; }
+    virtual bool accept(const ConceptPredicateGoal<Derived>& constructor) const { return false; }
     virtual bool accept(const ConceptAnd& constructor) const { return false; }
 };
+
+/**
+ * RoleVisitor
+ */
+
+template<PredicateCategory P>
+class RolePredicateState;
+template<PredicateCategory P>
+class RolePredicateGoal;
+class RoleAnd;
 
 class RoleVisitor
 {
@@ -57,6 +68,13 @@ public:
     // Default implementations always return false
 
     /* Roles */
+    virtual bool accept(const RolePredicateState<Static>& constructor) const { return false; }
+    virtual bool accept(const RolePredicateState<Fluent>& constructor) const { return false; }
+    virtual bool accept(const RolePredicateState<Derived>& constructor) const { return false; }
+    virtual bool accept(const RolePredicateGoal<Static>& constructor) const { return false; }
+    virtual bool accept(const RolePredicateGoal<Fluent>& constructor) const { return false; }
+    virtual bool accept(const RolePredicateGoal<Derived>& constructor) const { return false; }
+    virtual bool accept(const RoleAnd& constructor) const { return false; }
 };
 
 }

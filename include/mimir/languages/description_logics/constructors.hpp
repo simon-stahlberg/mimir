@@ -33,13 +33,27 @@ namespace mimir::dl
  */
 
 template<PredicateCategory P>
-class ConceptPredicate : public Concept
+class ConceptPredicateState : public Concept
 {
 private:
     Predicate<P> m_predicate;
 
 public:
-    ConceptPredicate(Predicate<P> predicate);
+    ConceptPredicateState(size_t id, Predicate<P> predicate);
+
+    void evaluate(EvaluationContext& context) const override;
+
+    bool accept(const ConceptVisitor& visitor) const override;
+};
+
+template<PredicateCategory P>
+class ConceptPredicateGoal : public Concept
+{
+private:
+    Predicate<P> m_predicate;
+
+public:
+    ConceptPredicateGoal(size_t id, Predicate<P> predicate);
 
     void evaluate(EvaluationContext& context) const override;
 
@@ -68,20 +82,38 @@ public:
  * Implementations
  */
 
-/* ConceptPredicate */
+/* ConceptPredicateState */
 template<PredicateCategory P>
-ConceptPredicate<P>::ConceptPredicate(Predicate<P> predicate) : m_predicate(predicate)
+ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicate) : Concept(id), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-void ConceptPredicate<P>::evaluate(EvaluationContext& context) const
+void ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
 {
     // TODO
 }
 
 template<PredicateCategory P>
-bool ConceptPredicate<P>::accept(const ConceptVisitor& visitor) const
+bool ConceptPredicateState<P>::accept(const ConceptVisitor& visitor) const
+{
+    return visitor.accept(*this);
+}
+
+/* ConceptPredicateGoal */
+template<PredicateCategory P>
+ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : Concept(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+void ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
+{
+    // TODO
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::accept(const ConceptVisitor& visitor) const
 {
     return visitor.accept(*this);
 }

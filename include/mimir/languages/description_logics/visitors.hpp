@@ -30,35 +30,39 @@ namespace mimir::dl
 {
 
 /**
- * Forward declarations
- */
-class NonTerminalSymbolConceptPredicate;
-class NonTerminalSymbolConceptAnd;
-
-/**
  * ConceptVisitors
  */
 
-class ConceptPredicateVisitor : public ConceptVisitor
+namespace grammar
+{
+template<PredicateCategory P>
+class ConceptPredicateState;
+template<PredicateCategory P>
+class ConceptPredicateGoal;
+class ConceptPredicateAnd;
+}
+
+template<PredicateCategory P>
+class ConceptPredicateStateVisitor : public ConceptVisitor
 {
 private:
-    const NonTerminalSymbolConceptPredicate* m_symbol;
+    const grammar::ConceptPredicateState<P>* m_grammar_constructor;
 
 public:
-    explicit ConceptPredicateVisitor(const NonTerminalSymbolConceptPredicate& symbol) : m_symbol(&symbol) {}
+    explicit ConceptPredicateStateVisitor(const grammar::ConceptPredicateState<P>& grammar_constructor) : m_grammar_constructor(&grammar_constructor) {}
 
-    bool accept(const ConceptPredicate<Static>& constructor) const override;
-    bool accept(const ConceptPredicate<Fluent>& constructor) const override;
-    bool accept(const ConceptPredicate<Derived>& constructor) const override;
+    bool accept(const ConceptPredicateState<Static>& constructor) const override;
+    bool accept(const ConceptPredicateState<Fluent>& constructor) const override;
+    bool accept(const ConceptPredicateState<Derived>& constructor) const override;
 };
 
 class ConceptAndVisitor : public ConceptVisitor
 {
 private:
-    const NonTerminalSymbolConceptAnd* m_symbol;
+    const grammar::ConceptPredicateAnd* m_grammar_constructor;
 
 public:
-    explicit ConceptAndVisitor(const NonTerminalSymbolConceptAnd& symbol) : m_symbol(&symbol) {}
+    explicit ConceptAndVisitor(const grammar::ConceptPredicateAnd& grammar_constructor) : m_grammar_constructor(&grammar_constructor) {}
 
     bool accept(const ConceptAnd& constructor) const override;
 };
@@ -66,6 +70,15 @@ public:
 /**
  * RoleVisitors
  */
+
+namespace grammar
+{
+template<PredicateCategory P>
+class RolePredicateState;
+template<PredicateCategory P>
+class RolePredicateGoal;
+class RolePredicateAnd;
+}
 
 }
 

@@ -61,13 +61,14 @@ using FlatStripsActionEffectLayout = flatmemory::Tuple<FlatBitsetLayout<Fluent>,
 using FlatStripsActionEffectBuilder = flatmemory::Builder<FlatStripsActionEffectLayout>;
 using FlatStripsActionEffect = flatmemory::ConstView<FlatStripsActionEffectLayout>;
 
-using FlatConditionalEffectLayout = flatmemory::Tuple<FlatBitsetLayout<Static>,
-                                                      FlatBitsetLayout<Static>,
-                                                      FlatBitsetLayout<Fluent>,
-                                                      FlatBitsetLayout<Fluent>,
-                                                      FlatBitsetLayout<Derived>,
-                                                      FlatBitsetLayout<Derived>,
-                                                      FlatSimpleEffect>;  // simple add or delete effect
+using FlatConditionalEffectLayout = flatmemory::Tuple<FlatIndexListLayout,  // Positive static atom indices
+                                                      FlatIndexListLayout,  // Negative static atom indices
+                                                      FlatIndexListLayout,  // Positive fluent atom indices
+                                                      FlatIndexListLayout,  // Negative fluent atom indices
+                                                      FlatIndexListLayout,  // Positive derived atom indices
+                                                      FlatIndexListLayout,  // Negative derived atom indices
+                                                      FlatSimpleEffect>;    // simple add or delete
+                                                                            // effect
 using FlatConditionalEffectBuilder = flatmemory::Builder<FlatConditionalEffectLayout>;
 using FlatConditionalEffect = flatmemory::ConstView<FlatConditionalEffectLayout>;
 
@@ -296,7 +297,7 @@ public:
     /* Precondition */
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitsetBuilder<P>& get_positive_precondition()
+    [[nodiscard]] FlatIndexListBuilder& get_positive_precondition()
     {
         if constexpr (std::is_same_v<P, Static>)
         {
@@ -317,7 +318,7 @@ public:
     }
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitsetBuilder<P>& get_negative_precondition()
+    [[nodiscard]] FlatIndexListBuilder& get_negative_precondition()
     {
         if constexpr (std::is_same_v<P, Static>)
         {
@@ -353,7 +354,7 @@ public:
     /* Precondition */
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_positive_precondition() const
+    [[nodiscard]] FlatIndexList get_positive_precondition() const
     {
         if constexpr (std::is_same_v<P, Static>)
         {
@@ -374,7 +375,7 @@ public:
     }
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_negative_precondition() const
+    [[nodiscard]] FlatIndexList get_negative_precondition() const
     {
         if constexpr (std::is_same_v<P, Static>)
         {
@@ -402,8 +403,8 @@ public:
     {
         const auto state_atoms = state.get_atoms<P>();
 
-        return state_atoms.is_superseteq(get_positive_precondition<P>())  //
-               && state_atoms.are_disjoint(get_negative_precondition<P>());
+        return is_superseteq(state_atoms, get_positive_precondition<P>())  //
+               && are_disjoint(state_atoms, get_negative_precondition<P>());
     }
 
     [[nodiscard]] bool is_dynamically_applicable(State state) const
@@ -415,8 +416,8 @@ public:
     {
         const auto static_initial_atoms = problem->get_static_initial_positive_atoms_bitset();
 
-        return static_initial_atoms.is_superseteq(get_positive_precondition<Static>())  //
-               && static_initial_atoms.are_disjoint(get_negative_precondition<Static>());
+        return is_superseteq(static_initial_atoms, get_positive_precondition<Static>())  //
+               && are_disjoint(static_initial_atoms, get_negative_precondition<Static>());
     }
 
     [[nodiscard]] bool is_applicable(Problem problem, State state) const { return is_dynamically_applicable(state) && is_statically_applicable(problem); }

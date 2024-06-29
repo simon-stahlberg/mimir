@@ -197,21 +197,21 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
             auto& cond_positive_derived_precondition_i = cond_effect_proxy_i.get_positive_precondition<Derived>();
             auto& cond_negative_derived_precondition_i = cond_effect_proxy_i.get_negative_precondition<Derived>();
             auto& cond_simple_effect_i = cond_effect_proxy_i.get_simple_effect();
-            cond_positive_fluent_precondition_i.unset_all();
-            cond_negative_fluent_precondition_i.unset_all();
-            cond_positive_static_precondition_i.unset_all();
-            cond_negative_static_precondition_i.unset_all();
-            cond_positive_derived_precondition_i.unset_all();
-            cond_negative_derived_precondition_i.unset_all();
-            m_pddl_factories->ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_fluent_conditions(),
+            cond_positive_fluent_precondition_i.clear();
+            cond_negative_fluent_precondition_i.clear();
+            cond_positive_static_precondition_i.clear();
+            cond_negative_static_precondition_i.clear();
+            cond_positive_derived_precondition_i.clear();
+            cond_negative_derived_precondition_i.clear();
+            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_fluent_conditions(),
                                                      cond_positive_fluent_precondition_i,
                                                      cond_negative_fluent_precondition_i,
                                                      binding);
-            m_pddl_factories->ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_static_conditions(),
+            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_static_conditions(),
                                                      cond_positive_static_precondition_i,
                                                      cond_negative_static_precondition_i,
                                                      binding);
-            m_pddl_factories->ground_and_fill_bitset(action->get_conditional_effects().at(i)->get_derived_conditions(),
+            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_derived_conditions(),
                                                      cond_positive_derived_precondition_i,
                                                      cond_negative_derived_precondition_i,
                                                      binding);
@@ -266,21 +266,21 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                 auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_precondition<Derived>();
                 auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_precondition<Derived>();
                 auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
-                cond_positive_fluent_precondition_j.unset_all();
-                cond_negative_fluent_precondition_j.unset_all();
-                cond_positive_static_precondition_j.unset_all();
-                cond_negative_static_precondition_j.unset_all();
-                cond_positive_derived_precondition_j.unset_all();
-                cond_negative_derived_precondition_j.unset_all();
-                m_pddl_factories->ground_and_fill_bitset(universal_effect->get_fluent_conditions(),
+                cond_positive_fluent_precondition_j.clear();
+                cond_negative_fluent_precondition_j.clear();
+                cond_positive_static_precondition_j.clear();
+                cond_negative_static_precondition_j.clear();
+                cond_positive_derived_precondition_j.clear();
+                cond_negative_derived_precondition_j.clear();
+                m_pddl_factories->ground_and_fill_vector(universal_effect->get_fluent_conditions(),
                                                          cond_positive_fluent_precondition_j,
                                                          cond_negative_fluent_precondition_j,
                                                          binding_ext);
-                m_pddl_factories->ground_and_fill_bitset(universal_effect->get_static_conditions(),
+                m_pddl_factories->ground_and_fill_vector(universal_effect->get_static_conditions(),
                                                          cond_positive_static_precondition_j,
                                                          cond_negative_static_precondition_j,
                                                          binding_ext);
-                m_pddl_factories->ground_and_fill_bitset(universal_effect->get_derived_conditions(),
+                m_pddl_factories->ground_and_fill_vector(universal_effect->get_derived_conditions(),
                                                          cond_positive_derived_precondition_j,
                                                          cond_negative_derived_precondition_j,
                                                          binding_ext);

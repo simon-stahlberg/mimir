@@ -722,6 +722,27 @@ public:
             }
         }
     }
+
+    template<PredicateCategory P>
+    void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
+                                FlatIndexListBuilder& ref_positive_indices,
+                                FlatIndexListBuilder& ref_negative_indices,
+                                const auto& binding)
+    {
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = ground_literal(literal, binding);
+
+            if (grounded_literal->is_negated())
+            {
+                ref_negative_indices.push_back(grounded_literal->get_atom()->get_identifier());
+            }
+            else
+            {
+                ref_positive_indices.push_back(grounded_literal->get_atom()->get_identifier());
+            }
+        }
+    }
 };
 
 }

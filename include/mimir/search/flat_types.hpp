@@ -56,6 +56,39 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset<>& set)
 using FlatObjectListLayout = flatmemory::Vector<Object>;
 using FlatObjectListBuilder = flatmemory::Builder<FlatObjectListLayout>;
 using FlatObjectList = flatmemory::ConstView<FlatObjectListLayout>;
+
+/* IndexList */
+
+using FlatIndexListLayout = flatmemory::Vector<uint32_t>;
+using FlatIndexListBuilder = flatmemory::Builder<FlatIndexListLayout>;
+using FlatIndexList = flatmemory::ConstView<FlatIndexListLayout>;
+
+template<flatmemory::IsBitset Bitset>
+bool are_disjoint(const Bitset& bitset, FlatIndexList list)
+{
+    for (const auto index : list)
+    {
+        if (bitset.get(index))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<flatmemory::IsBitset Bitset>
+bool is_superseteq(const Bitset& bitset, FlatIndexList list)
+{
+    for (const auto index : list)
+    {
+        if (!bitset.get(index))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 }
 
 #endif

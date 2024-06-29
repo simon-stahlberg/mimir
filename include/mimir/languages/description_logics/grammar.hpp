@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/grammar_interface.hpp"
+#include "mimir/languages/description_logics/constructors_interface.hpp"
 
 #include <functional>
 #include <memory>
@@ -30,28 +30,54 @@ namespace mimir::dl::grammar
 {
 
 /**
- * Parallel dl constructor hierarchy
+ * Grammar constructor hierarchy parallel to dl constructors.
  */
+
+template<IsConceptOrRole D>
+class Constructor
+{
+public:
+    virtual bool test_match(const D& constructor) const = 0;
+};
 
 template<PredicateCategory P>
 class ConceptPredicateState : public Constructor<Concept>
 {
+private:
+    Predicate<P> m_predicate;
+
+public:
+    explicit ConceptPredicateState(Predicate<P> predicate);
+
     bool test_match(const dl::Concept& constructor) const override;
 };
 
 template<PredicateCategory P>
 class ConceptPredicateGoal : public Constructor<Concept>
 {
+private:
+    Predicate<P> m_predicate;
+
+public:
+    explicit ConceptPredicateGoal(Predicate<P> predicate);
+
     bool test_match(const dl::Concept& constructor) const override;
 };
 
 class ConceptAnd : public Constructor<Concept>
 {
+private:
+    const Constructor<Concept>* m_concept_left;
+    const Constructor<Concept>* m_concept_right;
+
+public:
+    ConceptAnd(const Constructor<Concept>* concept_left, const Constructor<Concept>* concept_right);
+
     bool test_match(const dl::Concept& constructor) const override;
 };
 
 /**
- * Special symbol for decomposing grammar rules
+ * NonTerminal
  */
 
 template<IsConceptOrRole D>
@@ -68,11 +94,15 @@ public:
 };
 
 /**
- * Substitution alternatives
+ * Choice
  */
 
 template<IsConceptOrRole D>
 using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
+
+/**
+ * DerivationRule
+ */
 
 template<IsConceptOrRole D>
 class DerivationRule
@@ -90,9 +120,14 @@ public:
     }
 };
 
+/**
+ * Grammar
+ */
+
 class Grammar
 {
 private:
+    // Memory, the components cannot be shared due to cycles in grammars.
     std::vector<std::unique_ptr<Constructor<Concept>>> m_concept_storage;
     std::vector<std::unique_ptr<Constructor<Role>>> m_role_storage;
     std::vector<std::unique_ptr<NonTerminal<Concept>>> m_concept_non_terminal_storage;
@@ -100,6 +135,7 @@ private:
     std::vector<std::unique_ptr<DerivationRule<Concept>>> m_concept_rules_storage;
     std::vector<std::unique_ptr<DerivationRule<Role>>> m_role_rules_storage;
 
+    /* The rules of the grammar. */
     std::vector<const DerivationRule<Concept>*> m_concept_rules;
     std::vector<const DerivationRule<Role>*> m_role_rules;
 
@@ -124,6 +160,10 @@ public:
                            [&constructor](const DerivationRule<Role>* rule) { return rule->test_match(constructor); });
     }
 };
+
+/**
+ * Implementations
+ */
 }
 
 #endif
