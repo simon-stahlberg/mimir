@@ -38,9 +38,10 @@ class RoleVisitor;
 class Concept
 {
 protected:
-    size_t m_identifier;
+    size_t m_id;
 
 public:
+    explicit Concept(size_t id) : m_id(id) {}
     virtual ~Concept() {}
 
     /// @brief Evaluate the dl constructor on the evaluation context.
@@ -60,9 +61,10 @@ using ConceptList = std::vector<const Concept*>;
 class Role
 {
 protected:
-    size_t m_identifier;
+    size_t m_id;
 
 public:
+    explicit Role(size_t id) : m_id(id) {}
     virtual ~Role() {}
 
     /// @brief Evaluate the dl constructor on the evaluation context.

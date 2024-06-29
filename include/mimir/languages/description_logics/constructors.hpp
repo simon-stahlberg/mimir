@@ -53,7 +53,7 @@ private:
     const Concept* m_concept_right;
 
 public:
-    ConceptAnd(const Concept* concept_left, const Concept* concept_right);
+    ConceptAnd(size_t id, const Concept* concept_left, const Concept* concept_right);
 
     void evaluate(EvaluationContext& context) const override;
 

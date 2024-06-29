@@ -26,76 +26,104 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
-/**
- * Forward declaration
- */
-
-class Concept;
-class Role;
 
 /**
- * TerminalSymbols
+ * Parallel dl constructor hierarchy
  */
 
-class TerminalSymbolConceptPredicate : public TerminalSymbol
+template<PredicateCategory P>
+class ConceptPredicateState : public Constructor<Concept>
 {
+    bool test_match(const dl::Concept& constructor) const override;
+};
+
+template<PredicateCategory P>
+class ConceptPredicateGoal : public Constructor<Concept>
+{
+    bool test_match(const dl::Concept& constructor) const override;
+};
+
+class ConceptAnd : public Constructor<Concept>
+{
+    bool test_match(const dl::Concept& constructor) const override;
+};
+
+/**
+ * Special symbol for decomposing grammar rules
+ */
+
+template<IsConceptOrRole D>
+class DerivationRule;
+
+template<IsConceptOrRole D>
+class NonTerminal
+{
+protected:
+    const DerivationRule<D>* m_rule;
+
 public:
-    bool test_match(const Concept& constructor) const override;
+    bool test_match(const D& constructor) const { return m_rule->test_match(constructor); }
 };
 
-class TerminalSymbolConceptAnd : public TerminalSymbol
+/**
+ * Substitution alternatives
+ */
+
+template<IsConceptOrRole D>
+using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
+
+template<IsConceptOrRole D>
+class DerivationRule
 {
+protected:
+    std::vector<Choice<D>> m_choices;
+
 public:
-    bool test_match(const Concept& constructor) const override;
+    bool test_match(const D& constructor) const
+    {
+        return std::any_of(m_choices.begin(),
+                           m_choices.end(),
+                           [&constructor](const Choice<D>& choice)
+                           { return std::visit([&constructor](const auto& arg) -> bool { return arg->test_match(constructor); }, choice); });
+    }
 };
-
-/**
- * NonterminalSymbols
- */
-
-class NonTerminalSymbolConceptPredicate : public NonTerminalSymbol
-{
-    bool test_match(const Concept& constructor) const override;
-};
-
-class NonTerminalSymbolConceptAnd : public NonTerminalSymbol
-{
-    bool test_match(const Concept& constructor) const override;
-};
-
-/**
- * ChoiceRules
- */
-
-/**
- * DerivationRules
- */
-
-/**
- * Grammar
- */
-
-/// Example BNF grammar DL fragment with restriction on role-value map (equal)
-/// <concept_predicate1_state> ::= @concept_predicate_state "predicate1"
-/// <concept_predicate1_goal> ::= @concept_predicate_goal "predicate1"
-/// <concept_all> ::= "@concept_all" <role> <concept>
-/// <concept_equal> ::= "@concept_equal" <concept_predicate1_state> <concept_predicate1_goal>
-/// <concept_bot> ::= "@concept_bot"
-/// <concept_top> ::= "@concept_top"
-/// <concept> ::= <concept_predicate1_state> | <concept_predicate1_goal> | <concept_bot> | <concept_top> | <concept_all> | <concept_equal>
-/// <role_predicate2_state> ::= @role_predicate_state "predicate2"
-/// <role_predicate2_goal> ::= @role_predicate_goal "predicate2"
-/// <role_bot> ::= "@role_bot"
-/// <role_top> ::= "@role_top"
-/// <role> ::= <role_predicate2_state> | <role_predicate2_goal> | <role_bot> | <role_top>
 
 class Grammar
 {
-    std::vector<const DerivationRule*> m_rules;
-};
+private:
+    std::vector<std::unique_ptr<Constructor<Concept>>> m_concept_storage;
+    std::vector<std::unique_ptr<Constructor<Role>>> m_role_storage;
+    std::vector<std::unique_ptr<NonTerminal<Concept>>> m_concept_non_terminal_storage;
+    std::vector<std::unique_ptr<NonTerminal<Role>>> m_role_non_terminal_storage;
+    std::vector<std::unique_ptr<DerivationRule<Concept>>> m_concept_rules_storage;
+    std::vector<std::unique_ptr<DerivationRule<Role>>> m_role_rules_storage;
 
+    std::vector<const DerivationRule<Concept>*> m_concept_rules;
+    std::vector<const DerivationRule<Role>*> m_role_rules;
+
+public:
+    /// @brief Tests whether a dl concept constructor satisfies the grammar specification.
+    /// @param constructor is the dl concept constructor to test.
+    /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
+    bool test_match(const dl::Concept& constructor) const
+    {
+        return std::any_of(m_concept_rules.begin(),
+                           m_concept_rules.end(),
+                           [&constructor](const DerivationRule<Concept>* rule) { return rule->test_match(constructor); });
+    }
+
+    /// @brief Tests whether a dl role constructor satisfies the grammar specfication.
+    /// @param constructor is the dl role constructor to test.
+    /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
+    bool test_match(const dl::Role& constructor) const
+    {
+        return std::any_of(m_role_rules.begin(),
+                           m_role_rules.end(),
+                           [&constructor](const DerivationRule<Role>* rule) { return rule->test_match(constructor); });
+    }
+};
 }
 
 #endif

@@ -23,7 +23,12 @@ namespace mimir::dl
 /**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(const Concept* concept_left, const Concept* concept_right) : m_concept_left(concept_left), m_concept_right(concept_right) {}
+ConceptAnd::ConceptAnd(size_t id, const Concept* concept_left, const Concept* concept_right) :
+    Concept(id),
+    m_concept_left(concept_left),
+    m_concept_right(concept_right)
+{
+}
 
 void ConceptAnd::evaluate(EvaluationContext& context) const
 {

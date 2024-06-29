@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
 #include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/search/state.hpp"
 
@@ -30,18 +30,62 @@
 namespace mimir::dl
 {
 
+/// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
 template<IsConceptOrRole D>
 class DenotationRepository
 {
 private:
-    // TODO: use flatmemory::unordered_set
+    using FlatDenotationType = typename Denotation<D>::FlatDenotationType;
+    using FlatDenotationSetType = typename Denotation<D>::FlatDenotationSetType;
 
-    std::unordered_map<std::pair<State, const D*>, DenotationConstView<D>> m_cached_denotations;
+    // Store denotations uniquely.
+    FlatDenotationSetType m_storage;
+
+    // Cache for fluent and derived infos
+    std::unordered_map<std::tuple<State, const D*>, Denotation<D>> m_cached_dynamic_denotations;
+    // Cache for static infos
+    std::unordered_map<const D*, Denotation<D>> m_cached_static_denotations;
 
 public:
-    DenotationConstView<D> insert(DenotationBuilder<D> denotation);
+    auto insert(State state, const D* constructor, const DenotationBuilder<D>& denotation)
+    {
+        const auto [it, inserted] = m_storage.insert(denotation);
+        if (inserted)
+        {
+            m_cached_dynamic_denotations.emplace(std::make_tuple(state, constructor), *it);
+        }
+        return *it;
+    }
 
-    std::optional<DenotationConstView<D>> get_if(Problem problem, State state, const D* constructor) const;
+    auto insert(const D* constructor, const DenotationBuilder<D>& denotation)
+    {
+        const auto [it, inserted] = m_storage.insert(denotation);
+        if (inserted)
+        {
+            m_cached_static_denotations.emplace(constructor, *it);
+        }
+        return *it;
+    }
+
+    std::optional<Denotation<D>> get_if(State state, const D* constructor) const
+    {
+        auto it = m_cached_dynamic_denotations.find(std::make_tuple(state, constructor));
+        if (it == m_cached_dynamic_denotations.end())
+        {
+            return std::nullopt;
+        }
+        return it->second;
+    }
+
+    std::optional<Denotation<D>> get_if(const D* constructor) const
+    {
+        auto it = m_cached_dynamic_denotations.find(constructor);
+        if (it == m_cached_dynamic_denotations.end())
+        {
+            return std::nullopt;
+        }
+        return it->second;
+    }
 };
 
 }

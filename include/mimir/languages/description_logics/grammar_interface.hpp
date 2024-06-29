@@ -26,78 +26,20 @@
 #include <variant>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
 
 /**
- * Forward declaration
+ * Parallel dl constructor hierarchy
  */
 
-class DerivationRule;
-
-/**
- * Symbol
- */
-
-class Symbol
+template<IsConceptOrRole D>
+class Constructor
 {
 public:
-    virtual ~Symbol() {}
-
-    /// @brief Test whether a concept matches the grammar specification.
-    virtual bool test_match(const Concept& constructor) const { return false; }
-
-    /// @brief Test whether a role matches the grammar specification.
-    virtual bool test_match(const Role& constructor) const { return false; }
+    virtual bool test_match(const D& constructor) const = 0;
 };
 
-/**
- * Terminal symbols represent dl constructors
- */
-
-class TerminalSymbol : public Symbol
-{
-public:
-};
-
-/**
- * Nonterminal symbols
- */
-
-class NonTerminalSymbol : public Symbol
-{
-protected:
-    const DerivationRule* m_derivation_rule;
-
-public:
-};
-
-class Choice
-{
-protected:
-    std::variant<const TerminalSymbol*, const NonTerminalSymbol*> m_choice;
-
-public:
-    /// @brief Test whether the arguments of a concept matche the grammar specification of one of the choice rules.
-    virtual bool test_match(const Concept& constructor) const { return false; }
-
-    /// @brief Test whether the arguents of a role matche the grammar specification of one of the choice rules.
-    virtual bool test_match(const Role& constructor) const { return false; }
-};
-
-class DerivationRule
-{
-private:
-    const NonTerminalSymbol* m_non_terminal;
-    std::vector<const Choice*> m_choices;
-
-public:
-    /// @brief Test whether a concept matches the grammar specification.
-    virtual bool test_match(const Concept& constructor) const { return false; }
-
-    /// @brief Test whether a role matches the grammar specification.
-    virtual bool test_match(const Role& constructor) const { return false; }
-};
 }
 
 #endif

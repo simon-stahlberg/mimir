@@ -26,6 +26,7 @@
 namespace mimir::dl
 {
 
+// TODO: maybe use the persistent factory implementation from loki
 template<IsConcreteConceptOrRole D>
 class ConstructorRepository
 {

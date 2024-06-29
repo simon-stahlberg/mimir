@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 

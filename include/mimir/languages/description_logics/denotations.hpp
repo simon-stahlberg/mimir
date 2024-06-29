@@ -22,6 +22,7 @@
 #include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/search/state.hpp"
 
+#include <flatmemory/flatmemory.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -31,17 +32,111 @@ namespace mimir::dl
 template<IsConceptOrRole D>
 class DenotationBuilder
 {
-private:
-    // TODO: add flatmemory::builder to avoid memory allocations
-public:
 };
 
 template<IsConceptOrRole D>
-class DenotationConstView
+class Denotation
+{
+};
+
+template<typename Tag = void>
+using FlatBitsetLayout = flatmemory::Bitset<uint32_t, Tag>;
+template<typename Tag = void>
+using FlatBitsetBuilder = flatmemory::Builder<FlatBitsetLayout<Tag>>;
+template<typename Tag = void>
+using FlatBitset = flatmemory::ConstView<FlatBitsetLayout<Tag>>;
+
+using FlatConceptDenotationLayout = FlatBitsetLayout<Concept>;
+using FlatConceptDenotationBuilder = flatmemory::Builder<FlatConceptDenotationLayout>;
+using FlatConceptDenotation = flatmemory::ConstView<FlatConceptDenotationLayout>;
+
+template<>
+class DenotationBuilder<Concept>
 {
 private:
-    // TODO: add flatmemory::const_view to avoid memory allocations
+    FlatConceptDenotationBuilder m_builder;
+
 public:
+    explicit DenotationBuilder() {}
+
+    /**
+     * Getters
+     */
+
+    FlatBitsetBuilder<Concept>& get_flatmemory_builder() { return m_builder; }
+
+    FlatBitsetBuilder<Concept>& get_bitset() { return m_builder; }
+};
+
+template<>
+class Denotation<Concept>
+{
+private:
+    FlatConceptDenotation m_view;
+
+public:
+    using FlatDenotationLayoutType = FlatConceptDenotationLayout;
+    using FlatDenotationBuilderType = FlatConceptDenotationBuilder;
+    using FlatDenotationType = FlatConceptDenotation;
+    using FlatDenotationSetType = flatmemory::UnorderedSet<FlatDenotationLayoutType>;
+
+    explicit Denotation(FlatConceptDenotation view) : m_view(view) {}
+
+    /**
+     * Getters
+     */
+
+    FlatBitset<Concept> get_bitset() const { return m_view; }
+};
+
+template<typename Tag = void>
+using FlatBitsetListLayout = flatmemory::Vector<flatmemory::Bitset<uint32_t, Tag>>;
+template<typename Tag = void>
+using FlatBitsetListBuilder = flatmemory::Builder<FlatBitsetListLayout<Tag>>;
+template<typename Tag = void>
+using FlatBitsetList = flatmemory::ConstView<FlatBitsetListLayout<Tag>>;
+
+using FlatRoleDenotationLayout = FlatBitsetListLayout<Role>;
+using FlatRoleDenotationBuilder = flatmemory::Builder<FlatRoleDenotationLayout>;
+using FlatRoleDenotation = flatmemory::ConstView<FlatRoleDenotationLayout>;
+
+template<>
+class DenotationBuilder<Role>
+{
+private:
+    FlatRoleDenotationBuilder m_builder;
+
+public:
+    explicit DenotationBuilder(size_t num_objects) : m_builder(FlatRoleDenotationBuilder(num_objects)) {}
+
+    /**
+     * Getters
+     */
+
+    FlatBitsetListBuilder<Role>& get_flatmemory_builder() { return m_builder; }
+
+    FlatBitsetListBuilder<Role>& get_bitsets() { return m_builder; }
+};
+
+template<>
+class Denotation<Role>
+{
+private:
+    FlatRoleDenotation m_view;
+
+public:
+    using FlatDenotationLayoutType = FlatRoleDenotationLayout;
+    using FlatDenotationBuilderType = FlatRoleDenotationBuilder;
+    using FlatDenotationType = FlatRoleDenotation;
+    using FlatDenotationSetType = flatmemory::UnorderedSet<FlatRoleDenotationLayout>;
+
+    explicit Denotation(FlatRoleDenotation view) : m_view(view) {}
+
+    /**
+     * Getters
+     */
+
+    FlatBitsetList<Role> get_bitsets() const { return m_view; }
 };
 
 }
