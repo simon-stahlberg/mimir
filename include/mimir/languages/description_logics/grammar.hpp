@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_interface.hpp"
 
 #include <functional>
@@ -29,28 +28,24 @@
 
 namespace mimir::dl
 {
-
 /**
  * Forward declaration
  */
 
-template<IsDLConstructor D>
-class TerminalSymbol;
-
-template<IsDLConstructor D>
-class DerivationRule;
+class Concept;
+class Role;
 
 /**
  * TerminalSymbols
  */
 
-class TerminalSymbolConceptPredicate : public TerminalSymbol<Concept>
+class TerminalSymbolConceptPredicate : public TerminalSymbol
 {
 public:
     bool test_match(const Concept& constructor) const override;
 };
 
-class TerminalSymbolConceptAnd : public TerminalSymbol<Concept>
+class TerminalSymbolConceptAnd : public TerminalSymbol
 {
 public:
     bool test_match(const Concept& constructor) const override;
@@ -60,19 +55,15 @@ public:
  * NonterminalSymbols
  */
 
-class NonTerminalSymbolConceptPredicate : public NonTerminalSymbol<Concept>
+class NonTerminalSymbolConceptPredicate : public NonTerminalSymbol
 {
     bool test_match(const Concept& constructor) const override;
 };
 
-class NonTerminalSymbolConceptAnd : public NonTerminalSymbol<Concept>
+class NonTerminalSymbolConceptAnd : public NonTerminalSymbol
 {
     bool test_match(const Concept& constructor) const override;
 };
-
-/**
- * SequenceRules
- */
 
 /**
  * ChoiceRules
@@ -102,16 +93,7 @@ class NonTerminalSymbolConceptAnd : public NonTerminalSymbol<Concept>
 
 class Grammar
 {
-    // Store all remaining rules of concrete concepts and roles.
-    std::unique_ptr<DerivationRule<ConceptPredicate<Static>>> m_concept_predicate_static;
-    std::unique_ptr<DerivationRule<ConceptPredicate<Fluent>>> m_concept_predicate_fluent;
-    std::unique_ptr<DerivationRule<ConceptPredicate<Derived>>> m_concept_predicate_derived;
-    std::unique_ptr<DerivationRule<ConceptAnd>> m_concept_and;
-    // TODO: Add remaining concrete concept and rules at a later time
-
-    // Root rules
-    std::unique_ptr<DerivationRule<Concept>> m_concept_derivation_rule;
-    std::unique_ptr<DerivationRule<Role>> m_role_derivation_rule;
+    std::vector<const DerivationRule*> m_rules;
 };
 
 }

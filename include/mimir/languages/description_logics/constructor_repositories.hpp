@@ -15,50 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REPOSITORIES_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REPOSITORIES_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
 
-#include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/languages/description_logics/constructors_interface.hpp"
 
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace mimir::dl
 {
-template<IsDLConstructor D>
-class DenotationBuilder
-{
-private:
-    // TODO: add flatmemory::builder to avoid memory allocations
-public:
-};
 
-template<IsDLConstructor D>
-class DenotationConstView
-{
-private:
-    // TODO: add flatmemory::const_view to avoid memory allocations
-public:
-};
-
-template<IsDLConstructor D>
-class DenotationRepository
-{
-private:
-    // TODO: use flatmemory::unordered_set
-
-    std::unordered_map<std::pair<State, const D*>, DenotationConstView<D>> m_cached_denotations;
-
-public:
-    DenotationConstView<D> insert(DenotationBuilder<D> denotation);
-
-    std::optional<DenotationConstView<D>> get_if(Problem problem, State state, const D* constructor) const;
-};
-
-template<IsDLConstructor D>
+template<IsConcreteConceptOrRole D>
 class ConstructorRepository
 {
 private:

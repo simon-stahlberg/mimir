@@ -30,7 +30,12 @@ TEST(MimirTests, LanguagesDescriptionLogicsParser2Test)
     auto ast = dl::ast::Grammar();
 
     auto text = std::string(R"(
-<concept_x> ::= @concept_and @concept_and @concept_predicate_state "predicate1" @concept_predicate_goal "predicate1" @concept_predicate_state "predicate2"
+<concept_x> ::=
+    @concept_and
+        @concept_and
+            @concept_predicate_state "predicate1"
+            @concept_predicate_goal "predicate1"
+        @concept_predicate_state "predicate2"
 )");
 
     EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar(), ast));

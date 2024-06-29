@@ -76,7 +76,7 @@ public:
     [[nodiscard]] const GroundActionList& get_ground_actions() const;
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] GroundAction get_action(size_t action_id) const;
+    [[nodiscard]] GroundAction get_action(size_t action_id) const override;
 };
 
 /**

@@ -19,10 +19,11 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_INTERFACE_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/constructors_interface.hpp"
 
 #include <memory>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 namespace mimir::dl
@@ -32,10 +33,6 @@ namespace mimir::dl
  * Forward declaration
  */
 
-template<IsDLConstructor D>
-class TerminalSymbol;
-
-template<IsDLConstructor D>
 class DerivationRule;
 
 /**
@@ -55,49 +52,30 @@ public:
 };
 
 /**
- * Terminal symbols are all sorts of strings
+ * Terminal symbols represent dl constructors
  */
 
-template<IsDLConstructor D>
 class TerminalSymbol : public Symbol
 {
 public:
 };
 
 /**
- * Nonterminal symbols represent concept and role dl constructors.
+ * Nonterminal symbols
  */
-template<IsDLConstructor D>
+
 class NonTerminalSymbol : public Symbol
 {
 protected:
-    const DerivationRule<D>* m_derivation_rule;
+    const DerivationRule* m_derivation_rule;
 
 public:
 };
 
-/**
- * Sequence rule represents recipe
- */
-template<IsDLConstructor D>
-class Sequence
-{
-private:
-    std::vector<std::unique_ptr<Symbol>> m_sequence;
-
-public:
-    /// @brief Test whether the arguments of a concept matche the grammar specification.
-    virtual bool test_match(const Concept& constructor) const { return false; }
-
-    /// @brief Test whether the arguents of a role matche the grammar specification.
-    virtual bool test_match(const Role& constructor) const { return false; }
-};
-
-template<IsDLConstructor D>
 class Choice
 {
-private:
-    std::vector<Sequence<D>> m_choices;
+protected:
+    std::variant<const TerminalSymbol*, const NonTerminalSymbol*> m_choice;
 
 public:
     /// @brief Test whether the arguments of a concept matche the grammar specification of one of the choice rules.
@@ -107,12 +85,11 @@ public:
     virtual bool test_match(const Role& constructor) const { return false; }
 };
 
-template<IsDLConstructor D>
 class DerivationRule
 {
 private:
-    std::unique_ptr<NonTerminalSymbol<D>> m_head;
-    std::unique_ptr<Choice<D>> m_body;
+    const NonTerminalSymbol* m_non_terminal;
+    std::vector<const Choice*> m_choices;
 
 public:
     /// @brief Test whether a concept matches the grammar specification.

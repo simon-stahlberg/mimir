@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_VISITORS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_VISITORS_HPP_
 
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/visitors_interface.hpp"
 
 #include <concepts>

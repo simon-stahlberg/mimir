@@ -15,31 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 
-#include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors_interface.hpp"
-#include "mimir/languages/description_logics/denotation_repositories.hpp"
+#include "mimir/search/state.hpp"
 
-#include <concepts>
-#include <cstddef>
-#include <memory>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir::dl
 {
-
-struct EvaluationContext
+template<IsConceptOrRole D>
+class DenotationBuilder
 {
-    Problem problem;
-    State state;
-    DenotationBuilder<Concept> concept_denotation;
-    DenotationRepository<Concept> concept_denotation_repository;
-    DenotationBuilder<Role> role_denotation;
-    DenotationRepository<Role> role_denotation_repository;
+private:
+    // TODO: add flatmemory::builder to avoid memory allocations
+public:
+};
+
+template<IsConceptOrRole D>
+class DenotationConstView
+{
+private:
+    // TODO: add flatmemory::const_view to avoid memory allocations
+public:
 };
 
 }
