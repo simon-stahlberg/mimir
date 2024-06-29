@@ -23,57 +23,6 @@ namespace mimir::dl::grammar
 {
 
 /**
- * NonTerminal
- */
-
-template<dl::IsConceptOrRole D>
-NonTerminal<D>::NonTerminal(size_t id, const DerivationRule<D>& rule) : m_id(id), m_rule(&rule)
-{
-}
-
-template<dl::IsConceptOrRole D>
-bool NonTerminal<D>::test_match(const D& constructor) const
-{
-    return m_rule->test_match(constructor);
-}
-
-template<dl::IsConceptOrRole D>
-size_t NonTerminal<D>::get_id() const
-{
-    return m_id;
-}
-
-template<dl::IsConceptOrRole D>
-const DerivationRule<D>& NonTerminal<D>::get_rule() const
-{
-    return m_rule;
-}
-
-/**
- * DerivationRule
- */
-
-template<dl::IsConceptOrRole D>
-DerivationRule<D>::DerivationRule(size_t id, std::vector<Choice<D>> choices) : m_id(id), m_choices(std::move(choices))
-{
-}
-
-template<dl::IsConceptOrRole D>
-bool DerivationRule<D>::test_match(const D& constructor) const
-{
-    return std::any_of(m_choices.begin(),
-                       m_choices.end(),
-                       [&constructor](const Choice<D>& choice)
-                       { return std::visit([&constructor](const auto& arg) -> bool { return arg->test_match(constructor); }, choice); });
-}
-
-template<dl::IsConceptOrRole D>
-size_t DerivationRule<D>::get_id() const
-{
-    return m_id;
-}
-
-/**
  * Grammar
  */
 

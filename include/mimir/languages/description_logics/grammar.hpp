@@ -32,65 +32,6 @@ namespace mimir::dl::grammar
 {
 
 /**
- * NonTerminal
- */
-
-template<dl::IsConceptOrRole D>
-class DerivationRule;
-
-template<dl::IsConceptOrRole D>
-class NonTerminal
-{
-private:
-    size_t m_id;
-    const DerivationRule<D>* m_rule;
-
-public:
-    NonTerminal(size_t id, const DerivationRule<D>& rule);
-
-    bool test_match(const D& constructor) const;
-
-    size_t get_id() const;
-
-    const DerivationRule<D>& get_rule() const;
-};
-
-using ConceptNonTerminal = NonTerminal<dl::Concept>;
-using RoleNonTerminal = NonTerminal<dl::Role>;
-
-/**
- * Choice
- */
-
-template<dl::IsConceptOrRole D>
-using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
-
-using ConceptChoice = Choice<dl::Concept>;
-using RoleChoice = Choice<dl::Role>;
-
-/**
- * DerivationRule
- */
-
-template<dl::IsConceptOrRole D>
-class DerivationRule
-{
-protected:
-    size_t m_id;
-    std::vector<Choice<D>> m_choices;
-
-public:
-    DerivationRule(size_t id, std::vector<Choice<D>> choices);
-
-    bool test_match(const D& constructor) const;
-
-    size_t get_id() const;
-};
-
-using ConceptDerivationRule = DerivationRule<dl::Concept>;
-using RoleDerivationRule = DerivationRule<dl::Role>;
-
-/**
  * Grammar
  */
 

@@ -23,6 +23,96 @@ namespace mimir::dl::grammar
 {
 
 /**
+ * NonTerminal
+ */
+
+template<dl::IsConceptOrRole D>
+NonTerminal<D>::NonTerminal(size_t id, std::string name, std::unique_ptr<const DerivationRule<D>*>&& rule) :
+    m_id(id),
+    m_name(std::move(name)),
+    m_rule(std::move(rule))
+{
+}
+
+template<dl::IsConceptOrRole D>
+bool NonTerminal<D>::operator==(const NonTerminal& other) const
+{
+    if (this != &other)
+    {
+        return (m_name == other.m_name);
+    }
+    return true;
+}
+
+template<dl::IsConceptOrRole D>
+size_t NonTerminal<D>::hash() const
+{
+    return std::hash<std::string>()(m_name);
+}
+
+template<dl::IsConceptOrRole D>
+bool NonTerminal<D>::test_match(const D& constructor) const
+{
+    return (*m_rule)->test_match(constructor);
+}
+
+template<dl::IsConceptOrRole D>
+size_t NonTerminal<D>::get_id() const
+{
+    return m_id;
+}
+
+template<dl::IsConceptOrRole D>
+const DerivationRule<D>& NonTerminal<D>::get_rule() const
+{
+    return *m_rule.get();
+}
+
+/**
+ * DerivationRule
+ */
+
+template<dl::IsConceptOrRole D>
+DerivationRule<D>::DerivationRule(size_t id, std::vector<Choice<D>> choices) : m_id(id), m_choices(std::move(choices))
+{
+}
+
+template<dl::IsConceptOrRole D>
+bool DerivationRule<D>::operator==(const DerivationRule& other) const
+{
+    if (this != &other)
+    {
+        return (m_choices == other.m_choices);
+    }
+    return true;
+}
+
+template<dl::IsConceptOrRole D>
+size_t DerivationRule<D>::hash() const
+{
+    size_t seed = m_choices.size();
+    std::for_each(m_choices.begin(),
+                  m_choices.end(),
+                  [&seed](const auto& choice) { loki::hash_combine(seed, std::visit([](const auto& arg) { return arg->hash(); })); });
+    return seed;
+}
+
+template<dl::IsConceptOrRole D>
+bool DerivationRule<D>::test_match(const D& constructor) const
+{
+    return std::any_of(m_choices.begin(),
+                       m_choices.end(),
+                       [&constructor](const Choice<D>& choice)
+                       { return std::visit([&constructor](const auto& arg) -> bool { return arg->test_match(constructor); }, choice); });
+}
+
+template<dl::IsConceptOrRole D>
+size_t DerivationRule<D>::get_id() const
+{
+    return m_id;
+}
+
+/**
  * ConceptPredicateState
  */
 
@@ -109,10 +199,10 @@ size_t ConceptPredicateGoal<P>::get_id() const
 /**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right) :
+ConceptAnd::ConceptAnd(size_t id, ConceptChoice concept_left, ConceptChoice concept_right) :
     m_id(id),
-    m_concept_left(&concept_left),
-    m_concept_right(&concept_right)
+    m_concept_left(std::move(concept_left)),
+    m_concept_right(std::move(concept_right))
 {
 }
 
@@ -129,9 +219,9 @@ size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left, m_co
 
 bool ConceptAnd::test_match(const dl::Concept& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
 
-const Concept& ConceptAnd::get_concept_left() const { return *m_concept_left; }
+const ConceptChoice& ConceptAnd::get_concept_left() const { return m_concept_left; }
 
-const Concept& ConceptAnd::get_concept_right() const { return *m_concept_right; }
+const ConceptChoice& ConceptAnd::get_concept_right() const { return m_concept_right; }
 
 size_t ConceptAnd::get_id() const { return m_id; }
 

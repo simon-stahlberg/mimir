@@ -60,8 +60,8 @@ ConceptAndVisitor::ConceptAndVisitor(const grammar::ConceptAnd& grammar_construc
 
 bool ConceptAndVisitor::visit(const ConceptAnd& constructor) const
 {
-    return m_grammar_constructor.get_concept_left().test_match(constructor.get_concept_left())
-           && m_grammar_constructor.get_concept_right().test_match(constructor.get_concept_right());
+    return std::visit([&](const auto& arg) -> bool { return arg->test_match(constructor.get_concept_left()); }, m_grammar_constructor.get_concept_left())
+           && std::visit([&](const auto& arg) -> bool { return arg->test_match(constructor.get_concept_right()); }, m_grammar_constructor.get_concept_right());
 }
 
 /**

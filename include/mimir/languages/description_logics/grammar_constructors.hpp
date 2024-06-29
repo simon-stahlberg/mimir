@@ -29,6 +29,81 @@ class ConstructorRepository;
 
 namespace grammar
 {
+
+/**
+ * NonTerminal
+ */
+
+template<dl::IsConceptOrRole D>
+class DerivationRule;
+
+template<dl::IsConceptOrRole D>
+class NonTerminal
+{
+private:
+    size_t m_id;
+    // Use name for equality and hash since rule is deferred instantiated.
+    std::string m_name;
+    // Use unique_ptr for deferred instantiation.
+    std::unique_ptr<const DerivationRule<D>*> m_rule;
+
+    NonTerminal(size_t id, std::string name, std::unique_ptr<const DerivationRule<D>*>&& rule);
+
+    template<typename T>
+    friend class dl::ConstructorRepository;
+
+public:
+    bool operator==(const NonTerminal& other) const;
+    size_t hash() const;
+
+    bool test_match(const D& constructor) const;
+
+    size_t get_id() const;
+
+    const DerivationRule<D>& get_rule() const;
+};
+
+using ConceptNonTerminal = NonTerminal<dl::Concept>;
+using RoleNonTerminal = NonTerminal<dl::Role>;
+
+/**
+ * Choice
+ */
+
+template<dl::IsConceptOrRole D>
+using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
+
+using ConceptChoice = Choice<dl::Concept>;
+using RoleChoice = Choice<dl::Role>;
+
+/**
+ * DerivationRule
+ */
+
+template<dl::IsConceptOrRole D>
+class DerivationRule
+{
+protected:
+    size_t m_id;
+    std::vector<Choice<D>> m_choices;
+
+    DerivationRule(size_t id, std::vector<Choice<D>> choices);
+
+    template<typename T>
+    friend class dl::ConstructorRepository;
+
+public:
+    bool operator==(const DerivationRule& other) const;
+    size_t hash() const;
+
+    bool test_match(const D& constructor) const;
+
+    size_t get_id() const;
+};
+
+using ConceptDerivationRule = DerivationRule<dl::Concept>;
+using RoleDerivationRule = DerivationRule<dl::Role>;
+
 /**
  * Concepts
  */
@@ -83,10 +158,10 @@ class ConceptAnd : public Constructor<dl::Concept>
 {
 private:
     size_t m_id;
-    const Concept* m_concept_left;
-    const Concept* m_concept_right;
+    ConceptChoice m_concept_left;
+    ConceptChoice m_concept_right;
 
-    ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right);
+    ConceptAnd(size_t id, ConceptChoice concept_left, ConceptChoice concept_right);
 
     template<typename T>
     friend class dl::ConstructorRepository;
@@ -97,8 +172,8 @@ public:
 
     bool test_match(const dl::Concept& constructor) const override;
 
-    const Concept& get_concept_left() const;
-    const Concept& get_concept_right() const;
+    const ConceptChoice& get_concept_left() const;
+    const ConceptChoice& get_concept_right() const;
 
     size_t get_id() const override;
 };
