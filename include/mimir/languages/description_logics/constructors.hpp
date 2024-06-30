@@ -282,6 +282,13 @@ size_t ConceptPredicateState<P>::hash() const
 template<PredicateCategory P>
 Denotation<Concept> ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
 {
+    // Try to access cached result
+    auto denotation = context.concept_denotation_repository.get_if(this);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
     // Fetch data
     auto& bitset = context.concept_denotation.get_bitset();
     bitset.unset_all();
@@ -294,7 +301,32 @@ Denotation<Concept> ConceptPredicateState<P>::evaluate(EvaluationContext& contex
 
     // Store and return result;
     context.concept_denotation.get_flatmemory_builder().finish();
-    return context.concept_denotation_repository.insert(this, context.concept_denotation.get_flatmemory_builder());
+    return context.concept_denotation_repository.insert(this, context.concept_denotation);
+}
+
+template<>
+inline Denotation<Concept> ConceptPredicateState<Static>::evaluate(EvaluationContext& context) const
+{
+    // Try to access cached result
+    auto denotation = context.concept_denotation_repository.get_if(this);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
+    // Fetch data
+    auto& bitset = context.concept_denotation.get_bitset();
+    bitset.unset_all();
+
+    // Compute result
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
+    {
+        bitset.set(atom->get_identifier());
+    }
+
+    // Store and return result;
+    context.concept_denotation.get_flatmemory_builder().finish();
+    return context.concept_denotation_repository.insert(this, context.concept_denotation);
 }
 
 template<PredicateCategory P>

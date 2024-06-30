@@ -102,8 +102,8 @@ public:
 
     std::optional<Denotation<D>> get_if(const Constructor<D>* constructor) const
     {
-        auto it = m_cached_dynamic_denotations.find(constructor);
-        if (it == m_cached_dynamic_denotations.end())
+        auto it = m_cached_static_denotations.find(constructor);
+        if (it == m_cached_static_denotations.end())
         {
             return std::nullopt;
         }
