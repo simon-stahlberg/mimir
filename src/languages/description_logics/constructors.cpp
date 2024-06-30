@@ -54,6 +54,13 @@ size_t ConceptAnd::hash() const { return loki::hash_combine(&m_concept_left, &m_
 
 Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
 {
+    // Try to access cached result
+    auto denotation = context.concept_denotation_repository.get_if(this, context.state);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
     // Fetch data
     auto& bitset = context.concept_denotation.get_bitset();
     context.concept_denotation.get_bitset().unset_all();
@@ -68,7 +75,7 @@ Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
 
     // Store and return result;
     context.concept_denotation.get_flatmemory_builder().finish();
-    return context.concept_denotation_repository.insert(this, context.concept_denotation);
+    return context.concept_denotation_repository.insert(this, context.state, context.concept_denotation);
 }
 
 bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.visit(*this); }

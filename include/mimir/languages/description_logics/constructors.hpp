@@ -354,6 +354,13 @@ size_t ConceptPredicateGoal<P>::hash() const
 template<PredicateCategory P>
 Denotation<Concept> ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
 {
+    // Try to access cached result
+    auto denotation = context.concept_denotation_repository.get_if(this);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
     // Fetch data
     auto& bitset = context.concept_denotation.get_bitset();
     bitset.unset_all();

@@ -41,18 +41,41 @@ private:
     // Store denotations uniquely.
     FlatDenotationSetType m_storage;
 
+    struct Key
+    {
+        const Constructor<D>* constructor;
+        State state;
+    };
+
+    struct KeyHash
+    {
+        size_t operator()(const Key& key) const { return loki::hash_combine(key.constructor, key.state.hash()); }
+    };
+
+    struct KeyEqual
+    {
+        bool operator()(const Key& left, const Key& right) const
+        {
+            if (&left != &right)
+            {
+                return (left.constructor == right.constructor) && (left.state == right.state);
+            }
+            return true;
+        }
+    };
+
     // Cache for fluent and derived infos
-    std::unordered_map<std::tuple<State, const Constructor<D>*>, Denotation<D>> m_cached_dynamic_denotations;
+    std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
     // Cache for static infos
     std::unordered_map<const Constructor<D>*, Denotation<D>> m_cached_static_denotations;
 
 public:
-    Denotation<D> insert(State state, const Constructor<D>* constructor, const DenotationBuilder<D>& denotation)
+    Denotation<D> insert(const Constructor<D>* constructor, State state, const DenotationBuilder<D>& denotation)
     {
-        const auto [it, inserted] = m_storage.insert(denotation);
+        const auto [it, inserted] = m_storage.insert(denotation.get_flatmemory_builder());
         if (inserted)
         {
-            m_cached_dynamic_denotations.emplace(std::make_tuple(state, constructor), Denotation<D>(*it));
+            m_cached_dynamic_denotations.emplace(Key { constructor, state }, Denotation<D>(*it));
         }
         return Denotation<D>(*it);
     }
@@ -67,9 +90,9 @@ public:
         return Denotation<D>(*it);
     }
 
-    std::optional<Denotation<D>> get_if(State state, const D* constructor) const
+    std::optional<Denotation<D>> get_if(const Constructor<D>* constructor, State state) const
     {
-        auto it = m_cached_dynamic_denotations.find(std::make_tuple(state, constructor));
+        auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
         if (it == m_cached_dynamic_denotations.end())
         {
             return std::nullopt;
