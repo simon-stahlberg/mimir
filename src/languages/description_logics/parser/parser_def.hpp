@@ -39,6 +39,7 @@ using x3::int_;
 using x3::lexeme;
 using x3::lit;
 using x3::no_skip;
+using x3::omit;
 using x3::raw;
 using x3::string;
 
@@ -81,7 +82,7 @@ grammar_type const grammar = "grammar";
 inline auto separator_parser() { return (ascii::space | x3::eol | x3::eoi); }
 inline auto concept_non_terminal_parser() { return raw[lexeme["<concept" >> *(alnum | char_('-') | char_('_')) > ">"]]; }
 inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
-inline auto predicate_name_parser() { return raw[lexeme["\"" > alpha >> *(alnum | char_('-') | char_('_')) > "\""]]; }
+inline auto predicate_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 
 const auto concept__def = concept_non_terminal | concept_predicate_state | concept_predicate_goal | concept_and;
 const auto concept_predicate_state_def = lit("@concept_predicate_state") > predicate_name_parser();

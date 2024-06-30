@@ -127,6 +127,72 @@ public:
     bool visit(const RoleAnd& constructor) const override;
 };
 
+/**
+ * Implementations
+ */
+
+/**
+ * ConceptPredicateStateVisitor
+ */
+
+template<PredicateCategory P>
+ConceptPredicateStateVisitor<P>::ConceptPredicateStateVisitor(const grammar::ConceptPredicateState<P>& grammar_constructor) :
+    m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateStateVisitor<P>::visit(const ConceptPredicateState<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
+/**
+ * ConceptPredicateGoalVisitor
+ */
+
+template<PredicateCategory P>
+ConceptPredicateGoalVisitor<P>::ConceptPredicateGoalVisitor(const grammar::ConceptPredicateGoal<P>& grammar_constructor) :
+    m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoalVisitor<P>::visit(const ConceptPredicateGoal<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
+/**
+ * RolePredicateStateVisitor
+ */
+
+template<PredicateCategory P>
+RolePredicateStateVisitor<P>::RolePredicateStateVisitor(const grammar::RolePredicateState<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateStateVisitor<P>::visit(const RolePredicateState<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
+/**
+ * RolePredicateGoalVisitor
+ */
+
+template<PredicateCategory P>
+RolePredicateGoalVisitor<P>::RolePredicateGoalVisitor(const grammar::RolePredicateGoal<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoalVisitor<P>::visit(const RolePredicateGoal<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
 }
 
 #endif

@@ -25,6 +25,7 @@ add_executable(${TEST_NAME}
     "graphs/object_graph.cpp"
     "graphs/tuple_graph.cpp"
     "languages/description_logics/parser.cpp"
+    "languages/description_logics/grammar.cpp"
     "search/algorithms/brfs.cpp"
     "search/algorithms/iw.cpp"
     "search/applicable_action_generators/dense-grounded.cpp"

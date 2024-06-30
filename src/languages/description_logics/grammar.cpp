@@ -43,4 +43,8 @@ bool Grammar::test_match(const dl::Role& constructor) const
     return std::any_of(m_role_rules.begin(), m_role_rules.end(), [&constructor](const auto& rule) { return rule.get().test_match(constructor); });
 }
 
+const ConceptDerivationRuleList& Grammar::get_concept_rules() const { return m_concept_rules; }
+
+const RoleDerivationRuleList& Grammar::get_role_rules() const { return m_role_rules; }
+
 }

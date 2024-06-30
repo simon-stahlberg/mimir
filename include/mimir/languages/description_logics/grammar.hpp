@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 
+#include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors_interface.hpp"
@@ -79,6 +80,12 @@ public:
     /// @param constructor is the dl role constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
     bool test_match(const dl::Role& constructor) const;
+
+    /**
+     * Getters
+     */
+    const ConceptDerivationRuleList& get_concept_rules() const;
+    const RoleDerivationRuleList& get_role_rules() const;
 };
 }
 

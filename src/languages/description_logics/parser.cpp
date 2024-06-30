@@ -26,12 +26,11 @@ namespace mimir::dl::grammar
 
 struct Context
 {
-    std::unordered_map<std::string, const ConceptDerivationRule*> m_concept_rules_by_name;
-    std::unordered_map<std::string, const RoleDerivationRule*> m_role_rules_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const ConceptDerivationRule>> m_concept_rules_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const RoleDerivationRule>> m_role_rules_by_name;
 
-    // Double pointer for deferred initialization
-    std::unordered_map<const ConceptNonTerminal*, const ConceptDerivationRule**> m_uninitialized_concept_rules_by_non_terminal;
-    std::unordered_map<const RoleNonTerminal*, const RoleDerivationRule**> m_uninitialized_role_rules_by_non_terminal;
+    std::unordered_map<std::string, std::reference_wrapper<const ConceptNonTerminal>> m_concept_non_terminal_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const RoleNonTerminal>> m_role_non_terminal_by_name;
 };
 
 static const ConceptChoice& parse(const dl::ast::Concept& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
@@ -122,11 +121,8 @@ parse(const dl::ast::ConceptAnd& node, Domain domain, GrammarConstructorReposito
 static const ConceptChoice&
 parse(const dl::ast::ConceptNonTerminal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    auto concept_rule = std::make_unique<const ConceptDerivationRule*>(nullptr);
-    // Get and store uninitialized memory for deferred initialization.
-    auto uninitialized_concept_rule = concept_rule.get();
-    const auto& non_terminal = ref_grammar_constructor_repos.create<ConceptNonTerminal>(node.name, std::move(concept_rule));
-    context.m_uninitialized_concept_rules_by_non_terminal.emplace(&non_terminal, uninitialized_concept_rule);
+    const auto& non_terminal = ref_grammar_constructor_repos.create<ConceptNonTerminal>(node.name);
+    context.m_concept_non_terminal_by_name.emplace(node.name, non_terminal);
     return ref_grammar_constructor_repos.template create<ConceptChoice>(non_terminal);
 }
 
@@ -148,7 +144,7 @@ parse(const dl::ast::ConceptDerivationRule& node, Domain domain, GrammarConstruc
     {
         throw std::runtime_error("Got multiple concept rule definitions for non terminal \"" + node.non_terminal.name + "\". Use choice rules instead.");
     }
-    context.m_concept_rules_by_name.emplace(node.non_terminal.name, &rule);
+    context.m_concept_rules_by_name.emplace(node.non_terminal.name, rule);
     return rule;
 }
 
@@ -239,11 +235,8 @@ static const RoleChoice& parse(const dl::ast::RoleAnd& node, Domain domain, Gram
 static const RoleChoice&
 parse(const dl::ast::RoleNonTerminal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    auto role_rule = std::make_unique<const RoleDerivationRule*>(nullptr);
-    // Get and store uninitialized memory for deferred initialization.
-    auto uninitialized_role_rule = role_rule.get();
-    const auto& non_terminal = ref_grammar_constructor_repos.create<RoleNonTerminal>(node.name, std::move(role_rule));
-    context.m_uninitialized_role_rules_by_non_terminal.emplace(&non_terminal, uninitialized_role_rule);
+    const auto& non_terminal = ref_grammar_constructor_repos.create<RoleNonTerminal>(node.name);
+    context.m_role_non_terminal_by_name.emplace(node.name, non_terminal);
     return ref_grammar_constructor_repos.template create<RoleChoice>(non_terminal);
 }
 
@@ -264,7 +257,7 @@ parse(const dl::ast::RoleDerivationRule& node, Domain domain, GrammarConstructor
     {
         throw std::runtime_error("Got multiple role rule definitions for non terminal \"" + node.non_terminal.name + "\". Use choice rules instead.");
     }
-    context.m_role_rules_by_name.emplace(node.non_terminal.name, &rule);
+    context.m_role_rules_by_name.emplace(node.non_terminal.name, rule);
     return rule;
 }
 
@@ -299,23 +292,23 @@ parse(const dl::ast::Grammar& node, Domain domain, GrammarConstructorRepositorie
                   });
 
     /* Deferred initialization step */
-    for (auto& [non_terminal, concept_rule_memory] : context.m_uninitialized_concept_rules_by_non_terminal)
+    for (auto& [non_terminal_name, non_terminal] : context.m_concept_non_terminal_by_name)
     {
-        if (!context.m_concept_rules_by_name.count(non_terminal->get_name()))
+        if (!context.m_concept_rules_by_name.count(non_terminal_name))
         {
-            throw std::runtime_error("Missing definition for non terminal concept \"" + non_terminal->get_name() + "\".");
+            throw std::runtime_error("Missing definition for non terminal concept \"" + non_terminal_name + "\".");
         }
-        // Set the pointer that is pointing to a rule to the correct rule.
-        (*concept_rule_memory) = context.m_concept_rules_by_name.at(non_terminal->get_name());
+        const auto rule = context.m_concept_rules_by_name.at(non_terminal_name);
+        non_terminal.get().set_rule(rule);
     }
-    for (auto& [non_terminal, role_rule_memory] : context.m_uninitialized_role_rules_by_non_terminal)
+    for (auto& [non_terminal_name, non_terminal] : context.m_role_non_terminal_by_name)
     {
-        if (!context.m_role_rules_by_name.count(non_terminal->get_name()))
+        if (!context.m_role_rules_by_name.count(non_terminal_name))
         {
-            throw std::runtime_error("Missing definition for non terminal role \"" + non_terminal->get_name() + "\".");
+            throw std::runtime_error("Missing definition for non terminal role \"" + non_terminal_name + "\".");
         }
-        // Set the pointer that is pointing to a rule to the correct rule.
-        (*role_rule_memory) = context.m_role_rules_by_name.at(non_terminal->get_name());
+        // const auto rule = context.m_role_rules_by_name.at(non_terminal_name);
+        // non_terminal.get().set_rule(rule);
     }
 
     return std::make_tuple(concept_rules, role_rules);
