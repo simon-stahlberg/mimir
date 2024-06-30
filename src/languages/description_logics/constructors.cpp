@@ -24,7 +24,7 @@ namespace mimir::dl
  * ConceptAnd
  */
 
-ConceptAnd::ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right) :
+ConceptAnd::ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right) :
     m_id(id),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
@@ -40,7 +40,7 @@ bool ConceptAnd::operator==(const ConceptAnd& other) const
     return true;
 }
 
-bool ConceptAnd::is_equal(const Concept& other) const
+bool ConceptAnd::is_equal(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -52,7 +52,7 @@ bool ConceptAnd::is_equal(const Concept& other) const
 
 size_t ConceptAnd::hash() const { return loki::hash_combine(&m_concept_left, &m_concept_right); }
 
-void ConceptAnd::evaluate(EvaluationContext& context) const
+Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
 {
     // TODO
 }
@@ -61,15 +61,20 @@ bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.vi
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
-const Concept& ConceptAnd::get_concept_left() const { return m_concept_left; }
+const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left; }
 
-const Concept& ConceptAnd::get_concept_right() const { return m_concept_right; }
+const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right; }
 
 /**
  * RoleAnd
  */
 
-RoleAnd::RoleAnd(size_t id, const Role& role_left, const Role& role_right) : m_id(id), m_role_left(role_left), m_role_right(role_right) {}
+RoleAnd::RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right) :
+    m_id(id),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
 
 bool RoleAnd::operator==(const RoleAnd& other) const
 {
@@ -80,7 +85,7 @@ bool RoleAnd::operator==(const RoleAnd& other) const
     return true;
 }
 
-bool RoleAnd::is_equal(const Role& other) const
+bool RoleAnd::is_equal(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -92,7 +97,7 @@ bool RoleAnd::is_equal(const Role& other) const
 
 size_t RoleAnd::hash() const { return loki::hash_combine(&m_role_left, &m_role_right); }
 
-void RoleAnd::evaluate(EvaluationContext& context) const
+Denotation<Role> RoleAnd::evaluate(EvaluationContext& context) const
 {
     // TODO
 }
@@ -101,8 +106,8 @@ bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*t
 
 size_t RoleAnd::get_id() const { return m_id; }
 
-const Role& RoleAnd::get_role_left() const { return m_role_left; }
+const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left; }
 
-const Role& RoleAnd::get_role_right() const { return m_role_right; }
+const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right; }
 
 }

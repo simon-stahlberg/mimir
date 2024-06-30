@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
 #include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/constructor_ids.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/search/state.hpp"
 

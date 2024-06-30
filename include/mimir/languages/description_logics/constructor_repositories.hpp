@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
 
-#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/constructor_interface.hpp"
 
 #include <loki/loki.hpp>
 #include <unordered_set>

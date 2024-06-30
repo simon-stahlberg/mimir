@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/constructor_interface.hpp"
 
 #include <concepts>
 
@@ -52,14 +52,10 @@ public:
     virtual bool is_equal(const Constructor& other) const = 0;
     virtual size_t hash() const = 0;
 
-    virtual bool test_match(const D& constructor) const = 0;
+    virtual bool test_match(const dl::Constructor<D>& constructor) const = 0;
 
     virtual size_t get_id() const = 0;
 };
-
-using Concept = Constructor<dl::Concept>;
-using Role = Constructor<dl::Role>;
-
 }
 
 #endif

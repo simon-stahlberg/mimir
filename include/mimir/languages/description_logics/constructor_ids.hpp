@@ -15,31 +15,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
-
-#include "mimir/formalism/factories.hpp"
-#include "mimir/languages/description_logics/constructor_interface.hpp"
-#include "mimir/languages/description_logics/denotation_repositories.hpp"
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_IDS_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_IDS_HPP_
 
 #include <concepts>
-#include <cstddef>
-#include <memory>
-#include <vector>
 
 namespace mimir::dl
 {
 
-struct EvaluationContext
+/**
+ * ID classes.
+ */
+
+struct Concept
 {
-    std::reference_wrapper<const PDDLFactories> factories;
-    Problem problem;
-    State state;
-    DenotationBuilder<Concept> concept_denotation;
-    DenotationRepository<Concept> concept_denotation_repository;
-    DenotationBuilder<Role> role_denotation;
-    DenotationRepository<Role> role_denotation_repository;
 };
+struct Role
+{
+};
+
+/**
+ * Concepts
+ */
+
+template<typename T>
+concept IsConceptOrRole = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
 
 }
 

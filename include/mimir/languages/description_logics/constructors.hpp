@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 
-#include "mimir/languages/description_logics/constructors_interface.hpp"
+#include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/visitors_interface.hpp"
 
 #include <concepts>
@@ -41,7 +41,7 @@ class ConstructorRepository;
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public Concept
+class ConceptPredicateState : public Constructor<Concept>
 {
 private:
     size_t m_id;
@@ -60,10 +60,10 @@ public:
     ConceptPredicateState& operator=(ConceptPredicateState&& other) = default;
 
     bool operator==(const ConceptPredicateState& other) const;
-    bool is_equal(const Concept& other) const override;
+    bool is_equal(const Constructor<Concept>& other) const override;
     size_t hash() const override;
 
-    void evaluate(EvaluationContext& context) const override;
+    Denotation<Concept> evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
 
@@ -73,7 +73,7 @@ public:
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoal : public Concept
+class ConceptPredicateGoal : public Constructor<Concept>
 {
 private:
     size_t m_id;
@@ -92,10 +92,10 @@ public:
     ConceptPredicateGoal& operator=(ConceptPredicateGoal&& other) = default;
 
     bool operator==(const ConceptPredicateGoal& other) const;
-    bool is_equal(const Concept& other) const override;
+    bool is_equal(const Constructor<Concept>& other) const override;
     size_t hash() const override;
 
-    void evaluate(EvaluationContext& context) const override;
+    Denotation<Concept> evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
 
@@ -104,14 +104,14 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-class ConceptAnd : public Concept
+class ConceptAnd : public Constructor<Concept>
 {
 private:
     size_t m_id;
-    const Concept& m_concept_left;
-    const Concept& m_concept_right;
+    const Constructor<Concept>& m_concept_left;
+    const Constructor<Concept>& m_concept_right;
 
-    ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right);
+    ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right);
 
     template<typename T>
     friend class ConstructorRepository;
@@ -124,17 +124,17 @@ public:
     ConceptAnd& operator=(ConceptAnd&& other) = default;
 
     bool operator==(const ConceptAnd& other) const;
-    bool is_equal(const Concept& other) const override;
+    bool is_equal(const Constructor<Concept>& other) const override;
     size_t hash() const override;
 
-    void evaluate(EvaluationContext& context) const override;
+    Denotation<Concept> evaluate(EvaluationContext& context) const override;
 
     bool accept(const ConceptVisitor& visitor) const override;
 
     size_t get_id() const override;
 
-    const Concept& get_concept_left() const;
-    const Concept& get_concept_right() const;
+    const Constructor<Concept>& get_concept_left() const;
+    const Constructor<Concept>& get_concept_right() const;
 };
 
 /**
@@ -142,7 +142,7 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateState : public Role
+class RolePredicateState : public Constructor<Role>
 {
 private:
     size_t m_id;
@@ -161,10 +161,10 @@ public:
     RolePredicateState& operator=(RolePredicateState&& other) = default;
 
     bool operator==(const RolePredicateState& other) const;
-    bool is_equal(const Role& other) const override;
+    bool is_equal(const Constructor<Role>& other) const override;
     size_t hash() const override;
 
-    void evaluate(EvaluationContext& context) const override;
+    Denotation<Role> evaluate(EvaluationContext& context) const override;
 
     bool accept(const RoleVisitor& visitor) const override;
 
@@ -174,7 +174,7 @@ public:
 };
 
 template<PredicateCategory P>
-class RolePredicateGoal : public Role
+class RolePredicateGoal : public Constructor<Role>
 {
 private:
     size_t m_id;
@@ -193,10 +193,10 @@ public:
     RolePredicateGoal& operator=(RolePredicateGoal&& other) = default;
 
     bool operator==(const RolePredicateGoal& other) const;
-    bool is_equal(const Role& other) const override;
+    bool is_equal(const Constructor<Role>& other) const override;
     size_t hash() const override;
 
-    void evaluate(EvaluationContext& context) const override;
+    Denotation<Role> evaluate(EvaluationContext& context) const override;
 
     bool accept(const RoleVisitor& visitor) const override;
 
@@ -205,14 +205,14 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-class RoleAnd : public Role
+class RoleAnd : public Constructor<Role>
 {
 private:
     size_t m_id;
-    const Role& m_role_left;
-    const Role& m_role_right;
+    const Constructor<Role>& m_role_left;
+    const Constructor<Role>& m_role_right;
 
-    RoleAnd(size_t id, const Role& role_left, const Role& role_right);
+    RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right);
 
     template<typename T>
     friend class ConstructorRepository;
@@ -225,17 +225,17 @@ public:
     RoleAnd& operator=(RoleAnd&& other) = default;
 
     bool operator==(const RoleAnd& other) const;
-    bool is_equal(const Role& other) const override;
+    bool is_equal(const Constructor<Role>& other) const override;
     size_t hash() const override;
 
-    void evaluate(EvaluationContext& context) const override;
+    Denotation<Role> evaluate(EvaluationContext& context) const override;
 
     bool accept(const RoleVisitor& visitor) const override;
 
     size_t get_id() const override;
 
-    const Role& get_role_left() const;
-    const Role& get_role_right() const;
+    const Constructor<Role>& get_role_left() const;
+    const Constructor<Role>& get_role_right() const;
 };
 
 /**
@@ -262,7 +262,7 @@ bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) co
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::is_equal(const Concept& other) const
+bool ConceptPredicateState<P>::is_equal(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -279,9 +279,8 @@ size_t ConceptPredicateState<P>::hash() const
 }
 
 template<PredicateCategory P>
-void ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
+Denotation<Concept> ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
 {
-    // TODO
 }
 
 template<PredicateCategory P>
@@ -322,7 +321,7 @@ bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) cons
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::is_equal(const Concept& other) const
+bool ConceptPredicateGoal<P>::is_equal(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -339,7 +338,7 @@ size_t ConceptPredicateGoal<P>::hash() const
 }
 
 template<PredicateCategory P>
-void ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
+Denotation<Concept> ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
 {
     // TODO
 }
@@ -382,7 +381,7 @@ bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::is_equal(const Role& other) const
+bool RolePredicateState<P>::is_equal(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -399,7 +398,7 @@ size_t RolePredicateState<P>::hash() const
 }
 
 template<PredicateCategory P>
-void RolePredicateState<P>::evaluate(EvaluationContext& context) const
+Denotation<Role> RolePredicateState<P>::evaluate(EvaluationContext& context) const
 {
     // TODO
 }
@@ -442,7 +441,7 @@ bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::is_equal(const Role& other) const
+bool RolePredicateGoal<P>::is_equal(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -459,7 +458,7 @@ size_t RolePredicateGoal<P>::hash() const
 }
 
 template<PredicateCategory P>
-void RolePredicateGoal<P>::evaluate(EvaluationContext& context) const
+Denotation<Role> RolePredicateGoal<P>::evaluate(EvaluationContext& context) const
 {
     // TODO
 }

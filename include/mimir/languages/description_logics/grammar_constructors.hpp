@@ -19,8 +19,8 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
-#include "mimir/languages/description_logics/grammar_constructors_interface.hpp"
+#include "mimir/languages/description_logics/constructor_ids.hpp"
+#include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/visitors.hpp"
 
 #include <optional>
@@ -65,7 +65,7 @@ public:
     bool operator==(const NonTerminal& other) const;
     size_t hash() const;
 
-    bool test_match(const D& constructor) const;
+    bool test_match(const dl::Constructor<D>& constructor) const;
 
     size_t get_id() const;
     const std::string& get_name() const;
@@ -75,8 +75,8 @@ public:
     void set_rule(const DerivationRule<D>& rule) const;
 };
 
-using ConceptNonTerminal = NonTerminal<dl::Concept>;
-using RoleNonTerminal = NonTerminal<dl::Role>;
+using ConceptNonTerminal = NonTerminal<Concept>;
+using RoleNonTerminal = NonTerminal<Role>;
 
 /**
  * Choice
@@ -107,7 +107,7 @@ public:
     bool operator==(const Choice& other) const;
     size_t hash() const;
 
-    bool test_match(const D& constructor) const;
+    bool test_match(const dl::Constructor<D>& constructor) const;
 
     size_t get_id() const;
     const ConstructorOrNonTerminalChoice<D>& get_choice() const;
@@ -116,10 +116,10 @@ public:
 template<dl::IsConceptOrRole D>
 using ChoiceList = std::vector<std::reference_wrapper<const Choice<D>>>;
 
-using ConceptChoice = Choice<dl::Concept>;
-using ConceptChoiceList = ChoiceList<dl::Concept>;
-using RoleChoice = Choice<dl::Role>;
-using RoleChoiceList = ChoiceList<dl::Role>;
+using ConceptChoice = Choice<Concept>;
+using ConceptChoiceList = ChoiceList<Concept>;
+using RoleChoice = Choice<Role>;
+using RoleChoiceList = ChoiceList<Role>;
 
 /**
  * DerivationRule
@@ -147,7 +147,7 @@ public:
     bool operator==(const DerivationRule& other) const;
     size_t hash() const;
 
-    bool test_match(const D& constructor) const;
+    bool test_match(const dl::Constructor<D>& constructor) const;
 
     size_t get_id() const;
     const ChoiceList<D>& get_choices() const;
@@ -156,17 +156,17 @@ public:
 template<IsConceptOrRole D>
 using DerivationRuleList = std::vector<std::reference_wrapper<const DerivationRule<D>>>;
 
-using ConceptDerivationRule = DerivationRule<dl::Concept>;
-using ConceptDerivationRuleList = DerivationRuleList<dl::Concept>;
-using RoleDerivationRule = DerivationRule<dl::Role>;
-using RoleDerivationRuleList = DerivationRuleList<dl::Role>;
+using ConceptDerivationRule = DerivationRule<Concept>;
+using ConceptDerivationRuleList = DerivationRuleList<Concept>;
+using RoleDerivationRule = DerivationRule<Role>;
+using RoleDerivationRuleList = DerivationRuleList<Role>;
 
 /**
  * Concepts
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public Constructor<dl::Concept>
+class ConceptPredicateState : public Constructor<Concept>
 {
 private:
     size_t m_id;
@@ -185,17 +185,17 @@ public:
     ConceptPredicateState& operator=(ConceptPredicateState&& other) = default;
 
     bool operator==(const ConceptPredicateState& other) const;
-    bool is_equal(const Concept& other) const override;
+    bool is_equal(const Constructor<Concept>& other) const override;
     size_t hash() const override;
 
-    bool test_match(const dl::Concept& constructor) const override;
+    bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
     size_t get_id() const override;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoal : public Constructor<dl::Concept>
+class ConceptPredicateGoal : public Constructor<Concept>
 {
 private:
     size_t m_id;
@@ -214,16 +214,16 @@ public:
     ConceptPredicateGoal& operator=(ConceptPredicateGoal&& other) = default;
 
     bool operator==(const ConceptPredicateGoal& other) const;
-    bool is_equal(const Concept& other) const override;
+    bool is_equal(const Constructor<Concept>& other) const override;
     size_t hash() const override;
 
-    bool test_match(const dl::Concept& constructor) const override;
+    bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
     size_t get_id() const override;
     Predicate<P> get_predicate() const;
 };
 
-class ConceptAnd : public Constructor<dl::Concept>
+class ConceptAnd : public Constructor<Concept>
 {
 private:
     size_t m_id;
@@ -243,10 +243,10 @@ public:
     ConceptAnd& operator=(ConceptAnd&& other) = default;
 
     bool operator==(const ConceptAnd& other) const;
-    bool is_equal(const Concept& other) const override;
+    bool is_equal(const Constructor<Concept>& other) const override;
     size_t hash() const override;
 
-    bool test_match(const dl::Concept& constructor) const override;
+    bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
     size_t get_id() const override;
     const ConceptChoice& get_concept_left() const;
@@ -258,7 +258,7 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateState : public Constructor<dl::Role>
+class RolePredicateState : public Constructor<Role>
 {
 private:
     size_t m_id;
@@ -277,17 +277,17 @@ public:
     RolePredicateState& operator=(RolePredicateState&& other) = default;
 
     bool operator==(const RolePredicateState& other) const;
-    bool is_equal(const Role& other) const override;
+    bool is_equal(const Constructor<Role>& other) const override;
     size_t hash() const override;
 
-    bool test_match(const dl::Role& constructor) const override;
+    bool test_match(const dl::Constructor<Role>& constructor) const override;
 
     size_t get_id() const override;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class RolePredicateGoal : public Constructor<dl::Role>
+class RolePredicateGoal : public Constructor<Role>
 {
 private:
     size_t m_id;
@@ -306,16 +306,16 @@ public:
     RolePredicateGoal& operator=(RolePredicateGoal&& other) = default;
 
     bool operator==(const RolePredicateGoal& other) const;
-    bool is_equal(const Role& other) const override;
+    bool is_equal(const Constructor<Role>& other) const override;
     size_t hash() const override;
 
-    bool test_match(const dl::Role& constructor) const override;
+    bool test_match(const dl::Constructor<Role>& constructor) const override;
 
     size_t get_id() const override;
     Predicate<P> get_predicate() const;
 };
 
-class RoleAnd : public Constructor<dl::Role>
+class RoleAnd : public Constructor<Role>
 {
 private:
     size_t m_id;
@@ -335,10 +335,10 @@ public:
     RoleAnd& operator=(RoleAnd&& other) = default;
 
     bool operator==(const RoleAnd& other) const;
-    bool is_equal(const Role& other) const override;
+    bool is_equal(const Constructor<Role>& other) const override;
     size_t hash() const override;
 
-    bool test_match(const dl::Role& constructor) const override;
+    bool test_match(const dl::Constructor<Role>& constructor) const override;
 
     size_t get_id() const override;
     const RoleChoice& get_role_left() const;
@@ -375,7 +375,7 @@ size_t NonTerminal<D>::hash() const
 }
 
 template<dl::IsConceptOrRole D>
-bool NonTerminal<D>::test_match(const D& constructor) const
+bool NonTerminal<D>::test_match(const dl::Constructor<D>& constructor) const
 {
     assert(m_rule.has_value());
     return m_rule.value().get().test_match(constructor);
@@ -447,7 +447,7 @@ size_t Choice<D>::hash() const
 }
 
 template<dl::IsConceptOrRole D>
-bool Choice<D>::test_match(const D& constructor) const
+bool Choice<D>::test_match(const dl::Constructor<D>& constructor) const
 {
     return std::visit([&constructor](const auto& arg) -> bool { return arg.get().test_match(constructor); }, m_choice);
 }
@@ -502,7 +502,7 @@ size_t DerivationRule<D>::hash() const
 }
 
 template<dl::IsConceptOrRole D>
-bool DerivationRule<D>::test_match(const D& constructor) const
+bool DerivationRule<D>::test_match(const dl::Constructor<D>& constructor) const
 {
     return std::any_of(m_choices.begin(), m_choices.end(), [&constructor](const auto& choice) { return choice.get().test_match(constructor); });
 }
@@ -539,7 +539,7 @@ bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) co
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::is_equal(const Concept& other) const
+bool ConceptPredicateState<P>::is_equal(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -556,7 +556,7 @@ size_t ConceptPredicateState<P>::hash() const
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::test_match(const dl::Concept& constructor) const
+bool ConceptPredicateState<P>::test_match(const dl::Constructor<Concept>& constructor) const
 {
     return constructor.accept(ConceptPredicateStateVisitor<P>(*this));
 }
@@ -593,7 +593,7 @@ bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) cons
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::is_equal(const Concept& other) const
+bool ConceptPredicateGoal<P>::is_equal(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -610,7 +610,7 @@ size_t ConceptPredicateGoal<P>::hash() const
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::test_match(const dl::Concept& constructor) const
+bool ConceptPredicateGoal<P>::test_match(const dl::Constructor<Concept>& constructor) const
 {
     return constructor.accept(ConceptPredicateGoalVisitor<P>(*this));
 }
@@ -647,7 +647,7 @@ bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::is_equal(const Role& other) const
+bool RolePredicateState<P>::is_equal(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -664,7 +664,7 @@ size_t RolePredicateState<P>::hash() const
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::test_match(const dl::Role& constructor) const
+bool RolePredicateState<P>::test_match(const dl::Constructor<Role>& constructor) const
 {
     return constructor.accept(RolePredicateStateVisitor<P>(*this));
 }
@@ -701,7 +701,7 @@ bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::is_equal(const Role& other) const
+bool RolePredicateGoal<P>::is_equal(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -718,7 +718,7 @@ size_t RolePredicateGoal<P>::hash() const
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::test_match(const dl::Role& constructor) const
+bool RolePredicateGoal<P>::test_match(const dl::Constructor<Role>& constructor) const
 {
     return constructor.accept(RolePredicateGoalVisitor<P>(*this));
 }

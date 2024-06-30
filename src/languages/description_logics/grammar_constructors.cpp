@@ -34,12 +34,12 @@ bool ConceptAnd::operator==(const ConceptAnd& other) const
 {
     if (this != &other)
     {
-        return (m_concept_left == other.m_concept_left) && (m_concept_right == other.m_concept_right);
+        return (&m_concept_left == &other.m_concept_left) && (&m_concept_right == &other.m_concept_right);
     }
     return true;
 }
 
-bool ConceptAnd::is_equal(const Concept& other) const
+bool ConceptAnd::is_equal(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -49,9 +49,9 @@ bool ConceptAnd::is_equal(const Concept& other) const
     return (*this == otherDerived);
 }
 
-size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left.hash(), m_concept_right.hash()); }
+size_t ConceptAnd::hash() const { return loki::hash_combine(&m_concept_left, &m_concept_right); }
 
-bool ConceptAnd::test_match(const dl::Concept& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
+bool ConceptAnd::test_match(const dl::Constructor<Concept>& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
@@ -68,12 +68,12 @@ bool RoleAnd::operator==(const RoleAnd& other) const
 {
     if (this != &other)
     {
-        return (m_role_left == other.m_role_left) && (m_role_right == other.m_role_right);
+        return (&m_role_left == &other.m_role_left) && (&m_role_right == &other.m_role_right);
     }
     return true;
 }
 
-bool RoleAnd::is_equal(const Role& other) const
+bool RoleAnd::is_equal(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -83,9 +83,9 @@ bool RoleAnd::is_equal(const Role& other) const
     return (*this == otherDerived);
 }
 
-size_t RoleAnd::hash() const { return loki::hash_combine(m_role_left.hash(), m_role_right.hash()); }
+size_t RoleAnd::hash() const { return loki::hash_combine(&m_role_left, &m_role_right); }
 
-bool RoleAnd::test_match(const dl::Role& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
+bool RoleAnd::test_match(const dl::Constructor<Role>& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
 
 size_t RoleAnd::get_id() const { return m_id; }
 

@@ -18,16 +18,15 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 
+#include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
-#include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
+#include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/grammar_constructors_interface.hpp"
 #include "mimir/languages/description_logics/visitors.hpp"
 #include "mimir/languages/description_logics/visitors_interface.hpp"
 

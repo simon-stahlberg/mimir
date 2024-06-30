@@ -314,7 +314,7 @@ parse(const dl::ast::Grammar& node, Domain domain, GrammarConstructorRepositorie
     return std::make_tuple(concept_rules, role_rules);
 }
 
-std::tuple<DerivationRuleList<dl::Concept>, DerivationRuleList<dl::Role>>
+std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
 parse(const std::string& bnf_grammar_description, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
 {
     auto ast = dl::ast::Grammar();

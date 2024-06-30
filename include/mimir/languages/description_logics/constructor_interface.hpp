@@ -18,7 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/visitors_interface.hpp"
+#include "mimir/languages/description_logics/constructor_ids.hpp"
+#include "mimir/languages/description_logics/denotations.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -31,31 +32,33 @@ struct EvaluationContext;
 class ConceptVisitor;
 class RoleVisitor;
 
-/**
- * Concepts
- */
+template<IsConceptOrRole D>
+class Constructor
+{
+};
 
-class Concept
+template<>
+class Constructor<Concept>
 {
 protected:
-    bool type_equal(const Concept& other) const { return typeid(*this) == typeid(other); }
+    bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
 
-    Concept() = default;
-    Concept(Concept&& other) = default;
-    Concept& operator=(Concept&& other) = default;
+    Constructor() = default;
+    Constructor(Constructor&& other) = default;
+    Constructor& operator=(Constructor&& other) = default;
 
 public:
     // Uncopieable
-    Concept(const Concept& other) = delete;
-    Concept& operator=(const Concept& other) = delete;
-    virtual ~Concept() = default;
+    Constructor(const Constructor& other) = delete;
+    Constructor& operator=(const Constructor& other) = delete;
+    virtual ~Constructor() = default;
 
-    bool operator==(const Concept& other) const { return is_equal(other); }
-    virtual bool is_equal(const Concept& other) const = 0;
+    bool operator==(const Constructor& other) const { return is_equal(other); }
+    virtual bool is_equal(const Constructor& other) const = 0;
     virtual size_t hash() const = 0;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
-    virtual void evaluate(EvaluationContext& context) const = 0;
+    virtual Denotation<Concept> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
     /// Uses double dispatch.
@@ -64,33 +67,34 @@ public:
     virtual size_t get_id() const = 0;
 };
 
-using ConceptList = std::vector<const Concept*>;
+using ConceptConstructorList = std::vector<std::reference_wrapper<const Constructor<Concept>>>;
 
 /**
  * Roles
  */
 
-class Role
+template<>
+class Constructor<Role>
 {
 protected:
-    bool type_equal(const Role& other) const { return typeid(*this) == typeid(other); }
+    bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
 
-    Role() = default;
-    Role(Role&& other) = default;
-    Role& operator=(Role&& other) = default;
+    Constructor() = default;
+    Constructor(Constructor&& other) = default;
+    Constructor& operator=(Constructor&& other) = default;
 
 public:
     // Uncopieable
-    Role(const Role& other) = delete;
-    Role& operator=(const Role& other) = delete;
-    virtual ~Role() = default;
+    Constructor(const Constructor& other) = delete;
+    Constructor& operator=(const Constructor& other) = delete;
+    virtual ~Constructor() = default;
 
-    bool operator==(const Role& other) const { return is_equal(other); }
-    virtual bool is_equal(const Role& other) const = 0;
+    bool operator==(const Constructor& other) const { return is_equal(other); }
+    virtual bool is_equal(const Constructor& other) const = 0;
     virtual size_t hash() const = 0;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
-    virtual void evaluate(EvaluationContext& context) const = 0;
+    virtual Denotation<Role> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
     virtual bool accept(const RoleVisitor& visitor) const = 0;
@@ -98,17 +102,7 @@ public:
     virtual size_t get_id() const = 0;
 };
 
-using RoleList = std::vector<const Role*>;
-
-/**
- * Concepts
- */
-
-template<typename T>
-concept IsConceptOrRole = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
-
-template<typename T>
-concept IsConcreteConceptOrRole = std::derived_from<T, Concept> || std::derived_from<T, Role>;
+using RoleConstructorList = std::vector<std::reference_wrapper<const Constructor<Role>>>;
 
 }
 

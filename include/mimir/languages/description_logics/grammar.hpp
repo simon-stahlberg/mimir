@@ -20,8 +20,8 @@
 
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
-#include "mimir/languages/description_logics/constructors_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 
 #include <functional>
@@ -74,12 +74,12 @@ public:
     /// @brief Tests whether a dl concept constructor satisfies the grammar specification.
     /// @param constructor is the dl concept constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(const dl::Concept& constructor) const;
+    bool test_match(const dl::Constructor<Concept>& constructor) const;
 
     /// @brief Tests whether a dl role constructor satisfies the grammar specfication.
     /// @param constructor is the dl role constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(const dl::Role& constructor) const;
+    bool test_match(const dl::Constructor<Role>& constructor) const;
 
     /**
      * Getters
