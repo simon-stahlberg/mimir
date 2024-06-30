@@ -37,8 +37,22 @@ class RoleVisitor;
 
 class Concept
 {
+protected:
+    bool type_equal(const Concept& other) const { return typeid(*this) == typeid(other); }
+
+    Concept() = default;
+    Concept(Concept&& other) = default;
+    Concept& operator=(Concept&& other) = default;
+
 public:
-    virtual ~Concept() {}
+    // Uncopieable
+    Concept(const Concept& other) = delete;
+    Concept& operator=(const Concept& other) = delete;
+    virtual ~Concept() = default;
+
+    bool operator==(const Concept& other) const { return is_equal(other); }
+    virtual bool is_equal(const Concept& other) const = 0;
+    virtual size_t hash() const = 0;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual void evaluate(EvaluationContext& context) const = 0;
@@ -58,8 +72,22 @@ using ConceptList = std::vector<const Concept*>;
 
 class Role
 {
+protected:
+    bool type_equal(const Role& other) const { return typeid(*this) == typeid(other); }
+
+    Role() = default;
+    Role(Role&& other) = default;
+    Role& operator=(Role&& other) = default;
+
 public:
-    virtual ~Role() {}
+    // Uncopieable
+    Role(const Role& other) = delete;
+    Role& operator=(const Role& other) = delete;
+    virtual ~Role() = default;
+
+    bool operator==(const Role& other) const { return is_equal(other); }
+    virtual bool is_equal(const Role& other) const = 0;
+    virtual size_t hash() const = 0;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual void evaluate(EvaluationContext& context) const = 0;

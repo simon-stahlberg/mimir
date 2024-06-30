@@ -52,8 +52,15 @@ private:
     friend class ConstructorRepository;
 
 public:
+    // Users are not supposed to move these directly.
+    ConceptPredicateState(const ConceptPredicateState& other) = delete;
+    ConceptPredicateState& operator=(const ConceptPredicateState& other) = delete;
+    ConceptPredicateState(ConceptPredicateState&& other) = default;
+    ConceptPredicateState& operator=(ConceptPredicateState&& other) = default;
+
     bool operator==(const ConceptPredicateState& other) const;
-    size_t hash() const;
+    bool is_equal(const Concept& other) const override;
+    size_t hash() const override;
 
     void evaluate(EvaluationContext& context) const override;
 
@@ -77,8 +84,15 @@ private:
     friend class ConstructorRepository;
 
 public:
+    // Users are not supposed to move these directly.
+    ConceptPredicateGoal(const ConceptPredicateGoal& other) = delete;
+    ConceptPredicateGoal& operator=(const ConceptPredicateGoal& other) = delete;
+    ConceptPredicateGoal(ConceptPredicateGoal&& other) = default;
+    ConceptPredicateGoal& operator=(ConceptPredicateGoal&& other) = default;
+
     bool operator==(const ConceptPredicateGoal& other) const;
-    size_t hash() const;
+    bool is_equal(const Concept& other) const override;
+    size_t hash() const override;
 
     void evaluate(EvaluationContext& context) const override;
 
@@ -93,8 +107,8 @@ class ConceptAnd : public Concept
 {
 private:
     size_t m_id;
-    const Concept* m_concept_left;
-    const Concept* m_concept_right;
+    const Concept& m_concept_left;
+    const Concept& m_concept_right;
 
     ConceptAnd(size_t id, const Concept& concept_left, const Concept& concept_right);
 
@@ -102,8 +116,15 @@ private:
     friend class ConstructorRepository;
 
 public:
+    // Users are not supposed to move these directly.
+    ConceptAnd(const ConceptAnd& other) = delete;
+    ConceptAnd& operator=(const ConceptAnd& other) = delete;
+    ConceptAnd(ConceptAnd&& other) = default;
+    ConceptAnd& operator=(ConceptAnd&& other) = default;
+
     bool operator==(const ConceptAnd& other) const;
-    size_t hash() const;
+    bool is_equal(const Concept& other) const override;
+    size_t hash() const override;
 
     void evaluate(EvaluationContext& context) const override;
 
@@ -132,8 +153,15 @@ private:
     friend class ConstructorRepository;
 
 public:
+    // Users are not supposed to move these directly.
+    RolePredicateState(const RolePredicateState& other) = delete;
+    RolePredicateState& operator=(const RolePredicateState& other) = delete;
+    RolePredicateState(RolePredicateState&& other) = default;
+    RolePredicateState& operator=(RolePredicateState&& other) = default;
+
     bool operator==(const RolePredicateState& other) const;
-    size_t hash() const;
+    bool is_equal(const Role& other) const override;
+    size_t hash() const override;
 
     void evaluate(EvaluationContext& context) const override;
 
@@ -157,8 +185,15 @@ private:
     friend class ConstructorRepository;
 
 public:
+    // Users are not supposed to move these directly.
+    RolePredicateGoal(const RolePredicateGoal& other) = delete;
+    RolePredicateGoal& operator=(const RolePredicateGoal& other) = delete;
+    RolePredicateGoal(RolePredicateGoal&& other) = default;
+    RolePredicateGoal& operator=(RolePredicateGoal&& other) = default;
+
     bool operator==(const RolePredicateGoal& other) const;
-    size_t hash() const;
+    bool is_equal(const Role& other) const override;
+    size_t hash() const override;
 
     void evaluate(EvaluationContext& context) const override;
 
@@ -173,8 +208,8 @@ class RoleAnd : public Role
 {
 private:
     size_t m_id;
-    const Role* m_role_left;
-    const Role* m_role_right;
+    const Role& m_role_left;
+    const Role& m_role_right;
 
     RoleAnd(size_t id, const Role& role_left, const Role& role_right);
 
@@ -182,8 +217,15 @@ private:
     friend class ConstructorRepository;
 
 public:
+    // Users are not supposed to move these directly.
+    RoleAnd(const RoleAnd& other) = delete;
+    RoleAnd& operator=(const RoleAnd& other) = delete;
+    RoleAnd(RoleAnd&& other) = default;
+    RoleAnd& operator=(RoleAnd&& other) = default;
+
     bool operator==(const RoleAnd& other) const;
-    size_t hash() const;
+    bool is_equal(const Role& other) const override;
+    size_t hash() const override;
 
     void evaluate(EvaluationContext& context) const override;
 

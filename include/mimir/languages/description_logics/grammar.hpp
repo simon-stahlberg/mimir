@@ -63,8 +63,8 @@ private:
     GrammarConstructorRepositories m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
-    std::vector<const ConceptDerivationRule*> m_concept_rules;
-    std::vector<const RoleDerivationRule*> m_role_rules;
+    ConceptDerivationRuleList m_concept_rules;
+    RoleDerivationRuleList m_role_rules;
 
 public:
     /// @brief Create a grammar from a BNF description.

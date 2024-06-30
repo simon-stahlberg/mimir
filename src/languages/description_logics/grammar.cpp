@@ -35,14 +35,12 @@ Grammar::Grammar(std::string bnf_description, Domain domain)
 
 bool Grammar::test_match(const dl::Concept& constructor) const
 {
-    return std::any_of(m_concept_rules.begin(),
-                       m_concept_rules.end(),
-                       [&constructor](const ConceptDerivationRule* rule) { return rule->test_match(constructor); });
+    return std::any_of(m_concept_rules.begin(), m_concept_rules.end(), [&constructor](const auto& rule) { return rule.get().test_match(constructor); });
 }
 
 bool Grammar::test_match(const dl::Role& constructor) const
 {
-    return std::any_of(m_role_rules.begin(), m_role_rules.end(), [&constructor](const RoleDerivationRule* rule) { return rule->test_match(constructor); });
+    return std::any_of(m_role_rules.begin(), m_role_rules.end(), [&constructor](const auto& rule) { return rule.get().test_match(constructor); });
 }
 
 }

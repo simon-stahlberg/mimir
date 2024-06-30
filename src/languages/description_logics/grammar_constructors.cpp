@@ -63,6 +63,12 @@ size_t NonTerminal<D>::get_id() const
 }
 
 template<dl::IsConceptOrRole D>
+const std::string& NonTerminal<D>::get_name() const
+{
+    return m_name;
+}
+
+template<dl::IsConceptOrRole D>
 const DerivationRule<D>& NonTerminal<D>::get_rule() const
 {
     return *m_rule.get();
@@ -73,9 +79,7 @@ const DerivationRule<D>& NonTerminal<D>::get_rule() const
  */
 
 template<dl::IsConceptOrRole D>
-Choice<D>::Choice(size_t id, std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>> choice) :
-    m_id(id),
-    m_choice(std::move(choice))
+Choice<D>::Choice(size_t id, ConstructorOrNonTerminalChoice<D> choice) : m_id(id), m_choice(std::move(choice))
 {
 }
 
@@ -122,12 +126,18 @@ size_t Choice<D>::get_id() const
     return m_id;
 }
 
+template<dl::IsConceptOrRole D>
+const ConstructorOrNonTerminalChoice<D>& Choice<D>::get_choice() const
+{
+    return m_choice;
+}
+
 /**
  * DerivationRule
  */
 
 template<dl::IsConceptOrRole D>
-DerivationRule<D>::DerivationRule(size_t id, std::vector<std::reference_wrapper<const Choice<D>>> choices) : m_id(id), m_choices(std::move(choices))
+DerivationRule<D>::DerivationRule(size_t id, ChoiceList<D> choices) : m_id(id), m_choices(std::move(choices))
 {
 }
 
@@ -159,6 +169,12 @@ template<dl::IsConceptOrRole D>
 size_t DerivationRule<D>::get_id() const
 {
     return m_id;
+}
+
+template<dl::IsConceptOrRole D>
+const ChoiceList<D>& DerivationRule<D>::get_choices() const
+{
+    return m_choices;
 }
 
 /**
@@ -204,14 +220,14 @@ bool ConceptPredicateState<P>::test_match(const dl::Concept& constructor) const
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateState<P>::get_predicate() const
-{
-}
-
-template<PredicateCategory P>
 size_t ConceptPredicateState<P>::get_id() const
 {
     return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> ConceptPredicateState<P>::get_predicate() const
+{
 }
 
 /**
@@ -257,14 +273,14 @@ bool ConceptPredicateGoal<P>::test_match(const dl::Concept& constructor) const
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
-{
-}
-
-template<PredicateCategory P>
 size_t ConceptPredicateGoal<P>::get_id() const
 {
     return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
+{
 }
 
 /**
@@ -300,11 +316,11 @@ size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left.hash(
 
 bool ConceptAnd::test_match(const dl::Concept& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
 
+size_t ConceptAnd::get_id() const { return m_id; }
+
 const ConceptChoice& ConceptAnd::get_concept_left() const { return m_concept_left; }
 
 const ConceptChoice& ConceptAnd::get_concept_right() const { return m_concept_right; }
-
-size_t ConceptAnd::get_id() const { return m_id; }
 
 /**
  * RolePredicateState
@@ -349,14 +365,14 @@ bool RolePredicateState<P>::test_match(const dl::Role& constructor) const
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateState<P>::get_predicate() const
-{
-}
-
-template<PredicateCategory P>
 size_t RolePredicateState<P>::get_id() const
 {
     return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> RolePredicateState<P>::get_predicate() const
+{
 }
 
 /**
@@ -402,14 +418,14 @@ bool RolePredicateGoal<P>::test_match(const dl::Role& constructor) const
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateGoal<P>::get_predicate() const
-{
-}
-
-template<PredicateCategory P>
 size_t RolePredicateGoal<P>::get_id() const
 {
     return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> RolePredicateGoal<P>::get_predicate() const
+{
 }
 
 /**
@@ -440,9 +456,10 @@ size_t RoleAnd::hash() const { return loki::hash_combine(m_role_left.hash(), m_r
 
 bool RoleAnd::test_match(const dl::Role& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
 
+size_t RoleAnd::get_id() const { return m_id; }
+
 const RoleChoice& RoleAnd::get_role_left() const { return m_role_left; }
 
 const RoleChoice& RoleAnd::get_role_right() const { return m_role_right; }
 
-size_t RoleAnd::get_id() const { return m_id; }
 }

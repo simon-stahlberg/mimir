@@ -36,7 +36,15 @@ class Constructor
 protected:
     bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
 
+    Constructor() = default;
+    Constructor(Constructor&& other) = default;
+    Constructor& operator=(Constructor&& other) = default;
+
 public:
+    // Uncopieable
+    Constructor(const Constructor& other) = delete;
+    Constructor& operator=(const Constructor& other) = delete;
+
     virtual ~Constructor() = default;
 
     bool operator==(const Constructor& other) const { return is_equal(other); }
