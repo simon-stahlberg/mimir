@@ -294,7 +294,7 @@ Denotation<Concept> ConceptPredicateState<P>::evaluate(EvaluationContext& contex
     bitset.unset_all();
 
     // Compute result
-    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids(context.state.get_atoms<P>()))
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
     {
         bitset.set(atom->get_identifier());
     }
