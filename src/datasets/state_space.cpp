@@ -113,7 +113,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         const auto state = lifo_queue.back();
         const auto state_id = state_to_index.at(state);
         lifo_queue.pop_back();
-        if (state.literals_hold(problem->get_fluent_goal_condition()) && state.literals_hold(problem->get_derived_goal_condition()))
+        if (state.literals_hold(problem->get_goal_condition<Fluent>()) && state.literals_hold(problem->get_goal_condition<Derived>()))
         {
             goal_states.insert(state_id);
         }

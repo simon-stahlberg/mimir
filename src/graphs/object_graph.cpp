@@ -152,15 +152,15 @@ static int compute_num_vertices(const Problem problem, const PDDLFactories& pddl
     {
         num_vertices += atom->get_arity();
     }
-    for (const auto& literal : problem->get_static_goal_condition())
+    for (const auto& literal : problem->get_goal_condition<Static>())
     {
         num_vertices += literal->get_atom()->get_arity();
     }
-    for (const auto& literal : problem->get_fluent_goal_condition())
+    for (const auto& literal : problem->get_goal_condition<Fluent>())
     {
         num_vertices += literal->get_atom()->get_arity();
     }
-    for (const auto& literal : problem->get_derived_goal_condition())
+    for (const auto& literal : problem->get_goal_condition<Derived>())
     {
         num_vertices += literal->get_atom()->get_arity();
     }
@@ -198,15 +198,15 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     }
 
     // Initialize goal literal vertices and edges
-    for (const auto& literal : m_problem->get_static_goal_condition())
+    for (const auto& literal : m_problem->get_goal_condition<Static>())
     {
         vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
     }
-    for (const auto& literal : m_problem->get_fluent_goal_condition())
+    for (const auto& literal : m_problem->get_goal_condition<Fluent>())
     {
         vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
     }
-    for (const auto& literal : m_problem->get_derived_goal_condition())
+    for (const auto& literal : m_problem->get_goal_condition<Derived>())
     {
         vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
     }

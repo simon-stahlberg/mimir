@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_literal.hpp"
@@ -96,9 +97,8 @@ public:
     FlatBitset<Static> get_static_initial_positive_atoms_bitset() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
-    const GroundLiteralList<Static>& get_static_goal_condition() const;
-    const GroundLiteralList<Fluent>& get_fluent_goal_condition() const;
-    const GroundLiteralList<Derived>& get_derived_goal_condition() const;
+    template<PredicateCategory P>
+    const GroundLiteralList<P>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
     bool static_goal_holds() const;
@@ -111,6 +111,31 @@ public:
 
 using Problem = const ProblemImpl*;
 using ProblemList = std::vector<Problem>;
+
+/**
+ * Implementations
+ */
+
+template<PredicateCategory P>
+const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_goal_condition;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_goal_condition;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_goal_condition;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
 
 }
 

@@ -467,9 +467,18 @@ void init_pymimir(py::module_& m)
         .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::return_value_policy::reference)
         .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference)
-        .def("get_static_goal_condition", &ProblemImpl::get_static_goal_condition, py::return_value_policy::reference)
-        .def("get_fluent_goal_condition", &ProblemImpl::get_fluent_goal_condition, py::return_value_policy::reference)
-        .def("get_derived_goal_condition", &ProblemImpl::get_derived_goal_condition, py::return_value_policy::reference);
+        .def(
+            "get_static_goal_condition",
+            [](ProblemImpl& self) { return self.get_goal_condition<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_fluent_goal_condition",
+            [](ProblemImpl& self) { return self.get_goal_condition<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_derived_goal_condition",
+            [](ProblemImpl& self) { return self.get_goal_condition<Derived>(); },
+            py::return_value_policy::reference);
 
     py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
         .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference)

@@ -282,9 +282,9 @@ protected:
         this->prepare(problem.get_static_initial_literals());
         this->prepare(problem.get_fluent_initial_literals());
         this->prepare(problem.get_numeric_fluents());
-        this->prepare(problem.get_static_goal_condition());
-        this->prepare(problem.get_fluent_goal_condition());
-        this->prepare(problem.get_derived_goal_condition());
+        this->prepare(problem.get_goal_condition<Static>());
+        this->prepare(problem.get_goal_condition<Fluent>());
+        this->prepare(problem.get_goal_condition<Derived>());
         if (problem.get_optimization_metric().has_value())
         {
             this->prepare(*problem.get_optimization_metric().value());
@@ -675,9 +675,9 @@ protected:
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
             this->transform(problem.get_numeric_fluents()),
-            this->transform(problem.get_static_goal_condition()),
-            this->transform(problem.get_fluent_goal_condition()),
-            this->transform(problem.get_derived_goal_condition()),
+            this->transform(problem.get_goal_condition<Static>()),
+            this->transform(problem.get_goal_condition<Fluent>()),
+            this->transform(problem.get_goal_condition<Derived>()),
             (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->transform(*problem.get_optimization_metric().value())) :
                                                              std::nullopt),
             this->transform(problem.get_axioms()));

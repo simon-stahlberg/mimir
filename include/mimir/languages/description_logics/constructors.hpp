@@ -282,6 +282,19 @@ size_t ConceptPredicateState<P>::hash() const
 template<PredicateCategory P>
 Denotation<Concept> ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
 {
+    // Fetch data
+    auto& bitset = context.concept_denotation.get_bitset();
+    bitset.unset_all();
+
+    // Compute result
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids(context.state.get_atoms<P>()))
+    {
+        bitset.set(atom->get_identifier());
+    }
+
+    // Store and return result;
+    context.concept_denotation.get_flatmemory_builder().finish();
+    return context.concept_denotation_repository.insert(this, context.concept_denotation.get_flatmemory_builder());
 }
 
 template<PredicateCategory P>
@@ -341,7 +354,22 @@ size_t ConceptPredicateGoal<P>::hash() const
 template<PredicateCategory P>
 Denotation<Concept> ConceptPredicateGoal<P>::evaluate(EvaluationContext& context) const
 {
-    // TODO
+    // Fetch data
+    auto& bitset = context.concept_denotation.get_bitset();
+    bitset.unset_all();
+
+    // Compute result
+    for (const auto& literal : context.problem->get_goal_condition<P>())
+    {
+        if (!literal->is_negated())
+        {
+            bitset.set(literal->get_atom()->get_identifier());
+        }
+    }
+
+    // Store and return result;
+    context.concept_denotation.get_flatmemory_builder().finish();
+    return context.concept_denotation_repository.insert(this, context.concept_denotation.get_flatmemory_builder());
 }
 
 template<PredicateCategory P>

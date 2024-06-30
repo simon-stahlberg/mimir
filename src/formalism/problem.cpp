@@ -253,12 +253,6 @@ const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() cons
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
 
-const GroundLiteralList<Static>& ProblemImpl::get_static_goal_condition() const { return m_static_goal_condition; }
-
-const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_goal_condition() const { return m_fluent_goal_condition; }
-
-const GroundLiteralList<Derived>& ProblemImpl::get_derived_goal_condition() const { return m_derived_goal_condition; }
-
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }

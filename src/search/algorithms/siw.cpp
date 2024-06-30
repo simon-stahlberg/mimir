@@ -30,14 +30,14 @@ ProblemGoalCounter::ProblemGoalCounter(Problem problem, State state) : m_problem
 int ProblemGoalCounter::count_unsatisfied_goals(const State state) const
 {
     int num_unsatisfied_goals = 0;
-    for (const auto& literal : m_problem->get_fluent_goal_condition())
+    for (const auto& literal : m_problem->get_goal_condition<Fluent>())
     {
         if (!state.literal_holds(literal))
         {
             ++num_unsatisfied_goals;
         }
     }
-    for (const auto& literal : m_problem->get_derived_goal_condition())
+    for (const auto& literal : m_problem->get_goal_condition<Derived>())
     {
         if (!state.literal_holds(literal))
         {
