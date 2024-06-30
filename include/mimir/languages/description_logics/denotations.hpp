@@ -64,6 +64,7 @@ public:
      */
 
     FlatBitsetBuilder<Concept>& get_flatmemory_builder() { return m_builder; }
+    const FlatBitsetBuilder<Concept>& get_flatmemory_builder() const { return m_builder; }
 
     FlatBitsetBuilder<Concept>& get_bitset() { return m_builder; }
 };
@@ -114,6 +115,7 @@ public:
      */
 
     FlatBitsetListBuilder<Role>& get_flatmemory_builder() { return m_builder; }
+    const FlatBitsetListBuilder<Role>& get_flatmemory_builder() const { return m_builder; }
 
     FlatBitsetListBuilder<Role>& get_bitsets() { return m_builder; }
 };

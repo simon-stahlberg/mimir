@@ -54,7 +54,21 @@ size_t ConceptAnd::hash() const { return loki::hash_combine(&m_concept_left, &m_
 
 Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
 {
-    // TODO
+    // Fetch data
+    auto& bitset = context.concept_denotation.get_bitset();
+    context.concept_denotation.get_bitset().unset_all();
+
+    // Evaluate children
+    const auto eval_left = m_concept_left.evaluate(context);
+    const auto eval_right = m_concept_left.evaluate(context);
+
+    // Compute result
+    bitset |= eval_left.get_bitset();
+    bitset &= eval_right.get_bitset();
+
+    // Store and return result;
+    context.concept_denotation.get_flatmemory_builder().finish();
+    return context.concept_denotation_repository.insert(this, context.concept_denotation);
 }
 
 bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.visit(*this); }
@@ -99,7 +113,28 @@ size_t RoleAnd::hash() const { return loki::hash_combine(&m_role_left, &m_role_r
 
 Denotation<Role> RoleAnd::evaluate(EvaluationContext& context) const
 {
-    // TODO
+    // Fetch data
+    auto& bitset = context.role_denotation.get_bitsets();
+    for (auto& bitset : context.role_denotation.get_bitsets())
+    {
+        bitset.unset_all();
+    }
+
+    // Evaluate children
+    const auto eval_left = m_role_left.evaluate(context);
+    const auto eval_right = m_role_left.evaluate(context);
+
+    // Compute result
+    for (size_t i = 0; i < eval_left.get_bitsets().size(); ++i)
+    {
+        auto& bitset = context.role_denotation.get_bitsets()[i];
+        bitset |= eval_left.get_bitsets()[i];
+        bitset &= eval_right.get_bitsets()[i];
+    }
+
+    // Store and return result;
+    context.role_denotation.get_flatmemory_builder().finish();
+    return context.role_denotation_repository.insert(this, context.role_denotation);
 }
 
 bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*this); }
@@ -109,5 +144,4 @@ size_t RoleAnd::get_id() const { return m_id; }
 const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left; }
 
 const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right; }
-
 }

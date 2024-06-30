@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
+#include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/visitors_interface.hpp"
 
 #include <concepts>

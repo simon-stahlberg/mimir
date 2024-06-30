@@ -42,29 +42,29 @@ private:
     FlatDenotationSetType m_storage;
 
     // Cache for fluent and derived infos
-    std::unordered_map<std::tuple<State, const D*>, Denotation<D>> m_cached_dynamic_denotations;
+    std::unordered_map<std::tuple<State, const Constructor<D>*>, Denotation<D>> m_cached_dynamic_denotations;
     // Cache for static infos
-    std::unordered_map<const D*, Denotation<D>> m_cached_static_denotations;
+    std::unordered_map<const Constructor<D>*, Denotation<D>> m_cached_static_denotations;
 
 public:
-    auto insert(State state, const D* constructor, const DenotationBuilder<D>& denotation)
+    Denotation<D> insert(State state, const Constructor<D>* constructor, const DenotationBuilder<D>& denotation)
     {
         const auto [it, inserted] = m_storage.insert(denotation);
         if (inserted)
         {
-            m_cached_dynamic_denotations.emplace(std::make_tuple(state, constructor), *it);
+            m_cached_dynamic_denotations.emplace(std::make_tuple(state, constructor), Denotation<D>(*it));
         }
-        return *it;
+        return Denotation<D>(*it);
     }
 
-    auto insert(const D* constructor, const DenotationBuilder<D>& denotation)
+    Denotation<D> insert(const Constructor<D>* constructor, const DenotationBuilder<D>& denotation)
     {
-        const auto [it, inserted] = m_storage.insert(denotation);
+        const auto [it, inserted] = m_storage.insert(denotation.get_flatmemory_builder());
         if (inserted)
         {
-            m_cached_static_denotations.emplace(constructor, *it);
+            m_cached_static_denotations.emplace(constructor, Denotation<D>(*it));
         }
-        return *it;
+        return Denotation<D>(*it);
     }
 
     std::optional<Denotation<D>> get_if(State state, const D* constructor) const
@@ -77,7 +77,7 @@ public:
         return it->second;
     }
 
-    std::optional<Denotation<D>> get_if(const D* constructor) const
+    std::optional<Denotation<D>> get_if(const Constructor<D>* constructor) const
     {
         auto it = m_cached_dynamic_denotations.find(constructor);
         if (it == m_cached_dynamic_denotations.end())
