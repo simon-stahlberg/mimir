@@ -376,7 +376,7 @@ Denotation<Concept> ConceptPredicateGoal<P>::evaluate(EvaluationContext& context
 
     // Store and return result;
     context.concept_denotation.get_flatmemory_builder().finish();
-    return context.concept_denotation_repository.insert(this, context.concept_denotation.get_flatmemory_builder());
+    return context.concept_denotation_repository.insert(this, context.concept_denotation);
 }
 
 template<PredicateCategory P>
