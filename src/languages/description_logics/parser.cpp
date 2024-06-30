@@ -44,15 +44,18 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstruc
 {
     if (domain->get_name_to_static_predicate().count(node.predicate_name))
     {
-        return &ref_grammar_constructor_repos.template create<ConceptPredicateState<Static>>(domain->get_name_to_static_predicate().at(node.predicate_name));
+        return ref_grammar_constructor_repos.template create<ConceptChoice>(
+            ref_grammar_constructor_repos.template create<ConceptPredicateState<Static>>(domain->get_name_to_static_predicate().at(node.predicate_name)));
     }
     else if (domain->get_name_to_fluent_predicate().count(node.predicate_name))
     {
-        return &ref_grammar_constructor_repos.create<ConceptPredicateState<Fluent>>(domain->get_name_to_fluent_predicate().at(node.predicate_name));
+        return ref_grammar_constructor_repos.template create<ConceptChoice>(
+            ref_grammar_constructor_repos.create<ConceptPredicateState<Fluent>>(domain->get_name_to_fluent_predicate().at(node.predicate_name)));
     }
     else if (domain->get_name_to_derived_predicate().count(node.predicate_name))
     {
-        return &ref_grammar_constructor_repos.create<ConceptPredicateState<Derived>>(domain->get_name_to_derived_predicate().at(node.predicate_name));
+        return ref_grammar_constructor_repos.template create<ConceptChoice>(
+            ref_grammar_constructor_repos.create<ConceptPredicateState<Derived>>(domain->get_name_to_derived_predicate().at(node.predicate_name)));
     }
     else
     {
@@ -65,15 +68,18 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstruct
 {
     if (domain->get_name_to_static_predicate().count(node.predicate_name))
     {
-        return &ref_grammar_constructor_repos.create<ConceptPredicateGoal<Static>>(domain->get_name_to_static_predicate().at(node.predicate_name));
+        return ref_grammar_constructor_repos.template create<ConceptChoice>(
+            ref_grammar_constructor_repos.create<ConceptPredicateGoal<Static>>(domain->get_name_to_static_predicate().at(node.predicate_name)));
     }
     else if (domain->get_name_to_fluent_predicate().count(node.predicate_name))
     {
-        return &ref_grammar_constructor_repos.create<ConceptPredicateGoal<Fluent>>(domain->get_name_to_fluent_predicate().at(node.predicate_name));
+        return ref_grammar_constructor_repos.template create<ConceptChoice>(
+            ref_grammar_constructor_repos.create<ConceptPredicateGoal<Fluent>>(domain->get_name_to_fluent_predicate().at(node.predicate_name)));
     }
     else if (domain->get_name_to_derived_predicate().count(node.predicate_name))
     {
-        return &ref_grammar_constructor_repos.create<ConceptPredicateGoal<Derived>>(domain->get_name_to_derived_predicate().at(node.predicate_name));
+        return ref_grammar_constructor_repos.template create<ConceptChoice>(
+            ref_grammar_constructor_repos.create<ConceptPredicateGoal<Derived>>(domain->get_name_to_derived_predicate().at(node.predicate_name)));
     }
     else
     {
@@ -83,8 +89,9 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstruct
 
 static ConceptChoice parse(const dl::ast::ConceptAnd& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return &ref_grammar_constructor_repos.create<ConceptAnd>(parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
-                                                             parse(node.concept_right, domain, ref_grammar_constructor_repos, context));
+    return ref_grammar_constructor_repos.template create<ConceptChoice>(
+        ref_grammar_constructor_repos.create<ConceptAnd>(parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
+                                                         parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
 }
 
 static ConceptChoice
@@ -93,9 +100,9 @@ parse(const dl::ast::ConceptNonTerminal& node, Domain domain, GrammarConstructor
     auto concept_rule = std::make_unique<const ConceptDerivationRule*>(nullptr);
     // Get and store uninitialized memory for deferred initialization.
     auto uninitialized_concept_rule = concept_rule.get();
-    const auto non_terminal = &ref_grammar_constructor_repos.create<ConceptNonTerminal>(node.name, std::move(concept_rule));
-    context.m_uninitialized_concept_rules_by_non_terminal.emplace(non_terminal, uninitialized_concept_rule);
-    return non_terminal;
+    const auto& non_terminal = ref_grammar_constructor_repos.create<ConceptNonTerminal>(node.name, std::move(concept_rule));
+    context.m_uninitialized_concept_rules_by_non_terminal.emplace(&non_terminal, uninitialized_concept_rule);
+    return ref_grammar_constructor_repos.template create<ConceptChoice>(non_terminal);
 }
 
 static ConceptChoice parse(const dl::ast::ConceptChoice& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
@@ -107,15 +114,19 @@ parse(const dl::ast::ConceptDerivationRule& node, Domain domain, GrammarConstruc
 {
 }
 
-static Role* parse(const dl::ast::Role& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
+static RoleChoice parse(const dl::ast::Role& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
 
-static Role* parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
+static RoleChoice parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+{
+}
 
-static Role* parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
+static RoleChoice parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+{
+}
 
-static Role* parse(const dl::ast::RoleAnd& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
+static RoleChoice parse(const dl::ast::RoleAnd& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
 
-static Role* parse(const dl::ast::RoleNonTerminal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
+static RoleChoice parse(const dl::ast::RoleNonTerminal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
 
 static RoleChoice parse(const dl::ast::RoleChoice& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context) {}
 

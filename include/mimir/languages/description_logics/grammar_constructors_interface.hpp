@@ -33,7 +33,17 @@ namespace mimir::dl::grammar
 template<dl::IsConceptOrRole D>
 class Constructor
 {
+protected:
+    bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
+
 public:
+    virtual ~Constructor() = default;
+
+    bool operator==(const Constructor& other) const { return is_equal(other); }
+
+    virtual bool is_equal(const Constructor& other) const = 0;
+    virtual size_t hash() const = 0;
+
     virtual bool test_match(const D& constructor) const = 0;
 
     virtual size_t get_id() const = 0;

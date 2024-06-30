@@ -44,7 +44,7 @@ private:
     size_t m_id;
     // Use name for equality and hash since rule is deferred instantiated.
     std::string m_name;
-    // Use unique_ptr for deferred instantiation.
+    // Use double pointer for deferred instantiation.
     std::unique_ptr<const DerivationRule<D>*> m_rule;
 
     NonTerminal(size_t id, std::string name, std::unique_ptr<const DerivationRule<D>*>&& rule);
@@ -71,7 +71,25 @@ using RoleNonTerminal = NonTerminal<dl::Role>;
  */
 
 template<dl::IsConceptOrRole D>
-using Choice = std::variant<const Constructor<D>*, const NonTerminal<D>*>;
+class Choice
+{
+private:
+    size_t m_id;
+    std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>> m_choice;
+
+    Choice(size_t id, std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>> choice);
+
+    template<typename T>
+    friend class dl::ConstructorRepository;
+
+public:
+    bool operator==(const Choice& other) const;
+    size_t hash() const;
+
+    bool test_match(const D& constructor) const;
+
+    size_t get_id() const;
+};
 
 using ConceptChoice = Choice<dl::Concept>;
 using RoleChoice = Choice<dl::Role>;
@@ -85,9 +103,9 @@ class DerivationRule
 {
 protected:
     size_t m_id;
-    std::vector<Choice<D>> m_choices;
+    std::vector<std::reference_wrapper<const Choice<D>>> m_choices;
 
-    DerivationRule(size_t id, std::vector<Choice<D>> choices);
+    DerivationRule(size_t id, std::vector<std::reference_wrapper<const Choice<D>>> choices);
 
     template<typename T>
     friend class dl::ConstructorRepository;
@@ -122,7 +140,8 @@ private:
 
 public:
     bool operator==(const ConceptPredicateState& other) const;
-    size_t hash() const;
+    bool is_equal(const Concept& other) const override;
+    size_t hash() const override;
 
     bool test_match(const dl::Concept& constructor) const override;
 
@@ -145,7 +164,8 @@ private:
 
 public:
     bool operator==(const ConceptPredicateGoal& other) const;
-    size_t hash() const;
+    bool is_equal(const Concept& other) const override;
+    size_t hash() const override;
 
     bool test_match(const dl::Concept& constructor) const override;
 
@@ -158,17 +178,18 @@ class ConceptAnd : public Constructor<dl::Concept>
 {
 private:
     size_t m_id;
-    ConceptChoice m_concept_left;
-    ConceptChoice m_concept_right;
+    const ConceptChoice& m_concept_left;
+    const ConceptChoice& m_concept_right;
 
-    ConceptAnd(size_t id, ConceptChoice concept_left, ConceptChoice concept_right);
+    ConceptAnd(size_t id, const ConceptChoice& concept_left, const ConceptChoice& concept_right);
 
     template<typename T>
     friend class dl::ConstructorRepository;
 
 public:
     bool operator==(const ConceptAnd& other) const;
-    size_t hash() const;
+    bool is_equal(const Concept& other) const override;
+    size_t hash() const override;
 
     bool test_match(const dl::Concept& constructor) const override;
 
@@ -196,7 +217,8 @@ private:
 
 public:
     bool operator==(const RolePredicateState& other) const;
-    size_t hash() const;
+    bool is_equal(const Role& other) const override;
+    size_t hash() const override;
 
     bool test_match(const dl::Role& constructor) const override;
 
@@ -219,7 +241,8 @@ private:
 
 public:
     bool operator==(const RolePredicateGoal& other) const;
-    size_t hash() const;
+    bool is_equal(const Role& other) const override;
+    size_t hash() const override;
 
     bool test_match(const dl::Role& constructor) const override;
 
@@ -232,22 +255,23 @@ class RoleAnd : public Constructor<dl::Role>
 {
 private:
     size_t m_id;
-    const Role* m_role_left;
-    const Role* m_role_right;
+    const RoleChoice& m_role_left;
+    const RoleChoice& m_role_right;
 
-    RoleAnd(size_t id, const Role& role_left, const Role& role_right);
+    RoleAnd(size_t id, const RoleChoice& role_left, const RoleChoice& role_right);
 
     template<typename T>
     friend class dl::ConstructorRepository;
 
 public:
     bool operator==(const RoleAnd& other) const;
-    size_t hash() const;
+    bool is_equal(const Role& other) const override;
+    size_t hash() const override;
 
     bool test_match(const dl::Role& constructor) const override;
 
-    const Role& get_role_left() const;
-    const Role& get_role_right() const;
+    const RoleChoice& get_role_left() const;
+    const RoleChoice& get_role_right() const;
 
     size_t get_id() const override;
 };

@@ -69,11 +69,65 @@ const DerivationRule<D>& NonTerminal<D>::get_rule() const
 }
 
 /**
+ * Choice
+ */
+
+template<dl::IsConceptOrRole D>
+Choice<D>::Choice(size_t id, std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>> choice) :
+    m_id(id),
+    m_choice(std::move(choice))
+{
+}
+
+template<dl::IsConceptOrRole D>
+bool Choice<D>::operator==(const Choice& other) const
+{
+    if (this != &other)
+    {
+        return std::visit(
+            [](const auto& lhs, const auto& rhs) -> bool
+            {
+                using LHS = std::decay_t<decltype(lhs)>;
+                using RHS = std::decay_t<decltype(rhs)>;
+                if constexpr (std::is_same_v<LHS, RHS>)
+                {
+                    return &lhs.get() == &rhs.get();
+                }
+                else
+                {
+                    return false;
+                }
+            },
+            m_choice,
+            other.m_choice);
+    }
+    return true;
+}
+
+template<dl::IsConceptOrRole D>
+size_t Choice<D>::hash() const
+{
+    return std::visit([](const auto& arg) -> size_t { return arg.get().hash(); }, m_choice);
+}
+
+template<dl::IsConceptOrRole D>
+bool Choice<D>::test_match(const D& constructor) const
+{
+    return std::visit([&constructor](const auto& arg) -> bool { return arg.get().test_match(constructor); }, m_choice);
+}
+
+template<dl::IsConceptOrRole D>
+size_t Choice<D>::get_id() const
+{
+    return m_id;
+}
+
+/**
  * DerivationRule
  */
 
 template<dl::IsConceptOrRole D>
-DerivationRule<D>::DerivationRule(size_t id, std::vector<Choice<D>> choices) : m_id(id), m_choices(std::move(choices))
+DerivationRule<D>::DerivationRule(size_t id, std::vector<std::reference_wrapper<const Choice<D>>> choices) : m_id(id), m_choices(std::move(choices))
 {
 }
 
@@ -91,19 +145,14 @@ template<dl::IsConceptOrRole D>
 size_t DerivationRule<D>::hash() const
 {
     size_t seed = m_choices.size();
-    std::for_each(m_choices.begin(),
-                  m_choices.end(),
-                  [&seed](const auto& choice) { loki::hash_combine(seed, std::visit([](const auto& arg) { return arg->hash(); })); });
+    std::for_each(m_choices.begin(), m_choices.end(), [&seed](const auto& choice) { loki::hash_combine(seed, choice.get().hash()); });
     return seed;
 }
 
 template<dl::IsConceptOrRole D>
 bool DerivationRule<D>::test_match(const D& constructor) const
 {
-    return std::any_of(m_choices.begin(),
-                       m_choices.end(),
-                       [&constructor](const Choice<D>& choice)
-                       { return std::visit([&constructor](const auto& arg) -> bool { return arg->test_match(constructor); }, choice); });
+    return std::any_of(m_choices.begin(), m_choices.end(), [&constructor](const auto& choice) { return choice.get().test_match(constructor); });
 }
 
 template<dl::IsConceptOrRole D>
@@ -129,6 +178,17 @@ bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) co
         return (m_predicate == other.m_predicate);
     }
     return true;
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateState<P>::is_equal(const Concept& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const ConceptPredicateState<P>&>(other);
+    return (*this == otherDerived);
 }
 
 template<PredicateCategory P>
@@ -174,6 +234,17 @@ bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) cons
 }
 
 template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::is_equal(const Concept& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const ConceptPredicateGoal<P>&>(other);
+    return (*this == otherDerived);
+}
+
+template<PredicateCategory P>
 size_t ConceptPredicateGoal<P>::hash() const
 {
     return loki::hash_combine(m_predicate);
@@ -199,10 +270,10 @@ size_t ConceptPredicateGoal<P>::get_id() const
 /**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(size_t id, ConceptChoice concept_left, ConceptChoice concept_right) :
+ConceptAnd::ConceptAnd(size_t id, const ConceptChoice& concept_left, const ConceptChoice& concept_right) :
     m_id(id),
-    m_concept_left(std::move(concept_left)),
-    m_concept_right(std::move(concept_right))
+    m_concept_left(concept_left),
+    m_concept_right(concept_right)
 {
 }
 
@@ -215,7 +286,17 @@ bool ConceptAnd::operator==(const ConceptAnd& other) const
     return true;
 }
 
-size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left, m_concept_right); }
+bool ConceptAnd::is_equal(const Concept& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const ConceptAnd&>(other);
+    return (*this == otherDerived);
+}
+
+size_t ConceptAnd::hash() const { return loki::hash_combine(m_concept_left.hash(), m_concept_right.hash()); }
 
 bool ConceptAnd::test_match(const dl::Concept& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
 
@@ -242,6 +323,17 @@ bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
         return (m_predicate == other.m_predicate);
     }
     return true;
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::is_equal(const Role& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const RolePredicateState<P>&>(other);
+    return (*this == otherDerived);
 }
 
 template<PredicateCategory P>
@@ -287,6 +379,17 @@ bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
 }
 
 template<PredicateCategory P>
+bool RolePredicateGoal<P>::is_equal(const Role& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const RolePredicateGoal<P>&>(other);
+    return (*this == otherDerived);
+}
+
+template<PredicateCategory P>
 size_t RolePredicateGoal<P>::hash() const
 {
     return loki::hash_combine(m_predicate);
@@ -312,7 +415,7 @@ size_t RolePredicateGoal<P>::get_id() const
 /**
  * RoleAnd
  */
-RoleAnd::RoleAnd(size_t id, const Role& role_left, const Role& role_right) : m_id(id), m_role_left(&role_left), m_role_right(&role_right) {}
+RoleAnd::RoleAnd(size_t id, const RoleChoice& role_left, const RoleChoice& role_right) : m_id(id), m_role_left(role_left), m_role_right(role_right) {}
 
 bool RoleAnd::operator==(const RoleAnd& other) const
 {
@@ -323,14 +426,23 @@ bool RoleAnd::operator==(const RoleAnd& other) const
     return true;
 }
 
-size_t RoleAnd::hash() const { return loki::hash_combine(m_role_left, m_role_right); }
+bool RoleAnd::is_equal(const Role& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const RoleAnd&>(other);
+    return (*this == otherDerived);
+}
+
+size_t RoleAnd::hash() const { return loki::hash_combine(m_role_left.hash(), m_role_right.hash()); }
 
 bool RoleAnd::test_match(const dl::Role& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
 
-const Role& RoleAnd::get_role_left() const { return *m_role_left; }
+const RoleChoice& RoleAnd::get_role_left() const { return m_role_left; }
 
-const Role& RoleAnd::get_role_right() const { return *m_role_right; }
+const RoleChoice& RoleAnd::get_role_right() const { return m_role_right; }
 
 size_t RoleAnd::get_id() const { return m_id; }
-
 }

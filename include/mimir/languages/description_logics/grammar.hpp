@@ -36,6 +36,7 @@ namespace mimir::dl::grammar
  */
 
 using GrammarConstructorRepositories = VariadicConstructorRepository<ConceptNonTerminal,
+                                                                     ConceptChoice,
                                                                      ConceptDerivationRule,
                                                                      ConceptPredicateState<Static>,
                                                                      ConceptPredicateState<Fluent>,
@@ -45,6 +46,7 @@ using GrammarConstructorRepositories = VariadicConstructorRepository<ConceptNonT
                                                                      ConceptPredicateGoal<Derived>,
                                                                      ConceptAnd,
                                                                      RoleNonTerminal,
+                                                                     RoleChoice,
                                                                      RoleDerivationRule,
                                                                      RolePredicateState<Static>,
                                                                      RolePredicateState<Fluent>,
