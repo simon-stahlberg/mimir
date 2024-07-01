@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/languages/description_logics/visitors.hpp>
+#include <mimir/languages/description_logics/grammar_visitors.hpp>
 
 namespace mimir::dl
 {

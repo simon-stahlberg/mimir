@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_VISITORS_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_VISITORS_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VISITORS_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VISITORS_HPP_
 
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/visitors_interface.hpp"
+#include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
 #include <concepts>
 #include <cstddef>

@@ -20,7 +20,7 @@
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
-#include "mimir/languages/description_logics/visitors_interface.hpp"
+#include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
 #include <concepts>
 #include <cstddef>
