@@ -41,27 +41,27 @@ static const ConceptChoice& parse(const dl::ast::Concept& node, Domain domain, G
 static const ConceptChoice&
 parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    if (domain->get_name_to_static_predicate().count(node.predicate_name))
+    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_static_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateState<Static>>(predicate));
     }
-    else if (domain->get_name_to_fluent_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_fluent_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateState<Fluent>>(predicate));
     }
-    else if (domain->get_name_to_derived_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_derived_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
@@ -77,27 +77,27 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstruc
 static const ConceptChoice&
 parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    if (domain->get_name_to_static_predicate().count(node.predicate_name))
+    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_static_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Static>>(predicate));
     }
-    else if (domain->get_name_to_fluent_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_fluent_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Fluent>>(predicate));
     }
-    else if (domain->get_name_to_derived_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_derived_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
             throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
@@ -156,27 +156,27 @@ static const RoleChoice& parse(const dl::ast::Role& node, Domain domain, Grammar
 static const RoleChoice&
 parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    if (domain->get_name_to_static_predicate().count(node.predicate_name))
+    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_static_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateState<Static>>(predicate));
     }
-    else if (domain->get_name_to_fluent_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_fluent_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateState<Fluent>>(predicate));
     }
-    else if (domain->get_name_to_derived_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_derived_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
@@ -192,27 +192,27 @@ parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructor
 static const RoleChoice&
 parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    if (domain->get_name_to_static_predicate().count(node.predicate_name))
+    if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_static_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateGoal<Static>>(predicate));
     }
-    else if (domain->get_name_to_fluent_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_fluent_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateGoal<Fluent>>(predicate));
     }
-    else if (domain->get_name_to_derived_predicate().count(node.predicate_name))
+    else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
-        const auto predicate = domain->get_name_to_derived_predicate().at(node.predicate_name);
+        const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
             throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");

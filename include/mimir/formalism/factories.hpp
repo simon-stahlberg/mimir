@@ -225,69 +225,109 @@ public:
     ///        This function allows us to can change the underlying representation and storage.
     Object get_or_create_object(std::string name) { return objects.get_or_create<ObjectImpl>(std::move(name)); }
 
-    Atom<Static> get_or_create_atom(Predicate<Static> predicate, TermList terms)
+    template<PredicateCategory P>
+    Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms)
     {
-        return static_atoms.get_or_create<AtomImpl<Static>>(std::move(predicate), std::move(terms));
-    }
-    Atom<Fluent> get_or_create_atom(Predicate<Fluent> predicate, TermList terms)
-    {
-        return fluent_atoms.get_or_create<AtomImpl<Fluent>>(std::move(predicate), std::move(terms));
-    }
-    Atom<Derived> get_or_create_atom(Predicate<Derived> predicate, TermList terms)
-    {
-        return derived_atoms.get_or_create<AtomImpl<Derived>>(std::move(predicate), std::move(terms));
-    }
-
-    GroundAtom<Static> get_or_create_ground_atom(Predicate<Static> predicate, ObjectList objects)
-    {
-        return static_ground_atoms.get_or_create<GroundAtomImpl<Static>>(std::move(predicate), std::move(objects));
-    }
-    GroundAtom<Fluent> get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList objects)
-    {
-        return fluent_ground_atoms.get_or_create<GroundAtomImpl<Fluent>>(std::move(predicate), std::move(objects));
-    }
-    GroundAtom<Derived> get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList objects)
-    {
-        return derived_ground_atoms.get_or_create<GroundAtomImpl<Derived>>(std::move(predicate), std::move(objects));
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_atoms.get_or_create<AtomImpl<Static>>(std::move(predicate), std::move(terms));
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_atoms.get_or_create<AtomImpl<Fluent>>(std::move(predicate), std::move(terms));
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_atoms.get_or_create<AtomImpl<Derived>>(std::move(predicate), std::move(terms));
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
     }
 
-    Literal<Static> get_or_create_literal(bool is_negated, Atom<Static> atom)
+    template<PredicateCategory P>
+    GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
     {
-        return static_literals.get_or_create<LiteralImpl<Static>>(is_negated, std::move(atom));
-    }
-    Literal<Fluent> get_or_create_literal(bool is_negated, Atom<Fluent> atom)
-    {
-        return fluent_literals.get_or_create<LiteralImpl<Fluent>>(is_negated, std::move(atom));
-    }
-    Literal<Derived> get_or_create_literal(bool is_negated, Atom<Derived> atom)
-    {
-        return derived_literals.get_or_create<LiteralImpl<Derived>>(is_negated, std::move(atom));
-    }
-
-    GroundLiteral<Static> get_or_create_ground_literal(bool is_negated, GroundAtom<Static> atom)
-    {
-        return static_ground_literals.get_or_create<GroundLiteralImpl<Static>>(is_negated, std::move(atom));
-    }
-    GroundLiteral<Fluent> get_or_create_ground_literal(bool is_negated, GroundAtom<Fluent> atom)
-    {
-        return fluent_ground_literals.get_or_create<GroundLiteralImpl<Fluent>>(is_negated, std::move(atom));
-    }
-    GroundLiteral<Derived> get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom)
-    {
-        return derived_ground_literals.get_or_create<GroundLiteralImpl<Derived>>(is_negated, std::move(atom));
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_ground_atoms.get_or_create<GroundAtomImpl<Static>>(std::move(predicate), std::move(objects));
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_ground_atoms.get_or_create<GroundAtomImpl<Fluent>>(std::move(predicate), std::move(objects));
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_ground_atoms.get_or_create<GroundAtomImpl<Derived>>(std::move(predicate), std::move(objects));
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
     }
 
-    Predicate<Static> get_or_create_static_predicate(std::string name, VariableList parameters)
+    template<PredicateCategory P>
+    Literal<P> get_or_create_literal(bool is_negated, Atom<P> atom)
     {
-        return static_predicates.get_or_create<PredicateImpl<Static>>(name, std::move(parameters));
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_literals.get_or_create<LiteralImpl<Static>>(is_negated, std::move(atom));
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_literals.get_or_create<LiteralImpl<Fluent>>(is_negated, std::move(atom));
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_literals.get_or_create<LiteralImpl<Derived>>(is_negated, std::move(atom));
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
     }
-    Predicate<Fluent> get_or_create_fluent_predicate(std::string name, VariableList parameters)
+
+    template<PredicateCategory P>
+    GroundLiteral<P> get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
     {
-        return fluent_predicates.get_or_create<PredicateImpl<Fluent>>(name, std::move(parameters));
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_ground_literals.get_or_create<GroundLiteralImpl<Static>>(is_negated, std::move(atom));
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_ground_literals.get_or_create<GroundLiteralImpl<Fluent>>(is_negated, std::move(atom));
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_ground_literals.get_or_create<GroundLiteralImpl<Derived>>(is_negated, std::move(atom));
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
     }
-    Predicate<Derived> get_or_create_derived_predicate(std::string name, VariableList parameters)
+
+    template<PredicateCategory P>
+    Predicate<P> get_or_create_predicate(std::string name, VariableList parameters)
     {
-        return derived_predicates.get_or_create<PredicateImpl<Derived>>(name, std::move(parameters));
+        if constexpr (std::is_same_v<P, Static>)
+        {
+            return static_predicates.get_or_create<PredicateImpl<Static>>(name, std::move(parameters));
+        }
+        else if constexpr (std::is_same_v<P, Fluent>)
+        {
+            return fluent_predicates.get_or_create<PredicateImpl<Fluent>>(name, std::move(parameters));
+        }
+        else if constexpr (std::is_same_v<P, Derived>)
+        {
+            return derived_predicates.get_or_create<PredicateImpl<Derived>>(name, std::move(parameters));
+        }
+        else
+        {
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        }
     }
 
     /// @brief Get or create a number function expression for the given parameters.

@@ -67,6 +67,8 @@ template<PredicateCategory P>
 using Literal = const LiteralImpl<P>*;
 template<PredicateCategory P>
 using LiteralList = std::vector<Literal<P>>;
+template<PredicateCategory P>
+using LiteralSet = std::unordered_set<Literal<P>>;
 
 /**
  * Implementation details

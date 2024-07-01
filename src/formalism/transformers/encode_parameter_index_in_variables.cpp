@@ -38,7 +38,7 @@ Predicate<Static> EncodeParameterIndexInVariables::transform_impl(const Predicat
 {
     m_enable_encoding = false;
 
-    const auto translated_predicate = this->m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+    const auto translated_predicate = this->m_pddl_factories.get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -48,7 +48,7 @@ Predicate<Fluent> EncodeParameterIndexInVariables::transform_impl(const Predicat
 {
     m_enable_encoding = false;
 
-    const auto translated_predicate = this->m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+    const auto translated_predicate = this->m_pddl_factories.get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -58,7 +58,8 @@ Predicate<Derived> EncodeParameterIndexInVariables::transform_impl(const Predica
 {
     m_enable_encoding = false;
 
-    const auto translated_predicate = this->m_pddl_factories.get_or_create_derived_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+    const auto translated_predicate =
+        this->m_pddl_factories.get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -87,9 +88,9 @@ EffectUniversal EncodeParameterIndexInVariables::transform_impl(const EffectUniv
     }
 
     const auto translated_universal_effect = this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
-                                                                                                   this->transform(effect.get_static_conditions()),
-                                                                                                   this->transform(effect.get_fluent_conditions()),
-                                                                                                   this->transform(effect.get_derived_conditions()),
+                                                                                                   this->transform(effect.get_conditions<Static>()),
+                                                                                                   this->transform(effect.get_conditions<Fluent>()),
+                                                                                                   this->transform(effect.get_conditions<Derived>()),
                                                                                                    this->transform(*effect.get_effect()));
 
     // Erase for next universal effect
@@ -115,9 +116,9 @@ Axiom EncodeParameterIndexInVariables::transform_impl(const AxiomImpl& axiom)
 
     const auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(translated_parameters,
                                                                              this->transform(*axiom.get_literal()),
-                                                                             this->transform(axiom.get_static_conditions()),
-                                                                             this->transform(axiom.get_fluent_conditions()),
-                                                                             this->transform(axiom.get_derived_conditions()));
+                                                                             this->transform(axiom.get_conditions<Static>()),
+                                                                             this->transform(axiom.get_conditions<Fluent>()),
+                                                                             this->transform(axiom.get_conditions<Derived>()));
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();
@@ -142,9 +143,9 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
     const auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                                                action.get_original_arity(),
                                                                                translated_parameters,
-                                                                               this->transform(action.get_static_conditions()),
-                                                                               this->transform(action.get_fluent_conditions()),
-                                                                               this->transform(action.get_derived_conditions()),
+                                                                               this->transform(action.get_conditions<Static>()),
+                                                                               this->transform(action.get_conditions<Fluent>()),
+                                                                               this->transform(action.get_conditions<Derived>()),
                                                                                this->transform(action.get_simple_effects()),
                                                                                this->transform(action.get_conditional_effects()),
                                                                                translated_universal_effects,

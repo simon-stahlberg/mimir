@@ -109,12 +109,6 @@ void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOp
     out << ")";  // end when
 }
 
-const LiteralList<Static>& EffectConditionalImpl::get_static_conditions() const { return m_static_conditions; }
-
-const LiteralList<Fluent>& EffectConditionalImpl::get_fluent_conditions() const { return m_fluent_conditions; }
-
-const LiteralList<Derived>& EffectConditionalImpl::get_derived_conditions() const { return m_derived_conditions; }
-
 const Literal<Fluent>& EffectConditionalImpl::get_effect() const { return m_effect; }
 
 /**
@@ -203,12 +197,6 @@ void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOpti
 }
 
 const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
-
-const LiteralList<Static>& EffectUniversalImpl::get_static_conditions() const { return m_static_conditions; }
-
-const LiteralList<Fluent>& EffectUniversalImpl::get_fluent_conditions() const { return m_fluent_conditions; }
-
-const LiteralList<Derived>& EffectUniversalImpl::get_derived_conditions() const { return m_derived_conditions; }
 
 const Literal<Fluent>& EffectUniversalImpl::get_effect() const { return m_effect; }
 

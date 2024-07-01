@@ -169,12 +169,6 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 
-const LiteralList<Static>& ActionImpl::get_static_conditions() const { return m_static_conditions; }
-
-const LiteralList<Fluent>& ActionImpl::get_fluent_conditions() const { return m_fluent_conditions; }
-
-const LiteralList<Derived>& ActionImpl::get_derived_conditions() const { return m_derived_conditions; }
-
 const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
 
 const EffectConditionalList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }

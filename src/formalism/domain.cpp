@@ -181,22 +181,10 @@ const Requirements& DomainImpl::get_requirements() const { return m_requirements
 
 const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 
-const PredicateList<Static>& DomainImpl::get_static_predicates() const { return m_static_predicates; }
-
-const PredicateList<Fluent>& DomainImpl::get_fluent_predicates() const { return m_fluent_predicates; }
-
-const PredicateList<Derived>& DomainImpl::get_derived_predicates() const { return m_derived_predicates; }
-
 const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functions; }
 
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
-
-const ToPredicateMap<std::string, Static>& DomainImpl::get_name_to_static_predicate() const { return m_name_to_static_predicate; }
-
-const ToPredicateMap<std::string, Fluent>& DomainImpl::get_name_to_fluent_predicate() const { return m_name_to_fluent_predicate; }
-
-const ToPredicateMap<std::string, Derived>& DomainImpl::get_name_to_derived_predicate() const { return m_name_to_derived_predicate; }
 
 }

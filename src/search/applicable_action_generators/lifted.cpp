@@ -160,9 +160,9 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_pddl_factories->ground_and_fill_bitset(action->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_pddl_factories->ground_and_fill_bitset(action->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
-    m_pddl_factories->ground_and_fill_bitset(action->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(action->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(action->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(action->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
     auto strips_effect_proxy = StripsActionEffectBuilderProxy(m_action_builder.get_strips_effect());
@@ -203,15 +203,15 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
             cond_negative_static_precondition_i.clear();
             cond_positive_derived_precondition_i.clear();
             cond_negative_derived_precondition_i.clear();
-            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_fluent_conditions(),
+            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_conditions<Fluent>(),
                                                      cond_positive_fluent_precondition_i,
                                                      cond_negative_fluent_precondition_i,
                                                      binding);
-            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_static_conditions(),
+            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_conditions<Static>(),
                                                      cond_positive_static_precondition_i,
                                                      cond_negative_static_precondition_i,
                                                      binding);
-            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_derived_conditions(),
+            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_conditions<Derived>(),
                                                      cond_positive_derived_precondition_i,
                                                      cond_negative_derived_precondition_i,
                                                      binding);
@@ -272,15 +272,15 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                 cond_negative_static_precondition_j.clear();
                 cond_positive_derived_precondition_j.clear();
                 cond_negative_derived_precondition_j.clear();
-                m_pddl_factories->ground_and_fill_vector(universal_effect->get_fluent_conditions(),
+                m_pddl_factories->ground_and_fill_vector(universal_effect->get_conditions<Fluent>(),
                                                          cond_positive_fluent_precondition_j,
                                                          cond_negative_fluent_precondition_j,
                                                          binding_ext);
-                m_pddl_factories->ground_and_fill_vector(universal_effect->get_static_conditions(),
+                m_pddl_factories->ground_and_fill_vector(universal_effect->get_conditions<Static>(),
                                                          cond_positive_static_precondition_j,
                                                          cond_negative_static_precondition_j,
                                                          binding_ext);
-                m_pddl_factories->ground_and_fill_vector(universal_effect->get_derived_conditions(),
+                m_pddl_factories->ground_and_fill_vector(universal_effect->get_conditions<Derived>(),
                                                          cond_positive_derived_precondition_j,
                                                          cond_negative_derived_precondition_j,
                                                          binding_ext);
@@ -322,7 +322,7 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
 
     // Create the assignment sets that are shared by all action schemas.
 
-    auto& fluent_predicates = m_problem->get_domain()->get_fluent_predicates();
+    auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>());
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
@@ -385,16 +385,16 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     /* 2. Initialize the condition grounders for each action schema. */
 
     auto static_initial_atoms = to_ground_atoms(m_problem->get_static_initial_literals());
-    auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_static_predicates(), static_initial_atoms);
+    auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
 
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
         m_action_precondition_grounders.emplace(action,
                                                 ConditionGrounder<State>(m_problem,
                                                                          action->get_parameters(),
-                                                                         action->get_static_conditions(),
-                                                                         action->get_fluent_conditions(),
-                                                                         action->get_derived_conditions(),
+                                                                         action->get_conditions<Static>(),
+                                                                         action->get_conditions<Fluent>(),
+                                                                         action->get_conditions<Derived>(),
                                                                          static_assignment_set,
                                                                          m_pddl_factories));
         auto universal_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
@@ -405,7 +405,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
             universal_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
                                                                                   action->get_arity(),
                                                                                   action->get_arity() + universal_effect->get_arity(),
-                                                                                  universal_effect->get_static_conditions(),
+                                                                                  universal_effect->get_conditions<Static>(),
                                                                                   static_assignment_set));
         }
 

@@ -37,7 +37,7 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& 
 
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem,
-                                                             m_problem->get_domain()->get_fluent_predicates(),
+                                                             m_problem->get_domain()->get_predicates<Fluent>(),
                                                              m_pddl_factories->get_ground_atoms_from_ids<Fluent>(fluent_state_atoms));
 
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem,
@@ -163,7 +163,7 @@ AxiomEvaluator::AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> p
         }
     }
 
-    auto derived_predicates = m_problem->get_domain()->get_derived_predicates();
+    auto derived_predicates = m_problem->get_domain()->get_predicates<Derived>();
     derived_predicates.insert(derived_predicates.end(), m_problem->get_derived_predicates().begin(), m_problem->get_derived_predicates().end());
 
     m_partitioning = compute_axiom_partitioning(axioms, derived_predicates);
@@ -172,16 +172,16 @@ AxiomEvaluator::AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> p
 
     auto static_initial_atoms = GroundAtomList<Static> {};
     to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
-    const auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_static_predicates(), static_initial_atoms);
+    const auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
 
     for (const auto& axiom : axioms)
     {
         m_condition_grounders.emplace(axiom,
                                       ConditionGrounder<PartiallyExtendedState>(m_problem,
                                                                                 axiom->get_parameters(),
-                                                                                axiom->get_static_conditions(),
-                                                                                axiom->get_fluent_conditions(),
-                                                                                axiom->get_derived_conditions(),
+                                                                                axiom->get_conditions<Static>(),
+                                                                                axiom->get_conditions<Fluent>(),
+                                                                                axiom->get_conditions<Derived>(),
                                                                                 static_assignment_set,
                                                                                 m_pddl_factories));
     }
@@ -233,9 +233,9 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_pddl_factories->ground_and_fill_bitset(axiom->get_fluent_conditions(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_pddl_factories->ground_and_fill_bitset(axiom->get_static_conditions(), positive_static_precondition, negative_static_precondition, binding);
-    m_pddl_factories->ground_and_fill_bitset(axiom->get_derived_conditions(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(axiom->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(axiom->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
+    m_pddl_factories->ground_and_fill_bitset(axiom->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Effect */
 

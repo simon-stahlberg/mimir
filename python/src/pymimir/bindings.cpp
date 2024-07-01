@@ -301,9 +301,18 @@ void init_pymimir(py::module_& m)
     py::class_<EffectConditionalImpl>(m, "ConditionalEffect")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalImpl>::str, py::const_))
         .def("get_identifier", &EffectConditionalImpl::get_identifier)
-        .def("get_static_conditions", &EffectConditionalImpl::get_static_conditions, py::return_value_policy::reference)
-        .def("get_fluent_conditions", &EffectConditionalImpl::get_fluent_conditions, py::return_value_policy::reference)
-        .def("get_derived_conditions", &EffectConditionalImpl::get_derived_conditions, py::return_value_policy::reference)
+        .def(
+            "get_static_conditions",
+            [](const EffectConditionalImpl& self) { return self.get_conditions<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_fluent_conditions",
+            [](const EffectConditionalImpl& self) { return self.get_conditions<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_derived_conditions",
+            [](const EffectConditionalImpl& self) { return self.get_conditions<Derived>(); },
+            py::return_value_policy::reference)
         .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference);
 
     py::class_<FunctionExpressionVariant>(m, "FunctionExpression")  //
@@ -317,9 +326,18 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<EffectUniversalImpl>::str, py::const_))
         .def("get_identifier", &EffectUniversalImpl::get_identifier)
         .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_static_conditions", &EffectUniversalImpl::get_static_conditions, py::return_value_policy::reference)
-        .def("get_fluent_conditions", &EffectUniversalImpl::get_fluent_conditions, py::return_value_policy::reference)
-        .def("get_derived_conditions", &EffectUniversalImpl::get_derived_conditions, py::return_value_policy::reference)
+        .def(
+            "get_static_conditions",
+            [](const EffectUniversalImpl& self) { return self.get_conditions<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_fluent_conditions",
+            [](const EffectUniversalImpl& self) { return self.get_conditions<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_derived_conditions",
+            [](const EffectUniversalImpl& self) { return self.get_conditions<Derived>(); },
+            py::return_value_policy::reference)
         .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference);
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
@@ -427,9 +445,18 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &ActionImpl::get_identifier)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
         .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
-        .def("get_static_conditions", &ActionImpl::get_static_conditions, py::return_value_policy::reference)
-        .def("get_fluent_conditions", &ActionImpl::get_fluent_conditions, py::return_value_policy::reference)
-        .def("get_derived_conditions", &ActionImpl::get_derived_conditions, py::return_value_policy::reference)
+        .def(
+            "get_static_conditions",
+            [](const ActionImpl& self) { return self.get_conditions<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_fluent_conditions",
+            [](const ActionImpl& self) { return self.get_conditions<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_derived_conditions",
+            [](const ActionImpl& self) { return self.get_conditions<Derived>(); },
+            py::return_value_policy::reference)
         .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference)
         .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference)
         .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference)
@@ -439,9 +466,18 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
         .def("get_identifier", &AxiomImpl::get_identifier)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
-        .def("get_static_conditions", &AxiomImpl::get_static_conditions, py::return_value_policy::reference)
-        .def("get_fluent_conditions", &AxiomImpl::get_fluent_conditions, py::return_value_policy::reference)
-        .def("get_derived_conditions", &AxiomImpl::get_derived_conditions, py::return_value_policy::reference)
+        .def(
+            "get_static_conditions",
+            [](const AxiomImpl& self) { return self.get_conditions<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_fluent_conditions",
+            [](const AxiomImpl& self) { return self.get_conditions<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_derived_conditions",
+            [](const AxiomImpl& self) { return self.get_conditions<Derived>(); },
+            py::return_value_policy::reference)
         .def("get_arity", &AxiomImpl::get_arity);
 
     py::class_<DomainImpl>(m, "Domain")  //
@@ -449,12 +485,33 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &DomainImpl::get_identifier)
         .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference)
         .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference)
-        .def("get_fluent_predicates", &DomainImpl::get_fluent_predicates, py::return_value_policy::reference)
-        .def("get_static_predicates", &DomainImpl::get_static_predicates, py::return_value_policy::reference)
-        .def("get_derived_predicates", &DomainImpl::get_derived_predicates, py::return_value_policy::reference)
+        .def(
+            "get_static_predicates",
+            [](const DomainImpl& self) { return self.get_predicates<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_fluent_predicates",
+            [](const DomainImpl& self) { return self.get_predicates<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_derived_predicates",
+            [](const DomainImpl& self) { return self.get_predicates<Derived>(); },
+            py::return_value_policy::reference)
         .def("get_functions", &DomainImpl::get_functions, py::return_value_policy::reference)
         .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference)
-        .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference);
+        .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference)
+        .def(
+            "get_name_to_static_predicate",
+            [](const DomainImpl& self) { return self.get_name_to_predicate<Static>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_name_to_fluent_predicate",
+            [](const DomainImpl& self) { return self.get_name_to_predicate<Fluent>(); },
+            py::return_value_policy::reference)
+        .def(
+            "get_name_to_derived_predicate",
+            [](const DomainImpl& self) { return self.get_name_to_predicate<Derived>(); },
+            py::return_value_policy::reference);
 
     py::class_<ProblemImpl>(m, "Problem")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ProblemImpl>::str, py::const_))
@@ -469,15 +526,15 @@ void init_pymimir(py::module_& m)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference)
         .def(
             "get_static_goal_condition",
-            [](ProblemImpl& self) { return self.get_goal_condition<Static>(); },
+            [](const ProblemImpl& self) { return self.get_goal_condition<Static>(); },
             py::return_value_policy::reference)
         .def(
             "get_fluent_goal_condition",
-            [](ProblemImpl& self) { return self.get_goal_condition<Fluent>(); },
+            [](const ProblemImpl& self) { return self.get_goal_condition<Fluent>(); },
             py::return_value_policy::reference)
         .def(
             "get_derived_goal_condition",
-            [](ProblemImpl& self) { return self.get_goal_condition<Derived>(); },
+            [](const ProblemImpl& self) { return self.get_goal_condition<Derived>(); },
             py::return_value_policy::reference);
 
     py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //

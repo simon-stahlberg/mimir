@@ -66,6 +66,8 @@ template<PredicateCategory P>
 using GroundLiteral = const GroundLiteralImpl<P>*;
 template<PredicateCategory P>
 using GroundLiteralList = std::vector<GroundLiteral<P>>;
+template<PredicateCategory P>
+using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
 
 /**
  * Implementation details

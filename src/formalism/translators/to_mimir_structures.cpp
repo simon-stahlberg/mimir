@@ -285,15 +285,15 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki:
     auto parameters = translate_common(predicate.get_parameters());
     if (predicate_category == PredicateCategoryEnum::FLUENT)
     {
-        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), parameters));
+        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_predicate<Fluent>(predicate.get_name(), parameters));
     }
     else if (predicate_category == PredicateCategoryEnum::STATIC)
     {
-        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), parameters));
+        result = StaticOrFluentOrDerivedPredicate(m_pddl_factories.get_or_create_predicate<Static>(predicate.get_name(), parameters));
     }
     else if (predicate_category == PredicateCategoryEnum::DERIVED)
     {
-        const auto derived_predicate = m_pddl_factories.get_or_create_derived_predicate(predicate.get_name(), parameters);
+        const auto derived_predicate = m_pddl_factories.get_or_create_predicate<Derived>(predicate.get_name(), parameters);
         m_derived_predicates_by_name.emplace(derived_predicate->get_name(), derived_predicate);
         result = StaticOrFluentOrDerivedPredicate(derived_predicate);
     }
@@ -652,10 +652,10 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
         // and is not part of the predicates section.
         // The parameters of the derived predicate are only those needed for ground the head
         // and do not contain other parameters obtained from other free variables.
-        m_derived_predicates_by_name.emplace(
-            derived_predicate_name,
-            m_pddl_factories.get_or_create_derived_predicate(derived_predicate_name,
-                                                             VariableList(parameters.begin(), parameters.begin() + axiom.get_num_parameters_to_ground_head())));
+        m_derived_predicates_by_name.emplace(derived_predicate_name,
+                                             m_pddl_factories.get_or_create_predicate<Derived>(
+                                                 derived_predicate_name,
+                                                 VariableList(parameters.begin(), parameters.begin() + axiom.get_num_parameters_to_ground_head())));
     }
     const auto derived_predicate = m_derived_predicates_by_name.at(axiom.get_derived_predicate_name());
 
@@ -979,7 +979,7 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     }
 
     auto problem_and_domain_derived_predicates = derived_predicates;
-    const auto& domain_derived_predicates = translated_domain->get_derived_predicates();
+    const auto& domain_derived_predicates = translated_domain->get_predicates<Derived>();
     problem_and_domain_derived_predicates.insert(problem_and_domain_derived_predicates.end(),
                                                  domain_derived_predicates.begin(),
                                                  domain_derived_predicates.end());

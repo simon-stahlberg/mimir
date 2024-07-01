@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_AXIOM_HPP_
 #define MIMIR_FORMALISM_AXIOM_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/variable.hpp"
@@ -59,9 +60,8 @@ private:
 public:
     const VariableList& get_parameters() const;
     const Literal<Derived>& get_literal() const;
-    const LiteralList<Static>& get_static_conditions() const;
-    const LiteralList<Fluent>& get_fluent_conditions() const;
-    const LiteralList<Derived>& get_derived_conditions() const;
+    template<PredicateCategory P>
+    const LiteralList<P>& get_conditions() const;
 
     size_t get_arity() const;
 };
@@ -73,6 +73,31 @@ public:
 using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;
 using AxiomSet = std::unordered_set<Axiom>;
+
+/**
+ * Implementations
+ */
+
+template<PredicateCategory P>
+const LiteralList<P>& AxiomImpl::get_conditions() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_conditions;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
 
 }
 

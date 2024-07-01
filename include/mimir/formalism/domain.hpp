@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -77,16 +78,14 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_constants() const;
-    const PredicateList<Static>& get_static_predicates() const;
-    const PredicateList<Fluent>& get_fluent_predicates() const;
-    const PredicateList<Derived>& get_derived_predicates() const;
+    template<PredicateCategory P>
+    const PredicateList<P>& get_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
-    const ToPredicateMap<std::string, Static>& get_name_to_static_predicate() const;
-    const ToPredicateMap<std::string, Fluent>& get_name_to_fluent_predicate() const;
-    const ToPredicateMap<std::string, Derived>& get_name_to_derived_predicate() const;
+    template<PredicateCategory P>
+    const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
 };
 
 /**
@@ -96,6 +95,51 @@ public:
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
 
+/**
+ * Implementations
+ */
+
+template<PredicateCategory P>
+const PredicateList<P>& DomainImpl::get_predicates() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_predicates;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_predicates;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_predicates;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template<PredicateCategory P>
+const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_name_to_static_predicate;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_name_to_fluent_predicate;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_name_to_derived_predicate;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
 }
 
 #endif

@@ -39,9 +39,9 @@ void ProblemColorFunction::initialize_predicates()
         }
     };
 
-    add_predicates(m_problem->get_domain()->get_static_predicates());
-    add_predicates(m_problem->get_domain()->get_fluent_predicates());
-    add_predicates(m_problem->get_domain()->get_derived_predicates());
+    add_predicates(m_problem->get_domain()->get_predicates<Static>());
+    add_predicates(m_problem->get_domain()->get_predicates<Fluent>());
+    add_predicates(m_problem->get_domain()->get_predicates<Derived>());
 
     // Sort the vector lexicographically by the string in the pair
     std::sort(lexicographically_sorted_predicates.begin(),

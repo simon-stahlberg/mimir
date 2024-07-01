@@ -160,15 +160,17 @@ protected:
     void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(*effect.get_effect()); }
     void prepare_impl(const EffectConditionalImpl& effect)
     {
-        this->prepare(effect.get_static_conditions());
-        this->prepare(effect.get_fluent_conditions());
+        this->prepare(effect.get_conditions<Static>());
+        this->prepare(effect.get_conditions<Fluent>());
+        this->prepare(effect.get_conditions<Derived>());
         this->prepare(*effect.get_effect());
     }
     void prepare_impl(const EffectUniversalImpl& effect)
     {
         this->prepare(effect.get_parameters());
-        this->prepare(effect.get_static_conditions());
-        this->prepare(effect.get_fluent_conditions());
+        this->prepare(effect.get_conditions<Static>());
+        this->prepare(effect.get_conditions<Fluent>());
+        this->prepare(effect.get_conditions<Derived>());
         this->prepare(*effect.get_effect());
     }
     void prepare_impl(const FunctionExpressionNumberImpl& function_expression) {}
@@ -211,9 +213,9 @@ protected:
     void prepare_impl(const ActionImpl& action)
     {
         this->prepare(action.get_parameters());
-        this->prepare(action.get_static_conditions());
-        this->prepare(action.get_fluent_conditions());
-        this->prepare(action.get_derived_conditions());
+        this->prepare(action.get_conditions<Static>());
+        this->prepare(action.get_conditions<Fluent>());
+        this->prepare(action.get_conditions<Derived>());
         this->prepare(action.get_simple_effects());
         this->prepare(action.get_conditional_effects());
         this->prepare(action.get_universal_effects());
@@ -222,18 +224,18 @@ protected:
     void prepare_impl(const AxiomImpl& axiom)
     {
         this->prepare(axiom.get_parameters());
-        this->prepare(axiom.get_static_conditions());
-        this->prepare(axiom.get_fluent_conditions());
-        this->prepare(axiom.get_derived_conditions());
+        this->prepare(axiom.get_conditions<Static>());
+        this->prepare(axiom.get_conditions<Fluent>());
+        this->prepare(axiom.get_conditions<Derived>());
         this->prepare(*axiom.get_literal());
     }
     void prepare_impl(const DomainImpl& domain)
     {
         this->prepare(*domain.get_requirements());
         this->prepare(domain.get_constants());
-        this->prepare(domain.get_static_predicates());
-        this->prepare(domain.get_fluent_predicates());
-        this->prepare(domain.get_derived_predicates());
+        this->prepare(domain.get_predicates<Static>());
+        this->prepare(domain.get_predicates<Fluent>());
+        this->prepare(domain.get_predicates<Derived>());
         this->prepare(domain.get_functions());
         this->prepare(domain.get_actions());
         this->prepare(domain.get_axioms());
@@ -367,15 +369,15 @@ protected:
     }
     Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate)
     {
-        return this->m_pddl_factories.get_or_create_static_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_factories.get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     Predicate<Fluent> transform_impl(const PredicateImpl<Fluent>& predicate)
     {
-        return this->m_pddl_factories.get_or_create_fluent_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_factories.get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate)
     {
-        return this->m_pddl_factories.get_or_create_derived_predicate(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_factories.get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     template<PredicateCategory P>
     Atom<P> transform_impl(const AtomImpl<P>& atom)
@@ -407,17 +409,17 @@ protected:
     }
     EffectConditional transform_impl(const EffectConditionalImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_conditional_effect(this->transform(effect.get_static_conditions()),
-                                                                       this->transform(effect.get_fluent_conditions()),
-                                                                       this->transform(effect.get_derived_conditions()),
+        return this->m_pddl_factories.get_or_create_conditional_effect(this->transform(effect.get_conditions<Static>()),
+                                                                       this->transform(effect.get_conditions<Fluent>()),
+                                                                       this->transform(effect.get_conditions<Derived>()),
                                                                        this->transform(*effect.get_effect()));
     }
     EffectUniversal transform_impl(const EffectUniversalImpl& effect)
     {
         return this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
-                                                                     this->transform(effect.get_static_conditions()),
-                                                                     this->transform(effect.get_fluent_conditions()),
-                                                                     this->transform(effect.get_derived_conditions()),
+                                                                     this->transform(effect.get_conditions<Static>()),
+                                                                     this->transform(effect.get_conditions<Fluent>()),
+                                                                     this->transform(effect.get_conditions<Derived>()),
                                                                      this->transform(*effect.get_effect()));
     }
     FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
@@ -493,9 +495,9 @@ protected:
         return this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                            action.get_original_arity(),
                                                            this->transform(action.get_parameters()),
-                                                           this->transform(action.get_static_conditions()),
-                                                           this->transform(action.get_fluent_conditions()),
-                                                           this->transform(action.get_derived_conditions()),
+                                                           this->transform(action.get_conditions<Static>()),
+                                                           this->transform(action.get_conditions<Fluent>()),
+                                                           this->transform(action.get_conditions<Derived>()),
                                                            this->transform(action.get_simple_effects()),
                                                            this->transform(action.get_conditional_effects()),
                                                            this->transform(action.get_universal_effects()),
@@ -505,18 +507,18 @@ protected:
     {
         return this->m_pddl_factories.get_or_create_axiom(this->transform(axiom.get_parameters()),
                                                           this->transform(*axiom.get_literal()),
-                                                          this->transform(axiom.get_static_conditions()),
-                                                          this->transform(axiom.get_fluent_conditions()),
-                                                          this->transform(axiom.get_derived_conditions()));
+                                                          this->transform(axiom.get_conditions<Static>()),
+                                                          this->transform(axiom.get_conditions<Fluent>()),
+                                                          this->transform(axiom.get_conditions<Derived>()));
     }
     Domain transform_impl(const DomainImpl& domain)
     {
         return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
                                                            this->transform(*domain.get_requirements()),
                                                            this->transform(domain.get_constants()),
-                                                           this->transform(domain.get_static_predicates()),
-                                                           this->transform(domain.get_fluent_predicates()),
-                                                           this->transform(domain.get_derived_predicates()),
+                                                           this->transform(domain.get_predicates<Static>()),
+                                                           this->transform(domain.get_predicates<Fluent>()),
+                                                           this->transform(domain.get_predicates<Derived>()),
                                                            this->transform(domain.get_functions()),
                                                            this->transform(domain.get_actions()),
                                                            this->transform(domain.get_axioms()));

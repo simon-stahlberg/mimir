@@ -88,7 +88,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 }
 
 Graphs::Graphs(Problem problem, Action action, const AssignmentSet<Static>& static_assignment_set) :
-    m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_static_conditions(), static_assignment_set))
+    m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_conditions<Static>(), static_assignment_set))
 {
     m_universal_effects.reserve(action->get_universal_effects().size());
     for (const auto& universal_effect : action->get_universal_effects())
@@ -96,7 +96,7 @@ Graphs::Graphs(Problem problem, Action action, const AssignmentSet<Static>& stat
         m_universal_effects.push_back(StaticConsistencyGraph(problem,
                                                              action->get_arity(),
                                                              action->get_arity() + universal_effect->get_arity(),
-                                                             universal_effect->get_static_conditions(),
+                                                             universal_effect->get_conditions<Static>(),
                                                              static_assignment_set));
     }
 }
@@ -110,7 +110,10 @@ std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGr
     const auto& [graph, pddl_factories] = data;
 
     const auto create_node = [](const Vertex& vertex, const PDDLFactories& pddl_factories, std::ostream& out)
-    { out << "  \"" << vertex.get_id() << "\" [label=\"#" << vertex.get_parameter_index() << " <- " << *pddl_factories.get_object(vertex.get_object_id()) << "\"];\n"; };
+    {
+        out << "  \"" << vertex.get_id() << "\" [label=\"#" << vertex.get_parameter_index() << " <- " << *pddl_factories.get_object(vertex.get_object_id())
+            << "\"];\n";
+    };
 
     const auto create_edge = [](const Edge& edge, std::ostream& out)
     { out << "  \"" << edge.get_src().get_id() << "\" -- \"" << edge.get_dst().get_id() << "\";\n"; };

@@ -51,15 +51,15 @@ int main(int argc, char** argv)
 
         std::cout << std::endl;
         std::cout << "Static Predicates:" << std::endl;
-        std::cout << parser.get_domain()->get_static_predicates() << std::endl;
+        std::cout << parser.get_domain()->get_predicates<Static>() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Fluent Predicates:" << std::endl;
-        std::cout << parser.get_domain()->get_fluent_predicates() << std::endl;
+        std::cout << parser.get_domain()->get_predicates<Fluent>() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Derived Predicates:" << std::endl;
-        std::cout << parser.get_domain()->get_derived_predicates() << std::endl;
+        std::cout << parser.get_domain()->get_predicates<Derived>() << std::endl;
         std::cout << std::endl;
     }
 

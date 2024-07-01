@@ -90,12 +90,6 @@ const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 
 const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
 
-const LiteralList<Static>& AxiomImpl::get_static_conditions() const { return m_static_conditions; }
-
-const LiteralList<Fluent>& AxiomImpl::get_fluent_conditions() const { return m_fluent_conditions; }
-
-const LiteralList<Derived>& AxiomImpl::get_derived_conditions() const { return m_derived_conditions; }
-
 size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
 
 }
