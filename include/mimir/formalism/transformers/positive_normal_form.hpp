@@ -40,6 +40,7 @@ private:
     LiteralSet<Fluent> m_negative_fluent_conditions;
     LiteralSet<Fluent> m_fluent_literals;
 
+    void prepare_impl(const LiteralImpl<Static>& literal);
     void prepare_impl(const LiteralImpl<Fluent>& literal);
     void prepare_impl(const EffectConditionalImpl& effect);
     void prepare_impl(const EffectUniversalImpl& effect);
@@ -52,15 +53,33 @@ private:
                               const std::unordered_map<Literal<P>, Literal<P>>& negative_duals,
                               LiteralList<P>& out_transformed_conditions);
 
-    std::unordered_map<Literal<Fluent>, Literal<Fluent>> m_positive_duals;
-    std::unordered_map<Literal<Fluent>, Literal<Fluent>> m_negative_duals;
+    template<PredicateCategory P>
+    void compute_duals(const DomainImpl& domain,
+                       const LiteralSet<P>& negative_conditions,
+                       const std::unordered_map<Atom<P>, Literal<P>>& positive_literals_by_atom,
+                       std::unordered_map<Literal<P>, Literal<P>>& out_positive_duals,
+                       std::unordered_map<Literal<P>, Literal<P>>& out_negative_duals,
+                       std::unordered_map<Predicate<P>, Predicate<P>>& ref_dual_predicates);
+
+    std::unordered_map<Predicate<Static>, Predicate<Static>> m_static_dual_predicates;
+    std::unordered_map<Predicate<Fluent>, Predicate<Fluent>> m_fluent_dual_predicates;
+
+    std::unordered_map<Literal<Static>, Literal<Static>> m_positive_static_duals;
+    std::unordered_map<Literal<Static>, Literal<Static>> m_negative_static_duals;
+    std::unordered_map<Literal<Fluent>, Literal<Fluent>> m_positive_fluent_duals;
+    std::unordered_map<Literal<Fluent>, Literal<Fluent>> m_negative_fluent_duals;
 
     Action transform_impl(const ActionImpl& action);
     Domain transform_impl(const DomainImpl& domain);
+    Problem transform_impl(const ProblemImpl& problem);
 
 public:
     explicit PositiveNormalFormTransformer(PDDLFactories& pddl_factories);
 };
+
+/**
+ * Implementations
+ */
 
 template<PredicateCategory P>
 void PositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& conditions,
@@ -70,15 +89,52 @@ void PositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& c
     out_transformed_conditions.clear();
     for (const auto& literal : conditions)
     {
-        if (m_negative_duals.count(literal))
+        if (negative_duals.count(literal))
         {
-            out_transformed_conditions.push_back(this->m_negative_duals.at(literal));
+            out_transformed_conditions.push_back(negative_duals.at(literal));
         }
         {
             out_transformed_conditions.push_back(transform(*literal));
         }
     }
 }
+
+template<PredicateCategory P>
+void PositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
+                                                  const LiteralSet<P>& negative_conditions,
+                                                  const std::unordered_map<Atom<P>, Literal<P>>& positive_literals_by_atom,
+                                                  std::unordered_map<Literal<P>, Literal<P>>& out_positive_duals,
+                                                  std::unordered_map<Literal<P>, Literal<P>>& out_negative_duals,
+                                                  std::unordered_map<Predicate<P>, Predicate<P>>& out_dual_predicates)
+{
+    out_positive_duals.clear();
+    out_negative_duals.clear();
+    out_dual_predicates.clear();
+    for (const auto& negative_literal : negative_conditions)
+    {
+        // Create dual predicate
+        const auto& predicate = negative_literal->get_atom()->get_predicate();
+        const auto dual_predicate_name = "not " + predicate->get_name();
+        if (domain.get_name_to_predicate<P>().count(dual_predicate_name))
+        {
+            throw std::runtime_error("Tried to create dual predicate with name that already exists. Please contact the developers.");
+        }
+        const auto dual_predicate = m_pddl_factories.get_or_create_predicate<P>(dual_predicate_name, predicate->get_parameters());
+        out_dual_predicates.emplace(predicate, dual_predicate);
+
+        // Create dual literal (negative) for positive literal
+        const auto positive_literal = positive_literals_by_atom.at(negative_literal->get_atom());
+        const auto dual_for_positive_literal =
+            m_pddl_factories.get_or_create_literal(true, m_pddl_factories.get_or_create_atom(dual_predicate, positive_literal->get_atom()->get_terms()));
+        out_positive_duals.emplace(positive_literal, dual_for_positive_literal);
+
+        // Create dual literal (positive) for negative literal
+        const auto dual_for_negative_literal =
+            m_pddl_factories.get_or_create_literal(false, m_pddl_factories.get_or_create_atom(dual_predicate, negative_literal->get_atom()->get_terms()));
+        out_negative_duals.emplace(negative_literal, dual_for_negative_literal);
+    }
+}
+
 }
 
 #endif
