@@ -29,7 +29,8 @@ TEST(MimirTests, GraphsObjectGraphTest)
         // std::cout << object_graph << std::endl;
 
         object_graph.get_digraph().to_nauty_graph(nauty_graph);
-        const auto certificate = nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn());
+        const auto certificate =
+            nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(), object_graph.get_partitioning().get_partitioning());
         const auto& sorted_vertex_coloring = object_graph.get_sorted_vertex_colors();
 
         std::stringstream ss;

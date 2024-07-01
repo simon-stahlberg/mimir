@@ -154,7 +154,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     const auto abstract_initial_state_index = abstract_states.size();
     const auto& object_graph = object_graph_factory.create(initial_state);
     object_graph.get_digraph().to_nauty_graph(nauty_graph);
-    auto certificate = Certificate(nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors());
+    auto certificate = Certificate(
+        nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(), object_graph.get_partitioning().get_partitioning()),
+        object_graph.get_sorted_vertex_colors());
     abstract_states_by_certificate.emplace(certificate, abstract_initial_state_id);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_id);
     auto abstract_initial_state = FaithfulAbstractState(abstract_initial_state_id, abstract_initial_state_index, initial_state, certificate);
@@ -205,8 +207,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             // Compute certificate of successor state
             const auto& object_graph = object_graph_factory.create(successor_state);
             object_graph.get_digraph().to_nauty_graph(nauty_graph);
-            auto certificate =
-                Certificate(nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors());
+            auto certificate = Certificate(nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(),
+                                                                           object_graph.get_partitioning().get_partitioning()),
+                                           object_graph.get_sorted_vertex_colors());
             const auto it = abstract_states_by_certificate.find(certificate);
 
             // Regenerate abstract state
@@ -364,8 +367,9 @@ StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state)
 {
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
-    return m_states_by_certificate.at(
-        Certificate(m_nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors()));
+    return m_states_by_certificate.at(Certificate(
+        m_nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(), object_graph.get_partitioning().get_partitioning()),
+        object_graph.get_sorted_vertex_colors()));
 }
 
 /**

@@ -111,9 +111,7 @@ const ColorList& ObjectGraph::get_vertex_colors() const { return m_vertex_colors
 
 const ColorList& ObjectGraph::get_sorted_vertex_colors() const { return m_sorted_vertex_colors; }
 
-const std::vector<int>& ObjectGraph::get_lab() const { return m_lab; }
-
-const std::vector<int>& ObjectGraph::get_ptn() const { return m_ptn; }
+const Partitioning& ObjectGraph::get_partitioning() const { return m_partitioning; }
 
 /**
  * ObjectGraphFactory
@@ -222,16 +220,22 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     }
     std::sort(m_vertex_index_and_color.begin(), m_vertex_index_and_color.end(), [](const auto& l, const auto& r) { return l.second < r.second; });
 
-    m_object_graph.m_lab.clear();
-    m_object_graph.m_ptn.clear();
-    m_object_graph.m_lab.resize(num_vertices);
-    m_object_graph.m_ptn.resize(num_vertices);
+    m_object_graph.m_partitioning.m_vertex_index_permutation.clear();
+    m_object_graph.m_partitioning.m_partitioning.clear();
+    m_object_graph.m_partitioning.m_partition_begin.clear();
+    m_object_graph.m_partitioning.m_vertex_index_permutation.resize(num_vertices);
+    m_object_graph.m_partitioning.m_partitioning.resize(num_vertices);
+    m_object_graph.m_partitioning.m_partition_begin.push_back(0);
     for (int i = 0; i < num_vertices; ++i)
     {
         const auto& [vertex_index, color] = m_vertex_index_and_color.at(i);
         const auto next_has_same_color = ((i < num_vertices - 1) && (color == m_vertex_index_and_color[i + 1].second));
-        m_object_graph.m_lab.at(i) = vertex_index;
-        m_object_graph.m_ptn.at(i) = (next_has_same_color) ? 1 : 0;
+        m_object_graph.m_partitioning.m_vertex_index_permutation.at(i) = vertex_index;
+        m_object_graph.m_partitioning.m_partitioning.at(i) = (next_has_same_color) ? 1 : 0;
+        if (!next_has_same_color)
+        {
+            m_object_graph.m_partitioning.m_partition_begin.push_back(i + 1);
+        }
     }
 
     return m_object_graph;

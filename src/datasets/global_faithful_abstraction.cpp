@@ -234,8 +234,9 @@ StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_st
 {
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
-    return m_states_by_certificate.at(
-        Certificate(m_nauty_graph.compute_certificate(object_graph.get_lab(), object_graph.get_ptn()), object_graph.get_sorted_vertex_colors()));
+    return m_states_by_certificate.at(Certificate(
+        m_nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(), object_graph.get_partitioning().get_partitioning()),
+        object_graph.get_sorted_vertex_colors()));
 }
 
 /**

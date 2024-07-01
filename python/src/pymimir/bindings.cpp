@@ -1176,6 +1176,12 @@ void init_pymimir(py::module_& m)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 
+    // Partitioning
+    py::class_<Partitioning>(m, "Partitioning")
+        .def("get_vertex_index_permutation", &Partitioning::get_vertex_index_permutation, py::return_value_policy::reference)
+        .def("get_partitioning", &Partitioning::get_partitioning, py::return_value_policy::reference)
+        .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference);
+
     // Certificate
     py::class_<Certificate>(m, "Certificate")
         .def(py::init<std::string, ColorList>())
@@ -1215,8 +1221,7 @@ void init_pymimir(py::module_& m)
         .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference)
         .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference)
         .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference)
-        .def("get_lab", &ObjectGraph::get_lab, py::return_value_policy::reference)
-        .def("get_ptn", &ObjectGraph::get_ptn, py::return_value_policy::reference);
+        .def("get_partitioning", &ObjectGraph::get_partitioning, py::return_value_policy::reference);
 
     // ObjectGraph
     py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //

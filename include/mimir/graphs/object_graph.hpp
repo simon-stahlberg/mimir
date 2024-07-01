@@ -21,6 +21,7 @@
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/graphs/coloring.hpp"
 #include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/partitioning.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -41,9 +42,7 @@ private:
     // Initial color histogram, needed for equivalence test
     // when using vertex partitioning to take color remapping into account.
     ColorList m_sorted_vertex_colors;
-    // Vertex partitioning, uses nauty's representation, see their documentation.
-    std::vector<int> m_lab;
-    std::vector<int> m_ptn;
+    Partitioning m_partitioning;
 
     friend class ObjectGraphFactory;
 
@@ -54,8 +53,7 @@ public:
     const Digraph& get_digraph() const;
     const ColorList& get_vertex_colors() const;
     const ColorList& get_sorted_vertex_colors() const;
-    const std::vector<int>& get_lab() const;
-    const std::vector<int>& get_ptn() const;
+    const Partitioning& get_partitioning() const;
 };
 
 class ObjectGraphFactory
