@@ -369,15 +369,15 @@ protected:
     }
     Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate)
     {
-        return this->m_pddl_factories.get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_factories.template get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     Predicate<Fluent> transform_impl(const PredicateImpl<Fluent>& predicate)
     {
-        return this->m_pddl_factories.get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_factories.template get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate)
     {
-        return this->m_pddl_factories.get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_factories.template get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     template<PredicateCategory P>
     Atom<P> transform_impl(const AtomImpl<P>& atom)

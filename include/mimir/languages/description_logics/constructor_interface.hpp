@@ -44,6 +44,8 @@ protected:
     bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
 
     Constructor() = default;
+    // Move constructor and move assignment operator are protected
+    // to restrict their usage to derived classes only.
     Constructor(Constructor&& other) = default;
     Constructor& operator=(Constructor&& other) = default;
 
