@@ -76,8 +76,8 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
                                          StateIndexSet goal_states,
                                          StateIndexSet deadend_states,
                                          TransitionList transitions,
-                                         std::vector<TransitionIndexList<Forward>> forward_transitions,
-                                         std::vector<TransitionIndexList<Backward>> backward_transitions,
+                                         std::vector<TransitionIndexList> forward_transition_adjacency_lists,
+                                         std::vector<TransitionIndexList> backward_transition_adjacency_lists,
                                          std::vector<double> goal_distances) :
     m_mark_true_goal_atoms(mark_true_goal_atoms),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -91,8 +91,8 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
-    m_forward_transitions(std::move(forward_transitions)),
-    m_backward_transitions(std::move(backward_transitions)),
+    m_forward_transition_adjacency_lists(std::move(forward_transition_adjacency_lists)),
+    m_backward_transition_adjacency_lists(std::move(backward_transition_adjacency_lists)),
     m_goal_distances(std::move(goal_distances)),
     m_nauty_graph(),
     m_object_graph_factory(m_aag->get_problem(), m_parser->get_factories(), m_mark_true_goal_atoms)
@@ -164,8 +164,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     lifo_queue.push_back(abstract_initial_state);
 
     auto transitions = TransitionList {};
-    auto forward_successors = std::vector<TransitionIndexList<Forward>>(1);
-    auto backward_successors = std::vector<TransitionIndexList<Backward>>(1);
+    auto forward_transition_adjacency_lists = std::vector<TransitionIndexList>(1);
+    auto backward_transition_adjacency_lists = std::vector<TransitionIndexList>(1);
     auto abstract_goal_states = StateIndexSet {};
 
     auto applicable_actions = GroundActionList {};
@@ -198,8 +198,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                 const auto abstract_successor_state_index = abstract_successor_state.get_index();
                 const auto transition_index = transitions.size();
                 transitions.emplace_back(abstract_successor_state_index, abstract_state_index, action);
-                forward_successors.at(abstract_state_index).indices.push_back(transition_index);
-                backward_successors.at(abstract_successor_state_index).indices.push_back(transition_index);
+                forward_transition_adjacency_lists.at(abstract_state_index).push_back(transition_index);
+                backward_transition_adjacency_lists.at(abstract_successor_state_index).push_back(transition_index);
                 continue;
             }
 
@@ -220,8 +220,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                 const auto transition_index = transitions.size();
                 transitions.emplace_back(abstract_successor_state_index, abstract_state_index, action);
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
-                forward_successors.at(abstract_state_index).indices.push_back(transition_index);
-                backward_successors.at(abstract_successor_state_index).indices.push_back(transition_index);
+                forward_transition_adjacency_lists.at(abstract_state_index).push_back(transition_index);
+                backward_transition_adjacency_lists.at(abstract_successor_state_index).push_back(transition_index);
                 continue;
             }
 
@@ -236,13 +236,13 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             abstract_states_by_certificate.emplace(certificate, abstract_successor_state_index);
             concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
-            forward_successors.resize(abstract_states.size());
-            backward_successors.resize(abstract_states.size());
+            forward_transition_adjacency_lists.resize(abstract_states.size());
+            backward_transition_adjacency_lists.resize(abstract_states.size());
 
             const auto transition_index = transitions.size();
             transitions.emplace_back(abstract_successor_state_index, abstract_state_index, action);
-            forward_successors.at(abstract_state_index).indices.push_back(transition_index);
-            backward_successors.at(abstract_successor_state_index).indices.push_back(transition_index);
+            forward_transition_adjacency_lists.at(abstract_state_index).push_back(transition_index);
+            backward_transition_adjacency_lists.at(abstract_successor_state_index).push_back(transition_index);
 
             lifo_queue.push_back(abstract_successor_state);
             // Abstract states are stored by index
@@ -262,10 +262,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
         return std::nullopt;
     }
 
-    auto abstract_goal_distances = mimir::compute_shortest_distances_from_states(abstract_states.size(),
-                                                                                 StateIndexList { abstract_goal_states.begin(), abstract_goal_states.end() },
-                                                                                 transitions,
-                                                                                 backward_successors);
+    auto abstract_goal_distances =
+        mimir::compute_shortest_goal_distances_from_states(abstract_states.size(), abstract_goal_states, transitions, backward_transition_adjacency_lists);
 
     auto abstract_deadend_states = StateIndexSet {};
     for (const auto& state : abstract_states)
@@ -288,8 +286,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                std::move(abstract_goal_states),
                                std::move(abstract_deadend_states),
                                std::move(transitions),
-                               std::move(forward_successors),
-                               std::move(backward_successors),
+                               std::move(forward_transition_adjacency_lists),
+                               std::move(backward_transition_adjacency_lists),
                                std::move(abstract_goal_distances));
 }
 
@@ -441,9 +439,9 @@ size_t FaithfulAbstraction::get_num_transitions() const { return m_transitions.s
 
 const TransitionList& FaithfulAbstraction::get_transitions() const { return m_transitions; }
 
-const std::vector<TransitionIndexList<Forward>>& FaithfulAbstraction::get_forward_transition_adjacency_lists() const { return m_forward_transitions; }
+const std::vector<TransitionIndexList>& FaithfulAbstraction::get_forward_transition_adjacency_lists() const { return m_forward_transition_adjacency_lists; }
 
-const std::vector<TransitionIndexList<Backward>>& FaithfulAbstraction::get_backward_transition_adjacency_lists() const { return m_backward_transitions; }
+const std::vector<TransitionIndexList>& FaithfulAbstraction::get_backward_transition_adjacency_lists() const { return m_backward_transition_adjacency_lists; }
 
 /* Distances */
 const std::vector<double>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }

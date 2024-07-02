@@ -165,8 +165,8 @@ public:
     /* Transitions */
     size_t get_num_transitions() const;
     const TransitionList& get_transitions() const;
-    const std::vector<TransitionIndexList<Forward>>& get_forward_transition_adjacency_lists() const;
-    const std::vector<TransitionIndexList<Backward>>& get_backward_transition_adjacency_lists() const;
+    const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const;
+    const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;

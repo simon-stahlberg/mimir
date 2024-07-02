@@ -319,12 +319,12 @@ size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstrac
 
 const TransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_transitions(); }
 
-const std::vector<TransitionIndexList<Forward>>& GlobalFaithfulAbstraction::get_forward_transition_adjacency_lists() const
+const std::vector<TransitionIndexList>& GlobalFaithfulAbstraction::get_forward_transition_adjacency_lists() const
 {
     return m_abstractions->at(m_index).get_forward_transition_adjacency_lists();
 }
 
-const std::vector<TransitionIndexList<Backward>>& GlobalFaithfulAbstraction::get_backward_transition_adjacency_lists() const
+const std::vector<TransitionIndexList>& GlobalFaithfulAbstraction::get_backward_transition_adjacency_lists() const
 {
     return m_abstractions->at(m_index).get_backward_transition_adjacency_lists();
 }

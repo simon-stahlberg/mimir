@@ -826,8 +826,8 @@ void init_pymimir(py::module_& m)
     py::class_<Transition>(m, "Transition")  //
         .def("__eq__", &Transition::operator==)
         .def("__hash__", &Transition::hash)
-        .def("get_forward_successor", &Transition::get_successor<Forward>)
-        .def("get_backward_successor", &Transition::get_successor<Backward>)
+        .def("get_forward_successor", &Transition::get_forward_successor)
+        .def("get_backward_successor", &Transition::get_backward_successor)
         .def("get_creating_action", &Transition::get_creating_action);
 
     // StateSpace

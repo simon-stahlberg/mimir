@@ -37,8 +37,8 @@ StateSpace::StateSpace(bool use_unit_cost_one,
                        StateIndexSet goal_states,
                        StateIndexSet deadend_states,
                        TransitionList transitions,
-                       std::vector<TransitionIndexList<Forward>> forward_transitions,
-                       std::vector<TransitionIndexList<Backward>> backward_transitions,
+                       std::vector<TransitionIndexList> forward_transition_adjacency_lists,
+                       std::vector<TransitionIndexList> backward_transition_adjacency_lists,
                        std::vector<double> goal_distances) :
     m_use_unit_cost_one(use_unit_cost_one),
     m_parser(std::move(parser)),
@@ -50,8 +50,8 @@ StateSpace::StateSpace(bool use_unit_cost_one,
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
-    m_forward_transitions(std::move(forward_transitions)),
-    m_backward_transitions(std::move(backward_transitions)),
+    m_forward_transition_adjacency_lists(std::move(forward_transition_adjacency_lists)),
+    m_backward_transition_adjacency_lists(std::move(backward_transition_adjacency_lists)),
     m_goal_distances(std::move(goal_distances)),
     m_states_by_goal_distance()
 {
@@ -102,8 +102,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     auto state_to_index = StateMap<StateIndex> {};
     state_to_index[initial_state] = initial_state_index;
     auto transitions = TransitionList {};
-    auto forward_transitions = std::vector<TransitionIndexList<Forward>>(1);
-    auto backward_transitions = std::vector<TransitionIndexList<Backward>>(1);
+    auto forward_transition_adjacency_lists = std::vector<TransitionIndexList>(1);
+    auto backward_transition_adjacency_lists = std::vector<TransitionIndexList>(1);
     auto goal_states = StateIndexSet {};
 
     auto applicable_actions = GroundActionList {};
@@ -129,8 +129,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                 const auto successor_state_index = it->second;
                 const auto transition_index = transitions.size();
                 transitions.emplace_back(successor_state_index, state_index, action);
-                forward_transitions.at(state_index).indices.push_back(transition_index);
-                backward_transitions.at(successor_state_index).indices.push_back(transition_index);
+                forward_transition_adjacency_lists.at(state_index).push_back(transition_index);
+                backward_transition_adjacency_lists.at(successor_state_index).push_back(transition_index);
                 continue;
             }
 
@@ -141,13 +141,13 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                 return std::nullopt;
             }
 
-            forward_transitions.resize(states.size() + 1);
-            backward_transitions.resize(states.size() + 1);
+            forward_transition_adjacency_lists.resize(states.size() + 1);
+            backward_transition_adjacency_lists.resize(states.size() + 1);
 
             const auto transition_index = transitions.size();
             transitions.emplace_back(successor_state_index, state_index, action);
-            forward_transitions.at(state_index).indices.push_back(transition_index);
-            backward_transitions.at(successor_state_index).indices.push_back(transition_index);
+            forward_transition_adjacency_lists.at(state_index).push_back(transition_index);
+            backward_transition_adjacency_lists.at(successor_state_index).push_back(transition_index);
 
             states.push_back(successor_state);
             state_to_index[successor_state] = successor_state_index;
@@ -167,11 +167,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         return std::nullopt;
     }
 
-    auto goal_distances = mimir::compute_shortest_distances_from_states(states.size(),
-                                                                        StateIndexList { goal_states.begin(), goal_states.end() },
-                                                                        transitions,
-                                                                        backward_transitions,
-                                                                        use_unit_cost_one);
+    auto goal_distances =
+        mimir::compute_shortest_goal_distances_from_states(states.size(), goal_states, transitions, backward_transition_adjacency_lists, use_unit_cost_one);
 
     auto deadend_states = StateIndexSet {};
     for (StateIndex state_id = 0; state_id < states.size(); ++state_id)
@@ -193,8 +190,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                       std::move(goal_states),
                       std::move(deadend_states),
                       std::move(transitions),
-                      std::move(forward_transitions),
-                      std::move(backward_transitions),
+                      std::move(forward_transition_adjacency_lists),
+                      std::move(backward_transition_adjacency_lists),
                       std::move(goal_distances));
 }
 
@@ -312,9 +309,9 @@ size_t StateSpace::get_num_transitions() const { return m_transitions.size(); }
 
 const TransitionList& StateSpace::get_transitions() const { return m_transitions; }
 
-const std::vector<TransitionIndexList<Forward>>& StateSpace::get_forward_transition_adjacency_lists() const { return m_forward_transitions; }
+const std::vector<TransitionIndexList>& StateSpace::get_forward_transition_adjacency_lists() const { return m_forward_transition_adjacency_lists; }
 
-const std::vector<TransitionIndexList<Backward>>& StateSpace::get_backward_transition_adjacency_lists() const { return m_backward_transitions; }
+const std::vector<TransitionIndexList>& StateSpace::get_backward_transition_adjacency_lists() const { return m_backward_transition_adjacency_lists; }
 
 /* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }

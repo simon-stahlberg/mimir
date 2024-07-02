@@ -85,8 +85,8 @@ private:
 
     /* Transitions */
     TransitionList m_transitions;
-    std::vector<TransitionIndexList<Forward>> m_forward_transitions;
-    std::vector<TransitionIndexList<Backward>> m_backward_transitions;
+    std::vector<TransitionIndexList> m_forward_transition_adjacency_lists;
+    std::vector<TransitionIndexList> m_backward_transition_adjacency_lists;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -111,8 +111,8 @@ private:
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
                         TransitionList transitions,
-                        std::vector<TransitionIndexList<Forward>> forward_transitions,
-                        std::vector<TransitionIndexList<Backward>> backward_transitions,
+                        std::vector<TransitionIndexList> forward_transition_adjacency_lists,
+                        std::vector<TransitionIndexList> backward_transition_adjacency_lists,
                         std::vector<double> goal_distances);
 
 public:
@@ -197,8 +197,8 @@ public:
     /* Transitions */
     size_t get_num_transitions() const;
     const TransitionList& get_transitions() const;
-    const std::vector<TransitionIndexList<Forward>>& get_forward_transition_adjacency_lists() const;
-    const std::vector<TransitionIndexList<Backward>>& get_backward_transition_adjacency_lists() const;
+    const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const;
+    const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;
