@@ -75,6 +75,7 @@ private:
     // Note that state.get_id() does not yield the index within the abstraction.
     // Use abstraction.get_state_index(state) instead.
     GlobalFaithfulAbstractStateList m_states;
+    StateMap<StateIndex> m_concrete_to_abstract_state;
     GlobalFaithfulAbstractStateMap<StateIndex> m_state_to_index;
     CertificateToStateIndexMap m_states_by_certificate;
     size_t m_num_isomorphic_states;
@@ -89,6 +90,7 @@ private:
                               AbstractionIndex index,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
+                              StateMap<StateIndex> concrete_to_abstract_state,
                               GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
                               CertificateToStateIndexMap states_by_certificate,
                               size_t num_isomorphic_states,

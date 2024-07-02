@@ -77,6 +77,7 @@ private:
 
     /* States */
     FaithfulAbstractStateList m_states;
+    StateMap<StateIndex> m_concrete_to_abstract_state;
     CertificateToStateIndexMap m_states_by_certificate;
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
@@ -104,6 +105,7 @@ private:
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<SuccessorStateGenerator> ssg,
                         FaithfulAbstractStateList states,
+                        StateMap<StateIndex> concrete_to_abstract_state,
                         CertificateToStateIndexMap states_by_certificate,
                         StateIndex initial_state,
                         StateIndexSet goal_states,
@@ -180,6 +182,7 @@ public:
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
+    const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     const CertificateToStateIndexMap& get_states_by_certificate() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;

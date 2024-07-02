@@ -136,22 +136,42 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index) {
 
 // Requirement of boost::VertexListGraph
 template<IsTransitionSystem TransitionSystem>
-class VertexIterator
+class StateIndexIterator
 {
 private:
 public:
+    class const_iterator
+    {
+    private:
+        void advance();
+
+    public:
+        using difference_type = StateIndex;
+        using value_type = StateIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        // const_iterator(StateTupleIndexGenerator* data, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
 };
 
 // Requirement of boost::AdjacencyGraph
 template<IsTransitionSystem TransitionSystem>
-class OutAdjacentVertexIterator
+class OutAdjacentStateIndexIterator
 {
 private:
 public:
 };
 
 template<IsTransitionSystem TransitionSystem>
-class InAdjacentVertexIterator
+class InAdjacentStateIndexIterator
 {
 private:
 public:
@@ -159,7 +179,7 @@ public:
 
 // Requirement of boost::EdgeListGraph
 template<IsTransitionSystem TransitionSystem>
-class EdgeIterator
+class TransitionIndexIterator
 {
 private:
 public:
@@ -167,7 +187,7 @@ public:
 
 // Requirement of boost::IncidenceGraph
 template<IsTransitionSystem TransitionSystem>
-class OutEdgeIterator
+class OutTransitionIndexIterator
 {
 private:
 public:
@@ -175,7 +195,7 @@ public:
 
 // Requirement of boost::BidirectionalGraph
 template<IsTransitionSystem TransitionSystem>
-class InEdgeIterator
+class InTransitionIndexIterator
 {
 private:
 public:

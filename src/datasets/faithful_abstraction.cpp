@@ -70,6 +70,7 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
                                          std::shared_ptr<IAAG> aag,
                                          std::shared_ptr<SuccessorStateGenerator> ssg,
                                          FaithfulAbstractStateList states,
+                                         StateMap<StateIndex> concrete_to_abstract_state,
                                          CertificateToStateIndexMap states_by_certificate,
                                          StateIndex initial_state,
                                          StateIndexSet goal_states,
@@ -84,6 +85,7 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_atoms,
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
     m_states(std::move(states)),
+    m_concrete_to_abstract_state(std::move(concrete_to_abstract_state)),
     m_states_by_certificate(std::move(states_by_certificate)),
     m_initial_state(initial_state),
     m_goal_states(std::move(goal_states)),
@@ -280,6 +282,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                std::move(aag),
                                std::move(ssg),
                                std::move(abstract_states),
+                               std::move(concrete_to_abstract_state),
                                std::move(abstract_states_by_certificate),
                                abstract_initial_state_index,
                                std::move(abstract_goal_states),
@@ -364,6 +367,13 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
 
 StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state)
 {
+    // Cheap test.
+    if (m_concrete_to_abstract_state.count(concrete_state))
+    {
+        m_concrete_to_abstract_state.at(concrete_state);
+    }
+
+    // Expensive test.
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
     return m_states_by_certificate.at(Certificate(
@@ -403,6 +413,8 @@ const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() c
 
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }
+
+const StateMap<StateIndex>& FaithfulAbstraction::get_concrete_to_abstract_state() const { return m_concrete_to_abstract_state; }
 
 const CertificateToStateIndexMap& FaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
 

@@ -68,6 +68,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
                                                      AbstractionIndex id,
                                                      std::shared_ptr<FaithfulAbstractionList> abstractions,
                                                      GlobalFaithfulAbstractStateList states,
+                                                     StateMap<StateIndex> concrete_to_abstract_state,
                                                      GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
                                                      CertificateToStateIndexMap states_by_certificate,
                                                      size_t num_isomorphic_states,
@@ -77,6 +78,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
     m_index(id),
     m_abstractions(std::move(abstractions)),
     m_states(std::move(states)),
+    m_concrete_to_abstract_state(std::move(concrete_to_abstract_state)),
     m_state_to_index(std::move(state_to_index)),
     m_states_by_certificate(std::move(states_by_certificate)),
     m_num_isomorphic_states(num_isomorphic_states),
@@ -170,6 +172,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
         auto states = GlobalFaithfulAbstractStateList(
             faithful_abstraction.get_num_states(),
             GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
+        auto concrete_to_abstract_state = StateMap<StateIndex> {};
         auto state_to_index = GlobalFaithfulAbstractStateMap<StateIndex> {};
         auto states_by_certificate = CertificateToStateIndexMap {};
         for (size_t state_id = 0; state_id < faithful_abstraction.get_num_states(); ++state_id)
@@ -192,6 +195,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                 auto new_global_state = GlobalFaithfulAbstractState(new_global_state_id, abstraction_id, state_id);
                 certificate_to_global_state.emplace(state.get_certificate(), new_global_state);
                 states.at(state_id) = new_global_state;
+                concrete_to_abstract_state.emplace(state.get_state(), state_id);
                 state_to_index.emplace(new_global_state, state_id);
                 states_by_certificate.emplace(state.get_certificate(), state_id);
                 ++num_non_isomorphic_states;
@@ -216,6 +220,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                                                          abstraction_id,
                                                          relevant_faithful_abstractions,
                                                          std::move(states),
+                                                         std::move(concrete_to_abstract_state),
                                                          std::move(state_to_index),
                                                          std::move(states_by_certificate),
                                                          num_isomorphic_states,
@@ -232,6 +237,13 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
 StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_state)
 {
+    // Cheap test.
+    if (m_concrete_to_abstract_state.count(concrete_state))
+    {
+        m_concrete_to_abstract_state.at(concrete_state);
+    }
+
+    // Expensive test.
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
     return m_states_by_certificate.at(Certificate(
