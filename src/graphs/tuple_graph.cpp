@@ -221,14 +221,16 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     const auto empty_tuple_index = m_tuple_graph.m_tuple_index_mapper->get_empty_tuple_index();
     const auto root_state_vertex_index = 0;
     const auto root_state_index = m_tuple_graph.m_state_space->get_state_index(m_tuple_graph.get_root_state());
-    const auto& transitions = m_tuple_graph.m_state_space->get_forward_transitions().at(root_state_index);
-    m_tuple_graph.m_forward_successors.resize(m_tuple_graph.m_vertices.size() + transitions.size());
-    m_tuple_graph.m_backward_successors.resize(m_tuple_graph.m_vertices.size() + transitions.size());
+    const auto& transitions = m_tuple_graph.m_state_space->get_transitions();
+    const auto& transition_indices = m_tuple_graph.m_state_space->get_forward_transition_adjacency_lists().at(root_state_index).indices;
+    m_tuple_graph.m_forward_successors.resize(m_tuple_graph.m_vertices.size() + transition_indices.size());
+    m_tuple_graph.m_backward_successors.resize(m_tuple_graph.m_vertices.size() + transition_indices.size());
     auto vertex_indices_layer = VertexIndexList {};
     auto states_layer = StateList {};
-    for (const auto& transition : transitions)
+    for (const auto& transition_index : transition_indices)
     {
-        const auto succ_state_index = transition.get_successor_state();
+        const auto& transition = transitions.at(transition_index);
+        const auto succ_state_index = transition.get_successor<Forward>();
         const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
         if (succ_state == m_tuple_graph.get_root_state())
         {
@@ -311,12 +313,14 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
     // Clear data structures
     cur_states.clear();
 
+    const auto& transitions = m_tuple_graph.get_state_space()->get_transitions();
     for (const auto& state : m_tuple_graph.m_states_by_distance.back())
     {
         const auto state_index = m_tuple_graph.m_state_space->get_state_index(state);
-        for (const auto& transition : m_tuple_graph.m_state_space->get_forward_transitions().at(state_index))
+        for (const auto& transition_index : m_tuple_graph.m_state_space->get_forward_transition_adjacency_lists().at(state_index).indices)
         {
-            const auto succ_state_index = transition.get_successor_state();
+            const auto& transition = transitions.at(transition_index);
+            const auto succ_state_index = transition.get_successor<Forward>();
             const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
 
             if (!visited_states.count(succ_state))
@@ -358,8 +362,9 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
     cur_extended_novel_tuple_indices.clear();
     cur_extended_novel_tuple_index_to_prev_vertices.clear();
 
-    const auto& forward_transitions = m_tuple_graph.m_state_space->get_forward_transitions();
+    const auto& forward_transitions = m_tuple_graph.m_state_space->get_forward_transition_adjacency_lists();
 
+    const auto& transitions = m_tuple_graph.get_state_space()->get_transitions();
     for (auto& prev_vertex : cur_vertices)
     {
         cur_novel_tuple_index_to_extended_state.clear();
@@ -368,9 +373,10 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
         for (const auto state : m_tuple_graph.m_vertices.at(prev_vertex).get_states())
         {
             const auto state_index = m_tuple_graph.m_state_space->get_state_index(state);
-            for (const auto& transition : forward_transitions.at(state_index))
+            for (const auto& transition_index : forward_transitions.at(state_index).indices)
             {
-                const auto succ_state_index = transition.get_successor_state();
+                const auto& transition = transitions.at(transition_index);
+                const auto succ_state_index = transition.get_successor<Forward>();
                 const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
 
                 if (state_to_novel_tuple_indices.count(succ_state))

@@ -826,7 +826,8 @@ void init_pymimir(py::module_& m)
     py::class_<Transition>(m, "Transition")  //
         .def("__eq__", &Transition::operator==)
         .def("__hash__", &Transition::hash)
-        .def("get_successor_state", &Transition::get_successor_state)
+        .def("get_forward_successor", &Transition::get_successor<Forward>)
+        .def("get_backward_successor", &Transition::get_successor<Backward>)
         .def("get_creating_action", &Transition::get_creating_action);
 
     // StateSpace
@@ -935,8 +936,8 @@ void init_pymimir(py::module_& m)
         .def("is_deadend_state", &StateSpace::is_deadend_state)
         .def("is_alive_state", &StateSpace::is_alive_state)
         .def("get_num_transitions", &StateSpace::get_num_transitions)
-        .def("get_forward_transitions", &StateSpace::get_forward_transitions, py::return_value_policy::reference)
-        .def("get_backward_transitions", &StateSpace::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_forward_transition_adjacency_lists", &StateSpace::get_forward_transition_adjacency_lists, py::return_value_policy::reference)
+        .def("get_backward_transition_adjacency_lists", &StateSpace::get_backward_transition_adjacency_lists, py::return_value_policy::reference)
         .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference)
         .def("get_goal_distance", &StateSpace::get_goal_distance)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
@@ -960,13 +961,12 @@ void init_pymimir(py::module_& m)
         .def("is_deadend_state", &Abstraction::is_deadend_state)
         .def("is_alive_state", &Abstraction::is_alive_state)
         .def("get_num_transitions", &Abstraction::get_num_transitions)
-        .def("get_forward_transitions", &Abstraction::get_forward_transitions, py::return_value_policy::reference)
-        .def("get_backward_transitions", &Abstraction::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_forward_transition_adjacency_lists", &Abstraction::get_forward_transition_adjacency_lists, py::return_value_policy::reference)
+        .def("get_backward_transition_adjacency_lists", &Abstraction::get_backward_transition_adjacency_lists, py::return_value_policy::reference)
         .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference);
 
     // FaithfulAbstraction
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
-        .def("get_id", &FaithfulAbstractState::get_id)
         .def("get_index", &FaithfulAbstractState::get_index)
         .def("get_state", &FaithfulAbstractState::get_state)
         .def("get_certificate", &FaithfulAbstractState::get_certificate);
@@ -1094,8 +1094,8 @@ void init_pymimir(py::module_& m)
         .def("is_deadend_state", &FaithfulAbstraction::is_deadend_state)
         .def("is_alive_state", &FaithfulAbstraction::is_alive_state)
         .def("get_num_transitions", &FaithfulAbstraction::get_num_transitions)
-        .def("get_forward_transitions", &FaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
-        .def("get_backward_transitions", &FaithfulAbstraction::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_forward_transition_adjacency_lists", &FaithfulAbstraction::get_forward_transition_adjacency_lists, py::return_value_policy::reference)
+        .def("get_backward_transition_adjacency_lists", &FaithfulAbstraction::get_backward_transition_adjacency_lists, py::return_value_policy::reference)
         .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
 
     // GlobalFaithfulAbstraction
@@ -1189,8 +1189,8 @@ void init_pymimir(py::module_& m)
         .def("get_num_isomorphic_states", &GlobalFaithfulAbstraction::get_num_isomorphic_states)
         .def("get_num_non_isomorphic_states", &GlobalFaithfulAbstraction::get_num_non_isomorphic_states)
         .def("get_num_transitions", &GlobalFaithfulAbstraction::get_num_transitions)
-        .def("get_forward_transitions", &GlobalFaithfulAbstraction::get_forward_transitions, py::return_value_policy::reference)
-        .def("get_backward_transitions", &GlobalFaithfulAbstraction::get_backward_transitions, py::return_value_policy::reference)
+        .def("get_forward_transition_adjacency_lists", &GlobalFaithfulAbstraction::get_forward_transition_adjacency_lists, py::return_value_policy::reference)
+        .def("get_backward_transition_adjacency_lists", &GlobalFaithfulAbstraction::get_backward_transition_adjacency_lists, py::return_value_policy::reference)
         .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

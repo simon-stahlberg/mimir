@@ -74,8 +74,9 @@ private:
 
         /* Transitions */
         virtual size_t get_num_transitions() const = 0;
-        virtual const std::vector<TransitionList>& get_forward_transitions() const = 0;
-        virtual const std::vector<TransitionList>& get_backward_transitions() const = 0;
+        virtual const TransitionList& get_transitions() const = 0;
+        virtual const std::vector<TransitionIndexList<Forward>>& get_forward_transition_adjacency_lists() const = 0;
+        virtual const std::vector<TransitionIndexList<Backward>>& get_backward_transition_adjacency_lists() const = 0;
 
         /* Distances */
         virtual const std::vector<double>& get_goal_distances() const = 0;
@@ -114,8 +115,15 @@ private:
 
         /* Transitions */
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
-        const std::vector<TransitionList>& get_forward_transitions() const override { return m_abstraction.get_forward_transitions(); }
-        const std::vector<TransitionList>& get_backward_transitions() const override { return m_abstraction.get_backward_transitions(); }
+        const TransitionList& get_transitions() const { return m_abstraction.get_transitions(); }
+        const std::vector<TransitionIndexList<Forward>>& get_forward_transition_adjacency_lists() const override
+        {
+            return m_abstraction.get_forward_transition_adjacency_lists();
+        }
+        const std::vector<TransitionIndexList<Backward>>& get_backward_transition_adjacency_lists() const override
+        {
+            return m_abstraction.get_backward_transition_adjacency_lists();
+        }
 
         /* Distances */
         const std::vector<double>& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
@@ -168,8 +176,15 @@ public:
 
     /* Transitions */
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
-    const std::vector<TransitionList>& get_forward_transitions() const { return m_pimpl->get_forward_transitions(); }
-    const std::vector<TransitionList>& get_backward_transitions() const { return m_pimpl->get_backward_transitions(); }
+    const TransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
+    const std::vector<TransitionIndexList<Forward>>& get_forward_transition_adjacency_lists() const
+    {
+        return m_pimpl->get_forward_transition_adjacency_lists();
+    }
+    const std::vector<TransitionIndexList<Backward>>& get_backward_transition_adjacency_lists() const
+    {
+        return m_pimpl->get_backward_transition_adjacency_lists();
+    }
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const { return m_pimpl->get_goal_distances(); }

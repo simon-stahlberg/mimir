@@ -46,12 +46,11 @@ private:
     Certificate m_certificate;
 
 public:
-    FaithfulAbstractState(StateId id, StateIndex index, State state, Certificate certificate);
+    FaithfulAbstractState(StateIndex index, State state, Certificate certificate);
 
     [[nodiscard]] bool operator==(const FaithfulAbstractState& other) const;
     [[nodiscard]] size_t hash() const;
 
-    StateId get_id() const;
     StateIndex get_index() const;
     State get_state() const;
     const Certificate& get_certificate() const;
@@ -84,9 +83,9 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Transitions */
-    size_t m_num_transitions;
-    std::vector<TransitionList> m_forward_transitions;
-    std::vector<TransitionList> m_backward_transitions;
+    TransitionList m_transitions;
+    std::vector<TransitionIndexList<Forward>> m_forward_transitions;
+    std::vector<TransitionIndexList<Backward>> m_backward_transitions;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -109,9 +108,9 @@ private:
                         StateIndex initial_state,
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
-                        size_t num_transitions,
-                        std::vector<TransitionList> forward_transitions,
-                        std::vector<TransitionList> backward_transitions,
+                        TransitionList transitions,
+                        std::vector<TransitionIndexList<Forward>> forward_transitions,
+                        std::vector<TransitionIndexList<Backward>> backward_transitions,
                         std::vector<double> goal_distances);
 
 public:
@@ -194,8 +193,9 @@ public:
 
     /* Transitions */
     size_t get_num_transitions() const;
-    const std::vector<TransitionList>& get_forward_transitions() const;
-    const std::vector<TransitionList>& get_backward_transitions() const;
+    const TransitionList& get_transitions() const;
+    const std::vector<TransitionIndexList<Forward>>& get_forward_transition_adjacency_lists() const;
+    const std::vector<TransitionIndexList<Backward>>& get_backward_transition_adjacency_lists() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;

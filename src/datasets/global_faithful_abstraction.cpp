@@ -245,12 +245,12 @@ StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_st
 
 std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& abstract_states, bool forward) const
 {
-    return mimir::compute_shortest_distances_from_states(*this, abstract_states, forward);
+    throw std::runtime_error("Not implemented");
 }
 
 std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances(bool forward) const
 {
-    return mimir::compute_pairwise_shortest_state_distances(*this, forward);
+    throw std::runtime_error("Not implemented");
 }
 
 /**
@@ -305,11 +305,16 @@ size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return
 /* Transitions */
 size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstractions->at(m_index).get_num_transitions(); }
 
-const std::vector<TransitionList>& GlobalFaithfulAbstraction::get_forward_transitions() const { return m_abstractions->at(m_index).get_forward_transitions(); }
+const TransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_transitions(); }
 
-const std::vector<TransitionList>& GlobalFaithfulAbstraction::get_backward_transitions() const
+const std::vector<TransitionIndexList<Forward>>& GlobalFaithfulAbstraction::get_forward_transition_adjacency_lists() const
 {
-    return m_abstractions->at(m_index).get_backward_transitions();
+    return m_abstractions->at(m_index).get_forward_transition_adjacency_lists();
+}
+
+const std::vector<TransitionIndexList<Backward>>& GlobalFaithfulAbstraction::get_backward_transition_adjacency_lists() const
+{
+    return m_abstractions->at(m_index).get_backward_transition_adjacency_lists();
 }
 
 /* Distances */

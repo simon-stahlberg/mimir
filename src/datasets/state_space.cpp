@@ -36,9 +36,9 @@ StateSpace::StateSpace(bool use_unit_cost_one,
                        StateIndex initial_state,
                        StateIndexSet goal_states,
                        StateIndexSet deadend_states,
-                       size_t num_transitions,
-                       std::vector<TransitionList> forward_transitions,
-                       std::vector<TransitionList> backward_transitions,
+                       TransitionList transitions,
+                       std::vector<TransitionIndexList<Forward>> forward_transitions,
+                       std::vector<TransitionIndexList<Backward>> backward_transitions,
                        std::vector<double> goal_distances) :
     m_use_unit_cost_one(use_unit_cost_one),
     m_parser(std::move(parser)),
@@ -49,7 +49,7 @@ StateSpace::StateSpace(bool use_unit_cost_one,
     m_initial_state(std::move(initial_state)),
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
-    m_num_transitions(num_transitions),
+    m_transitions(std::move(transitions)),
     m_forward_transitions(std::move(forward_transitions)),
     m_backward_transitions(std::move(backward_transitions)),
     m_goal_distances(std::move(goal_distances)),
@@ -97,13 +97,13 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     auto lifo_queue = std::deque<State>();
     lifo_queue.push_back(initial_state);
 
-    const auto initial_state_id = 0;
+    const auto initial_state_index = 0;
     auto states = StateList { initial_state };
     auto state_to_index = StateMap<StateIndex> {};
-    state_to_index[initial_state] = initial_state_id;
-    auto num_transitions = (size_t) 0;
-    auto forward_transitions = std::vector<TransitionList>(1);
-    auto backward_transitions = std::vector<TransitionList>(1);
+    state_to_index[initial_state] = initial_state_index;
+    auto transitions = TransitionList {};
+    auto forward_transitions = std::vector<TransitionIndexList<Forward>>(1);
+    auto backward_transitions = std::vector<TransitionIndexList<Backward>>(1);
     auto goal_states = StateIndexSet {};
 
     auto applicable_actions = GroundActionList {};
@@ -111,11 +111,11 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
         const auto state = lifo_queue.back();
-        const auto state_id = state_to_index.at(state);
+        const auto state_index = state_to_index.at(state);
         lifo_queue.pop_back();
         if (state.literals_hold(problem->get_goal_condition<Fluent>()) && state.literals_hold(problem->get_goal_condition<Derived>()))
         {
-            goal_states.insert(state_id);
+            goal_states.insert(state_index);
         }
 
         aag->generate_applicable_actions(state, applicable_actions);
@@ -126,15 +126,16 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
             const bool exists = (it != state_to_index.end());
             if (exists)
             {
-                const auto successor_state_id = it->second;
-                forward_transitions.at(state_id).emplace_back(successor_state_id, action);
-                backward_transitions.at(successor_state_id).emplace_back(state_id, action);
-                ++num_transitions;
+                const auto successor_state_index = it->second;
+                const auto transition_index = transitions.size();
+                transitions.emplace_back(successor_state_index, state_index, action);
+                forward_transitions.at(state_index).indices.push_back(transition_index);
+                backward_transitions.at(successor_state_index).indices.push_back(transition_index);
                 continue;
             }
 
-            const auto successor_state_id = states.size();
-            if (successor_state_id >= max_num_states)
+            const auto successor_state_index = states.size();
+            if (successor_state_index >= max_num_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
@@ -142,12 +143,14 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
 
             forward_transitions.resize(states.size() + 1);
             backward_transitions.resize(states.size() + 1);
-            forward_transitions.at(state_id).emplace_back(successor_state_id, action);
-            backward_transitions.at(successor_state_id).emplace_back(state_id, action);
-            ++num_transitions;
+
+            const auto transition_index = transitions.size();
+            transitions.emplace_back(successor_state_index, state_index, action);
+            forward_transitions.at(state_index).indices.push_back(transition_index);
+            backward_transitions.at(successor_state_index).indices.push_back(transition_index);
 
             states.push_back(successor_state);
-            state_to_index[successor_state] = successor_state_id;
+            state_to_index[successor_state] = successor_state_index;
             lifo_queue.push_back(successor_state);
         }
     }
@@ -166,6 +169,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
 
     auto goal_distances = mimir::compute_shortest_distances_from_states(states.size(),
                                                                         StateIndexList { goal_states.begin(), goal_states.end() },
+                                                                        transitions,
                                                                         backward_transitions,
                                                                         use_unit_cost_one);
 
@@ -185,10 +189,10 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                       std::move(ssg),
                       std::move(states),
                       std::move(state_to_index),
-                      initial_state_id,
+                      initial_state_index,
                       std::move(goal_states),
                       std::move(deadend_states),
-                      num_transitions,
+                      std::move(transitions),
                       std::move(forward_transitions),
                       std::move(backward_transitions),
                       std::move(goal_distances));
@@ -258,12 +262,12 @@ StateSpace::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std
 
 std::vector<double> StateSpace::compute_shortest_distances_from_states(const StateIndexList& states, const bool forward) const
 {
-    return mimir::compute_shortest_distances_from_states(*this, states, forward, m_use_unit_cost_one);
+    throw std::runtime_error("Not implemented");
 }
 
 std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_distances(const bool forward) const
 {
-    return mimir::compute_pairwise_shortest_state_distances(*this, forward, m_use_unit_cost_one);
+    throw std::runtime_error("Not implemented");
 }
 
 /**
@@ -304,11 +308,13 @@ bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_s
 bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
-size_t StateSpace::get_num_transitions() const { return m_num_transitions; }
+size_t StateSpace::get_num_transitions() const { return m_transitions.size(); }
 
-const std::vector<TransitionList>& StateSpace::get_forward_transitions() const { return m_forward_transitions; }
+const TransitionList& StateSpace::get_transitions() const { return m_transitions; }
 
-const std::vector<TransitionList>& StateSpace::get_backward_transitions() const { return m_backward_transitions; }
+const std::vector<TransitionIndexList<Forward>>& StateSpace::get_forward_transition_adjacency_lists() const { return m_forward_transitions; }
+
+const std::vector<TransitionIndexList<Backward>>& StateSpace::get_backward_transition_adjacency_lists() const { return m_backward_transitions; }
 
 /* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }
