@@ -1,5 +1,7 @@
 #include "mimir/datasets/state_space.hpp"
 
+#include "mimir/datasets/boost_adapter.hpp"
+
 #include <gtest/gtest.h>
 
 namespace mimir::tests
@@ -28,5 +30,21 @@ TEST(MimirTests, DatasetsStateSpaceCreateParallelTest)
     const auto state_spaces = StateSpace::create(domain_file, problem_files);
 
     EXPECT_EQ(state_spaces.size(), 2);
+}
+
+TEST(MimirTests, DatasetsStateSpaceVertexListGraphTest)
+{
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+    const auto state_space = StateSpace::create(domain_file, problem_file).value();
+
+    EXPECT_EQ(num_vertices(state_space), 28);
+
+    auto [it, last] = vertices(state_space);
+    for (int i = 0; i < 28; ++i, ++it)
+    {
+        EXPECT_EQ(*it, i);
+    }
+    EXPECT_EQ(it, last);
 }
 }
