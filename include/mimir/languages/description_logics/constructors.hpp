@@ -288,7 +288,7 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
     auto& bitset = context.concept_denotation.get_bitset();
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
     {
-        if (atom->get_prediate() == m_predicate)
+        if (atom->get_predicate() == m_predicate)
         {
             bitset.set(atom->get_objects().at(0).get_identifier());
         }
@@ -464,7 +464,7 @@ Denotation<Role> RolePredicateState<P>::evaluate(EvaluationContext& context) con
     // Compute result
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
     {
-        if (atom->get_prediate() == m_predicate)
+        if (atom->get_predicate() == m_predicate)
         {
             const auto object_left_id = atom->get_objects().at(0).get_identifier();
             const auto object_right_id = atom->get_objects().at(1).get_identifier();
@@ -584,7 +584,7 @@ Denotation<Role> RolePredicateGoal<P>::evaluate(EvaluationContext& context) cons
     // Compute result
     for (const auto& literal : context.problem->get_goal_condition<P>())
     {
-        if (literal->get_atom()->get_prediate() == m_predicate && !literal->is_negated())
+        if (literal->get_atom()->get_predicate() == m_predicate && !literal->is_negated())
         {
             const auto object_left_id = literal->get_atom()->get_objects().at(0)->get_identifier();
             const auto object_right_id = literal->get_atom()->get_objects().at(1)->get_identifier();
