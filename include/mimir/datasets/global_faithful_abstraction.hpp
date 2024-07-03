@@ -20,6 +20,7 @@
 
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/faithful_abstraction.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/transition_system.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -153,6 +154,8 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
+    const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const;
+    const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -163,10 +166,11 @@ public:
     size_t get_num_non_isomorphic_states() const;
 
     /* Transitions */
-    size_t get_num_transitions() const;
     const TransitionList& get_transitions() const;
+    TransitionCost get_transition_cost(TransitionIndex transition) const;
     const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const;
     const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const;
+    size_t get_num_transitions() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;

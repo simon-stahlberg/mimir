@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_ABSTRACTION_HPP_
 
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/transition_system.hpp"
 #include "mimir/search/state.hpp"
 
@@ -65,6 +66,8 @@ private:
         virtual StateIndex get_initial_state() const = 0;
         virtual const StateIndexSet& get_goal_states() const = 0;
         virtual const StateIndexSet& get_deadend_states() const = 0;
+        virtual const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const = 0;
+        virtual const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const = 0;
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
@@ -73,10 +76,10 @@ private:
         virtual bool is_alive_state(StateIndex state) const = 0;
 
         /* Transitions */
-        virtual size_t get_num_transitions() const = 0;
-        virtual const TransitionList& get_transitions() const = 0;
+        virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
         virtual const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const = 0;
         virtual const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const = 0;
+        virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
         virtual const std::vector<double>& get_goal_distances() const = 0;
@@ -106,6 +109,14 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
+        const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const override
+        {
+            return m_abstraction.get_forward_successor_adjacency_lists();
+        }
+        const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const override
+        {
+            return m_abstraction.get_backward_successor_adjacency_lists();
+        }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
         size_t get_num_deadend_states() const override { return m_abstraction.get_num_deadend_states(); }
@@ -114,8 +125,7 @@ private:
         bool is_alive_state(StateIndex state) const override { return m_abstraction.is_alive_state(state); }
 
         /* Transitions */
-        size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
-        const TransitionList& get_transitions() const { return m_abstraction.get_transitions(); }
+        TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
         const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const override
         {
             return m_abstraction.get_forward_transition_adjacency_lists();
@@ -124,6 +134,7 @@ private:
         {
             return m_abstraction.get_backward_transition_adjacency_lists();
         }
+        size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
         /* Distances */
         const std::vector<double>& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
@@ -167,6 +178,8 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
+    const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const { return m_pimpl->get_forward_successor_adjacency_lists(); }
+    const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const { return m_pimpl->get_backward_successor_adjacency_lists(); }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }
@@ -175,10 +188,10 @@ public:
     bool is_alive_state(StateIndex state) const { return m_pimpl->is_alive_state(state); }
 
     /* Transitions */
-    size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
-    const TransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
+    TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
     const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const { return m_pimpl->get_forward_transition_adjacency_lists(); }
     const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const { return m_pimpl->get_backward_transition_adjacency_lists(); }
+    size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const { return m_pimpl->get_goal_distances(); }

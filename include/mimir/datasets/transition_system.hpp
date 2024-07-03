@@ -30,38 +30,13 @@
 namespace mimir
 {
 
-struct Forward
-{
-};
-struct Backward
-{
-};
-
-/// @brief Transition encapsulates data of a transition in a transition system.
-class Transition
-{
-private:
-    StateIndex m_forward_successor;
-    StateIndex m_backward_successor;
-    GroundAction m_creating_action;
-
-public:
-    Transition(StateIndex forward_successor, StateIndex backward_successor, GroundAction creating_action);
-
-    [[nodiscard]] bool operator==(const Transition& other) const;
-    [[nodiscard]] size_t hash() const;
-
-    StateIndex get_forward_successor() const;
-    StateIndex get_backward_successor() const;
-    GroundAction get_creating_action() const;
-};
-
-using TransitionList = std::vector<Transition>;
+using TransitionCost = double;
+using TransitionCostList = std::vector<TransitionCost>;
 using TransitionIndex = int;
 using TransitionIndexList = std::vector<TransitionIndex>;
 
 template<typename T>
-concept IsTransitionSystem = requires(T a, StateIndex state_index) {
+concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionIndex transition_index) {
     /* Memory */
     {
         a.get_pddl_parser()
@@ -83,6 +58,12 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index) {
     {
         a.get_deadend_states()
     } -> std::convertible_to<const StateIndexSet&>;
+    {
+        a.get_forward_successor_adjacency_lists()
+    } -> std::convertible_to<const std::vector<StateIndexList>&>;
+    {
+        a.get_backward_successor_adjacency_lists()
+    } -> std::convertible_to<const std::vector<StateIndexList>&>;
     {
         a.get_num_states()
     } -> std::convertible_to<size_t>;
@@ -107,8 +88,8 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index) {
         a.get_num_transitions()
     } -> std::convertible_to<size_t>;
     {
-        a.get_transitions()
-    } -> std::convertible_to<const TransitionList&>;
+        a.get_transition_cost(transition_index)
+    } -> std::convertible_to<TransitionCost>;
     {
         a.get_forward_transition_adjacency_lists()
     } -> std::convertible_to<const std::vector<TransitionIndexList>&>;
@@ -116,89 +97,11 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index) {
         a.get_backward_transition_adjacency_lists()
     } -> std::convertible_to<const std::vector<TransitionIndexList>&>;
 
-    // Distances
+    /* Distances */
     {
         a.get_goal_distances()
     } -> std::convertible_to<const std::vector<double>&>;
 };
-
-/**
- * Declarations
- */
-
-// Requirement of boost::VertexListGraph
-template<IsTransitionSystem TransitionSystem>
-class StateIndexIterator
-{
-private:
-public:
-    class const_iterator
-    {
-    private:
-        void advance();
-
-    public:
-        using difference_type = StateIndex;
-        using value_type = StateIndex;
-        using pointer = value_type*;
-        using reference = value_type&;
-        using iterator_category = std::forward_iterator_tag;
-
-        const_iterator();
-        // const_iterator(StateTupleIndexGenerator* data, bool begin);
-        [[nodiscard]] value_type operator*() const;
-        const_iterator& operator++();
-        const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
-    };
-};
-
-// Requirement of boost::AdjacencyGraph
-template<IsTransitionSystem TransitionSystem>
-class OutAdjacentStateIndexIterator
-{
-private:
-public:
-};
-
-template<IsTransitionSystem TransitionSystem>
-class InAdjacentStateIndexIterator
-{
-private:
-public:
-};
-
-// Requirement of boost::EdgeListGraph
-template<IsTransitionSystem TransitionSystem>
-class TransitionIndexIterator
-{
-private:
-public:
-};
-
-// Requirement of boost::IncidenceGraph
-template<IsTransitionSystem TransitionSystem>
-class OutTransitionIndexIterator
-{
-private:
-public:
-};
-
-// Requirement of boost::BidirectionalGraph
-template<IsTransitionSystem TransitionSystem>
-class InTransitionIndexIterator
-{
-private:
-public:
-};
-
-/// @brief Compute shortest distances from the given states using Dijkstra.
-extern std::vector<double> compute_shortest_goal_distances_from_states(size_t num_total_states,
-                                                                       const StateIndexSet& goal_states,
-                                                                       const TransitionList& transitions,
-                                                                       const std::vector<TransitionIndexList>& backward_transition_adjacency_lists,
-                                                                       bool use_unit_cost_one = true);
 
 }
 

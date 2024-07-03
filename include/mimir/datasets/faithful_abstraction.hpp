@@ -19,6 +19,7 @@
 #define MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 
 #include "mimir/datasets/abstraction.hpp"
+#include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/transition_system.hpp"
 #include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/object_graph.hpp"
@@ -82,6 +83,8 @@ private:
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
     StateIndexSet m_deadend_states;
+    std::vector<StateIndexList> m_forward_successor_adjacency_lists;
+    std::vector<StateIndexList> m_backward_successor_adjacency_lists;
 
     /* Transitions */
     TransitionList m_transitions;
@@ -110,6 +113,8 @@ private:
                         StateIndex initial_state,
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
+                        std::vector<StateIndexList> forward_successor_adjacency_lists,
+                        std::vector<StateIndexList> backward_successor_adjacency_lists,
                         TransitionList transitions,
                         std::vector<TransitionIndexList> forward_transition_adjacency_lists,
                         std::vector<TransitionIndexList> backward_transition_adjacency_lists,
@@ -121,6 +126,7 @@ public:
                                                      bool mark_true_goal_atoms = false,
                                                      bool use_unit_cost_one = true,
                                                      bool remove_if_unsolvable = true,
+                                                     bool prune_isomorphic_states = true,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
@@ -130,6 +136,7 @@ public:
                                                      bool mark_true_goal_atoms = false,
                                                      bool use_unit_cost_one = true,
                                                      bool remove_if_unsolvable = true,
+                                                     bool prune_isomorphic_states = true,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
@@ -138,6 +145,7 @@ public:
                                                    bool mark_true_goal_atoms = false,
                                                    bool use_unit_cost_one = true,
                                                    bool remove_if_unsolvable = true,
+                                                   bool prune_isomorphic_states = true,
                                                    bool sort_ascending_by_num_states = true,
                                                    uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -148,6 +156,7 @@ public:
            bool mark_true_goal_atoms = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
+           bool prune_isomorphic_states = true,
            bool sort_ascending_by_num_states = true,
            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -187,6 +196,8 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
+    const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const;
+    const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -195,10 +206,11 @@ public:
     bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
-    size_t get_num_transitions() const;
     const TransitionList& get_transitions() const;
+    TransitionCost get_transition_cost(TransitionIndex transition) const;
     const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const;
     const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const;
+    size_t get_num_transitions() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;

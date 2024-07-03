@@ -37,6 +37,27 @@
 namespace mimir
 {
 
+/// @brief Transition encapsulates data of a transition in a transition system.
+class Transition
+{
+private:
+    StateIndex m_forward_successor;
+    StateIndex m_backward_successor;
+    GroundAction m_creating_action;
+
+public:
+    Transition(StateIndex forward_successor, StateIndex backward_successor, GroundAction creating_action);
+
+    [[nodiscard]] bool operator==(const Transition& other) const;
+    [[nodiscard]] size_t hash() const;
+
+    StateIndex get_forward_successor() const;
+    StateIndex get_backward_successor() const;
+    GroundAction get_creating_action() const;
+};
+
+using TransitionList = std::vector<Transition>;
+
 /// @brief A StateSpace encapsulates the complete dynamics of a PDDL problem.
 /// To keep the memory consumption small, we do not store information dependent on the initial state.
 class StateSpace
@@ -58,6 +79,8 @@ private:
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
     StateIndexSet m_deadend_states;
+    std::vector<StateIndexList> m_forward_successor_adjacency_lists;
+    std::vector<StateIndexList> m_backward_successor_adjacency_lists;
 
     /* Transitions */
     TransitionList m_transitions;
@@ -83,6 +106,8 @@ private:
                StateIndex initial_state,
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
+               std::vector<StateIndexList> forward_successor_adjacency_lists,
+               std::vector<StateIndexList> backward_successor_adjacency_lists,
                TransitionList transitions,
                std::vector<TransitionIndexList> forward_transition_adjacency_lists,
                std::vector<TransitionIndexList> backward_transition_adjacency_lists,
@@ -172,6 +197,8 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
+    const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const;
+    const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -180,10 +207,11 @@ public:
     bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
-    size_t get_num_transitions() const;
     const TransitionList& get_transitions() const;
+    TransitionCost get_transition_cost(TransitionIndex transition) const;
     const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const;
     const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const;
+    size_t get_num_transitions() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;
@@ -202,6 +230,12 @@ using StateSpaceList = std::vector<StateSpace>;
 
 static_assert(IsTransitionSystem<StateSpace>);
 
+/// @brief Compute shortest distances from the given states using Dijkstra.
+extern std::vector<double> compute_shortest_goal_distances(size_t num_total_states,
+                                                           const StateIndexSet& goal_states,
+                                                           const TransitionList& transitions,
+                                                           const std::vector<TransitionIndexList>& backward_transition_adjacency_lists,
+                                                           bool use_unit_cost_one = true);
 }
 
 #endif
