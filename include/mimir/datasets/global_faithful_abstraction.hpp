@@ -76,9 +76,7 @@ private:
     // Note that state.get_id() does not yield the index within the abstraction.
     // Use abstraction.get_state_index(state) instead.
     GlobalFaithfulAbstractStateList m_states;
-    StateMap<StateIndex> m_concrete_to_abstract_state;
     GlobalFaithfulAbstractStateMap<StateIndex> m_state_to_index;
-    CertificateToStateIndexMap m_states_by_certificate;
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
@@ -91,9 +89,7 @@ private:
                               AbstractionIndex index,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
-                              StateMap<StateIndex> concrete_to_abstract_state,
                               GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
-                              CertificateToStateIndexMap states_by_certificate,
                               size_t num_isomorphic_states,
                               size_t num_non_isomorphic_states);
 
@@ -103,6 +99,7 @@ public:
                                                          bool mark_true_goal_atoms = false,
                                                          bool use_unit_cost_one = true,
                                                          bool remove_if_unsolvable = true,
+                                                         bool prune_isomorphic_states = true,
                                                          bool sort_ascending_by_num_states = true,
                                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -113,6 +110,7 @@ public:
            bool mark_true_goal_atoms = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
+           bool prune_isomorphic_states = true,
            bool sort_ascending_by_num_states = true,
            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -150,6 +148,7 @@ public:
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
     StateIndex get_state_index(const GlobalFaithfulAbstractState& state) const;
+    const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     const CertificateToStateIndexMap& get_states_by_certificate() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;

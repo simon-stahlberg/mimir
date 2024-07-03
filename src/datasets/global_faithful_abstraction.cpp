@@ -68,9 +68,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
                                                      AbstractionIndex id,
                                                      std::shared_ptr<FaithfulAbstractionList> abstractions,
                                                      GlobalFaithfulAbstractStateList states,
-                                                     StateMap<StateIndex> concrete_to_abstract_state,
                                                      GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
-                                                     CertificateToStateIndexMap states_by_certificate,
                                                      size_t num_isomorphic_states,
                                                      size_t num_non_isomorphic_states) :
     m_mark_true_goal_atoms(mark_true_goal_atoms),
@@ -78,9 +76,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
     m_index(id),
     m_abstractions(std::move(abstractions)),
     m_states(std::move(states)),
-    m_concrete_to_abstract_state(std::move(concrete_to_abstract_state)),
     m_state_to_index(std::move(state_to_index)),
-    m_states_by_certificate(std::move(states_by_certificate)),
     m_num_isomorphic_states(num_isomorphic_states),
     m_num_non_isomorphic_states(num_non_isomorphic_states),
     m_nauty_graph(),
@@ -95,6 +91,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                                                          bool mark_true_goal_atoms,
                                                                          bool use_unit_cost_one,
                                                                          bool remove_if_unsolvable,
+                                                                         bool prune_isomorphic_states,
                                                                          bool sort_ascending_by_num_states,
                                                                          uint32_t max_num_states,
                                                                          uint32_t timeout_ms,
@@ -113,6 +110,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                              mark_true_goal_atoms,
                                              use_unit_cost_one,
                                              remove_if_unsolvable,
+                                             prune_isomorphic_states,
                                              sort_ascending_by_num_states,
                                              max_num_states,
                                              timeout_ms,
@@ -124,6 +122,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     bool mark_true_goal_atoms,
     bool use_unit_cost_one,
     bool remove_if_unsolvable,
+    bool prune_isomorphic_states,
     bool sort_ascending_by_num_states,
     uint32_t max_num_states,
     uint32_t timeout_ms,
@@ -134,6 +133,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                                                              mark_true_goal_atoms,
                                                              use_unit_cost_one,
                                                              remove_if_unsolvable,
+                                                             prune_isomorphic_states,
                                                              sort_ascending_by_num_states,
                                                              max_num_states,
                                                              timeout_ms,
@@ -172,9 +172,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
         auto states = GlobalFaithfulAbstractStateList(
             faithful_abstraction.get_num_states(),
             GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
-        auto concrete_to_abstract_state = StateMap<StateIndex> {};
         auto state_to_index = GlobalFaithfulAbstractStateMap<StateIndex> {};
-        auto states_by_certificate = CertificateToStateIndexMap {};
         for (size_t state_id = 0; state_id < faithful_abstraction.get_num_states(); ++state_id)
         {
             const auto& state = faithful_abstraction.get_states().at(state_id);
@@ -185,7 +183,6 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                 // Copy existing global state
                 states.at(state_id) = it->second;
                 state_to_index.emplace(it->second, state_id);
-                states_by_certificate.emplace(it->first, state_id);
                 ++num_isomorphic_states;
             }
             else
@@ -195,9 +192,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                 auto new_global_state = GlobalFaithfulAbstractState(new_global_state_id, abstraction_id, state_id);
                 certificate_to_global_state.emplace(state.get_certificate(), new_global_state);
                 states.at(state_id) = new_global_state;
-                concrete_to_abstract_state.emplace(state.get_state(), state_id);
                 state_to_index.emplace(new_global_state, state_id);
-                states_by_certificate.emplace(state.get_certificate(), state_id);
                 ++num_non_isomorphic_states;
             }
         }
@@ -220,9 +215,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                                                          abstraction_id,
                                                          relevant_faithful_abstractions,
                                                          std::move(states),
-                                                         std::move(concrete_to_abstract_state),
                                                          std::move(state_to_index),
-                                                         std::move(states_by_certificate),
                                                          num_isomorphic_states,
                                                          num_non_isomorphic_states));
         ++abstraction_id;
@@ -238,15 +231,15 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_state)
 {
     // Cheap test.
-    if (m_concrete_to_abstract_state.count(concrete_state))
+    if (get_concrete_to_abstract_state().count(concrete_state))
     {
-        m_concrete_to_abstract_state.at(concrete_state);
+        return get_concrete_to_abstract_state().at(concrete_state);
     }
 
     // Expensive test.
     const auto& object_graph = m_object_graph_factory.create(concrete_state);
     object_graph.get_digraph().to_nauty_graph(m_nauty_graph);
-    return m_states_by_certificate.at(Certificate(
+    return get_states_by_certificate().at(Certificate(
         m_nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(), object_graph.get_partitioning().get_partitioning()),
         object_graph.get_sorted_vertex_colors()));
 }
@@ -290,7 +283,15 @@ const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() c
 
 StateIndex GlobalFaithfulAbstraction::get_state_index(const GlobalFaithfulAbstractState& state) const { return m_state_to_index.at(state); }
 
-const CertificateToStateIndexMap& GlobalFaithfulAbstraction::get_states_by_certificate() const { return m_states_by_certificate; }
+const StateMap<StateIndex>& GlobalFaithfulAbstraction::get_concrete_to_abstract_state() const
+{
+    return m_abstractions->at(m_index).get_concrete_to_abstract_state();
+}
+
+const CertificateToStateIndexMap& GlobalFaithfulAbstraction::get_states_by_certificate() const
+{
+    return m_abstractions->at(m_index).get_states_by_certificate();
+}
 
 StateIndex GlobalFaithfulAbstraction::get_initial_state() const { return m_abstractions->at(m_index).get_initial_state(); }
 

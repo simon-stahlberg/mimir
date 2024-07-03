@@ -418,7 +418,7 @@ StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state)
     // Cheap test.
     if (m_concrete_to_abstract_state.count(concrete_state))
     {
-        m_concrete_to_abstract_state.at(concrete_state);
+        return m_concrete_to_abstract_state.at(concrete_state);
     }
 
     // Expensive test.
