@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_INTERFACE_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_INTERFACE_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 
 #include "mimir/languages/description_logics/constructor_ids.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
@@ -36,6 +36,10 @@ template<IsConceptOrRole D>
 class Constructor
 {
 };
+
+/**
+ * Concept
+ */
 
 template<>
 class Constructor<Concept>
@@ -72,7 +76,7 @@ public:
 using ConceptConstructorList = std::vector<std::reference_wrapper<const Constructor<Concept>>>;
 
 /**
- * Roles
+ * Role
  */
 
 template<>

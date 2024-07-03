@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_HPP_
 
-#include "mimir/languages/description_logics/constructor_interface.hpp"
+#include "mimir/languages/description_logics/constructor_base.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
@@ -42,7 +42,7 @@ class ConstructorRepository;
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public Constructor<Concept>
+class ConceptPredicateState : public ConceptConstructorEvaluatorBase<ConceptPredicateState<P>>
 {
 private:
     size_t m_id;
@@ -53,6 +53,17 @@ private:
     template<typename T>
     friend class ConstructorRepository;
 
+    bool is_equal_impl(const Constructor<Concept>& other) const;
+    size_t hash_impl() const;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const ConceptVisitor& visitor) const;
+
+    size_t get_id_impl() const;
+
+    friend class ConceptConstructorEvaluatorBase<ConceptPredicateState>;
+
 public:
     // Users are not supposed to move these directly.
     ConceptPredicateState(const ConceptPredicateState& other) = delete;
@@ -61,14 +72,6 @@ public:
     ConceptPredicateState& operator=(ConceptPredicateState&& other) = default;
 
     bool operator==(const ConceptPredicateState& other) const;
-    bool is_equal(const Constructor<Concept>& other) const override;
-    size_t hash() const override;
-
-    Denotation<Concept> evaluate(EvaluationContext& context) const override;
-
-    bool accept(const ConceptVisitor& visitor) const override;
-
-    size_t get_id() const override;
 
     Predicate<P> get_predicate() const;
 };
@@ -263,7 +266,7 @@ bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) co
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::is_equal(const Constructor<Concept>& other) const
+bool ConceptPredicateState<P>::is_equal_impl(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -274,69 +277,45 @@ bool ConceptPredicateState<P>::is_equal(const Constructor<Concept>& other) const
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateState<P>::hash() const
+size_t ConceptPredicateState<P>::hash_impl() const
 {
     return loki::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
-Denotation<Concept> ConceptPredicateState<P>::evaluate(EvaluationContext& context) const
+void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
 {
-    // Try to access cached result
-    auto denotation = context.concept_denotation_repository.get_if(this);
-    if (denotation.has_value())
-    {
-        return denotation.value();
-    }
-
-    // Fetch data
     auto& bitset = context.concept_denotation.get_bitset();
-    bitset.unset_all();
-
-    // Compute result
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
     {
-        bitset.set(atom->get_identifier());
+        if (atom->get_prediate() == m_predicate)
+        {
+            bitset.set(atom->get_objects().at(0).get_identifier());
+        }
     }
-
-    // Store and return result;
-    context.concept_denotation.get_flatmemory_builder().finish();
-    return context.concept_denotation_repository.insert(this, context.concept_denotation);
 }
 
 template<>
-inline Denotation<Concept> ConceptPredicateState<Static>::evaluate(EvaluationContext& context) const
+inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
 {
-    // Try to access cached result
-    auto denotation = context.concept_denotation_repository.get_if(this);
-    if (denotation.has_value())
-    {
-        return denotation.value();
-    }
-
-    // Fetch data
     auto& bitset = context.concept_denotation.get_bitset();
-    bitset.unset_all();
-
-    // Compute result
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
     {
-        bitset.set(atom->get_identifier());
+        if (atom->get_predicate() == m_predicate)
+        {
+            bitset.set(atom->get_identifier());
+        }
     }
-
-    // Store and return result;
-    context.concept_denotation.get_flatmemory_builder().finish();
-    return context.concept_denotation_repository.insert(this, context.concept_denotation);
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::accept(const ConceptVisitor& visitor) const
+bool ConceptPredicateState<P>::accept_impl(const ConceptVisitor& visitor) const
 {
     return visitor.visit(*this);
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateState<P>::get_id() const
+size_t ConceptPredicateState<P>::get_id_impl() const
 {
     return m_id;
 }
@@ -400,9 +379,9 @@ Denotation<Concept> ConceptPredicateGoal<P>::evaluate(EvaluationContext& context
     // Compute result
     for (const auto& literal : context.problem->get_goal_condition<P>())
     {
-        if (!literal->is_negated())
+        if (literal->get_atom()->get_predicate() == m_predicate && !literal->is_negated())
         {
-            bitset.set(literal->get_atom()->get_identifier());
+            bitset.set(literal->get_atom()->get_objects().at(0)->get_identifier());
         }
     }
 
@@ -468,7 +447,67 @@ size_t RolePredicateState<P>::hash() const
 template<PredicateCategory P>
 Denotation<Role> RolePredicateState<P>::evaluate(EvaluationContext& context) const
 {
-    // TODO
+    // Try to access cached result
+    auto denotation = context.role_denotation_repository.get_if(this, context.state);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
+    {
+        if (atom->get_prediate() == m_predicate)
+        {
+            const auto object_left_id = atom->get_objects().at(0).get_identifier();
+            const auto object_right_id = atom->get_objects().at(1).get_identifier();
+            bitsets.at(object_left_id).set(object_right_id);
+        }
+    }
+
+    // Store and return result;
+    context.role_denotation.get_flatmemory_builder().finish();
+    return context.role_denotation_repository.insert(this, context.state, context.role_denotation);
+}
+
+template<>
+inline Denotation<Role> RolePredicateState<Static>::evaluate(EvaluationContext& context) const
+{
+    // Try to access cached result
+    auto denotation = context.role_denotation_repository.get_if(this);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
+            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
+            bitsets.at(object_left_id).set(object_right_id);
+        }
+    }
+
+    // Store and return result;
+    context.role_denotation.get_flatmemory_builder().finish();
+    return context.role_denotation_repository.insert(this, context.role_denotation);
 }
 
 template<PredicateCategory P>
@@ -528,7 +567,34 @@ size_t RolePredicateGoal<P>::hash() const
 template<PredicateCategory P>
 Denotation<Role> RolePredicateGoal<P>::evaluate(EvaluationContext& context) const
 {
-    // TODO
+    // Try to access cached result
+    auto denotation = context.role_denotation_repository.get_if(this);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (const auto& literal : context.problem->get_goal_condition<P>())
+    {
+        if (literal->get_atom()->get_prediate() == m_predicate && !literal->is_negated())
+        {
+            const auto object_left_id = literal->get_atom()->get_objects().at(0)->get_identifier();
+            const auto object_right_id = literal->get_atom()->get_objects().at(1)->get_identifier();
+            bitsets.at(object_left_id).set(object_right_id);
+        }
+    }
+
+    // Store and return result;
+    context.role_denotation.get_flatmemory_builder().finish();
+    return context.role_denotation_repository.insert(this, context.role_denotation);
 }
 
 template<PredicateCategory P>

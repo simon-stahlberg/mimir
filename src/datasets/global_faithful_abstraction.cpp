@@ -63,7 +63,7 @@ StateId GlobalFaithfulAbstractState::get_abstract_state_id() const { return m_ab
  * GlobalFaithfulAbstraction
  */
 
-GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
+GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                                                      bool use_unit_cost_one,
                                                      AbstractionIndex id,
                                                      std::shared_ptr<FaithfulAbstractionList> abstractions,
@@ -71,7 +71,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
                                                      GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
                                                      size_t num_isomorphic_states,
                                                      size_t num_non_isomorphic_states) :
-    m_mark_true_goal_atoms(mark_true_goal_atoms),
+    m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
     m_index(id),
     m_abstractions(std::move(abstractions)),
@@ -82,16 +82,16 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
     m_nauty_graph(),
     m_object_graph_factory(m_abstractions->at(m_index).get_pddl_parser()->get_problem(),
                            m_abstractions->at(m_index).get_pddl_parser()->get_factories(),
-                           m_mark_true_goal_atoms)
+                           m_mark_true_goal_literals)
 {
 }
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const fs::path& domain_filepath,
                                                                          const std::vector<fs::path>& problem_filepaths,
-                                                                         bool mark_true_goal_atoms,
+                                                                         bool mark_true_goal_literals,
                                                                          bool use_unit_cost_one,
                                                                          bool remove_if_unsolvable,
-                                                                         bool prune_isomorphic_states,
+                                                                         bool compute_complete_abstraction_mapping,
                                                                          bool sort_ascending_by_num_states,
                                                                          uint32_t max_num_states,
                                                                          uint32_t timeout_ms,
@@ -107,10 +107,10 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
     }
 
     return GlobalFaithfulAbstraction::create(memories,
-                                             mark_true_goal_atoms,
+                                             mark_true_goal_literals,
                                              use_unit_cost_one,
                                              remove_if_unsolvable,
-                                             prune_isomorphic_states,
+                                             compute_complete_abstraction_mapping,
                                              sort_ascending_by_num_states,
                                              max_num_states,
                                              timeout_ms,
@@ -119,10 +119,10 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-    bool mark_true_goal_atoms,
+    bool mark_true_goal_literals,
     bool use_unit_cost_one,
     bool remove_if_unsolvable,
-    bool prune_isomorphic_states,
+    bool compute_complete_abstraction_mapping,
     bool sort_ascending_by_num_states,
     uint32_t max_num_states,
     uint32_t timeout_ms,
@@ -130,10 +130,10 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
     auto faithful_abstractions = FaithfulAbstraction::create(memories,
-                                                             mark_true_goal_atoms,
+                                                             mark_true_goal_literals,
                                                              use_unit_cost_one,
                                                              remove_if_unsolvable,
-                                                             prune_isomorphic_states,
+                                                             compute_complete_abstraction_mapping,
                                                              sort_ascending_by_num_states,
                                                              max_num_states,
                                                              timeout_ms,
@@ -210,7 +210,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
         // Constructor of GlobalFaithfulAbstraction requires this to come first.
         relevant_faithful_abstractions->push_back(std::move(faithful_abstraction));
 
-        abstractions.push_back(GlobalFaithfulAbstraction(mark_true_goal_atoms,
+        abstractions.push_back(GlobalFaithfulAbstraction(mark_true_goal_literals,
                                                          use_unit_cost_one,
                                                          abstraction_id,
                                                          relevant_faithful_abstractions,
@@ -263,7 +263,7 @@ std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_sho
  */
 
 /* Meta data */
-bool GlobalFaithfulAbstraction::get_mark_true_goal_atoms() const { return m_mark_true_goal_atoms; }
+bool GlobalFaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_true_goal_literals; }
 
 bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 

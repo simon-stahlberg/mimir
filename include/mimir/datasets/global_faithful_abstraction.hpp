@@ -30,6 +30,7 @@
 #include <loki/details/utils/filesystem.hpp>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <thread>
 #include <unordered_set>
 #include <vector>
@@ -65,7 +66,7 @@ class GlobalFaithfulAbstraction
 {
 private:
     /* Meta data */
-    bool m_mark_true_goal_atoms;
+    bool m_mark_true_goal_literals;
     bool m_use_unit_cost_one;
     AbstractionIndex m_index;
 
@@ -84,7 +85,7 @@ private:
     nauty_wrapper::Graph m_nauty_graph;
     ObjectGraphFactory m_object_graph_factory;
 
-    GlobalFaithfulAbstraction(bool mark_true_goal_atoms,
+    GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                               bool use_unit_cost_one,
                               AbstractionIndex index,
                               std::shared_ptr<FaithfulAbstractionList> abstractions,
@@ -96,10 +97,10 @@ private:
 public:
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
                                                          const std::vector<fs::path>& problem_filepaths,
-                                                         bool mark_true_goal_atoms = false,
+                                                         bool mark_true_goal_literals = false,
                                                          bool use_unit_cost_one = true,
                                                          bool remove_if_unsolvable = true,
-                                                         bool prune_isomorphic_states = true,
+                                                         bool compute_complete_abstraction_mapping = false,
                                                          bool sort_ascending_by_num_states = true,
                                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -107,10 +108,10 @@ public:
 
     static std::vector<GlobalFaithfulAbstraction>
     create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool mark_true_goal_atoms = false,
+           bool mark_true_goal_literals = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
-           bool prune_isomorphic_states = true,
+           bool compute_complete_abstraction_mapping = false,
            bool sort_ascending_by_num_states = true,
            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -135,7 +136,7 @@ public:
      */
 
     /* Meta data */
-    bool get_mark_true_goal_atoms() const;
+    bool get_mark_true_goal_literals() const;
     bool get_use_unit_cost_one() const;
     AbstractionIndex get_index() const;
 

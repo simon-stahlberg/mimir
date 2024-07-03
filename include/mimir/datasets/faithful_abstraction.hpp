@@ -37,6 +37,7 @@
 
 namespace mimir
 {
+
 /// @brief FaithfulAbstractState encapsulates data of an abstract state in a faithful abstraction.
 class FaithfulAbstractState
 {
@@ -68,7 +69,7 @@ class FaithfulAbstraction
 {
 private:
     /* Meta data */
-    bool m_mark_true_goal_atoms;
+    bool m_mark_true_goal_literals;
     bool m_use_unit_cost_one;
 
     /* Memory */
@@ -102,7 +103,7 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    FaithfulAbstraction(bool mark_true_goal_atoms,
+    FaithfulAbstraction(bool mark_true_goal_literals,
                         bool use_unit_cost_one,
                         std::shared_ptr<PDDLParser> parser,
                         std::shared_ptr<IAAG> aag,
@@ -123,29 +124,40 @@ private:
 public:
     static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                      const fs::path& problem_filepath,
-                                                     bool mark_true_goal_atoms = false,
+                                                     bool mark_true_goal_literals = false,
                                                      bool use_unit_cost_one = true,
                                                      bool remove_if_unsolvable = true,
-                                                     bool prune_isomorphic_states = true,
+                                                     bool compute_complete_abstraction_mapping = false,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
+    /// @brief Compute a faithful abstraction if within resource limits.
+    /// @param parser is the external PDDL parser.
+    /// @param aag is the external applicable action generator.
+    /// @param ssg is the external successor state generator.
+    /// @param mark_true_goal_literals whether satisfied goal atoms should be marked.
+    /// @param use_unit_cost_one whether costs along transitions are 1 or the action costs.
+    /// @param remove_if_unsolvable whether an abstraction should be discared if unsolvable.
+    /// @param compute_complete_abstraction_mapping whether an to compute the complete abstraction mapping.
+    /// @param max_num_states the maximum number of abstract states.
+    /// @param timeout_ms the maximum time to compute the abstraction.
+    /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(std::shared_ptr<PDDLParser> parser,
                                                      std::shared_ptr<IAAG> aag,
                                                      std::shared_ptr<SuccessorStateGenerator> ssg,
-                                                     bool mark_true_goal_atoms = false,
+                                                     bool mark_true_goal_literals = false,
                                                      bool use_unit_cost_one = true,
                                                      bool remove_if_unsolvable = true,
-                                                     bool prune_isomorphic_states = true,
+                                                     bool compute_complete_abstraction_mapping = false,
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
     static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                    const std::vector<fs::path>& problem_filepaths,
-                                                   bool mark_true_goal_atoms = false,
+                                                   bool mark_true_goal_literals = false,
                                                    bool use_unit_cost_one = true,
                                                    bool remove_if_unsolvable = true,
-                                                   bool prune_isomorphic_states = true,
+                                                   bool compute_complete_abstraction_mapping = false,
                                                    bool sort_ascending_by_num_states = true,
                                                    uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -153,10 +165,10 @@ public:
 
     static std::vector<FaithfulAbstraction>
     create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool mark_true_goal_atoms = false,
+           bool mark_true_goal_literals = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
-           bool prune_isomorphic_states = true,
+           bool compute_complete_abstraction_mapping = false,
            bool sort_ascending_by_num_states = true,
            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
@@ -181,7 +193,7 @@ public:
      */
 
     /* Meta data */
-    bool get_mark_true_goal_atoms() const;
+    bool get_mark_true_goal_literals() const;
     bool get_use_unit_cost_one() const;
 
     /* Memory */

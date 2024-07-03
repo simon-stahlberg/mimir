@@ -120,8 +120,14 @@ size_t RoleAnd::hash() const { return loki::hash_combine(&m_role_left, &m_role_r
 
 Denotation<Role> RoleAnd::evaluate(EvaluationContext& context) const
 {
+    // Try to access cached result
+    auto denotation = context.role_denotation_repository.get_if(this, context.state);
+    if (denotation.has_value())
+    {
+        return denotation.value();
+    }
+
     // Fetch data
-    auto& bitset = context.role_denotation.get_bitsets();
     for (auto& bitset : context.role_denotation.get_bitsets())
     {
         bitset.unset_all();
