@@ -43,54 +43,53 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     /* Memory */
     {
         a.get_pddl_parser()
-    } -> std::convertible_to<const std::shared_ptr<PDDLParser>&>;
+    } -> std::same_as<const std::shared_ptr<PDDLParser>&>;
     {
         a.get_aag()
-    } -> std::convertible_to<const std::shared_ptr<IAAG>&>;
+    } -> std::same_as<const std::shared_ptr<IAAG>&>;
     {
         a.get_ssg()
-    } -> std::convertible_to<const std::shared_ptr<SuccessorStateGenerator>&>;
+    } -> std::same_as<const std::shared_ptr<SuccessorStateGenerator>&>;
 
     /* States */
     {
         a.get_initial_state()
-    } -> std::convertible_to<StateIndex>;
+    } -> std::same_as<StateIndex>;
     {
         a.get_goal_states()
-    } -> std::convertible_to<const StateIndexSet&>;
+    } -> std::same_as<const StateIndexSet&>;
     {
         a.get_deadend_states()
-    } -> std::convertible_to<const StateIndexSet&>;
+    } -> std::same_as<const StateIndexSet&>;
     {
         a.get_target_states(state_index)
     } -> std::same_as<TargetStateIterator<typename T::TransitionType>>;
     {
+        a.get_source_states(state_index)
+    } -> std::same_as<SourceStateIterator<typename T::TransitionType>>;
+    {
         a.get_num_states()
-    } -> std::convertible_to<size_t>;
+    } -> std::same_as<size_t>;
     {
         a.get_num_goal_states()
-    } -> std::convertible_to<size_t>;
+    } -> std::same_as<size_t>;
     {
         a.get_num_deadend_states()
-    } -> std::convertible_to<size_t>;
+    } -> std::same_as<size_t>;
     {
         a.is_goal_state(state_index)
-    } -> std::convertible_to<bool>;
+    } -> std::same_as<bool>;
     {
         a.is_deadend_state(state_index)
-    } -> std::convertible_to<bool>;
+    } -> std::same_as<bool>;
     {
         a.is_alive_state(state_index)
-    } -> std::convertible_to<bool>;
+    } -> std::same_as<bool>;
 
     /* Transitions */
     {
         a.get_transitions()
     } -> std::same_as<const std::vector<typename T::TransitionType>&>;
-
-    //{
-    //    a.get_transitions_begin_by_source()
-    //} -> std::convertible_to<const BeginIndexList&>;
     //{
     //    a.get_forward_transitions(state_index)
     //} -> IsTransitionIndexIteratorPair;
@@ -101,7 +100,7 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     /* Distances */
     {
         a.get_goal_distances()
-    } -> std::convertible_to<const std::vector<double>&>;
+    } -> std::same_as<const std::vector<double>&>;
 };
 
 }

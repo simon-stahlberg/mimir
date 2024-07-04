@@ -299,9 +299,14 @@ const StateIndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return
 
 const StateIndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_index).get_deadend_states(); }
 
-TargetStateIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex state) const
+TargetStateIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex source) const
 {
-    return m_abstractions->at(m_index).get_target_states(state);
+    return m_abstractions->at(m_index).get_target_states(source);
+}
+
+SourceStateIterator<AbstractTransition> GlobalFaithfulAbstraction::get_source_states(StateIndex source) const
+{
+    return m_abstractions->at(m_index).get_source_states(source);
 }
 
 size_t GlobalFaithfulAbstraction::get_num_states() const { return get_states().size(); }

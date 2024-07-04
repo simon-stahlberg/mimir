@@ -297,10 +297,15 @@ const StateIndexSet& StateSpace::get_goal_states() const { return m_goal_states;
 
 const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
-TargetStateIterator<Transition> StateSpace::get_target_states(StateIndex state) const
+TargetStateIterator<Transition> StateSpace::get_target_states(StateIndex source) const
 {
-    return TargetStateIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(state),
-                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(state + 1)));
+    return TargetStateIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+}
+
+SourceStateIterator<Transition> StateSpace::get_source_states(StateIndex target) const
+{
+    return SourceStateIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
 }
 
 size_t StateSpace::get_num_states() const { return get_states().size(); }

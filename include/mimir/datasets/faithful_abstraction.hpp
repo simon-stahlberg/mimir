@@ -207,7 +207,8 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    TargetStateIterator<AbstractTransition> get_target_states(StateIndex state) const;
+    TargetStateIterator<AbstractTransition> get_target_states(StateIndex source) const;
+    SourceStateIterator<AbstractTransition> get_source_states(StateIndex target) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;

@@ -37,7 +37,7 @@ template<typename T>
 concept IsAbstraction = IsTransitionSystem<T> && requires(T a, State concrete_state) {
     {
         a.get_abstract_state_index(concrete_state)
-    } -> std::convertible_to<StateIndex>;
+    } -> std::same_as<StateIndex>;
 };
 
 }

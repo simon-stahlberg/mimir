@@ -35,13 +35,13 @@ template<typename T>
 concept IsTransition = requires(T a) {
     {
         a.get_source_state()
-    } -> std::convertible_to<StateIndex>;
+    } -> std::same_as<StateIndex>;
     {
         a.get_target_state()
-    } -> std::convertible_to<StateIndex>;
+    } -> std::same_as<StateIndex>;
     {
         a.get_cost()
-    } -> std::convertible_to<TransitionCost>;
+    } -> std::same_as<TransitionCost>;
 };
 
 }

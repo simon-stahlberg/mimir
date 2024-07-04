@@ -502,10 +502,15 @@ const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goa
 
 const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
-TargetStateIterator<AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex state) const
+TargetStateIterator<AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex source) const
 {
-    return TargetStateIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_source.at(state),
-                                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(state + 1)));
+    return TargetStateIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+}
+
+SourceStateIterator<AbstractTransition> FaithfulAbstraction::get_source_states(StateIndex target) const
+{
+    return SourceStateIterator<AbstractTransition>(target, std::span<const AbstractTransition>(m_transitions.begin(), m_transitions.end()));
 }
 
 size_t FaithfulAbstraction::get_num_states() const { return get_states().size(); }
