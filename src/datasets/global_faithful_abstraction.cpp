@@ -299,14 +299,9 @@ const StateIndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return
 
 const StateIndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_index).get_deadend_states(); }
 
-const std::vector<StateIndexList>& GlobalFaithfulAbstraction::get_forward_successor_adjacency_lists() const
+DestinationStateIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_successors(StateIndex state) const
 {
-    return m_abstractions->at(m_index).get_forward_successor_adjacency_lists();
-}
-
-const std::vector<StateIndexList>& GlobalFaithfulAbstraction::get_backward_successor_adjacency_lists() const
-{
-    return m_abstractions->at(m_index).get_backward_successor_adjacency_lists();
+    return m_abstractions->at(m_index).get_forward_successors(state);
 }
 
 size_t GlobalFaithfulAbstraction::get_num_states() const { return get_states().size(); }
@@ -326,21 +321,16 @@ size_t GlobalFaithfulAbstraction::get_num_isomorphic_states() const { return m_n
 size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return m_num_non_isomorphic_states; }
 
 /* Transitions */
-const TransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_transitions(); }
+const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_transitions(); }
+
+const BeginIndexList& GlobalFaithfulAbstraction::get_transitions_begin_by_source() const
+{
+    return m_abstractions->at(m_index).get_transitions_begin_by_source();
+}
 
 TransitionCost GlobalFaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
     return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_transition_cost(transition);
-}
-
-const std::vector<TransitionIndexList>& GlobalFaithfulAbstraction::get_forward_transition_adjacency_lists() const
-{
-    return m_abstractions->at(m_index).get_forward_transition_adjacency_lists();
-}
-
-const std::vector<TransitionIndexList>& GlobalFaithfulAbstraction::get_backward_transition_adjacency_lists() const
-{
-    return m_abstractions->at(m_index).get_backward_transition_adjacency_lists();
 }
 
 size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstractions->at(m_index).get_num_transitions(); }

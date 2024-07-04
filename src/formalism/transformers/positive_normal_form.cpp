@@ -92,6 +92,12 @@ EffectUniversal PositiveNormalFormTransformer::transform_impl(const EffectUniver
     transform_conditions(effect.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
     transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
     transform_conditions(effect.get_conditions<Derived>(), m_negative_derived_duals, transformed_derived_conditions, transformed_derived_conditions);
+
+    return this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
+                                                                 transformed_static_conditions,
+                                                                 transformed_fluent_conditions,
+                                                                 transformed_derived_conditions,
+                                                                 this->transform(*effect.get_effect()));
 }
 
 Action PositiveNormalFormTransformer::transform_impl(const ActionImpl& action)

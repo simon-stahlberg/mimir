@@ -18,8 +18,8 @@
 #ifndef MIMIR_DATASETS_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_ABSTRACTION_HPP_
 
-#include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transition_system.hpp"
+#include "mimir/datasets/abstraction_interface.hpp"
+#include "mimir/datasets/transition.hpp"
 #include "mimir/search/state.hpp"
 
 #include <concepts>
@@ -29,17 +29,6 @@ namespace mimir
 {
 
 using AbstractionIndex = uint32_t;
-
-/**
- * Internal concept
- */
-
-template<typename T>
-concept IsAbstraction = IsTransitionSystem<T> && requires(T a, State concrete_state) {
-    {
-        a.get_abstract_state_index(concrete_state)
-    } -> std::convertible_to<StateIndex>;
-};
 
 /**
  * External inheritance hierarchy using type erasure.
@@ -66,19 +55,17 @@ private:
         virtual StateIndex get_initial_state() const = 0;
         virtual const StateIndexSet& get_goal_states() const = 0;
         virtual const StateIndexSet& get_deadend_states() const = 0;
-        virtual const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const = 0;
-        virtual const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const = 0;
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
+        virtual DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const;
         virtual bool is_goal_state(StateIndex state) const = 0;
         virtual bool is_deadend_state(StateIndex state) const = 0;
         virtual bool is_alive_state(StateIndex state) const = 0;
 
         /* Transitions */
+        virtual const AbstractTransitionList& get_transitions() const = 0;
         virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
-        virtual const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const = 0;
-        virtual const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const = 0;
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
@@ -109,13 +96,9 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
-        const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const override
+        DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const override
         {
-            return m_abstraction.get_forward_successor_adjacency_lists();
-        }
-        const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const override
-        {
-            return m_abstraction.get_backward_successor_adjacency_lists();
+            return m_abstraction.get_forward_successors(state);
         }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
@@ -125,15 +108,8 @@ private:
         bool is_alive_state(StateIndex state) const override { return m_abstraction.is_alive_state(state); }
 
         /* Transitions */
+        const AbstractTransitionList& get_transitions() const override { return m_abstraction.get_transitions(); }
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
-        const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const override
-        {
-            return m_abstraction.get_forward_transition_adjacency_lists();
-        }
-        const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const override
-        {
-            return m_abstraction.get_backward_transition_adjacency_lists();
-        }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
         /* Distances */
@@ -147,6 +123,8 @@ private:
     std::unique_ptr<AbstractionConcept> m_pimpl;
 
 public:
+    using TransitionType = AbstractTransition;
+
     template<IsAbstraction A>
     explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction)))
     {
@@ -178,8 +156,7 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
-    const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const { return m_pimpl->get_forward_successor_adjacency_lists(); }
-    const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const { return m_pimpl->get_backward_successor_adjacency_lists(); }
+    DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const { return m_pimpl->get_forward_successors(state); }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }
@@ -188,9 +165,9 @@ public:
     bool is_alive_state(StateIndex state) const { return m_pimpl->is_alive_state(state); }
 
     /* Transitions */
+    // Write an adaptor if you need to return different kinds of transitions
+    const AbstractTransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
     TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
-    const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const { return m_pimpl->get_forward_transition_adjacency_lists(); }
-    const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const { return m_pimpl->get_backward_transition_adjacency_lists(); }
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */

@@ -15,10 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_TRANSITION_SYSTEM_HPP_
-#define MIMIR_DATASETS_TRANSITION_SYSTEM_HPP_
+#ifndef MIMIR_DATASETS_TRANSITION_SYSTEM_INTERFACE_HPP_
+#define MIMIR_DATASETS_TRANSITION_SYSTEM_INTERFACE_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/types.hpp"
+#include "mimir/datasets/iterators.hpp"
+#include "mimir/datasets/transition_interface.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/openlists.hpp"
@@ -26,17 +29,18 @@
 #include "mimir/search/successor_state_generator.hpp"
 
 #include <concepts>
+#include <iterator>
+#include <ranges>
+#include <type_traits>
 
 namespace mimir
 {
 
-using TransitionCost = double;
-using TransitionCostList = std::vector<TransitionCost>;
-using TransitionIndex = int;
-using TransitionIndexList = std::vector<TransitionIndex>;
-
 template<typename T>
 concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionIndex transition_index) {
+    /* Types */
+    typename T::TransitionType;
+
     /* Memory */
     {
         a.get_pddl_parser()
@@ -59,11 +63,8 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
         a.get_deadend_states()
     } -> std::convertible_to<const StateIndexSet&>;
     {
-        a.get_forward_successor_adjacency_lists()
-    } -> std::convertible_to<const std::vector<StateIndexList>&>;
-    {
-        a.get_backward_successor_adjacency_lists()
-    } -> std::convertible_to<const std::vector<StateIndexList>&>;
+        a.get_forward_successors(state_index)
+    } -> std::same_as<DestinationStateIterator<typename T::TransitionType>>;
     {
         a.get_num_states()
     } -> std::convertible_to<size_t>;
@@ -85,17 +86,19 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
 
     /* Transitions */
     {
-        a.get_num_transitions()
-    } -> std::convertible_to<size_t>;
-    {
-        a.get_transition_cost(transition_index)
-    } -> std::convertible_to<TransitionCost>;
-    {
-        a.get_forward_transition_adjacency_lists()
-    } -> std::convertible_to<const std::vector<TransitionIndexList>&>;
-    {
-        a.get_backward_transition_adjacency_lists()
-    } -> std::convertible_to<const std::vector<TransitionIndexList>&>;
+        // Ensure get_somethings returns const std::vector<T>&
+        a.get_transitions()
+    } -> std::same_as<const std::vector<typename T::TransitionType>&>;
+
+    //{
+    //    a.get_transitions_begin_by_source()
+    //} -> std::convertible_to<const BeginIndexList&>;
+    //{
+    //    a.get_forward_transitions(state_index)
+    //} -> IsTransitionIndexIteratorPair;
+    //{
+    //    a.get_backward_transitions(state_index)
+    //} -> IsTransitionIndexIteratorPair;
 
     /* Distances */
     {

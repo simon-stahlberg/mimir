@@ -52,7 +52,7 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
     set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g3 -ggdb -fconcepts-diagnostics-depth=5")
 endif()
 
 # set(CMAKE_BUILD_TYPE "Release")

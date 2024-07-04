@@ -18,9 +18,10 @@
 #ifndef MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 
-#include "mimir/datasets/abstraction.hpp"
+#include "mimir/common/types.hpp"
+#include "mimir/datasets/abstraction_interface.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transition_system.hpp"
+#include "mimir/datasets/transition.hpp"
 #include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -84,13 +85,11 @@ private:
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
     StateIndexSet m_deadend_states;
-    std::vector<StateIndexList> m_forward_successor_adjacency_lists;
-    std::vector<StateIndexList> m_backward_successor_adjacency_lists;
 
     /* Transitions */
-    TransitionList m_transitions;
-    std::vector<TransitionIndexList> m_forward_transition_adjacency_lists;
-    std::vector<TransitionIndexList> m_backward_transition_adjacency_lists;
+    AbstractTransitionList m_transitions;
+    std::shared_ptr<GroundActionList> m_ground_actions_by_src_and_dst;
+    BeginIndexList m_transitions_begin_by_src;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -114,14 +113,14 @@ private:
                         StateIndex initial_state,
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
-                        std::vector<StateIndexList> forward_successor_adjacency_lists,
-                        std::vector<StateIndexList> backward_successor_adjacency_lists,
-                        TransitionList transitions,
-                        std::vector<TransitionIndexList> forward_transition_adjacency_lists,
-                        std::vector<TransitionIndexList> backward_transition_adjacency_lists,
+                        AbstractTransitionList transitions,
+                        std::shared_ptr<GroundActionList> ground_actions_by_src_and_dst,
+                        BeginIndexList transitions_begin_by_src,
                         std::vector<double> goal_distances);
 
 public:
+    using TransitionType = AbstractTransition;
+
     static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                      const fs::path& problem_filepath,
                                                      bool mark_true_goal_literals = false,
@@ -208,8 +207,7 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    const std::vector<StateIndexList>& get_forward_successor_adjacency_lists() const;
-    const std::vector<StateIndexList>& get_backward_successor_adjacency_lists() const;
+    DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -218,10 +216,9 @@ public:
     bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
-    const TransitionList& get_transitions() const;
+    const AbstractTransitionList& get_transitions() const;
+    const BeginIndexList& get_transitions_begin_by_source() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
-    const std::vector<TransitionIndexList>& get_forward_transition_adjacency_lists() const;
-    const std::vector<TransitionIndexList>& get_backward_transition_adjacency_lists() const;
     size_t get_num_transitions() const;
 
     /* Distances */

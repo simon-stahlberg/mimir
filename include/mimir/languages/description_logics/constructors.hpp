@@ -290,7 +290,7 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            bitset.set(atom->get_objects().at(0).get_identifier());
+            bitset.set(atom->get_objects().at(0)->get_identifier());
         }
     }
 }

@@ -14,7 +14,7 @@ def test_faithful_abstraction():
     abstraction = FaithfulAbstraction.create(domain_filepath, problem_filepath)
 
     assert abstraction.get_num_states() == 12
-    assert abstraction.get_num_transitions() == 46
+    assert abstraction.get_num_transitions() == 36
     assert abstraction.get_num_goal_states() == 2
     assert abstraction.get_num_deadend_states() == 0
 
