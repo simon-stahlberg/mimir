@@ -316,7 +316,7 @@ template<IsTransition T>
 SourceStateIterator<T>::const_iterator::value_type SourceStateIterator<T>::const_iterator::operator*() const
 {
     assert(m_pos < m_transitions.size());
-    return m_transitions[m_pos].get_target_state();
+    return m_transitions[m_pos].get_source_state();
 }
 
 template<IsTransition T>
