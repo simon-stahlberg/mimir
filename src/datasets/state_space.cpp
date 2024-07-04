@@ -180,17 +180,17 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         const auto& cur_transition = transitions.at(i);
         if (prev_transition.get_source_state() != cur_transition.get_source_state())
         {
-            // Write i for skipped source indices.
+            // Write begin i for skipped source indices.
             for (size_t j = 0; j < (cur_transition.get_source_state() - prev_transition.get_source_state() - 1); ++j)
             {
                 transitions_begin_by_source.push_back(i);
             }
-            // Ensure that begin for source is written into transitions_begin_by_source[source]
+            // Ensure that begin i for source is written into transitions_begin_by_source[source]
             assert(cur_transition.get_source_state() == transitions_begin_by_source.size());
             transitions_begin_by_source.push_back(i);
         }
     }
-    // Set end for remaining states.
+    // Set begin of remaining states + end of last state.
     for (size_t i = transitions_begin_by_source.size(); i < states.size() + 1; ++i)
     {
         transitions_begin_by_source.push_back(transitions.size());
