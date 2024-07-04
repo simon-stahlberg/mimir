@@ -24,7 +24,6 @@
 #include "mimir/datasets/transition_interface.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/openlists.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/successor_state_generator.hpp"
 
@@ -63,8 +62,8 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
         a.get_deadend_states()
     } -> std::convertible_to<const StateIndexSet&>;
     {
-        a.get_forward_successors(state_index)
-    } -> std::same_as<DestinationStateIterator<typename T::TransitionType>>;
+        a.get_target_states(state_index)
+    } -> std::same_as<TargetStateIterator<typename T::TransitionType>>;
     {
         a.get_num_states()
     } -> std::convertible_to<size_t>;
@@ -86,7 +85,6 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
 
     /* Transitions */
     {
-        // Ensure get_somethings returns const std::vector<T>&
         a.get_transitions()
     } -> std::same_as<const std::vector<typename T::TransitionType>&>;
 

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/transition.hpp"
+#include "mimir/datasets/transitions.hpp"
 
 namespace mimir
 {
@@ -24,9 +24,9 @@ namespace mimir
  * Transition
  */
 
-Transition::Transition(StateIndex src_state, StateIndex dst_state, GroundAction creating_action) :
-    m_src_state(src_state),
-    m_dst_state(dst_state),
+Transition::Transition(StateIndex source_state, StateIndex target_state, GroundAction creating_action) :
+    m_source_state(source_state),
+    m_target_state(target_state),
     m_creating_action(creating_action)
 {
 }
@@ -35,16 +35,16 @@ bool Transition::operator==(const Transition& other) const
 {
     if (this != &other)
     {
-        return (m_src_state == other.m_src_state) && (m_dst_state == other.m_dst_state) && (m_creating_action == other.m_creating_action);
+        return (m_source_state == other.m_source_state) && (m_target_state == other.m_target_state) && (m_creating_action == other.m_creating_action);
     }
     return true;
 }
 
-size_t Transition::hash() const { return loki::hash_combine(m_src_state, m_dst_state, m_creating_action.hash()); }
+size_t Transition::hash() const { return loki::hash_combine(m_source_state, m_target_state, m_creating_action.hash()); }
 
-StateIndex Transition::get_src_state() const { return m_src_state; }
+StateIndex Transition::get_source_state() const { return m_source_state; }
 
-StateIndex Transition::get_dst_state() const { return m_dst_state; }
+StateIndex Transition::get_target_state() const { return m_target_state; }
 
 TransitionCost Transition::get_cost() const { return m_creating_action.get_cost(); }
 
@@ -54,9 +54,9 @@ GroundAction Transition::get_creating_action() const { return m_creating_action;
  * AbstractTransition
  */
 
-AbstractTransition::AbstractTransition(StateIndex src_state, StateIndex dst_state, std::span<GroundAction> creating_actions) :
-    m_src_state(src_state),
-    m_dst_state(dst_state),
+AbstractTransition::AbstractTransition(StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions) :
+    m_source_state(source_state),
+    m_target_state(target_state),
     m_creating_actions(creating_actions)
 {
 }
@@ -65,8 +65,8 @@ bool AbstractTransition::operator==(const AbstractTransition& other) const
 {
     if (this != &other)
     {
-        return (m_src_state == other.m_src_state)                                 //
-               && (m_dst_state == other.m_dst_state)                              //
+        return (m_source_state == other.m_source_state)                           //
+               && (m_target_state == other.m_target_state)                        //
                && (m_creating_actions.size() == other.m_creating_actions.size())  //
                && std::equal(m_creating_actions.begin(), m_creating_actions.end(), other.m_creating_actions.begin());
     }
@@ -80,12 +80,12 @@ size_t AbstractTransition::hash() const
     {
         loki::hash_combine(creating_actions_hash, action.hash());
     }
-    return loki::hash_combine(m_src_state, m_dst_state, creating_actions_hash);
+    return loki::hash_combine(m_source_state, m_target_state, creating_actions_hash);
 }
 
-StateIndex AbstractTransition::get_src_state() const { return m_src_state; }
+StateIndex AbstractTransition::get_source_state() const { return m_source_state; }
 
-StateIndex AbstractTransition::get_dst_state() const { return m_dst_state; }
+StateIndex AbstractTransition::get_target_state() const { return m_target_state; }
 
 TransitionCost AbstractTransition::get_cost() const
 {

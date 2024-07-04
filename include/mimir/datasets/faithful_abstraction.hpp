@@ -21,7 +21,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/abstraction_interface.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transition.hpp"
+#include "mimir/datasets/transitions.hpp"
 #include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -88,8 +88,8 @@ private:
 
     /* Transitions */
     AbstractTransitionList m_transitions;
-    std::shared_ptr<GroundActionList> m_ground_actions_by_src_and_dst;
-    BeginIndexList m_transitions_begin_by_src;
+    std::shared_ptr<GroundActionList> m_ground_actions_by_source_and_target;
+    BeginIndexList m_transitions_begin_by_source;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -114,7 +114,7 @@ private:
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
                         AbstractTransitionList transitions,
-                        std::shared_ptr<GroundActionList> ground_actions_by_src_and_dst,
+                        std::shared_ptr<GroundActionList> ground_actions_by_source_and_target,
                         BeginIndexList transitions_begin_by_src,
                         std::vector<double> goal_distances);
 
@@ -207,7 +207,7 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const;
+    TargetStateIterator<AbstractTransition> get_target_states(StateIndex state) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;

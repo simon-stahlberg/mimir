@@ -30,7 +30,7 @@ namespace mimir
 {
 
 template<IsTransition T>
-class DestinationStateIterator
+class TargetStateIterator
 {
 private:
     std::span<const T> m_transitions;
@@ -38,7 +38,7 @@ private:
 public:
     using value_type = T;
 
-    DestinationStateIterator(std::span<const T> transitions);
+    TargetStateIterator(std::span<const T> transitions);
 
     class const_iterator
     {
@@ -69,7 +69,7 @@ public:
 };
 
 template<IsTransition T>
-class BackwardSuccessorIterator
+class SourceStateIterator
 {
 };
 
@@ -87,47 +87,47 @@ class BackwardTransitionIterator
  * Implementations
  */
 
-/* DestinationStateIterator */
+/* TargetStateIterator */
 
 template<IsTransition T>
-DestinationStateIterator<T>::DestinationStateIterator(std::span<const T> transitions) : m_transitions(transitions)
+TargetStateIterator<T>::TargetStateIterator(std::span<const T> transitions) : m_transitions(transitions)
 {
 }
 
 template<IsTransition T>
-void DestinationStateIterator<T>::const_iterator::advance()
+void TargetStateIterator<T>::const_iterator::advance()
 {
     ++m_pos;
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator::const_iterator()
+TargetStateIterator<T>::const_iterator::const_iterator()
 {
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator::const_iterator(std::span<const T> transitions, bool begin) :
+TargetStateIterator<T>::const_iterator::const_iterator(std::span<const T> transitions, bool begin) :
     m_pos(begin ? 0 : transitions.size()),
     m_transitions(transitions)
 {
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator::value_type DestinationStateIterator<T>::const_iterator::operator*() const
+TargetStateIterator<T>::const_iterator::value_type TargetStateIterator<T>::const_iterator::operator*() const
 {
     assert(m_pos < m_transitions.size());
-    return m_transitions[m_pos].get_dst_state();
+    return m_transitions[m_pos].get_target_state();
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator& DestinationStateIterator<T>::const_iterator::operator++()
+TargetStateIterator<T>::const_iterator& TargetStateIterator<T>::const_iterator::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator DestinationStateIterator<T>::const_iterator::operator++(int)
+TargetStateIterator<T>::const_iterator TargetStateIterator<T>::const_iterator::operator++(int)
 {
     const_iterator tmp = *this;
     ++(*this);
@@ -135,25 +135,25 @@ DestinationStateIterator<T>::const_iterator DestinationStateIterator<T>::const_i
 }
 
 template<IsTransition T>
-bool DestinationStateIterator<T>::const_iterator::operator==(const const_iterator& other) const
+bool TargetStateIterator<T>::const_iterator::operator==(const const_iterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsTransition T>
-bool DestinationStateIterator<T>::const_iterator::operator!=(const const_iterator& other) const
+bool TargetStateIterator<T>::const_iterator::operator!=(const const_iterator& other) const
 {
     return !(*this == other);
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator DestinationStateIterator<T>::begin() const
+TargetStateIterator<T>::const_iterator TargetStateIterator<T>::begin() const
 {
     return const_iterator(m_transitions, true);
 }
 
 template<IsTransition T>
-DestinationStateIterator<T>::const_iterator DestinationStateIterator<T>::end() const
+TargetStateIterator<T>::const_iterator TargetStateIterator<T>::end() const
 {
     return const_iterator(m_transitions, false);
 }

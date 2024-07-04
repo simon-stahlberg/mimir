@@ -34,10 +34,10 @@ using TransitionIndexList = std::vector<TransitionIndex>;
 template<typename T>
 concept IsTransition = requires(T a) {
     {
-        a.get_src_state()
+        a.get_source_state()
     } -> std::convertible_to<StateIndex>;
     {
-        a.get_dst_state()
+        a.get_target_state()
     } -> std::convertible_to<StateIndex>;
     {
         a.get_cost()

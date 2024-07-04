@@ -223,7 +223,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     const auto root_state_index = m_tuple_graph.m_state_space->get_state_index(m_tuple_graph.get_root_state());
     auto vertex_indices_layer = VertexIndexList {};
     auto states_layer = StateList {};
-    for (const auto succ_state_index : m_tuple_graph.m_state_space->get_forward_successors(root_state_index))
+    for (const auto succ_state_index : m_tuple_graph.m_state_space->get_target_states(root_state_index))
     {
         const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
         if (succ_state == m_tuple_graph.get_root_state())
@@ -312,7 +312,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
     for (const auto& state : m_tuple_graph.m_states_by_distance.back())
     {
         const auto state_index = m_tuple_graph.m_state_space->get_state_index(state);
-        for (const auto succ_state_index : m_tuple_graph.m_state_space->get_forward_successors(state_index))
+        for (const auto succ_state_index : m_tuple_graph.m_state_space->get_target_states(state_index))
         {
             const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
 
@@ -363,7 +363,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
         for (const auto state : m_tuple_graph.m_vertices.at(prev_vertex).get_states())
         {
             const auto state_index = m_tuple_graph.m_state_space->get_state_index(state);
-            for (const auto& succ_state_index : m_tuple_graph.m_state_space->get_forward_successors(state_index))
+            for (const auto& succ_state_index : m_tuple_graph.m_state_space->get_target_states(state_index))
             {
                 const auto succ_state = m_tuple_graph.m_state_space->get_states().at(succ_state_index);
 

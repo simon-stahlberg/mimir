@@ -19,7 +19,7 @@
 #define MIMIR_DATASETS_ABSTRACTION_HPP_
 
 #include "mimir/datasets/abstraction_interface.hpp"
-#include "mimir/datasets/transition.hpp"
+#include "mimir/datasets/transitions.hpp"
 #include "mimir/search/state.hpp"
 
 #include <concepts>
@@ -58,7 +58,7 @@ private:
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
-        virtual DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const;
+        virtual TargetStateIterator<AbstractTransition> get_target_states(StateIndex state) const;
         virtual bool is_goal_state(StateIndex state) const = 0;
         virtual bool is_deadend_state(StateIndex state) const = 0;
         virtual bool is_alive_state(StateIndex state) const = 0;
@@ -96,10 +96,7 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
-        DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const override
-        {
-            return m_abstraction.get_forward_successors(state);
-        }
+        TargetStateIterator<AbstractTransition> get_target_states(StateIndex state) const override { return m_abstraction.get_target_states(state); }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
         size_t get_num_deadend_states() const override { return m_abstraction.get_num_deadend_states(); }
@@ -156,7 +153,7 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
-    DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const { return m_pimpl->get_forward_successors(state); }
+    TargetStateIterator<AbstractTransition> get_target_states(StateIndex state) const { return m_pimpl->get_target_states(state); }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }

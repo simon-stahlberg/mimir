@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/search/openlists/priority_queue.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -39,7 +40,7 @@ StateSpace::StateSpace(bool use_unit_cost_one,
                        StateIndexSet goal_states,
                        StateIndexSet deadend_states,
                        TransitionList transitions,
-                       BeginIndexList transitions_begin_by_src,
+                       BeginIndexList transitions_begin_by_source,
                        std::vector<double> goal_distances) :
     m_use_unit_cost_one(use_unit_cost_one),
     m_parser(std::move(parser)),
@@ -51,7 +52,7 @@ StateSpace::StateSpace(bool use_unit_cost_one,
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
-    m_transitions_begin_by_src(std::move(transitions_begin_by_src)),
+    m_transitions_begin_by_source(std::move(transitions_begin_by_source)),
     m_goal_distances(std::move(goal_distances)),
     m_states_by_goal_distance()
 {
@@ -166,24 +167,24 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         }
     }
 
-    // Sort transitions by src state.
-    std::sort(transitions.begin(), transitions.end(), [](const auto& l, const auto& r) { return l.get_src_state() < r.get_src_state(); });
+    // Sort transitions by source state.
+    std::sort(transitions.begin(), transitions.end(), [](const auto& l, const auto& r) { return l.get_source_state() < r.get_source_state(); });
 
-    auto transitions_begin_by_src = BeginIndexList {};
+    auto transitions_begin_by_source = BeginIndexList {};
     // Set begin of first state index.
-    transitions_begin_by_src.push_back(0);
+    transitions_begin_by_source.push_back(0);
     // Set begin of intermediate state indices.
     for (size_t i = 1; i < transitions.size(); ++i)
     {
         const auto& prev_transition = transitions.at(i - 1);
         const auto& cur_transition = transitions.at(i);
-        if (prev_transition.get_src_state() != cur_transition.get_src_state())
+        if (prev_transition.get_source_state() != cur_transition.get_source_state())
         {
-            transitions_begin_by_src.push_back(i);
+            transitions_begin_by_source.push_back(i);
         }
     }
     // Set end of last state index.
-    transitions_begin_by_src.push_back(transitions.size());
+    transitions_begin_by_source.push_back(transitions.size());
 
     return StateSpace(use_unit_cost_one,
                       std::move(parser),
@@ -195,7 +196,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                       std::move(goal_states),
                       std::move(deadend_states),
                       std::move(transitions),
-                      std::move(transitions_begin_by_src),
+                      std::move(transitions_begin_by_source),
                       std::move(goal_distances));
 }
 
@@ -296,10 +297,10 @@ const StateIndexSet& StateSpace::get_goal_states() const { return m_goal_states;
 
 const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
-DestinationStateIterator<Transition> StateSpace::get_forward_successors(StateIndex state) const
+TargetStateIterator<Transition> StateSpace::get_target_states(StateIndex state) const
 {
-    return DestinationStateIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_src.at(state),
-                                                                            m_transitions.begin() + m_transitions_begin_by_src.at(state + 1)));
+    return TargetStateIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(state),
+                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(state + 1)));
 }
 
 size_t StateSpace::get_num_states() const { return get_states().size(); }
@@ -317,7 +318,7 @@ bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_stat
 /* Transitions */
 const TransitionList& StateSpace::get_transitions() const { return m_transitions; }
 
-const BeginIndexList& StateSpace::get_transitions_begin_by_source() const { return m_transitions_begin_by_src; }
+const BeginIndexList& StateSpace::get_transitions_begin_by_source() const { return m_transitions_begin_by_source; }
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const { return (m_use_unit_cost_one) ? 1 : m_transitions.at(transition).get_cost(); }
 
@@ -368,11 +369,11 @@ compute_shortest_goal_distances(size_t num_total_states, const StateIndexSet& go
 
         for (const auto& transition : transitions)
         {
-            if (transition.get_dst_state() != state_index)
+            if (transition.get_target_state() != state_index)
             {
                 continue;
             }
-            const auto successor_state = transition.get_src_state();
+            const auto successor_state = transition.get_source_state();
 
             auto succ_cost = distances.at(successor_state);
             auto new_succ_cost = cost + ((use_unit_cost_one) ? 1. : transition.get_creating_action().get_cost());

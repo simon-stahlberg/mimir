@@ -76,8 +76,8 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
                                          StateIndexSet goal_states,
                                          StateIndexSet deadend_states,
                                          AbstractTransitionList transitions,
-                                         std::shared_ptr<GroundActionList> ground_actions_by_src_and_dst,
-                                         BeginIndexList transitions_begin_by_src,
+                                         std::shared_ptr<GroundActionList> ground_actions_by_source_and_target,
+                                         BeginIndexList transitions_begin_by_source,
                                          std::vector<double> goal_distances) :
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -91,8 +91,8 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
-    m_ground_actions_by_src_and_dst(std::move(ground_actions_by_src_and_dst)),
-    m_transitions_begin_by_src(std::move(transitions_begin_by_src)),
+    m_ground_actions_by_source_and_target(std::move(ground_actions_by_source_and_target)),
+    m_transitions_begin_by_source(std::move(transitions_begin_by_source)),
     m_goal_distances(std::move(goal_distances)),
     m_nauty_graph(),
     m_object_graph_factory(m_aag->get_problem(), m_parser->get_factories(), m_mark_true_goal_literals)
@@ -268,69 +268,69 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
         }
     }
 
-    /* Sort transitions by src and dst state. */
+    /* Sort transitions by source and target state. */
     std::sort(transitions.begin(),
               transitions.end(),
               [](const auto& l, const auto& r)
               {
-                  if (l.get_src_state() == r.get_src_state())
+                  if (l.get_source_state() == r.get_source_state())
                   {
-                      return l.get_dst_state() < r.get_dst_state();
+                      return l.get_target_state() < r.get_target_state();
                   }
-                  return l.get_src_state() < r.get_src_state();
+                  return l.get_source_state() < r.get_source_state();
               });
 
-    /* Store actions persistently and grouped by src and dst to be able to use span. */
-    auto ground_actions_by_src_and_dst = std::make_shared<GroundActionList>();
+    /* Store actions persistently and grouped by source and target to be able to use span. */
+    auto ground_actions_by_source_and_target = std::make_shared<GroundActionList>();
     std::transform(transitions.begin(),
                    transitions.end(),
-                   std::back_inserter(*ground_actions_by_src_and_dst),
+                   std::back_inserter(*ground_actions_by_source_and_target),
                    [](const auto& transition) { return transition.get_creating_action(); });
 
     /* Group transitions by 1) src and 2) src and dst */
-    auto transitions_begin_by_src = BeginIndexList {};
-    auto transitions_begin_by_src_and_dst = BeginIndexList {};
+    auto transitions_begin_by_source = BeginIndexList {};
+    auto transitions_begin_by_source_and_target = BeginIndexList {};
     // Set begin of first state index.
-    transitions_begin_by_src.push_back(0);
-    transitions_begin_by_src_and_dst.push_back(0);
+    transitions_begin_by_source.push_back(0);
+    transitions_begin_by_source_and_target.push_back(0);
     // Set begin of intermediate state indices.
     for (size_t i = 1; i < transitions.size(); ++i)
     {
         const auto& prev_transition = transitions.at(i - 1);
         const auto& cur_transition = transitions.at(i);
-        if (prev_transition.get_src_state() != cur_transition.get_src_state())
+        if (prev_transition.get_source_state() != cur_transition.get_source_state())
         {
-            transitions_begin_by_src.push_back(i);
+            transitions_begin_by_source.push_back(i);
         }
 
-        if ((prev_transition.get_src_state() != cur_transition.get_src_state())  //
-            || (prev_transition.get_dst_state() != cur_transition.get_dst_state()))
+        if ((prev_transition.get_source_state() != cur_transition.get_source_state())  //
+            || (prev_transition.get_target_state() != cur_transition.get_target_state()))
         {
-            transitions_begin_by_src_and_dst.push_back(i);
+            transitions_begin_by_source_and_target.push_back(i);
         }
     }
     // Set end of last state index.
-    transitions_begin_by_src.push_back(transitions.size());
-    transitions_begin_by_src_and_dst.push_back(transitions.size());
+    transitions_begin_by_source.push_back(transitions.size());
+    transitions_begin_by_source_and_target.push_back(transitions.size());
 
     /* Create abstract transitions. */
     auto abstract_transitions = AbstractTransitionList {};
-    for (size_t i = 0; i < transitions_begin_by_src_and_dst.size() - 1; ++i)
+    for (size_t i = 0; i < transitions_begin_by_source_and_target.size() - 1; ++i)
     {
-        const auto begin_offset = transitions_begin_by_src_and_dst[i];
-        const auto end_offset = transitions_begin_by_src_and_dst[i + 1];
+        const auto begin_offset = transitions_begin_by_source_and_target[i];
+        const auto end_offset = transitions_begin_by_source_and_target[i + 1];
 
         bool has_transition = (begin_offset != end_offset);
 
         if (has_transition)
         {
-            const auto src = (transitions.begin() + begin_offset)->get_src_state();
-            const auto dst = (transitions.begin() + begin_offset)->get_dst_state();
+            const auto src = (transitions.begin() + begin_offset)->get_source_state();
+            const auto dst = (transitions.begin() + begin_offset)->get_target_state();
 
-            abstract_transitions.emplace_back(
-                src,
-                dst,
-                std::span<GroundAction>((*ground_actions_by_src_and_dst).begin() + begin_offset, (*ground_actions_by_src_and_dst).begin() + end_offset));
+            abstract_transitions.emplace_back(src,
+                                              dst,
+                                              std::span<GroundAction>((*ground_actions_by_source_and_target).begin() + begin_offset,
+                                                                      (*ground_actions_by_source_and_target).begin() + end_offset));
         }
     }
 
@@ -346,8 +346,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                std::move(abstract_goal_states),
                                std::move(abstract_deadend_states),
                                std::move(abstract_transitions),
-                               std::move(ground_actions_by_src_and_dst),
-                               std::move(transitions_begin_by_src),
+                               std::move(ground_actions_by_source_and_target),
+                               std::move(transitions_begin_by_source),
                                std::move(abstract_goal_distances));
 }
 
@@ -502,10 +502,10 @@ const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goa
 
 const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
-DestinationStateIterator<AbstractTransition> FaithfulAbstraction::get_forward_successors(StateIndex state) const
+TargetStateIterator<AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex state) const
 {
-    return DestinationStateIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_src.at(state),
-                                                                                            m_transitions.begin() + m_transitions_begin_by_src.at(state + 1)));
+    return TargetStateIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_source.at(state),
+                                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(state + 1)));
 }
 
 size_t FaithfulAbstraction::get_num_states() const { return get_states().size(); }
@@ -523,7 +523,7 @@ bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_
 /* Transitions */
 const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_transitions; }
 
-const BeginIndexList& FaithfulAbstraction::get_transitions_begin_by_source() const { return m_transitions_begin_by_src; }
+const BeginIndexList& FaithfulAbstraction::get_transitions_begin_by_source() const { return m_transitions_begin_by_source; }
 
 TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {

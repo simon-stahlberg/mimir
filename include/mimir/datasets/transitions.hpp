@@ -34,18 +34,18 @@ namespace mimir
 class Transition
 {
 private:
-    StateIndex m_src_state;
-    StateIndex m_dst_state;
+    StateIndex m_source_state;
+    StateIndex m_target_state;
     GroundAction m_creating_action;
 
 public:
-    Transition(StateIndex src_state, StateIndex dst_state, GroundAction creating_action);
+    Transition(StateIndex source_state, StateIndex target_state, GroundAction creating_action);
 
     [[nodiscard]] bool operator==(const Transition& other) const;
     [[nodiscard]] size_t hash() const;
 
-    [[nodiscard]] StateIndex get_src_state() const;
-    [[nodiscard]] StateIndex get_dst_state() const;
+    [[nodiscard]] StateIndex get_source_state() const;
+    [[nodiscard]] StateIndex get_target_state() const;
     [[nodiscard]] TransitionCost get_cost() const;
     [[nodiscard]] GroundAction get_creating_action() const;
 };
@@ -61,18 +61,18 @@ static_assert(IsTransition<Transition>);
 class AbstractTransition
 {
 private:
-    StateIndex m_src_state;
-    StateIndex m_dst_state;
+    StateIndex m_source_state;
+    StateIndex m_target_state;
     std::span<GroundAction> m_creating_actions;
 
 public:
-    AbstractTransition(StateIndex src_state, StateIndex dst_state, std::span<GroundAction> creating_actions);
+    AbstractTransition(StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions);
 
     [[nodiscard]] bool operator==(const AbstractTransition& other) const;
     [[nodiscard]] size_t hash() const;
 
-    StateIndex get_src_state() const;
-    StateIndex get_dst_state() const;
+    StateIndex get_source_state() const;
+    StateIndex get_target_state() const;
     [[nodiscard]] TransitionCost get_cost() const;
     std::span<GroundAction> get_creating_actions() const;
 };

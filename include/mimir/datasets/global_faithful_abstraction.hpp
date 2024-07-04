@@ -21,7 +21,7 @@
 #include "mimir/datasets/abstraction_interface.hpp"
 #include "mimir/datasets/faithful_abstraction.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transition.hpp"
+#include "mimir/datasets/transitions.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/state.hpp"
@@ -156,7 +156,7 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    DestinationStateIterator<AbstractTransition> get_forward_successors(StateIndex state) const;
+    TargetStateIterator<AbstractTransition> get_target_states(StateIndex state) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;

@@ -19,8 +19,8 @@
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
 #include "mimir/datasets/iterators.hpp"
-#include "mimir/datasets/transition.hpp"
 #include "mimir/datasets/transition_system_interface.hpp"
+#include "mimir/datasets/transitions.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/action.hpp"
@@ -62,7 +62,7 @@ private:
 
     /* Transitions */
     TransitionList m_transitions;
-    BeginIndexList m_transitions_begin_by_src;
+    BeginIndexList m_transitions_begin_by_source;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -84,7 +84,7 @@ private:
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
                TransitionList transitions,
-               BeginIndexList transitions_begin_by_src,
+               BeginIndexList transitions_begin_by_source,
                std::vector<double> goal_distances);
 
 public:
@@ -173,7 +173,7 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    DestinationStateIterator<Transition> get_forward_successors(StateIndex state) const;
+    TargetStateIterator<Transition> get_target_states(StateIndex state) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;

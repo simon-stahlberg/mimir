@@ -826,8 +826,8 @@ void init_pymimir(py::module_& m)
     py::class_<Transition>(m, "Transition")  //
         .def("__eq__", &Transition::operator==)
         .def("__hash__", &Transition::hash)
-        .def("get_src_state", &Transition::get_src_state)
-        .def("get_dst_state", &Transition::get_dst_state)
+        .def("get_source_state", &Transition::get_source_state)
+        .def("get_target_state", &Transition::get_target_state)
         .def("get_creating_action", &Transition::get_creating_action);
 
     // StateSpace
@@ -930,10 +930,10 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference)
         .def(
-            "get_forward_successors",
+            "get_target_states",
             [](const StateSpace& self, StateIndex state)
             {
-                auto iterator = self.get_forward_successors(state);
+                auto iterator = self.get_target_states(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -963,10 +963,10 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference)
         .def(
-            "get_forward_successors",
+            "get_target_states",
             [](const Abstraction& self, StateIndex state)
             {
-                auto iterator = self.get_forward_successors(state);
+                auto iterator = self.get_target_states(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1121,10 +1121,10 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
         .def(
-            "get_forward_successors",
+            "get_target_states",
             [](const FaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_forward_successors(state);
+                auto iterator = self.get_target_states(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1228,10 +1228,10 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
         .def(
-            "get_forward_successors",
+            "get_target_states",
             [](const GlobalFaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_forward_successors(state);
+                auto iterator = self.get_target_states(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
