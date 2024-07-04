@@ -328,21 +328,21 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     }
 
     /* Group abstract transitions by source. */
-    auto transitions_begin_by_source = BeginIndexList {};
+    auto abstract_transitions_begin_by_source = BeginIndexList {};
     // Set begin of first state index.
-    transitions_begin_by_source.push_back(0);
+    abstract_transitions_begin_by_source.push_back(0);
     // Set begin of intermediate state indices.
     for (size_t i = 1; i < abstract_transitions.size(); ++i)
     {
-        const auto& prev_transition = abstract_transitions.at(i - 1);
-        const auto& cur_transition = abstract_transitions.at(i);
-        if (prev_transition.get_source_state() != cur_transition.get_source_state())
+        const auto& prev_abstract_transition = abstract_transitions.at(i - 1);
+        const auto& cur_astract_transition = abstract_transitions.at(i);
+        if (prev_abstract_transition.get_source_state() != cur_astract_transition.get_source_state())
         {
-            transitions_begin_by_source.push_back(i);
+            abstract_transitions_begin_by_source.push_back(i);
         }
     }
     // Set end of last state index.
-    transitions_begin_by_source.push_back(transitions.size());
+    abstract_transitions_begin_by_source.push_back(abstract_transitions.size());
 
     return FaithfulAbstraction(mark_true_goal_literals,
                                use_unit_cost_one,
@@ -357,7 +357,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                std::move(abstract_deadend_states),
                                std::move(abstract_transitions),
                                std::move(ground_actions_by_source_and_target),
-                               std::move(transitions_begin_by_source),
+                               std::move(abstract_transitions_begin_by_source),
                                std::move(abstract_goal_distances));
 }
 
