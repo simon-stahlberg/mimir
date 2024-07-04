@@ -19,10 +19,12 @@
 #define MIMIR_DATASETS_ITERATORS_HPP_
 
 #include "mimir/datasets/transition_interface.hpp"
+#include "mimir/datasets/transitions.hpp"
 #include "mimir/search/state.hpp"
 
 #include <concepts>
 #include <iterator>
+#include <ranges>
 #include <span>
 #include <type_traits>
 
@@ -67,6 +69,9 @@ public:
     [[nodiscard]] const_iterator begin() const;
     [[nodiscard]] const_iterator end() const;
 };
+
+static_assert(std::ranges::forward_range<TargetStateIterator<Transition>>);
+static_assert(std::ranges::forward_range<TargetStateIterator<AbstractTransition>>);
 
 template<IsTransition T>
 class SourceStateIterator
