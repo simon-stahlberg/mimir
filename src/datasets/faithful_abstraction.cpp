@@ -335,9 +335,16 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     for (size_t i = 1; i < abstract_transitions.size(); ++i)
     {
         const auto& prev_abstract_transition = abstract_transitions.at(i - 1);
-        const auto& cur_astract_transition = abstract_transitions.at(i);
-        if (prev_abstract_transition.get_source_state() != cur_astract_transition.get_source_state())
+        const auto& cur_abstract_transition = abstract_transitions.at(i);
+        if (prev_abstract_transition.get_source_state() != cur_abstract_transition.get_source_state())
         {
+            // Write i for skipped source indices.
+            for (size_t j = 0; j < (cur_abstract_transition.get_source_state() - prev_abstract_transition.get_source_state() - 1); ++j)
+            {
+                abstract_transitions_begin_by_source.push_back(i);
+            }
+            // Ensure that begin for source is written into abstract_transitions_begin_by_source[source]
+            assert(cur_abstract_transition.get_source_state() == abstract_transitions_begin_by_source.size());
             abstract_transitions_begin_by_source.push_back(i);
         }
     }
