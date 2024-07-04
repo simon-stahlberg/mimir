@@ -22,6 +22,7 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
+#include <span>
 #include <vector>
 
 namespace mimir
