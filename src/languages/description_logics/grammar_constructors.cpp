@@ -55,9 +55,9 @@ bool ConceptAnd::test_match(const dl::Constructor<Concept>& constructor) const {
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
-const ConceptChoice& ConceptAnd::get_concept_left() const { return m_concept_left; }
+const ConceptChoice& ConceptAnd::get_concept_left() const { return m_concept_left.get(); }
 
-const ConceptChoice& ConceptAnd::get_concept_right() const { return m_concept_right; }
+const ConceptChoice& ConceptAnd::get_concept_right() const { return m_concept_right.get(); }
 
 /**
  * RoleAnd
@@ -89,8 +89,8 @@ bool RoleAnd::test_match(const dl::Constructor<Role>& constructor) const { retur
 
 size_t RoleAnd::get_id() const { return m_id; }
 
-const RoleChoice& RoleAnd::get_role_left() const { return m_role_left; }
+const RoleChoice& RoleAnd::get_role_left() const { return m_role_left.get(); }
 
-const RoleChoice& RoleAnd::get_role_right() const { return m_role_right; }
+const RoleChoice& RoleAnd::get_role_right() const { return m_role_right.get(); }
 
 }

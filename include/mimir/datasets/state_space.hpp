@@ -127,6 +127,7 @@ public:
     /// @param memories External memory to parsers, aags, ssgs.
     /// @param use_unit_cost_one whether to use unit cost one or action costs.
     /// @param remove_if_unsolvable whether to remove state spaces of unsolvable problems.
+    /// @param sort_ascending_by_num_states whether the state spaces should be sorted ascending by the number of states.
     /// @param max_num_states The maximum number of states allowed in a StateSpace.
     /// @param timeout_ms The maximum time spent on creating a StateSpace.
     /// @param num_threads The number of threads used for construction.

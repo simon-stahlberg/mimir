@@ -227,8 +227,8 @@ class ConceptAnd : public Constructor<Concept>
 {
 private:
     size_t m_id;
-    const ConceptChoice& m_concept_left;
-    const ConceptChoice& m_concept_right;
+    std::reference_wrapper<const ConceptChoice> m_concept_left;
+    std::reference_wrapper<const ConceptChoice> m_concept_right;
 
     ConceptAnd(size_t id, const ConceptChoice& concept_left, const ConceptChoice& concept_right);
 
@@ -319,8 +319,8 @@ class RoleAnd : public Constructor<Role>
 {
 private:
     size_t m_id;
-    const RoleChoice& m_role_left;
-    const RoleChoice& m_role_right;
+    std::reference_wrapper<const RoleChoice> m_role_left;
+    std::reference_wrapper<const RoleChoice> m_role_right;
 
     RoleAnd(size_t id, const RoleChoice& role_left, const RoleChoice& role_right);
 

@@ -66,8 +66,8 @@ Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
     context.concept_denotation.get_bitset().unset_all();
 
     // Evaluate children
-    const auto eval_left = m_concept_left.evaluate(context);
-    const auto eval_right = m_concept_left.evaluate(context);
+    const auto eval_left = m_concept_left.get().evaluate(context);
+    const auto eval_right = m_concept_left.get().evaluate(context);
 
     // Compute result
     bitset |= eval_left.get_bitset();
@@ -82,9 +82,9 @@ bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.vi
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
-const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left; }
+const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left.get(); }
 
-const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right; }
+const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right.get(); }
 
 /**
  * RoleAnd
@@ -134,8 +134,8 @@ Denotation<Role> RoleAnd::evaluate(EvaluationContext& context) const
     }
 
     // Evaluate children
-    const auto eval_left = m_role_left.evaluate(context);
-    const auto eval_right = m_role_left.evaluate(context);
+    const auto eval_left = m_role_left.get().evaluate(context);
+    const auto eval_right = m_role_left.get().evaluate(context);
 
     // Compute result
     for (size_t i = 0; i < eval_left.get_bitsets().size(); ++i)
@@ -154,7 +154,7 @@ bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*t
 
 size_t RoleAnd::get_id() const { return m_id; }
 
-const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left; }
+const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left.get(); }
 
-const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right; }
+const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right.get(); }
 }

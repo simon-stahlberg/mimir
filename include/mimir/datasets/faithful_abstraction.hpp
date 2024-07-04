@@ -134,8 +134,8 @@ public:
     /// @param parser is the external PDDL parser.
     /// @param aag is the external applicable action generator.
     /// @param ssg is the external successor state generator.
-    /// @param mark_true_goal_literals whether satisfied goal atoms should be marked.
-    /// @param use_unit_cost_one whether costs along transitions are 1 or the action costs.
+    /// @param mark_true_goal_literals whether satisfied goal literals should be marked.
+    /// @param use_unit_cost_one whether to use unit cost one or action costs.
     /// @param remove_if_unsolvable whether an abstraction should be discared if unsolvable.
     /// @param compute_complete_abstraction_mapping whether an to compute the complete abstraction mapping.
     /// @param max_num_states the maximum number of abstract states.
@@ -151,6 +151,7 @@ public:
                                                      uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
+    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                    const std::vector<fs::path>& problem_filepaths,
                                                    bool mark_true_goal_literals = false,
@@ -162,6 +163,16 @@ public:
                                                    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                                    uint32_t num_threads = std::thread::hardware_concurrency());
 
+    /// @brief Try to create a FaithfulAbstractionList from the given data and the given resource limits.
+    /// @param memories External memory to parsers, aags, ssgs.
+    /// @param mark_true_goal_literals whether satisfied goal literals should be marked.
+    /// @param use_unit_cost_one whether to use unit cost one or action costs.
+    /// @param remove_if_unsolvable whether to remove abstractions of unsolvable problems.
+    /// @param sort_ascending_by_num_states whether the abstractions should be sorted ascending by the number of states.
+    /// @param max_num_states The maximum number of states allowed in an abstraction.
+    /// @param timeout_ms The maximum time spent on creating an abstraction.
+    /// @param num_threads The number of threads used for construction.
+    /// @return FaithfulAbstractionList contains the FaithfulAbstractions for which the construction is within the given resource limits.
     static std::vector<FaithfulAbstraction>
     create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            bool mark_true_goal_literals = false,

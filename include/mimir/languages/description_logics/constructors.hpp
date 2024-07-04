@@ -112,8 +112,8 @@ class ConceptAnd : public Constructor<Concept>
 {
 private:
     size_t m_id;
-    const Constructor<Concept>& m_concept_left;
-    const Constructor<Concept>& m_concept_right;
+    std::reference_wrapper<const Constructor<Concept>> m_concept_left;
+    std::reference_wrapper<const Constructor<Concept>> m_concept_right;
 
     ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right);
 
@@ -213,8 +213,8 @@ class RoleAnd : public Constructor<Role>
 {
 private:
     size_t m_id;
-    const Constructor<Role>& m_role_left;
-    const Constructor<Role>& m_role_right;
+    std::reference_wrapper<const Constructor<Role>> m_role_left;
+    std::reference_wrapper<const Constructor<Role>> m_role_right;
 
     RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right);
 
@@ -291,6 +291,19 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
         if (atom->get_predicate() == m_predicate)
         {
             bitset.set(atom->get_objects().at(0)->get_identifier());
+        }
+    }
+}
+
+template<>
+inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
+{
+    auto& bitset = context.concept_denotation.get_bitset();
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            bitset.set(atom->get_identifier());
         }
     }
 }
