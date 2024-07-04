@@ -327,6 +327,17 @@ const BeginIndexList& StateSpace::get_transitions_begin_by_source() const { retu
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const { return (m_use_unit_cost_one) ? 1 : m_transitions.at(transition).get_cost(); }
 
+ForwardTransitionIterator<Transition> StateSpace::get_forward_transitions(StateIndex source) const
+{
+    return ForwardTransitionIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                                                             m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+}
+
+BackwardTransitionIterator<Transition> StateSpace::get_backward_transitions(StateIndex target) const
+{
+    return BackwardTransitionIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
+}
+
 size_t StateSpace::get_num_transitions() const { return m_transitions.size(); }
 
 /* Distances */

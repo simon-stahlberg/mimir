@@ -186,6 +186,8 @@ public:
     const TransitionList& get_transitions() const;
     const BeginIndexList& get_transitions_begin_by_source() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
+    ForwardTransitionIterator<Transition> get_forward_transitions(StateIndex source) const;
+    BackwardTransitionIterator<Transition> get_backward_transitions(StateIndex target) const;
     size_t get_num_transitions() const;
 
     /* Distances */

@@ -67,6 +67,8 @@ private:
         /* Transitions */
         virtual const AbstractTransitionList& get_transitions() const = 0;
         virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
+        virtual ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const = 0;
+        virtual BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const = 0;
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
@@ -109,6 +111,11 @@ private:
         /* Transitions */
         const AbstractTransitionList& get_transitions() const override { return m_abstraction.get_transitions(); }
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
+        ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_abstraction.get_forward_transitions(source); }
+        BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const
+        {
+            return m_abstraction.get_backward_transitions(target);
+        }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
         /* Distances */
@@ -168,6 +175,8 @@ public:
     // Write an adaptor if you need to return different kinds of transitions
     const AbstractTransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
     TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
+    ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_pimpl->get_forward_transitions(source); }
+    BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const { return m_pimpl->get_backward_transitions(target); }
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */

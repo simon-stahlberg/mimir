@@ -931,9 +931,17 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference)
         .def(
             "get_target_states",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, StateIndex source)
             {
-                auto iterator = self.get_target_states(state);
+                auto iterator = self.get_target_states(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_source_states",
+            [](const StateSpace& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -945,6 +953,22 @@ void init_pymimir(py::module_& m)
         .def("is_alive_state", &StateSpace::is_alive_state)
         .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference)
         .def("get_transition_cost", &StateSpace::get_transition_cost)
+        .def(
+            "get_forward_transitions",
+            [](const StateSpace& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transitions(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transitions",
+            [](const StateSpace& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
         .def("get_num_transitions", &StateSpace::get_num_transitions)
         .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference)
         .def("get_goal_distance", &StateSpace::get_goal_distance)
@@ -964,9 +988,17 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference)
         .def(
             "get_target_states",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, StateIndex source)
             {
-                auto iterator = self.get_target_states(state);
+                auto iterator = self.get_target_states(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_source_states",
+            [](const Abstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -977,6 +1009,22 @@ void init_pymimir(py::module_& m)
         .def("is_deadend_state", &Abstraction::is_deadend_state)
         .def("is_alive_state", &Abstraction::is_alive_state)
         .def("get_transition_cost", &Abstraction::get_transition_cost)
+        .def(
+            "get_forward_transitions",
+            [](const StateSpace& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transitions(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transitions",
+            [](const StateSpace& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
         .def("get_num_transitions", &Abstraction::get_num_transitions)
         .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference);
 
@@ -1122,9 +1170,17 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
         .def(
             "get_target_states",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, StateIndex source)
             {
-                auto iterator = self.get_target_states(state);
+                auto iterator = self.get_target_states(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_source_states",
+            [](const FaithfulAbstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1136,6 +1192,22 @@ void init_pymimir(py::module_& m)
         .def("is_alive_state", &FaithfulAbstraction::is_alive_state)
         .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference)
         .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost)
+        .def(
+            "get_forward_transitions",
+            [](const FaithfulAbstraction& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transitions(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transitions",
+            [](const FaithfulAbstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
         .def("get_num_transitions", &FaithfulAbstraction::get_num_transitions)
         .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
 
@@ -1229,9 +1301,17 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
         .def(
             "get_target_states",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, StateIndex source)
             {
-                auto iterator = self.get_target_states(state);
+                auto iterator = self.get_target_states(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_source_states",
+            [](const GlobalFaithfulAbstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1245,6 +1325,22 @@ void init_pymimir(py::module_& m)
         .def("get_num_non_isomorphic_states", &GlobalFaithfulAbstraction::get_num_non_isomorphic_states)
         .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference)
         .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
+        .def(
+            "get_forward_transitions",
+            [](const GlobalFaithfulAbstraction& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transitions(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transitions",
+            [](const GlobalFaithfulAbstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_source_states(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
         .def("get_num_transitions", &GlobalFaithfulAbstraction::get_num_transitions)
         .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
 

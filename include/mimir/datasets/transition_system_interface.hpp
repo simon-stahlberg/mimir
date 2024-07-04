@@ -90,12 +90,12 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     {
         a.get_transitions()
     } -> std::same_as<const std::vector<typename T::TransitionType>&>;
-    //{
-    //    a.get_forward_transitions(state_index)
-    //} -> IsTransitionIndexIteratorPair;
-    //{
-    //    a.get_backward_transitions(state_index)
-    //} -> IsTransitionIndexIteratorPair;
+    {
+        a.get_forward_transitions(state_index)
+    } -> std::same_as<ForwardTransitionIterator<typename T::TransitionType>>;
+    {
+        a.get_backward_transitions(state_index)
+    } -> std::same_as<BackwardTransitionIterator<typename T::TransitionType>>;
 
     /* Distances */
     {
