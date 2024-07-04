@@ -466,8 +466,8 @@ Denotation<Role> RolePredicateState<P>::evaluate(EvaluationContext& context) con
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0).get_identifier();
-            const auto object_right_id = atom->get_objects().at(1).get_identifier();
+            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
+            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
             bitsets.at(object_left_id).set(object_right_id);
         }
     }
