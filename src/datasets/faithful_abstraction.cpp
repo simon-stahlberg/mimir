@@ -287,21 +287,15 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                    std::back_inserter(*ground_actions_by_source_and_target),
                    [](const auto& transition) { return transition.get_creating_action(); });
 
-    /* Group transitions by 1) src and 2) src and dst */
-    auto transitions_begin_by_source = BeginIndexList {};
+    /* Group transitions by source and target */
     auto transitions_begin_by_source_and_target = BeginIndexList {};
     // Set begin of first state index.
-    transitions_begin_by_source.push_back(0);
     transitions_begin_by_source_and_target.push_back(0);
     // Set begin of intermediate state indices.
     for (size_t i = 1; i < transitions.size(); ++i)
     {
         const auto& prev_transition = transitions.at(i - 1);
         const auto& cur_transition = transitions.at(i);
-        if (prev_transition.get_source_state() != cur_transition.get_source_state())
-        {
-            transitions_begin_by_source.push_back(i);
-        }
 
         if ((prev_transition.get_source_state() != cur_transition.get_source_state())  //
             || (prev_transition.get_target_state() != cur_transition.get_target_state()))
@@ -310,10 +304,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
         }
     }
     // Set end of last state index.
-    transitions_begin_by_source.push_back(transitions.size());
     transitions_begin_by_source_and_target.push_back(transitions.size());
 
-    /* Create abstract transitions. */
+    /* Create abstract transitions from groups. */
     auto abstract_transitions = AbstractTransitionList {};
     for (size_t i = 0; i < transitions_begin_by_source_and_target.size() - 1; ++i)
     {
@@ -333,6 +326,23 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                                                       (*ground_actions_by_source_and_target).begin() + end_offset));
         }
     }
+
+    /* Group abstract transitions by source. */
+    auto transitions_begin_by_source = BeginIndexList {};
+    // Set begin of first state index.
+    transitions_begin_by_source.push_back(0);
+    // Set begin of intermediate state indices.
+    for (size_t i = 1; i < abstract_transitions.size(); ++i)
+    {
+        const auto& prev_transition = abstract_transitions.at(i - 1);
+        const auto& cur_transition = abstract_transitions.at(i);
+        if (prev_transition.get_source_state() != cur_transition.get_source_state())
+        {
+            transitions_begin_by_source.push_back(i);
+        }
+    }
+    // Set end of last state index.
+    transitions_begin_by_source.push_back(transitions.size());
 
     return FaithfulAbstraction(mark_true_goal_literals,
                                use_unit_cost_one,
