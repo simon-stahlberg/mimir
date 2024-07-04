@@ -13,7 +13,7 @@ TEST(MimirTests, GraphsTupleGraphTest)
 
     const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(domain_file, problem_file).value()));
 
-    auto tuple_graph_factory = TupleGraphFactory(state_space, 2, false);
+    auto tuple_graph_factory = TupleGraphFactory(state_space, 0, false);
 
     for (const auto& state : state_space->get_states())
     {

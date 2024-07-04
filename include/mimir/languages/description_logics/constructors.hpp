@@ -62,7 +62,7 @@ private:
 
     size_t get_id_impl() const;
 
-    friend class ConceptConstructorEvaluatorBase<ConceptPredicateState>;
+    friend class ConceptConstructorEvaluatorBase<ConceptPredicateState<P>>;
 
 public:
     // Users are not supposed to move these directly.
@@ -291,19 +291,6 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
         if (atom->get_predicate() == m_predicate)
         {
             bitset.set(atom->get_objects().at(0)->get_identifier());
-        }
-    }
-}
-
-template<>
-inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
-{
-    auto& bitset = context.concept_denotation.get_bitset();
-    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
-    {
-        if (atom->get_predicate() == m_predicate)
-        {
-            bitset.set(atom->get_identifier());
         }
     }
 }

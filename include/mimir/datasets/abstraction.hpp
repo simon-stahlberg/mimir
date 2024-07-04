@@ -28,8 +28,6 @@
 namespace mimir
 {
 
-using AbstractionIndex = uint32_t;
-
 /**
  * External inheritance hierarchy using type erasure.
  */

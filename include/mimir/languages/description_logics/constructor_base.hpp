@@ -48,7 +48,7 @@ public:
     Denotation<Concept> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.concept_denotation_repository.get_if(this);
+        auto denotation = context.concept_denotation_repository.get_if(this, context.state);
         if (denotation.has_value())
         {
             return denotation.value();
@@ -63,7 +63,7 @@ public:
 
         // Store and return result;
         context.concept_denotation.get_flatmemory_builder().finish();
-        return context.concept_denotation_repository.insert(this, context.concept_denotation);
+        return context.concept_denotation_repository.insert(this, context.state, context.concept_denotation);
     };
 
     bool accept(const ConceptVisitor& visitor) const override { return self().accept_impl(visitor); }
@@ -87,7 +87,7 @@ public:
     virtual Denotation<Role> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.role_denotation_repository.get_if(this);
+        auto denotation = context.role_denotation_repository.get_if(this, context.state);
         if (denotation.has_value())
         {
             return denotation.value();
@@ -105,7 +105,7 @@ public:
 
         // Store and return result;
         context.role_denotation.get_flatmemory_builder().finish();
-        return context.role_denotation_repository.insert(this, context.role_denotation);
+        return context.role_denotation_repository.insert(this, context.state, context.role_denotation);
     };
 };
 

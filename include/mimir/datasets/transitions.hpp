@@ -72,10 +72,10 @@ public:
     [[nodiscard]] bool operator==(const AbstractTransition& other) const;
     [[nodiscard]] size_t hash() const;
 
-    StateIndex get_source_state() const;
-    StateIndex get_target_state() const;
+    [[nodiscard]] StateIndex get_source_state() const;
+    [[nodiscard]] StateIndex get_target_state() const;
     [[nodiscard]] TransitionCost get_cost() const;
-    std::span<GroundAction> get_creating_actions() const;
+    [[nodiscard]] std::span<GroundAction> get_creating_actions() const;
 };
 
 using AbstractTransitionList = std::vector<AbstractTransition>;

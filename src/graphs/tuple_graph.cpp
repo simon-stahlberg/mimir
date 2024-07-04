@@ -233,8 +233,8 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
         }
         const auto succ_state_vertex_index = m_tuple_graph.m_vertices.size();
         m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_index, empty_tuple_index, StateList { succ_state });
-        m_tuple_graph.m_forward_successors.resize(succ_state_vertex_index);
-        m_tuple_graph.m_backward_successors.resize(succ_state_vertex_index);
+        m_tuple_graph.m_forward_successors.resize(succ_state_vertex_index + 1);
+        m_tuple_graph.m_backward_successors.resize(succ_state_vertex_index + 1);
         m_tuple_graph.m_forward_successors.at(root_state_vertex_index).push_back(succ_state_vertex_index);
         m_tuple_graph.m_backward_successors.at(succ_state_vertex_index).push_back(root_state_vertex_index);
         vertex_indices_layer.push_back(succ_state_vertex_index);
