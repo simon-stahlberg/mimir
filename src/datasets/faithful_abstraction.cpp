@@ -348,8 +348,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             abstract_transitions_begin_by_source.push_back(i);
         }
     }
-    // Set end of last state index.
-    abstract_transitions_begin_by_source.push_back(abstract_transitions.size());
+    // Set end for remaining states.
+    for (size_t i = abstract_transitions_begin_by_source.size(); i < abstract_transitions.size() + 1; ++i)
+    {
+        abstract_transitions_begin_by_source.push_back(transitions.size());
+    }
 
     return FaithfulAbstraction(mark_true_goal_literals,
                                use_unit_cost_one,

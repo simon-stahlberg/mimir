@@ -190,8 +190,11 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
             transitions_begin_by_source.push_back(i);
         }
     }
-    // Set end of last state index.
-    transitions_begin_by_source.push_back(transitions.size());
+    // Set end for remaining states.
+    for (size_t i = transitions_begin_by_source.size(); i < states.size() + 1; ++i)
+    {
+        transitions_begin_by_source.push_back(transitions.size());
+    }
 
     return StateSpace(use_unit_cost_one,
                       std::move(parser),
