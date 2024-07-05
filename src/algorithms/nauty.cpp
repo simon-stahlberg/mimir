@@ -17,29 +17,31 @@
 
 #include "mimir/algorithms/nauty.hpp"
 
-#include "nauty_impl.hpp"
+#include "nauty_dense_impl.hpp"
+#include "nauty_sparse_impl.hpp"
 
 namespace nauty_wrapper
 {
 
-Graph::Graph() : m_impl(std::make_unique<GraphImpl>(0)) {}
+/* Graph */
+DenseGraph::DenseGraph(bool is_directed) : m_impl(std::make_unique<DenseGraphImpl>(0, is_directed)) {}
 
-Graph::Graph(int num_vertices) : m_impl(std::make_unique<GraphImpl>(num_vertices)) {}
+DenseGraph::DenseGraph(int num_vertices, bool is_directed) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices, is_directed)) {}
 
-Graph::Graph(const Graph& other) : m_impl(std::make_unique<GraphImpl>(*other.m_impl)) {}
+DenseGraph::DenseGraph(const DenseGraph& other) : m_impl(std::make_unique<DenseGraphImpl>(*other.m_impl)) {}
 
-Graph& Graph::operator=(const Graph& other)
+DenseGraph& DenseGraph::operator=(const DenseGraph& other)
 {
     if (this != &other)
     {
-        m_impl = std::make_unique<GraphImpl>(*other.m_impl);
+        m_impl = std::make_unique<DenseGraphImpl>(*other.m_impl);
     }
     return *this;
 }
 
-Graph::Graph(Graph&& other) noexcept : m_impl(std::move(other.m_impl)) {}
+DenseGraph::DenseGraph(DenseGraph&& other) noexcept : m_impl(std::move(other.m_impl)) {}
 
-Graph& Graph::operator=(Graph&& other) noexcept
+DenseGraph& DenseGraph::operator=(DenseGraph&& other) noexcept
 {
     if (this != &other)
     {
@@ -48,12 +50,52 @@ Graph& Graph::operator=(Graph&& other) noexcept
     return *this;
 }
 
-Graph::~Graph() = default;
+DenseGraph::~DenseGraph() = default;
 
-void Graph::add_edge(int src, int dst) { m_impl->add_edge(src, dst); }
+void DenseGraph::add_edge(int src, int dst) { m_impl->add_edge(src, dst); }
 
-std::string Graph::compute_certificate(const std::vector<int>& lab, const std::vector<int>& ptn) const { return m_impl->compute_certificate(lab, ptn); }
+std::string DenseGraph::compute_certificate(const mimir::Partitioning& partitioning) const { return m_impl->compute_certificate(partitioning); }
 
-void Graph::reset(int num_vertices) { m_impl->reset(num_vertices); }
+void DenseGraph::reset(int num_vertices, bool is_directed) { m_impl->reset(num_vertices, is_directed); }
+
+bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
+
+/* SparseGraph*/
+
+SparseGraph::SparseGraph(bool is_directed) : m_impl(std::make_unique<SparseGraphImpl>(0, is_directed)) {}
+
+SparseGraph::SparseGraph(int num_vertices, bool is_directed) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices, is_directed)) {}
+
+SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<SparseGraphImpl>(*other.m_impl)) {}
+
+SparseGraph& SparseGraph::operator=(const SparseGraph& other)
+{
+    if (this != &other)
+    {
+        m_impl = std::make_unique<SparseGraphImpl>(*other.m_impl);
+    }
+    return *this;
+}
+
+SparseGraph::SparseGraph(SparseGraph&& other) noexcept : m_impl(std::move(other.m_impl)) {}
+
+SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept
+{
+    if (this != &other)
+    {
+        std::swap(m_impl, other.m_impl);
+    }
+    return *this;
+}
+
+SparseGraph::~SparseGraph() = default;
+
+void SparseGraph::add_edge(int src, int dst) { m_impl->add_edge(src, dst); }
+
+std::string SparseGraph::compute_certificate(const mimir::Partitioning& partitioning) { return m_impl->compute_certificate(partitioning); }
+
+void SparseGraph::reset(int num_vertices, bool is_directed) { m_impl->reset(num_vertices, is_directed); }
+
+bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 
 }

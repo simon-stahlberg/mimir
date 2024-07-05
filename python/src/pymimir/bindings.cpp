@@ -828,7 +828,19 @@ void init_pymimir(py::module_& m)
         .def("__hash__", &Transition::hash)
         .def("get_source_state", &Transition::get_source_state)
         .def("get_target_state", &Transition::get_target_state)
+        .def("get_cost", &Transition::get_cost)
         .def("get_creating_action", &Transition::get_creating_action);
+
+    // AbstractTransition
+    py::class_<AbstractTransition>(m, "AbstractTransition")  //
+        .def("__eq__", &AbstractTransition::operator==)
+        .def("__hash__", &AbstractTransition::hash)
+        .def("get_source_state", &AbstractTransition::get_source_state)
+        .def("get_target_state", &AbstractTransition::get_target_state)
+        .def("get_cost", &AbstractTransition::get_cost)
+        .def("get_creating_actions",
+             [](const AbstractTransition& self) { return GroundActionList(self.get_creating_actions().begin(), self.get_creating_actions().end()); })
+        .def("get_representative_creating_action", &AbstractTransition::get_representative_creating_action);
 
     // StateSpace
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
@@ -1063,8 +1075,8 @@ void init_pymimir(py::module_& m)
     // FaithfulAbstraction
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_index", &FaithfulAbstractState::get_index)
-        .def("get_state", &FaithfulAbstractState::get_state)
-        .def("get_certificate", &FaithfulAbstractState::get_certificate);
+        .def("get_states", [](const FaithfulAbstractState& self) { return std::vector<State>(self.get_states().begin(), self.get_states().end()); })
+        .def("get_representative_state", &FaithfulAbstractState::get_representative_state);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def_static(
@@ -1196,7 +1208,6 @@ void init_pymimir(py::module_& m)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index)
         .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
-        .def("get_states_by_certificate", &FaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
@@ -1343,7 +1354,6 @@ void init_pymimir(py::module_& m)
         .def("get_abstract_state_index", &GlobalFaithfulAbstraction::get_abstract_state_index)
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
         .def("get_state_index", &GlobalFaithfulAbstraction::get_state_index)
-        .def("get_states_by_certificate", &GlobalFaithfulAbstraction::get_states_by_certificate, py::return_value_policy::reference)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
@@ -1462,20 +1472,29 @@ void init_pymimir(py::module_& m)
         .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference)
         .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference);
 
-    // NautyGraph
-    py::class_<nauty_wrapper::Graph>(m, "NautyGraph")  //
-        .def(py::init<>())
-        .def(py::init<int>())
-        .def("add_edge", &nauty_wrapper::Graph::add_edge)
-        .def("compute_certificate", &nauty_wrapper::Graph::compute_certificate)
-        .def("reset", &nauty_wrapper::Graph::reset);
+    // DenseNautyGraph
+    py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
+        .def(py::init<bool>(), py::arg("is_directed") = false)
+        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
+        .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
+        .def("reset", &nauty_wrapper::DenseGraph::reset);
+
+    // SparseNautyGraph
+    py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
+        .def(py::init<bool>(), py::arg("is_directed") = false)
+        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
+        .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
+        .def("reset", &nauty_wrapper::SparseGraph::reset);
 
     // Digraph
     py::class_<Digraph>(m, "Digraph")  //
         .def(py::init<bool>(), py::arg("is_directed") = false)
         .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
         .def("add_edge", &Digraph::add_edge)
-        .def("to_nauty_graph", &Digraph::to_nauty_graph)
+        .def("to_nauty_graph", py::overload_cast<nauty_wrapper::DenseGraph&>(&Digraph::to_nauty_graph, py::const_))
+        .def("to_nauty_graph", py::overload_cast<nauty_wrapper::SparseGraph&>(&Digraph::to_nauty_graph, py::const_))
         .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
         .def("get_num_vertices", &Digraph::get_num_vertices)
         .def("get_num_edges", &Digraph::get_num_edges)

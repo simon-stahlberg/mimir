@@ -93,6 +93,7 @@ from _pymimir import (
 # Dataset
 from _pymimir import (
     Abstraction,
+    AbstractTransition,
     FaithfulAbstractState,
     FaithfulAbstraction,
     GlobalFaithfulAbstractState,
@@ -105,10 +106,12 @@ from _pymimir import (
 from _pymimir import (
     Certificate,
     Digraph,
-    NautyGraph,
+    DenseNautyGraph,
     ObjectGraph,
     ObjectGraphFactory,
+    Partitioning,
     ProblemColorFunction,
+    SparseNautyGraph,
     TupleGraphVertex,
     TupleGraph,
     TupleGraphFactory

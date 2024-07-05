@@ -20,6 +20,8 @@
 #include <cassert>
 #include <stdexcept>
 
+using namespace std::string_literals;
+
 namespace mimir
 {
 Digraph::Digraph(bool is_directed) : m_num_vertices(0), m_num_edges(0), m_is_directed(is_directed), m_forward_successors(), m_backward_successors() {}
@@ -68,8 +70,33 @@ void Digraph::reset(int num_vertices, bool is_directed)
     m_is_directed = is_directed;
 }
 
-void Digraph::to_nauty_graph(nauty_wrapper::Graph& out_graph) const
+void Digraph::to_nauty_graph(nauty_wrapper::DenseGraph& out_graph) const
 {
+    if (m_is_directed != out_graph.is_directed())
+    {
+        throw std::runtime_error("Mismatches graph types. Digraph is_directed: " + std::to_string(m_is_directed)
+                                 + " DenseGraph is_directed: " + std::to_string(out_graph.is_directed()));
+    }
+
+    out_graph.reset(m_num_vertices);
+
+    for (int src = 0; src < m_num_vertices; ++src)
+    {
+        for (const int dst : m_forward_successors.at(src))
+        {
+            out_graph.add_edge(src, dst);
+        }
+    }
+}
+
+void Digraph::to_nauty_graph(nauty_wrapper::SparseGraph& out_graph) const
+{
+    if (m_is_directed != out_graph.is_directed())
+    {
+        throw std::runtime_error("Mismatches graph types. Digraph is_directed: " + std::to_string(m_is_directed)
+                                 + " DenseGraph is_directed: " + std::to_string(out_graph.is_directed()));
+    }
+
     out_graph.reset(m_num_vertices);
 
     for (int src = 0; src < m_num_vertices; ++src)

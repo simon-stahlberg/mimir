@@ -81,10 +81,6 @@ private:
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
-    /* Preallocated memory to compute abstract state of concrete state. */
-    nauty_wrapper::Graph m_nauty_graph;
-    ObjectGraphFactory m_object_graph_factory;
-
     GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                               bool use_unit_cost_one,
                               AbstractionIndex index,
@@ -152,7 +148,6 @@ public:
     const GlobalFaithfulAbstractStateList& get_states() const;
     StateIndex get_state_index(const GlobalFaithfulAbstractState& state) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
-    const CertificateToStateIndexMap& get_states_by_certificate() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;

@@ -43,20 +43,18 @@ namespace mimir
 class FaithfulAbstractState
 {
 private:
-    StateId m_id;
     StateIndex m_index;
-    State m_state;
-    Certificate m_certificate;
+    std::span<State> m_states;
 
 public:
-    FaithfulAbstractState(StateIndex index, State state, Certificate certificate);
+    FaithfulAbstractState(StateIndex index, std::span<State> states);
 
-    [[nodiscard]] bool operator==(const FaithfulAbstractState& other) const;
-    [[nodiscard]] size_t hash() const;
+    bool operator==(const FaithfulAbstractState& other) const;
+    size_t hash() const;
 
     StateIndex get_index() const;
-    State get_state() const;
-    const Certificate& get_certificate() const;
+    std::span<State> get_states() const;
+    State get_representative_state() const;
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
@@ -80,23 +78,21 @@ private:
 
     /* States */
     FaithfulAbstractStateList m_states;
+    // Persistent and sorted to store slices in the abstract states.
+    std::shared_ptr<const StateList> m_concrete_states_by_abstract_state;
     StateMap<StateIndex> m_concrete_to_abstract_state;
-    CertificateToStateIndexMap m_states_by_certificate;
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
     StateIndexSet m_deadend_states;
 
     /* Transitions */
     AbstractTransitionList m_transitions;
-    std::shared_ptr<GroundActionList> m_ground_actions_by_source_and_target;
+    // Persistent and sorted to store slices in the abstract transitions.
+    std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
     BeginIndexList m_transitions_begin_by_source;
 
     /* Distances */
     std::vector<double> m_goal_distances;
-
-    /* Preallocated memory to compute abstract state of concrete state. */
-    nauty_wrapper::Graph m_nauty_graph;
-    ObjectGraphFactory m_object_graph_factory;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -108,27 +104,27 @@ private:
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<SuccessorStateGenerator> ssg,
                         FaithfulAbstractStateList states,
+                        std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                         StateMap<StateIndex> concrete_to_abstract_state,
-                        CertificateToStateIndexMap states_by_certificate,
                         StateIndex initial_state,
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
                         AbstractTransitionList transitions,
-                        std::shared_ptr<GroundActionList> ground_actions_by_source_and_target,
+                        std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                         BeginIndexList transitions_begin_by_src,
                         std::vector<double> goal_distances);
 
 public:
     using TransitionType = AbstractTransition;
 
-    static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
-                                                     const fs::path& problem_filepath,
-                                                     bool mark_true_goal_literals = false,
-                                                     bool use_unit_cost_one = true,
-                                                     bool remove_if_unsolvable = true,
-                                                     bool compute_complete_abstraction_mapping = false,
-                                                     uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+    static std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> create(const fs::path& domain_filepath,
+                                                                                             const fs::path& problem_filepath,
+                                                                                             bool mark_true_goal_literals = false,
+                                                                                             bool use_unit_cost_one = true,
+                                                                                             bool remove_if_unsolvable = true,
+                                                                                             bool compute_complete_abstraction_mapping = false,
+                                                                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                                                             uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
     /// @brief Compute a faithful abstraction if within resource limits.
     /// @param parser is the external PDDL parser.
@@ -141,27 +137,27 @@ public:
     /// @param max_num_states the maximum number of abstract states.
     /// @param timeout_ms the maximum time to compute the abstraction.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
-    static std::optional<FaithfulAbstraction> create(std::shared_ptr<PDDLParser> parser,
-                                                     std::shared_ptr<IAAG> aag,
-                                                     std::shared_ptr<SuccessorStateGenerator> ssg,
-                                                     bool mark_true_goal_literals = false,
-                                                     bool use_unit_cost_one = true,
-                                                     bool remove_if_unsolvable = true,
-                                                     bool compute_complete_abstraction_mapping = false,
-                                                     uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+    static std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> create(std::shared_ptr<PDDLParser> parser,
+                                                                                             std::shared_ptr<IAAG> aag,
+                                                                                             std::shared_ptr<SuccessorStateGenerator> ssg,
+                                                                                             bool mark_true_goal_literals = false,
+                                                                                             bool use_unit_cost_one = true,
+                                                                                             bool remove_if_unsolvable = true,
+                                                                                             bool compute_complete_abstraction_mapping = false,
+                                                                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                                                             uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
-    static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
-                                                   const std::vector<fs::path>& problem_filepaths,
-                                                   bool mark_true_goal_literals = false,
-                                                   bool use_unit_cost_one = true,
-                                                   bool remove_if_unsolvable = true,
-                                                   bool compute_complete_abstraction_mapping = false,
-                                                   bool sort_ascending_by_num_states = true,
-                                                   uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                   uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-                                                   uint32_t num_threads = std::thread::hardware_concurrency());
+    static std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> create(const fs::path& domain_filepath,
+                                                                                           const std::vector<fs::path>& problem_filepaths,
+                                                                                           bool mark_true_goal_literals = false,
+                                                                                           bool use_unit_cost_one = true,
+                                                                                           bool remove_if_unsolvable = true,
+                                                                                           bool compute_complete_abstraction_mapping = false,
+                                                                                           bool sort_ascending_by_num_states = true,
+                                                                                           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                                                                           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+                                                                                           uint32_t num_threads = std::thread::hardware_concurrency());
 
     /// @brief Try to create a FaithfulAbstractionList from the given data and the given resource limits.
     /// @param memories External memory to parsers, aags, ssgs.
@@ -173,7 +169,7 @@ public:
     /// @param timeout_ms The maximum time spent on creating an abstraction.
     /// @param num_threads The number of threads used for construction.
     /// @return FaithfulAbstractionList contains the FaithfulAbstractions for which the construction is within the given resource limits.
-    static std::vector<FaithfulAbstraction>
+    static std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>>
     create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            bool mark_true_goal_literals = false,
            bool use_unit_cost_one = true,
@@ -214,7 +210,6 @@ public:
     /* States */
     const FaithfulAbstractStateList& get_states() const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
-    const CertificateToStateIndexMap& get_states_by_certificate() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;

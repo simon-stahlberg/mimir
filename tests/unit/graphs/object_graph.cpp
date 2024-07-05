@@ -16,7 +16,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
 
     auto object_graph_factory = ObjectGraphFactory(state_space.get_pddl_parser()->get_problem(), state_space.get_pddl_parser()->get_factories());
 
-    auto nauty_graph = nauty_wrapper::Graph();
+    auto nauty_graph = nauty_wrapper::DenseGraph();
 
     auto certificates = std::unordered_set<std::string> {};
 
@@ -29,8 +29,7 @@ TEST(MimirTests, GraphsObjectGraphTest)
         // std::cout << object_graph << std::endl;
 
         object_graph.get_digraph().to_nauty_graph(nauty_graph);
-        const auto certificate =
-            nauty_graph.compute_certificate(object_graph.get_partitioning().get_vertex_index_permutation(), object_graph.get_partitioning().get_partitioning());
+        const auto certificate = nauty_graph.compute_certificate(object_graph.get_partitioning());
         const auto& sorted_vertex_coloring = object_graph.get_sorted_vertex_colors();
 
         std::stringstream ss;

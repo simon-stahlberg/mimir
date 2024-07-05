@@ -43,14 +43,14 @@ private:
 public:
     Transition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action);
 
-    [[nodiscard]] bool operator==(const Transition& other) const;
-    [[nodiscard]] size_t hash() const;
+    bool operator==(const Transition& other) const;
+    size_t hash() const;
 
-    [[nodiscard]] TransitionIndex get_index() const;
-    [[nodiscard]] StateIndex get_source_state() const;
-    [[nodiscard]] StateIndex get_target_state() const;
-    [[nodiscard]] TransitionCost get_cost() const;
-    [[nodiscard]] GroundAction get_creating_action() const;
+    TransitionIndex get_index() const;
+    StateIndex get_source_state() const;
+    StateIndex get_target_state() const;
+    TransitionCost get_cost() const;
+    GroundAction get_creating_action() const;
 };
 
 using TransitionList = std::vector<Transition>;
@@ -72,14 +72,15 @@ private:
 public:
     AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions);
 
-    [[nodiscard]] bool operator==(const AbstractTransition& other) const;
-    [[nodiscard]] size_t hash() const;
+    bool operator==(const AbstractTransition& other) const;
+    size_t hash() const;
 
-    [[nodiscard]] TransitionIndex get_index() const;
-    [[nodiscard]] StateIndex get_source_state() const;
-    [[nodiscard]] StateIndex get_target_state() const;
-    [[nodiscard]] TransitionCost get_cost() const;
-    [[nodiscard]] std::span<GroundAction> get_creating_actions() const;
+    TransitionIndex get_index() const;
+    StateIndex get_source_state() const;
+    StateIndex get_target_state() const;
+    TransitionCost get_cost() const;
+    std::span<GroundAction> get_creating_actions() const;
+    GroundAction get_representative_creating_action() const;
 };
 
 using AbstractTransitionList = std::vector<AbstractTransition>;

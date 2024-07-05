@@ -18,38 +18,65 @@
 #ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
+#include "mimir/graphs/partitioning.hpp"
+
 #include <memory>
 #include <vector>
 
 /// @brief Wrap a namespace around nauty's interface
 namespace nauty_wrapper
 {
-class GraphImpl;
+class DenseGraphImpl;
+class SparseGraphImpl;
 
-class Graph
+class DenseGraph
 {
 private:
-    std::unique_ptr<GraphImpl> m_impl;
+    std::unique_ptr<DenseGraphImpl> m_impl;
 
 public:
-    Graph();
-    explicit Graph(int num_vertices);
-    Graph(const Graph& other);
-    Graph& operator=(const Graph& other);
-    Graph(Graph&& other) noexcept;
-    Graph& operator=(Graph&& other) noexcept;
-    ~Graph();
+    DenseGraph(bool is_directed = false);
+    explicit DenseGraph(int num_vertices, bool is_directed = false);
+    DenseGraph(const DenseGraph& other);
+    DenseGraph& operator=(const DenseGraph& other);
+    DenseGraph(DenseGraph&& other) noexcept;
+    DenseGraph& operator=(DenseGraph&& other) noexcept;
+    ~DenseGraph();
 
     void add_edge(int src, int dst);
 
-    /// @brief Compute a certificate for the graph and the given vertex partitioning as lab and ptn.
-    /// @param lab A permutation of the vertex ids.
-    /// @param ptn Groups subsequent ids in lab as group where the first n-1 vertex ids
-    /// of a group are marked as 1 and the last vertex id as 0, indicating the end of the group.
-    std::string compute_certificate(const std::vector<int>& lab, const std::vector<int>& ptn) const;
+    /// @brief Compute a certificate for the graph and the given vertex partitioning.
+    std::string compute_certificate(const mimir::Partitioning& partitioning) const;
 
     /// @brief Reinitialize the graph.
-    void reset(int num_vertices);
+    void reset(int num_vertices, bool is_directed = false);
+
+    bool is_directed() const;
+};
+
+class SparseGraph
+{
+private:
+    std::unique_ptr<SparseGraphImpl> m_impl;
+
+public:
+    explicit SparseGraph(bool is_directed = false);
+    SparseGraph(int num_vertices, bool is_directed = false);
+    SparseGraph(const SparseGraph& other);
+    SparseGraph& operator=(const SparseGraph& other);
+    SparseGraph(SparseGraph&& other) noexcept;
+    SparseGraph& operator=(SparseGraph&& other) noexcept;
+    ~SparseGraph();
+
+    void add_edge(int src, int dst);
+
+    /// @brief Compute a certificate for the graph and the given vertex partitioning.
+    std::string compute_certificate(const mimir::Partitioning& partitioning);
+
+    /// @brief Reinitialize the graph.
+    void reset(int num_vertices, bool is_directed = false);
+
+    bool is_directed() const;
 };
 }
 

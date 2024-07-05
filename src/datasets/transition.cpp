@@ -104,4 +104,10 @@ TransitionCost AbstractTransition::get_cost() const
 
 std::span<GroundAction> AbstractTransition::get_creating_actions() const { return m_creating_actions; }
 
+GroundAction AbstractTransition::get_representative_creating_action() const
+{
+    assert(!m_creating_actions.empty());
+    return m_creating_actions.front();
+}
+
 }

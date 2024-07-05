@@ -15,42 +15,52 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_ALGORITHMS_NAUTY_IMPL_HPP_
-#define SRC_ALGORITHMS_NAUTY_IMPL_HPP_
+#ifndef SRC_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
+#define SRC_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
 
 // Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
+#include <mimir/graphs/partitioning.hpp>
 #include <nauty.h>
 #include <string>
 #include <vector>
 
 namespace nauty_wrapper
 {
-class GraphImpl
+class DenseGraphImpl
 {
 private:
     // num_vertices
-    int n;
+    int n_;
+    // vertex capacity
+    int c_;
     // blocks_per_vertex
-    int m;
+    int m_;
+    // Whether the graph is directed.
+    bool is_directed_;
+    // Whether a certificate was obtained from the graph.
+    bool obtained_certificate_;
 
     graph* graph_;
+    graph* canon_graph_;
 
-    void allocate_graph();
-    void deallocate_graph();
+    void allocate_graph(graph** out_graph);
+    void deallocate_graph(graph* out_graph);
 
 public:
-    explicit GraphImpl(int num_vertices);
-    GraphImpl(const GraphImpl& other);
-    GraphImpl& operator=(const GraphImpl& other);
-    GraphImpl(GraphImpl&& other) noexcept;
-    GraphImpl& operator=(GraphImpl&& other) noexcept;
-    ~GraphImpl();
+    DenseGraphImpl(int num_vertices, bool is_directed = false);
+    DenseGraphImpl(const DenseGraphImpl& other);
+    DenseGraphImpl& operator=(const DenseGraphImpl& other);
+    DenseGraphImpl(DenseGraphImpl&& other) noexcept;
+    DenseGraphImpl& operator=(DenseGraphImpl&& other) noexcept;
+    ~DenseGraphImpl();
 
     void add_edge(int src, int dst);
 
-    std::string compute_certificate(const std::vector<int>& lab, const std::vector<int>& ptn) const;
+    std::string compute_certificate(const mimir::Partitioning& partitioning);
 
-    void reset(int num_vertices);
+    void reset(int num_vertices, bool is_directed = false);
+
+    bool is_directed() const;
 };
 
 }
