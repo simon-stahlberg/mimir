@@ -18,8 +18,10 @@
 #ifndef MIMIR_DATASETS_BOOST_ADAPTER_HPP_
 #define MIMIR_DATASETS_BOOST_ADAPTER_HPP_
 
+#include "mimir/datasets/iterators.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transition_system.hpp"
+#include "mimir/datasets/transition_interface.hpp"
+#include "mimir/datasets/transition_system_interface.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -38,23 +40,35 @@ inline constexpr bool std::ranges::enable_borrowed_range<mimir::StateIndexRangeV
 
 namespace boost
 {
+
+struct vertex_list_and_incidence_graph_tag : public vertex_list_graph_tag, public incidence_graph_tag
+{
+};
+
 template<mimir::IsTransitionSystem TransitionSystem>
 struct graph_traits<TransitionSystem>
 {
+    // boost::GraphConcept
     using vertex_descriptor = mimir::StateIndex;
     using edge_descriptor = mimir::TransitionIndex;
     using directed_category = directed_tag;
     using edge_parallel_category = allow_parallel_edge_tag;
-    using traversal_category = vertex_list_graph_tag;
-    using vertices_size_type = size_t;
+    using traversal_category = vertex_list_and_incidence_graph_tag;
     using edges_size_type = size_t;
+    // boost::VertexListGraph
     using vertex_iterator = std::ranges::iterator_t<mimir::StateIndexRangeView>;
+    using vertices_size_type = size_t;
+    // boost::IncidenceGraph
+    using out_edge_iterator = mimir::ForwardTransitionIndexIterator<typename TransitionSystem::TransitionType>::const_iterator;
+    using degree_size_type = size_t;
 };
 
 }
 
 namespace mimir
 {
+
+/* boost::VertexListGraph */
 
 template<IsTransitionSystem TransitionSystem>
 std::pair<typename boost::graph_traits<TransitionSystem>::vertex_iterator, typename boost::graph_traits<TransitionSystem>::vertex_iterator>
@@ -72,8 +86,40 @@ boost::graph_traits<TransitionSystem>::vertices_size_type num_vertices(const Tra
     return g.get_num_states();
 }
 
+/* boost::IncidenceGraph */
+
+template<IsTransitionSystem TransitionSystem>
+typename boost::graph_traits<TransitionSystem>::vertex_descriptor source(const typename boost::graph_traits<TransitionSystem>::edge_descriptor& e,
+                                                                         const TransitionSystem& g)
+{
+    return g.get_transitions()[e].get_source_state();
+}
+
+template<IsTransitionSystem TransitionSystem>
+typename boost::graph_traits<TransitionSystem>::vertex_descriptor target(const typename boost::graph_traits<TransitionSystem>::edge_descriptor& e,
+                                                                         const TransitionSystem& g)
+{
+    return g.get_transitions()[e].get_target_state();
+}
+
+template<IsTransitionSystem TransitionSystem>
+std::pair<typename boost::graph_traits<TransitionSystem>::out_edge_iterator, typename boost::graph_traits<TransitionSystem>::out_edge_iterator>
+out_edges(typename boost::graph_traits<TransitionSystem>::vertex_descriptor const& u, const TransitionSystem& g)
+{
+    return { g.get_forward_transition_indices(u).begin(), g.get_forward_transition_indices(u).end() };
+}
+
+template<IsTransitionSystem TransitionSystem>
+boost::graph_traits<TransitionSystem>::degree_size_type out_degree(typename boost::graph_traits<TransitionSystem>::vertex_descriptor const& u,
+                                                                   const TransitionSystem& g)
+{
+    return std::distance(g.get_forward_transition_indices(u).begin(), g.get_forward_transition_indices(u).end());
+}
+
+/* Assert that the concepts are satisfied */
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<StateSpace>) );
 BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<StateSpace>) );
+BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<StateSpace>) );
 }
 
 #endif

@@ -47,4 +47,33 @@ TEST(MimirTests, DatasetsStateSpaceVertexListGraphTest)
     }
     EXPECT_EQ(it, last);
 }
+
+TEST(MimirTests, DatasetsStateSpaceIncidenceGraphTest)
+{
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+    const auto state_space = StateSpace::create(domain_file, problem_file).value();
+
+    size_t transition_count = 0;
+    for (auto [state_it, state_last] = vertices(state_space); state_it != state_last; ++state_it)
+    {
+        const auto& state_id = *state_it;
+        size_t state_transition_count = 0;
+        for (auto [out_it, out_last] = out_edges(state_id, state_space); out_it != out_last; ++out_it)
+        {
+            EXPECT_EQ(source(*out_it, state_space), state_id);
+            transition_count++;
+            state_transition_count++;
+        }
+        // Counting the number of transitions should give us the out degree.
+        EXPECT_EQ(out_degree(*state_it, state_space), state_transition_count);
+    }
+    // Summing over the successors of each state should give the total number of transitions.
+    EXPECT_EQ(transition_count, state_space.get_num_transitions());
+
+    // possible actions:
+    // pick(ball1, rooma, right), pick(ball1, rooma, left), pick(ball2, rooma, right), pick(ball2, rooma, left)
+    // move(rooma, rooma), move(rooma, roomb)
+    EXPECT_EQ(out_degree(state_space.get_initial_state(), state_space), 6);
+}
 }
