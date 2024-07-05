@@ -126,7 +126,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
             if (exists)
             {
                 const auto successor_state_index = it->second;
-                transitions.emplace_back(successor_state_index, state_index, action);
+                transitions.emplace_back(state_index, successor_state_index, action);
                 continue;
             }
 
@@ -137,7 +137,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                 return std::nullopt;
             }
 
-            transitions.emplace_back(successor_state_index, state_index, action);
+            transitions.emplace_back(state_index, successor_state_index, action);
             states.push_back(successor_state);
             state_to_index[successor_state] = successor_state_index;
             lifo_queue.push_back(successor_state);
@@ -181,7 +181,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         if (prev_transition.get_source_state() != cur_transition.get_source_state())
         {
             // Write begin i for skipped source indices.
-            for (size_t j = 0; j < (cur_transition.get_source_state() - prev_transition.get_source_state() - 1); ++j)
+            while (transitions_begin_by_source.size() < cur_transition.get_source_state())
             {
                 transitions_begin_by_source.push_back(i);
             }
@@ -191,7 +191,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
         }
     }
     // Set begin of remaining states + end of last state.
-    for (size_t i = transitions_begin_by_source.size(); i < states.size() + 1; ++i)
+    while (transitions_begin_by_source.size() <= states.size())
     {
         transitions_begin_by_source.push_back(transitions.size());
     }

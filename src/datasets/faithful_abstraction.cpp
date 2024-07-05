@@ -191,12 +191,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             const auto successor_state = ssg->get_or_create_successor_state(state, action);
 
             // Regenerate concrete state
-            const auto concrete_state_exists = concrete_to_abstract_state.count(successor_state);
-            if (concrete_state_exists)
+            const auto concrete_successor_state_exists = concrete_to_abstract_state.count(successor_state);
+            if (concrete_successor_state_exists)
             {
                 const auto& abstract_successor_state = abstract_states.at(concrete_to_abstract_state.at(successor_state));
                 const auto abstract_successor_state_index = abstract_successor_state.get_index();
-                transitions.emplace_back(abstract_successor_state_index, abstract_state_index, action);
+                transitions.emplace_back(abstract_state_index, abstract_successor_state_index, action);
                 continue;
             }
 
@@ -235,7 +235,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             }
 
             const auto abstract_successor_state_index = concrete_to_abstract_state.at(successor_state);
-            transitions.emplace_back(abstract_successor_state_index, abstract_state_index, action);
+            transitions.emplace_back(abstract_state_index, abstract_successor_state_index, action);
             concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
             if (compute_complete_abstraction_mapping || !abstract_state_exists)
@@ -317,11 +317,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
 
         if (has_transition)
         {
-            const auto src = (transitions.begin() + begin_offset)->get_source_state();
-            const auto dst = (transitions.begin() + begin_offset)->get_target_state();
+            const auto source = (transitions.begin() + begin_offset)->get_source_state();
+            const auto target = (transitions.begin() + begin_offset)->get_target_state();
 
-            abstract_transitions.emplace_back(src,
-                                              dst,
+            abstract_transitions.emplace_back(source,
+                                              target,
                                               std::span<GroundAction>((*ground_actions_by_source_and_target).begin() + begin_offset,
                                                                       (*ground_actions_by_source_and_target).begin() + end_offset));
         }
@@ -336,10 +336,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
     {
         const auto& prev_abstract_transition = abstract_transitions.at(i - 1);
         const auto& cur_abstract_transition = abstract_transitions.at(i);
+
         if (prev_abstract_transition.get_source_state() != cur_abstract_transition.get_source_state())
         {
             // Write begin i for skipped source indices.
-            for (size_t j = 0; j < (cur_abstract_transition.get_source_state() - prev_abstract_transition.get_source_state() - 1); ++j)
+            while (abstract_transitions_begin_by_source.size() < cur_abstract_transition.get_source_state())
             {
                 abstract_transitions_begin_by_source.push_back(i);
             }
@@ -349,7 +350,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
         }
     }
     // Set begin of remaining states + end of last state.
-    for (size_t i = abstract_transitions_begin_by_source.size(); i < abstract_states.size() + 1; ++i)
+    while (abstract_transitions_begin_by_source.size() <= abstract_states.size())
     {
         abstract_transitions_begin_by_source.push_back(abstract_transitions.size());
     }
