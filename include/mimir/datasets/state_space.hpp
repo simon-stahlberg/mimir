@@ -174,8 +174,8 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    TargetStateIterator<Transition> get_target_states(StateIndex source) const;
-    SourceStateIterator<Transition> get_source_states(StateIndex target) const;
+    TargetStateIndexIterator<Transition> get_target_states(StateIndex source) const;
+    SourceStateIndexIterator<Transition> get_source_states(StateIndex target) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -187,6 +187,8 @@ public:
     const TransitionList& get_transitions() const;
     const BeginIndexList& get_transitions_begin_by_source() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
+    ForwardTransitionIndexIterator<Transition> get_forward_transition_indices(StateIndex source) const;
+    BackwardTransitionIndexIterator<Transition> get_backward_transition_indices(StateIndex target) const;
     ForwardTransitionIterator<Transition> get_forward_transitions(StateIndex source) const;
     BackwardTransitionIterator<Transition> get_backward_transitions(StateIndex target) const;
     size_t get_num_transitions() const;

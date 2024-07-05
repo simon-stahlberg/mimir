@@ -63,10 +63,10 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     } -> std::same_as<const StateIndexSet&>;
     {
         a.get_target_states(state_index)
-    } -> std::same_as<TargetStateIterator<typename T::TransitionType>>;
+    } -> std::same_as<TargetStateIndexIterator<typename T::TransitionType>>;
     {
         a.get_source_states(state_index)
-    } -> std::same_as<SourceStateIterator<typename T::TransitionType>>;
+    } -> std::same_as<SourceStateIndexIterator<typename T::TransitionType>>;
     {
         a.get_num_states()
     } -> std::same_as<size_t>;
@@ -90,6 +90,12 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     {
         a.get_transitions()
     } -> std::same_as<const std::vector<typename T::TransitionType>&>;
+    {
+        a.get_forward_transition_indices(state_index)
+    } -> std::same_as<ForwardTransitionIndexIterator<typename T::TransitionType>>;
+    {
+        a.get_backward_transition_indices(state_index)
+    } -> std::same_as<BackwardTransitionIndexIterator<typename T::TransitionType>>;
     {
         a.get_forward_transitions(state_index)
     } -> std::same_as<ForwardTransitionIterator<typename T::TransitionType>>;

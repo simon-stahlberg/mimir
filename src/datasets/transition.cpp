@@ -24,7 +24,8 @@ namespace mimir
  * Transition
  */
 
-Transition::Transition(StateIndex source_state, StateIndex target_state, GroundAction creating_action) :
+Transition::Transition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action) :
+    m_index(index),
     m_source_state(source_state),
     m_target_state(target_state),
     m_creating_action(creating_action)
@@ -42,6 +43,8 @@ bool Transition::operator==(const Transition& other) const
 
 size_t Transition::hash() const { return loki::hash_combine(m_source_state, m_target_state, m_creating_action.hash()); }
 
+TransitionIndex Transition::get_index() const { return m_index; }
+
 StateIndex Transition::get_source_state() const { return m_source_state; }
 
 StateIndex Transition::get_target_state() const { return m_target_state; }
@@ -54,7 +57,8 @@ GroundAction Transition::get_creating_action() const { return m_creating_action;
  * AbstractTransition
  */
 
-AbstractTransition::AbstractTransition(StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions) :
+AbstractTransition::AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions) :
+    m_index(index),
     m_source_state(source_state),
     m_target_state(target_state),
     m_creating_actions(creating_actions)
@@ -82,6 +86,8 @@ size_t AbstractTransition::hash() const
     }
     return loki::hash_combine(m_source_state, m_target_state, creating_actions_hash);
 }
+
+TransitionIndex AbstractTransition::get_index() const { return m_index; }
 
 StateIndex AbstractTransition::get_source_state() const { return m_source_state; }
 

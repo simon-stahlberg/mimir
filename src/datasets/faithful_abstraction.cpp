@@ -196,7 +196,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             {
                 const auto& abstract_successor_state = abstract_states.at(concrete_to_abstract_state.at(successor_state));
                 const auto abstract_successor_state_index = abstract_successor_state.get_index();
-                transitions.emplace_back(abstract_state_index, abstract_successor_state_index, action);
+                transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
                 continue;
             }
 
@@ -235,7 +235,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             }
 
             const auto abstract_successor_state_index = concrete_to_abstract_state.at(successor_state);
-            transitions.emplace_back(abstract_state_index, abstract_successor_state_index, action);
+            transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
             concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
             if (compute_complete_abstraction_mapping || !abstract_state_exists)
@@ -320,7 +320,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             const auto source = (transitions.begin() + begin_offset)->get_source_state();
             const auto target = (transitions.begin() + begin_offset)->get_target_state();
 
-            abstract_transitions.emplace_back(source,
+            abstract_transitions.emplace_back(abstract_transitions.size(),
+                                              source,
                                               target,
                                               std::span<GroundAction>((*ground_actions_by_source_and_target).begin() + begin_offset,
                                                                       (*ground_actions_by_source_and_target).begin() + end_offset));
@@ -523,15 +524,16 @@ const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goa
 
 const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
-TargetStateIterator<AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex source) const
+TargetStateIndexIterator<AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex source) const
 {
-    return TargetStateIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
-                                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+    return TargetStateIndexIterator<AbstractTransition>(
+        std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                            m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
 }
 
-SourceStateIterator<AbstractTransition> FaithfulAbstraction::get_source_states(StateIndex target) const
+SourceStateIndexIterator<AbstractTransition> FaithfulAbstraction::get_source_states(StateIndex target) const
 {
-    return SourceStateIterator<AbstractTransition>(target, std::span<const AbstractTransition>(m_transitions.begin(), m_transitions.end()));
+    return SourceStateIndexIterator<AbstractTransition>(target, std::span<const AbstractTransition>(m_transitions.begin(), m_transitions.end()));
 }
 
 size_t FaithfulAbstraction::get_num_states() const { return get_states().size(); }
@@ -554,6 +556,18 @@ const BeginIndexList& FaithfulAbstraction::get_transitions_begin_by_source() con
 TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
     return (m_use_unit_cost_one) ? 1 : m_transitions.at(transition).get_cost();
+}
+
+ForwardTransitionIndexIterator<AbstractTransition> FaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
+{
+    return ForwardTransitionIndexIterator<AbstractTransition>(
+        std::span<const AbstractTransition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                            m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+}
+
+BackwardTransitionIndexIterator<AbstractTransition> FaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
+{
+    return BackwardTransitionIndexIterator<AbstractTransition>(target, std::span<const AbstractTransition>(m_transitions.begin(), m_transitions.end()));
 }
 
 ForwardTransitionIterator<AbstractTransition> FaithfulAbstraction::get_forward_transitions(StateIndex source) const

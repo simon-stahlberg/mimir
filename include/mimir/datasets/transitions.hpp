@@ -35,16 +35,18 @@ namespace mimir
 class Transition
 {
 private:
+    TransitionIndex m_index;
     StateIndex m_source_state;
     StateIndex m_target_state;
     GroundAction m_creating_action;
 
 public:
-    Transition(StateIndex source_state, StateIndex target_state, GroundAction creating_action);
+    Transition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action);
 
     [[nodiscard]] bool operator==(const Transition& other) const;
     [[nodiscard]] size_t hash() const;
 
+    [[nodiscard]] TransitionIndex get_index() const;
     [[nodiscard]] StateIndex get_source_state() const;
     [[nodiscard]] StateIndex get_target_state() const;
     [[nodiscard]] TransitionCost get_cost() const;
@@ -62,16 +64,18 @@ static_assert(IsTransition<Transition>);
 class AbstractTransition
 {
 private:
+    TransitionIndex m_index;
     StateIndex m_source_state;
     StateIndex m_target_state;
     std::span<GroundAction> m_creating_actions;
 
 public:
-    AbstractTransition(StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions);
+    AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions);
 
     [[nodiscard]] bool operator==(const AbstractTransition& other) const;
     [[nodiscard]] size_t hash() const;
 
+    [[nodiscard]] TransitionIndex get_index() const;
     [[nodiscard]] StateIndex get_source_state() const;
     [[nodiscard]] StateIndex get_target_state() const;
     [[nodiscard]] TransitionCost get_cost() const;

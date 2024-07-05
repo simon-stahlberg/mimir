@@ -126,7 +126,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
             if (exists)
             {
                 const auto successor_state_index = it->second;
-                transitions.emplace_back(state_index, successor_state_index, action);
+                transitions.emplace_back(transitions.size(), state_index, successor_state_index, action);
                 continue;
             }
 
@@ -137,7 +137,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                 return std::nullopt;
             }
 
-            transitions.emplace_back(state_index, successor_state_index, action);
+            transitions.emplace_back(transitions.size(), state_index, successor_state_index, action);
             states.push_back(successor_state);
             state_to_index[successor_state] = successor_state_index;
             lifo_queue.push_back(successor_state);
@@ -169,6 +169,13 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
 
     // Sort transitions by source state.
     std::sort(transitions.begin(), transitions.end(), [](const auto& l, const auto& r) { return l.get_source_state() < r.get_source_state(); });
+    // Adapt indices
+    auto transition_index = TransitionIndex { 0 };
+    std::transform(transitions.begin(),
+                   transitions.end(),
+                   transitions.begin(),
+                   [&transition_index](const auto& transition)
+                   { return Transition(transition_index++, transition.get_source_state(), transition.get_target_state(), transition.get_creating_action()); });
 
     auto transitions_begin_by_source = BeginIndexList {};
     // Set begin of first state index.
@@ -307,15 +314,15 @@ const StateIndexSet& StateSpace::get_goal_states() const { return m_goal_states;
 
 const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
-TargetStateIterator<Transition> StateSpace::get_target_states(StateIndex source) const
+TargetStateIndexIterator<Transition> StateSpace::get_target_states(StateIndex source) const
 {
-    return TargetStateIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
-                                                                       m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+    return TargetStateIndexIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                                                            m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
 }
 
-SourceStateIterator<Transition> StateSpace::get_source_states(StateIndex target) const
+SourceStateIndexIterator<Transition> StateSpace::get_source_states(StateIndex target) const
 {
-    return SourceStateIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
+    return SourceStateIndexIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
 }
 
 size_t StateSpace::get_num_states() const { return get_states().size(); }
@@ -336,6 +343,17 @@ const TransitionList& StateSpace::get_transitions() const { return m_transitions
 const BeginIndexList& StateSpace::get_transitions_begin_by_source() const { return m_transitions_begin_by_source; }
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const { return (m_use_unit_cost_one) ? 1 : m_transitions.at(transition).get_cost(); }
+
+ForwardTransitionIndexIterator<Transition> StateSpace::get_forward_transition_indices(StateIndex source) const
+{
+    return ForwardTransitionIndexIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
+                                                                                  m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+}
+
+BackwardTransitionIndexIterator<Transition> StateSpace::get_backward_transition_indices(StateIndex target) const
+{
+    return BackwardTransitionIndexIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
+}
 
 ForwardTransitionIterator<Transition> StateSpace::get_forward_transitions(StateIndex source) const
 {

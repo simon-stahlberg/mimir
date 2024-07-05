@@ -34,6 +34,9 @@ using TransitionIndexList = std::vector<TransitionIndex>;
 template<typename T>
 concept IsTransition = requires(T a) {
     {
+        a.get_index()
+    } -> std::same_as<TransitionIndex>;
+    {
         a.get_source_state()
     } -> std::same_as<StateIndex>;
     {

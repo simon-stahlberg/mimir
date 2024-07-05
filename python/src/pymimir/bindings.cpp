@@ -954,6 +954,22 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference)
         .def("get_transition_cost", &StateSpace::get_transition_cost)
         .def(
+            "get_forward_transition_indices",
+            [](const StateSpace& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transition_indices(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transition_indices",
+            [](const StateSpace& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_transition_indices(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
             "get_forward_transitions",
             [](const StateSpace& self, StateIndex source)
             {
@@ -965,7 +981,7 @@ void init_pymimir(py::module_& m)
             "get_backward_transitions",
             [](const StateSpace& self, StateIndex target)
             {
-                auto iterator = self.get_source_states(target);
+                auto iterator = self.get_backward_transitions(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1010,6 +1026,22 @@ void init_pymimir(py::module_& m)
         .def("is_alive_state", &Abstraction::is_alive_state)
         .def("get_transition_cost", &Abstraction::get_transition_cost)
         .def(
+            "get_forward_transition_indices",
+            [](const StateSpace& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transition_indices(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transition_indices",
+            [](const StateSpace& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_transition_indices(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
             "get_forward_transitions",
             [](const StateSpace& self, StateIndex source)
             {
@@ -1021,7 +1053,7 @@ void init_pymimir(py::module_& m)
             "get_backward_transitions",
             [](const StateSpace& self, StateIndex target)
             {
-                auto iterator = self.get_source_states(target);
+                auto iterator = self.get_backward_transitions(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1193,6 +1225,22 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference)
         .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost)
         .def(
+            "get_forward_transition_indices",
+            [](const FaithfulAbstraction& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transition_indices(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transition_indices",
+            [](const FaithfulAbstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_transition_indices(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
             "get_forward_transitions",
             [](const FaithfulAbstraction& self, StateIndex source)
             {
@@ -1204,7 +1252,7 @@ void init_pymimir(py::module_& m)
             "get_backward_transitions",
             [](const FaithfulAbstraction& self, StateIndex target)
             {
-                auto iterator = self.get_source_states(target);
+                auto iterator = self.get_backward_transitions(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1326,6 +1374,22 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference)
         .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
         .def(
+            "get_forward_transition_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_transition_indices(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_transition_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_transition_indices(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
             "get_forward_transitions",
             [](const GlobalFaithfulAbstraction& self, StateIndex source)
             {
@@ -1337,7 +1401,7 @@ void init_pymimir(py::module_& m)
             "get_backward_transitions",
             [](const GlobalFaithfulAbstraction& self, StateIndex target)
             {
-                auto iterator = self.get_source_states(target);
+                auto iterator = self.get_backward_transitions(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())

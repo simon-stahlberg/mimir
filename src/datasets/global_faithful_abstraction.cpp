@@ -299,12 +299,12 @@ const StateIndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return
 
 const StateIndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_index).get_deadend_states(); }
 
-TargetStateIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex source) const
+TargetStateIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex source) const
 {
     return m_abstractions->at(m_index).get_target_states(source);
 }
 
-SourceStateIterator<AbstractTransition> GlobalFaithfulAbstraction::get_source_states(StateIndex target) const
+SourceStateIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_source_states(StateIndex target) const
 {
     return m_abstractions->at(m_index).get_source_states(target);
 }
@@ -336,6 +336,16 @@ const BeginIndexList& GlobalFaithfulAbstraction::get_transitions_begin_by_source
 TransitionCost GlobalFaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
     return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_transition_cost(transition);
+}
+
+ForwardTransitionIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
+{
+    return m_abstractions->at(m_index).get_forward_transition_indices(source);
+}
+
+BackwardTransitionIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
+{
+    return m_abstractions->at(m_index).get_backward_transition_indices(target);
 }
 
 ForwardTransitionIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_transitions(StateIndex source) const
