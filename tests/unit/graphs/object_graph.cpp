@@ -49,7 +49,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
 
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
-    auto object_graph_factory = ObjectGraphFactory(state_space.get_pddl_parser()->get_problem(), state_space.get_pddl_parser()->get_factories());
+    auto object_graph_factory = ObjectGraphFactory(state_space.get_pddl_parser()->get_problem(), state_space.get_pddl_parser()->get_factories(), true);
 
     auto nauty_graph_factory = nauty_wrapper::SparseGraphFactory();
 

@@ -392,7 +392,7 @@ SourceStateIndexIterator<T>::const_iterator::const_iterator(StateIndex target, s
     m_pos(begin ? 0 : transitions.size()),
     m_transitions(transitions)
 {
-    if (m_transitions.size() > 0 && m_transitions[0].get_target_state() != m_target)
+    if (begin && m_transitions.size() > 0 && m_transitions[0].get_target_state() != m_target)
     {
         advance();
     }
@@ -545,7 +545,7 @@ BackwardTransitionIndexIterator<T>::const_iterator::const_iterator(StateIndex ta
     m_pos(begin ? 0 : transitions.size()),
     m_transitions(transitions)
 {
-    if (m_transitions.size() > 0 && m_transitions[0].get_target_state() != m_target)
+    if (begin && m_transitions.size() > 0 && m_transitions[0].get_target_state() != m_target)
     {
         advance();
     }
@@ -696,7 +696,7 @@ BackwardTransitionIterator<T>::const_iterator::const_iterator(StateIndex target,
     m_pos(begin ? 0 : transitions.size()),
     m_transitions(transitions)
 {
-    if (m_transitions.size() > 0 && m_transitions[0].get_target_state() != m_target)
+    if (begin && m_transitions.size() > 0 && m_transitions[0].get_target_state() != m_target)
     {
         advance();
     }

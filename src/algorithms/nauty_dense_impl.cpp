@@ -130,6 +130,11 @@ void DenseGraphImpl::add_edge(int source, int target)
     {
         throw std::out_of_range("DenseGraphImpl::add_edge: Source or target vertex out of range.");
     }
+    if (!is_directed_ && source == target)
+    {
+        throw std::logic_error("DenseGraphImpl::add_edge: Nauty does not support loops on undirected graphs.");
+    }
+
     // Silently skip adding parallel edges because edges are unlabelled, and hence,
     // parallel edges do not encode additional information on the graph.
 

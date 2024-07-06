@@ -75,7 +75,7 @@ DigraphTargetIndexIterator::const_iterator::const_iterator(DigraphVertexIndex so
     m_pos(begin ? 0 : edges.size()),
     m_edges(edges)
 {
-    if (m_edges.size() > 0 && m_edges[0].get_source() != m_source)
+    if (begin && m_edges.size() > 0 && m_edges[0].get_source() != m_source)
     {
         advance();
     }
@@ -128,7 +128,7 @@ DigraphSourceIndexIterator::const_iterator::const_iterator(DigraphVertexIndex ta
     m_pos(begin ? 0 : edges.size()),
     m_edges(edges)
 {
-    if (m_edges.size() > 0 && m_edges[0].get_target() != m_target)
+    if (begin && m_edges.size() > 0 && m_edges[0].get_target() != m_target)
     {
         advance();
     }
@@ -185,7 +185,7 @@ DigraphForwardEdgeIndexIterator::const_iterator::const_iterator(DigraphVertexInd
     m_pos(begin ? 0 : edges.size()),
     m_edges(edges)
 {
-    if (m_edges.size() > 0 && m_edges[0].get_source() != m_source)
+    if (begin && m_edges.size() > 0 && m_edges[0].get_source() != m_source)
     {
         advance();
     }
@@ -242,7 +242,7 @@ DigraphBackwardEdgeIndexIterator::const_iterator::const_iterator(DigraphVertexIn
     m_pos(begin ? 0 : edges.size()),
     m_edges(edges)
 {
-    if (m_edges.size() > 0 && m_edges[0].get_target() != m_target)
+    if (begin && m_edges.size() > 0 && m_edges[0].get_target() != m_target)
     {
         advance();
     }
@@ -295,7 +295,7 @@ DigraphForwardEdgeIterator::const_iterator::const_iterator(DigraphVertexIndex so
     m_pos(begin ? 0 : edges.size()),
     m_edges(edges)
 {
-    if (m_edges.size() > 0 && m_edges[0].get_source() != m_source)
+    if (begin && m_edges.size() > 0 && m_edges[0].get_source() != m_source)
     {
         advance();
     }
@@ -348,7 +348,7 @@ DigraphBackwardEdgeIterator::const_iterator::const_iterator(DigraphVertexIndex t
     m_pos(begin ? 0 : edges.size()),
     m_edges(edges)
 {
-    if (m_edges.size() > 0 && m_edges[0].get_target() != m_target)
+    if (begin && m_edges.size() > 0 && m_edges[0].get_target() != m_target)
     {
         advance();
     }

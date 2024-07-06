@@ -171,7 +171,7 @@ void SparseGraphImpl::add_edge(int source, int target)
     }
     if (!is_directed_ && source == target)
     {
-        throw std::logic_error("Nauty does not support loops on undirected graphs.");
+        throw std::logic_error("SparseGraphImpl::add_edge: Nauty does not support loops on undirected graphs.");
     }
 
     // Silently skip adding parallel edges because edges are unlabelled, and hence,
@@ -194,11 +194,6 @@ void SparseGraphImpl::add_edge(int source, int target)
             ++graph_.d[target];
             ++graph_.nde;
         }
-    }
-
-    if (graph_.nde >= n_ * n_)
-    {
-        throw std::out_of_range("Not enough space for edges.");
     }
 }
 
