@@ -1502,7 +1502,6 @@ void init_pymimir(py::module_& m)
         .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph);
 
     // DigraphEdge
-
     py::class_<DigraphEdge>(m, "DigraphEdge")
         .def("__eq__", &DigraphEdge::operator==)
         .def("__hash__", &DigraphEdge::hash)
@@ -1571,7 +1570,24 @@ void init_pymimir(py::module_& m)
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
-        .def(py::init<Problem>(), py::arg("problem"));
+        .def(py::init<Problem>(), py::arg("problem"))
+        .def("get_color", [](const ProblemColorFunction& self, Object object) -> Color { return self.get_color(object); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Static> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Fluent> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Derived> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Fluent> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color_name", &ProblemColorFunction::get_color_name)
+        .def("get_problem", &ProblemColorFunction::get_problem)
+        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference)
+        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference);
 
     // ObjectGraph
     py::class_<ObjectGraph>(m, "ObjectGraph")  //

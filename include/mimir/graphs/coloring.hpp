@@ -44,23 +44,28 @@ public:
     explicit ProblemColorFunction(Problem problem);
 
     /// @brief get color of object.
-    Color get_color(const Object& object);
+    Color get_color(Object object) const;
 
     /// @brief Get unique color of state atom.
     template<PredicateCategory P>
-    Color get_color(const GroundAtom<P>& atom, int pos);
+    Color get_color(GroundAtom<P> atom, int pos) const;
 
     /// @brief Get unique color of dynamic goal literal.
     template<DynamicPredicateCategory P>
-    Color get_color(const State& state, const GroundLiteral<P>& literal, int pos, bool mark_true_goal_literal = false);
+    Color get_color(State state, GroundLiteral<P> literal, int pos, bool mark_true_goal_literal = false) const;
 
     /// @brief Get unique color of static goal literal.
-    Color get_color(const State& state, const GroundLiteral<Static>& literal, int pos, bool mark_true_goal_literal = false);
+    Color get_color(State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal = false) const;
 
     /// @brief Get name of color.
     const std::string& get_color_name(Color color) const;
 
+    /**
+     * Getters
+     */
     Problem get_problem() const;
+    const std::unordered_map<std::string, Color>& get_name_to_color() const;
+    const std::unordered_map<Color, std::string>& get_color_to_name() const;
 };
 
 /**
@@ -68,13 +73,13 @@ public:
  */
 
 template<PredicateCategory P>
-Color ProblemColorFunction::get_color(const GroundAtom<P>& atom, int pos)
+Color ProblemColorFunction::get_color(GroundAtom<P> atom, int pos) const
 {
     return m_name_to_color.at(atom->get_predicate()->get_name() + ":" + std::to_string(pos));
 }
 
 template<DynamicPredicateCategory P>
-Color ProblemColorFunction::get_color(const State& state, const GroundLiteral<P>& literal, int pos, bool mark_true_goal_literal)
+Color ProblemColorFunction::get_color(State state, GroundLiteral<P> literal, int pos, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = state.literal_holds(literal);
     return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"

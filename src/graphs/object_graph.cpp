@@ -84,9 +84,9 @@ void ProblemColorFunction::initialize_predicates()
     }
 }
 
-int ProblemColorFunction::get_color(const Object& object) { return m_name_to_color.at(""); }
+int ProblemColorFunction::get_color(Object object) const { return m_name_to_color.at(""); }
 
-Color ProblemColorFunction::get_color(const State& state, const GroundLiteral<Static>& literal, int pos, bool mark_true_goal_literal)
+Color ProblemColorFunction::get_color(State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = m_problem->static_literal_holds(literal);
     return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"
@@ -96,6 +96,10 @@ Color ProblemColorFunction::get_color(const State& state, const GroundLiteral<St
 const std::string& ProblemColorFunction::get_color_name(Color color) const { return m_color_to_name.at(color); }
 
 Problem ProblemColorFunction::get_problem() const { return m_problem; }
+
+const std::unordered_map<std::string, Color>& ProblemColorFunction::get_name_to_color() const { return m_name_to_color; }
+
+const std::unordered_map<Color, std::string>& ProblemColorFunction::get_color_to_name() const { return m_color_to_name; }
 
 /**
  * ObjectGraph
