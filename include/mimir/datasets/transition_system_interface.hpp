@@ -39,6 +39,7 @@ template<typename T>
 concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionIndex transition_index) {
     /* Types */
     typename T::TransitionType;
+    requires IsTransition<typename T::TransitionType>;
 
     /* Memory */
     {
@@ -89,7 +90,7 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     /* Transitions */
     {
         a.get_transitions()
-    } -> std::same_as<const std::vector<typename T::TransitionType>&>;
+    } -> std::convertible_to<const std::vector<typename T::TransitionType>&>;
     {
         a.get_forward_transition_indices(state_index)
     } -> std::same_as<ForwardTransitionIndexIterator<typename T::TransitionType>>;

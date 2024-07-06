@@ -42,7 +42,7 @@ private:
         virtual ~AbstractionConcept() {}
 
         /* Abstraction */
-        virtual StateIndex get_abstract_state_index(State concrete_state) = 0;
+        virtual StateIndex get_abstract_state_index(State concrete_state) const = 0;
 
         /* Memory */
         virtual const std::shared_ptr<PDDLParser>& get_pddl_parser() const = 0;
@@ -88,7 +88,7 @@ private:
         explicit AbstractionModel(A abstraction) : m_abstraction(std::move(abstraction)) {}
 
         /* Abstraction */
-        StateIndex get_abstract_state_index(State concrete_state) override { return m_abstraction.get_abstract_state_index(concrete_state); }
+        StateIndex get_abstract_state_index(State concrete_state) const override { return m_abstraction.get_abstract_state_index(concrete_state); }
 
         /* Memory */
         const std::shared_ptr<PDDLParser>& get_pddl_parser() const override { return m_abstraction.get_pddl_parser(); }
@@ -162,7 +162,7 @@ public:
     Abstraction& operator=(Abstraction&& other) noexcept = default;
 
     /* Abstraction */
-    StateIndex get_abstract_state_index(State concrete_state) { return m_pimpl->get_abstract_state_index(concrete_state); }
+    StateIndex get_abstract_state_index(State concrete_state) const { return m_pimpl->get_abstract_state_index(concrete_state); }
 
     /* Memory */
     const std::shared_ptr<PDDLParser>& get_pddl_parser() const { return m_pimpl->get_pddl_parser(); }

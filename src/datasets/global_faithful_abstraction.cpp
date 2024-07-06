@@ -30,10 +30,14 @@ namespace mimir
  * GlobalFaithfulAbstractState
  */
 
-GlobalFaithfulAbstractState::GlobalFaithfulAbstractState(StateId id, AbstractionIndex abstraction_index, StateId abstract_state_id) :
-    m_id(id),
-    m_abstraction_index(abstraction_index),
-    m_abstract_state_id(abstract_state_id)
+GlobalFaithfulAbstractState::GlobalFaithfulAbstractState(StateIndex index,
+                                                         StateIndex global_index,
+                                                         AbstractionIndex faithful_abstraction_index,
+                                                         StateIndex faithful_abstract_state_index) :
+    m_index(index),
+    m_global_index(global_index),
+    m_faithful_abstraction_index(faithful_abstraction_index),
+    m_faithful_abstract_state_index(faithful_abstract_state_index)
 {
 }
 
@@ -41,23 +45,20 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
 {
     if (this != &other)
     {
-        // GlobalFaithfulAbstractStates are unique by id within a GlobalFaithfulAbstraction;
-        return (m_id == other.m_id);
+        return (m_global_index == other.m_global_index);
     }
     return true;
 }
 
-size_t GlobalFaithfulAbstractState::hash() const
-{
-    // GlobalFaithfulAbstractStates are unique by id within a GlobalFaithfulAbstraction;
-    return loki::hash_combine(m_id);
-}
+size_t GlobalFaithfulAbstractState::hash() const { return loki::hash_combine(m_global_index); }
 
-StateId GlobalFaithfulAbstractState::get_id() const { return m_id; }
+StateIndex GlobalFaithfulAbstractState::get_index() const { return m_index; }
 
-AbstractionIndex GlobalFaithfulAbstractState::get_abstraction_index() const { return m_abstraction_index; }
+StateIndex GlobalFaithfulAbstractState::get_global_index() const { return m_global_index; }
 
-StateId GlobalFaithfulAbstractState::get_abstract_state_id() const { return m_abstract_state_id; }
+AbstractionIndex GlobalFaithfulAbstractState::get_faithful_abstraction_index() const { return m_faithful_abstraction_index; }
+
+StateIndex GlobalFaithfulAbstractState::get_faithful_abstract_state_index() const { return m_faithful_abstract_state_index; }
 
 /**
  * GlobalFaithfulAbstraction
@@ -66,9 +67,8 @@ StateId GlobalFaithfulAbstractState::get_abstract_state_id() const { return m_ab
 GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                                                      bool use_unit_cost_one,
                                                      AbstractionIndex id,
-                                                     std::shared_ptr<FaithfulAbstractionList> abstractions,
+                                                     std::shared_ptr<const FaithfulAbstractionList> abstractions,
                                                      GlobalFaithfulAbstractStateList states,
-                                                     GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
                                                      size_t num_isomorphic_states,
                                                      size_t num_non_isomorphic_states) :
     m_mark_true_goal_literals(mark_true_goal_literals),
@@ -76,10 +76,16 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     m_index(id),
     m_abstractions(std::move(abstractions)),
     m_states(std::move(states)),
-    m_state_to_index(std::move(state_to_index)),
     m_num_isomorphic_states(num_isomorphic_states),
     m_num_non_isomorphic_states(num_non_isomorphic_states)
 {
+    /* Ensure correctness. */
+
+    // Check correct state ordering
+    for (size_t i = 0; i < get_num_states(); ++i)
+    {
+        assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
+    }
 }
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const fs::path& domain_filepath,
@@ -139,25 +145,14 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();
-    auto abstraction_id = AbstractionIndex { 0 };
+    auto abstraction_index = AbstractionIndex { 0 };
 
     for (auto& faithful_abstraction : faithful_abstractions)
     {
-        auto max_goal_distance = *std::max_element(faithful_abstraction.get_goal_distances().begin(), faithful_abstraction.get_goal_distances().end());
+        auto has_zero_non_isomorphic_states =
+            certificate_to_global_state.count(faithful_abstraction.get_states().at(faithful_abstraction.get_initial_state()).get_certificate());
 
-        auto is_relevant = false;
-        for (const auto& state : faithful_abstraction.get_states())
-        {
-            // const auto& state = faithful_abstraction.get_states().at(state_id);
-            if (faithful_abstraction.get_goal_distances().at(state.get_index()) == max_goal_distance  //
-                && !certificate_to_global_state.count(state.get_certificate()))
-            {
-                is_relevant = true;
-                break;
-            }
-        }
-
-        if (!is_relevant)
+        if (has_zero_non_isomorphic_states)
         {
             // Skip: no non-isomorphic state
             continue;
@@ -165,55 +160,43 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
         auto num_isomorphic_states = 0;
         auto num_non_isomorphic_states = 0;
-        auto states = GlobalFaithfulAbstractStateList(
-            faithful_abstraction.get_num_states(),
-            GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
-        auto state_to_index = GlobalFaithfulAbstractStateMap<StateIndex> {};
+        auto states = GlobalFaithfulAbstractStateList {};
         for (const auto& state : faithful_abstraction.get_states())
         {
+            // Ensure ordering consistent with state in faithful abstraction.
+            assert(state.get_index() == states.size());
+
             auto it = certificate_to_global_state.find(state.get_certificate());
 
             if (it != certificate_to_global_state.end())
             {
-                // Copy existing global state
-                states.at(state.get_index()) = it->second;
-                state_to_index.emplace(it->second, state.get_index());
+                // Copy existing global state data.
+                states.emplace_back(state.get_index(),
+                                    it->second.get_global_index(),
+                                    it->second.get_faithful_abstraction_index(),
+                                    it->second.get_faithful_abstract_state_index());
                 ++num_isomorphic_states;
             }
             else
             {
-                // Create new global state
-                const auto new_global_state_id = certificate_to_global_state.size();
-                auto new_global_state = GlobalFaithfulAbstractState(new_global_state_id, abstraction_id, state.get_index());
-                certificate_to_global_state.emplace(state.get_certificate(), new_global_state);
-                states.at(state.get_index()) = new_global_state;
-                state_to_index.emplace(new_global_state, state.get_index());
+                // Create a new global state and add it to global mapping.
+                certificate_to_global_state.emplace(
+                    state.get_certificate(),
+                    states.emplace_back(state.get_index(), certificate_to_global_state.size(), abstraction_index, state.get_index()));
                 ++num_non_isomorphic_states;
             }
         }
 
-        // Ensure that all global states were correctly initialized.
-        assert(std::all_of(states.begin(),
-                           states.end(),
-                           [](const GlobalFaithfulAbstractState& global_state)
-                           {
-                               return global_state.get_id() != std::numeric_limits<StateId>::max()
-                                      && global_state.get_abstraction_index() != std::numeric_limits<StateId>::max()
-                                      && global_state.get_abstract_state_id() != std::numeric_limits<StateId>::max();
-                           }));
-
-        // Constructor of GlobalFaithfulAbstraction requires this to come first.
         relevant_faithful_abstractions->push_back(std::move(faithful_abstraction));
 
         abstractions.push_back(GlobalFaithfulAbstraction(mark_true_goal_literals,
                                                          use_unit_cost_one,
-                                                         abstraction_id,
-                                                         relevant_faithful_abstractions,
+                                                         abstraction_index,
+                                                         std::const_pointer_cast<const FaithfulAbstractionList>(relevant_faithful_abstractions),
                                                          std::move(states),
-                                                         std::move(state_to_index),
                                                          num_isomorphic_states,
                                                          num_non_isomorphic_states));
-        ++abstraction_id;
+        ++abstraction_index;
     }
 
     return abstractions;
@@ -223,7 +206,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
  * Abstraction functionality
  */
 
-StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_state)
+StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_state) const
 {
     return m_abstractions->at(m_index).get_abstract_state_index(concrete_state);
 }
@@ -264,8 +247,6 @@ const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() con
 
 /* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
-
-StateIndex GlobalFaithfulAbstraction::get_state_index(const GlobalFaithfulAbstractState& state) const { return m_state_to_index.at(state); }
 
 const StateMap<StateIndex>& GlobalFaithfulAbstraction::get_concrete_to_abstract_state() const
 {

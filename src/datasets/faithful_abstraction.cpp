@@ -84,8 +84,8 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
                                          StateIndexSet goal_states,
                                          StateIndexSet deadend_states,
                                          AbstractTransitionList transitions,
-                                         std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                                          BeginIndexList transitions_begin_by_source,
+                                         std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                                          std::vector<double> goal_distances) :
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -99,10 +99,23 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
-    m_ground_actions_by_source_and_target(std::move(ground_actions_by_source_and_target)),
     m_transitions_begin_by_source(std::move(transitions_begin_by_source)),
+    m_ground_actions_by_source_and_target(std::move(ground_actions_by_source_and_target)),
     m_goal_distances(std::move(goal_distances))
 {
+    /* Ensure correctness. */
+
+    // Check correct state ordering
+    for (size_t i = 0; i < get_num_states(); ++i)
+    {
+        assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
+    }
+
+    // Check correct transition ordering
+    for (size_t i = 0; i < get_num_transitions(); ++i)
+    {
+        assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
+    }
 }
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& domain_filepath,
@@ -296,8 +309,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                              concrete_states_by_abstract_state->begin() + concrete_states_begin_by_abstract_state.at(abstract_state_index + 1)),
             certificate);
     }
+    std::sort(abstract_states.begin(), abstract_states.end(), [](const auto& l, const auto& r) { return l.get_index() < r.get_index(); });
 
-    /* Sort transitions by source and target state. */
+    /* Sort concrete transitions by source and target state. */
     std::sort(transitions.begin(),
               transitions.end(),
               [](const auto& l, const auto& r)
@@ -309,14 +323,14 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                   return l.get_source_state() < r.get_source_state();
               });
 
-    /* Store actions persistently and grouped by source and target to be able to use span. */
+    /* Group ground actions by source and target and store persistent to be able to use span. */
     auto ground_actions_by_source_and_target = std::make_shared<GroundActionList>();
     std::transform(transitions.begin(),
                    transitions.end(),
                    std::back_inserter(*ground_actions_by_source_and_target),
                    [](const auto& transition) { return transition.get_creating_action(); });
 
-    /* Group transitions by source and target */
+    /* Group concrete transitions by source and target */
     auto transitions_begin_by_source_and_target = BeginIndexList {};
     transitions_begin_by_source_and_target.reserve(transitions.size() + 1);
     // Set begin of first state index.
@@ -399,8 +413,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
                                std::move(abstract_goal_states),
                                std::move(abstract_deadend_states),
                                std::move(abstract_transitions),
-                               const_pointer_cast<const GroundActionList>(ground_actions_by_source_and_target),
                                std::move(abstract_transitions_begin_by_source),
+                               const_pointer_cast<const GroundActionList>(ground_actions_by_source_and_target),
                                std::move(abstract_goal_distances));
 }
 
@@ -496,7 +510,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
  * Abstraction functionality
  */
 
-StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state)
+StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state) const
 {
     if (m_concrete_to_abstract_state.count(concrete_state))
     {

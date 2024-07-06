@@ -89,9 +89,9 @@ private:
 
     /* Transitions */
     AbstractTransitionList m_transitions;
+    BeginIndexList m_transitions_begin_by_source;
     // Persistent and sorted to store slices in the abstract transitions.
     std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
-    BeginIndexList m_transitions_begin_by_source;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -112,8 +112,8 @@ private:
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
                         AbstractTransitionList transitions,
-                        std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                         BeginIndexList transitions_begin_by_src,
+                        std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                         std::vector<double> goal_distances);
 
 public:
@@ -186,7 +186,7 @@ public:
      * Abstraction functionality
      */
 
-    StateIndex get_abstract_state_index(State concrete_state);
+    StateIndex get_abstract_state_index(State concrete_state) const;
 
     /**
      * Extended functionality

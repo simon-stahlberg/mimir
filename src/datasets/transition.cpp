@@ -61,7 +61,7 @@ AbstractTransition::AbstractTransition(TransitionIndex index, StateIndex source_
     m_index(index),
     m_source_state(source_state),
     m_target_state(target_state),
-    m_creating_actions(creating_actions)
+    m_actions(creating_actions)
 {
 }
 
@@ -69,18 +69,18 @@ bool AbstractTransition::operator==(const AbstractTransition& other) const
 {
     if (this != &other)
     {
-        return (m_source_state == other.m_source_state)                           //
-               && (m_target_state == other.m_target_state)                        //
-               && (m_creating_actions.size() == other.m_creating_actions.size())  //
-               && std::equal(m_creating_actions.begin(), m_creating_actions.end(), other.m_creating_actions.begin());
+        return (m_source_state == other.m_source_state)         //
+               && (m_target_state == other.m_target_state)      //
+               && (m_actions.size() == other.m_actions.size())  //
+               && std::equal(m_actions.begin(), m_actions.end(), other.m_actions.begin());
     }
     return true;
 }
 
 size_t AbstractTransition::hash() const
 {
-    size_t creating_actions_hash = m_creating_actions.size();
-    for (const auto& action : m_creating_actions)
+    size_t creating_actions_hash = m_actions.size();
+    for (const auto& action : m_actions)
     {
         loki::hash_combine(creating_actions_hash, action.hash());
     }
@@ -97,17 +97,17 @@ TransitionCost AbstractTransition::get_cost() const
 {
     auto cost = std::numeric_limits<double>::max();
 
-    std::for_each(m_creating_actions.begin(), m_creating_actions.end(), [&cost](const auto& action) { cost = std::min(cost, (double) action.get_cost()); });
+    std::for_each(m_actions.begin(), m_actions.end(), [&cost](const auto& action) { cost = std::min(cost, (double) action.get_cost()); });
 
     return cost;
 }
 
-std::span<GroundAction> AbstractTransition::get_creating_actions() const { return m_creating_actions; }
+std::span<GroundAction> AbstractTransition::get_actions() const { return m_actions; }
 
-GroundAction AbstractTransition::get_representative_creating_action() const
+GroundAction AbstractTransition::get_representative_action() const
 {
-    assert(!m_creating_actions.empty());
-    return m_creating_actions.front();
+    assert(!m_actions.empty());
+    return m_actions.front();
 }
 
 }

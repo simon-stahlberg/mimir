@@ -840,9 +840,8 @@ void init_pymimir(py::module_& m)
         .def("get_source_state", &AbstractTransition::get_source_state)
         .def("get_target_state", &AbstractTransition::get_target_state)
         .def("get_cost", &AbstractTransition::get_cost)
-        .def("get_creating_actions",
-             [](const AbstractTransition& self) { return GroundActionList(self.get_creating_actions().begin(), self.get_creating_actions().end()); })
-        .def("get_representative_creating_action", &AbstractTransition::get_representative_creating_action);
+        .def("get_actions", [](const AbstractTransition& self) { return GroundActionList(self.get_actions().begin(), self.get_actions().end()); })
+        .def("get_representative_action", &AbstractTransition::get_representative_action);
 
     // StateSpace
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
@@ -1278,9 +1277,10 @@ void init_pymimir(py::module_& m)
     py::class_<GlobalFaithfulAbstractState>(m, "GlobalFaithfulAbstractState")
         .def("__eq__", &GlobalFaithfulAbstractState::operator==)
         .def("__hash__", &GlobalFaithfulAbstractState::hash)
-        .def("get_id", &GlobalFaithfulAbstractState::get_id)
-        .def("get_abstraction_index", &GlobalFaithfulAbstractState::get_abstraction_index)
-        .def("get_abstract_state_id", &GlobalFaithfulAbstractState::get_abstract_state_id);
+        .def("get_index", &GlobalFaithfulAbstractState::get_index)
+        .def("get_global_index", &GlobalFaithfulAbstractState::get_global_index)
+        .def("get_faithful_abstraction_index", &GlobalFaithfulAbstractState::get_faithful_abstraction_index)
+        .def("get_faithful_abstract_state_index", &GlobalFaithfulAbstractState::get_faithful_abstract_state_index);
 
     py::class_<GlobalFaithfulAbstraction, std::shared_ptr<GlobalFaithfulAbstraction>>(m, "GlobalFaithfulAbstraction")
         .def_static(
@@ -1356,7 +1356,6 @@ void init_pymimir(py::module_& m)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
         .def("get_abstract_state_index", &GlobalFaithfulAbstraction::get_abstract_state_index)
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
-        .def("get_state_index", &GlobalFaithfulAbstraction::get_state_index)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)

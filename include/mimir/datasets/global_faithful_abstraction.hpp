@@ -43,19 +43,27 @@ namespace mimir
 class GlobalFaithfulAbstractState
 {
 private:
-    StateId m_id;
-    AbstractionIndex m_abstraction_index;
-    StateId m_abstract_state_id;
+    // The index within a GlobalFaithfulAbstraction.
+    StateIndex m_index;
+    // The index within a GlobalFaithfulAbstractionList.
+    StateId m_global_index;
+    // The indices to access the corresponding FaithfulAbstractState.
+    AbstractionIndex m_faithful_abstraction_index;
+    StateId m_faithful_abstract_state_index;
 
 public:
-    GlobalFaithfulAbstractState(StateId id, AbstractionIndex abstraction_index, StateId abstract_state_id);
+    GlobalFaithfulAbstractState(StateIndex index,
+                                StateIndex global_index,
+                                AbstractionIndex faithful_abstraction_index,
+                                StateIndex faithful_abstract_state_index);
 
     [[nodiscard]] bool operator==(const GlobalFaithfulAbstractState& other) const;
     [[nodiscard]] size_t hash() const;
 
-    StateId get_id() const;
-    AbstractionIndex get_abstraction_index() const;
-    StateId get_abstract_state_id() const;
+    StateIndex get_index() const;
+    StateIndex get_global_index() const;
+    AbstractionIndex get_faithful_abstraction_index() const;
+    StateIndex get_faithful_abstract_state_index() const;
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
@@ -71,22 +79,18 @@ private:
     AbstractionIndex m_index;
 
     /* Memory */
-    std::shared_ptr<FaithfulAbstractionList> m_abstractions;
+    std::shared_ptr<const FaithfulAbstractionList> m_abstractions;
 
     /* States */
-    // Note that state.get_id() does not yield the index within the abstraction.
-    // Use abstraction.get_state_index(state) instead.
     GlobalFaithfulAbstractStateList m_states;
-    GlobalFaithfulAbstractStateMap<StateIndex> m_state_to_index;
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
     GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                               bool use_unit_cost_one,
                               AbstractionIndex index,
-                              std::shared_ptr<FaithfulAbstractionList> abstractions,
+                              std::shared_ptr<const FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
-                              GlobalFaithfulAbstractStateMap<StateIndex> state_to_index,
                               size_t num_isomorphic_states,
                               size_t num_non_isomorphic_states);
 
@@ -119,7 +123,7 @@ public:
      * Abstraction functionality
      */
 
-    StateIndex get_abstract_state_index(State concrete_state);
+    StateIndex get_abstract_state_index(State concrete_state) const;
 
     /**
      * Extended functionality
@@ -146,7 +150,6 @@ public:
 
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
-    StateIndex get_state_index(const GlobalFaithfulAbstractState& state) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
