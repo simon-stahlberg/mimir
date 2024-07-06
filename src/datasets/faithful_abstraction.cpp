@@ -33,7 +33,12 @@ namespace mimir
  * FaithfulAbstractState
  */
 
-FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<State> states) : m_index(index), m_states(states) {}
+FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<State> states, Certificate certificate) :
+    m_index(index),
+    m_states(states),
+    m_certificate(certificate)
+{
+}
 
 bool FaithfulAbstractState::operator==(const FaithfulAbstractState& other) const
 {
@@ -60,6 +65,8 @@ State FaithfulAbstractState::get_representative_state() const
     assert(!m_states.empty());
     return m_states.front();
 }
+
+const Certificate& FaithfulAbstractState::get_certificate() const { return m_certificate; }
 
 /**
  * FaithfulAbstraction
@@ -98,14 +105,14 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
 {
 }
 
-std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> FaithfulAbstraction::create(const fs::path& domain_filepath,
-                                                                                                       const fs::path& problem_filepath,
-                                                                                                       bool mark_true_goal_literals,
-                                                                                                       bool use_unit_cost_one,
-                                                                                                       bool remove_if_unsolvable,
-                                                                                                       bool compute_complete_abstraction_mapping,
-                                                                                                       uint32_t max_num_states,
-                                                                                                       uint32_t timeout_ms)
+std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& domain_filepath,
+                                                               const fs::path& problem_filepath,
+                                                               bool mark_true_goal_literals,
+                                                               bool use_unit_cost_one,
+                                                               bool remove_if_unsolvable,
+                                                               bool compute_complete_abstraction_mapping,
+                                                               uint32_t max_num_states,
+                                                               uint32_t timeout_ms)
 {
     auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
     auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
@@ -122,15 +129,15 @@ std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faith
                                        timeout_ms);
 }
 
-std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> FaithfulAbstraction::create(std::shared_ptr<PDDLParser> parser,
-                                                                                                       std::shared_ptr<IAAG> aag,
-                                                                                                       std::shared_ptr<SuccessorStateGenerator> ssg,
-                                                                                                       bool mark_true_goal_literals,
-                                                                                                       bool use_unit_cost_one,
-                                                                                                       bool remove_if_unsolvable,
-                                                                                                       bool compute_complete_abstraction_mapping,
-                                                                                                       uint32_t max_num_states,
-                                                                                                       uint32_t timeout_ms)
+std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<PDDLParser> parser,
+                                                               std::shared_ptr<IAAG> aag,
+                                                               std::shared_ptr<SuccessorStateGenerator> ssg,
+                                                               bool mark_true_goal_literals,
+                                                               bool use_unit_cost_one,
+                                                               bool remove_if_unsolvable,
+                                                               bool compute_complete_abstraction_mapping,
+                                                               uint32_t max_num_states,
+                                                               uint32_t timeout_ms)
 {
     auto stop_watch = StopWatch(timeout_ms);
 
@@ -281,12 +288,13 @@ std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faith
     /* Construct abstract states */
     auto abstract_states = FaithfulAbstractStateList {};
     abstract_states.reserve(num_abstract_states);
-    for (StateIndex abstract_state_index = 0; abstract_state_index < num_abstract_states; ++abstract_state_index)
+    for (const auto& [certificate, abstract_state_index] : abstract_states_by_certificate)
     {
         abstract_states.emplace_back(
             abstract_state_index,
             std::span<State>(concrete_states_by_abstract_state->begin() + concrete_states_begin_by_abstract_state.at(abstract_state_index),
-                             concrete_states_by_abstract_state->begin() + concrete_states_begin_by_abstract_state.at(abstract_state_index + 1)));
+                             concrete_states_by_abstract_state->begin() + concrete_states_begin_by_abstract_state.at(abstract_state_index + 1)),
+            certificate);
     }
 
     /* Sort transitions by source and target state. */
@@ -379,34 +387,33 @@ std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faith
         abstract_transitions_begin_by_source.push_back(abstract_transitions.size());
     }
 
-    return std::make_tuple(FaithfulAbstraction(mark_true_goal_literals,
-                                               use_unit_cost_one,
-                                               std::move(parser),
-                                               std::move(aag),
-                                               std::move(ssg),
-                                               std::move(abstract_states),
-                                               const_pointer_cast<const StateList>(concrete_states_by_abstract_state),
-                                               std::move(concrete_to_abstract_state),
-                                               abstract_initial_state_index,
-                                               std::move(abstract_goal_states),
-                                               std::move(abstract_deadend_states),
-                                               std::move(abstract_transitions),
-                                               const_pointer_cast<const GroundActionList>(ground_actions_by_source_and_target),
-                                               std::move(abstract_transitions_begin_by_source),
-                                               std::move(abstract_goal_distances)),
-                           std::move(abstract_states_by_certificate));
+    return FaithfulAbstraction(mark_true_goal_literals,
+                               use_unit_cost_one,
+                               std::move(parser),
+                               std::move(aag),
+                               std::move(ssg),
+                               std::move(abstract_states),
+                               const_pointer_cast<const StateList>(concrete_states_by_abstract_state),
+                               std::move(concrete_to_abstract_state),
+                               abstract_initial_state_index,
+                               std::move(abstract_goal_states),
+                               std::move(abstract_deadend_states),
+                               std::move(abstract_transitions),
+                               const_pointer_cast<const GroundActionList>(ground_actions_by_source_and_target),
+                               std::move(abstract_transitions_begin_by_source),
+                               std::move(abstract_goal_distances));
 }
 
-std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> FaithfulAbstraction::create(const fs::path& domain_filepath,
-                                                                                                     const std::vector<fs::path>& problem_filepaths,
-                                                                                                     bool mark_true_goal_literals,
-                                                                                                     bool use_unit_cost_one,
-                                                                                                     bool remove_if_unsolvable,
-                                                                                                     bool compute_complete_abstraction_mapping,
-                                                                                                     bool sort_ascending_by_num_states,
-                                                                                                     uint32_t max_num_states,
-                                                                                                     uint32_t timeout_ms,
-                                                                                                     uint32_t num_threads)
+std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& domain_filepath,
+                                                             const std::vector<fs::path>& problem_filepaths,
+                                                             bool mark_true_goal_literals,
+                                                             bool use_unit_cost_one,
+                                                             bool remove_if_unsolvable,
+                                                             bool compute_complete_abstraction_mapping,
+                                                             bool sort_ascending_by_num_states,
+                                                             uint32_t max_num_states,
+                                                             uint32_t timeout_ms,
+                                                             uint32_t num_threads)
 {
     auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
@@ -428,7 +435,7 @@ std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faithfu
                                        num_threads);
 }
 
-std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> FaithfulAbstraction::create(
+std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
     const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
     bool mark_true_goal_literals,
     bool use_unit_cost_one,
@@ -439,9 +446,9 @@ std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faithfu
     uint32_t timeout_ms,
     uint32_t num_threads)
 {
-    auto abstractions_data = std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> {};
+    auto abstractions_data = std::vector<FaithfulAbstraction> {};
     auto pool = BS::thread_pool(num_threads);
-    auto futures = std::vector<std::future<std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>>>> {};
+    auto futures = std::vector<std::future<std::optional<FaithfulAbstraction>>> {};
 
     for (const auto& [parser, aag, ssg] : memories)
     {
@@ -479,9 +486,7 @@ std::vector<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faithfu
 
     if (sort_ascending_by_num_states)
     {
-        std::sort(abstractions_data.begin(),
-                  abstractions_data.end(),
-                  [](const auto& l, const auto& r) { return std::get<0>(l).get_num_states() < std::get<0>(r).get_num_states(); });
+        std::sort(abstractions_data.begin(), abstractions_data.end(), [](const auto& l, const auto& r) { return l.get_num_states() < r.get_num_states(); });
     }
 
     return abstractions_data;

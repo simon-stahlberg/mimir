@@ -277,26 +277,25 @@ bool SparseGraphImpl::is_directed() const { return is_directed_; }
 
 std::ostream& operator<<(std::ostream& out, const sparsegraph& graph)
 {
+    // TODO: we could use log_2(nv) many bits to encode the adjacency lists
+    // and log_2(nde) to encode number of transitions and degrees to save memory.
     out << "nv:" << graph.nv << "\n"
         << "nde:" << graph.nde << "\n"
         << "d:";
     for (int i = 0; i < graph.nv; ++i)
     {
-        out << graph.d[i] << ",";
+        out << graph.d[i] << (i == graph.nv - 1 ? "\n" : ",");
     }
-    out << "\n"
-        << "v:";
+    out << "v:";
     for (int i = 0; i < graph.nv; ++i)
     {
-        out << graph.v[i] << ",";
+        out << graph.v[i] << (i == graph.nv - 1 ? "\n" : ",");
     }
-    out << "\n"
-        << "e:";
+    out << "e:";
     for (size_t i = 0; i < graph.nde; ++i)
     {
-        out << graph.e[i] << ",";
+        out << graph.e[i] << (i == graph.nde - 1 ? "\n" : ",");
     }
-    out << "\n";
 
     return out;
 }

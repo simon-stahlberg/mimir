@@ -1078,7 +1078,8 @@ void init_pymimir(py::module_& m)
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_index", &FaithfulAbstractState::get_index)
         .def("get_states", [](const FaithfulAbstractState& self) { return std::vector<State>(self.get_states().begin(), self.get_states().end()); })
-        .def("get_representative_state", &FaithfulAbstractState::get_representative_state);
+        .def("get_representative_state", &FaithfulAbstractState::get_representative_state)
+        .def("get_certificate", &FaithfulAbstractState::get_certificate, py::return_value_policy::reference);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def_static(

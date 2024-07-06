@@ -141,16 +141,16 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();
     auto abstraction_id = AbstractionIndex { 0 };
 
-    for (auto& [faithful_abstraction, states_by_certificate] : faithful_abstractions)
+    for (auto& faithful_abstraction : faithful_abstractions)
     {
         auto max_goal_distance = *std::max_element(faithful_abstraction.get_goal_distances().begin(), faithful_abstraction.get_goal_distances().end());
 
         auto is_relevant = false;
-        for (const auto& [certificate, state_index] : states_by_certificate)
+        for (const auto& state : faithful_abstraction.get_states())
         {
             // const auto& state = faithful_abstraction.get_states().at(state_id);
-            if (faithful_abstraction.get_goal_distances().at(state_index) == max_goal_distance  //
-                && !certificate_to_global_state.count(certificate))
+            if (faithful_abstraction.get_goal_distances().at(state.get_index()) == max_goal_distance  //
+                && !certificate_to_global_state.count(state.get_certificate()))
             {
                 is_relevant = true;
                 break;
@@ -169,25 +169,25 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
             faithful_abstraction.get_num_states(),
             GlobalFaithfulAbstractState(std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max(), std::numeric_limits<StateId>::max()));
         auto state_to_index = GlobalFaithfulAbstractStateMap<StateIndex> {};
-        for (const auto& [certificate, state_index] : states_by_certificate)
+        for (const auto& state : faithful_abstraction.get_states())
         {
-            auto it = certificate_to_global_state.find(certificate);
+            auto it = certificate_to_global_state.find(state.get_certificate());
 
             if (it != certificate_to_global_state.end())
             {
                 // Copy existing global state
-                states.at(state_index) = it->second;
-                state_to_index.emplace(it->second, state_index);
+                states.at(state.get_index()) = it->second;
+                state_to_index.emplace(it->second, state.get_index());
                 ++num_isomorphic_states;
             }
             else
             {
                 // Create new global state
                 const auto new_global_state_id = certificate_to_global_state.size();
-                auto new_global_state = GlobalFaithfulAbstractState(new_global_state_id, abstraction_id, state_index);
-                certificate_to_global_state.emplace(certificate, new_global_state);
-                states.at(state_index) = new_global_state;
-                state_to_index.emplace(new_global_state, state_index);
+                auto new_global_state = GlobalFaithfulAbstractState(new_global_state_id, abstraction_id, state.get_index());
+                certificate_to_global_state.emplace(state.get_certificate(), new_global_state);
+                states.at(state.get_index()) = new_global_state;
+                state_to_index.emplace(new_global_state, state.get_index());
                 ++num_non_isomorphic_states;
             }
         }
