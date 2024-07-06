@@ -22,9 +22,12 @@
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/transition_interface.hpp"
 #include "mimir/datasets/transition_system_interface.hpp"
+#include "mimir/search/state.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
+#include <boost/property_map/property_map.hpp>
+#include <limits>
 #include <ranges>
 
 namespace mimir
@@ -61,6 +64,8 @@ struct graph_traits<TransitionSystem>
     // boost::IncidenceGraph
     using out_edge_iterator = mimir::ForwardTransitionIndexIterator<typename TransitionSystem::TransitionType>::const_iterator;
     using degree_size_type = size_t;
+    // boost::strong_components
+    constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
 };
 
 }
@@ -116,6 +121,37 @@ boost::graph_traits<TransitionSystem>::degree_size_type out_degree(typename boos
     return std::distance(g.get_forward_transition_indices(u).begin(), g.get_forward_transition_indices(u).end());
 }
 
+}
+
+// boost::strong_components requires a vertex_index that translates vertex->index, where the index is an index into the vertex list.
+// In our case, the vertex is described with a StateIndex and so vertex and index are the same.
+// To avoid storing a map of the size of the graph, we provide a custom index that just returns the key.
+namespace mimir
+{
+struct IdIsIndexVertexIndex
+{
+};
+}
+
+template<>
+struct boost::property_traits<mimir::IdIsIndexVertexIndex>
+{
+    using value_type = mimir::StateIndex;
+    using key_type = mimir::StateIndex;
+    using reference = mimir::StateIndex;
+    using category = boost::readable_property_map_tag;
+};
+
+namespace mimir
+{
+inline boost::property_traits<IdIsIndexVertexIndex>::reference get(IdIsIndexVertexIndex, boost::property_traits<IdIsIndexVertexIndex>::key_type key)
+{
+    return key;
+}
+}
+
+namespace mimir
+{
 /* Assert that the concepts are satisfied */
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<StateSpace>) );
 BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<StateSpace>) );
