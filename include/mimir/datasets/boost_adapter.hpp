@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_BOOST_ADAPTER_HPP_
 #define MIMIR_DATASETS_BOOST_ADAPTER_HPP_
 
+#include "boost/graph/strong_components.hpp"
 #include "mimir/datasets/iterators.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/transition_interface.hpp"
@@ -147,6 +148,18 @@ namespace mimir
 inline boost::property_traits<IdIsIndexVertexIndex>::reference get(IdIsIndexVertexIndex, boost::property_traits<IdIsIndexVertexIndex>::key_type key)
 {
     return key;
+}
+
+// Wrapper function for boost's strong_components algorithm.
+template<IsTransitionSystem TransitionSystem>
+std::pair<typename boost::graph_traits<TransitionSystem>::vertices_size_type,
+          std::map<typename boost::graph_traits<TransitionSystem>::vertex_descriptor, typename boost::graph_traits<TransitionSystem>::vertices_size_type>>
+strong_components(const TransitionSystem& g)
+{
+    std::map<StateIndex, size_t> component_map;
+    boost::associative_property_map component_map_property(component_map);
+    const auto num_components = boost::strong_components(g, component_map_property, boost::vertex_index_map(IdIsIndexVertexIndex()));
+    return std::make_pair(num_components, component_map);
 }
 }
 

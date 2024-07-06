@@ -1,6 +1,5 @@
 #include "mimir/datasets/state_space.hpp"
 
-#include "boost/graph/strong_components.hpp"
 #include "mimir/datasets/boost_adapter.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
@@ -86,23 +85,18 @@ TEST(MimirTests, DatasetsStateSpaceStrongComponentsTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        std::map<StateIndex, size_t> _component_map;
-        boost::associative_property_map component_map(_component_map);
-        const auto num_components = boost::strong_components(state_space, component_map, boost::vertex_index_map(IdIsIndexVertexIndex()));
-
+        const auto [num_components, component_map] = strong_components(state_space);
         EXPECT_EQ(num_components, 1);
         for (auto [it, last] = vertices(state_space); it != last; ++it)
         {
-            EXPECT_EQ(get(component_map, *it), 0);
+            EXPECT_EQ(component_map.at(*it), 0);
         }
     }
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        std::map<StateIndex, size_t> _component_map;
-        boost::associative_property_map component_map(_component_map);
-        const auto num_components = boost::strong_components(state_space, component_map, boost::vertex_index_map(IdIsIndexVertexIndex()));
+        const auto [num_components, component_map] = strong_components(state_space);
 
         // Each state should have its own component.
         EXPECT_EQ(num_components, num_vertices(state_space));
@@ -111,7 +105,7 @@ TEST(MimirTests, DatasetsStateSpaceStrongComponentsTest)
         std::map<size_t, size_t> num_states_per_component;
         for (auto [it, last] = vertices(state_space); it != last; ++it)
         {
-            num_states_per_component[get(component_map, *it)]++;
+            num_states_per_component[component_map.at(*it)]++;
         }
         for (const auto& [key, val] : num_states_per_component)
         {
