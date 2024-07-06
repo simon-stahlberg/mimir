@@ -106,14 +106,15 @@ from _pymimir import (
 from _pymimir import (
     Certificate,
     Digraph,
+    DigraphEdge,
     DenseNautyGraph,
-    DenseNautyGraphFactory
+    DenseNautyGraphFactory,
     ObjectGraph,
     ObjectGraphFactory,
     Partitioning,
     ProblemColorFunction,
     SparseNautyGraph,
-    SparseNautyGraphFactory
+    SparseNautyGraphFactory,
     TupleGraphVertex,
     TupleGraph,
     TupleGraphFactory

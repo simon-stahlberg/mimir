@@ -256,7 +256,7 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 
     for (int vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
     {
-        for (const auto& succ_vertex_index : object_graph.get_digraph().get_forward_successors()[vertex_index])
+        for (const auto& succ_vertex_index : object_graph.get_digraph().get_targets(vertex_index))
         {
             out << "t" << vertex_index << "->"
                 << "t" << succ_vertex_index << "\n";

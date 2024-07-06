@@ -826,6 +826,7 @@ void init_pymimir(py::module_& m)
     py::class_<Transition>(m, "Transition")  //
         .def("__eq__", &Transition::operator==)
         .def("__hash__", &Transition::hash)
+        .def("get_index", &Transition::get_index)
         .def("get_source_state", &Transition::get_source_state)
         .def("get_target_state", &Transition::get_target_state)
         .def("get_cost", &Transition::get_cost)
@@ -835,6 +836,7 @@ void init_pymimir(py::module_& m)
     py::class_<AbstractTransition>(m, "AbstractTransition")  //
         .def("__eq__", &AbstractTransition::operator==)
         .def("__hash__", &AbstractTransition::hash)
+        .def("get_index", &AbstractTransition::get_index)
         .def("get_source_state", &AbstractTransition::get_source_state)
         .def("get_target_state", &AbstractTransition::get_target_state)
         .def("get_cost", &AbstractTransition::get_cost)
@@ -1498,16 +1500,73 @@ void init_pymimir(py::module_& m)
         .def(py::init<>())
         .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph);
 
+    // DigraphEdge
+
+    py::class_<DigraphEdge>(m, "DigraphEdge")
+        .def("__eq__", &DigraphEdge::operator==)
+        .def("__hash__", &DigraphEdge::hash)
+        .def("get_index", &DigraphEdge::get_index)
+        .def("get_source", &DigraphEdge::get_source)
+        .def("get_target", &DigraphEdge::get_target)
+        .def("get_weight", &DigraphEdge::get_weight);
+
     // Digraph
     py::class_<Digraph>(m, "Digraph")  //
         .def(py::init<bool>(), py::arg("is_directed") = false)
         .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def("add_edge", &Digraph::add_edge)
+        .def("add_edge", &Digraph::add_edge, py::arg("source"), py::arg("target"), py::arg("weight") = 1.)
         .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def(
+            "get_targets",
+            [](const Digraph& self, StateIndex source)
+            {
+                auto iterator = self.get_targets(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_sources",
+            [](const Digraph& self, StateIndex target)
+            {
+                auto iterator = self.get_sources(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_edge_indices",
+            [](const Digraph& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_edge_indices(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_edge_indices",
+            [](const Digraph& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_edge_indices(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_edges",
+            [](const Digraph& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_edges(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_edges",
+            [](const Digraph& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_edges(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
         .def("get_num_vertices", &Digraph::get_num_vertices)
         .def("get_num_edges", &Digraph::get_num_edges)
-        .def("get_forward_successors", &Digraph::get_forward_successors)
-        .def("get_backward_successors", &Digraph::get_backward_successors);
+        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference);
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //

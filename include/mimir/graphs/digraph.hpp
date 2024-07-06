@@ -18,33 +18,307 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_HPP_
 
+#include <ranges>
 #include <span>
 #include <vector>
 
 namespace mimir
 {
 
-class Digraph
+using DigraphEdgeIndex = int;
+using DigraphEdgeWeight = double;
+using DigraphVertexIndex = int;
+
+class DigraphEdge
 {
 private:
-    int m_num_vertices;
-    int m_num_edges;
+    DigraphEdgeIndex m_index;
+    DigraphVertexIndex m_source;
+    DigraphVertexIndex m_target;
+    DigraphEdgeWeight m_weight;
 
+public:
+    DigraphEdge(DigraphEdgeIndex index, DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight);
+
+    bool operator==(const DigraphEdge& other) const;
+    size_t hash() const;
+
+    DigraphEdgeIndex get_index() const;
+    DigraphVertexIndex get_source() const;
+    DigraphVertexIndex get_target() const;
+    DigraphEdgeWeight get_weight() const;
+};
+
+using DigraphEdgeList = std::vector<DigraphEdge>;
+
+class DigraphTargetIndexIterator
+{
+private:
+    DigraphVertexIndex m_source;
+    std::span<const DigraphEdge> m_edges;
+
+public:
+    DigraphTargetIndexIterator(DigraphVertexIndex source, std::span<const DigraphEdge> edges);
+
+    class const_iterator
+    {
+    private:
+        DigraphVertexIndex m_source;
+        size_t m_pos;
+        std::span<const DigraphEdge> m_edges;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = DigraphVertexIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(DigraphVertexIndex source, std::span<const DigraphEdge> edges, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+};
+
+static_assert(std::ranges::forward_range<DigraphTargetIndexIterator>);
+
+class DigraphSourceIndexIterator
+{
+private:
+    DigraphVertexIndex m_target;
+    std::span<const DigraphEdge> m_edges;
+
+public:
+    DigraphSourceIndexIterator(DigraphVertexIndex target, std::span<const DigraphEdge> edges);
+
+    class const_iterator
+    {
+    private:
+        DigraphVertexIndex m_target;
+        size_t m_pos;
+        std::span<const DigraphEdge> m_edges;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = DigraphVertexIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(DigraphVertexIndex target, std::span<const DigraphEdge> edges, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+};
+
+static_assert(std::ranges::forward_range<DigraphSourceIndexIterator>);
+
+class DigraphForwardEdgeIndexIterator
+{
+private:
+    DigraphVertexIndex m_source;
+    std::span<const DigraphEdge> m_edges;
+
+public:
+    DigraphForwardEdgeIndexIterator(DigraphVertexIndex source, std::span<const DigraphEdge> edges);
+
+    class const_iterator
+    {
+    private:
+        DigraphVertexIndex m_source;
+        size_t m_pos;
+        std::span<const DigraphEdge> m_edges;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = DigraphEdgeIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(DigraphVertexIndex source, std::span<const DigraphEdge> edges, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+};
+
+static_assert(std::ranges::forward_range<DigraphForwardEdgeIndexIterator>);
+
+class DigraphBackwardEdgeIndexIterator
+{
+private:
+    DigraphVertexIndex m_target;
+    std::span<const DigraphEdge> m_edges;
+
+public:
+    DigraphBackwardEdgeIndexIterator(DigraphVertexIndex target, std::span<const DigraphEdge> edges);
+
+    class const_iterator
+    {
+    private:
+        DigraphVertexIndex m_target;
+        size_t m_pos;
+        std::span<const DigraphEdge> m_edges;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = DigraphEdgeIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(DigraphVertexIndex target, std::span<const DigraphEdge> edges, bool begin);
+        [[nodiscard]] value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+};
+
+static_assert(std::ranges::forward_range<DigraphBackwardEdgeIndexIterator>);
+
+class DigraphForwardEdgeIterator
+{
+private:
+    DigraphVertexIndex m_source;
+    std::span<const DigraphEdge> m_edges;
+
+public:
+    DigraphForwardEdgeIterator(DigraphVertexIndex source, std::span<const DigraphEdge> edges);
+
+    class const_iterator
+    {
+    private:
+        DigraphVertexIndex m_source;
+        size_t m_pos;
+        std::span<const DigraphEdge> m_edges;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = const DigraphEdge;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(DigraphVertexIndex source, std::span<const DigraphEdge> edges, bool begin);
+        [[nodiscard]] reference operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+};
+
+static_assert(std::ranges::forward_range<DigraphForwardEdgeIterator>);
+
+class DigraphBackwardEdgeIterator
+{
+private:
+    DigraphVertexIndex m_target;
+    std::span<const DigraphEdge> m_edges;
+
+public:
+    DigraphBackwardEdgeIterator(DigraphVertexIndex target, std::span<const DigraphEdge> edges);
+
+    class const_iterator
+    {
+    private:
+        DigraphVertexIndex m_target;
+        size_t m_pos;
+        std::span<const DigraphEdge> m_edges;
+
+        void advance();
+
+    public:
+        using difference_type = int;
+        using value_type = const DigraphEdge;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(DigraphVertexIndex target, std::span<const DigraphEdge> edges, bool begin);
+        [[nodiscard]] reference operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        [[nodiscard]] bool operator==(const const_iterator& other) const;
+        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+    };
+
+    [[nodiscard]] const_iterator begin() const;
+    [[nodiscard]] const_iterator end() const;
+};
+
+class Digraph
+{
+public:
+private:
+    int m_num_vertices;
     bool m_is_directed;
 
-    // Never deallocate memory, getters return a span on the relevant part.
-    std::vector<std::vector<int>> m_forward_successors;
-    std::vector<std::vector<int>> m_backward_successors;
+    DigraphEdgeList m_edges;
 
 public:
     explicit Digraph(bool is_directed = false);
     Digraph(int num_vertices, bool is_directed = false);
 
-    /// @brief Add an edge to the graph.
-    void add_edge(int src, int dst);
+    /// @brief Add an edge to the graph and return the index to it.
+    /// If the graph is undirected, then the backward edge has index + 1.
+    DigraphEdgeIndex add_edge(DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight = 1.);
 
     /// @brief Reinitialize the graph to an empty graph with num_vertices many vertices.
     void reset(int num_vertices, bool is_directed = false);
+
+    /**
+     * Iterators
+     */
+
+    DigraphTargetIndexIterator get_targets(DigraphVertexIndex source) const;
+    DigraphSourceIndexIterator get_sources(DigraphVertexIndex target) const;
+    DigraphForwardEdgeIndexIterator get_forward_edge_indices(DigraphVertexIndex source) const;
+    DigraphBackwardEdgeIndexIterator get_backward_edge_indices(DigraphVertexIndex target) const;
+    DigraphForwardEdgeIterator get_forward_edges(DigraphVertexIndex source) const;
+    DigraphBackwardEdgeIterator get_backward_edges(DigraphVertexIndex target) const;
 
     /**
      * Getters
@@ -52,8 +326,7 @@ public:
     int get_num_vertices() const;
     int get_num_edges() const;
     bool is_directed() const;
-    std::span<const std::vector<int>> get_forward_successors() const;
-    std::span<const std::vector<int>> get_backward_successors() const;
+    const DigraphEdgeList& get_edges() const;
 };
 
 }

@@ -69,13 +69,9 @@ DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::Digraph& digraph
 {
     m_graph.reset(digraph.get_num_vertices(), digraph.is_directed());
 
-    for (int source = 0; source < digraph.get_num_vertices(); ++source)
+    for (const auto& edge : digraph.get_edges())
     {
-        assert(source < static_cast<int>(digraph.get_forward_successors().size()));
-        for (const int target : digraph.get_forward_successors()[source])
-        {
-            m_graph.add_edge(source, target);
-        }
+        m_graph.add_edge(edge.get_source(), edge.get_target());
     }
 
     return m_graph;
@@ -125,13 +121,9 @@ SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::Digraph& digra
 {
     m_graph.reset(digraph.get_num_vertices(), digraph.is_directed());
 
-    for (int source = 0; source < digraph.get_num_vertices(); ++source)
+    for (const auto& edge : digraph.get_edges())
     {
-        assert(source < static_cast<int>(digraph.get_forward_successors().size()));
-        for (const int target : digraph.get_forward_successors()[source])
-        {
-            m_graph.add_edge(source, target);
-        }
+        m_graph.add_edge(edge.get_source(), edge.get_target());
     }
 
     return m_graph;
