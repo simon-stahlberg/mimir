@@ -1480,6 +1480,11 @@ void init_pymimir(py::module_& m)
         .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::DenseGraph::reset);
 
+    // DenseNautyGraphFactory
+    py::class_<nauty_wrapper::DenseGraphFactory>(m, "DenseNautyGraphFactory")  //
+        .def(py::init<>())
+        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_digraph);
+
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
         .def(py::init<bool>(), py::arg("is_directed") = false)
@@ -1488,13 +1493,16 @@ void init_pymimir(py::module_& m)
         .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::SparseGraph::reset);
 
+    // SparseNautyGraphFactory
+    py::class_<nauty_wrapper::SparseGraphFactory>(m, "SparseNautyGraphFactory")  //
+        .def(py::init<>())
+        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph);
+
     // Digraph
     py::class_<Digraph>(m, "Digraph")  //
         .def(py::init<bool>(), py::arg("is_directed") = false)
         .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
         .def("add_edge", &Digraph::add_edge)
-        .def("to_nauty_graph", py::overload_cast<nauty_wrapper::DenseGraph&>(&Digraph::to_nauty_graph, py::const_))
-        .def("to_nauty_graph", py::overload_cast<nauty_wrapper::SparseGraph&>(&Digraph::to_nauty_graph, py::const_))
         .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
         .def("get_num_vertices", &Digraph::get_num_vertices)
         .def("get_num_edges", &Digraph::get_num_edges)

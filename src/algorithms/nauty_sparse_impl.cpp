@@ -17,6 +17,7 @@
 
 #include "nauty_sparse_impl.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -24,21 +25,35 @@
 namespace nauty_wrapper
 {
 
-void SparseGraphImpl::allocate_graph(sparsegraph& out_graph)
+void SparseGraphImpl::copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const
+{
+    std::copy(in_graph.v, in_graph.v + n_, out_graph.v);
+    std::copy(in_graph.d, in_graph.d + n_, out_graph.d);
+    std::copy(in_graph.e, in_graph.e + in_graph.nde, out_graph.e);
+    out_graph.nde = in_graph.nde;
+}
+
+void SparseGraphImpl::initialize_graph_data(sparsegraph& out_graph) const
+{
+    out_graph.nv = n_;
+    out_graph.nde = 0;  // No edges yet
+    std::fill(out_graph.d, out_graph.d + n_, 0);
+    for (int i = 0; i < n_; ++i)
+    {
+        out_graph.v[i] = i * n_;
+    }
+    std::fill(out_graph.e, out_graph.e + n_ * n_, 0);
+}
+
+void SparseGraphImpl::allocate_graph(sparsegraph& out_graph) const
 {
     if (n_ > 0)
     {
         // Allocate the sparse graph structure, assuming a complete graph
         SG_INIT(out_graph);
-        SG_ALLOC(out_graph, n_, 2 * n_ * n_, "malloc");
+        SG_ALLOC(out_graph, n_, n_ * n_, "malloc");
 
-        out_graph.nv = n_;
-        out_graph.nde = 0;  // No edges yet
-
-        // Initialize arrays
-        std::fill(out_graph.d, out_graph.d + n_, 0);
-        std::fill(out_graph.v, out_graph.v + n_, 0);
-        std::fill(out_graph.e, out_graph.e + 2 * n_ * n_, 0);
+        initialize_graph_data(out_graph);
     }
     else
     {
@@ -49,7 +64,7 @@ void SparseGraphImpl::allocate_graph(sparsegraph& out_graph)
     }
 }
 
-void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph)
+void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph) const
 {
     if (c_ > 0)
     {
@@ -62,7 +77,8 @@ SparseGraphImpl::SparseGraphImpl(int num_vertices, bool is_directed) :
     n_(num_vertices),
     c_(num_vertices),
     is_directed_(is_directed),
-    obtained_certificate_(false)
+    obtained_certificate_(false),
+    m_adj_matrix_()
 {
     allocate_graph(graph_);
     allocate_graph(canon_graph_);
@@ -74,19 +90,13 @@ SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other)
     c_ = other.c_;
     is_directed_ = other.is_directed_;
     obtained_certificate_ = other.obtained_certificate_;
+    m_adj_matrix_ = other.m_adj_matrix_;
 
     allocate_graph(graph_);
     allocate_graph(canon_graph_);
 
-    std::copy(other.graph_.v, other.graph_.v + n_, graph_.v);
-    std::copy(other.graph_.d, other.graph_.d + n_, graph_.d);
-    std::copy(other.graph_.e, other.graph_.e + other.graph_.nde, graph_.e);
-    graph_.nde = other.graph_.nde;
-
-    std::copy(other.canon_graph_.v, other.canon_graph_.v + n_, canon_graph_.v);
-    std::copy(other.canon_graph_.d, other.canon_graph_.d + n_, canon_graph_.d);
-    std::copy(other.canon_graph_.e, other.canon_graph_.e + other.canon_graph_.nde, canon_graph_.e);
-    canon_graph_.nde = other.canon_graph_.nde;
+    copy_graph_data(other.graph_, graph_);
+    copy_graph_data(other.canon_graph_, canon_graph_);
 }
 
 SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
@@ -100,19 +110,13 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
         c_ = other.c_;
         is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
+        m_adj_matrix_ = other.m_adj_matrix_;
 
         allocate_graph(graph_);
         allocate_graph(canon_graph_);
 
-        std::copy(other.graph_.v, other.graph_.v + n_, graph_.v);
-        std::copy(other.graph_.d, other.graph_.d + n_, graph_.d);
-        std::copy(other.graph_.e, other.graph_.e + other.graph_.nde, graph_.e);
-        graph_.nde = other.graph_.nde;
-
-        std::copy(other.canon_graph_.v, other.canon_graph_.v + n_, canon_graph_.v);
-        std::copy(other.canon_graph_.d, other.canon_graph_.d + n_, canon_graph_.d);
-        std::copy(other.canon_graph_.e, other.canon_graph_.e + other.canon_graph_.nde, canon_graph_.e);
-        canon_graph_.nde = other.canon_graph_.nde;
+        copy_graph_data(other.graph_, graph_);
+        copy_graph_data(other.canon_graph_, canon_graph_);
     }
     return *this;
 }
@@ -122,24 +126,12 @@ SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
     c_(other.c_),
     is_directed_(other.is_directed_),
     obtained_certificate_(other.obtained_certificate_),
+    m_adj_matrix_(other.m_adj_matrix_),
     graph_(other.graph_),
     canon_graph_(other.canon_graph_)
 {
-    other.graph_.v = nullptr;
-    other.graph_.d = nullptr;
-    other.graph_.e = nullptr;
-    other.graph_.vlen = 0;
-    other.graph_.dlen = 0;
-    other.graph_.elen = 0;
-    other.graph_.nde = 0;
-
-    other.canon_graph_.v = nullptr;
-    other.canon_graph_.d = nullptr;
-    other.canon_graph_.e = nullptr;
-    other.canon_graph_.vlen = 0;
-    other.canon_graph_.dlen = 0;
-    other.canon_graph_.elen = 0;
-    other.canon_graph_.nde = 0;
+    SG_INIT(other.graph_);
+    SG_INIT(other.canon_graph_);
 }
 
 SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
@@ -154,24 +146,13 @@ SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
         c_ = other.c_;
         is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
+        m_adj_matrix_ = other.m_adj_matrix_;
 
         graph_ = other.graph_;
-        other.graph_.v = nullptr;
-        other.graph_.d = nullptr;
-        other.graph_.e = nullptr;
-        other.graph_.vlen = 0;
-        other.graph_.dlen = 0;
-        other.graph_.elen = 0;
-        other.graph_.nde = 0;
+        SG_INIT(other.graph_);
 
         canon_graph_ = other.canon_graph_;
-        other.canon_graph_.v = nullptr;
-        other.canon_graph_.d = nullptr;
-        other.canon_graph_.e = nullptr;
-        other.canon_graph_.vlen = 0;
-        other.canon_graph_.dlen = 0;
-        other.canon_graph_.elen = 0;
-        other.canon_graph_.nde = 0;
+        SG_INIT(other.canon_graph_);
     }
     return *this;
 }
@@ -182,22 +163,40 @@ SparseGraphImpl::~SparseGraphImpl()
     deallocate_graph(canon_graph_);
 }
 
-void SparseGraphImpl::add_edge(int src, int dst)
+void SparseGraphImpl::add_edge(int source, int target)
 {
-    if (src >= n_ || dst >= n_ || src < 0 || dst < 0)
+    if (source >= n_ || target >= n_ || source < 0 || target < 0)
     {
-        throw std::out_of_range("Source or destination vertex out of range.");
+        throw std::out_of_range("SparseGraphImpl::add_edge: Source or target vertex out of range.");
     }
-    // TODO: this is wrong!
-    graph_.e[graph_.nde++] = dst;
-    graph_.d[src]++;
-    if (!is_directed_)
+    if (!is_directed_ && source == target)
     {
-        graph_.e[graph_.nde++] = src;
-        graph_.d[dst]++;
+        throw std::logic_error("Nauty does not support loops on undirected graphs.");
     }
 
-    if (graph_.nde >= 2 * n_ * n_)
+    // Silently skip adding parallel edges because edges are unlabelled, and hence,
+    // parallel edges do not encode additional information on the graph.
+    if (!m_adj_matrix_.at(source * n_ + target))
+    {
+        m_adj_matrix_.at(source * n_ + target) = true;
+
+        graph_.e[source * n_ + graph_.d[source]] = target;
+        ++graph_.d[source];
+        ++graph_.nde;
+    }
+    if (!is_directed_)
+    {
+        if (!m_adj_matrix_.at(target * n_ + source))
+        {
+            m_adj_matrix_.at(target * n_ + source) = true;
+
+            graph_.e[target * n_ + graph_.d[target]] = source;
+            ++graph_.d[target];
+            ++graph_.nde;
+        }
+    }
+
+    if (graph_.nde >= n_ * n_)
     {
         throw std::out_of_range("Not enough space for edges.");
     }
@@ -207,11 +206,12 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
 {
     if (obtained_certificate_)
     {
-        throw std::runtime_error("Tried to compute certificate twice for the same graph. That is most likely a bug on the user side.");
+        throw std::runtime_error(
+            "SparseGraphImpl::compute_certificate: Tried to compute certificate twice for the same graph. We consider this a bug on the user side.");
     }
     if (static_cast<int>(partitioning.get_vertex_index_permutation().size()) != n_ || static_cast<int>(partitioning.get_partitioning().size()) != n_)
     {
-        throw std::out_of_range("lab or ptn is incompatible with number of vertices in the graph.");
+        throw std::out_of_range("SparseGraphImpl::compute_certificate: The arrays lab or ptn are incompatible with number of vertices in the graph.");
     }
 
     int lab[n_], ptn[n_], orbits[n_];
@@ -226,25 +226,18 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
 
     statsblk stats;
 
-    // std::cout << "graph_.nv: " << graph_.nv << std::endl;
-    // std::cout << "graph_.nde: " << graph_.nde << std::endl;
-    // std::cout << "graph_.vlen: " << graph_.vlen << std::endl;
-    // std::cout << "graph_.dlen: " << graph_.dlen << std::endl;
-    // std::cout << "graph_.elen: " << graph_.elen << std::endl;
-
-    // std::cout << "canon_graph_.nv: " << canon_graph_.nv << std::endl;
-    // std::cout << "canon_graph_.nde: " << canon_graph_.nde << std::endl;
-    // std::cout << "canon_graph_.vlen: " << canon_graph_.vlen << std::endl;
-    // std::cout << "canon_graph_.dlen: " << canon_graph_.dlen << std::endl;
-    // std::cout << "canon_graph_.elen: " << canon_graph_.elen << std::endl;
+    std::fill(canon_graph_.d, canon_graph_.d + n_, 0);
+    std::fill(canon_graph_.v, canon_graph_.v + n_, 0);
+    std::fill(canon_graph_.e, canon_graph_.e + n_ * n_, 0);
 
     sparsenauty(&graph_, lab, ptn, orbits, &options, &stats, &canon_graph_);
 
+    // According to documentation:
+    //   canon_graph has contiguous adjacency lists that are not necessarily sorted
+    sortlists_sg(&canon_graph_);
+
     std::ostringstream oss;
-    for (size_t i = 0; i < canon_graph_.nde; ++i)
-    {
-        oss << canon_graph_.e[i] << " ";
-    }
+    oss << canon_graph_;
 
     obtained_certificate_ = true;
 
@@ -258,35 +251,53 @@ void SparseGraphImpl::reset(int num_vertices, bool is_directed)
 
     if (num_vertices > c_)
     {
-        // Reallocate memory.
+        /* Reallocate memory. */
         deallocate_graph(graph_);
         deallocate_graph(canon_graph_);
 
         n_ = num_vertices;
         c_ = num_vertices;
+        m_adj_matrix_ = std::vector<bool>(c_ * c_, false);
 
         allocate_graph(graph_);
         allocate_graph(canon_graph_);
     }
     else
     {
-        // Reuse memory.
+        /* Reuse memory. */
         n_ = num_vertices;
+        std::fill(m_adj_matrix_.begin(), m_adj_matrix_.begin() + n_ * n_, false);
 
-        graph_.nv = n_;
-        graph_.nde = 0;
-        std::fill(graph_.d, graph_.d + n_, 0);
-        std::fill(graph_.v, graph_.v + n_, 0);
-        std::fill(graph_.e, graph_.e + 2 * n_ * n_, 0);
-
-        canon_graph_.nv = n_;
-        canon_graph_.nde = 0;
-        std::fill(canon_graph_.d, canon_graph_.d + n_, 0);
-        std::fill(canon_graph_.v, canon_graph_.v + n_, 0);
-        std::fill(canon_graph_.e, canon_graph_.e + 2 * n_ * n_, 0);
+        initialize_graph_data(graph_);
+        initialize_graph_data(canon_graph_);
     }
 }
 
 bool SparseGraphImpl::is_directed() const { return is_directed_; }
 
+std::ostream& operator<<(std::ostream& out, const sparsegraph& graph)
+{
+    out << "nv:" << graph.nv << "\n"
+        << "nde:" << graph.nde << "\n"
+        << "d:";
+    for (int i = 0; i < graph.nv; ++i)
+    {
+        out << graph.d[i] << ",";
+    }
+    out << "\n"
+        << "v:";
+    for (int i = 0; i < graph.nv; ++i)
+    {
+        out << graph.v[i] << ",";
+    }
+    out << "\n"
+        << "e:";
+    for (size_t i = 0; i < graph.nde; ++i)
+    {
+        out << graph.e[i] << ",";
+    }
+    out << "\n";
+
+    return out;
+}
 }

@@ -18,6 +18,7 @@
 #ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
+#include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/partitioning.hpp"
 
 #include <memory>
@@ -43,7 +44,7 @@ public:
     DenseGraph& operator=(DenseGraph&& other) noexcept;
     ~DenseGraph();
 
-    void add_edge(int src, int dst);
+    void add_edge(int source, int target);
 
     /// @brief Compute a certificate for the graph and the given vertex partitioning.
     std::string compute_certificate(const mimir::Partitioning& partitioning) const;
@@ -52,6 +53,15 @@ public:
     void reset(int num_vertices, bool is_directed = false);
 
     bool is_directed() const;
+};
+
+class DenseGraphFactory
+{
+private:
+    DenseGraph m_graph;
+
+public:
+    DenseGraph& create_from_digraph(const mimir::Digraph& digraph);
 };
 
 class SparseGraph
@@ -68,7 +78,7 @@ public:
     SparseGraph& operator=(SparseGraph&& other) noexcept;
     ~SparseGraph();
 
-    void add_edge(int src, int dst);
+    void add_edge(int source, int target);
 
     /// @brief Compute a certificate for the graph and the given vertex partitioning.
     std::string compute_certificate(const mimir::Partitioning& partitioning);
@@ -78,6 +88,16 @@ public:
 
     bool is_directed() const;
 };
+
+class SparseGraphFactory
+{
+private:
+    SparseGraph m_graph;
+
+public:
+    SparseGraph& create_from_digraph(const mimir::Digraph& digraph);
+};
+
 }
 
 #endif

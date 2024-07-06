@@ -18,15 +18,12 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_HPP_
 
-#include "mimir/algorithms/nauty.hpp"
-
 #include <span>
 #include <vector>
 
 namespace mimir
 {
 
-// TODO: make this boost like
 class Digraph
 {
 private:
@@ -49,15 +46,12 @@ public:
     /// @brief Reinitialize the graph to an empty graph with num_vertices many vertices.
     void reset(int num_vertices, bool is_directed = false);
 
-    /// @brief Get a nauty graph representation.
-    void to_nauty_graph(nauty_wrapper::DenseGraph& out_graph) const;
-    void to_nauty_graph(nauty_wrapper::SparseGraph& out_graph) const;
-
     /**
      * Getters
      */
     int get_num_vertices() const;
     int get_num_edges() const;
+    bool is_directed() const;
     std::span<const std::vector<int>> get_forward_successors() const;
     std::span<const std::vector<int>> get_backward_successors() const;
 };

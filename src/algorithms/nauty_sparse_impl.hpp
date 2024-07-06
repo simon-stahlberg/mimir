@@ -39,11 +39,18 @@ private:
     // Whether a certificate was obtained from the graph.
     bool obtained_certificate_;
 
+    // Track existing edges to avoid duplicates
+    std::vector<bool> m_adj_matrix_;
+
     sparsegraph graph_;
     sparsegraph canon_graph_;
 
-    void allocate_graph(sparsegraph& out_graph);
-    void deallocate_graph(sparsegraph& the_graph);
+    void copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const;
+
+    void initialize_graph_data(sparsegraph& out_graph) const;
+
+    void allocate_graph(sparsegraph& out_graph) const;
+    void deallocate_graph(sparsegraph& the_graph) const;
 
 public:
     explicit SparseGraphImpl(int num_vertices, bool is_directed = false);
@@ -53,7 +60,7 @@ public:
     SparseGraphImpl& operator=(SparseGraphImpl&& other) noexcept;
     ~SparseGraphImpl();
 
-    void add_edge(int src, int dst);
+    void add_edge(int source, int target);
 
     std::string compute_certificate(const mimir::Partitioning& partitioning);
 
@@ -61,6 +68,8 @@ public:
 
     bool is_directed() const;
 };
+
+extern std::ostream& operator<<(std::ostream& out, const sparsegraph& graph);
 
 }
 

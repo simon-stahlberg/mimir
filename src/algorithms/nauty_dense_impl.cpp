@@ -17,8 +17,6 @@
 
 #include "nauty_dense_impl.hpp"
 
-#include "mimir/common/printers.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -26,7 +24,6 @@
 
 namespace nauty_wrapper
 {
-using mimir::operator<<;
 
 void DenseGraphImpl::allocate_graph(graph** out_graph)
 {
@@ -127,25 +124,30 @@ DenseGraphImpl::~DenseGraphImpl()
     deallocate_graph(canon_graph_);
 }
 
-void DenseGraphImpl::add_edge(int src, int dst)
+void DenseGraphImpl::add_edge(int source, int target)
 {
-    if (src >= n_ || dst >= n_ || src < 0 || dst < 0)
+    if (source >= n_ || target >= n_ || source < 0 || target < 0)
     {
-        throw std::out_of_range("Vertex index out of range");
+        throw std::out_of_range("DenseGraphImpl::add_edge: Source or target vertex out of range.");
     }
-    // dont need to add antiparralel edge in sparse representation
-    ADDONEARC0(graph_, src, dst, m_);
+    // Silently skip adding parallel edges because edges are unlabelled, and hence,
+    // parallel edges do not encode additional information on the graph.
+
+    // It is unnecessary to add antiparrallel edge in sparse representation
+    // because nauty automatically takes care of this.
+    ADDONEARC0(graph_, source, target, m_);
 }
 
 std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& partitioning)
 {
     if (obtained_certificate_)
     {
-        throw std::runtime_error("Tried to compute certificate twice for the same graph. That is most likely a bug on the user side.");
+        throw std::runtime_error(
+            "DenseGraphImpl::compute_certificate: Tried to compute certificate twice for the same graph. We consider this a bug on the user side.");
     }
     if (static_cast<int>(partitioning.get_vertex_index_permutation().size()) != n_ || static_cast<int>(partitioning.get_partitioning().size()) != n_)
     {
-        throw std::out_of_range("lab or ptn is incompatible with number of vertices in the graph.");
+        throw std::out_of_range("DenseGraphImpl::compute_certificate: The arrays lab or ptn are incompatible with number of vertices in the graph.");
     }
 
     int lab[n_], ptn[n_], orbits[n_];

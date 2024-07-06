@@ -54,7 +54,7 @@ public:
     DenseGraphImpl& operator=(DenseGraphImpl&& other) noexcept;
     ~DenseGraphImpl();
 
-    void add_edge(int src, int dst);
+    void add_edge(int source, int target);
 
     std::string compute_certificate(const mimir::Partitioning& partitioning);
 

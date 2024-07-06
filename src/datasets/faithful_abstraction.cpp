@@ -18,6 +18,7 @@
 #include "mimir/datasets/faithful_abstraction.hpp"
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
+#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
 
 #include <algorithm>
@@ -143,15 +144,15 @@ std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faith
         return std::nullopt;
     }
 
-    auto nauty_graph = nauty_wrapper::SparseGraph();
+    auto nauty_graph_factory = nauty_wrapper::SparseGraphFactory();
     auto object_graph_factory = ObjectGraphFactory(problem, factories);
     auto concrete_to_abstract_state = StateMap<StateIndex> {};
     auto abstract_states_by_certificate = CertificateToStateIndexMap {};
 
     /* Initialize for initial state. */
     const auto& object_graph = object_graph_factory.create(initial_state);
-    object_graph.get_digraph().to_nauty_graph(nauty_graph);
-    auto certificate = Certificate(nauty_graph.compute_certificate(object_graph.get_partitioning()), object_graph.get_sorted_vertex_colors());
+    auto certificate = Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
+                                   object_graph.get_sorted_vertex_colors());
     const auto abstract_initial_state_index = 0;
     abstract_states_by_certificate.emplace(certificate, abstract_initial_state_index);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_index);
@@ -194,8 +195,9 @@ std::optional<std::tuple<FaithfulAbstraction, CertificateToStateIndexMap>> Faith
 
             // Compute certificate of successor state
             const auto& object_graph = object_graph_factory.create(successor_state);
-            object_graph.get_digraph().to_nauty_graph(nauty_graph);
-            auto certificate = Certificate(nauty_graph.compute_certificate(object_graph.get_partitioning()), object_graph.get_sorted_vertex_colors());
+            auto certificate =
+                Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
+                            object_graph.get_sorted_vertex_colors());
             const auto it = abstract_states_by_certificate.find(certificate);
 
             // Regenerate abstract state

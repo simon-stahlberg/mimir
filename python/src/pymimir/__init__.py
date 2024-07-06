@@ -107,11 +107,13 @@ from _pymimir import (
     Certificate,
     Digraph,
     DenseNautyGraph,
+    DenseNautyGraphFactory
     ObjectGraph,
     ObjectGraphFactory,
     Partitioning,
     ProblemColorFunction,
     SparseNautyGraph,
+    SparseNautyGraphFactory
     TupleGraphVertex,
     TupleGraph,
     TupleGraphFactory
