@@ -517,11 +517,12 @@ const TupleGraph& TupleGraphFactory::create_for_arity_k(const State root_state)
 
 TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpace> state_space, int arity, bool prune_dominated_tuples) :
     m_state_space(std::move(state_space)),
-    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>(m_state_space->get_aag()->get_pddl_factories()->get_ground_atom_factory<Fluent>(),
-                                                                 m_state_space->get_aag()->get_pddl_factories()->get_ground_atom_factory<Derived>())),
-    m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(arity,
-                                                            m_state_space->get_aag()->get_pddl_factories()->get_num_ground_atoms<Fluent>()
-                                                                + m_state_space->get_aag()->get_pddl_factories()->get_num_ground_atoms<Derived>())),
+    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>(m_state_space->get_aag()->get_pddl_factories()->get_factory<GroundAtomImpl<Fluent>>(),
+                                                                 m_state_space->get_aag()->get_pddl_factories()->get_factory<GroundAtomImpl<Derived>>())),
+    m_tuple_index_mapper(
+        std::make_shared<TupleIndexMapper>(arity,
+                                           m_state_space->get_aag()->get_pddl_factories()->get_factory<GroundAtomImpl<Fluent>>().size()
+                                               + m_state_space->get_aag()->get_pddl_factories()->get_factory<GroundAtomImpl<Derived>>().size())),
     m_prune_dominated_tuples(prune_dominated_tuples),
     m_arity_zero_computation(m_state_space, m_atom_index_mapper, m_tuple_index_mapper, m_prune_dominated_tuples),
     m_arity_k_computation(m_state_space, m_atom_index_mapper, m_tuple_index_mapper, m_prune_dominated_tuples)

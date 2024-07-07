@@ -68,15 +68,18 @@ public:
 
     void on_end_search() const override;
 
-    [[nodiscard]] Problem get_problem() const override;
+    Problem get_problem() const override;
 
-    [[nodiscard]] const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
 
     /// @brief Return all actions.
-    [[nodiscard]] const GroundActionList& get_ground_actions() const;
+    const GroundActionList& get_ground_actions() const;
 
-    /// @brief Return the action with the given id.
-    [[nodiscard]] GroundAction get_action(size_t action_id) const override;
+    GroundAction get_action(size_t action_id) const override;
+
+    size_t get_num_ground_actions() const override;
+
+    size_t get_num_ground_axioms() const override;
 };
 
 /**

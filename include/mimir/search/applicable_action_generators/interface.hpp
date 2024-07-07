@@ -47,11 +47,14 @@ public:
     virtual void on_end_search() const = 0;
 
     /// @brief Return the action with the given id.
-    [[nodiscard]] virtual GroundAction get_action(size_t action_id) const = 0;
+    virtual GroundAction get_action(size_t action_id) const = 0;
+
+    virtual size_t get_num_ground_actions() const = 0;
+    virtual size_t get_num_ground_axioms() const = 0;
 
     /* Getters */
-    [[nodiscard]] virtual Problem get_problem() const = 0;
-    [[nodiscard]] virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
+    virtual Problem get_problem() const = 0;
+    virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
 };
 
 /**

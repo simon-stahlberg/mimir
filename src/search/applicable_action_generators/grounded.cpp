@@ -251,12 +251,16 @@ void GroundedApplicableActionGenerator::on_finish_f_layer() const { m_event_hand
 
 void GroundedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 
-[[nodiscard]] const GroundActionList& GroundedApplicableActionGenerator::get_ground_actions() const { return m_lifted_aag.get_ground_actions(); }
+const GroundActionList& GroundedApplicableActionGenerator::get_ground_actions() const { return m_lifted_aag.get_ground_actions(); }
 
-[[nodiscard]] GroundAction GroundedApplicableActionGenerator::get_action(size_t action_id) const { return m_lifted_aag.get_action(action_id); }
+GroundAction GroundedApplicableActionGenerator::get_action(size_t action_id) const { return m_lifted_aag.get_action(action_id); }
+
+size_t GroundedApplicableActionGenerator::get_num_ground_actions() const { return m_lifted_aag.get_num_ground_actions(); }
+
+size_t GroundedApplicableActionGenerator::get_num_ground_axioms() const { return m_lifted_aag.get_num_ground_axioms(); }
 
 Problem GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-[[nodiscard]] const std::shared_ptr<PDDLFactories>& GroundedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLFactories>& GroundedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
 
 }

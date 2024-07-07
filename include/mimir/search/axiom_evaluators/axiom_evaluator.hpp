@@ -97,13 +97,15 @@ public:
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
 
     /// @brief Return the axiom partitioning.
-    [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
+    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 
     /// @brief Ground an axiom and return a view onto it.
-    [[nodiscard]] GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
+    GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
 
     /// @brief Return all axioms.
-    [[nodiscard]] const GroundAxiomList& get_ground_axioms() const;
+    const GroundAxiomList& get_ground_axioms() const;
+
+    size_t get_num_ground_axioms() const override;
 };
 
 /**

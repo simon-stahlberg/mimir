@@ -198,13 +198,13 @@ public:
         return State(*iter2);
     }
 
-    [[nodiscard]] size_t get_state_count() const { return m_states.size(); }
+    size_t get_state_count() const { return m_states.size(); }
 
-    [[nodiscard]] const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
+    const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
 
-    [[nodiscard]] const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
+    const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
 
-    [[nodiscard]] std::shared_ptr<IAAG> get_aag() const { return m_aag; }
+    std::shared_ptr<IAAG> get_aag() const { return m_aag; }
 };
 
 }

@@ -88,27 +88,30 @@ public:
 
     void on_end_search() const override;
 
-    [[nodiscard]] Problem get_problem() const override;
+    Problem get_problem() const override;
 
-    [[nodiscard]] const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
 
     /// @brief Return the axiom partitioning.
-    [[nodiscard]] const std::vector<AxiomPartition>& get_axiom_partitioning() const;
+    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 
     /// @brief Ground an axiom and return a view onto it.
-    [[nodiscard]] GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
+    GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
 
     /// @brief Ground an action and return a view onto it.
-    [[nodiscard]] GroundAction ground_action(Action action, ObjectList&& binding);
+    GroundAction ground_action(Action action, ObjectList&& binding);
 
     /// @brief Return all axioms.
-    [[nodiscard]] const GroundAxiomList& get_ground_axioms() const;
+    const GroundAxiomList& get_ground_axioms() const;
 
     /// @brief Return all actions.
-    [[nodiscard]] const GroundActionList& get_ground_actions() const;
+    const GroundActionList& get_ground_actions() const;
 
-    /// @brief Return the action with the given id.
-    [[nodiscard]] GroundAction get_action(size_t action_id) const override;
+    GroundAction get_action(size_t action_id) const override;
+
+    size_t get_num_ground_actions() const override;
+
+    size_t get_num_ground_axioms() const override;
 
     friend std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag);
 };

@@ -37,6 +37,8 @@ public:
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) = 0;
+
+    virtual size_t get_num_ground_axioms() const = 0;
 };
 
 /**

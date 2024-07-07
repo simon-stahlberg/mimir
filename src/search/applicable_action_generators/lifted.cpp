@@ -419,6 +419,10 @@ const GroundActionList& LiftedApplicableActionGenerator::get_ground_actions() co
 
 GroundAction LiftedApplicableActionGenerator::get_action(size_t action_id) const { return m_actions_by_index.at(action_id); }
 
+size_t LiftedApplicableActionGenerator::get_num_ground_actions() const { return m_actions_by_index.size(); }
+
+size_t LiftedApplicableActionGenerator::get_num_ground_axioms() const { return m_axiom_evaluator.get_num_ground_axioms(); }
+
 Problem LiftedApplicableActionGenerator::get_problem() const { return m_problem; }
 
 [[nodiscard]] const std::shared_ptr<PDDLFactories>& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }

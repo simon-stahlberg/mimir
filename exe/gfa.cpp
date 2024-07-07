@@ -26,14 +26,39 @@ int main(int argc, char** argv)
 {
     if (argc != 3)
     {
-        std::cout << "Usage: planner_brfs <domain:str> <problem:str>" << std::endl;
+        std::cout << "Usage: planner_brfs <domain:str> <problems:str>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
-    const auto problem_file_path = fs::path { argv[2] };
+    const auto problems_directory = fs::path { argv[2] };
 
-    auto gfa = FaithfulAbstraction::create(domain_file_path, problem_file_path);
+    auto problem_filepaths = std::vector<fs::path> {};
+    for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
+    {
+        std::cout << problem_filepath.path() << std::endl;
+        problem_filepaths.push_back(problem_filepath.path());
+    }
+
+    auto gfas = FaithfulAbstraction::create(domain_file_path, problem_filepaths);
+
+    size_t num_states = 0;
+    size_t num_transitions = 0;
+    size_t num_ground_actions = 0;
+    size_t num_ground_axioms = 0;
+    for (const auto& gfa : gfas)
+    {
+        num_states += gfa.get_num_states();
+        num_transitions += gfa.get_num_transitions();
+        num_ground_actions += gfa.get_aag()->get_num_ground_actions();
+        num_ground_axioms += gfa.get_aag()->get_num_ground_axioms();
+    }
+
+    std::cout << "Num gfas: " << gfas.size() << std::endl;
+    std::cout << "Num states: " << num_states << std::endl;
+    std::cout << "Num transitions: " << num_transitions << std::endl;
+    std::cout << "Num ground actions: " << num_ground_actions << std::endl;
+    std::cout << "Num ground axioms: " << num_ground_axioms << std::endl;
 
     return 0;
 }

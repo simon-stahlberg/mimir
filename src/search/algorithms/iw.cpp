@@ -114,7 +114,8 @@ TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tupl
 
 FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_is_remapped_fluent(), m_inverse_remap(), m_num_atoms(0) {}
 
-FluentAndDerivedMapper::FluentAndDerivedMapper(const FluentGroundAtomFactory& fluent_atoms, const DerivedGroundAtomFactory& derived_atoms) :
+FluentAndDerivedMapper::FluentAndDerivedMapper(const loki::PDDLFactory<GroundAtomImpl<Fluent>>& fluent_atoms,
+                                               const loki::PDDLFactory<GroundAtomImpl<Derived>>& derived_atoms) :
     m_fluent_remap(fluent_atoms.size(), -1),
     m_derived_remap(derived_atoms.size(), -1),
     m_is_remapped_fluent(fluent_atoms.size() + derived_atoms.size(), false),
@@ -123,7 +124,7 @@ FluentAndDerivedMapper::FluentAndDerivedMapper(const FluentGroundAtomFactory& fl
 {
     for (const auto& atom : fluent_atoms)
     {
-        const auto atom_id = atom.get_identifier();
+        const auto atom_id = atom->get_identifier();
         const auto remapped_atom_id = m_num_atoms++;
         m_fluent_remap.at(atom_id) = remapped_atom_id;
         m_is_remapped_fluent.at(atom_id) = true;
@@ -131,7 +132,7 @@ FluentAndDerivedMapper::FluentAndDerivedMapper(const FluentGroundAtomFactory& fl
     }
     for (const auto& atom : derived_atoms)
     {
-        const auto atom_id = atom.get_identifier();
+        const auto atom_id = atom->get_identifier();
         const auto remapped_atom_id = m_num_atoms++;
         m_derived_remap.at(atom_id) = remapped_atom_id;
         m_inverse_remap.at(remapped_atom_id) = atom_id;

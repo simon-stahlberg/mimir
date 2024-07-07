@@ -276,4 +276,7 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
 }
 
 const GroundAxiomList& AxiomEvaluator::get_ground_axioms() const { return m_axioms_by_index; }
+
+size_t AxiomEvaluator::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
+
 }
