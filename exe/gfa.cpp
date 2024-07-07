@@ -24,14 +24,15 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 3)
+    if (argc != 4)
     {
-        std::cout << "Usage: planner_brfs <domain:str> <problems:str>" << std::endl;
+        std::cout << "Usage: planner_brfs <domain:str> <problems:str> <max_num_state:int>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
+    const auto max_num_states = std::atoi(argv[3]);
 
     auto problem_filepaths = std::vector<fs::path> {};
     for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
@@ -40,7 +41,7 @@ int main(int argc, char** argv)
         problem_filepaths.push_back(problem_filepath.path());
     }
 
-    auto gfas = FaithfulAbstraction::create(domain_file_path, problem_filepaths);
+    auto gfas = FaithfulAbstraction::create(domain_file_path, problem_filepaths, true, true, true, false, max_num_states);
 
     size_t num_states = 0;
     size_t num_transitions = 0;

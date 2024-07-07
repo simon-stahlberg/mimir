@@ -819,6 +819,199 @@ void init_pymimir(py::module_& m)
                       std::shared_ptr<ISIWAlgorithmEventHandler>>());
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // Graphs
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    // TupleGraphVertex
+    py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
+        .def("get_identifier", &TupleGraphVertex::get_index)
+        .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
+        .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference);
+
+    // TupleGraph
+    py::class_<TupleGraph>(m, "TupleGraph")  //
+        .def("__str__",
+             [](const TupleGraph& self)
+             {
+                 std::stringstream ss;
+                 ss << self;
+                 return ss.str();
+             })
+        .def("compute_admissible_chain",
+             py::overload_cast<const GroundAtomList<Fluent>&, const GroundAtomList<Derived>&>(&TupleGraph::compute_admissible_chain))
+        .def("compute_admissible_chain", py::overload_cast<const StateList&>(&TupleGraph::compute_admissible_chain))
+        .def("get_state_space", &TupleGraph::get_state_space)
+        .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
+        .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
+        .def("get_root_state", &TupleGraph::get_root_state)
+        .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference)
+        .def("get_forward_successors", &TupleGraph::get_forward_successors, py::return_value_policy::reference)
+        .def("get_backward_successors", &TupleGraph::get_backward_successors, py::return_value_policy::reference)
+        .def("get_vertex_indices_by_distances", &TupleGraph::get_vertex_indices_by_distances, py::return_value_policy::reference)
+        .def("get_states_by_distance", &TupleGraph::get_states_by_distance, py::return_value_policy::reference);
+
+    // TupleGraphFactory
+    py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
+        .def(py::init<std::shared_ptr<StateSpace>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
+        .def("create", &TupleGraphFactory::create, py::return_value_policy::copy)
+        .def("get_state_space", &TupleGraphFactory::get_state_space)
+        .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
+        .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
+
+    // Partitioning
+    py::class_<Partitioning>(m, "Partitioning")
+        .def("get_vertex_index_permutation", &Partitioning::get_vertex_index_permutation, py::return_value_policy::reference)
+        .def("get_partitioning", &Partitioning::get_partitioning, py::return_value_policy::reference)
+        .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference);
+
+    // Certificate
+    py::class_<Certificate>(m, "Certificate")
+        .def(py::init<std::string, ColorList>())
+        .def("__eq__", &Certificate::operator==)
+        .def("__hash__", &Certificate::hash)
+        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference)
+        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference);
+
+    // DenseNautyGraph
+    py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
+        .def(py::init<bool>(), py::arg("is_directed") = false)
+        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
+        .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
+        .def("reset", &nauty_wrapper::DenseGraph::reset);
+
+    // DenseNautyGraphFactory
+    py::class_<nauty_wrapper::DenseGraphFactory>(m, "DenseNautyGraphFactory")  //
+        .def(py::init<>())
+        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_digraph);
+
+    // SparseNautyGraph
+    py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
+        .def(py::init<bool>(), py::arg("is_directed") = false)
+        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
+        .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
+        .def("reset", &nauty_wrapper::SparseGraph::reset);
+
+    // SparseNautyGraphFactory
+    py::class_<nauty_wrapper::SparseGraphFactory>(m, "SparseNautyGraphFactory")  //
+        .def(py::init<>())
+        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph);
+
+    // DigraphEdge
+    py::class_<DigraphEdge>(m, "DigraphEdge")
+        .def("__eq__", &DigraphEdge::operator==)
+        .def("__hash__", &DigraphEdge::hash)
+        .def("get_index", &DigraphEdge::get_index)
+        .def("get_source", &DigraphEdge::get_source)
+        .def("get_target", &DigraphEdge::get_target)
+        .def("get_weight", &DigraphEdge::get_weight);
+
+    // Digraph
+    py::class_<Digraph>(m, "Digraph")  //
+        .def(py::init<bool>(), py::arg("is_directed") = false)
+        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &Digraph::add_edge, py::arg("source"), py::arg("target"), py::arg("weight") = 1.)
+        .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def(
+            "get_targets",
+            [](const Digraph& self, StateIndex source)
+            {
+                auto iterator = self.get_targets(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_sources",
+            [](const Digraph& self, StateIndex target)
+            {
+                auto iterator = self.get_sources(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_edge_indices",
+            [](const Digraph& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_edge_indices(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_edge_indices",
+            [](const Digraph& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_edge_indices(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_edges",
+            [](const Digraph& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_edges(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_edges",
+            [](const Digraph& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_edges(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def("get_num_vertices", &Digraph::get_num_vertices)
+        .def("get_num_edges", &Digraph::get_num_edges)
+        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference);
+
+    // ProblemColorFunction
+    py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
+        .def(py::init<Problem>(), py::arg("problem"))
+        .def("get_color", [](const ProblemColorFunction& self, Object object) -> Color { return self.get_color(object); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Static> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Fluent> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Derived> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Fluent> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color_name", &ProblemColorFunction::get_color_name)
+        .def("get_problem", &ProblemColorFunction::get_problem)
+        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference)
+        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference);
+
+    // ObjectGraph
+    py::class_<ObjectGraph>(m, "ObjectGraph")  //
+        .def("__str__",
+             [](const ObjectGraph& self)
+             {
+                 std::stringstream ss;
+                 ss << self;
+                 return ss.str();
+             })
+        .def(py::init<std::shared_ptr<ProblemColorFunction>>())
+        .def("get_coloring_function", &ObjectGraph::get_coloring_function)
+        .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference)
+        .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference)
+        .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference)
+        .def("get_partitioning", &ObjectGraph::get_partitioning, py::return_value_policy::reference);
+
+    // ObjectGraph
+    py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, bool>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("mark_true_goal_literals") = false)
+        .def("create", &ObjectGraphFactory::create, py::return_value_policy::copy)
+        .def("get_coloring_function", &ObjectGraphFactory::get_coloring_function);
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1419,189 +1612,4 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def("get_num_transitions", &GlobalFaithfulAbstraction::get_num_transitions)
         .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
-
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    // Graphs
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    // TupleGraphVertex
-    py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
-        .def("get_identifier", &TupleGraphVertex::get_index)
-        .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference);
-
-    // TupleGraph
-    py::class_<TupleGraph>(m, "TupleGraph")  //
-        .def("__str__",
-             [](const TupleGraph& self)
-             {
-                 std::stringstream ss;
-                 ss << self;
-                 return ss.str();
-             })
-        .def("compute_admissible_chain",
-             py::overload_cast<const GroundAtomList<Fluent>&, const GroundAtomList<Derived>&>(&TupleGraph::compute_admissible_chain))
-        .def("compute_admissible_chain", py::overload_cast<const StateList&>(&TupleGraph::compute_admissible_chain))
-        .def("get_state_space", &TupleGraph::get_state_space)
-        .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
-        .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
-        .def("get_root_state", &TupleGraph::get_root_state)
-        .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference)
-        .def("get_forward_successors", &TupleGraph::get_forward_successors, py::return_value_policy::reference)
-        .def("get_backward_successors", &TupleGraph::get_backward_successors, py::return_value_policy::reference)
-        .def("get_vertex_indices_by_distances", &TupleGraph::get_vertex_indices_by_distances, py::return_value_policy::reference)
-        .def("get_states_by_distance", &TupleGraph::get_states_by_distance, py::return_value_policy::reference);
-
-    // TupleGraphFactory
-    py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
-        .def(py::init<std::shared_ptr<StateSpace>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
-        .def("create", &TupleGraphFactory::create, py::return_value_policy::copy)
-        .def("get_state_space", &TupleGraphFactory::get_state_space)
-        .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
-        .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
-
-    // Partitioning
-    py::class_<Partitioning>(m, "Partitioning")
-        .def("get_vertex_index_permutation", &Partitioning::get_vertex_index_permutation, py::return_value_policy::reference)
-        .def("get_partitioning", &Partitioning::get_partitioning, py::return_value_policy::reference)
-        .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference);
-
-    // Certificate
-    py::class_<Certificate>(m, "Certificate")
-        .def(py::init<std::string, ColorList>())
-        .def("__eq__", &Certificate::operator==)
-        .def("__hash__", &Certificate::hash)
-        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference)
-        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference);
-
-    // DenseNautyGraph
-    py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
-        .def(py::init<bool>(), py::arg("is_directed") = false)
-        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
-        .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
-        .def("reset", &nauty_wrapper::DenseGraph::reset);
-
-    // DenseNautyGraphFactory
-    py::class_<nauty_wrapper::DenseGraphFactory>(m, "DenseNautyGraphFactory")  //
-        .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_digraph);
-
-    // SparseNautyGraph
-    py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
-        .def(py::init<bool>(), py::arg("is_directed") = false)
-        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
-        .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
-        .def("reset", &nauty_wrapper::SparseGraph::reset);
-
-    // SparseNautyGraphFactory
-    py::class_<nauty_wrapper::SparseGraphFactory>(m, "SparseNautyGraphFactory")  //
-        .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph);
-
-    // DigraphEdge
-    py::class_<DigraphEdge>(m, "DigraphEdge")
-        .def("__eq__", &DigraphEdge::operator==)
-        .def("__hash__", &DigraphEdge::hash)
-        .def("get_index", &DigraphEdge::get_index)
-        .def("get_source", &DigraphEdge::get_source)
-        .def("get_target", &DigraphEdge::get_target)
-        .def("get_weight", &DigraphEdge::get_weight);
-
-    // Digraph
-    py::class_<Digraph>(m, "Digraph")  //
-        .def(py::init<bool>(), py::arg("is_directed") = false)
-        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def("add_edge", &Digraph::add_edge, py::arg("source"), py::arg("target"), py::arg("weight") = 1.)
-        .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def(
-            "get_targets",
-            [](const Digraph& self, StateIndex source)
-            {
-                auto iterator = self.get_targets(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_sources",
-            [](const Digraph& self, StateIndex target)
-            {
-                auto iterator = self.get_sources(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_forward_edge_indices",
-            [](const Digraph& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_edge_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_edge_indices",
-            [](const Digraph& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_edge_indices(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_forward_edges",
-            [](const Digraph& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_edges(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_edges",
-            [](const Digraph& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_edges(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def("get_num_vertices", &Digraph::get_num_vertices)
-        .def("get_num_edges", &Digraph::get_num_edges)
-        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference);
-
-    // ProblemColorFunction
-    py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
-        .def(py::init<Problem>(), py::arg("problem"))
-        .def("get_color", [](const ProblemColorFunction& self, Object object) -> Color { return self.get_color(object); })
-        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Static> atom, int pos) -> Color { return self.get_color(atom, pos); })
-        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Fluent> atom, int pos) -> Color { return self.get_color(atom, pos); })
-        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Derived> atom, int pos) -> Color { return self.get_color(atom, pos); })
-        .def("get_color",
-             [](const ProblemColorFunction& self, State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) -> Color
-             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
-        .def("get_color",
-             [](const ProblemColorFunction& self, State state, GroundLiteral<Fluent> literal, int pos, bool mark_true_goal_literal) -> Color
-             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
-        .def("get_color",
-             [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
-             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
-        .def("get_color_name", &ProblemColorFunction::get_color_name)
-        .def("get_problem", &ProblemColorFunction::get_problem)
-        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference)
-        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference);
-
-    // ObjectGraph
-    py::class_<ObjectGraph>(m, "ObjectGraph")  //
-        .def(py::init<std::shared_ptr<ProblemColorFunction>>())
-        .def("get_coloring_function", &ObjectGraph::get_coloring_function)
-        .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference)
-        .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference)
-        .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference)
-        .def("get_partitioning", &ObjectGraph::get_partitioning, py::return_value_policy::reference);
-
-    // ObjectGraph
-    py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, bool>(),
-             py::arg("problem"),
-             py::arg("pddl_factories"),
-             py::arg("mark_true_goal_literals") = false)
-        .def("create", &ObjectGraphFactory::create, py::return_value_policy::copy);
 }

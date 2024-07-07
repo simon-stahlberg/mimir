@@ -33,7 +33,7 @@ class ObjectGraphFactory;
 class ObjectGraph
 {
 private:
-    std::shared_ptr<ProblemColorFunction> m_coloring_function;
+    std::shared_ptr<const ProblemColorFunction> m_coloring_function;
 
     // Vertex colored graph, uses nauty's graph representation
     Digraph m_digraph;
@@ -47,9 +47,9 @@ private:
     friend class ObjectGraphFactory;
 
 public:
-    ObjectGraph(std::shared_ptr<ProblemColorFunction> coloring_function);
+    ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function);
 
-    const std::shared_ptr<ProblemColorFunction>& get_coloring_function() const;
+    const std::shared_ptr<const ProblemColorFunction>& get_coloring_function() const;
     const Digraph& get_digraph() const;
     const ColorList& get_vertex_colors() const;
     const ColorList& get_sorted_vertex_colors() const;
@@ -63,7 +63,7 @@ private:
     std::shared_ptr<PDDLFactories> m_pddl_factories;
     bool m_mark_true_goal_literals;
 
-    std::shared_ptr<ProblemColorFunction> m_coloring_function;
+    std::shared_ptr<const ProblemColorFunction> m_coloring_function;
 
     ObjectGraph m_object_graph;
 
@@ -84,6 +84,8 @@ public:
 
     /// @brief Create and return a reference to the object graph.
     const ObjectGraph& create(State state);
+
+    const std::shared_ptr<const ProblemColorFunction>& get_coloring_function() const;
 };
 
 /**

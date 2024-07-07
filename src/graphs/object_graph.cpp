@@ -105,9 +105,9 @@ const std::unordered_map<Color, std::string>& ProblemColorFunction::get_color_to
  * ObjectGraph
  */
 
-ObjectGraph::ObjectGraph(std::shared_ptr<ProblemColorFunction> coloring_function) : m_coloring_function(std::move(coloring_function)), m_digraph(false) {}
+ObjectGraph::ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function) : m_coloring_function(std::move(coloring_function)), m_digraph(false) {}
 
-const std::shared_ptr<ProblemColorFunction>& ObjectGraph::get_coloring_function() const { return m_coloring_function; }
+const std::shared_ptr<const ProblemColorFunction>& ObjectGraph::get_coloring_function() const { return m_coloring_function; }
 
 const Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
 
@@ -125,7 +125,7 @@ ObjectGraphFactory::ObjectGraphFactory(Problem problem, std::shared_ptr<PDDLFact
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),
     m_mark_true_goal_literals(mark_true_goal_literals),
-    m_coloring_function(std::make_shared<ProblemColorFunction>(m_problem)),
+    m_coloring_function(std::make_shared<const ProblemColorFunction>(m_problem)),
     m_object_graph(m_coloring_function)
 {
 }
@@ -244,6 +244,8 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
 
     return m_object_graph;
 }
+
+const std::shared_ptr<const ProblemColorFunction>& ObjectGraphFactory::get_coloring_function() const { return m_coloring_function; }
 
 std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 {
