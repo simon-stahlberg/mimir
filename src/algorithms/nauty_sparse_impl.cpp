@@ -18,6 +18,9 @@
 #include "nauty_sparse_impl.hpp"
 
 #include <algorithm>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -78,19 +81,25 @@ SparseGraphImpl::SparseGraphImpl(int num_vertices, bool is_directed) :
     c_(num_vertices),
     is_directed_(is_directed),
     obtained_certificate_(false),
-    m_adj_matrix_()
+    m_adj_matrix_(),
+    canon_graph_repr_(),
+    canon_graph_compressed_repr_()
 {
     allocate_graph(graph_);
     allocate_graph(canon_graph_);
 }
 
-SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other)
+SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
+    n_(other.n_),
+    c_(other.c_),
+    is_directed_(other.is_directed_),
+    obtained_certificate_(other.obtained_certificate_),
+    m_adj_matrix_(other.m_adj_matrix_),
+    canon_graph_repr_(),
+    canon_graph_compressed_repr_()
 {
-    n_ = other.n_;
-    c_ = other.c_;
-    is_directed_ = other.is_directed_;
-    obtained_certificate_ = other.obtained_certificate_;
-    m_adj_matrix_ = other.m_adj_matrix_;
+    canon_graph_repr_.str(other.canon_graph_repr_.str());
+    canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
 
     allocate_graph(graph_);
     allocate_graph(canon_graph_);
@@ -111,6 +120,8 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
         is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
         m_adj_matrix_ = other.m_adj_matrix_;
+        canon_graph_repr_.str(other.canon_graph_repr_.str());
+        canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
 
         allocate_graph(graph_);
         allocate_graph(canon_graph_);
@@ -128,7 +139,9 @@ SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
     obtained_certificate_(other.obtained_certificate_),
     m_adj_matrix_(other.m_adj_matrix_),
     graph_(other.graph_),
-    canon_graph_(other.canon_graph_)
+    canon_graph_(other.canon_graph_),
+    canon_graph_repr_(std::move(other.canon_graph_repr_)),
+    canon_graph_compressed_repr_(std::move(other.canon_graph_compressed_repr_))
 {
     SG_INIT(other.graph_);
     SG_INIT(other.canon_graph_);
@@ -147,6 +160,8 @@ SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
         is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
         m_adj_matrix_ = other.m_adj_matrix_;
+        canon_graph_repr_ = std::move(other.canon_graph_repr_);
+        canon_graph_compressed_repr_ = std::move(other.canon_graph_compressed_repr_);
 
         graph_ = other.graph_;
         SG_INIT(other.graph_);
@@ -231,12 +246,27 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted
     sortlists_sg(&canon_graph_);
 
-    std::ostringstream oss;
-    oss << canon_graph_;
+    // Clear streams
+    canon_graph_repr_.str(std::string());
+    canon_graph_repr_.clear();
+    canon_graph_compressed_repr_.str(std::string());
+    canon_graph_compressed_repr_.clear();
+
+    // Compute conon graph repr.
+    canon_graph_repr_ << canon_graph_;
+
+    // Compress canon graph repr.
+    boost::iostreams::filtering_ostream boost_filtering_ostream;
+    boost_filtering_ostream.push(boost::iostreams::gzip_compressor());
+    boost_filtering_ostream.push(canon_graph_compressed_repr_);
+    boost::iostreams::copy(canon_graph_repr_, boost_filtering_ostream);
+    boost::iostreams::close(boost_filtering_ostream);
+    // We usually see compression ratio ~ 2
+    // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
     obtained_certificate_ = true;
 
-    return oss.str();
+    return canon_graph_compressed_repr_.str();
 }
 
 void SparseGraphImpl::reset(int num_vertices, bool is_directed)

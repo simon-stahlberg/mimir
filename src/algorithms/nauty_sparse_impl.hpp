@@ -22,6 +22,7 @@
 #include <mimir/graphs/partitioning.hpp>
 #include <nausparse.h>
 #include <nauty.h>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -34,16 +35,22 @@ private:
     int n_;
     // vertex capacity
     int c_;
-    // Whether the graph is directed.
+    // Whether the graph is directed
     bool is_directed_;
-    // Whether a certificate was obtained from the graph.
+    // Whether a certificate was obtained from the graph
     bool obtained_certificate_;
 
     // Track existing edges to avoid duplicates
     std::vector<bool> m_adj_matrix_;
 
+    // The input graph
     sparsegraph graph_;
+    // The canonical graph
     sparsegraph canon_graph_;
+
+    // Output streams
+    std::stringstream canon_graph_repr_;
+    std::stringstream canon_graph_compressed_repr_;
 
     void copy_graph_data(const sparsegraph& in_graph, sparsegraph& out_graph) const;
 

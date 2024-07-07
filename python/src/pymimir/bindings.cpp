@@ -865,7 +865,7 @@ void init_pymimir(py::module_& m)
         .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference);
 
     // Certificate
-    py::class_<Certificate>(m, "Certificate")
+    py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
         .def(py::init<std::string, ColorList>())
         .def("__eq__", &Certificate::operator==)
         .def("__hash__", &Certificate::hash)

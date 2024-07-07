@@ -141,7 +141,8 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                                                              timeout_ms,
                                                              num_threads);
 
-    auto certificate_to_global_state = std::unordered_map<Certificate, GlobalFaithfulAbstractState, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
+    auto certificate_to_global_state =
+        std::unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>> {};
 
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();

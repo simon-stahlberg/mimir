@@ -21,6 +21,7 @@
 // Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
 #include <mimir/graphs/partitioning.hpp>
 #include <nauty.h>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -40,8 +41,14 @@ private:
     // Whether a certificate was obtained from the graph.
     bool obtained_certificate_;
 
+    // The input graph
     graph* graph_;
+    // The canonical graph
     graph* canon_graph_;
+
+    // Output streams
+    std::stringstream canon_graph_repr_;
+    std::stringstream canon_graph_compressed_repr_;
 
     void allocate_graph(graph** out_graph);
     void deallocate_graph(graph* out_graph);

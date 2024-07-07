@@ -17,6 +17,9 @@
 
 #include "nauty_dense_impl.hpp"
 
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -56,8 +59,17 @@ DenseGraphImpl::DenseGraphImpl(int num_vertices, bool is_directed) :
     allocate_graph(&canon_graph_);
 }
 
-DenseGraphImpl::DenseGraphImpl(const DenseGraphImpl& other) : n_(other.n_), m_(other.m_), graph_(nullptr), canon_graph_(nullptr)
+DenseGraphImpl::DenseGraphImpl(const DenseGraphImpl& other) :
+    n_(other.n_),
+    m_(other.m_),
+    graph_(nullptr),
+    canon_graph_(nullptr),
+    canon_graph_repr_(),
+    canon_graph_compressed_repr_()
 {
+    canon_graph_repr_.str(other.canon_graph_repr_.str());
+    canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
+
     allocate_graph(&graph_);
     allocate_graph(&canon_graph_);
     std::copy(other.graph_, other.graph_ + m_ * n_, graph_);
@@ -76,6 +88,8 @@ DenseGraphImpl& DenseGraphImpl::operator=(const DenseGraphImpl& other)
         m_ = other.m_;
         is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
+        canon_graph_repr_.str(other.canon_graph_repr_.str());
+        canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
 
         allocate_graph(&graph_);
         allocate_graph(&canon_graph_);
@@ -92,7 +106,10 @@ DenseGraphImpl::DenseGraphImpl(DenseGraphImpl&& other) noexcept :
     m_(other.m_),
     is_directed_(other.is_directed_),
     obtained_certificate_(other.obtained_certificate_),
-    graph_(other.graph_)
+    graph_(other.graph_),
+    canon_graph_(other.canon_graph_),
+    canon_graph_repr_(std::move(other.canon_graph_repr_)),
+    canon_graph_compressed_repr_(std::move(other.canon_graph_compressed_repr_))
 {
     other.graph_ = nullptr;
     other.canon_graph_ = nullptr;
@@ -112,6 +129,9 @@ DenseGraphImpl& DenseGraphImpl::operator=(DenseGraphImpl&& other) noexcept
         obtained_certificate_ = other.obtained_certificate_;
         graph_ = other.graph_;
         canon_graph_ = other.canon_graph_;
+        canon_graph_repr_ = std::move(other.canon_graph_repr_);
+        canon_graph_compressed_repr_ = std::move(other.canon_graph_compressed_repr_);
+
         other.graph_ = nullptr;
         other.canon_graph_ = nullptr;
     }
@@ -168,15 +188,30 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
 
     densenauty(graph_, lab, ptn, orbits, &options, &stats, m_, n_, canon_graph_);
 
-    std::ostringstream oss;
+    // Clear streams
+    canon_graph_repr_.str(std::string());
+    canon_graph_repr_.clear();
+    canon_graph_compressed_repr_.str(std::string());
+    canon_graph_compressed_repr_.clear();
+
+    // Compute conon graph repr.
     for (int i = 0; i < n_ * m_; ++i)
     {
-        oss << canon_graph_[i] << " ";
+        canon_graph_repr_ << canon_graph_[i] << " ";
     }
+
+    // Compress canon graph repr.
+    boost::iostreams::filtering_ostream boost_filtering_ostream;
+    boost_filtering_ostream.push(boost::iostreams::gzip_compressor());
+    boost_filtering_ostream.push(canon_graph_compressed_repr_);
+    boost::iostreams::copy(canon_graph_repr_, boost_filtering_ostream);
+    boost::iostreams::close(boost_filtering_ostream);
+    // We usually see compression ratio ~ 2
+    // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
     obtained_certificate_ = true;
 
-    return oss.str();
+    return canon_graph_compressed_repr_.str();
 }
 
 void DenseGraphImpl::reset(int num_vertices, bool is_directed)

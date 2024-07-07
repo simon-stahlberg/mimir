@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 
+#include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/abstraction_interface.hpp"
 #include "mimir/datasets/state_space.hpp"
@@ -45,10 +46,10 @@ class FaithfulAbstractState
 private:
     StateIndex m_index;
     std::span<State> m_states;
-    Certificate m_certificate;
+    std::shared_ptr<const Certificate> m_certificate;
 
 public:
-    FaithfulAbstractState(StateIndex index, std::span<State> states, Certificate certificate);
+    FaithfulAbstractState(StateIndex index, std::span<State> states, std::shared_ptr<const Certificate> certificate);
 
     bool operator==(const FaithfulAbstractState& other) const;
     size_t hash() const;
@@ -56,13 +57,13 @@ public:
     StateIndex get_index() const;
     std::span<State> get_states() const;
     State get_representative_state() const;
-    const Certificate& get_certificate() const;
+    const std::shared_ptr<const Certificate>& get_certificate() const;
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
 template<typename T>
 using FaithfulAbstractStateMap = std::unordered_map<FaithfulAbstractState, T, loki::Hash<FaithfulAbstractState>, loki::EqualTo<FaithfulAbstractState>>;
-using CertificateToStateIndexMap = std::unordered_map<Certificate, StateIndex, loki::Hash<Certificate>, loki::EqualTo<Certificate>>;
+using CertificateToStateIndexMap = std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>>;
 
 /// @brief FaithfulAbstraction implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf

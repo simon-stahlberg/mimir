@@ -15,35 +15,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_CONCEPTS_HPP_
-#define MIMIR_COMMON_CONCEPTS_HPP_
+#ifndef MIMIR_COMMON_HASH_HPP_
+#define MIMIR_COMMON_HASH_HPP_
 
-#include <concepts>
-#include <cstddef>
-#include <type_traits>
+#include "mimir/common/concepts.hpp"
+
+#include <loki/loki.hpp>
 
 namespace mimir
 {
-
-template<typename T>
-struct dependent_false : std::false_type
+template<IsHashable T>
+struct SharedPtrHash
 {
+    std::size_t operator()(const std::shared_ptr<T>& ptr) const { return ptr->hash(); }
+
+    std::size_t operator()(const std::shared_ptr<const T>& ptr) const { return ptr->hash(); }
 };
 
-template<typename T>
-concept IsHashable = requires(T a) {
-    {
-        a.hash()
-    } -> std::same_as<size_t>;
-};
+template<IsComparable T>
+struct SharedPtrEqual
+{
+    bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const { return *lhs == *rhs; }
 
-template<typename T>
-concept IsComparable = requires(T a, T b) {
-    {
-        a == b
-    } -> std::same_as<bool>;
+    bool operator()(const std::shared_ptr<const T>& lhs, const std::shared_ptr<const T>& rhs) const { return *lhs == *rhs; }
 };
-
 }
 
 #endif

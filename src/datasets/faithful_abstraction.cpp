@@ -33,10 +33,10 @@ namespace mimir
  * FaithfulAbstractState
  */
 
-FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<State> states, Certificate certificate) :
+FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<State> states, std::shared_ptr<const Certificate> certificate) :
     m_index(index),
     m_states(states),
-    m_certificate(certificate)
+    m_certificate(std::move(certificate))
 {
 }
 
@@ -66,7 +66,7 @@ State FaithfulAbstractState::get_representative_state() const
     return m_states.front();
 }
 
-const Certificate& FaithfulAbstractState::get_certificate() const { return m_certificate; }
+const std::shared_ptr<const Certificate>& FaithfulAbstractState::get_certificate() const { return m_certificate; }
 
 /**
  * FaithfulAbstraction
@@ -171,10 +171,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
 
     /* Initialize for initial state. */
     const auto& object_graph = object_graph_factory.create(initial_state);
-    auto certificate = Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
-                                   object_graph.get_sorted_vertex_colors());
+    auto certificate = std::make_shared<const Certificate>(
+        nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
+        object_graph.get_sorted_vertex_colors());
     const auto abstract_initial_state_index = 0;
-    abstract_states_by_certificate.emplace(certificate, abstract_initial_state_index);
+    abstract_states_by_certificate.emplace(std::move(certificate), abstract_initial_state_index);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_index);
 
     /* Initialize search. */
@@ -215,9 +216,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
 
             // Compute certificate of successor state
             const auto& object_graph = object_graph_factory.create(successor_state);
-            auto certificate =
-                Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
-                            object_graph.get_sorted_vertex_colors());
+            auto certificate = std::make_shared<const Certificate>(
+                nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
+                object_graph.get_sorted_vertex_colors());
             const auto it = abstract_states_by_certificate.find(certificate);
 
             // Regenerate abstract state
@@ -232,7 +233,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
             {
                 /* Generate new abstract state and add concrete state to abstraction mapping.  */
                 const auto abstract_successor_state_index = next_abstract_state_index++;
-                abstract_states_by_certificate.emplace(certificate, abstract_successor_state_index);
+                abstract_states_by_certificate.emplace(std::move(certificate), abstract_successor_state_index);
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
                 if (next_abstract_state_index >= max_num_states)
