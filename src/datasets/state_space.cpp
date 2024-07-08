@@ -84,14 +84,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
                                              uint32_t max_num_states,
                                              uint32_t timeout_ms)
 {
-    return StateSpace::create(parser->get_problem(),
-                              std::move(parser),
-                              std::move(aag),
-                              std::move(ssg),
-                              use_unit_cost_one,
-                              remove_if_unsolvable,
-                              max_num_states,
-                              timeout_ms);
+    const auto problem = parser->get_problem();
+    return StateSpace::create(problem, std::move(parser), std::move(aag), std::move(ssg), use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
 }
 
 std::optional<StateSpace> StateSpace::create(Problem problem,
