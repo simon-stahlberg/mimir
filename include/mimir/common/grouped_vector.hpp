@@ -92,9 +92,19 @@ private:
     }
 
 public:
-    template<typename GroupComparator, typename GroupRetriever>
-        requires IsGroupBoundaryChecker<GroupComparator, T> && IsGroupIndexRetriever<GroupRetriever, T>
-    static IndexGroupedVector<T> create(std::vector<T> vec, size_t num_groups, GroupComparator group_boundary_checker, GroupRetriever group_index_retriever)
+    /// @brief This implementation creates a new group when the boundary checker returns true,
+    /// uses the group retriever to find the index of the group, and adds empty suffix groups.
+    /// @tparam GroupBoundaryChecker
+    /// @tparam GroupIndexRetriever
+    /// @param vec
+    /// @param num_groups
+    /// @param group_boundary_checker
+    /// @param group_index_retriever
+    /// @return
+    template<typename GroupBoundaryChecker, typename GroupIndexRetriever>
+        requires IsGroupBoundaryChecker<GroupBoundaryChecker, T> && IsGroupIndexRetriever<GroupIndexRetriever, T>
+    static IndexGroupedVector<T>
+    create(std::vector<T> vec, size_t num_groups, GroupBoundaryChecker group_boundary_checker, GroupIndexRetriever group_index_retriever)
     {
         auto groups_begin = std::vector<size_t> {};
 
@@ -131,6 +141,73 @@ public:
         return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
     }
 
+    /// @brief This implementation creates a new group when the boundary checker returns true
+    /// and uses the group retriever to find the index of the group.
+    /// @tparam GroupBoundaryChecker
+    /// @tparam GroupIndexRetriever
+    /// @param vec
+    /// @param group_boundary_checker
+    /// @param group_index_retriever
+    /// @return
+    template<typename GroupBoundaryChecker, typename GroupIndexRetriever>
+        requires IsGroupBoundaryChecker<GroupBoundaryChecker, T> && IsGroupIndexRetriever<GroupIndexRetriever, T>
+    static IndexGroupedVector<T> create(std::vector<T> vec, GroupBoundaryChecker group_boundary_checker, GroupIndexRetriever group_index_retriever)
+    {
+        auto groups_begin = std::vector<size_t> {};
+
+        // Write begin of first group.
+        groups_begin.push_back(0);
+
+        for (size_t i = 1; i < vec.size(); ++i)
+        {
+            const auto cur_group = groups_begin.size() - 1;
+            if (cur_group > group_index_retriever(vec[i]))
+            {
+                throw std::logic_error("IndexGroupedVector::create: Got element of finished group. Did you forget to sort the input vector?");
+            }
+
+            if (group_boundary_checker(vec[i - 1], vec[i]))
+            {
+                // Write begin of new group.
+                groups_begin.push_back(i);
+            }
+        }
+
+        // Write begin of remaining groups + end of last group.
+        groups_begin.push_back(vec.size());
+
+        return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
+    }
+
+    /// @brief This implementation adds a new group whenever the boundary checker returns true.
+    /// @tparam GroupBoundaryChecker
+    /// @param vec
+    /// @param group_boundary_checker
+    /// @return
+    template<typename GroupBoundaryChecker>
+        requires IsGroupBoundaryChecker<GroupBoundaryChecker, T>
+    static IndexGroupedVector<T> create(std::vector<T> vec, GroupBoundaryChecker group_boundary_checker)
+    {
+        auto groups_begin = std::vector<size_t> {};
+
+        // Write begin of first group.
+        groups_begin.push_back(0);
+
+        for (size_t i = 1; i < vec.size(); ++i)
+        {
+            if (group_boundary_checker(vec[i - 1], vec[i]))
+            {
+                // Write begin of new group.
+                groups_begin.push_back(i);
+            }
+        }
+
+        // Write begin of remaining groups + end of last group.
+        groups_begin.push_back(vec.size());
+
+        return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
+    }
+
     std::span<const T> get_group(size_t pos) const
     {
         return std::span<const T>(  //
@@ -140,6 +217,7 @@ public:
 
     const std::vector<T>& get_vector() const { return m_vec; }
     const std::vector<size_t>& get_groups_begin() const { return m_groups_begin; }
+    size_t get_num_groups() const { return m_groups_begin.size() - 1; }
 };
 
 }
