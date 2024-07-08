@@ -168,7 +168,6 @@ public:
 
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
-    const BeginIndexList& get_transitions_begin_by_source() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const;
     BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const;

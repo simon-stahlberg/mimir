@@ -175,15 +175,11 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
                    [&transition_index](const auto& transition)
                    { return Transition(transition_index++, transition.get_source_state(), transition.get_target_state(), transition.get_creating_action()); });
 
-    /* Group transitions by source, keep sorting by index for correct retrieval since transitions were already sorted before. */
-    auto transitions_sort_comparator = [](const Transition& l, const Transition& r) { return l.get_index() < r.get_index(); };
-    auto transitions_group_comparator = transitions_sort_comparator;
-    auto transitions_index_retriever = [](const Transition& e) { return static_cast<size_t>(e.get_source_state()); };
-    auto grouped_transitions = IndexGroupedVector<Transition>::create(std::move(transitions),
-                                                                      states.size(),
-                                                                      transitions_sort_comparator,
-                                                                      transitions_group_comparator,
-                                                                      transitions_index_retriever);
+    /* Group transitions by source. */
+    auto transitions_group_boundary_checker = [](const Transition& l, const Transition& r) { return l.get_source_state() != r.get_source_state(); };
+    auto transitions_group_index_retriever = [](const Transition& e) { return static_cast<size_t>(e.get_source_state()); };
+    auto grouped_transitions =
+        IndexGroupedVector<Transition>::create(std::move(transitions), states.size(), transitions_group_boundary_checker, transitions_group_index_retriever);
 
     return StateSpace(problem,
                       use_unit_cost_one,

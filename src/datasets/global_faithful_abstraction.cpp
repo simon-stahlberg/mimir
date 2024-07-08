@@ -291,11 +291,6 @@ size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return
 /* Transitions */
 const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_transitions(); }
 
-const BeginIndexList& GlobalFaithfulAbstraction::get_transitions_begin_by_source() const
-{
-    return m_abstractions->at(m_index).get_transitions_begin_by_source();
-}
-
 TransitionCost GlobalFaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
     return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_transition_cost(transition);

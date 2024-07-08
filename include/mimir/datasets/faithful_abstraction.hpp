@@ -91,8 +91,7 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Transitions */
-    AbstractTransitionList m_transitions;
-    BeginIndexList m_transitions_begin_by_source;
+    IndexGroupedVector<AbstractTransition> m_transitions;
     // Persistent and sorted to store slices in the abstract transitions.
     std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
 
@@ -115,8 +114,7 @@ private:
                         StateIndex initial_state,
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
-                        AbstractTransitionList transitions,
-                        BeginIndexList transitions_begin_by_src,
+                        IndexGroupedVector<AbstractTransition> transitions,
                         std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                         std::vector<double> goal_distances);
 
@@ -233,7 +231,6 @@ public:
 
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
-    const BeginIndexList& get_transitions_begin_by_source() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const;
     BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const;
