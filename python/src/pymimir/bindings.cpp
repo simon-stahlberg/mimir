@@ -139,27 +139,27 @@ void init_pymimir(py::module_& m)
     py::class_<RequirementsImpl>(m, "Requirements")  // s
         .def("__str__", py::overload_cast<>(&loki::Base<RequirementsImpl>::str, py::const_))
         .def("get_identifier", &RequirementsImpl::get_identifier)
-        .def("get_requirements", &RequirementsImpl::get_requirements, py::return_value_policy::reference);
+        .def("get_requirements", &RequirementsImpl::get_requirements, py::return_value_policy::reference_internal);
 
     py::class_<ObjectImpl>(m, "Object")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ObjectImpl>::str, py::const_))
         .def("get_identifier", &ObjectImpl::get_identifier)
-        .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference);
+        .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference_internal);
 
     py::class_<VariableImpl>(m, "Variable")  //
         .def("__str__", py::overload_cast<>(&loki::Base<VariableImpl>::str, py::const_))
         .def("get_identifier", &VariableImpl::get_identifier)
-        .def("get_name", &VariableImpl::get_name, py::return_value_policy::reference);
+        .def("get_name", &VariableImpl::get_name, py::return_value_policy::reference_internal);
 
     py::class_<TermObjectImpl>(m, "TermObject")  //
         .def("__str__", py::overload_cast<>(&loki::Base<TermObjectImpl>::str, py::const_))
         .def("get_identifier", &TermObjectImpl::get_identifier)
-        .def("get_object", &TermObjectImpl::get_object, py::return_value_policy::reference);
+        .def("get_object", &TermObjectImpl::get_object, py::return_value_policy::reference_internal);
 
     py::class_<TermVariableImpl>(m, "TermVariable")  //
         .def("__str__", py::overload_cast<>(&loki::Base<TermVariableImpl>::str, py::const_))
         .def("get_identifier", &TermVariableImpl::get_identifier)
-        .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference);
+        .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference_internal);
 
     py::class_<TermVariant>(m, "Term")  //
         .def("get", [](const TermVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.term); });
@@ -167,136 +167,136 @@ void init_pymimir(py::module_& m)
     py::class_<PredicateImpl<Static>>(m, "StaticPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Static>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Static>::get_identifier)
-        .def("get_name", &PredicateImpl<Static>::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl<Static>::get_parameters, py::return_value_policy::reference)
+        .def("get_name", &PredicateImpl<Static>::get_name, py::return_value_policy::reference_internal)
+        .def("get_parameters", &PredicateImpl<Static>::get_parameters, py::return_value_policy::reference_internal)
         .def("get_arity", &PredicateImpl<Static>::get_arity);
 
     py::class_<PredicateImpl<Fluent>>(m, "FluentPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Fluent>::get_identifier)
-        .def("get_name", &PredicateImpl<Fluent>::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl<Fluent>::get_parameters, py::return_value_policy::reference)
+        .def("get_name", &PredicateImpl<Fluent>::get_name, py::return_value_policy::reference_internal)
+        .def("get_parameters", &PredicateImpl<Fluent>::get_parameters, py::return_value_policy::reference_internal)
         .def("get_arity", &PredicateImpl<Fluent>::get_arity);
 
     py::class_<PredicateImpl<Derived>>(m, "DerivedPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Derived>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Derived>::get_identifier)
-        .def("get_name", &PredicateImpl<Derived>::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &PredicateImpl<Derived>::get_parameters, py::return_value_policy::reference)
+        .def("get_name", &PredicateImpl<Derived>::get_name, py::return_value_policy::reference_internal)
+        .def("get_parameters", &PredicateImpl<Derived>::get_parameters, py::return_value_policy::reference_internal)
         .def("get_arity", &PredicateImpl<Derived>::get_arity);
 
     py::class_<AtomImpl<Static>>(m, "StaticAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Static>>::str, py::const_))
         .def("get_identifier", &AtomImpl<Static>::get_identifier)
-        .def("get_predicate", &AtomImpl<Static>::get_predicate, py::return_value_policy::reference)
+        .def("get_predicate", &AtomImpl<Static>::get_predicate, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
             [](const AtomImpl<Static>& atom) { return to_term_variant_list(atom.get_terms()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<AtomImpl<Fluent>>(m, "FluentAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &AtomImpl<Fluent>::get_identifier)
-        .def("get_predicate", &AtomImpl<Fluent>::get_predicate, py::return_value_policy::reference)
+        .def("get_predicate", &AtomImpl<Fluent>::get_predicate, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
             [](const AtomImpl<Fluent>& atom) { return to_term_variant_list(atom.get_terms()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<AtomImpl<Derived>>(m, "DerivedAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Derived>>::str, py::const_))
         .def("get_identifier", &AtomImpl<Derived>::get_identifier)
-        .def("get_predicate", &AtomImpl<Derived>::get_predicate, py::return_value_policy::reference)
+        .def("get_predicate", &AtomImpl<Derived>::get_predicate, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
             [](const AtomImpl<Derived>& atom) { return to_term_variant_list(atom.get_terms()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<FunctionSkeletonImpl>(m, "FunctionSkeleton")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionSkeletonImpl>::str, py::const_))
         .def("get_identifier", &FunctionSkeletonImpl::get_identifier)
-        .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::return_value_policy::reference);
+        .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference_internal)
+        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::return_value_policy::reference_internal);
 
     py::class_<FunctionImpl>(m, "Function")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionImpl>::str, py::const_))
         .def("get_identifier", &FunctionImpl::get_identifier)
-        .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference)
+        .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
         .def("get_terms", [](const FunctionImpl& function) { return to_term_variant_list(function.get_terms()); });
 
     py::class_<GroundFunctionImpl>(m, "GroundFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionImpl>::str, py::const_))
         .def("get_identifier", &GroundFunctionImpl::get_identifier)
-        .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference)
-        .def("get_objects", &GroundFunctionImpl::get_objects, py::return_value_policy::reference);
+        .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
+        .def("get_objects", &GroundFunctionImpl::get_objects, py::return_value_policy::reference_internal);
 
     py::class_<GroundAtomImpl<Static>>(m, "StaticGroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Static>>::str, py::const_))
         .def("get_identifier", &GroundAtomImpl<Static>::get_identifier)
         .def("get_arity", &GroundAtomImpl<Static>::get_arity)
-        .def("get_predicate", &GroundAtomImpl<Static>::get_predicate, py::return_value_policy::reference)
-        .def("get_objects", &GroundAtomImpl<Static>::get_objects, py::return_value_policy::reference);
+        .def("get_predicate", &GroundAtomImpl<Static>::get_predicate, py::return_value_policy::reference_internal)
+        .def("get_objects", &GroundAtomImpl<Static>::get_objects, py::return_value_policy::reference_internal);
 
     py::class_<GroundAtomImpl<Fluent>>(m, "FluentGroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &GroundAtomImpl<Fluent>::get_identifier)
         .def("get_arity", &GroundAtomImpl<Fluent>::get_arity)
-        .def("get_predicate", &GroundAtomImpl<Fluent>::get_predicate, py::return_value_policy::reference)
-        .def("get_objects", &GroundAtomImpl<Fluent>::get_objects, py::return_value_policy::reference);
+        .def("get_predicate", &GroundAtomImpl<Fluent>::get_predicate, py::return_value_policy::reference_internal)
+        .def("get_objects", &GroundAtomImpl<Fluent>::get_objects, py::return_value_policy::reference_internal);
 
     py::class_<GroundAtomImpl<Derived>>(m, "DerivedGroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Derived>>::str, py::const_))
         .def("get_identifier", &GroundAtomImpl<Derived>::get_identifier)
         .def("get_arity", &GroundAtomImpl<Derived>::get_arity)
-        .def("get_predicate", &GroundAtomImpl<Derived>::get_predicate, py::return_value_policy::reference)
-        .def("get_objects", &GroundAtomImpl<Derived>::get_objects, py::return_value_policy::reference);
+        .def("get_predicate", &GroundAtomImpl<Derived>::get_predicate, py::return_value_policy::reference_internal)
+        .def("get_objects", &GroundAtomImpl<Derived>::get_objects, py::return_value_policy::reference_internal);
 
     py::class_<GroundLiteralImpl<Static>>(m, "StaticGroundLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Static>>::str, py::const_))
         .def("get_identifier", &GroundLiteralImpl<Static>::get_identifier)
-        .def("get_atom", &GroundLiteralImpl<Static>::get_atom, py::return_value_policy::reference)
+        .def("get_atom", &GroundLiteralImpl<Static>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &GroundLiteralImpl<Static>::is_negated);
 
     py::class_<GroundLiteralImpl<Fluent>>(m, "FluentGroundLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &GroundLiteralImpl<Fluent>::get_identifier)
-        .def("get_atom", &GroundLiteralImpl<Fluent>::get_atom, py::return_value_policy::reference)
+        .def("get_atom", &GroundLiteralImpl<Fluent>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &GroundLiteralImpl<Fluent>::is_negated);
 
     py::class_<GroundLiteralImpl<Derived>>(m, "DerivedGroundLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Derived>>::str, py::const_))
         .def("get_identifier", &GroundLiteralImpl<Derived>::get_identifier)
-        .def("get_atom", &GroundLiteralImpl<Derived>::get_atom, py::return_value_policy::reference)
+        .def("get_atom", &GroundLiteralImpl<Derived>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &GroundLiteralImpl<Derived>::is_negated);
 
     py::class_<LiteralImpl<Static>>(m, "StaticLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Static>>::str, py::const_))
         .def("get_identifier", &LiteralImpl<Static>::get_identifier)
-        .def("get_atom", &LiteralImpl<Static>::get_atom, py::return_value_policy::reference)
+        .def("get_atom", &LiteralImpl<Static>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &LiteralImpl<Static>::is_negated);
 
     py::class_<LiteralImpl<Fluent>>(m, "FluentLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &LiteralImpl<Fluent>::get_identifier)
-        .def("get_atom", &LiteralImpl<Fluent>::get_atom, py::return_value_policy::reference)
+        .def("get_atom", &LiteralImpl<Fluent>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &LiteralImpl<Fluent>::is_negated);
 
     py::class_<LiteralImpl<Derived>>(m, "DerivedLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Derived>>::str, py::const_))
         .def("get_identifier", &LiteralImpl<Derived>::get_identifier)
-        .def("get_atom", &LiteralImpl<Derived>::get_atom, py::return_value_policy::reference)
+        .def("get_atom", &LiteralImpl<Derived>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &LiteralImpl<Derived>::is_negated);
 
     py::class_<NumericFluentImpl>(m, "NumericFluent")  //
         .def("__str__", py::overload_cast<>(&loki::Base<NumericFluentImpl>::str, py::const_))
         .def("get_identifier", &NumericFluentImpl::get_identifier)
-        .def("get_function", &NumericFluentImpl::get_function, py::return_value_policy::reference)
+        .def("get_function", &NumericFluentImpl::get_function, py::return_value_policy::reference_internal)
         .def("get_number", &NumericFluentImpl::get_number);
 
     py::class_<EffectSimpleImpl>(m, "SimpleEffect")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectSimpleImpl>::str, py::const_))
         .def("get_identifier", &EffectSimpleImpl::get_identifier)
-        .def("get_effect", &EffectSimpleImpl::get_effect, py::return_value_policy::reference);
+        .def("get_effect", &EffectSimpleImpl::get_effect, py::return_value_policy::reference_internal);
 
     py::class_<EffectConditionalImpl>(m, "ConditionalEffect")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalImpl>::str, py::const_))
@@ -304,41 +304,41 @@ void init_pymimir(py::module_& m)
         .def(
             "get_static_conditions",
             [](const EffectConditionalImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_fluent_conditions",
             [](const EffectConditionalImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_derived_conditions",
             [](const EffectConditionalImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference)
-        .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference);
+            py::return_value_policy::reference_internal)
+        .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionVariant>(m, "FunctionExpression")  //
         .def(
             "get",
             [](const FunctionExpressionVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.function_expression); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
     ;
 
     py::class_<EffectUniversalImpl>(m, "UniversalEffect")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectUniversalImpl>::str, py::const_))
         .def("get_identifier", &EffectUniversalImpl::get_identifier)
-        .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference)
+        .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference_internal)
         .def(
             "get_static_conditions",
             [](const EffectUniversalImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_fluent_conditions",
             [](const EffectUniversalImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_derived_conditions",
             [](const EffectUniversalImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference)
-        .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference);
+            py::return_value_policy::reference_internal)
+        .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionNumberImpl>::str, py::const_))
@@ -353,12 +353,12 @@ void init_pymimir(py::module_& m)
             "get_left_function_expression",
             [](const FunctionExpressionBinaryOperatorImpl& function_expression)
             { return FunctionExpressionVariant(function_expression.get_left_function_expression()); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_right_function_expression",
             [](const FunctionExpressionBinaryOperatorImpl& function_expression)
             { return FunctionExpressionVariant(function_expression.get_right_function_expression()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionMultiOperatorImpl>(m, "FunctionExpressionMultiOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMultiOperatorImpl>::str, py::const_))
@@ -368,7 +368,7 @@ void init_pymimir(py::module_& m)
             "get_function_expressions",
             [](const FunctionExpressionMultiOperatorImpl& function_expression)
             { return to_function_expression_variant_list(function_expression.get_function_expressions()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionMinusImpl>(m, "FunctionExpressionMinus")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMinusImpl>::str, py::const_))
@@ -380,13 +380,13 @@ void init_pymimir(py::module_& m)
     py::class_<FunctionExpressionFunctionImpl>(m, "FunctionExpressionFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionFunctionImpl>::str, py::const_))
         .def("get_identifier", &FunctionExpressionFunctionImpl::get_identifier)
-        .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference);
+        .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionVariant>(m, "GroundFunctionExpression")  //
         .def(
             "get",
             [](const GroundFunctionExpressionVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.function_expression); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
     ;
 
     py::class_<GroundFunctionExpressionNumberImpl>(m, "GroundFunctionExpressionNumber")  //
@@ -402,12 +402,12 @@ void init_pymimir(py::module_& m)
             "get_left_function_expression",
             [](const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
             { return GroundFunctionExpressionVariant(function_expression.get_left_function_expression()); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_right_function_expression",
             [](const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
             { return GroundFunctionExpressionVariant(function_expression.get_right_function_expression()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionMultiOperatorImpl>(m, "GroundFunctionExpressionMultiOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionMultiOperatorImpl>::str, py::const_))
@@ -417,7 +417,7 @@ void init_pymimir(py::module_& m)
             "get_function_expressions",
             [](const GroundFunctionExpressionMultiOperatorImpl& function_expression)
             { return to_ground_function_expression_variant_list(function_expression.get_function_expressions()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionMinusImpl>(m, "GroundFunctionExpressionMinus")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionMinusImpl>::str, py::const_))
@@ -426,58 +426,58 @@ void init_pymimir(py::module_& m)
             "get_function_expression",
             [](const GroundFunctionExpressionMinusImpl& function_expression)
             { return GroundFunctionExpressionVariant(function_expression.get_function_expression()); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
     ;
 
     py::class_<GroundFunctionExpressionFunctionImpl>(m, "GroundFunctionExpressionFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionFunctionImpl>::str, py::const_))
         .def("get_identifier", &GroundFunctionExpressionFunctionImpl::get_identifier)
-        .def("get_function", &GroundFunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference);
+        .def("get_function", &GroundFunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
     py::class_<OptimizationMetricImpl>(m, "OptimizationMetric")  //
         .def("__str__", py::overload_cast<>(&loki::Base<OptimizationMetricImpl>::str, py::const_))
         .def("get_identifier", &OptimizationMetricImpl::get_identifier)
         .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return GroundFunctionExpressionVariant(metric.get_function_expression()); })
-        .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference);
+        .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
     py::class_<ActionImpl>(m, "Action")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ActionImpl>::str, py::const_))
         .def("get_identifier", &ActionImpl::get_identifier)
-        .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference)
-        .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference)
+        .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference_internal)
+        .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference_internal)
         .def(
             "get_static_conditions",
             [](const ActionImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_fluent_conditions",
             [](const ActionImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_derived_conditions",
             [](const ActionImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference)
-        .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference)
-        .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference)
-        .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
+        .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference_internal)
+        .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference_internal)
+        .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference_internal)
         .def("get_arity", &ActionImpl::get_arity);
 
     py::class_<AxiomImpl>(m, "Axiom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
         .def("get_identifier", &AxiomImpl::get_identifier)
-        .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference)
+        .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference_internal)
         .def(
             "get_static_conditions",
             [](const AxiomImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_fluent_conditions",
             [](const AxiomImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_derived_conditions",
             [](const AxiomImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def("get_arity", &AxiomImpl::get_arity);
 
     py::class_<DomainImpl>(m, "Domain")  //
@@ -485,85 +485,85 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &DomainImpl::get_identifier)
         .def("get_filepath",
              [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; })
-        .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference)
-        .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference)
+        .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference_internal)
+        .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference_internal)
         .def(
             "get_static_predicates",
             [](const DomainImpl& self) { return self.get_predicates<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_fluent_predicates",
             [](const DomainImpl& self) { return self.get_predicates<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_derived_predicates",
             [](const DomainImpl& self) { return self.get_predicates<Derived>(); },
-            py::return_value_policy::reference)
-        .def("get_functions", &DomainImpl::get_functions, py::return_value_policy::reference)
-        .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference)
-        .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
+        .def("get_functions", &DomainImpl::get_functions, py::return_value_policy::reference_internal)
+        .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference_internal)
+        .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference_internal)
         .def(
             "get_name_to_static_predicate",
             [](const DomainImpl& self) { return self.get_name_to_predicate<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_name_to_fluent_predicate",
             [](const DomainImpl& self) { return self.get_name_to_predicate<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_name_to_derived_predicate",
             [](const DomainImpl& self) { return self.get_name_to_predicate<Derived>(); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<ProblemImpl>(m, "Problem")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ProblemImpl>::str, py::const_))
         .def("get_identifier", &ProblemImpl::get_identifier)
         .def("get_filepath",
              [](const ProblemImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; })
-        .def("get_name", &ProblemImpl::get_name, py::return_value_policy::reference)
-        .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference)
-        .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference)
-        .def("get_objects", &ProblemImpl::get_objects, py::return_value_policy::reference)
-        .def("get_static_initial_literals", &ProblemImpl::get_static_initial_literals, py::return_value_policy::reference)
-        .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::return_value_policy::reference)
-        .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference)
-        .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference)
+        .def("get_name", &ProblemImpl::get_name, py::return_value_policy::reference_internal)
+        .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference_internal)
+        .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference_internal)
+        .def("get_objects", &ProblemImpl::get_objects, py::return_value_policy::reference_internal)
+        .def("get_static_initial_literals", &ProblemImpl::get_static_initial_literals, py::return_value_policy::reference_internal)
+        .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::return_value_policy::reference_internal)
+        .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference_internal)
+        .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference_internal)
         .def(
             "get_static_goal_condition",
             [](const ProblemImpl& self) { return self.get_goal_condition<Static>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_fluent_goal_condition",
             [](const ProblemImpl& self) { return self.get_goal_condition<Fluent>(); },
-            py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
         .def(
             "get_derived_goal_condition",
             [](const ProblemImpl& self) { return self.get_goal_condition<Derived>(); },
-            py::return_value_policy::reference);
+            py::return_value_policy::reference_internal);
 
     py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
-        .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference)
-        .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>, py::return_value_policy::reference)
-        .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>, py::return_value_policy::reference)
+        .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference_internal)
+        .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>, py::return_value_policy::reference_internal)
+        .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>, py::return_value_policy::reference_internal)
         .def("get_static_ground_atoms_from_ids",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Static, std::vector<size_t>>, py::const_),
-             py::return_value_policy::reference)
+             py::return_value_policy::reference_internal)
         .def("get_fluent_ground_atoms_from_ids",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Fluent, std::vector<size_t>>, py::const_),
-             py::return_value_policy::reference)
+             py::return_value_policy::reference_internal)
         .def("get_derived_ground_atoms_from_ids",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Derived, std::vector<size_t>>, py::const_),
-             py::return_value_policy::reference)
-        .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference)
+             py::return_value_policy::reference_internal)
+        .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal)
         .def("get_objects_from_ids",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_),
-             py::return_value_policy::reference);
+             py::return_value_policy::reference_internal);
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
-        .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference)
-        .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference)
-        .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference);
+        .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference_internal)
+        .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference_internal)
+        .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference_internal);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Search
@@ -623,18 +623,16 @@ void init_pymimir(py::module_& m)
         .def("__hash__", &GroundAction::hash)
         .def("__eq__", &GroundAction::operator==)
         .def("get_name", [](GroundAction self) { return self.get_action()->get_name(); })
-        .def(
-            "get_terms",
-            [](GroundAction self)
-            {
-                ObjectList terms;
-                for (const auto& object : self.get_objects())
-                {
-                    terms.emplace_back(object);
-                }
-                return terms;
-            },
-            py::return_value_policy::reference_internal)
+        .def("get_terms",
+             [](GroundAction self)
+             {
+                 ObjectList terms;
+                 for (const auto& object : self.get_objects())
+                 {
+                     terms.emplace_back(object);
+                 }
+                 return terms;
+             })
         .def("to_string",
              [](GroundAction self, PDDLFactories& pddl_factories)
              {
@@ -668,9 +666,9 @@ void init_pymimir(py::module_& m)
                 self.generate_applicable_actions(state, applicable_actions);
                 return applicable_actions;
             },
-            py::return_value_policy::reference)
-        .def("get_action", &IAAG::get_action, py::return_value_policy::reference)
-        .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference)
+            py::return_value_policy::reference_internal)
+        .def("get_action", &IAAG::get_action, py::return_value_policy::reference_internal)
+        .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &IAAG::get_pddl_factories);
 
     // Lifted
@@ -761,7 +759,7 @@ void init_pymimir(py::module_& m)
         .def("tuple_index_to_string", &TupleIndexMapper::tuple_index_to_string)
         .def("get_num_atoms", &TupleIndexMapper::get_num_atoms)
         .def("get_arity", &TupleIndexMapper::get_arity)
-        .def("get_factors", &TupleIndexMapper::get_factors, py::return_value_policy::reference)
+        .def("get_factors", &TupleIndexMapper::get_factors, py::return_value_policy::reference_internal)
         .def("get_max_tuple_index", &TupleIndexMapper::get_max_tuple_index)
         .def("get_empty_tuple_index", &TupleIndexMapper::get_empty_tuple_index);
     py::class_<FluentAndDerivedMapper, std::shared_ptr<FluentAndDerivedMapper>>(m, "FluentAndDerivedMapper")  //
@@ -791,10 +789,10 @@ void init_pymimir(py::module_& m)
                  self.inverse_remap_and_separate(fluent_and_derived_atom_indices, fluent_atom_indices, derived_atom_indices);
                  return std::make_tuple(fluent_atom_indices, derived_atom_indices);
              })
-        .def("get_fluent_remap", &FluentAndDerivedMapper::get_fluent_remap, py::return_value_policy::reference)
-        .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference)
-        .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference)
-        .def("get_inverse_remap", &FluentAndDerivedMapper::get_inverse_remap, py::return_value_policy::reference);
+        .def("get_fluent_remap", &FluentAndDerivedMapper::get_fluent_remap, py::return_value_policy::reference_internal)
+        .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference_internal)
+        .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference_internal)
+        .def("get_inverse_remap", &FluentAndDerivedMapper::get_inverse_remap, py::return_value_policy::reference_internal);
     py::class_<IIWAlgorithmEventHandler, std::shared_ptr<IIWAlgorithmEventHandler>>(m, "IIWAlgorithmEventHandler");
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
@@ -828,7 +826,7 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_identifier", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference);
+        .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference_internal);
 
     // TupleGraph
     py::class_<TupleGraph>(m, "TupleGraph")  //
@@ -846,11 +844,11 @@ void init_pymimir(py::module_& m)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
         .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
         .def("get_root_state", &TupleGraph::get_root_state)
-        .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference)
-        .def("get_forward_successors", &TupleGraph::get_forward_successors, py::return_value_policy::reference)
-        .def("get_backward_successors", &TupleGraph::get_backward_successors, py::return_value_policy::reference)
-        .def("get_vertex_indices_by_distances", &TupleGraph::get_vertex_indices_by_distances, py::return_value_policy::reference)
-        .def("get_states_by_distance", &TupleGraph::get_states_by_distance, py::return_value_policy::reference);
+        .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_forward_successors", &TupleGraph::get_forward_successors, py::return_value_policy::reference_internal)
+        .def("get_backward_successors", &TupleGraph::get_backward_successors, py::return_value_policy::reference_internal)
+        .def("get_vertex_indices_by_distances", &TupleGraph::get_vertex_indices_by_distances, py::return_value_policy::reference_internal)
+        .def("get_states_by_distance", &TupleGraph::get_states_by_distance, py::return_value_policy::reference_internal);
 
     // TupleGraphFactory
     py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
@@ -862,17 +860,17 @@ void init_pymimir(py::module_& m)
 
     // Partitioning
     py::class_<Partitioning>(m, "Partitioning")
-        .def("get_vertex_index_permutation", &Partitioning::get_vertex_index_permutation, py::return_value_policy::reference)
-        .def("get_partitioning", &Partitioning::get_partitioning, py::return_value_policy::reference)
-        .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference);
+        .def("get_vertex_index_permutation", &Partitioning::get_vertex_index_permutation, py::return_value_policy::reference_internal)
+        .def("get_partitioning", &Partitioning::get_partitioning, py::return_value_policy::reference_internal)
+        .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference_internal);
 
     // Certificate
     py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
         .def(py::init<std::string, ColorList>())
         .def("__eq__", &Certificate::operator==)
         .def("__hash__", &Certificate::hash)
-        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference)
-        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference);
+        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
+        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
 
     // DenseNautyGraph
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
@@ -965,7 +963,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def("get_num_vertices", &Digraph::get_num_vertices)
         .def("get_num_edges", &Digraph::get_num_edges)
-        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference);
+        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference_internal);
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
@@ -984,9 +982,9 @@ void init_pymimir(py::module_& m)
              [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
              { return self.get_color(state, literal, pos, mark_true_goal_literal); })
         .def("get_color_name", &ProblemColorFunction::get_color_name)
-        .def("get_problem", &ProblemColorFunction::get_problem, py::return_value_policy::reference)
-        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference)
-        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference);
+        .def("get_problem", &ProblemColorFunction::get_problem, py::return_value_policy::reference_internal)
+        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference_internal)
+        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference_internal);
 
     // ObjectGraph
     py::class_<ObjectGraph>(m, "ObjectGraph")  //
@@ -999,10 +997,10 @@ void init_pymimir(py::module_& m)
              })
         .def(py::init<std::shared_ptr<ProblemColorFunction>>())
         .def("get_coloring_function", &ObjectGraph::get_coloring_function)
-        .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference)
-        .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference)
-        .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference)
-        .def("get_partitioning", &ObjectGraph::get_partitioning, py::return_value_policy::reference);
+        .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference_internal)
+        .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference_internal)
+        .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference_internal)
+        .def("get_partitioning", &ObjectGraph::get_partitioning, py::return_value_policy::reference_internal);
 
     // ObjectGraph
     py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
@@ -1133,15 +1131,15 @@ void init_pymimir(py::module_& m)
              pybind11::arg("states"),
              pybind11::arg("forward") = true)
         .def("compute_pairwise_shortest_state_distances", &StateSpace::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
-        .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference)
+        .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
-        .def("get_states", &StateSpace::get_states, py::return_value_policy::reference)
+        .def("get_states", &StateSpace::get_states, py::return_value_policy::reference_internal)
         .def("get_state_index", &StateSpace::get_state_index)
         .def("get_initial_state", &StateSpace::get_initial_state)
-        .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference)
-        .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference)
+        .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_target_states",
             [](const StateSpace& self, StateIndex source)
@@ -1164,7 +1162,7 @@ void init_pymimir(py::module_& m)
         .def("is_goal_state", &StateSpace::is_goal_state)
         .def("is_deadend_state", &StateSpace::is_deadend_state)
         .def("is_alive_state", &StateSpace::is_alive_state)
-        .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference)
+        .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &StateSpace::get_transition_cost)
         .def(
             "get_forward_transition_indices",
@@ -1199,23 +1197,23 @@ void init_pymimir(py::module_& m)
             },
             py::keep_alive<0, 1>())
         .def("get_num_transitions", &StateSpace::get_num_transitions)
-        .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference)
+        .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference_internal)
         .def("get_goal_distance", &StateSpace::get_goal_distance)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
-        .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference);
+        .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference_internal);
 
     // Abstraction
     py::class_<Abstraction, std::shared_ptr<Abstraction>>(m, "Abstraction")  //
         .def(py::init<FaithfulAbstraction>())
         .def(py::init<GlobalFaithfulAbstraction>())
-        .def("get_problem", &Abstraction::get_problem, py::return_value_policy::reference)
+        .def("get_problem", &Abstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &Abstraction::get_pddl_factories)
         .def("get_aag", &Abstraction::get_aag)
         .def("get_ssg", &Abstraction::get_ssg)
         .def("get_abstract_state_index", &Abstraction::get_abstract_state_index)
         .def("get_initial_state", &Abstraction::get_initial_state)
-        .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference)
-        .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference)
+        .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_target_states",
             [](const Abstraction& self, StateIndex source)
@@ -1272,14 +1270,14 @@ void init_pymimir(py::module_& m)
             },
             py::keep_alive<0, 1>())
         .def("get_num_transitions", &Abstraction::get_num_transitions)
-        .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference);
+        .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // FaithfulAbstraction
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_index", &FaithfulAbstractState::get_index)
         .def("get_states", [](const FaithfulAbstractState& self) { return std::vector<State>(self.get_states().begin(), self.get_states().end()); })
         .def("get_representative_state", &FaithfulAbstractState::get_representative_state)
-        .def("get_certificate", &FaithfulAbstractState::get_certificate, py::return_value_policy::reference);
+        .def("get_certificate", &FaithfulAbstractState::get_certificate, py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def_static(
@@ -1411,15 +1409,15 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
-        .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference)
+        .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index)
-        .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
-        .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
-        .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
+        .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_target_states",
             [](const FaithfulAbstraction& self, StateIndex source)
@@ -1442,7 +1440,7 @@ void init_pymimir(py::module_& m)
         .def("is_goal_state", &FaithfulAbstraction::is_goal_state)
         .def("is_deadend_state", &FaithfulAbstraction::is_deadend_state)
         .def("is_alive_state", &FaithfulAbstraction::is_alive_state)
-        .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference)
+        .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost)
         .def(
             "get_forward_transition_indices",
@@ -1477,7 +1475,7 @@ void init_pymimir(py::module_& m)
             },
             py::keep_alive<0, 1>())
         .def("get_num_transitions", &FaithfulAbstraction::get_num_transitions)
-        .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
+        .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // GlobalFaithfulAbstraction
 
@@ -1558,16 +1556,16 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
-        .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference)
+        .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &GlobalFaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
-        .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)
+        .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
         .def("get_abstract_state_index", &GlobalFaithfulAbstraction::get_abstract_state_index)
-        .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference)
+        .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
-        .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference)
-        .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference)
+        .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_target_states",
             [](const GlobalFaithfulAbstraction& self, StateIndex source)
@@ -1592,7 +1590,7 @@ void init_pymimir(py::module_& m)
         .def("is_alive_state", &GlobalFaithfulAbstraction::is_alive_state)
         .def("get_num_isomorphic_states", &GlobalFaithfulAbstraction::get_num_isomorphic_states)
         .def("get_num_non_isomorphic_states", &GlobalFaithfulAbstraction::get_num_non_isomorphic_states)
-        .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference)
+        .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
         .def(
             "get_forward_transition_indices",
@@ -1627,5 +1625,5 @@ void init_pymimir(py::module_& m)
             },
             py::keep_alive<0, 1>())
         .def("get_num_transitions", &GlobalFaithfulAbstraction::get_num_transitions)
-        .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference);
+        .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference_internal);
 }
