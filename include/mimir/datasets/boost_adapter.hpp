@@ -31,17 +31,6 @@
 #include <limits>
 #include <ranges>
 
-namespace mimir
-{
-struct StateIndexRangeView : std::ranges::iota_view<StateIndex, StateIndex>
-{
-    using std::ranges::iota_view<StateIndex, StateIndex>::iota_view;
-};
-}
-
-template<>
-inline constexpr bool std::ranges::enable_borrowed_range<mimir::StateIndexRangeView> = true;
-
 namespace boost
 {
 
@@ -60,7 +49,7 @@ struct graph_traits<TransitionSystem>
     using traversal_category = vertex_list_and_incidence_graph_tag;
     using edges_size_type = size_t;
     // boost::VertexListGraph
-    using vertex_iterator = std::ranges::iterator_t<mimir::StateIndexRangeView>;
+    using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
     using out_edge_iterator = mimir::ForwardTransitionIndexIterator<typename TransitionSystem::TransitionType>::const_iterator;
@@ -80,9 +69,10 @@ template<IsTransitionSystem TransitionSystem>
 std::pair<typename boost::graph_traits<TransitionSystem>::vertex_iterator, typename boost::graph_traits<TransitionSystem>::vertex_iterator>
 vertices(const TransitionSystem& g)
 {
-    StateIndexRangeView range(0, g.get_num_states());
+    std::ranges::iota_view<typename boost::graph_traits<TransitionSystem>::vertex_descriptor, typename boost::graph_traits<TransitionSystem>::vertex_descriptor>
+        range(0, g.get_num_states());
     // Make sure we can return dangling iterators.
-    static_assert(std::ranges::borrowed_range<StateIndexRangeView>);
+    static_assert(std::ranges::borrowed_range<decltype(range)>);
     return std::make_pair(range.begin(), range.end());
 }
 
