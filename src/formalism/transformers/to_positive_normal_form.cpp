@@ -137,7 +137,8 @@ Domain ToPositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
     introduce_axiom_for_dual(m_negative_fluent_duals, transformed_axioms);
     introduce_axiom_for_dual(m_negative_derived_duals, transformed_axioms);
 
-    return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                       domain.get_name(),
                                                        this->transform(*domain.get_requirements()),
                                                        this->transform(domain.get_constants()),
                                                        this->transform(domain.get_predicates<Static>()),

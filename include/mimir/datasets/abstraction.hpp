@@ -44,8 +44,11 @@ private:
         /* Abstraction */
         virtual StateIndex get_abstract_state_index(State concrete_state) const = 0;
 
+        /* Meta data */
+        virtual Problem get_problem() const = 0;
+
         /* Memory */
-        virtual const std::shared_ptr<PDDLParser>& get_pddl_parser() const = 0;
+        virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
         virtual const std::shared_ptr<IAAG>& get_aag() const = 0;
         virtual const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const = 0;
 
@@ -90,8 +93,11 @@ private:
         /* Abstraction */
         StateIndex get_abstract_state_index(State concrete_state) const override { return m_abstraction.get_abstract_state_index(concrete_state); }
 
+        /* Meta data */
+        Problem get_problem() const override { return m_abstraction.get_problem(); }
+
         /* Memory */
-        const std::shared_ptr<PDDLParser>& get_pddl_parser() const override { return m_abstraction.get_pddl_parser(); }
+        const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override { return m_abstraction.get_pddl_factories(); }
         const std::shared_ptr<IAAG>& get_aag() const override { return m_abstraction.get_aag(); }
         const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const override { return m_abstraction.get_ssg(); }
 
@@ -164,8 +170,11 @@ public:
     /* Abstraction */
     StateIndex get_abstract_state_index(State concrete_state) const { return m_pimpl->get_abstract_state_index(concrete_state); }
 
+    /* Meta data */
+    Problem get_problem() const { return m_pimpl->get_problem(); }
+
     /* Memory */
-    const std::shared_ptr<PDDLParser>& get_pddl_parser() const { return m_pimpl->get_pddl_parser(); }
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const { return m_pimpl->get_pddl_factories(); }
     const std::shared_ptr<IAAG>& get_aag() const { return m_pimpl->get_aag(); }
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const { return m_pimpl->get_ssg(); }
 

@@ -102,7 +102,8 @@ loki::Domain SplitDisjunctiveConditionsTranslator::translate_impl(const loki::Do
     // Split axioms
     auto translated_axioms = split_axioms_at_disjunction(this->translate(domain.get_axioms()), this->m_pddl_factories);
 
-    return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                       domain.get_name(),
                                                        this->translate(*domain.get_requirements()),
                                                        this->translate(domain.get_types()),
                                                        this->translate(domain.get_constants()),
@@ -118,6 +119,7 @@ loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(const loki::P
     auto translated_axioms = split_axioms_at_disjunction(this->translate(problem.get_axioms()), this->m_pddl_factories);
 
     return this->m_pddl_factories.get_or_create_problem(
+        problem.get_filepath(),
         this->translate(*problem.get_domain()),
         problem.get_name(),
         this->translate(*problem.get_requirements()),

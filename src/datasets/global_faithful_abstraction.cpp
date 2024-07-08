@@ -99,13 +99,13 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
                                                                          uint32_t timeout_ms,
                                                                          uint32_t num_threads)
 {
-    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
-        auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedAAG>(parser->get_problem(), parser->get_factories());
+        auto parser = PDDLParser(domain_filepath, problem_filepath);
+        auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
         auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-        memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
+        memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
     return GlobalFaithfulAbstraction::create(memories,
@@ -120,7 +120,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
 }
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
-    const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
     bool mark_true_goal_literals,
     bool use_unit_cost_one,
     bool remove_if_unsolvable,
@@ -231,6 +231,8 @@ std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_sho
  */
 
 /* Meta data */
+Problem GlobalFaithfulAbstraction::get_problem() const { return m_abstractions->at(m_index).get_problem(); }
+
 bool GlobalFaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_true_goal_literals; }
 
 bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
@@ -238,7 +240,7 @@ bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_uni
 AbstractionIndex GlobalFaithfulAbstraction::get_index() const { return m_index; }
 
 /* Memory */
-const std::shared_ptr<PDDLParser>& GlobalFaithfulAbstraction::get_pddl_parser() const { return m_abstractions->at(m_index).get_pddl_parser(); }
+const std::shared_ptr<PDDLFactories>& GlobalFaithfulAbstraction::get_pddl_factories() const { return m_abstractions->at(m_index).get_pddl_factories(); }
 
 const std::shared_ptr<IAAG>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_index).get_aag(); }
 

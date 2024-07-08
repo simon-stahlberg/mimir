@@ -44,10 +44,11 @@ class StateSpace
 {
 private:
     /* Meta data */
+    Problem m_problem;
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLParser> m_parser;
+    std::shared_ptr<PDDLFactories> m_pddl_factories;
     std::shared_ptr<IAAG> m_aag;
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
@@ -74,8 +75,9 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    StateSpace(bool use_unit_cost_one,
-               std::shared_ptr<PDDLParser> parser,
+    StateSpace(Problem problem,
+               bool use_unit_cost_one,
+               std::shared_ptr<PDDLFactories> pddl_factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
                StateList states,
@@ -92,22 +94,14 @@ public:
 
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.
     /// @param problem The problem from which to create the state space.
-    /// @param parser External memory to parser.
+    /// @param parser External memory to PDDLFactories.
     /// @param aag External memory to aag.
     /// @param ssg External memory to ssg.
     /// @param max_num_states The maximum number of states allowed in the StateSpace.
     /// @param timeout_ms The maximum time spent on creating the StateSpace.
     /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
     static std::optional<StateSpace> create(Problem problem,
-                                            std::shared_ptr<PDDLParser> parser,
-                                            std::shared_ptr<IAAG> aag,
-                                            std::shared_ptr<SuccessorStateGenerator> ssg,
-                                            bool use_unit_cost_one = true,
-                                            bool remove_if_unsolvable = true,
-                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
-
-    static std::optional<StateSpace> create(std::shared_ptr<PDDLParser> parser,
+                                            std::shared_ptr<PDDLFactories> factories,
                                             std::shared_ptr<IAAG> aag,
                                             std::shared_ptr<SuccessorStateGenerator> ssg,
                                             bool use_unit_cost_one = true,
@@ -133,17 +127,7 @@ public:
     /// @param num_threads The number of threads used for construction.
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
     static std::vector<StateSpace>
-    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool use_unit_cost_one = true,
-           bool remove_if_unsolvable = true,
-           bool sort_ascending_by_num_states = true,
-           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-           uint32_t num_threads = std::thread::hardware_concurrency());
-
-    /// @brief Convenience function when using the default problem and external memory.
-    static std::vector<StateSpace>
-    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
            bool sort_ascending_by_num_states = true,
@@ -179,10 +163,11 @@ public:
      */
 
     /* Meta data */
+    Problem get_problem() const;
     bool get_use_unit_cost_one() const;
 
     /* Memory */
-    const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 

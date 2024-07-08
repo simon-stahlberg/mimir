@@ -397,7 +397,8 @@ public:
     /// @brief Get or create a domain for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Domain get_or_create_domain(std::string name,
+    Domain get_or_create_domain(std::optional<fs::path> filepath,
+                                std::string name,
                                 Requirements requirements,
                                 ObjectList constants,
                                 PredicateList<Static> static_predicates,
@@ -407,7 +408,8 @@ public:
                                 ActionList actions,
                                 AxiomList axioms)
     {
-        return m_factories.get<DomainImpl>().get_or_create<DomainImpl>(std::move(name),
+        return m_factories.get<DomainImpl>().get_or_create<DomainImpl>(std::move(filepath),
+                                                                       std::move(name),
                                                                        std::move(requirements),
                                                                        std::move(constants),
                                                                        std::move(static_predicates),
@@ -421,7 +423,8 @@ public:
     /// @brief Get or create a problem for the given parameters.
     ///
     ///        This function allows us to can change the underlying representation and storage.
-    Problem get_or_create_problem(Domain domain,
+    Problem get_or_create_problem(std::optional<fs::path> filepath,
+                                  Domain domain,
                                   std::string name,
                                   Requirements requirements,
                                   ObjectList objects,
@@ -436,7 +439,8 @@ public:
                                   std::optional<OptimizationMetric> optimization_metric,
                                   AxiomList axioms)
     {
-        return m_factories.get<ProblemImpl>().get_or_create<ProblemImpl>(std::move(domain),
+        return m_factories.get<ProblemImpl>().get_or_create<ProblemImpl>(std::move(filepath),
+                                                                         std::move(domain),
                                                                          std::move(name),
                                                                          std::move(requirements),
                                                                          std::move(objects),

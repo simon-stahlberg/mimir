@@ -86,6 +86,7 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
     translated_axioms = uniquify_elements(translated_axioms);
 
     return this->m_pddl_factories.get_or_create_problem(
+        problem.get_filepath(),
         this->translate(*problem.get_domain()),
         problem.get_name(),
         this->translate(*problem.get_requirements()),

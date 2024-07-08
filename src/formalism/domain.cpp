@@ -36,6 +36,7 @@ using namespace std;
 namespace mimir
 {
 DomainImpl::DomainImpl(int identifier,
+                       std::optional<fs::path> filepath,
                        std::string name,
                        Requirements requirements,
                        ObjectList constants,
@@ -46,6 +47,7 @@ DomainImpl::DomainImpl(int identifier,
                        ActionList actions,
                        AxiomList axioms) :
     Base(identifier),
+    m_filepath(std::move(filepath)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
     m_constants(std::move(constants)),
@@ -174,6 +176,8 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
 
     out << std::string(options.indent, ' ') << ")";
 }
+
+const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }
 
 const std::string& DomainImpl::get_name() const { return m_name; }
 

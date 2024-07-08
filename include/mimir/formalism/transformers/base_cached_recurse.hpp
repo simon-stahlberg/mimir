@@ -650,7 +650,8 @@ protected:
     }
     Domain transform_impl(const DomainImpl& domain)
     {
-        return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+        return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                           domain.get_name(),
                                                            this->transform(*domain.get_requirements()),
                                                            this->transform(domain.get_constants()),
                                                            this->transform(domain.get_predicates<Static>()),
@@ -668,6 +669,7 @@ protected:
     Problem transform_impl(const ProblemImpl& problem)
     {
         return this->m_pddl_factories.get_or_create_problem(
+            problem.get_filepath(),
             this->transform(*problem.get_domain()),
             problem.get_name(),
             this->transform(*problem.get_requirements()),

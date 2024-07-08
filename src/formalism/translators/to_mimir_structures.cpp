@@ -718,7 +718,8 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
         static_predicates.push_back(m_equal_predicate);
     }
 
-    return m_pddl_factories.get_or_create_domain(domain.get_name(),
+    return m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                 domain.get_name(),
                                                  requirements,
                                                  uniquify_elements(constants),
                                                  uniquify_elements(static_predicates),
@@ -984,7 +985,8 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                  domain_derived_predicates.begin(),
                                                  domain_derived_predicates.end());
 
-    return m_pddl_factories.get_or_create_problem(translated_domain,
+    return m_pddl_factories.get_or_create_problem(problem.get_filepath(),
+                                                  translated_domain,
                                                   problem.get_name(),
                                                   translate_common(*problem.get_requirements()),
                                                   uniquify_elements(objects),

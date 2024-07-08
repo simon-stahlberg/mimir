@@ -39,6 +39,7 @@ using namespace std;
 namespace mimir
 {
 ProblemImpl::ProblemImpl(int identifier,
+                         std::optional<fs::path> filepath,
                          Domain domain,
                          std::string name,
                          Requirements requirements,
@@ -54,6 +55,7 @@ ProblemImpl::ProblemImpl(int identifier,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms) :
     Base(identifier),
+    m_filepath(std::move(filepath)),
     m_domain(std::move(domain)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
@@ -229,6 +231,8 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
 
     out << string(options.indent, ' ') << ")";
 }
+
+const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 
 const Domain& ProblemImpl::get_domain() const { return m_domain; }
 

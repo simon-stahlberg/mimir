@@ -256,7 +256,8 @@ loki::Domain RemoveTypesTranslator::translate_impl(const loki::DomainImpl& domai
         translated_predicates.push_back(predicate);
     }
 
-    auto translated_domain = this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+    auto translated_domain = this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                                         domain.get_name(),
                                                                          translated_requirements,
                                                                          loki::TypeList {},
                                                                          translated_constants,
@@ -298,6 +299,7 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
     translated_initial_literals.insert(translated_initial_literals.end(), additional_initial_literals.begin(), additional_initial_literals.end());
 
     auto translated_problem = this->m_pddl_factories.get_or_create_problem(
+        problem.get_filepath(),
         this->translate(*problem.get_domain()),
         problem.get_name(),
         translated_requirements,

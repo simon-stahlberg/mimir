@@ -109,7 +109,7 @@ public:
                                                          uint32_t num_threads = std::thread::hardware_concurrency());
 
     static std::vector<GlobalFaithfulAbstraction>
-    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            bool mark_true_goal_literals = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
@@ -138,12 +138,13 @@ public:
      */
 
     /* Meta data */
+    Problem get_problem() const;
     bool get_mark_true_goal_literals() const;
     bool get_use_unit_cost_one() const;
     AbstractionIndex get_index() const;
 
     /* Memory */
-    const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
     const FaithfulAbstractionList& get_abstractions() const;

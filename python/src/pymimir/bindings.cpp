@@ -483,6 +483,8 @@ void init_pymimir(py::module_& m)
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
         .def("get_identifier", &DomainImpl::get_identifier)
+        .def("get_filepath",
+             [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; })
         .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference)
         .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference)
         .def(
@@ -516,6 +518,8 @@ void init_pymimir(py::module_& m)
     py::class_<ProblemImpl>(m, "Problem")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ProblemImpl>::str, py::const_))
         .def("get_identifier", &ProblemImpl::get_identifier)
+        .def("get_filepath",
+             [](const ProblemImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; })
         .def("get_name", &ProblemImpl::get_name, py::return_value_policy::reference)
         .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference)
         .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference)
@@ -555,10 +559,8 @@ void init_pymimir(py::module_& m)
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_),
              py::return_value_policy::reference);
 
-    py::class_<PDDLParser, std::shared_ptr<PDDLParser>>(m, "PDDLParser")  //
+    py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
-        .def("get_domain_filepath", [](const PDDLParser& self) { return std::string(self.get_domain_filepath()); })
-        .def("get_problem_filepath", [](const PDDLParser& self) { return std::string(self.get_problem_filepath()); })
         .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference)
         .def("get_factories", &PDDLParser::get_factories, py::return_value_policy::reference);
@@ -982,7 +984,7 @@ void init_pymimir(py::module_& m)
              [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
              { return self.get_color(state, literal, pos, mark_true_goal_literal); })
         .def("get_color_name", &ProblemColorFunction::get_color_name)
-        .def("get_problem", &ProblemColorFunction::get_problem)
+        .def("get_problem", &ProblemColorFunction::get_problem, py::return_value_policy::reference)
         .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference)
         .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference);
 
@@ -1055,14 +1057,17 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
             "create",
-            [](std::shared_ptr<PDDLParser> parser,
+            [](Problem problem,
+               std::shared_ptr<PDDLFactories> factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
                uint32_t max_num_states,
-               uint32_t timeout_ms) { return StateSpace::create(parser, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); },
-            py::arg("parser"),
+               uint32_t timeout_ms)
+            { return StateSpace::create(problem, factories, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); },
+            py::arg("problem"),
+            py::arg("factories"),
             py::arg("aag"),
             py::arg("ssg"),
             py::arg("use_unit_cost_one") = true,
@@ -1100,7 +1105,8 @@ void init_pymimir(py::module_& m)
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+            [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
+                   memories,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
                bool sort_ascending_by_num_states,
@@ -1127,7 +1133,8 @@ void init_pymimir(py::module_& m)
              pybind11::arg("states"),
              pybind11::arg("forward") = true)
         .def("compute_pairwise_shortest_state_distances", &StateSpace::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
-        .def("get_pddl_parser", &StateSpace::get_pddl_parser)
+        .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference)
+        .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
         .def("get_states", &StateSpace::get_states, py::return_value_policy::reference)
@@ -1201,7 +1208,8 @@ void init_pymimir(py::module_& m)
     py::class_<Abstraction, std::shared_ptr<Abstraction>>(m, "Abstraction")  //
         .def(py::init<FaithfulAbstraction>())
         .def(py::init<GlobalFaithfulAbstraction>())
-        .def("get_pddl_parser", &Abstraction::get_pddl_parser)
+        .def("get_problem", &Abstraction::get_problem, py::return_value_policy::reference)
+        .def("get_pddl_factories", &Abstraction::get_pddl_factories)
         .def("get_aag", &Abstraction::get_aag)
         .def("get_ssg", &Abstraction::get_ssg)
         .def("get_abstract_state_index", &Abstraction::get_abstract_state_index)
@@ -1304,7 +1312,8 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
         .def_static(
             "create",
-            [](std::shared_ptr<PDDLParser> parser,
+            [](Problem problem,
+               std::shared_ptr<PDDLFactories> factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
                bool mark_true_goal_literals,
@@ -1312,8 +1321,10 @@ void init_pymimir(py::module_& m)
                bool remove_if_unsolvable,
                bool compute_complete_abstraction_mapping,
                uint32_t max_num_states,
-               uint32_t timeout_ms) {
-                return FaithfulAbstraction::create(parser,
+               uint32_t timeout_ms)
+            {
+                return FaithfulAbstraction::create(problem,
+                                                   factories,
                                                    aag,
                                                    ssg,
                                                    mark_true_goal_literals,
@@ -1322,7 +1333,8 @@ void init_pymimir(py::module_& m)
                                                    max_num_states,
                                                    timeout_ms);
             },
-            py::arg("parser"),
+            py::arg("problem"),
+            py::arg("factories"),
             py::arg("aag"),
             py::arg("ssg"),
             py::arg("mark_true_goal_literals") = false,
@@ -1368,7 +1380,8 @@ void init_pymimir(py::module_& m)
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+            [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
+                   memories,
                bool mark_true_goal_literals,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
@@ -1398,7 +1411,8 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
-        .def("get_pddl_parser", &FaithfulAbstraction::get_pddl_parser)
+        .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference)
+        .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index)
@@ -1513,7 +1527,8 @@ void init_pymimir(py::module_& m)
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+            [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
+                   memories,
                bool mark_true_goal_literals,
                bool use_unit_cost_one,
                bool remove_if_unsolvable,
@@ -1543,7 +1558,8 @@ void init_pymimir(py::module_& m)
             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
             py::arg("num_threads") = std::thread::hardware_concurrency())
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
-        .def("get_pddl_parser", &GlobalFaithfulAbstraction::get_pddl_parser)
+        .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference)
+        .def("get_pddl_factories", &GlobalFaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference)

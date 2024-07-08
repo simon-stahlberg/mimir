@@ -30,8 +30,9 @@ namespace mimir
 /**
  * StateSpace
  */
-StateSpace::StateSpace(bool use_unit_cost_one,
-                       std::shared_ptr<PDDLParser> parser,
+StateSpace::StateSpace(Problem problem,
+                       bool use_unit_cost_one,
+                       std::shared_ptr<PDDLFactories> pddl_factories,
                        std::shared_ptr<IAAG> aag,
                        std::shared_ptr<SuccessorStateGenerator> ssg,
                        StateList states,
@@ -42,8 +43,9 @@ StateSpace::StateSpace(bool use_unit_cost_one,
                        TransitionList transitions,
                        BeginIndexList transitions_begin_by_source,
                        std::vector<double> goal_distances) :
+    m_problem(problem),
     m_use_unit_cost_one(use_unit_cost_one),
-    m_parser(std::move(parser)),
+    m_pddl_factories(std::move(pddl_factories)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
     m_states(std::move(states)),
@@ -69,27 +71,14 @@ std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath,
                                              uint32_t max_num_states,
                                              uint32_t timeout_ms)
 {
-    auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-    const auto problem = parser->get_problem();
-    auto aag = std::make_shared<GroundedAAG>(problem, parser->get_factories());
+    auto parser = PDDLParser(domain_filepath, problem_filepath);
+    auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-    return StateSpace::create(std::move(parser), std::move(aag), std::move(ssg), use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
-}
-
-std::optional<StateSpace> StateSpace::create(std::shared_ptr<PDDLParser> parser,
-                                             std::shared_ptr<IAAG> aag,
-                                             std::shared_ptr<SuccessorStateGenerator> ssg,
-                                             bool use_unit_cost_one,
-                                             bool remove_if_unsolvable,
-                                             uint32_t max_num_states,
-                                             uint32_t timeout_ms)
-{
-    const auto problem = parser->get_problem();
-    return StateSpace::create(problem, std::move(parser), std::move(aag), std::move(ssg), use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
+    return StateSpace::create(parser.get_problem(), parser.get_factories(), aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
 }
 
 std::optional<StateSpace> StateSpace::create(Problem problem,
-                                             std::shared_ptr<PDDLParser> parser,
+                                             std::shared_ptr<PDDLFactories> factories,
                                              std::shared_ptr<IAAG> aag,
                                              std::shared_ptr<SuccessorStateGenerator> ssg,
                                              bool use_unit_cost_one,
@@ -215,8 +204,9 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         transitions_begin_by_source.push_back(transitions.size());
     }
 
-    return StateSpace(use_unit_cost_one,
-                      std::move(parser),
+    return StateSpace(problem,
+                      use_unit_cost_one,
+                      std::move(factories),
                       std::move(aag),
                       std::move(ssg),
                       std::move(states),
@@ -238,43 +228,20 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
                                   uint32_t timeout_ms,
                                   uint32_t num_threads)
 {
-    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
-        auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedAAG>(parser->get_problem(), parser->get_factories());
+        auto parser = PDDLParser(domain_filepath, problem_filepath);
+        auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
         auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-        memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
+        memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
     return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, sort_ascending_by_num_states, max_num_states, timeout_ms, num_threads);
 }
 
-std::vector<StateSpace>
-StateSpace::create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-                   bool use_unit_cost_one,
-                   bool remove_if_unsolvable,
-                   bool sort_ascending_by_num_states,
-                   uint32_t max_num_states,
-                   uint32_t timeout_ms,
-                   uint32_t num_threads)
-{
-    auto extended_memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
-    for (auto& [parser, aag, ssg] : memories)
-    {
-        extended_memories.emplace_back(parser->get_problem(), parser, aag, ssg);
-    }
-    return StateSpace::create(extended_memories,
-                              use_unit_cost_one,
-                              remove_if_unsolvable,
-                              sort_ascending_by_num_states,
-                              max_num_states,
-                              timeout_ms,
-                              num_threads);
-}
-
 std::vector<StateSpace> StateSpace::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
     bool use_unit_cost_one,
     bool remove_if_unsolvable,
     bool sort_ascending_by_num_states,
@@ -286,11 +253,11 @@ std::vector<StateSpace> StateSpace::create(
     auto pool = BS::thread_pool(num_threads);
     auto futures = std::vector<std::future<std::optional<StateSpace>>> {};
 
-    for (const auto& [problem, parser, aag, ssg] : memories)
+    for (const auto& [problem, factories, aag, ssg] : memories)
     {
-        futures.push_back(
-            pool.submit_task([problem, parser, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms]
-                             { return StateSpace::create(problem, parser, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); }));
+        futures.push_back(pool.submit_task(
+            [problem, factories, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms]
+            { return StateSpace::create(problem, factories, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); }));
     }
 
     for (auto& future : futures)
@@ -329,10 +296,11 @@ std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_dis
  */
 
 /* Meta data */
+Problem StateSpace::get_problem() const { return m_problem; }
 bool StateSpace::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLParser>& StateSpace::get_pddl_parser() const { return m_parser; }
+const std::shared_ptr<PDDLFactories>& StateSpace::get_pddl_factories() const { return m_pddl_factories; }
 
 const std::shared_ptr<IAAG>& StateSpace::get_aag() const { return m_aag; }
 

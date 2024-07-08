@@ -9,8 +9,6 @@
 namespace mimir
 {
 PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_filepath) :
-    m_domain_filepath(domain_filepath),
-    m_problem_filepath(problem_filepath),
     m_loki_domain_parser(loki::DomainParser(domain_filepath)),
     m_loki_problem_parser(loki::ProblemParser(problem_filepath, m_loki_domain_parser)),
     m_factories(std::make_shared<PDDLFactories>())
@@ -66,10 +64,6 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_problem = encode_parameter_index_in_variables.run(*m_problem);
     m_domain = m_problem->get_domain();
 }
-
-const fs::path& PDDLParser::get_domain_filepath() const { return m_domain_filepath; }
-
-const fs::path& PDDLParser::get_problem_filepath() const { return m_problem_filepath; }
 
 const std::shared_ptr<PDDLFactories>& PDDLParser::get_factories() { return m_factories; }
 

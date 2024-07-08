@@ -39,6 +39,7 @@ namespace mimir
 class ProblemImpl : public loki::Base<ProblemImpl>
 {
 private:
+    std::optional<fs::path> m_filepath;
     Domain m_domain;
     std::string m_name;
     Requirements m_requirements;
@@ -60,6 +61,7 @@ private:
     bool m_static_goal_holds;
 
     ProblemImpl(int identifier,
+                std::optional<fs::path> filepath,
                 Domain domain,
                 std::string name,
                 Requirements requirements,
@@ -87,6 +89,7 @@ private:
     friend class loki::Base<ProblemImpl>;
 
 public:
+    const std::optional<fs::path>& get_filepath() const;
     const Domain& get_domain() const;
     const std::string& get_name() const;
     const Requirements& get_requirements() const;

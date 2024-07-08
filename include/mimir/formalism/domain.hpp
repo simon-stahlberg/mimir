@@ -37,6 +37,7 @@ namespace mimir
 class DomainImpl : public loki::Base<DomainImpl>
 {
 private:
+    std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
     ObjectList m_constants;
@@ -53,6 +54,7 @@ private:
     ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
 
     DomainImpl(int identifier,
+               std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
                ObjectList constants,
@@ -75,6 +77,7 @@ private:
     friend class loki::Base<DomainImpl>;
 
 public:
+    const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_constants() const;

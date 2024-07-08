@@ -71,11 +71,12 @@ class FaithfulAbstraction
 {
 private:
     /* Meta data */
+    Problem m_problem;
     bool m_mark_true_goal_literals;
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLParser> m_parser;
+    std::shared_ptr<PDDLFactories> m_pddl_factories;
     std::shared_ptr<IAAG> m_aag;
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
@@ -101,9 +102,10 @@ private:
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    FaithfulAbstraction(bool mark_true_goal_literals,
+    FaithfulAbstraction(Problem problem,
+                        bool mark_true_goal_literals,
                         bool use_unit_cost_one,
-                        std::shared_ptr<PDDLParser> parser,
+                        std::shared_ptr<PDDLFactories> factories,
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<SuccessorStateGenerator> ssg,
                         FaithfulAbstractStateList states,
@@ -130,7 +132,8 @@ public:
                                                      uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
     /// @brief Compute a faithful abstraction if within resource limits.
-    /// @param parser is the external PDDL parser.
+    /// @param problem is the problem.
+    /// @param factories is the external PDDL factories.
     /// @param aag is the external applicable action generator.
     /// @param ssg is the external successor state generator.
     /// @param mark_true_goal_literals whether satisfied goal literals should be marked.
@@ -140,7 +143,8 @@ public:
     /// @param max_num_states the maximum number of abstract states.
     /// @param timeout_ms the maximum time to compute the abstraction.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
-    static std::optional<FaithfulAbstraction> create(std::shared_ptr<PDDLParser> parser,
+    static std::optional<FaithfulAbstraction> create(Problem problem,
+                                                     std::shared_ptr<PDDLFactories> factories,
                                                      std::shared_ptr<IAAG> aag,
                                                      std::shared_ptr<SuccessorStateGenerator> ssg,
                                                      bool mark_true_goal_literals = false,
@@ -163,7 +167,7 @@ public:
                                                    uint32_t num_threads = std::thread::hardware_concurrency());
 
     /// @brief Try to create a FaithfulAbstractionList from the given data and the given resource limits.
-    /// @param memories External memory to parsers, aags, ssgs.
+    /// @param memories External memory to problem, factories, aags, ssgs.
     /// @param mark_true_goal_literals whether satisfied goal literals should be marked.
     /// @param use_unit_cost_one whether to use unit cost one or action costs.
     /// @param remove_if_unsolvable whether to remove abstractions of unsolvable problems.
@@ -173,7 +177,7 @@ public:
     /// @param num_threads The number of threads used for construction.
     /// @return FaithfulAbstractionList contains the FaithfulAbstractions for which the construction is within the given resource limits.
     static std::vector<FaithfulAbstraction>
-    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            bool mark_true_goal_literals = false,
            bool use_unit_cost_one = true,
            bool remove_if_unsolvable = true,
@@ -202,11 +206,12 @@ public:
      */
 
     /* Meta data */
+    Problem get_problem() const;
     bool get_mark_true_goal_literals() const;
     bool get_use_unit_cost_one() const;
 
     /* Memory */
-    const std::shared_ptr<PDDLParser>& get_pddl_parser() const;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 

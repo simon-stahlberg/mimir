@@ -41,10 +41,15 @@ concept IsTransitionSystem = requires(T a, StateIndex state_index, TransitionInd
     typename T::TransitionType;
     requires IsTransition<typename T::TransitionType>;
 
+    /* Meta data */
+    {
+        a.get_problem()
+    } -> std::same_as<Problem>;
+
     /* Memory */
     {
-        a.get_pddl_parser()
-    } -> std::same_as<const std::shared_ptr<PDDLParser>&>;
+        a.get_pddl_factories()
+    } -> std::same_as<const std::shared_ptr<PDDLFactories>&>;
     {
         a.get_aag()
     } -> std::same_as<const std::shared_ptr<IAAG>&>;

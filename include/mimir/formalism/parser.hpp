@@ -29,10 +29,6 @@ namespace mimir
 class PDDLParser
 {
 private:
-    // Meta data
-    fs::path m_domain_filepath;
-    fs::path m_problem_filepath;
-
     // Parsers that contain the original domain and problem
     loki::DomainParser m_loki_domain_parser;
     loki::ProblemParser m_loki_problem_parser;
@@ -44,12 +40,6 @@ private:
 
 public:
     PDDLParser(const fs::path& domain_filepath, const fs::path& problem_filepath);
-
-    /// @brief Get the domain filepath.
-    const fs::path& get_domain_filepath() const;
-
-    /// @brief Get the problem filepath.
-    const fs::path& get_problem_filepath() const;
 
     /// @brief Get the original domain.
     const loki::Domain get_original_domain() const;

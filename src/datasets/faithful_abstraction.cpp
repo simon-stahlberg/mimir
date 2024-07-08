@@ -72,9 +72,10 @@ const std::shared_ptr<const Certificate>& FaithfulAbstractState::get_certificate
  * FaithfulAbstraction
  */
 
-FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
+FaithfulAbstraction::FaithfulAbstraction(Problem problem,
+                                         bool mark_true_goal_literals,
                                          bool use_unit_cost_one,
-                                         std::shared_ptr<PDDLParser> parser,
+                                         std::shared_ptr<PDDLFactories> factories,
                                          std::shared_ptr<IAAG> aag,
                                          std::shared_ptr<SuccessorStateGenerator> ssg,
                                          FaithfulAbstractStateList states,
@@ -87,9 +88,10 @@ FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
                                          BeginIndexList transitions_begin_by_source,
                                          std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                                          std::vector<double> goal_distances) :
+    m_problem(problem),
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
-    m_parser(std::move(parser)),
+    m_pddl_factories(std::move(factories)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
     m_states(std::move(states)),
@@ -127,13 +129,14 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
                                                                uint32_t max_num_states,
                                                                uint32_t timeout_ms)
 {
-    auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-    auto aag = std::make_shared<LiftedAAG>(parser->get_problem(), parser->get_factories());
+    auto parser = PDDLParser(domain_filepath, problem_filepath);
+    auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
 
-    return FaithfulAbstraction::create(std::move(parser),
-                                       std::move(aag),
-                                       std::move(ssg),
+    return FaithfulAbstraction::create(parser.get_problem(),
+                                       parser.get_factories(),
+                                       aag,
+                                       ssg,
                                        mark_true_goal_literals,
                                        use_unit_cost_one,
                                        remove_if_unsolvable,
@@ -142,7 +145,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& d
                                        timeout_ms);
 }
 
-std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<PDDLParser> parser,
+std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
+                                                               std::shared_ptr<PDDLFactories> factories,
                                                                std::shared_ptr<IAAG> aag,
                                                                std::shared_ptr<SuccessorStateGenerator> ssg,
                                                                bool mark_true_goal_literals,
@@ -154,8 +158,6 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
 {
     auto stop_watch = StopWatch(timeout_ms);
 
-    const auto problem = parser->get_problem();
-    const auto& factories = parser->get_factories();
     auto initial_state = ssg->get_or_create_initial_state();
 
     if (remove_if_unsolvable && !problem->static_goal_holds())
@@ -402,9 +404,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<P
         abstract_transitions_begin_by_source.push_back(abstract_transitions.size());
     }
 
-    return FaithfulAbstraction(mark_true_goal_literals,
+    return FaithfulAbstraction(problem,
+                               mark_true_goal_literals,
                                use_unit_cost_one,
-                               std::move(parser),
+                               std::move(factories),
                                std::move(aag),
                                std::move(ssg),
                                std::move(abstract_states),
@@ -430,13 +433,13 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
                                                              uint32_t timeout_ms,
                                                              uint32_t num_threads)
 {
-    auto memories = std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
-        auto parser = std::make_shared<PDDLParser>(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedAAG>(parser->get_problem(), parser->get_factories());
+        auto parser = PDDLParser(domain_filepath, problem_filepath);
+        auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
         auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-        memories.emplace_back(std::move(parser), std::move(aag), std::move(ssg));
+        memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
     return FaithfulAbstraction::create(memories,
@@ -451,7 +454,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
 }
 
 std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
-    const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
     bool mark_true_goal_literals,
     bool use_unit_cost_one,
     bool remove_if_unsolvable,
@@ -465,10 +468,11 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
     auto pool = BS::thread_pool(num_threads);
     auto futures = std::vector<std::future<std::optional<FaithfulAbstraction>>> {};
 
-    for (const auto& [parser, aag, ssg] : memories)
+    for (const auto& [problem, factories, aag, ssg] : memories)
     {
         futures.push_back(pool.submit_task(
-            [parser,
+            [problem,
+             factories,
              aag,
              ssg,
              mark_true_goal_literals,
@@ -478,7 +482,8 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
              max_num_states,
              timeout_ms]
             {
-                return FaithfulAbstraction::create(parser,
+                return FaithfulAbstraction::create(problem,
+                                                   factories,
                                                    aag,
                                                    ssg,
                                                    mark_true_goal_literals,
@@ -539,12 +544,14 @@ std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_
  */
 
 /* Meta data */
+Problem FaithfulAbstraction::get_problem() const { return m_problem; }
+
 bool FaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_true_goal_literals; }
 
 bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLParser>& FaithfulAbstraction::get_pddl_parser() const { return m_parser; }
+const std::shared_ptr<PDDLFactories>& FaithfulAbstraction::get_pddl_factories() const { return m_pddl_factories; }
 
 const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag; }
 

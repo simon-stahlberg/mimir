@@ -193,7 +193,8 @@ loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Do
     auto translated_predicates = this->translate(domain.get_predicates());
     translated_predicates.insert(translated_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
 
-    return this->m_pddl_factories.get_or_create_domain(domain.get_name(),
+    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                       domain.get_name(),
                                                        this->translate(*domain.get_requirements()),
                                                        this->translate(domain.get_types()),
                                                        this->translate(domain.get_constants()),
@@ -227,6 +228,7 @@ loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::P
     translated_axioms = uniquify_elements(translated_axioms);
 
     return this->m_pddl_factories.get_or_create_problem(
+        problem.get_filepath(),
         translated_domain,
         problem.get_name(),
         this->translate(*problem.get_requirements()),
