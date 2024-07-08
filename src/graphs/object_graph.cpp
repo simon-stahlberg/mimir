@@ -139,40 +139,66 @@ int ObjectGraphFactory::add_object_graph_structures(Object object, int num_verti
     return ++num_vertices;
 }
 
-static int compute_num_vertices(const Problem problem, const PDDLFactories& pddl_factories, const State state)
+static int
+compute_num_vertices(const Problem problem, const PDDLFactories& pddl_factories, const State state, const ObjectGraphPruningStrategy& pruning_strategy)
 {
-    auto num_vertices = static_cast<int>(problem->get_objects().size());
+    auto num_vertices = 0;
+    for (const auto& object : problem->get_objects())
+    {
+        if (!pruning_strategy.prune(object))
+        {
+            num_vertices += 1;
+        }
+    }
     for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Static>(problem->get_static_initial_positive_atoms_bitset()))
     {
-        num_vertices += atom->get_arity();
+        if (!pruning_strategy.prune(atom))
+        {
+            num_vertices += atom->get_arity();
+        }
     }
     for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()))
     {
-        num_vertices += atom->get_arity();
+        if (!pruning_strategy.prune(atom))
+        {
+            num_vertices += atom->get_arity();
+        }
     }
     for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()))
     {
-        num_vertices += atom->get_arity();
+        if (!pruning_strategy.prune(atom))
+        {
+            num_vertices += atom->get_arity();
+        }
     }
     for (const auto& literal : problem->get_goal_condition<Static>())
     {
-        num_vertices += literal->get_atom()->get_arity();
+        if (!pruning_strategy.prune(literal))
+        {
+            num_vertices += literal->get_atom()->get_arity();
+        }
     }
     for (const auto& literal : problem->get_goal_condition<Fluent>())
     {
-        num_vertices += literal->get_atom()->get_arity();
+        if (!pruning_strategy.prune(literal))
+        {
+            num_vertices += literal->get_atom()->get_arity();
+        }
     }
     for (const auto& literal : problem->get_goal_condition<Derived>())
     {
-        num_vertices += literal->get_atom()->get_arity();
+        if (!pruning_strategy.prune(literal))
+        {
+            num_vertices += literal->get_atom()->get_arity();
+        }
     }
     return num_vertices;
 }
 
-const ObjectGraph& ObjectGraphFactory::create(State state)
+const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPruningStrategy& pruning_strategy)
 {
     // Reset data structures
-    auto num_vertices = compute_num_vertices(m_problem, *m_pddl_factories, state);
+    auto num_vertices = compute_num_vertices(m_problem, *m_pddl_factories, state, pruning_strategy);
     m_object_graph.m_digraph.reset(num_vertices, false);
     m_object_graph.m_vertex_colors.clear();
     m_object_graph.m_sorted_vertex_colors.clear();
@@ -182,35 +208,56 @@ const ObjectGraph& ObjectGraphFactory::create(State state)
     auto vertex_index = 0;
     for (const auto& object : m_problem->get_objects())
     {
-        vertex_index = add_object_graph_structures(object, vertex_index);
+        if (!pruning_strategy.prune(object))
+        {
+            vertex_index = add_object_graph_structures(object, vertex_index);
+        }
     }
 
     // Initialize atom vertices and edges
     for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Static>(m_problem->get_static_initial_positive_atoms_bitset()))
     {
-        vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
+        if (!pruning_strategy.prune(atom))
+        {
+            vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
+        }
     }
     for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()))
     {
-        vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
+        if (!pruning_strategy.prune(atom))
+        {
+            vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
+        }
     }
     for (const auto& atom : m_pddl_factories->get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()))
     {
-        vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
+        if (!pruning_strategy.prune(atom))
+        {
+            vertex_index = add_ground_atom_graph_structures(atom, vertex_index);
+        }
     }
 
     // Initialize goal literal vertices and edges
     for (const auto& literal : m_problem->get_goal_condition<Static>())
     {
-        vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
+        if (!pruning_strategy.prune(literal))
+        {
+            vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
+        }
     }
     for (const auto& literal : m_problem->get_goal_condition<Fluent>())
     {
-        vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
+        if (!pruning_strategy.prune(literal))
+        {
+            vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
+        }
     }
     for (const auto& literal : m_problem->get_goal_condition<Derived>())
     {
-        vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
+        if (!pruning_strategy.prune(literal))
+        {
+            vertex_index = add_ground_literal_graph_structures(state, literal, vertex_index);
+        }
     }
 
     // Initialize histogram

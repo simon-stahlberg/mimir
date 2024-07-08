@@ -56,6 +56,20 @@ public:
     const Partitioning& get_partitioning() const;
 };
 
+class ObjectGraphPruningStrategy
+{
+public:
+    virtual ~ObjectGraphPruningStrategy() = default;
+
+    virtual bool prune(const Object&) const { return false; };
+    virtual bool prune(const GroundAtom<Static>) const { return false; };
+    virtual bool prune(const GroundAtom<Fluent>) const { return false; };
+    virtual bool prune(const GroundAtom<Derived>) const { return false; };
+    virtual bool prune(const GroundLiteral<Static>) const { return false; }
+    virtual bool prune(const GroundLiteral<Fluent>) const { return false; }
+    virtual bool prune(const GroundLiteral<Derived>) const { return false; }
+};
+
 class ObjectGraphFactory
 {
 private:
@@ -83,7 +97,7 @@ public:
     ObjectGraphFactory(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, bool mark_true_goal_literals = false);
 
     /// @brief Create and return a reference to the object graph.
-    const ObjectGraph& create(State state);
+    const ObjectGraph& create(State state, const ObjectGraphPruningStrategy& pruning_strategy = ObjectGraphPruningStrategy());
 
     const std::shared_ptr<const ProblemColorFunction>& get_coloring_function() const;
 };
