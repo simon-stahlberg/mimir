@@ -15,14 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_GROUPED_VECTOR_HPP_
-#define MIMIR_COMMON_GROUPED_VECTOR_HPP_
+#ifndef MIMIR_COMMON_INDEX_GROUPED_VECTOR_HPP_
+#define MIMIR_COMMON_INDEX_GROUPED_VECTOR_HPP_
+
+#include "mimir/common/printers.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <functional>
+#include <iostream>
 #include <span>
+#include <string>
 #include <vector>
 
 namespace mimir
@@ -34,16 +39,16 @@ namespace mimir
  * Example:
  *
  * Input:
- *  - vec                     = [(0,2),(2,5),(0,3),(2,4)]
+ *  - vec                     = [(2,3),(0,2),(2,0),(0,2)]
  *  - num_groups              = 4
- *  - sort comparator  (l,r) := l[0] < r[0]
+ *  - sort comparator  (l,r) := if l[0] == r[0]: return l[1] < r[1] else l[0] < r[0]
  *  - group comparator (l,r) := l[0] < r[0]
- *  - group retriever  (x)   :=x[0]
+ *  - group retriever  (x)   := x[0]
  *
  * Output:
- *   - vec       = [(0,2),(0,3),(2,4),(2,5)]
- *   - (indices) = [0,1,2,3,4]
- *   - groups    = [0,2,2,4,4,4]
+ *   - vec       = [(0,2),(0,2),(2,0),(2,3)]
+ *   - (indices) = [0,1,2,3]
+ *   - groups    = [0,2,2,4,4]
  *
  * Accessors:
  *   - get_groups(0) = span(0,2)
@@ -74,51 +79,58 @@ concept IsGroupRetriever = requires(T a, U u) {
     // Require an operator to retrieve the index of T to be able to add skipped group begin indices.
     {
         a(u)
-    } -> std::same_as<size_t>;
+    } -> std::unsigned_integral;
 };
 
-template<typename T, typename SortComparator, typename GroupComparator, typename GroupRetriever>
-    requires IsSortComparator<SortComparator, T> && IsGroupComparator<GroupComparator, T> && IsGroupRetriever<GroupRetriever, T>
+template<typename T>
 class IndexGroupedVector
 {
 private:
     std::vector<T> m_vec;
     std::vector<size_t> m_groups_begin;
 
+    IndexGroupedVector(std::vector<T> vec, std::vector<size_t> groups_begin) : m_vec(std::move(vec)), m_groups_begin(std::move(groups_begin)) {}
+
 public:
-    IndexGroupedVector(std::vector<T> vec,
-                       size_t num_groups,
-                       SortComparator sort_comparator,
-                       GroupComparator group_comparator,
-                       GroupRetriever group_retriever) :
-        m_vec(std::move(vec)),
-        m_groups_begin()
+    IndexGroupedVector() = default;
+
+    template<typename SortComparator, typename GroupComparator, typename GroupRetriever>
+        requires IsSortComparator<SortComparator, T> && IsGroupComparator<GroupComparator, T> && IsGroupRetriever<GroupRetriever, T>
+    static IndexGroupedVector<T>
+    create(std::vector<T> vec, size_t num_groups, SortComparator sort_comparator, GroupComparator group_comparator, GroupRetriever group_retriever)
     {
         /* Sort */
 
-        std::sort(m_vec.begin(), m_vec.end(), sort_comparator);
+        std::sort(vec.begin(), vec.end(), sort_comparator);
 
         /* Group */
 
+        auto groups_begin = std::vector<size_t> {};
         // Push begin of first group.
-        m_groups_begin.push_back(0);
-        for (size_t i = 1; i < m_vec.size(); ++i)
+        groups_begin.push_back(0);
+        for (size_t i = 1; i < vec.size(); ++i)
         {
-            if (group_comparator(m_vec[i - 1], m_vec[i]))
+            if (group_comparator(vec[i - 1], vec[i]))
             {
-                // true comparison yields begin of new group
                 // Write begin i for skipped groups.
-                while (m_groups_begin.size() < group_retriever(m_vec[i]))
+                while (groups_begin.size() < group_retriever(vec[i]))
                 {
-                    m_groups_begin.push_back(i);
+                    groups_begin.push_back(i);
                 }
+                if (groups_begin.size() != group_retriever(vec[i]))
+                {
+                    throw std::logic_error("IndexGroupedVector::create: group comparator must compare group retrievers index.");
+                }
+                groups_begin.push_back(i);
             }
         }
         // Set begin of remaining groups + end of last group.
-        while (m_groups_begin.size() <= num_groups)
+        while (groups_begin.size() <= num_groups)
         {
-            m_groups_begin.push_back(m_vec.size());
+            groups_begin.push_back(vec.size());
         }
+
+        return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
     }
 
     std::span<T> get_group(size_t pos) const
@@ -129,6 +141,7 @@ public:
     }
 
     const std::vector<T> get_vector() const { return m_vec; }
+    const std::vector<size_t> get_groups_begin() const { return m_groups_begin; }
 };
 
 }

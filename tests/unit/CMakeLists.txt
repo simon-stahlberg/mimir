@@ -15,6 +15,7 @@ set(TEST_NAME ${CMAKE_PROJECT_NAME}_tests)
 
 add_executable(${TEST_NAME}
     "algorithms/memory_pool.cpp"
+    "common/grouped_vector.cpp"
     "datasets/faithful_abstraction.cpp"
     "datasets/global_faithful_abstraction.cpp"
     "datasets/state_space.cpp"
