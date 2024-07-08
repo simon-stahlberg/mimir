@@ -34,10 +34,12 @@
 namespace boost
 {
 
+/// A tag for a graph that is both a vertex list graph and an incidence graph.
 struct vertex_list_and_incidence_graph_tag : public vertex_list_graph_tag, public incidence_graph_tag
 {
 };
 
+/// Traits for a transition system that are needed for the boost graph library.
 template<mimir::IsTransitionSystem TransitionSystem>
 struct graph_traits<TransitionSystem>
 {
@@ -65,6 +67,9 @@ namespace mimir
 
 /* boost::VertexListGraph */
 
+/// @brief Get the vertices of the transition system.
+/// @param g the transition system.
+/// @return an iterator-range providing access to all the vertices in the transition system.
 template<IsTransitionSystem TransitionSystem>
 std::pair<typename boost::graph_traits<TransitionSystem>::vertex_iterator, typename boost::graph_traits<TransitionSystem>::vertex_iterator>
 vertices(const TransitionSystem& g)
@@ -76,6 +81,9 @@ vertices(const TransitionSystem& g)
     return std::make_pair(range.begin(), range.end());
 }
 
+/// @brief Get the number of vertices in the transition system.
+/// @param g the transition system.
+/// @return the number of vertices in the transition system.
 template<IsTransitionSystem TransitionSystem>
 boost::graph_traits<TransitionSystem>::vertices_size_type num_vertices(const TransitionSystem& g)
 {
@@ -84,6 +92,10 @@ boost::graph_traits<TransitionSystem>::vertices_size_type num_vertices(const Tra
 
 /* boost::IncidenceGraph */
 
+/// @brief Get the source state of a transition.
+/// @param e the transition.
+/// @param g the transition system.
+/// @return the source state of the transition.
 template<IsTransitionSystem TransitionSystem>
 typename boost::graph_traits<TransitionSystem>::vertex_descriptor source(const typename boost::graph_traits<TransitionSystem>::edge_descriptor& e,
                                                                          const TransitionSystem& g)
@@ -91,6 +103,10 @@ typename boost::graph_traits<TransitionSystem>::vertex_descriptor source(const t
     return g.get_transitions()[e].get_source_state();
 }
 
+/// @brief Get the target state of a transition.
+/// @param e the transition.
+/// @param g the transition system.
+/// @return the target state of the transition.
 template<IsTransitionSystem TransitionSystem>
 typename boost::graph_traits<TransitionSystem>::vertex_descriptor target(const typename boost::graph_traits<TransitionSystem>::edge_descriptor& e,
                                                                          const TransitionSystem& g)
@@ -98,6 +114,9 @@ typename boost::graph_traits<TransitionSystem>::vertex_descriptor target(const t
     return g.get_transitions()[e].get_target_state();
 }
 
+/// @brief Get the transitions of the transition system.
+/// @param g the transition system.
+/// @return an iterator-range providing access to all the forward transitions (i.e., the out edges) in the transition system.
 template<IsTransitionSystem TransitionSystem>
 std::pair<typename boost::graph_traits<TransitionSystem>::out_edge_iterator, typename boost::graph_traits<TransitionSystem>::out_edge_iterator>
 out_edges(typename boost::graph_traits<TransitionSystem>::vertex_descriptor const& u, const TransitionSystem& g)
@@ -105,6 +124,10 @@ out_edges(typename boost::graph_traits<TransitionSystem>::vertex_descriptor cons
     return { g.get_forward_transition_indices(u).begin(), g.get_forward_transition_indices(u).end() };
 }
 
+/// @brief Get the number of out edges of a state.
+/// @param u the state.
+/// @param g the transition system.
+/// @return the number of out edges of the state.
 template<IsTransitionSystem TransitionSystem>
 boost::graph_traits<TransitionSystem>::degree_size_type out_degree(typename boost::graph_traits<TransitionSystem>::vertex_descriptor const& u,
                                                                    const TransitionSystem& g)
@@ -119,6 +142,7 @@ boost::graph_traits<TransitionSystem>::degree_size_type out_degree(typename boos
 // To avoid storing a map of the size of the graph, we provide a custom index that just returns the key.
 namespace mimir
 {
+/// @brief A property map that maps a vertex to its index.
 struct IdIsIndexVertexIndex
 {
 };
@@ -126,6 +150,8 @@ struct IdIsIndexVertexIndex
 
 namespace boost
 {
+
+/// @brief Traits for the IdIsIndexVertexIndex property map, required for boost::strong_components.
 template<>
 struct property_traits<mimir::IdIsIndexVertexIndex>
 {
@@ -134,17 +160,23 @@ struct property_traits<mimir::IdIsIndexVertexIndex>
     using reference = mimir::StateIndex;
     using category = boost::readable_property_map_tag;
 };
+
 }
 
 namespace mimir
 {
 
+/// @brief Get the index of a state.
+/// @param key the state.
+/// @return the index of the state, which is just the input key.
 inline boost::property_traits<IdIsIndexVertexIndex>::reference get(IdIsIndexVertexIndex, boost::property_traits<IdIsIndexVertexIndex>::key_type key)
 {
     return key;
 }
 
-// Wrapper function for boost's strong_components algorithm.
+/// @brief Wrapper function for boost's strong_components algorithm.
+/// @param g the transition system.
+/// @return a pair of the number of strong components and a map from state to component.
 template<IsTransitionSystem TransitionSystem>
 std::pair<typename boost::graph_traits<TransitionSystem>::vertices_size_type,
           std::map<typename boost::graph_traits<TransitionSystem>::vertex_descriptor, typename boost::graph_traits<TransitionSystem>::vertices_size_type>>
