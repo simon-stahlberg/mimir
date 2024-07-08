@@ -673,16 +673,14 @@ void init_pymimir(py::module_& m)
     /* AAGs */
 
     py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
-        .def(
-            "compute_applicable_actions",
-            [](IAAG& self, State state)
-            {
-                auto applicable_actions = GroundActionList {};
-                self.generate_applicable_actions(state, applicable_actions);
-                return applicable_actions;
-            },
-            py::return_value_policy::reference_internal)
-        .def("get_action", &IAAG::get_action, py::return_value_policy::reference_internal)
+        .def("compute_applicable_actions",
+             [](IAAG& self, State state)
+             {
+                 auto applicable_actions = GroundActionList {};
+                 self.generate_applicable_actions(state, applicable_actions);
+                 return applicable_actions;
+             })                                // reference_internal does not work because State is value type
+        .def("get_action", &IAAG::get_action)  // reference_internal does not work because State is value type
         .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &IAAG::get_pddl_factories);
 
@@ -711,9 +709,11 @@ void init_pymimir(py::module_& m)
     /* SuccessorStateGenerator */
     py::class_<SuccessorStateGenerator, std::shared_ptr<SuccessorStateGenerator>>(m, "SuccessorStateGenerator")  //
         .def(py::init<std::shared_ptr<IAAG>>())
-        .def("get_or_create_initial_state", &SuccessorStateGenerator::get_or_create_initial_state, py::return_value_policy::reference_internal)
-        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state, py::return_value_policy::reference_internal)
-        .def("get_or_create_successor_state", &SuccessorStateGenerator::get_or_create_successor_state, py::return_value_policy::reference_internal)
+        .def("get_or_create_initial_state",
+             &SuccessorStateGenerator::get_or_create_initial_state)                 // reference_internal does not work because State is value type
+        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state)  // reference_internal does not work because State is value type
+        .def("get_or_create_successor_state",
+             &SuccessorStateGenerator::get_or_create_successor_state)  // reference_internal does not work because State is value type
         .def("get_state_count", &SuccessorStateGenerator::get_state_count)
         .def(
             "get_reached_fluent_ground_atoms",

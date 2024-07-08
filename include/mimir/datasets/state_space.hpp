@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_STATE_SPACE_HPP_
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
+#include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/iterators.hpp"
 #include "mimir/datasets/transition_system_interface.hpp"
 #include "mimir/datasets/transitions.hpp"
@@ -62,8 +63,7 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Transitions */
-    TransitionList m_transitions;
-    BeginIndexList m_transitions_begin_by_source;
+    IndexGroupedVector<Transition> m_transitions;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -85,8 +85,7 @@ private:
                StateIndex initial_state,
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
-               TransitionList transitions,
-               BeginIndexList transitions_begin_by_source,
+               IndexGroupedVector<Transition> transitions,
                std::vector<double> goal_distances);
 
 public:
@@ -190,7 +189,6 @@ public:
 
     /* Transitions */
     const TransitionList& get_transitions() const;
-    const BeginIndexList& get_transitions_begin_by_source() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     ForwardTransitionIndexIterator<Transition> get_forward_transition_indices(StateIndex source) const;
     BackwardTransitionIndexIterator<Transition> get_backward_transition_indices(StateIndex target) const;

@@ -40,8 +40,7 @@ StateSpace::StateSpace(Problem problem,
                        StateIndex initial_state,
                        StateIndexSet goal_states,
                        StateIndexSet deadend_states,
-                       TransitionList transitions,
-                       BeginIndexList transitions_begin_by_source,
+                       IndexGroupedVector<Transition> transitions,
                        std::vector<double> goal_distances) :
     m_problem(problem),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -54,7 +53,6 @@ StateSpace::StateSpace(Problem problem,
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
-    m_transitions_begin_by_source(std::move(transitions_begin_by_source)),
     m_goal_distances(std::move(goal_distances)),
     m_states_by_goal_distance()
 {
@@ -168,9 +166,8 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         }
     }
 
-    // Sort transitions by source state.
+    /* Sort transitions by source state and recreate indexing. */
     std::sort(transitions.begin(), transitions.end(), [](const auto& l, const auto& r) { return l.get_source_state() < r.get_source_state(); });
-    // Adapt indices
     auto transition_index = TransitionIndex { 0 };
     std::transform(transitions.begin(),
                    transitions.end(),
@@ -178,31 +175,15 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
                    [&transition_index](const auto& transition)
                    { return Transition(transition_index++, transition.get_source_state(), transition.get_target_state(), transition.get_creating_action()); });
 
-    auto transitions_begin_by_source = BeginIndexList {};
-    // Set begin of first state index.
-    transitions_begin_by_source.push_back(0);
-    // Set begin of intermediate state indices.
-    for (size_t i = 1; i < transitions.size(); ++i)
-    {
-        const auto& prev_transition = transitions.at(i - 1);
-        const auto& cur_transition = transitions.at(i);
-        if (prev_transition.get_source_state() != cur_transition.get_source_state())
-        {
-            // Write begin i for skipped source indices.
-            while (transitions_begin_by_source.size() < cur_transition.get_source_state())
-            {
-                transitions_begin_by_source.push_back(i);
-            }
-            // Ensure that begin i for source is written into transitions_begin_by_source[source]
-            assert(cur_transition.get_source_state() == transitions_begin_by_source.size());
-            transitions_begin_by_source.push_back(i);
-        }
-    }
-    // Set begin of remaining states + end of last state.
-    while (transitions_begin_by_source.size() <= states.size())
-    {
-        transitions_begin_by_source.push_back(transitions.size());
-    }
+    /* Group transitions by source, keep sorting by index for correct retrieval since transitions were already sorted before. */
+    auto transitions_sort_comparator = [](const Transition& l, const Transition& r) { return l.get_index() < r.get_index(); };
+    auto transitions_group_comparator = transitions_sort_comparator;
+    auto transitions_index_retriever = [](const Transition& e) { return static_cast<size_t>(e.get_source_state()); };
+    auto grouped_transitions = IndexGroupedVector<Transition>::create(std::move(transitions),
+                                                                      states.size(),
+                                                                      transitions_sort_comparator,
+                                                                      transitions_group_comparator,
+                                                                      transitions_index_retriever);
 
     return StateSpace(problem,
                       use_unit_cost_one,
@@ -214,8 +195,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
                       initial_state_index,
                       std::move(goal_states),
                       std::move(deadend_states),
-                      std::move(transitions),
-                      std::move(transitions_begin_by_source),
+                      std::move(grouped_transitions),
                       std::move(goal_distances));
 }
 
@@ -319,13 +299,12 @@ const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_s
 
 TargetStateIndexIterator<Transition> StateSpace::get_target_states(StateIndex source) const
 {
-    return TargetStateIndexIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
-                                                                            m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+    return TargetStateIndexIterator<Transition>(m_transitions.get_group(source));
 }
 
 SourceStateIndexIterator<Transition> StateSpace::get_source_states(StateIndex target) const
 {
-    return SourceStateIndexIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
+    return SourceStateIndexIterator<Transition>(target, m_transitions.get_vector());
 }
 
 size_t StateSpace::get_num_states() const { return get_states().size(); }
@@ -341,35 +320,34 @@ bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_s
 bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
-const TransitionList& StateSpace::get_transitions() const { return m_transitions; }
+const TransitionList& StateSpace::get_transitions() const { return m_transitions.get_vector(); }
 
-const BeginIndexList& StateSpace::get_transitions_begin_by_source() const { return m_transitions_begin_by_source; }
-
-TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const { return (m_use_unit_cost_one) ? 1 : m_transitions.at(transition).get_cost(); }
+TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const
+{
+    return (m_use_unit_cost_one) ? 1 : m_transitions.get_vector().at(transition).get_cost();
+}
 
 ForwardTransitionIndexIterator<Transition> StateSpace::get_forward_transition_indices(StateIndex source) const
 {
-    return ForwardTransitionIndexIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
-                                                                                  m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+    return ForwardTransitionIndexIterator<Transition>(m_transitions.get_group(source));
 }
 
 BackwardTransitionIndexIterator<Transition> StateSpace::get_backward_transition_indices(StateIndex target) const
 {
-    return BackwardTransitionIndexIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
+    return BackwardTransitionIndexIterator<Transition>(target, m_transitions.get_vector());
 }
 
 ForwardTransitionIterator<Transition> StateSpace::get_forward_transitions(StateIndex source) const
 {
-    return ForwardTransitionIterator<Transition>(std::span<const Transition>(m_transitions.begin() + m_transitions_begin_by_source.at(source),
-                                                                             m_transitions.begin() + m_transitions_begin_by_source.at(source + 1)));
+    return ForwardTransitionIterator<Transition>(m_transitions.get_group(source));
 }
 
 BackwardTransitionIterator<Transition> StateSpace::get_backward_transitions(StateIndex target) const
 {
-    return BackwardTransitionIterator<Transition>(target, std::span<const Transition>(m_transitions.begin(), m_transitions.end()));
+    return BackwardTransitionIterator<Transition>(target, m_transitions.get_vector());
 }
 
-size_t StateSpace::get_num_transitions() const { return m_transitions.size(); }
+size_t StateSpace::get_num_transitions() const { return m_transitions.get_vector().size(); }
 
 /* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }

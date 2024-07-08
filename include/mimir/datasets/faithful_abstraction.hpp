@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 
+#include "mimir/common/grouped_vector.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/abstraction_interface.hpp"

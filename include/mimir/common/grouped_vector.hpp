@@ -92,8 +92,6 @@ private:
     IndexGroupedVector(std::vector<T> vec, std::vector<size_t> groups_begin) : m_vec(std::move(vec)), m_groups_begin(std::move(groups_begin)) {}
 
 public:
-    IndexGroupedVector() = default;
-
     template<typename SortComparator, typename GroupComparator, typename GroupRetriever>
         requires IsSortComparator<SortComparator, T> && IsGroupComparator<GroupComparator, T> && IsGroupRetriever<GroupRetriever, T>
     static IndexGroupedVector<T>
@@ -131,18 +129,26 @@ public:
             groups_begin.push_back(vec.size());
         }
 
+        // std::cout << "vec_data: [";
+        // for (const auto& e : vec)
+        // {
+        //     std::cout << group_retriever(e) << ",";
+        // }
+        // std::cout << "]" << std::endl;
+        // std::cout << "groups_begin: " << groups_begin << std::endl;
+
         return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
     }
 
-    std::span<T> get_group(size_t pos) const
+    std::span<const T> get_group(size_t pos) const
     {
-        return std::span<T>(  //
+        return std::span<const T>(  //
             m_vec.begin() + m_groups_begin.at(pos),
             m_vec.begin() + m_groups_begin.at(pos + 1));
     }
 
-    const std::vector<T> get_vector() const { return m_vec; }
-    const std::vector<size_t> get_groups_begin() const { return m_groups_begin; }
+    const std::vector<T>& get_vector() const { return m_vec; }
+    const std::vector<size_t>& get_groups_begin() const { return m_groups_begin; }
 };
 
 }
