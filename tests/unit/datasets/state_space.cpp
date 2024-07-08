@@ -2,6 +2,8 @@
 
 #include "mimir/datasets/boost_adapter.hpp"
 
+#include <boost/graph/graph_concepts.hpp>
+#include <boost/graph/properties.hpp>
 #include <gtest/gtest.h>
 
 namespace mimir::tests
@@ -75,5 +77,40 @@ TEST(MimirTests, DatasetsStateSpaceIncidenceGraphTest)
     // pick(ball1, rooma, right), pick(ball1, rooma, left), pick(ball2, rooma, right), pick(ball2, rooma, left)
     // move(rooma, rooma), move(rooma, roomb)
     EXPECT_EQ(out_degree(state_space.get_initial_state(), state_space), 6);
+}
+
+TEST(MimirTests, DatasetsStateSpaceStrongComponentsTest)
+{
+    {
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+        const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+        const auto state_space = StateSpace::create(domain_file, problem_file).value();
+        const auto [num_components, component_map] = strong_components(state_space);
+        EXPECT_EQ(num_components, 1);
+        for (auto [it, last] = vertices(state_space); it != last; ++it)
+        {
+            EXPECT_EQ(component_map.at(*it), 0);
+        }
+    }
+    {
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
+        const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
+        const auto state_space = StateSpace::create(domain_file, problem_file).value();
+        const auto [num_components, component_map] = strong_components(state_space);
+
+        // Each state should have its own component.
+        EXPECT_EQ(num_components, num_vertices(state_space));
+
+        // Each component should only have one state.
+        std::map<size_t, size_t> num_states_per_component;
+        for (auto [it, last] = vertices(state_space); it != last; ++it)
+        {
+            num_states_per_component[component_map.at(*it)]++;
+        }
+        for (const auto& [key, val] : num_states_per_component)
+        {
+            EXPECT_EQ(val, 1);
+        }
+    }
 }
 }
