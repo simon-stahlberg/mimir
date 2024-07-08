@@ -124,17 +124,21 @@ struct IdIsIndexVertexIndex
 };
 }
 
+namespace boost
+{
 template<>
-struct boost::property_traits<mimir::IdIsIndexVertexIndex>
+struct property_traits<mimir::IdIsIndexVertexIndex>
 {
     using value_type = mimir::StateIndex;
     using key_type = mimir::StateIndex;
     using reference = mimir::StateIndex;
     using category = boost::readable_property_map_tag;
 };
+}
 
 namespace mimir
 {
+
 inline boost::property_traits<IdIsIndexVertexIndex>::reference get(IdIsIndexVertexIndex, boost::property_traits<IdIsIndexVertexIndex>::key_type key)
 {
     return key;
@@ -151,14 +155,12 @@ strong_components(const TransitionSystem& g)
     const auto num_components = boost::strong_components(g, component_map_property, boost::vertex_index_map(IdIsIndexVertexIndex()));
     return std::make_pair(num_components, component_map);
 }
-}
 
-namespace mimir
-{
 /* Assert that the concepts are satisfied */
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<StateSpace>) );
 BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<StateSpace>) );
 BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<StateSpace>) );
+
 }
 
 #endif
