@@ -37,7 +37,7 @@ bool Certificate::operator==(const Certificate& other) const
 
 size_t Certificate::hash() const { return loki::hash_combine(m_nauty_certificate, loki::hash_container(m_canonical_initial_coloring)); }
 
-const std::string Certificate::get_nauty_certificate() const { return m_nauty_certificate; }
+const std::string& Certificate::get_nauty_certificate() const { return m_nauty_certificate; }
 
 const ColorList& Certificate::get_canonical_initial_coloring() const { return m_canonical_initial_coloring; }
 

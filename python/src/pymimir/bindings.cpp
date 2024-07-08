@@ -222,7 +222,10 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionImpl>::str, py::const_))
         .def("get_identifier", &FunctionImpl::get_identifier)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def("get_terms", [](const FunctionImpl& function) { return to_term_variant_list(function.get_terms()); });
+        .def(
+            "get_terms",
+            [](const FunctionImpl& function) { return to_term_variant_list(function.get_terms()); },
+            py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionImpl>(m, "GroundFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionImpl>::str, py::const_))
@@ -373,8 +376,10 @@ void init_pymimir(py::module_& m)
     py::class_<FunctionExpressionMinusImpl>(m, "FunctionExpressionMinus")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMinusImpl>::str, py::const_))
         .def("get_identifier", &FunctionExpressionMinusImpl::get_identifier)
-        .def("get_function_expression",
-             [](const FunctionExpressionMinusImpl& function_expression) { return FunctionExpressionVariant(function_expression.get_function_expression()); });
+        .def(
+            "get_function_expression",
+            [](const FunctionExpressionMinusImpl& function_expression) { return FunctionExpressionVariant(function_expression.get_function_expression()); },
+            py::return_value_policy::reference_internal);
     ;
 
     py::class_<FunctionExpressionFunctionImpl>(m, "FunctionExpressionFunction")  //
@@ -483,9 +488,11 @@ void init_pymimir(py::module_& m)
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
         .def("get_identifier", &DomainImpl::get_identifier)
-        .def("get_filepath",
-             [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; })
-        .def("get_name", &DomainImpl::get_name, py::return_value_policy::reference_internal)
+        .def(
+            "get_filepath",
+            [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; },
+            py::return_value_policy::copy)
+        .def("get_name", &DomainImpl::get_name, py::return_value_policy::copy)
         .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference_internal)
         .def(
             "get_static_predicates",
@@ -518,9 +525,11 @@ void init_pymimir(py::module_& m)
     py::class_<ProblemImpl>(m, "Problem")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ProblemImpl>::str, py::const_))
         .def("get_identifier", &ProblemImpl::get_identifier)
-        .def("get_filepath",
-             [](const ProblemImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; })
-        .def("get_name", &ProblemImpl::get_name, py::return_value_policy::reference_internal)
+        .def(
+            "get_filepath",
+            [](const ProblemImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; },
+            py::return_value_policy::copy)
+        .def("get_name", &ProblemImpl::get_name, py::return_value_policy::copy)
         .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference_internal)
         .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference_internal)
         .def("get_objects", &ProblemImpl::get_objects, py::return_value_policy::reference_internal)
@@ -589,18 +598,22 @@ void init_pymimir(py::module_& m)
     py::class_<State>(m, "State")  //
         .def("__hash__", &State::hash)
         .def("__eq__", &State::operator==)
-        .def("get_fluent_atoms",
-             [](State self)
-             {
-                 auto atoms = self.get_atoms<Fluent>();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             })
-        .def("get_derived_atoms",
-             [](State self)
-             {
-                 auto atoms = self.get_atoms<Derived>();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             })
+        .def(
+            "get_fluent_atoms",
+            [](State self)
+            {
+                auto atoms = self.get_atoms<Fluent>();
+                return std::vector<size_t>(atoms.begin(), atoms.end());
+            },
+            py::return_value_policy::reference_internal)
+        .def(
+            "get_derived_atoms",
+            [](State self)
+            {
+                auto atoms = self.get_atoms<Derived>();
+                return std::vector<size_t>(atoms.begin(), atoms.end());
+            },
+            py::return_value_policy::reference_internal)
         .def("contains", py::overload_cast<GroundAtom<Fluent>>(&State::contains<Fluent>, py::const_))
         .def("contains", py::overload_cast<GroundAtom<Derived>>(&State::contains<Derived>, py::const_))
         .def("superset_of", py::overload_cast<const GroundAtomList<Fluent>&>(&State::superset_of<Fluent>, py::const_))
@@ -623,16 +636,18 @@ void init_pymimir(py::module_& m)
         .def("__hash__", &GroundAction::hash)
         .def("__eq__", &GroundAction::operator==)
         .def("get_name", [](GroundAction self) { return self.get_action()->get_name(); })
-        .def("get_terms",
-             [](GroundAction self)
-             {
-                 ObjectList terms;
-                 for (const auto& object : self.get_objects())
-                 {
-                     terms.emplace_back(object);
-                 }
-                 return terms;
-             })
+        .def(
+            "get_terms",
+            [](GroundAction self)
+            {
+                ObjectList terms;
+                for (const auto& object : self.get_objects())
+                {
+                    terms.emplace_back(object);
+                }
+                return terms;
+            },
+            py::return_value_policy::reference_internal)
         .def("to_string",
              [](GroundAction self, PDDLFactories& pddl_factories)
              {
@@ -696,22 +711,26 @@ void init_pymimir(py::module_& m)
     /* SuccessorStateGenerator */
     py::class_<SuccessorStateGenerator, std::shared_ptr<SuccessorStateGenerator>>(m, "SuccessorStateGenerator")  //
         .def(py::init<std::shared_ptr<IAAG>>())
-        .def("get_or_create_initial_state", &SuccessorStateGenerator::get_or_create_initial_state)
-        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state)
-        .def("get_or_create_successor_state", &SuccessorStateGenerator::get_or_create_successor_state)
+        .def("get_or_create_initial_state", &SuccessorStateGenerator::get_or_create_initial_state, py::return_value_policy::reference_internal)
+        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state, py::return_value_policy::reference_internal)
+        .def("get_or_create_successor_state", &SuccessorStateGenerator::get_or_create_successor_state, py::return_value_policy::reference_internal)
         .def("get_state_count", &SuccessorStateGenerator::get_state_count)
-        .def("get_reached_fluent_ground_atoms",
-             [](const SuccessorStateGenerator& self)
-             {
-                 const auto& atoms = self.get_reached_fluent_ground_atoms();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             })
-        .def("get_reached_derived_ground_atoms",
-             [](const SuccessorStateGenerator& self)
-             {
-                 const auto& atoms = self.get_reached_derived_ground_atoms();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             });
+        .def(
+            "get_reached_fluent_ground_atoms",
+            [](const SuccessorStateGenerator& self)
+            {
+                const auto& atoms = self.get_reached_fluent_ground_atoms();
+                return std::vector<size_t>(atoms.begin(), atoms.end());
+            },
+            py::return_value_policy::reference_internal)
+        .def(
+            "get_reached_derived_ground_atoms",
+            [](const SuccessorStateGenerator& self)
+            {
+                const auto& atoms = self.get_reached_derived_ground_atoms();
+                return std::vector<size_t>(atoms.begin(), atoms.end());
+            },
+            py::return_value_policy::reference_internal);
 
     /* Heuristics */
     py::class_<IHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic");
@@ -843,7 +862,7 @@ void init_pymimir(py::module_& m)
         .def("get_state_space", &TupleGraph::get_state_space)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
         .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
-        .def("get_root_state", &TupleGraph::get_root_state)
+        .def("get_root_state", &TupleGraph::get_root_state, py::return_value_policy::reference_internal)
         .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference_internal)
         .def("get_forward_successors", &TupleGraph::get_forward_successors, py::return_value_policy::reference_internal)
         .def("get_backward_successors", &TupleGraph::get_backward_successors, py::return_value_policy::reference_internal)
@@ -883,7 +902,7 @@ void init_pymimir(py::module_& m)
     // DenseNautyGraphFactory
     py::class_<nauty_wrapper::DenseGraphFactory>(m, "DenseNautyGraphFactory")  //
         .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_digraph);
+        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_digraph, py::return_value_policy::reference_internal);
 
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
@@ -896,7 +915,7 @@ void init_pymimir(py::module_& m)
     // SparseNautyGraphFactory
     py::class_<nauty_wrapper::SparseGraphFactory>(m, "SparseNautyGraphFactory")  //
         .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph);
+        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph, py::return_value_policy::reference_internal);
 
     // DigraphEdge
     py::class_<DigraphEdge>(m, "DigraphEdge")
@@ -1023,7 +1042,7 @@ void init_pymimir(py::module_& m)
         .def("get_source_state", &Transition::get_source_state)
         .def("get_target_state", &Transition::get_target_state)
         .def("get_cost", &Transition::get_cost)
-        .def("get_creating_action", &Transition::get_creating_action);
+        .def("get_creating_action", &Transition::get_creating_action, py::return_value_policy::reference_internal);
 
     // AbstractTransition
     py::class_<AbstractTransition>(m, "AbstractTransition")  //
@@ -1033,8 +1052,11 @@ void init_pymimir(py::module_& m)
         .def("get_source_state", &AbstractTransition::get_source_state)
         .def("get_target_state", &AbstractTransition::get_target_state)
         .def("get_cost", &AbstractTransition::get_cost)
-        .def("get_actions", [](const AbstractTransition& self) { return GroundActionList(self.get_actions().begin(), self.get_actions().end()); })
-        .def("get_representative_action", &AbstractTransition::get_representative_action);
+        .def(
+            "get_actions",
+            [](const AbstractTransition& self) { return GroundActionList(self.get_actions().begin(), self.get_actions().end()); },
+            py::return_value_policy::reference_internal)
+        .def("get_representative_action", &AbstractTransition::get_representative_action, py::return_value_policy::reference_internal);
 
     // StateSpace
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
@@ -1275,7 +1297,10 @@ void init_pymimir(py::module_& m)
     // FaithfulAbstraction
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_index", &FaithfulAbstractState::get_index)
-        .def("get_states", [](const FaithfulAbstractState& self) { return std::vector<State>(self.get_states().begin(), self.get_states().end()); })
+        .def(
+            "get_states",
+            [](const FaithfulAbstractState& self) { return std::vector<State>(self.get_states().begin(), self.get_states().end()); },
+            py::return_value_policy::reference_internal)
         .def("get_representative_state", &FaithfulAbstractState::get_representative_state)
         .def("get_certificate", &FaithfulAbstractState::get_certificate, py::return_value_policy::reference_internal);
 

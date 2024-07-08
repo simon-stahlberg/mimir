@@ -38,7 +38,7 @@ public:
     [[nodiscard]] bool operator==(const Certificate& other) const;
     [[nodiscard]] size_t hash() const;
 
-    const std::string get_nauty_certificate() const;
+    const std::string& get_nauty_certificate() const;
     const ColorList& get_canonical_initial_coloring() const;
 };
 
