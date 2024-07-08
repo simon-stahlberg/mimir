@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSFORMERS_POSITIVE_NORMAL_FORM_HPP_
-#define MIMIR_FORMALISM_TRANSFORMERS_POSITIVE_NORMAL_FORM_HPP_
+#ifndef MIMIR_FORMALISM_TRANSFORMERS_TO_POSITIVE_NORMAL_FORM_HPP_
+#define MIMIR_FORMALISM_TRANSFORMERS_TO_POSITIVE_NORMAL_FORM_HPP_
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/formalism/transformers/base_cached_recurse.hpp"
@@ -24,15 +24,15 @@
 namespace mimir
 {
 
-class PositiveNormalFormTransformer : public BaseCachedRecurseTransformer<PositiveNormalFormTransformer>
+class ToPositiveNormalFormTransformer : public BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>
 {
 private:
     /* Implement BaseTransformer interface. */
-    friend class BaseCachedRecurseTransformer<PositiveNormalFormTransformer>;
+    friend class BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>;
 
     // Provide default implementations
-    using BaseCachedRecurseTransformer<PositiveNormalFormTransformer>::prepare_impl;
-    using BaseCachedRecurseTransformer<PositiveNormalFormTransformer>::transform_impl;
+    using BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>::prepare_impl;
+    using BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>::transform_impl;
 
     /* Prepare step */
 
@@ -78,7 +78,7 @@ private:
     Domain transform_impl(const DomainImpl& domain);
 
 public:
-    explicit PositiveNormalFormTransformer(PDDLFactories& pddl_factories);
+    explicit ToPositiveNormalFormTransformer(PDDLFactories& pddl_factories);
 };
 
 /**
@@ -86,10 +86,10 @@ public:
  */
 
 template<PredicateCategory P>
-void PositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& conditions,
-                                                         const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals,
-                                                         LiteralList<P>& ref_transformed_conditions,
-                                                         LiteralList<Derived>& ref_transformed_derived_conditions)
+void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& conditions,
+                                                           const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals,
+                                                           LiteralList<P>& ref_transformed_conditions,
+                                                           LiteralList<Derived>& ref_transformed_derived_conditions)
 {
     for (const auto& literal : conditions)
     {
@@ -105,10 +105,10 @@ void PositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& c
 }
 
 template<PredicateCategory P>
-void PositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
-                                                  const LiteralSet<P>& negative_conditions,
-                                                  std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_duals,
-                                                  PredicateList<Derived>& ref_derived_predicates)
+void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
+                                                    const LiteralSet<P>& negative_conditions,
+                                                    std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_duals,
+                                                    PredicateList<Derived>& ref_derived_predicates)
 {
     out_negative_duals.clear();
     for (const auto& negative_literal : negative_conditions)
@@ -134,7 +134,7 @@ void PositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
 }
 
 template<PredicateCategory P>
-void PositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals, AxiomList& ref_axioms)
+void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals, AxiomList& ref_axioms)
 {
     for (const auto& [negative_literal, dual_positive_literal] : negative_duals)
     {

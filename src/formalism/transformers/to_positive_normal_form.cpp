@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/transformers/positive_normal_form.hpp"
+#include "mimir/formalism/transformers/to_positive_normal_form.hpp"
 
 namespace mimir
 {
@@ -36,27 +36,27 @@ static void collect_negative_conditions(const LiteralList<P>& conditions, Litera
     }
 }
 
-void PositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Static>& literal) { m_static_literals.insert(&literal); }
+void ToPositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Static>& literal) { m_static_literals.insert(&literal); }
 
-void PositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Fluent>& literal) { m_fluent_literals.insert(&literal); }
+void ToPositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Fluent>& literal) { m_fluent_literals.insert(&literal); }
 
-void PositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Derived>& literal) { m_derived_literals.insert(&literal); }
+void ToPositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Derived>& literal) { m_derived_literals.insert(&literal); }
 
-void PositiveNormalFormTransformer::prepare_impl(const EffectConditionalImpl& effect)
+void ToPositiveNormalFormTransformer::prepare_impl(const EffectConditionalImpl& effect)
 {
     collect_negative_conditions(effect.get_conditions<Static>(), m_negative_static_conditions);
     collect_negative_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_conditions);
     collect_negative_conditions(effect.get_conditions<Derived>(), m_negative_derived_conditions);
 }
 
-void PositiveNormalFormTransformer::prepare_impl(const EffectUniversalImpl& effect)
+void ToPositiveNormalFormTransformer::prepare_impl(const EffectUniversalImpl& effect)
 {
     collect_negative_conditions(effect.get_conditions<Static>(), m_negative_static_conditions);
     collect_negative_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_conditions);
     collect_negative_conditions(effect.get_conditions<Derived>(), m_negative_derived_conditions);
 }
 
-void PositiveNormalFormTransformer::prepare_impl(const ActionImpl& action)
+void ToPositiveNormalFormTransformer::prepare_impl(const ActionImpl& action)
 {
     collect_negative_conditions(action.get_conditions<Static>(), m_negative_static_conditions);
     collect_negative_conditions(action.get_conditions<Fluent>(), m_negative_fluent_conditions);
@@ -67,7 +67,7 @@ void PositiveNormalFormTransformer::prepare_impl(const ActionImpl& action)
  * Transform step
  */
 
-EffectConditional PositiveNormalFormTransformer::transform_impl(const EffectConditionalImpl& effect)
+EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectConditionalImpl& effect)
 {
     auto transformed_static_conditions = this->transform(effect.get_conditions<Static>());
     auto transformed_fluent_conditions = this->transform(effect.get_conditions<Fluent>());
@@ -83,7 +83,7 @@ EffectConditional PositiveNormalFormTransformer::transform_impl(const EffectCond
                                                                    this->transform(*effect.get_effect()));
 }
 
-EffectUniversal PositiveNormalFormTransformer::transform_impl(const EffectUniversalImpl& effect)
+EffectUniversal ToPositiveNormalFormTransformer::transform_impl(const EffectUniversalImpl& effect)
 {
     auto transformed_static_conditions = this->transform(effect.get_conditions<Static>());
     auto transformed_fluent_conditions = this->transform(effect.get_conditions<Fluent>());
@@ -100,7 +100,7 @@ EffectUniversal PositiveNormalFormTransformer::transform_impl(const EffectUniver
                                                                  this->transform(*effect.get_effect()));
 }
 
-Action PositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
+Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
 {
     auto transformed_static_conditions = this->transform(action.get_conditions<Static>());
     auto transformed_fluent_conditions = this->transform(action.get_conditions<Fluent>());
@@ -122,7 +122,7 @@ Action PositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
                                                        this->transform(*action.get_function_expression()));
 }
 
-Domain PositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
+Domain ToPositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
 {
     auto transformed_derived_predicates = this->transform(domain.get_predicates<Derived>());
     compute_duals(domain, m_negative_static_conditions, m_negative_static_duals, transformed_derived_predicates);
@@ -148,8 +148,8 @@ Domain PositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
                                                        transformed_axioms);
 }
 
-PositiveNormalFormTransformer::PositiveNormalFormTransformer(PDDLFactories& pddl_factories) :
-    BaseCachedRecurseTransformer<PositiveNormalFormTransformer>(pddl_factories)
+ToPositiveNormalFormTransformer::ToPositiveNormalFormTransformer(PDDLFactories& pddl_factories) :
+    BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>(pddl_factories)
 {
 }
 }

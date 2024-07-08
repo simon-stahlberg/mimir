@@ -110,18 +110,19 @@ public:
         groups_begin.push_back(0);
         for (size_t i = 1; i < vec.size(); ++i)
         {
+            const auto cur_group = groups_begin.size() - 1;
+            if (cur_group > group_retriever(vec[i]))
+            {
+                std::logic_error("IndexGroupedVector::create: got element of finished group. Incompatible sort and group comparator.");
+            }
+
             if (group_comparator(vec[i - 1], vec[i]))
             {
-                // Write begin i for skipped groups.
-                while (groups_begin.size() < group_retriever(vec[i]))
+                // Write begin i for skipped groups + begin of new group.
+                while (groups_begin.size() <= group_retriever(vec[i]))
                 {
                     groups_begin.push_back(i);
                 }
-                if (groups_begin.size() != group_retriever(vec[i]))
-                {
-                    throw std::logic_error("IndexGroupedVector::create: group comparator must compare group retrievers index.");
-                }
-                groups_begin.push_back(i);
             }
         }
         // Set begin of remaining groups + end of last group.

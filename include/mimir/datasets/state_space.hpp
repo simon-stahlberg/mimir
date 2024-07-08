@@ -90,6 +90,31 @@ private:
 public:
     using TransitionType = Transition;
 
+    /// @brief Try to create a StateSpace from the given input files with the given resource limits.
+    /// @param problem The problem from which to create the state space.
+    /// @param parser External memory to parser.
+    /// @param aag External memory to aag.
+    /// @param ssg External memory to ssg.
+    /// @param max_num_states The maximum number of states allowed in the StateSpace.
+    /// @param timeout_ms The maximum time spent on creating the StateSpace.
+    /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
+    static std::optional<StateSpace> create(Problem problem,
+                                            std::shared_ptr<PDDLParser> parser,
+                                            std::shared_ptr<IAAG> aag,
+                                            std::shared_ptr<SuccessorStateGenerator> ssg,
+                                            bool use_unit_cost_one = true,
+                                            bool remove_if_unsolvable = true,
+                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+
+    static std::optional<StateSpace> create(std::shared_ptr<PDDLParser> parser,
+                                            std::shared_ptr<IAAG> aag,
+                                            std::shared_ptr<SuccessorStateGenerator> ssg,
+                                            bool use_unit_cost_one = true,
+                                            bool remove_if_unsolvable = true,
+                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::optional<StateSpace> create(const fs::path& domain_filepath,
                                             const fs::path& problem_filepath,
@@ -98,20 +123,33 @@ public:
                                             uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                             uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
 
-    /// @brief Try to create a StateSpace from the given input files with the given resource limits.
-    /// @param parser External memory to parser.
-    /// @param aag External memory to aag.
-    /// @param ssg External memory to ssg.
-    /// @param max_num_states The maximum number of states allowed in the StateSpace.
-    /// @param timeout_ms The maximum time spent on creating the StateSpace.
-    /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
-    static std::optional<StateSpace> create(std::shared_ptr<PDDLParser> parser,
-                                            std::shared_ptr<IAAG> aag,
-                                            std::shared_ptr<SuccessorStateGenerator> ssg,
-                                            bool use_unit_cost_one = true,
-                                            bool remove_if_unsolvable = true,
-                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+    /// @brief Try to create a StateSpaceList from the given data and the given resource limits.
+    /// @param memories External memory to problems, parsers, aags, ssgs.
+    /// @param use_unit_cost_one whether to use unit cost one or action costs.
+    /// @param remove_if_unsolvable whether to remove state spaces of unsolvable problems.
+    /// @param sort_ascending_by_num_states whether the state spaces should be sorted ascending by the number of states.
+    /// @param max_num_states The maximum number of states allowed in a StateSpace.
+    /// @param timeout_ms The maximum time spent on creating a StateSpace.
+    /// @param num_threads The number of threads used for construction.
+    /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
+    static std::vector<StateSpace>
+    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+           bool use_unit_cost_one = true,
+           bool remove_if_unsolvable = true,
+           bool sort_ascending_by_num_states = true,
+           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+           uint32_t num_threads = std::thread::hardware_concurrency());
+
+    /// @brief Convenience function when using the default problem and external memory.
+    static std::vector<StateSpace>
+    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+           bool use_unit_cost_one = true,
+           bool remove_if_unsolvable = true,
+           bool sort_ascending_by_num_states = true,
+           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
+           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
+           uint32_t num_threads = std::thread::hardware_concurrency());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::vector<StateSpace> create(const fs::path& domain_filepath,
@@ -122,24 +160,6 @@ public:
                                           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
                                           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
                                           uint32_t num_threads = std::thread::hardware_concurrency());
-
-    /// @brief Try to create a StateSpaceList from the given data and the given resource limits.
-    /// @param memories External memory to parsers, aags, ssgs.
-    /// @param use_unit_cost_one whether to use unit cost one or action costs.
-    /// @param remove_if_unsolvable whether to remove state spaces of unsolvable problems.
-    /// @param sort_ascending_by_num_states whether the state spaces should be sorted ascending by the number of states.
-    /// @param max_num_states The maximum number of states allowed in a StateSpace.
-    /// @param timeout_ms The maximum time spent on creating a StateSpace.
-    /// @param num_threads The number of threads used for construction.
-    /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
-    static std::vector<StateSpace>
-    create(const std::vector<std::tuple<std::shared_ptr<PDDLParser>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool use_unit_cost_one = true,
-           bool remove_if_unsolvable = true,
-           bool sort_ascending_by_num_states = true,
-           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-           uint32_t num_threads = std::thread::hardware_concurrency());
 
     /**
      * Extended functionality

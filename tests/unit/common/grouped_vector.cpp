@@ -17,7 +17,7 @@ TEST(MimirTests, CommonIndexGroupedVectorTest)
         }
         return l.first < r.first;
     };
-    auto group_comparator = [](const ElementType& l, const ElementType& r) { return l.first < r.first; };
+    auto group_comparator = sort_comparator;
     auto group_retriever = [](const ElementType& e) { return static_cast<size_t>(e.first); };
     auto index_grouped_vector = IndexGroupedVector<ElementType>::create(vec, 4, sort_comparator, group_comparator, group_retriever);
 
