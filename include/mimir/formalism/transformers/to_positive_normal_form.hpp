@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TRANSFORMERS_TO_POSITIVE_NORMAL_FORM_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/transformers/base_cached_recurse.hpp"
 
 namespace mimir
@@ -54,26 +55,26 @@ private:
 
     template<PredicateCategory P>
     void transform_conditions(const LiteralList<P>& conditions,
-                              const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals,
+                              const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals,
                               LiteralList<P>& ref_transformed_conditions,
                               LiteralList<Derived>& ref_transformed_derived_conditions);
 
     template<PredicateCategory P>
     void compute_duals(const DomainImpl& domain,
                        const LiteralSet<P>& negative_conditions,
-                       std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_duals,
-                       PredicateList<Derived>& ref_derived_predicates);
+                       std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_transformed_duals,
+                       PredicateList<Derived>& ref_transformed_derived_predicates);
 
-    std::unordered_map<Literal<Static>, Literal<Derived>> m_negative_static_duals;
-    std::unordered_map<Literal<Fluent>, Literal<Derived>> m_negative_fluent_duals;
-    std::unordered_map<Literal<Derived>, Literal<Derived>> m_negative_derived_duals;
+    std::unordered_map<Literal<Static>, Literal<Derived>> m_negative_static_transformed_duals;
+    std::unordered_map<Literal<Fluent>, Literal<Derived>> m_negative_fluent_transformed_duals;
+    std::unordered_map<Literal<Derived>, Literal<Derived>> m_negative_derived_transformed_duals;
 
     EffectConditional transform_impl(const EffectConditionalImpl& effect);
     EffectUniversal transform_impl(const EffectUniversalImpl& effect);
     Action transform_impl(const ActionImpl& action);
 
     template<PredicateCategory P>
-    void introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals, AxiomList& ref_axioms);
+    void introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals, AxiomList& ref_axioms);
 
     Domain transform_impl(const DomainImpl& domain);
 
@@ -87,17 +88,18 @@ public:
 
 template<PredicateCategory P>
 void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& conditions,
-                                                           const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals,
+                                                           const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals,
                                                            LiteralList<P>& ref_transformed_conditions,
                                                            LiteralList<Derived>& ref_transformed_derived_conditions)
 {
     for (const auto& literal : conditions)
     {
-        if (negative_duals.count(literal))
+        if (negative_transformed_duals.count(literal))
         {
             assert(literal->is_negated());
-            ref_transformed_derived_conditions.push_back(negative_duals.at(literal));
+            ref_transformed_derived_conditions.push_back(negative_transformed_duals.at(literal));
         }
+        else
         {
             assert(!literal->is_negated());
             ref_transformed_conditions.push_back(this->transform(*literal));
@@ -108,10 +110,10 @@ void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>&
 template<PredicateCategory P>
 void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
                                                     const LiteralSet<P>& negative_conditions,
-                                                    std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_duals,
-                                                    PredicateList<Derived>& ref_derived_predicates)
+                                                    std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_transformed_duals,
+                                                    PredicateList<Derived>& ref_transformed_derived_predicates)
 {
-    out_negative_duals.clear();
+    out_negative_transformed_duals.clear();
     for (const auto& negative_literal : negative_conditions)
     {
         // Create dual predicate
@@ -123,50 +125,69 @@ void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
         {
             throw std::runtime_error("Tried to create dual predicate with name that already exists. Please contact the developers.");
         }
-        const auto dual_derived_predicate = m_pddl_factories.get_or_create_predicate<Derived>(dual_predicate_name, predicate->get_parameters());
-        ref_derived_predicates.push_back(dual_derived_predicate);
 
+        // transformed_dual_for_negative_literal must use term list
+        // that matches the parameters of the introduced derived predicate
+        // because we will use the derived predicate parameters as axiom parameters.
+        const auto transformed_parameters = predicate->get_parameters();
+        const auto transformed_dual_derived_predicate = m_pddl_factories.get_or_create_predicate<Derived>(dual_predicate_name, transformed_parameters);
+        ref_transformed_derived_predicates.push_back(transformed_dual_derived_predicate);
+        auto transformed_terms = TermList {};
+        for (const auto& variable : transformed_parameters)
+        {
+            transformed_terms.push_back(m_pddl_factories.get_or_create_term_variable(variable));
+        }
+        const auto transformed_atom = m_pddl_factories.get_or_create_atom(transformed_dual_derived_predicate, transformed_terms);
         // Create dual literal (positive) for negative literal
-        const auto dual_for_negative_literal =
-            m_pddl_factories.get_or_create_literal(false,
-                                                   m_pddl_factories.get_or_create_atom(dual_derived_predicate, negative_literal->get_atom()->get_terms()));
-        out_negative_duals.emplace(negative_literal, dual_for_negative_literal);
+        const auto transformed_dual_for_negative_literal = m_pddl_factories.get_or_create_literal(false, transformed_atom);
+        out_negative_transformed_duals.emplace(negative_literal, transformed_dual_for_negative_literal);
     }
 }
 
 template<PredicateCategory P>
-void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_duals, AxiomList& ref_axioms)
+void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals,
+                                                               AxiomList& ref_axioms)
 {
-    for (const auto& [negative_literal, dual_positive_literal] : negative_duals)
+    for (const auto& [negative_literal, transformed_dual_positive_literal] : negative_transformed_duals)
     {
         assert(negative_literal->is_negated());
-        assert(!dual_positive_literal->is_negated());
-        assert(negative_literal->get_atom()->get_predicate()->get_parameters() == dual_positive_literal->get_atom()->get_predicate()->get_parameters());
-        const auto& parameters = negative_literal->get_atom()->get_predicate()->get_parameters();
+        assert(!transformed_dual_positive_literal->is_negated());
 
-        auto static_conditions = LiteralList<Static> {};
-        auto fluent_conditions = LiteralList<Fluent> {};
-        auto derived_conditions = LiteralList<Derived> {};
+        // transformed_negative_literal must use term list that matches the parameters of derived predicates
+        // because we will use the derived predicate parameters as axiom parameters.
+        const auto transformed_negative_literal =
+            m_pddl_factories.get_or_create_literal(true,
+                                                   m_pddl_factories.get_or_create_atom(this->transform(*negative_literal->get_atom()->get_predicate()),
+                                                                                       transformed_dual_positive_literal->get_atom()->get_terms()));
+
+        const auto& transformed_parameters = transformed_dual_positive_literal->get_atom()->get_predicate()->get_parameters();
+
+        auto transformed_static_conditions = LiteralList<Static> {};
+        auto transformed_fluent_conditions = LiteralList<Fluent> {};
+        auto transformed_derived_conditions = LiteralList<Derived> {};
 
         if constexpr (std::is_same_v<P, Static>)
         {
-            static_conditions.push_back(this->transform(*negative_literal));
+            transformed_static_conditions.push_back(transformed_negative_literal);
         }
         else if constexpr (std::is_same_v<P, Fluent>)
         {
-            fluent_conditions.push_back(this->transform(*negative_literal));
+            transformed_fluent_conditions.push_back(transformed_negative_literal);
         }
         else if constexpr (std::is_same_v<P, Derived>)
         {
-            derived_conditions.push_back(this->transform(*negative_literal));
+            transformed_derived_conditions.push_back(transformed_negative_literal);
         }
         else
         {
             static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
         }
 
-        ref_axioms.push_back(
-            this->m_pddl_factories.get_or_create_axiom(parameters, dual_positive_literal, static_conditions, fluent_conditions, derived_conditions));
+        ref_axioms.push_back(this->m_pddl_factories.get_or_create_axiom(transformed_parameters,
+                                                                        transformed_dual_positive_literal,
+                                                                        transformed_static_conditions,
+                                                                        transformed_fluent_conditions,
+                                                                        transformed_derived_conditions));
     }
 }
 

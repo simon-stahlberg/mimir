@@ -20,15 +20,14 @@ def x(domain_filepath, problem_filepath):# Ownership semantics rule 1: do not un
     initial_state = ssg.get_or_create_initial_state()
     actions = lifted_aag.compute_applicable_actions(initial_state)
 
-    return pddl_parser, initial_state, actions
+    return pddl_parser, initial_state, actions[0]
 
 if __name__ == "__main__":
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
 
-    pddl_parser, initial_state, actions = x(domain_filepath, problem_filepath)
+    pddl_parser, initial_state, action = x(domain_filepath, problem_filepath)
 
     print(initial_state.to_string(pddl_parser.get_problem(), pddl_parser.get_factories()))
 
-    for action in actions:
-        print(action.to_string(pddl_parser.get_factories()))
+    print(action.to_string(pddl_parser.get_factories()))

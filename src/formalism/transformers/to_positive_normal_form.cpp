@@ -73,9 +73,12 @@ EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectCo
     auto transformed_fluent_conditions = LiteralList<Fluent>();
     auto transformed_derived_conditions = LiteralList<Derived>();
 
-    transform_conditions(effect.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
-    transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
-    transform_conditions(effect.get_conditions<Derived>(), m_negative_derived_duals, transformed_derived_conditions, transformed_derived_conditions);
+    transform_conditions(effect.get_conditions<Static>(), m_negative_static_transformed_duals, transformed_static_conditions, transformed_derived_conditions);
+    transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_transformed_duals, transformed_fluent_conditions, transformed_derived_conditions);
+    transform_conditions(effect.get_conditions<Derived>(),
+                         m_negative_derived_transformed_duals,
+                         transformed_derived_conditions,
+                         transformed_derived_conditions);
 
     return this->m_pddl_factories.get_or_create_conditional_effect(transformed_static_conditions,
                                                                    transformed_fluent_conditions,
@@ -89,9 +92,12 @@ EffectUniversal ToPositiveNormalFormTransformer::transform_impl(const EffectUniv
     auto transformed_fluent_conditions = LiteralList<Fluent>();
     auto transformed_derived_conditions = LiteralList<Derived>();
 
-    transform_conditions(effect.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
-    transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
-    transform_conditions(effect.get_conditions<Derived>(), m_negative_derived_duals, transformed_derived_conditions, transformed_derived_conditions);
+    transform_conditions(effect.get_conditions<Static>(), m_negative_static_transformed_duals, transformed_static_conditions, transformed_derived_conditions);
+    transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_transformed_duals, transformed_fluent_conditions, transformed_derived_conditions);
+    transform_conditions(effect.get_conditions<Derived>(),
+                         m_negative_derived_transformed_duals,
+                         transformed_derived_conditions,
+                         transformed_derived_conditions);
 
     return this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
                                                                  transformed_static_conditions,
@@ -106,9 +112,12 @@ Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
     auto transformed_fluent_conditions = LiteralList<Fluent>();
     auto transformed_derived_conditions = LiteralList<Derived>();
 
-    transform_conditions(action.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
-    transform_conditions(action.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
-    transform_conditions(action.get_conditions<Derived>(), m_negative_derived_duals, transformed_derived_conditions, transformed_derived_conditions);
+    transform_conditions(action.get_conditions<Static>(), m_negative_static_transformed_duals, transformed_static_conditions, transformed_derived_conditions);
+    transform_conditions(action.get_conditions<Fluent>(), m_negative_fluent_transformed_duals, transformed_fluent_conditions, transformed_derived_conditions);
+    transform_conditions(action.get_conditions<Derived>(),
+                         m_negative_derived_transformed_duals,
+                         transformed_derived_conditions,
+                         transformed_derived_conditions);
 
     return this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                        action.get_original_arity(),
@@ -125,17 +134,17 @@ Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
 Domain ToPositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
 {
     auto transformed_derived_predicates = this->transform(domain.get_predicates<Derived>());
-    compute_duals(domain, m_negative_static_conditions, m_negative_static_duals, transformed_derived_predicates);
-    compute_duals(domain, m_negative_fluent_conditions, m_negative_fluent_duals, transformed_derived_predicates);
-    compute_duals(domain, m_negative_derived_conditions, m_negative_derived_duals, transformed_derived_predicates);
+    compute_duals(domain, m_negative_static_conditions, m_negative_static_transformed_duals, transformed_derived_predicates);
+    compute_duals(domain, m_negative_fluent_conditions, m_negative_fluent_transformed_duals, transformed_derived_predicates);
+    compute_duals(domain, m_negative_derived_conditions, m_negative_derived_transformed_duals, transformed_derived_predicates);
 
     // Note: Keep negative axiom conditions, since axioms applicability remains identical.
     // Also, we are introducing axioms of form â :- not a, which would contradict a transformation of negative conditions.
 
     auto transformed_axioms = this->transform(domain.get_axioms());
-    introduce_axiom_for_dual(m_negative_static_duals, transformed_axioms);
-    introduce_axiom_for_dual(m_negative_fluent_duals, transformed_axioms);
-    introduce_axiom_for_dual(m_negative_derived_duals, transformed_axioms);
+    introduce_axiom_for_dual(m_negative_static_transformed_duals, transformed_axioms);
+    introduce_axiom_for_dual(m_negative_fluent_transformed_duals, transformed_axioms);
+    introduce_axiom_for_dual(m_negative_derived_transformed_duals, transformed_axioms);
 
     return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
                                                        domain.get_name(),

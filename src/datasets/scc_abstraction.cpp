@@ -30,6 +30,7 @@
 #include <mimir/datasets/boost_adapter.hpp>
 #include <mimir/datasets/scc_abstraction.hpp>
 #include <mimir/formalism/factories.hpp>
+#include <mimir/formalism/transformers/encode_parameter_index_in_variables.hpp>
 #include <mimir/formalism/transformers/to_positive_normal_form.hpp>
 #include <mimir/search/applicable_action_generators/grounded.hpp>
 #include <optional>
@@ -37,9 +38,9 @@
 namespace mimir
 {
 
-Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+Digraph<DigraphEdge> create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
 {
-    auto g = Digraph(static_cast<int>(num_components));
+    auto g = Digraph<DigraphEdge>(num_components);
     std::set<std::pair<size_t, size_t>> edges;
     for (const auto t : state_space.get_transitions())
     {
@@ -56,9 +57,12 @@ Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, siz
 std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remove_if_unsolvable, uint32_t max_num_states, uint32_t timeout_ms)
 {
     auto pnf_factories = std::make_shared<PDDLFactories>();
-    const auto pnf_problem = ToPositiveNormalFormTransformer(*pnf_factories).transform(*problem);
+    auto pnf_problem = ToPositiveNormalFormTransformer(*pnf_factories).run(*problem);
+    pnf_problem = EncodeParameterIndexInVariables(*pnf_factories).run(*pnf_problem);
     std::cout << "original domain:\n" << *problem->get_domain() << std::endl;
     std::cout << "PNF domain:\n" << *pnf_problem->get_domain() << std::endl;
+    std::cout << "original problem:\n" << *problem << std::endl;
+    std::cout << "PNF problem:\n" << *pnf_problem << std::endl;
     auto pnf_aag = std::make_shared<GroundedAAG>(pnf_problem, pnf_factories);
     auto pnf_ssg = std::make_shared<SuccessorStateGenerator>(pnf_aag);
     auto pnf_state_space = StateSpace::create(pnf_problem, pnf_factories, pnf_aag, pnf_ssg, true, remove_if_unsolvable, max_num_states, timeout_ms);

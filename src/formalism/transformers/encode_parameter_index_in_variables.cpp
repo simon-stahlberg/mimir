@@ -29,7 +29,13 @@ Variable EncodeParameterIndexInVariables::transform_impl(const VariableImpl& var
     {
         const auto parameter_index = it->second;
 
+        std::cout << "EncodeParameterIndexInVariables::transform_impl - case 1: " << &variable << " " << variable << std::endl;
+
         return m_pddl_factories.get_or_create_variable(variable.get_name() + "_" + std::to_string(parameter_index), parameter_index);
+    }
+    else
+    {
+        std::cout << "EncodeParameterIndexInVariables::transform_impl - case 2: " << &variable << " " << variable << std::endl;
     }
     return m_pddl_factories.get_or_create_variable(variable.get_name(), 0);
 }
@@ -106,13 +112,21 @@ Axiom EncodeParameterIndexInVariables::transform_impl(const AxiomImpl& axiom)
 {
     m_variable_to_parameter_index.clear();
 
+    std::cout << "Axiom: " << *axiom.get_literal() << std::endl;
+
     // Determine variable parameter indices
     for (size_t i = 0; i < axiom.get_arity(); ++i)
     {
+        std::cout << "i: " << axiom.get_parameters()[i] << " " << *axiom.get_parameters()[i] << std::endl;
         m_variable_to_parameter_index[axiom.get_parameters()[i]] = i;
     }
 
     const auto translated_parameters = this->transform(axiom.get_parameters());
+
+    for (size_t i = 0; i < axiom.get_arity(); ++i)
+    {
+        std::cout << "i: " << translated_parameters[i] << " " << *translated_parameters[i] << std::endl;
+    }
 
     const auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(translated_parameters,
                                                                              this->transform(*axiom.get_literal()),
