@@ -538,7 +538,6 @@ protected:
             this->transform(*problem.get_requirements()),
             this->transform(problem.get_objects()),
             this->transform(problem.get_derived_predicates()),
-            this->transform(problem.get_problem_and_domain_derived_predicates()),
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
             this->transform(problem.get_numeric_fluents()),

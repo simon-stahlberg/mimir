@@ -979,19 +979,12 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
         }
     }
 
-    auto problem_and_domain_derived_predicates = derived_predicates;
-    const auto& domain_derived_predicates = translated_domain->get_predicates<Derived>();
-    problem_and_domain_derived_predicates.insert(problem_and_domain_derived_predicates.end(),
-                                                 domain_derived_predicates.begin(),
-                                                 domain_derived_predicates.end());
-
     return m_pddl_factories.get_or_create_problem(problem.get_filepath(),
                                                   translated_domain,
                                                   problem.get_name(),
                                                   translate_common(*problem.get_requirements()),
                                                   uniquify_elements(objects),
                                                   uniquify_elements(derived_predicates),
-                                                  uniquify_elements(problem_and_domain_derived_predicates),
                                                   uniquify_elements(static_initial_literals),
                                                   uniquify_elements(fluent_initial_literals),
                                                   uniquify_elements(translate_grounded(problem.get_numeric_fluents())),

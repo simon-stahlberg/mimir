@@ -45,7 +45,6 @@ private:
     Requirements m_requirements;
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
-    PredicateList<Derived> m_problem_and_domain_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
     FlatBitsetBuilder<Static> m_static_initial_positive_atoms_builder;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
@@ -57,8 +56,8 @@ private:
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
-
     bool m_static_goal_holds;
+    PredicateList<Derived> m_problem_and_domain_derived_predicates;
 
     ProblemImpl(int identifier,
                 std::optional<fs::path> filepath,
@@ -67,7 +66,6 @@ private:
                 Requirements requirements,
                 ObjectList objects,
                 PredicateList<Derived> derived_predicates,
-                PredicateList<Derived> problem_and_domain_derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
                 NumericFluentList numeric_fluents,

@@ -107,7 +107,7 @@ inline size_t get_assignment_rank(const Assignment& assignment, size_t arity, si
     const auto fourth = third * (num_objects + 1);
     const auto rank = (first * (assignment.first_index + 1))      //
                       + (second * (assignment.second_index + 1))  //
-                      + (third * (assignment.first_object + 1))      //
+                      + (third * (assignment.first_object + 1))   //
                       + (fourth * (assignment.second_object + 1));
     return rank;
 }
@@ -172,14 +172,16 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
 {
     const auto num_objects = problem->get_objects().size();
 
-    m_f.resize(predicates.size());
+    auto max_predicate_index = (size_t) 0;
+    for (const auto& predicate : predicates)
+    {
+        max_predicate_index = std::max(max_predicate_index, predicate->get_identifier());
+    }
+    m_f.resize(max_predicate_index + 1);
 
     for (const auto& predicate : predicates)
     {
-        // Predicates must have indexing 0,1,2,... for this implementation
-        assert(predicate->get_identifier() < predicates.size());
-
-        auto& assignment_set = m_f[predicate->get_identifier()];
+        auto& assignment_set = m_f.at(predicate->get_identifier());
         assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
     }
 
@@ -188,7 +190,7 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
         const auto& arity = ground_atom->get_arity();
         const auto& predicate = ground_atom->get_predicate();
         const auto& arguments = ground_atom->get_objects();
-        auto& assignment_set = m_f[predicate->get_identifier()];
+        auto& assignment_set = m_f.at(predicate->get_identifier());
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
@@ -198,7 +200,9 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
                 const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier(), second_index, second_object->get_identifier()), arity, num_objects)] = true;
+                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier(), second_index, second_object->get_identifier()),
+                                                   arity,
+                                                   num_objects)] = true;
             }
         }
     }
@@ -212,7 +216,7 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     const auto& arity = ground_atom->get_arity();
     const auto& predicate = ground_atom->get_predicate();
     const auto& arguments = ground_atom->get_objects();
-    auto& assignment_set = m_f[predicate->get_identifier()];
+    auto& assignment_set = m_f.at(predicate->get_identifier());
 
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
@@ -222,17 +226,24 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier(), second_index, second_object->get_identifier()), arity, num_objects)] = true;
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier(), second_index, second_object->get_identifier()),
+                                               arity,
+                                               num_objects)] = true;
         }
     }
 }
 
 template<PredicateCategory P, typename AssignmentIterator>
-bool consistent_literals_helper(const Problem& problem, const std::vector<std::vector<bool>>& assignment_sets, const LiteralList<P>& literals, const auto& element)
+bool consistent_literals_helper(const Problem& problem,
+                                const std::vector<std::vector<bool>>& assignment_sets,
+                                const LiteralList<P>& literals,
+                                const auto& element)
 {
     // If the type of "element" is "Vertex", then "AssignmentIterator" must be "VertexAssignmentIterator". Likewise for "Edge" and "EdgeAssignmentIterator".
-    using ExpectedElementType = typename std::conditional<std::is_same<AssignmentIterator, EdgeAssignmentIterator>::value, consistency_graph::Edge, consistency_graph::Vertex>::type;
-    static_assert(std::is_same<AssignmentIterator, EdgeAssignmentIterator>::value || std::is_same<AssignmentIterator, VertexAssignmentIterator>::value, "Invalid AssignmentIterator type");
+    using ExpectedElementType =
+        typename std::conditional<std::is_same<AssignmentIterator, EdgeAssignmentIterator>::value, consistency_graph::Edge, consistency_graph::Vertex>::type;
+    static_assert(std::is_same<AssignmentIterator, EdgeAssignmentIterator>::value || std::is_same<AssignmentIterator, VertexAssignmentIterator>::value,
+                  "Invalid AssignmentIterator type");
     static_assert(std::is_same<decltype(element), const ExpectedElementType&>::value, "Mismatch between AssignmentIterator and element type");
 
     for (const auto& literal : literals)

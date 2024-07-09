@@ -45,7 +45,6 @@ ProblemImpl::ProblemImpl(int identifier,
                          Requirements requirements,
                          ObjectList objects,
                          PredicateList<Derived> derived_predicates,
-                         PredicateList<Derived> problem_and_domain_derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
                          NumericFluentList numeric_fluents,
@@ -61,7 +60,6 @@ ProblemImpl::ProblemImpl(int identifier,
     m_requirements(std::move(requirements)),
     m_objects(std::move(objects)),
     m_derived_predicates(std::move(derived_predicates)),
-    m_problem_and_domain_derived_predicates(std::move(problem_and_domain_derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_numeric_fluents(std::move(numeric_fluents)),
@@ -70,11 +68,11 @@ ProblemImpl::ProblemImpl(int identifier,
     m_derived_goal_condition(std::move(derived_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
-    m_static_goal_holds(false)
+    m_static_goal_holds(false),
+    m_problem_and_domain_derived_predicates()
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
-    assert(is_all_unique(m_problem_and_domain_derived_predicates));
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
     assert(is_all_unique(m_numeric_fluents));
@@ -82,6 +80,11 @@ ProblemImpl::ProblemImpl(int identifier,
     assert(is_all_unique(m_fluent_goal_condition));
     assert(is_all_unique(m_derived_goal_condition));
     assert(is_all_unique(m_axioms));
+
+    // Combine derived predicates
+    m_problem_and_domain_derived_predicates = m_domain->get_predicates<Derived>();
+    m_problem_and_domain_derived_predicates.insert(m_problem_and_domain_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
+    assert(is_all_unique(m_problem_and_domain_derived_predicates));
 
     // Initialize static atom bitsets
     for (const auto& literal : m_static_initial_literals)
