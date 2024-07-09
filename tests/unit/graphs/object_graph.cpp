@@ -72,4 +72,43 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
     EXPECT_EQ(state_space.get_states().size(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
+
+TEST(MimirTests, GraphsObjectGraphPruningTest)
+{
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+    const auto state_space = StateSpace::create(domain_file, problem_file).value();
+
+    class PruneAllObjects : public ObjectGraphPruningStrategy
+    {
+    public:
+        bool prune(const Object&) const override { return true; };
+        bool prune(const GroundAtom<Static>) const override { return true; };
+        bool prune(const GroundAtom<Fluent>) const override { return true; };
+        bool prune(const GroundAtom<Derived>) const override { return true; };
+        bool prune(const GroundLiteral<Static>) const override { return true; }
+        bool prune(const GroundLiteral<Fluent>) const override { return true; }
+        bool prune(const GroundLiteral<Derived>) const override { return true; }
+    };
+    auto object_graph_factory = ObjectGraphFactory(state_space.get_problem(), state_space.get_pddl_factories());
+    auto nauty_graph_factory = nauty_wrapper::SparseGraphFactory();
+    auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
+    for (const auto& state : state_space.get_states())
+    {
+        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
+
+        const auto& object_graph = object_graph_factory.create(state, PruneAllObjects());
+
+        // std::cout << object_graph << std::endl;
+
+        auto certificate = Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
+                                       object_graph.get_sorted_vertex_colors());
+
+        certificates.insert(std::move(certificate));
+    }
+
+    EXPECT_EQ(state_space.get_states().size(), 28);
+    EXPECT_EQ(certificates.size(), 1);
+}
+
 }

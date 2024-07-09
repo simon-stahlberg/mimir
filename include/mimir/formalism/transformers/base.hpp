@@ -554,7 +554,11 @@ protected:
     ///        Default behavior runs prepare and transform and returns its results.
     Problem run_base(const ProblemImpl& problem) { return self().run_impl(problem); }
 
-    Problem run_impl(const ProblemImpl& problem) { return self().transform(problem); }
+    Problem run_impl(const ProblemImpl& problem)
+    {
+        self().prepare(problem);
+        return self().transform(problem);
+    }
 };
 }
 

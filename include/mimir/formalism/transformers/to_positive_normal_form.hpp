@@ -99,6 +99,7 @@ void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>&
             ref_transformed_derived_conditions.push_back(negative_duals.at(literal));
         }
         {
+            assert(!literal->is_negated());
             ref_transformed_conditions.push_back(this->transform(*literal));
         }
     }

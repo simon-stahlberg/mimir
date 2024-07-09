@@ -69,9 +69,9 @@ void ToPositiveNormalFormTransformer::prepare_impl(const ActionImpl& action)
 
 EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectConditionalImpl& effect)
 {
-    auto transformed_static_conditions = this->transform(effect.get_conditions<Static>());
-    auto transformed_fluent_conditions = this->transform(effect.get_conditions<Fluent>());
-    auto transformed_derived_conditions = this->transform(effect.get_conditions<Derived>());
+    auto transformed_static_conditions = LiteralList<Static>();
+    auto transformed_fluent_conditions = LiteralList<Fluent>();
+    auto transformed_derived_conditions = LiteralList<Derived>();
 
     transform_conditions(effect.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
     transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
@@ -85,9 +85,9 @@ EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectCo
 
 EffectUniversal ToPositiveNormalFormTransformer::transform_impl(const EffectUniversalImpl& effect)
 {
-    auto transformed_static_conditions = this->transform(effect.get_conditions<Static>());
-    auto transformed_fluent_conditions = this->transform(effect.get_conditions<Fluent>());
-    auto transformed_derived_conditions = this->transform(effect.get_conditions<Derived>());
+    auto transformed_static_conditions = LiteralList<Static>();
+    auto transformed_fluent_conditions = LiteralList<Fluent>();
+    auto transformed_derived_conditions = LiteralList<Derived>();
 
     transform_conditions(effect.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
     transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
@@ -102,9 +102,9 @@ EffectUniversal ToPositiveNormalFormTransformer::transform_impl(const EffectUniv
 
 Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
 {
-    auto transformed_static_conditions = this->transform(action.get_conditions<Static>());
-    auto transformed_fluent_conditions = this->transform(action.get_conditions<Fluent>());
-    auto transformed_derived_conditions = this->transform(action.get_conditions<Derived>());
+    auto transformed_static_conditions = LiteralList<Static>();
+    auto transformed_fluent_conditions = LiteralList<Fluent>();
+    auto transformed_derived_conditions = LiteralList<Derived>();
 
     transform_conditions(action.get_conditions<Static>(), m_negative_static_duals, transformed_static_conditions, transformed_derived_conditions);
     transform_conditions(action.get_conditions<Fluent>(), m_negative_fluent_duals, transformed_fluent_conditions, transformed_derived_conditions);
