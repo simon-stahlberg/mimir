@@ -18,6 +18,7 @@ add_executable(${TEST_NAME}
     "common/grouped_vector.cpp"
     "datasets/faithful_abstraction.cpp"
     "datasets/global_faithful_abstraction.cpp"
+    "datasets/scc_abstraction.cpp"
     "datasets/state_space.cpp"
     "formalism/translators/to_disjunctive_normal_form.cpp"
     "formalism/translators/to_negation_normal_form.cpp"
