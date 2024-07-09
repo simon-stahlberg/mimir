@@ -19,7 +19,7 @@
 #define MIMIR_GRAPHS_OBJECT_GRAPH_HPP_
 
 #include "mimir/formalism/formalism.hpp"
-#include "mimir/graphs/coloring.hpp"
+#include "mimir/graphs/coloring_function.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/partitioning.hpp"
 #include "mimir/search/flat_types.hpp"

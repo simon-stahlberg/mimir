@@ -84,9 +84,9 @@ void ProblemColorFunction::initialize_predicates()
     }
 }
 
-int ProblemColorFunction::get_color(Object object) const { return m_name_to_color.at(""); }
+Color ProblemColorFunction::get_color(Object object) const { return m_name_to_color.at(""); }
 
-Color ProblemColorFunction::get_color(State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) const
+Color ProblemColorFunction::get_color(State state, GroundLiteral<Static> literal, size_t pos, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = m_problem->static_literal_holds(literal);
     return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"

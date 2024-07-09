@@ -45,6 +45,7 @@ class TupleGraphVertex
 private:
     VertexIndex m_index;
     TupleIndex m_tuple_index;
+    // TODO: make this a span
     StateList m_states;
 
 public:
@@ -69,13 +70,17 @@ private:
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
 
+    // TODO. make this an index grouped vector, grouped by distance
     TupleGraphVertexList m_vertices;
 
-    // TODO: avoid reallocations and return span to relevant parts.
+    // TODO: make this a index grouped vector, grouped by source vertex index.
     std::vector<VertexIndexList> m_forward_successors;
+    // TODO: make this an index grouped vector, grouped by target vertex index.
     std::vector<VertexIndexList> m_backward_successors;
 
+    // TODO: Remove this, since vertices will be grouped by distance
     std::vector<VertexIndexList> m_vertex_indices_by_distance;
+    // TODO: make this an index grouped vector, grouped by vertex to be able to store spans in the vertices
     std::vector<StateList> m_states_by_distance;
 
     TupleGraph(std::shared_ptr<StateSpace> state_space,

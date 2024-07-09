@@ -81,6 +81,52 @@ struct CastVisitor
 };
 
 /**
+ * KeepAliveVector
+ */
+
+template<typename T>
+class KeepAliveVector
+{
+private:
+    std::vector<T> m_vec;
+
+public:
+    KeepAliveVector() : m_vec() {}
+    explicit KeepAliveVector(std::vector<T> vec) : m_vec(std::move(vec)) {}
+
+    std::vector<T>& get_vector() { return m_vec; }
+    const std::vector<T>& get_vector() const { return m_vec; }
+};
+
+template<typename T>
+void bind_keep_alive_vector(py::module& m, const std::string& name)
+{
+    py::class_<KeepAliveVector<T>>(m, name.c_str())
+        .def(py::init<>())
+        .def("size", [](const KeepAliveVector<T>& arg) { return arg.get_vector().size(); })
+        .def(
+            "__getitem__",
+            [](const KeepAliveVector<T>& v, size_t i) -> const T&
+            {
+                if (i >= v.get_vector().size())
+                    throw py::index_error();
+                return v.get_vector()[i];
+            },
+            py::keep_alive<0, 1>())
+        .def("__setitem__",
+             [](KeepAliveVector<T>& v, size_t i, const T& val)
+             {
+                 if (i >= v.get_vector().size())
+                     throw py::index_error();
+                 v.get_vector()[i] = val;
+             })
+        .def(
+            "__iter__",
+            [](KeepAliveVector<T>& v) { return py::make_iterator(v.get_vector().begin(), v.get_vector().end()); },
+            py::keep_alive<0, 1>());
+}
+
+/**
  * Bindings
  */
 void init_pymimir(py::module_& m)
@@ -672,15 +718,19 @@ void init_pymimir(py::module_& m)
 
     /* AAGs */
 
+    bind_keep_alive_vector<GroundAction>(m, "GroundActionList");
+
     py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
-        .def("compute_applicable_actions",
-             [](IAAG& self, State state)
-             {
-                 auto applicable_actions = GroundActionList {};
-                 self.generate_applicable_actions(state, applicable_actions);
-                 return applicable_actions;
-             })                                // reference_internal does not work because State is value type
-        .def("get_action", &IAAG::get_action)  // reference_internal does not work because State is value type
+        .def(
+            "compute_applicable_actions",
+            [](IAAG& self, State state)
+            {
+                auto applicable_actions = GroundActionList();
+                self.generate_applicable_actions(state, applicable_actions);
+                return KeepAliveVector(std::move(applicable_actions));
+            },
+            py::keep_alive<0, 1>())
+        .def("get_action", &IAAG::get_action, py::keep_alive<0, 1>())
         .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &IAAG::get_pddl_factories);
 
@@ -709,11 +759,9 @@ void init_pymimir(py::module_& m)
     /* SuccessorStateGenerator */
     py::class_<SuccessorStateGenerator, std::shared_ptr<SuccessorStateGenerator>>(m, "SuccessorStateGenerator")  //
         .def(py::init<std::shared_ptr<IAAG>>())
-        .def("get_or_create_initial_state",
-             &SuccessorStateGenerator::get_or_create_initial_state)                 // reference_internal does not work because State is value type
-        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state)  // reference_internal does not work because State is value type
-        .def("get_or_create_successor_state",
-             &SuccessorStateGenerator::get_or_create_successor_state)  // reference_internal does not work because State is value type
+        .def("get_or_create_initial_state", &SuccessorStateGenerator::get_or_create_initial_state, py::keep_alive<0, 1>())      // keep_alive because value type
+        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state, py::keep_alive<0, 1>())                      // keep_alive because value type
+        .def("get_or_create_successor_state", &SuccessorStateGenerator::get_or_create_successor_state, py::keep_alive<0, 1>())  // keep_alive because value type
         .def("get_state_count", &SuccessorStateGenerator::get_state_count)
         .def(
             "get_reached_fluent_ground_atoms",

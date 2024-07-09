@@ -71,6 +71,7 @@ from _pymimir import (
     DefaultSIWAlgorithmEventHandler,
     FluentAndDerivedMapper,
     GroundAction,
+    GroundActionList,
     GroundedAAG,
     IAAG,
     IAlgorithm,
