@@ -19,6 +19,7 @@
 #define MIMIR_DATASETS_BOOST_ADAPTER_HPP_
 
 #include "boost/graph/strong_components.hpp"
+#include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/iterators.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/datasets/transition_interface.hpp"
@@ -186,6 +187,25 @@ strong_components(const TransitionSystem& g)
     boost::associative_property_map component_map_property(component_map);
     const auto num_components = boost::strong_components(g, component_map_property, boost::vertex_index_map(IdIsIndexVertexIndex()));
     return std::make_pair(num_components, component_map);
+}
+
+template<IsTransitionSystem TransitionSystem>
+IndexGroupedVector<
+    std::pair<typename boost::graph_traits<TransitionSystem>::vertices_size_type, typename boost::graph_traits<TransitionSystem>::vertex_descriptor>>
+get_partitioning(typename boost::graph_traits<TransitionSystem>::vertices_size_type num_components,
+                 std::map<typename boost::graph_traits<TransitionSystem>::vertex_descriptor, typename boost::graph_traits<TransitionSystem>::vertices_size_type>
+                     component_map)
+{
+    using state_component_pair_t =
+        std::pair<typename boost::graph_traits<TransitionSystem>::vertices_size_type, typename boost::graph_traits<TransitionSystem>::vertex_descriptor>;
+    auto partitioning = std::vector<state_component_pair_t>();
+    for (const auto& [state, component] : component_map)
+    {
+        partitioning.push_back({ component, state });
+    }
+    std::sort(std::begin(partitioning), std::end(partitioning));
+    return IndexGroupedVector<state_component_pair_t>::create(std::move(partitioning),
+                                                              [](const auto& prev, const auto& cur) { return prev.first != cur.first; });
 }
 
 /* Assert that the concepts are satisfied */
