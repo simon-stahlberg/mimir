@@ -81,7 +81,7 @@ using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVector
 using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
 
 using FlatActionLayout = flatmemory::Tuple<uint32_t,  //
-                                           int32_t,
+                                           double,
                                            Action,
                                            FlatObjectListLayout,
                                            FlatStripsActionPreconditionLayout,
@@ -433,7 +433,7 @@ public:
     [[nodiscard]] const FlatActionBuilder& get_flatmemory_builder() const { return m_builder; }
 
     [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] int32_t& get_cost() { return m_builder.get<1>(); }
+    [[nodiscard]] double& get_cost() { return m_builder.get<1>(); }
     [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
     [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<3>(); }
 
@@ -464,7 +464,7 @@ public:
     [[nodiscard]] size_t hash() const { return loki::hash_combine(m_view.buffer()); }
 
     [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] int32_t get_cost() const { return m_view.get<1>(); }
+    [[nodiscard]] double get_cost() const { return m_view.get<1>(); }
     [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
     [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<3>(); }
 

@@ -927,14 +927,14 @@ void init_pymimir(py::module_& m)
         .def("get_weight", &DigraphEdge::get_weight);
 
     // Digraph
-    py::class_<Digraph>(m, "Digraph")  //
+    py::class_<Digraph<DigraphEdge>>(m, "Digraph")  //
         .def(py::init<bool>(), py::arg("is_directed") = false)
         .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def("add_edge", &Digraph::add_edge, py::arg("source"), py::arg("target"), py::arg("weight") = 1.)
-        .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def("add_edge", &Digraph<DigraphEdge>::add_edge, py::arg("source"), py::arg("target"), py::arg("weight") = 1.)
+        .def("reset", &Digraph<DigraphEdge>::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
         .def(
             "get_targets",
-            [](const Digraph& self, StateIndex source)
+            [](const Digraph<DigraphEdge>& self, StateIndex source)
             {
                 auto iterator = self.get_targets(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -942,7 +942,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_sources",
-            [](const Digraph& self, StateIndex target)
+            [](const Digraph<DigraphEdge>& self, StateIndex target)
             {
                 auto iterator = self.get_sources(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -950,7 +950,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_edge_indices",
-            [](const Digraph& self, StateIndex source)
+            [](const Digraph<DigraphEdge>& self, StateIndex source)
             {
                 auto iterator = self.get_forward_edge_indices(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -958,7 +958,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_edge_indices",
-            [](const Digraph& self, StateIndex target)
+            [](const Digraph<DigraphEdge>& self, StateIndex target)
             {
                 auto iterator = self.get_backward_edge_indices(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -966,7 +966,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_edges",
-            [](const Digraph& self, StateIndex source)
+            [](const Digraph<DigraphEdge>& self, StateIndex source)
             {
                 auto iterator = self.get_forward_edges(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -974,15 +974,15 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_edges",
-            [](const Digraph& self, StateIndex target)
+            [](const Digraph<DigraphEdge>& self, StateIndex target)
             {
                 auto iterator = self.get_backward_edges(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
-        .def("get_num_vertices", &Digraph::get_num_vertices)
-        .def("get_num_edges", &Digraph::get_num_edges)
-        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference_internal);
+        .def("get_num_vertices", &Digraph<DigraphEdge>::get_num_vertices)
+        .def("get_num_edges", &Digraph<DigraphEdge>::get_num_edges)
+        .def("get_edges", &Digraph<DigraphEdge>::get_edges, py::return_value_policy::reference_internal);
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //

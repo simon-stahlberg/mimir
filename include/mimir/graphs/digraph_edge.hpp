@@ -15,38 +15,37 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_TRANSITION_INTERFACE_HPP_
-#define MIMIR_DATASETS_TRANSITION_INTERFACE_HPP_
+#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_HPP_
+#define MIMIR_GRAPHS_DIGRAPH_EDGE_HPP_
 
-#include "mimir/search/action.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/graphs/digraph_edge_interface.hpp"
 
+#include <ranges>
+#include <span>
 #include <vector>
 
 namespace mimir
 {
 
-using TransitionCost = double;
-using TransitionCostList = std::vector<TransitionCost>;
-using TransitionIndex = uint32_t;
-using TransitionIndexList = std::vector<TransitionIndex>;
+class DigraphEdge
+{
+private:
+    DigraphEdgeIndex m_index;
+    DigraphVertexIndex m_source;
+    DigraphVertexIndex m_target;
+    DigraphEdgeWeight m_weight;
 
-template<typename T>
-concept IsTransition = requires(T a) {
-    {
-        a.get_index()
-    } -> std::same_as<TransitionIndex>;
-    {
-        a.get_source_state()
-    } -> std::same_as<StateIndex>;
-    {
-        a.get_target_state()
-    } -> std::same_as<StateIndex>;
-    {
-        a.get_cost()
-    } -> std::same_as<TransitionCost>;
+public:
+    DigraphEdge(DigraphEdgeIndex index, DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight);
+
+    bool operator==(const DigraphEdge& other) const;
+    size_t hash() const;
+
+    DigraphEdgeIndex get_index() const;
+    DigraphVertexIndex get_source() const;
+    DigraphVertexIndex get_target() const;
+    DigraphEdgeWeight get_weight() const;
 };
 
 }
-
 #endif

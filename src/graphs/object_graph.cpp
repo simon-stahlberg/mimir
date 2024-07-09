@@ -109,7 +109,7 @@ ObjectGraph::ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_fu
 
 const std::shared_ptr<const ProblemColorFunction>& ObjectGraph::get_coloring_function() const { return m_coloring_function; }
 
-const Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
+const Digraph<DigraphEdge>& ObjectGraph::get_digraph() const { return m_digraph; }
 
 const ColorList& ObjectGraph::get_vertex_colors() const { return m_vertex_colors; }
 
@@ -251,7 +251,7 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 {
     out << "digraph {\n";
 
-    for (int vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
+    for (size_t vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
     {
         const auto color = object_graph.get_vertex_colors().at(vertex_index);
         const auto& color_name = object_graph.get_coloring_function()->get_color_name(color);
@@ -260,7 +260,7 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
             << "\"]\n";
     }
 
-    for (int vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
+    for (size_t vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
     {
         for (const auto& succ_vertex_index : object_graph.get_digraph().get_targets(vertex_index))
         {

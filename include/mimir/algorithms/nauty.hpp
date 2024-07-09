@@ -61,7 +61,7 @@ private:
     DenseGraph m_graph;
 
 public:
-    DenseGraph& create_from_digraph(const mimir::Digraph& digraph);
+    DenseGraph& create_from_digraph(const mimir::Digraph<mimir::DigraphEdge>& digraph);
 };
 
 class SparseGraph
@@ -95,7 +95,7 @@ private:
     SparseGraph m_graph;
 
 public:
-    SparseGraph& create_from_digraph(const mimir::Digraph& digraph);
+    SparseGraph& create_from_digraph(const mimir::Digraph<mimir::DigraphEdge>& digraph);
 };
 
 }

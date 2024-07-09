@@ -15,36 +15,36 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_TRANSITION_INTERFACE_HPP_
-#define MIMIR_DATASETS_TRANSITION_INTERFACE_HPP_
+#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_INTERFACE_HPP_
+#define MIMIR_GRAPHS_DIGRAPH_EDGE_INTERFACE_HPP_
 
-#include "mimir/search/action.hpp"
-#include "mimir/search/state.hpp"
-
+#include <concepts>
+#include <cstdint>
+#include <ranges>
+#include <span>
 #include <vector>
 
 namespace mimir
 {
 
-using TransitionCost = double;
-using TransitionCostList = std::vector<TransitionCost>;
-using TransitionIndex = uint32_t;
-using TransitionIndexList = std::vector<TransitionIndex>;
+using DigraphEdgeIndex = uint32_t;
+using DigraphEdgeWeight = double;
+using DigraphVertexIndex = uint32_t;
 
 template<typename T>
-concept IsTransition = requires(T a) {
+concept IsDigraphEdge = requires(T a) {
     {
         a.get_index()
-    } -> std::same_as<TransitionIndex>;
+    } -> std::same_as<DigraphEdgeIndex>;
     {
-        a.get_source_state()
-    } -> std::same_as<StateIndex>;
+        a.get_source()
+    } -> std::same_as<DigraphVertexIndex>;
     {
-        a.get_target_state()
-    } -> std::same_as<StateIndex>;
+        a.get_target()
+    } -> std::same_as<DigraphVertexIndex>;
     {
-        a.get_cost()
-    } -> std::same_as<TransitionCost>;
+        a.get_weight()
+    } -> std::same_as<DigraphEdgeWeight>;
 };
 
 }

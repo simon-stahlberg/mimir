@@ -36,7 +36,7 @@ private:
     std::shared_ptr<const ProblemColorFunction> m_coloring_function;
 
     // Vertex colored graph, uses nauty's graph representation
-    Digraph m_digraph;
+    Digraph<DigraphEdge> m_digraph;
     ColorList m_vertex_colors;
 
     // Initial color histogram, needed for equivalence test
@@ -50,7 +50,7 @@ public:
     ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function);
 
     const std::shared_ptr<const ProblemColorFunction>& get_coloring_function() const;
-    const Digraph& get_digraph() const;
+    const Digraph<DigraphEdge>& get_digraph() const;
     const ColorList& get_vertex_colors() const;
     const ColorList& get_sorted_vertex_colors() const;
     const Partitioning& get_partitioning() const;
