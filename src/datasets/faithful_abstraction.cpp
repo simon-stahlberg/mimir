@@ -299,7 +299,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     concrete_states_begin_by_abstract_state.push_back(concrete_states_by_abstract_state->size());
     assert(concrete_states_begin_by_abstract_state.size() == num_abstract_states + 1);
 
-    /* Construct abstract states */
+    /* Construct abstract states and sort by index. */
     auto abstract_states = FaithfulAbstractStateList {};
     abstract_states.reserve(num_abstract_states);
     for (const auto& [certificate, abstract_state_index] : abstract_states_by_certificate)
@@ -332,46 +332,24 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                    [](const auto& transition) { return transition.get_creating_action(); });
 
     /* Group concrete transitions by source and target */
-    auto transitions_begin_by_source_and_target = BeginIndexList {};
-    transitions_begin_by_source_and_target.reserve(transitions.size() + 1);
-    // Set begin of first state index.
-    transitions_begin_by_source_and_target.push_back(0);
-    // Set begin of intermediate state indices.
-    for (size_t i = 1; i < transitions.size(); ++i)
-    {
-        const auto& prev_transition = transitions.at(i - 1);
-        const auto& cur_transition = transitions.at(i);
-
-        if ((prev_transition.get_source_state() != cur_transition.get_source_state())  //
-            || (prev_transition.get_target_state() != cur_transition.get_target_state()))
-        {
-            transitions_begin_by_source_and_target.push_back(i);
-        }
-    }
-    // Set end of last state index.
-    transitions_begin_by_source_and_target.push_back(transitions.size());
+    auto transitions_group_boundary_checker = [](const Transition& l, const Transition& r)
+    { return ((l.get_source_state() != r.get_source_state()) || (l.get_target_state() != r.get_target_state())); };
+    auto grouped_transitions = IndexGroupedVector<Transition>::create(std::move(transitions), transitions_group_boundary_checker);
 
     /* Create abstract transitions from groups. */
     auto abstract_transitions = AbstractTransitionList {};
-    abstract_transitions.reserve(transitions_begin_by_source_and_target.size() - 1);
-    for (size_t i = 0; i < transitions_begin_by_source_and_target.size() - 1; ++i)
+    abstract_transitions.reserve(grouped_transitions.get_num_groups());
+    for (size_t group_index = 0; group_index < grouped_transitions.get_num_groups(); ++group_index)
     {
-        const auto begin_offset = transitions_begin_by_source_and_target[i];
-        const auto end_offset = transitions_begin_by_source_and_target[i + 1];
+        const auto group = grouped_transitions.get_group(group_index);
+        assert(!group.empty());
+        const auto& group_begins = grouped_transitions.get_groups_begin();
 
-        bool has_transition = (begin_offset != end_offset);
-
-        if (has_transition)
-        {
-            const auto source = (transitions.begin() + begin_offset)->get_source_state();
-            const auto target = (transitions.begin() + begin_offset)->get_target_state();
-
-            abstract_transitions.emplace_back(abstract_transitions.size(),
-                                              source,
-                                              target,
-                                              std::span<GroundAction>((*ground_actions_by_source_and_target).begin() + begin_offset,
-                                                                      (*ground_actions_by_source_and_target).begin() + end_offset));
-        }
+        abstract_transitions.emplace_back(abstract_transitions.size(),
+                                          group.front().get_source_state(),
+                                          group.front().get_target_state(),
+                                          std::span<GroundAction>((*ground_actions_by_source_and_target).begin() + group_begins.at(group_index),
+                                                                  (*ground_actions_by_source_and_target).begin() + group_begins.at(group_index + 1)));
     }
 
     /* Group abstract transitions by source. */

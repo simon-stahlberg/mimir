@@ -141,44 +141,6 @@ public:
         return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
     }
 
-    /// @brief This implementation creates a new group when the boundary checker returns true
-    /// and uses the group retriever to find the index of the group.
-    /// @tparam GroupBoundaryChecker
-    /// @tparam GroupIndexRetriever
-    /// @param vec
-    /// @param group_boundary_checker
-    /// @param group_index_retriever
-    /// @return
-    template<typename GroupBoundaryChecker, typename GroupIndexRetriever>
-        requires IsGroupBoundaryChecker<GroupBoundaryChecker, T> && IsGroupIndexRetriever<GroupIndexRetriever, T>
-    static IndexGroupedVector<T> create(std::vector<T> vec, GroupBoundaryChecker group_boundary_checker, GroupIndexRetriever group_index_retriever)
-    {
-        auto groups_begin = std::vector<size_t> {};
-
-        // Write begin of first group.
-        groups_begin.push_back(0);
-
-        for (size_t i = 1; i < vec.size(); ++i)
-        {
-            const auto cur_group = groups_begin.size() - 1;
-            if (cur_group > group_index_retriever(vec[i]))
-            {
-                throw std::logic_error("IndexGroupedVector::create: Got element of finished group. Did you forget to sort the input vector?");
-            }
-
-            if (group_boundary_checker(vec[i - 1], vec[i]))
-            {
-                // Write begin of new group.
-                groups_begin.push_back(i);
-            }
-        }
-
-        // Write begin of remaining groups + end of last group.
-        groups_begin.push_back(vec.size());
-
-        return IndexGroupedVector<T>(std::move(vec), std::move(groups_begin));
-    }
-
     /// @brief This implementation adds a new group whenever the boundary checker returns true.
     /// @tparam GroupBoundaryChecker
     /// @param vec
