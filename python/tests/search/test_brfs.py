@@ -1,5 +1,4 @@
-from pymimir import PDDLParser
-from pymimir import LiftedAAG, BrFSAlgorithm, SearchStatus
+from pymimir import PDDLParser, LiftedAAG, BrFSAlgorithm, SearchStatus
 
 from pathlib import Path
 
