@@ -38,9 +38,9 @@
 namespace mimir
 {
 
-Digraph<DigraphEdge> create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
 {
-    auto g = Digraph<DigraphEdge>(num_components);
+    auto g = Digraph(num_components);
     std::set<std::pair<size_t, size_t>> edges;
     for (const auto t : state_space.get_transitions())
     {

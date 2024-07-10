@@ -65,7 +65,7 @@ bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
 
 /* DenseGraphFactory */
 
-DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::Digraph<mimir::DigraphEdge>& digraph)
+DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::Digraph& digraph)
 {
     m_graph.reset(digraph.get_num_vertices(), digraph.is_directed());
 
@@ -117,7 +117,7 @@ bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 
 /* SparseGraphFactory */
 
-SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::Digraph<mimir::DigraphEdge>& digraph)
+SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::Digraph& digraph)
 {
     m_graph.reset(digraph.get_num_vertices(), digraph.is_directed());
 

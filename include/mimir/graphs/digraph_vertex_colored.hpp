@@ -15,11 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_INTERFACE_HPP_
-#define MIMIR_GRAPHS_DIGRAPH_EDGE_INTERFACE_HPP_
+#ifndef MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORE_HPP_
+#define MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORE_HPP_
 
-#include <concepts>
-#include <cstdint>
+#include "mimir/graphs/coloring_function.hpp"
+#include "mimir/graphs/digraph.hpp"
+
 #include <ranges>
 #include <span>
 #include <vector>
@@ -27,26 +28,28 @@
 namespace mimir
 {
 
-using DigraphEdgeIndex = uint32_t;
-using DigraphEdgeWeight = double;
-using DigraphVertexIndex = uint32_t;
+/**
+ * Declarations
+ */
 
-template<typename T>
-concept IsDigraphEdge = requires(T a) {
-    {
-        a.get_index()
-    } -> std::convertible_to<DigraphEdgeIndex>;
-    {
-        a.get_source()
-    } -> std::convertible_to<DigraphVertexIndex>;
-    {
-        a.get_target()
-    } -> std::convertible_to<DigraphVertexIndex>;
-    {
-        a.get_weight()
-    } -> std::convertible_to<DigraphEdgeWeight>;
+class VertexColoredDigraph
+{
+private:
+    Digraph m_digraph;
+    ColorList m_vertex_colors;
+
+public:
+    explicit VertexColoredDigraph(bool is_directed = false);
+
+    DigraphVertexIndex add_vertex(Color color = 0);
+
+    DigraphEdgeIndex add_edge(DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight = 1.);
+
+    void reset(size_t num_vertices, bool is_directed = false);
+
+    const Digraph& get_digraph() const;
+    const ColorList& get_vertex_colors() const;
 };
 
 }
-
 #endif

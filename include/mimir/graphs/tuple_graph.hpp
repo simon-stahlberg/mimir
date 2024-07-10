@@ -18,7 +18,9 @@
 #ifndef MIMIR_GRAPHS_TUPLE_GRAPH_HPP_
 #define MIMIR_GRAPHS_TUPLE_GRAPH_HPP_
 
+#include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/graphs/digraph.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
@@ -73,15 +75,18 @@ private:
     // TODO. make this an index grouped vector, grouped by distance
     TupleGraphVertexList m_vertices;
 
-    // TODO: make this a index grouped vector, grouped by source vertex index.
-    std::vector<VertexIndexList> m_forward_successors;
-    // TODO: make this an index grouped vector, grouped by target vertex index.
-    std::vector<VertexIndexList> m_backward_successors;
+    Digraph m_digraph;
 
     // TODO: Remove this, since vertices will be grouped by distance
     std::vector<VertexIndexList> m_vertex_indices_by_distance;
     // TODO: make this an index grouped vector, grouped by vertex to be able to store spans in the vertices
     std::vector<StateList> m_states_by_distance;
+
+    // TODO: operation to add a group
+    // IndexGroupedVector<TupleGraphVertex> m_vertices_grouped_by_distance;
+    // IndexGroupedVector<StateIndex> m_states_grouped_by_vertex;
+
+    // IndexGroupedVector<StateIndex> m_states_grouped_by_distance;
 
     TupleGraph(std::shared_ptr<StateSpace> state_space,
                std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
@@ -108,8 +113,7 @@ public:
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
     const TupleGraphVertexList& get_vertices() const;
-    const std::vector<VertexIndexList>& get_forward_successors() const;
-    const std::vector<VertexIndexList>& get_backward_successors() const;
+    const Digraph& get_digraph() const;
     const std::vector<VertexIndexList>& get_vertex_indices_by_distances() const;
     const std::vector<StateList>& get_states_by_distance() const;
 };

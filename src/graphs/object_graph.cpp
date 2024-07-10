@@ -109,7 +109,7 @@ ObjectGraph::ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_fu
 
 const std::shared_ptr<const ProblemColorFunction>& ObjectGraph::get_coloring_function() const { return m_coloring_function; }
 
-const Digraph<DigraphEdge>& ObjectGraph::get_digraph() const { return m_digraph; }
+const Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
 
 const ColorList& ObjectGraph::get_vertex_colors() const { return m_vertex_colors; }
 
@@ -132,74 +132,18 @@ ObjectGraphFactory::ObjectGraphFactory(Problem problem, std::shared_ptr<PDDLFact
 
 int ObjectGraphFactory::add_object_graph_structures(Object object, int num_vertices)
 {
+    m_object_graph.m_digraph.increase_num_vertices(num_vertices + 1);
+
     const auto vertex_color = m_coloring_function->get_color(object);
     m_object_graph.m_vertex_colors.push_back(vertex_color);
-    m_object_graph.m_sorted_vertex_colors.push_back(vertex_color);
     m_object_to_vertex_index.emplace(object, num_vertices);
     return ++num_vertices;
-}
-
-static int
-compute_num_vertices(const Problem problem, const PDDLFactories& pddl_factories, const State state, const ObjectGraphPruningStrategy& pruning_strategy)
-{
-    auto num_vertices = 0;
-    for (const auto& object : problem->get_objects())
-    {
-        if (!pruning_strategy.prune(object))
-        {
-            num_vertices += 1;
-        }
-    }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Static>(problem->get_static_initial_positive_atoms_bitset()))
-    {
-        if (!pruning_strategy.prune(atom))
-        {
-            num_vertices += atom->get_arity();
-        }
-    }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>()))
-    {
-        if (!pruning_strategy.prune(atom))
-        {
-            num_vertices += atom->get_arity();
-        }
-    }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>()))
-    {
-        if (!pruning_strategy.prune(atom))
-        {
-            num_vertices += atom->get_arity();
-        }
-    }
-    for (const auto& literal : problem->get_goal_condition<Static>())
-    {
-        if (!pruning_strategy.prune(literal))
-        {
-            num_vertices += literal->get_atom()->get_arity();
-        }
-    }
-    for (const auto& literal : problem->get_goal_condition<Fluent>())
-    {
-        if (!pruning_strategy.prune(literal))
-        {
-            num_vertices += literal->get_atom()->get_arity();
-        }
-    }
-    for (const auto& literal : problem->get_goal_condition<Derived>())
-    {
-        if (!pruning_strategy.prune(literal))
-        {
-            num_vertices += literal->get_atom()->get_arity();
-        }
-    }
-    return num_vertices;
 }
 
 const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPruningStrategy& pruning_strategy)
 {
     // Reset data structures
-    auto num_vertices = compute_num_vertices(m_problem, *m_pddl_factories, state, pruning_strategy);
-    m_object_graph.m_digraph.reset(num_vertices, false);
+    m_object_graph.m_digraph.reset(false);
     m_object_graph.m_vertex_colors.clear();
     m_object_graph.m_sorted_vertex_colors.clear();
     m_object_to_vertex_index.clear();
@@ -261,11 +205,13 @@ const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPrun
     }
 
     // Initialize histogram
+    m_object_graph.m_sorted_vertex_colors = m_object_graph.m_vertex_colors;
     std::sort(m_object_graph.m_sorted_vertex_colors.begin(), m_object_graph.m_sorted_vertex_colors.end());
 
     // Initialize partitioning
+    const auto num_vertices = m_object_graph.m_digraph.get_num_vertices();
     m_vertex_index_and_color.clear();
-    for (int vertex_index = 0; vertex_index < num_vertices; ++vertex_index)
+    for (size_t vertex_index = 0; vertex_index < num_vertices; ++vertex_index)
     {
         m_vertex_index_and_color.emplace_back(vertex_index, m_object_graph.m_vertex_colors.at(vertex_index));
     }
@@ -277,7 +223,7 @@ const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPrun
     m_object_graph.m_partitioning.m_vertex_index_permutation.resize(num_vertices);
     m_object_graph.m_partitioning.m_partitioning.resize(num_vertices);
     m_object_graph.m_partitioning.m_partition_begin.push_back(0);
-    for (int i = 0; i < num_vertices; ++i)
+    for (size_t i = 0; i < num_vertices; ++i)
     {
         const auto& [vertex_index, color] = m_vertex_index_and_color.at(i);
         const auto next_has_same_color = ((i < num_vertices - 1) && (color == m_vertex_index_and_color[i + 1].second));

@@ -35,22 +35,22 @@ namespace mimir
 
 /* Digraph */
 
-template<IsDigraphEdge Edge>
 class Digraph
 {
-public:
-    using EdgeType = Edge;
-    using EdgeList = std::vector<EdgeType>;
-
 private:
     size_t m_num_vertices;
     bool m_is_directed;
 
-    EdgeList m_edges;
+    DigraphEdgeList m_edges;
 
 public:
+    using EdgeType = DigraphEdge;
+
     explicit Digraph(bool is_directed = false);
     Digraph(size_t num_vertices, bool is_directed = false);
+
+    /// @brief Extend the current number of vertices beyond the current number of vertices.
+    void increase_num_vertices(size_t new_num_vertices);
 
     /// @brief Add an edge to the graph and return the index to it.
     /// If the graph is undirected, then the backward edge has index + 1.
@@ -63,12 +63,12 @@ public:
      * Iterators
      */
 
-    DigraphTargetIndexIterator<Edge> get_targets(DigraphVertexIndex source) const;
-    DigraphSourceIndexIterator<Edge> get_sources(DigraphVertexIndex target) const;
-    DigraphForwardEdgeIndexIterator<Edge> get_forward_edge_indices(DigraphVertexIndex source) const;
-    DigraphBackwardEdgeIndexIterator<Edge> get_backward_edge_indices(DigraphVertexIndex target) const;
-    DigraphForwardEdgeIterator<Edge> get_forward_edges(DigraphVertexIndex source) const;
-    DigraphBackwardEdgeIterator<Edge> get_backward_edges(DigraphVertexIndex target) const;
+    DigraphTargetIndexIterator<DigraphEdge> get_targets(DigraphVertexIndex source) const;
+    DigraphSourceIndexIterator<DigraphEdge> get_sources(DigraphVertexIndex target) const;
+    DigraphForwardEdgeIndexIterator<DigraphEdge> get_forward_edge_indices(DigraphVertexIndex source) const;
+    DigraphBackwardEdgeIndexIterator<DigraphEdge> get_backward_edge_indices(DigraphVertexIndex target) const;
+    DigraphForwardEdgeIterator<DigraphEdge> get_forward_edges(DigraphVertexIndex source) const;
+    DigraphBackwardEdgeIterator<DigraphEdge> get_backward_edges(DigraphVertexIndex target) const;
 
     /**
      * Getters
@@ -76,114 +76,14 @@ public:
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
     bool is_directed() const;
-    const EdgeList& get_edges() const;
+    const DigraphEdgeList& get_edges() const;
 };
 
-static_assert(IsDigraph<Digraph<DigraphEdge>>);
+static_assert(IsDigraph<Digraph>);
 
 /* ForwardDigraph */
 
 /* BidirectionalDigraph */
-
-/**
- * Implementations
- */
-
-/* Digraph */
-
-template<IsDigraphEdge Edge>
-Digraph<Edge>::Digraph(bool is_directed) : m_num_vertices(0), m_is_directed(is_directed), m_edges()
-{
-}
-
-template<IsDigraphEdge Edge>
-Digraph<Edge>::Digraph(size_t num_vertices, bool is_directed) : m_num_vertices(num_vertices), m_is_directed(is_directed)
-{
-}
-
-template<IsDigraphEdge Edge>
-DigraphEdgeIndex Digraph<Edge>::add_edge(DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight)
-{
-    if (source >= m_num_vertices || target >= m_num_vertices || source < 0 || target < 0)
-    {
-        throw std::out_of_range("Source or destination vertex out of range");
-    }
-    const auto index = static_cast<DigraphEdgeIndex>(m_edges.size());
-    m_edges.emplace_back(index, source, target, weight);
-    if (!m_is_directed)
-    {
-        m_edges.emplace_back(index, target, source, weight);
-    }
-    return index;
-}
-
-template<IsDigraphEdge Edge>
-void Digraph<Edge>::reset(size_t num_vertices, bool is_directed)
-{
-    m_num_vertices = num_vertices;
-    m_is_directed = is_directed;
-    m_edges.clear();
-}
-
-template<IsDigraphEdge Edge>
-DigraphTargetIndexIterator<Edge> Digraph<Edge>::get_targets(DigraphVertexIndex source) const
-{
-    return DigraphTargetIndexIterator<Edge>(source, m_edges);
-}
-
-template<IsDigraphEdge Edge>
-DigraphSourceIndexIterator<Edge> Digraph<Edge>::get_sources(DigraphVertexIndex target) const
-{
-    return DigraphSourceIndexIterator<Edge>(target, m_edges);
-}
-
-template<IsDigraphEdge Edge>
-DigraphForwardEdgeIndexIterator<Edge> Digraph<Edge>::get_forward_edge_indices(DigraphVertexIndex source) const
-{
-    return DigraphForwardEdgeIndexIterator<Edge>(source, m_edges);
-}
-
-template<IsDigraphEdge Edge>
-DigraphBackwardEdgeIndexIterator<Edge> Digraph<Edge>::get_backward_edge_indices(DigraphVertexIndex target) const
-{
-    return DigraphBackwardEdgeIndexIterator<Edge>(target, m_edges);
-}
-
-template<IsDigraphEdge Edge>
-DigraphForwardEdgeIterator<Edge> Digraph<Edge>::get_forward_edges(DigraphVertexIndex source) const
-{
-    return DigraphForwardEdgeIterator<Edge>(source, m_edges);
-}
-
-template<IsDigraphEdge Edge>
-DigraphBackwardEdgeIterator<Edge> Digraph<Edge>::get_backward_edges(DigraphVertexIndex target) const
-{
-    return DigraphBackwardEdgeIterator<Edge>(target, m_edges);
-}
-
-template<IsDigraphEdge Edge>
-size_t Digraph<Edge>::get_num_vertices() const
-{
-    return m_num_vertices;
-}
-
-template<IsDigraphEdge Edge>
-size_t Digraph<Edge>::get_num_edges() const
-{
-    return m_edges.size();
-}
-
-template<IsDigraphEdge Edge>
-bool Digraph<Edge>::is_directed() const
-{
-    return m_is_directed;
-}
-
-template<IsDigraphEdge Edge>
-const Digraph<Edge>::EdgeList& Digraph<Edge>::get_edges() const
-{
-    return m_edges;
-}
 
 }
 #endif

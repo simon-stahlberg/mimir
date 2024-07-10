@@ -41,25 +41,51 @@ int main(int argc, char** argv)
         problem_filepaths.push_back(problem_filepath.path());
     }
 
-    auto gfas = FaithfulAbstraction::create(domain_file_path, problem_filepaths, true, true, true, false, max_num_states);
+    /* State spaces */
+    auto state_spaces = StateSpace::create(domain_file_path, problem_filepaths, true, true, true, max_num_states);
 
-    size_t num_states = 0;
-    size_t num_transitions = 0;
-    size_t num_ground_actions = 0;
-    size_t num_ground_axioms = 0;
-    for (const auto& gfa : gfas)
+    size_t num_ss_states = 0;
+    size_t num_ss_transitions = 0;
+    size_t num_ss_ground_actions = 0;
+    size_t num_ss_ground_axioms = 0;
+    for (const auto& state_space : state_spaces)
     {
-        num_states += gfa.get_num_states();
-        num_transitions += gfa.get_num_transitions();
-        num_ground_actions += gfa.get_aag()->get_num_ground_actions();
-        num_ground_axioms += gfa.get_aag()->get_num_ground_axioms();
+        num_ss_states += state_space.get_num_states();
+        num_ss_transitions += state_space.get_num_transitions();
+        num_ss_ground_actions += state_space.get_aag()->get_num_ground_actions();
+        num_ss_ground_axioms += state_space.get_aag()->get_num_ground_axioms();
+    }
+    std::cout << "Num sss: " << state_spaces.size() << std::endl;
+    std::cout << "Num ss states: " << num_ss_states << std::endl;
+    std::cout << "Num ss transitions: " << num_ss_transitions << std::endl;
+    std::cout << "Num ss ground actions: " << num_ss_ground_actions << std::endl;
+    std::cout << "Num ss ground axioms: " << num_ss_ground_axioms << std::endl;
+
+    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    for (const auto& state_space : state_spaces)
+    {
+        memories.emplace_back(state_space.get_problem(), state_space.get_pddl_factories(), state_space.get_aag(), state_space.get_ssg());
     }
 
+    /* Gfas */
+    auto gfas = FaithfulAbstraction::create(memories, true, true, true, false, true, max_num_states);
+
+    size_t num_gfa_states = 0;
+    size_t num_gfa_transitions = 0;
+    size_t num_gfa_ground_actions = 0;
+    size_t num_gfa_ground_axioms = 0;
+    for (const auto& gfa : gfas)
+    {
+        num_gfa_states += gfa.get_num_states();
+        num_gfa_transitions += gfa.get_num_transitions();
+        num_gfa_ground_actions += gfa.get_aag()->get_num_ground_actions();
+        num_gfa_ground_axioms += gfa.get_aag()->get_num_ground_axioms();
+    }
     std::cout << "Num gfas: " << gfas.size() << std::endl;
-    std::cout << "Num states: " << num_states << std::endl;
-    std::cout << "Num transitions: " << num_transitions << std::endl;
-    std::cout << "Num ground actions: " << num_ground_actions << std::endl;
-    std::cout << "Num ground axioms: " << num_ground_axioms << std::endl;
+    std::cout << "Num gfa states: " << num_gfa_states << std::endl;
+    std::cout << "Num gfa transitions: " << num_gfa_transitions << std::endl;
+    std::cout << "Num gfa ground actions: " << num_gfa_ground_actions << std::endl;
+    std::cout << "Num gfa ground axioms: " << num_gfa_ground_axioms << std::endl;
 
     return 0;
 }

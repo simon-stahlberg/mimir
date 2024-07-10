@@ -36,7 +36,7 @@ private:
     DigraphEdgeWeight m_weight;
 
 public:
-    DigraphEdge(DigraphEdgeIndex index, DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight);
+    DigraphEdge(DigraphEdgeIndex index, DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight = 1.);
 
     bool operator==(const DigraphEdge& other) const;
     size_t hash() const;
@@ -46,6 +46,8 @@ public:
     DigraphVertexIndex get_target() const;
     DigraphEdgeWeight get_weight() const;
 };
+
+using DigraphEdgeList = std::vector<DigraphEdge>;
 
 }
 #endif
