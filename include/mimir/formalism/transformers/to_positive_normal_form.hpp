@@ -94,14 +94,19 @@ void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>&
 {
     for (const auto& literal : conditions)
     {
-        if (negative_transformed_duals.count(literal))
+        if (literal->is_negated())
         {
-            assert(literal->is_negated());
-            ref_transformed_derived_conditions.push_back(negative_transformed_duals.at(literal));
+            const auto& negative_transformed_dual = negative_transformed_duals.at(literal);
+            assert(!negative_transformed_dual->is_negated());
+            // We need to use the term list from the context, i.e., from the literal of the condition.
+            auto transformed_dual = m_pddl_factories.get_or_create_literal<Derived>(
+                false,
+                m_pddl_factories.get_or_create_atom<Derived>(negative_transformed_dual->get_atom()->get_predicate(),
+                                                             transform(literal->get_atom()->get_terms())));
+            ref_transformed_derived_conditions.push_back(transformed_dual);
         }
         else
         {
-            assert(!literal->is_negated());
             ref_transformed_conditions.push_back(this->transform(*literal));
         }
     }
