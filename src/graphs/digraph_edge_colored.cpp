@@ -15,38 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
-#define MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
+#include "mimir/graphs/digraph_edge_colored.hpp"
 
-#include "mimir/graphs/digraph_vertex_colored.hpp"
-
-#include <ranges>
-#include <span>
-#include <vector>
+#include <algorithm>
+#include <loki/loki.hpp>
 
 namespace mimir
 {
 
-class ColoredDigraphEdge
+/**
+ * ColoredDigraphEdge
+ */
+
+ColoredDigraphEdge::ColoredDigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target, Color color) :
+    m_index(index),
+    m_source(source),
+    m_target(target),
+    m_color(color)
 {
-private:
-    EdgeIndex m_index;
-    VertexIndex m_source;
-    VertexIndex m_target;
-    Color m_color;
+}
 
-public:
-    ColoredDigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target, Color color);
+EdgeIndex ColoredDigraphEdge::get_index() const { return m_index; }
 
-    EdgeIndex get_index() const;
-    VertexIndex get_source() const;
-    VertexIndex get_target() const;
-    Color get_color() const;
-};
+VertexIndex ColoredDigraphEdge::get_source() const { return m_source; }
 
-using EdgeColoredDigraph = Graph<ColoredDigraphVertex, ColoredDigraphEdge>;
+VertexIndex ColoredDigraphEdge::get_target() const { return m_target; }
 
-static_assert(IsGraph<EdgeColoredDigraph>);
+Color ColoredDigraphEdge::get_color() const { return m_color; }
 
 }
-#endif

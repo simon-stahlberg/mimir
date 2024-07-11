@@ -67,8 +67,6 @@ public:
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
-template<typename T>
-using GlobalFaithfulAbstractStateMap = std::unordered_map<GlobalFaithfulAbstractState, T, loki::Hash<GlobalFaithfulAbstractState>>;
 
 class GlobalFaithfulAbstraction
 {

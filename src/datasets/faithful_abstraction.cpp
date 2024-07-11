@@ -170,8 +170,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
     const auto object_graph = create_object_graph(color_function, *factories, problem, initial_state, mark_true_goal_literals);
-    auto certificate =
-        std::make_shared<const Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
+    auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
+                                                           object_graph.get_num_edges(),
+                                                           nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
+                                                           compute_sorted_vertex_colors(object_graph));
     const auto abstract_initial_state_index = 0;
     abstract_states_by_certificate.emplace(std::move(certificate), abstract_initial_state_index);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_index);
@@ -214,8 +216,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
             // Compute certificate of successor state
             const auto object_graph = create_object_graph(color_function, *factories, problem, successor_state, mark_true_goal_literals);
-            auto certificate =
-                std::make_shared<const Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
+            auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
+                                                                   object_graph.get_num_edges(),
+                                                                   nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
+                                                                   compute_sorted_vertex_colors(object_graph));
             const auto it = abstract_states_by_certificate.find(certificate);
 
             // Regenerate abstract state

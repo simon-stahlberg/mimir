@@ -29,15 +29,19 @@ namespace mimir
 class Certificate
 {
 private:
+    size_t m_num_vertices;
+    size_t m_num_edges;
     std::string m_nauty_certificate;
     ColorList m_canonical_initial_coloring;
 
 public:
-    Certificate(std::string nauty_certificate, ColorList canonical_initial_coloring);
+    Certificate(size_t num_vertices, size_t num_edges, std::string nauty_certificate, ColorList canonical_initial_coloring);
 
-    [[nodiscard]] bool operator==(const Certificate& other) const;
-    [[nodiscard]] size_t hash() const;
+    bool operator==(const Certificate& other) const;
+    size_t hash() const;
 
+    size_t get_num_vertices() const;
+    size_t get_num_edges() const;
     const std::string& get_nauty_certificate() const;
     const ColorList& get_canonical_initial_coloring() const;
 };

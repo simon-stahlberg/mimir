@@ -50,7 +50,7 @@ public:
 
 using VertexColoredDigraph = Graph<ColoredDigraphVertex, DigraphEdge>;
 
-static_assert(IsGraph<Digraph>);
+static_assert(IsGraph<VertexColoredDigraph>);
 
 /**
  * Utils

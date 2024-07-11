@@ -20,7 +20,9 @@
 namespace mimir
 {
 
-Certificate::Certificate(std::string nauty_certificate, ColorList canonical_initial_coloring) :
+Certificate::Certificate(size_t num_vertices, size_t num_edges, std::string nauty_certificate, ColorList canonical_initial_coloring) :
+    m_num_vertices(num_vertices),
+    m_num_edges(num_edges),
     m_nauty_certificate(std::move(nauty_certificate)),
     m_canonical_initial_coloring(std::move(canonical_initial_coloring))
 {
@@ -30,12 +32,20 @@ bool Certificate::operator==(const Certificate& other) const
 {
     if (this != &other)
     {
-        return (m_canonical_initial_coloring == other.m_canonical_initial_coloring) && (m_nauty_certificate == other.m_nauty_certificate);
+        return (m_num_vertices == other.m_num_vertices) && (m_num_edges == other.m_num_edges)
+               && (m_canonical_initial_coloring == other.m_canonical_initial_coloring) && (m_nauty_certificate == other.m_nauty_certificate);
     }
     return true;
 }
 
-size_t Certificate::hash() const { return loki::hash_combine(m_nauty_certificate, loki::hash_container(m_canonical_initial_coloring)); }
+size_t Certificate::hash() const
+{
+    return loki::hash_combine(m_num_vertices, m_num_edges, m_nauty_certificate, loki::hash_container(m_canonical_initial_coloring));
+}
+
+size_t Certificate::get_num_vertices() const { return m_num_vertices; }
+
+size_t Certificate::get_num_edges() const { return m_num_edges; }
 
 const std::string& Certificate::get_nauty_certificate() const { return m_nauty_certificate; }
 

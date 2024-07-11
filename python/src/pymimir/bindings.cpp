@@ -1614,9 +1614,11 @@ void init_pymimir(py::module_& m)
 
     // Certificate
     py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
-        .def(py::init<std::string, ColorList>())
+        .def(py::init<size_t, size_t, std::string, ColorList>())
         .def("__eq__", &Certificate::operator==)
         .def("__hash__", &Certificate::hash)
+        .def("get_num_vertices", &Certificate::get_num_vertices)
+        .def("get_num_edges", &Certificate::get_num_edges)
         .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
         .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
 

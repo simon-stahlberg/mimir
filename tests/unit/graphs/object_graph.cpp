@@ -29,7 +29,10 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_wrapper::DenseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
+        auto certificate = Certificate(object_graph.get_num_vertices(),
+                                       object_graph.get_num_edges(),
+                                       nauty_wrapper::DenseGraph(object_graph).compute_certificate(),
+                                       compute_sorted_vertex_colors(object_graph));
 
         certificates.insert(std::move(certificate));
     }
@@ -56,7 +59,10 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
+        auto certificate = Certificate(object_graph.get_num_vertices(),
+                                       object_graph.get_num_edges(),
+                                       nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
+                                       compute_sorted_vertex_colors(object_graph));
 
         certificates.insert(std::move(certificate));
     }
@@ -95,7 +101,10 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
+        auto certificate = Certificate(object_graph.get_num_vertices(),
+                                       object_graph.get_num_edges(),
+                                       nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
+                                       compute_sorted_vertex_colors(object_graph));
 
         certificates.insert(std::move(certificate));
     }
