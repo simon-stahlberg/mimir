@@ -57,8 +57,6 @@ void SparseGraphImpl::allocate_graph(sparsegraph& out_graph) const
         // Allocate the sparse graph structure, assuming a complete graph
         SG_INIT(out_graph);
         SG_ALLOC(out_graph, n_, n_ * n_, "malloc");
-
-        initialize_graph_data(out_graph);
     }
     else
     {
@@ -67,6 +65,8 @@ void SparseGraphImpl::allocate_graph(sparsegraph& out_graph) const
         out_graph.dlen = 0;
         out_graph.elen = 0;
     }
+
+    initialize_graph_data(out_graph);
 }
 
 void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph) const
@@ -80,11 +80,11 @@ void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph) const
 
 SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
     n_(num_vertices),
-    c_(num_vertices),
-    m_adj_matrix_(),
+    c_(n_),
+    adj_matrix_(c_ * c_, false),
     use_default_ptn_(true),
-    lab_(num_vertices),
-    ptn_(num_vertices),
+    lab_(c_),
+    ptn_(c_),
     canon_graph_repr_(),
     canon_graph_compressed_repr_()
 {
@@ -95,7 +95,7 @@ SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
 SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     n_(other.n_),
     c_(other.c_),
-    m_adj_matrix_(other.m_adj_matrix_),
+    adj_matrix_(other.adj_matrix_),
     use_default_ptn_(other.use_default_ptn_),
     lab_(other.lab_),
     ptn_(other.ptn_),
@@ -121,7 +121,7 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 
         n_ = other.n_;
         c_ = other.c_;
-        m_adj_matrix_ = other.m_adj_matrix_;
+        adj_matrix_ = other.adj_matrix_;
         use_default_ptn_ = other.use_default_ptn_;
         lab_ = other.lab_;
         ptn_ = other.ptn_;
@@ -140,7 +140,7 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
     n_(other.n_),
     c_(other.c_),
-    m_adj_matrix_(other.m_adj_matrix_),
+    adj_matrix_(other.adj_matrix_),
     graph_(other.graph_),
     use_default_ptn_(other.use_default_ptn_),
     lab_(std::move(other.lab_)),
@@ -163,7 +163,7 @@ SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
 
         n_ = other.n_;
         c_ = other.c_;
-        m_adj_matrix_ = other.m_adj_matrix_;
+        adj_matrix_ = other.adj_matrix_;
         use_default_ptn_ = other.use_default_ptn_;
         lab_ = std::move(other.lab_);
         ptn_ = std::move(other.ptn_);
@@ -202,9 +202,9 @@ void SparseGraphImpl::add_edge(size_t source, size_t target)
         throw std::out_of_range("SparseGraphImpl::add_edge: Source or target vertex out of range.");
     }
 
-    if (!m_adj_matrix_.at(source * n_ + target))
+    if (!adj_matrix_.at(source * n_ + target))
     {
-        m_adj_matrix_.at(source * n_ + target) = true;
+        adj_matrix_.at(source * n_ + target) = true;
 
         graph_.e[source * n_ + graph_.d[source]] = target;
         ++graph_.d[source];
@@ -277,7 +277,7 @@ void SparseGraphImpl::reset(size_t num_vertices)
         c_ = num_vertices;
         lab_ = std::vector<int>(c_);
         ptn_ = std::vector<int>(c_);
-        m_adj_matrix_ = std::vector<bool>(c_ * c_, false);
+        adj_matrix_ = std::vector<bool>(c_ * c_, false);
 
         allocate_graph(graph_);
         allocate_graph(canon_graph_);
@@ -286,7 +286,7 @@ void SparseGraphImpl::reset(size_t num_vertices)
     {
         /* Reuse memory. */
         n_ = num_vertices;
-        std::fill(m_adj_matrix_.begin(), m_adj_matrix_.begin() + n_ * n_, false);
+        std::fill(adj_matrix_.begin(), adj_matrix_.begin() + n_ * n_, false);
 
         initialize_graph_data(graph_);
         initialize_graph_data(canon_graph_);
@@ -299,7 +299,7 @@ bool SparseGraphImpl::is_directed() const
     {
         for (size_t target = source + 1; target < n_; ++target)
         {
-            if (m_adj_matrix_.at(source * n_ + target) != m_adj_matrix_.at(target * n_ + source))
+            if (adj_matrix_.at(source * n_ + target) != adj_matrix_.at(target * n_ + source))
             {
                 return true;
             }
@@ -312,7 +312,7 @@ bool SparseGraphImpl::has_loop() const
 {
     for (size_t source = 0; source < n_; ++source)
     {
-        if (m_adj_matrix_.at(source * n_ + source))
+        if (adj_matrix_.at(source * n_ + source))
         {
             return true;
         }

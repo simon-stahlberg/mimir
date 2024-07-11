@@ -75,8 +75,9 @@
  * Graphs
  */
 
-#include "mimir/graphs/coloring_function.hpp"
+#include "mimir/graphs/color_function.hpp"
 #include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/graphs/tuple_graph.hpp"
 

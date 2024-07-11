@@ -66,4 +66,33 @@ ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph)
     return coloring;
 }
 
+/**
+ * Pretty printing
+ */
+
+std::ostream& operator<<(std::ostream& out, std::tuple<const VertexColoredDigraph&, const ColorFunction&>& data)
+{
+    const auto& [vertex_colored_digraph, color_function] = data;
+
+    out << "digraph {\n";
+    for (const auto& vertex : vertex_colored_digraph.get_vertices())
+    {
+        const auto& color_name = color_function.get_color_name(vertex.get_color());
+        out << "t" << vertex.get_index() << "[";
+        out << "label=\"" << color_name << " (" << vertex.get_color() << ")"
+            << "\"]\n";
+    }
+    for (const auto& vertex : vertex_colored_digraph.get_vertices())
+    {
+        for (const auto& succ_vertex : vertex_colored_digraph.get_targets(vertex.get_index()))
+        {
+            out << "t" << vertex.get_index() << "->"
+                << "t" << succ_vertex.get_index() << "\n";
+        }
+    }
+    out << "}";  // end digraph
+
+    return out;
+}
+
 }

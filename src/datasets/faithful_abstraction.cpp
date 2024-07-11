@@ -164,16 +164,14 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         return std::nullopt;
     }
 
-    auto nauty_graph_factory = nauty_wrapper::SparseGraphFactory();
-    auto object_graph_factory = ObjectGraphFactory(problem, factories);
     auto concrete_to_abstract_state = StateMap<StateIndex> {};
     auto abstract_states_by_certificate = CertificateToStateIndexMap {};
 
     /* Initialize for initial state. */
-    const auto& object_graph = object_graph_factory.create(initial_state);
-    auto certificate = std::make_shared<const Certificate>(
-        nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
-        compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
+    const auto color_function = ProblemColorFunction(problem);
+    const auto object_graph = create_object_graph(color_function, *factories, problem, initial_state, mark_true_goal_literals);
+    auto certificate =
+        std::make_shared<const Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
     const auto abstract_initial_state_index = 0;
     abstract_states_by_certificate.emplace(std::move(certificate), abstract_initial_state_index);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_index);
@@ -215,10 +213,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             }
 
             // Compute certificate of successor state
-            const auto& object_graph = object_graph_factory.create(successor_state);
-            auto certificate = std::make_shared<const Certificate>(
-                nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
-                compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
+            const auto object_graph = create_object_graph(color_function, *factories, problem, successor_state, mark_true_goal_literals);
+            auto certificate =
+                std::make_shared<const Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
             const auto it = abstract_states_by_certificate.find(certificate);
 
             // Regenerate abstract state

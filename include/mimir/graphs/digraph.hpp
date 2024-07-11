@@ -60,5 +60,11 @@ using Digraph = Graph<DigraphVertex, DigraphEdge>;
 
 static_assert(IsGraph<Digraph>);
 
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const Digraph& digraph);
+
 }
 #endif

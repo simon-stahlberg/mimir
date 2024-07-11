@@ -19,7 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 
 // Only include nauty_sparse_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include <mimir/graphs/coloring.hpp>
+#include <mimir/graphs/color.hpp>
 #include <nausparse.h>
 #include <nauty.h>
 #include <sstream>
@@ -36,7 +36,7 @@ private:
     // vertex capacity
     size_t c_;
     // Track existing edges to avoid duplicates
-    std::vector<bool> m_adj_matrix_;
+    std::vector<bool> adj_matrix_;
 
     // The input graph
     sparsegraph graph_;

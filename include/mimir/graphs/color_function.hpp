@@ -15,11 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_COLORING_FUNCTION_HPP_
-#define MIMIR_GRAPHS_COLORING_FUNCTION_HPP_
+#ifndef MIMIR_GRAPHS_COLOR_FUNCTION_HPP_
+#define MIMIR_GRAPHS_COLOR_FUNCTION_HPP_
 
 #include "mimir/formalism/formalism.hpp"
-#include "mimir/graphs/coloring.hpp"
+#include "mimir/graphs/color.hpp"
 #include "mimir/search/state.hpp"
 
 #include <set>
@@ -29,7 +29,16 @@
 namespace mimir
 {
 
-class ProblemColorFunction
+class ColorFunction
+{
+public:
+    virtual ~ColorFunction() = default;
+
+    /// @brief Get name of color.
+    virtual const std::string& get_color_name(Color color) const = 0;
+};
+
+class ProblemColorFunction : public ColorFunction
 {
 private:
     Problem m_problem;
@@ -57,7 +66,7 @@ public:
     Color get_color(State state, GroundLiteral<Static> literal, size_t pos, bool mark_true_goal_literal = false) const;
 
     /// @brief Get name of color.
-    const std::string& get_color_name(Color color) const;
+    const std::string& get_color_name(Color color) const override;
 
     /**
      * Getters

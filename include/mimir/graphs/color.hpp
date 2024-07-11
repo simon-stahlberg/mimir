@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_COLORING_HPP_
-#define MIMIR_GRAPHS_COLORING_HPP_
+#ifndef MIMIR_GRAPHS_COLOR_HPP_
+#define MIMIR_GRAPHS_COLOR_HPP_
 
 #include <cstdint>
 #include <vector>

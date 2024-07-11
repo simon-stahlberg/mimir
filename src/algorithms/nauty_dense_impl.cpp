@@ -50,12 +50,12 @@ void DenseGraphImpl::deallocate_graph(graph* the_graph)
 
 DenseGraphImpl::DenseGraphImpl(size_t num_vertices) :
     n_(num_vertices),
-    c_(num_vertices),
+    c_(n_),
     m_(SETWORDSNEEDED(n_)),
     graph_(nullptr),
     use_default_ptn_(true),
-    lab_(num_vertices),
-    ptn_(num_vertices),
+    lab_(n_),
+    ptn_(n_),
     canon_graph_(nullptr)
 {
     allocate_graph(&graph_);
@@ -64,6 +64,7 @@ DenseGraphImpl::DenseGraphImpl(size_t num_vertices) :
 
 DenseGraphImpl::DenseGraphImpl(const DenseGraphImpl& other) :
     n_(other.n_),
+    c_(other.c_),
     m_(other.m_),
     graph_(nullptr),
     use_default_ptn_(other.use_default_ptn_),

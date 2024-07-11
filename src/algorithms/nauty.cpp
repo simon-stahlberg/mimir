@@ -21,6 +21,7 @@
 #include "nauty_sparse_impl.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <stdexcept>
 
 namespace nauty_wrapper
@@ -30,6 +31,16 @@ namespace nauty_wrapper
 DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
 
 DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices)) {}
+
+DenseGraph::DenseGraph(const mimir::VertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
+{
+    for (const auto& edge : digraph.get_edges())
+    {
+        add_edge(edge.get_source(), edge.get_target());
+    }
+
+    add_vertex_coloring(mimir::compute_vertex_colors(digraph));
+}
 
 DenseGraph::DenseGraph(const DenseGraph& other) : m_impl(std::make_unique<DenseGraphImpl>(*other.m_impl)) {}
 
@@ -65,27 +76,21 @@ void DenseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
 
 bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
 
-/* DenseGraphFactory */
-
-DenseGraph& DenseGraphFactory::create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph)
-{
-    m_graph.reset(digraph.get_num_vertices());
-
-    for (const auto& edge : digraph.get_edges())
-    {
-        m_graph.add_edge(edge.get_source(), edge.get_target());
-    }
-
-    m_graph.add_vertex_coloring(mimir::compute_vertex_colors(digraph));
-
-    return m_graph;
-}
-
 /* SparseGraph*/
 
 SparseGraph::SparseGraph() : m_impl(std::make_unique<SparseGraphImpl>(0)) {}
 
 SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices)) {}
+
+SparseGraph::SparseGraph(const mimir::VertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
+{
+    for (const auto& edge : digraph.get_edges())
+    {
+        add_edge(edge.get_source(), edge.get_target());
+    }
+
+    add_vertex_coloring(mimir::compute_vertex_colors(digraph));
+}
 
 SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<SparseGraphImpl>(*other.m_impl)) {}
 
@@ -120,21 +125,5 @@ std::string SparseGraph::compute_certificate() { return m_impl->compute_certific
 void SparseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
-
-/* SparseGraphFactory */
-
-SparseGraph& SparseGraphFactory::create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph)
-{
-    m_graph.reset(digraph.get_num_vertices());
-
-    for (const auto& edge : digraph.get_edges())
-    {
-        m_graph.add_edge(edge.get_source(), edge.get_target());
-    }
-
-    m_graph.add_vertex_coloring(mimir::compute_vertex_colors(digraph));
-
-    return m_graph;
-}
 
 }

@@ -1637,6 +1637,13 @@ void init_pymimir(py::module_& m)
     // Digraph
     py::class_<Digraph>(m, "Digraph")  //
         .def(py::init<>())
+        .def("__str__",
+             [](const Digraph& self)
+             {
+                 std::stringstream ss;
+                 ss << self;
+                 return ss.str();
+             })
         .def("add_vertex", [](Digraph& self) -> VertexIndex { return self.add_vertex(); })
         .def("add_directed_edge", [](Digraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
         .def("add_undirected_edge",
@@ -1679,6 +1686,30 @@ void init_pymimir(py::module_& m)
         .def("get_num_vertices", &Digraph::get_num_vertices)
         .def("get_num_edges", &Digraph::get_num_edges);
 
+    // ColorFunction
+    py::class_<ColorFunction>(m, "ColorFunction")  //
+        .def("get_color_name", [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); });
+
+    // ProblemColorFunction
+    py::class_<ProblemColorFunction, ColorFunction>(m, "ProblemColorFunction")  //
+        .def(py::init<Problem>(), py::arg("problem"))
+        .def("get_color", [](const ProblemColorFunction& self, Object object) -> Color { return self.get_color(object); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Static> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Fluent> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Derived> atom, int pos) -> Color { return self.get_color(atom, pos); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Fluent> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_color",
+             [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
+             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
+        .def("get_problem", &ProblemColorFunction::get_problem, py::return_value_policy::reference_internal)
+        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference_internal)
+        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference_internal);
+
     // ColoredDigraphVertex
     py::class_<ColoredDigraphVertex>(m, "ColoredDigraphVertex")
         .def("__eq__", &ColoredDigraphVertex::operator==)
@@ -1689,6 +1720,13 @@ void init_pymimir(py::module_& m)
     // VertexColoredDigraph
     py::class_<VertexColoredDigraph>(m, "VertexColoredDigraph")  //
         .def(py::init<>())
+        .def("to_string",
+             [](const VertexColoredDigraph& self, const ColorFunction& color_function)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(std::cref(self), std::cref(color_function));
+                 return ss.str();
+             })
         .def("add_vertex", [](VertexColoredDigraph& self, Color color) -> VertexIndex { return self.add_vertex(color); })
         .def("add_directed_edge",
              [](VertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
@@ -1737,68 +1775,32 @@ void init_pymimir(py::module_& m)
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
         .def(py::init<>())
         .def(py::init<int>())
+        .def(py::init<VertexColoredDigraph>())
         .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::DenseGraph::reset);
 
-    // DenseNautyGraphFactory
-    py::class_<nauty_wrapper::DenseGraphFactory>(m, "DenseNautyGraphFactory")  //
-        .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_vertex_colored_digraph, py::return_value_policy::reference_internal);
-
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
         .def(py::init<>())
-        .def(py::init<int>(), py::arg("num_vertices"))
+        .def(py::init<int>())
+        .def(py::init<VertexColoredDigraph>())
         .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::SparseGraph::reset);
 
-    // SparseNautyGraphFactory
-    py::class_<nauty_wrapper::SparseGraphFactory>(m, "SparseNautyGraphFactory")  //
-        .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_vertex_colored_digraph, py::return_value_policy::reference_internal);
-
-    // ProblemColorFunction
-    py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
-        .def(py::init<Problem>(), py::arg("problem"))
-        .def("get_color", [](const ProblemColorFunction& self, Object object) -> Color { return self.get_color(object); })
-        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Static> atom, int pos) -> Color { return self.get_color(atom, pos); })
-        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Fluent> atom, int pos) -> Color { return self.get_color(atom, pos); })
-        .def("get_color", [](const ProblemColorFunction& self, GroundAtom<Derived> atom, int pos) -> Color { return self.get_color(atom, pos); })
-        .def("get_color",
-             [](const ProblemColorFunction& self, State state, GroundLiteral<Static> literal, int pos, bool mark_true_goal_literal) -> Color
-             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
-        .def("get_color",
-             [](const ProblemColorFunction& self, State state, GroundLiteral<Fluent> literal, int pos, bool mark_true_goal_literal) -> Color
-             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
-        .def("get_color",
-             [](const ProblemColorFunction& self, State state, GroundLiteral<Derived> literal, int pos, bool mark_true_goal_literal) -> Color
-             { return self.get_color(state, literal, pos, mark_true_goal_literal); })
-        .def("get_color_name", &ProblemColorFunction::get_color_name)
-        .def("get_problem", &ProblemColorFunction::get_problem, py::return_value_policy::reference_internal)
-        .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference_internal)
-        .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference_internal);
+    // ObjectGraphPruningStrategy
+    py::class_<ObjectGraphPruningStrategy>(m, "ObjectGraphPruningStrategy")  //
+        ;
 
     // ObjectGraph
-    py::class_<ObjectGraph>(m, "ObjectGraph")  //
-        .def("__str__",
-             [](const ObjectGraph& self)
-             {
-                 std::stringstream ss;
-                 ss << self;
-                 return ss.str();
-             })
-        .def(py::init<std::shared_ptr<ProblemColorFunction>>())
-        .def("get_coloring_function", &ObjectGraph::get_coloring_function)
-        .def("get_vertex_colored_digraph", &ObjectGraph::get_vertex_colored_digraph, py::return_value_policy::reference_internal);
-
-    // ObjectGraph
-    py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, bool>(),
-             py::arg("problem"),
-             py::arg("pddl_factories"),
-             py::arg("mark_true_goal_literals") = false)
-        .def("create", &ObjectGraphFactory::create, py::return_value_policy::copy)
-        .def("get_coloring_function", &ObjectGraphFactory::get_coloring_function);
+    m.def("create_object_graph",
+          &create_object_graph,
+          py::arg("color_function"),
+          py::arg("pddl_factories"),
+          py::arg("problem"),
+          py::arg("state"),
+          py::arg("mark_true_goal_literals") = false,
+          py::arg("pruning_strategy") = ObjectGraphPruningStrategy(),
+          "Creates an object graph based on the provided parameters");
 }

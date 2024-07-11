@@ -56,4 +56,29 @@ VertexIndex DigraphEdge::get_source() const { return m_source; }
 
 VertexIndex DigraphEdge::get_target() const { return m_target; }
 
+/**
+ * Pretty printing
+ */
+
+std::ostream& operator<<(std::ostream& out, const Digraph& digraph)
+{
+    out << "digraph {\n";
+    for (const auto& vertex : digraph.get_vertices())
+    {
+        out << "t" << vertex.get_index() << "[";
+        out << "label=\"" << vertex.get_index() << "\"]\n";
+    }
+    for (const auto& vertex : digraph.get_vertices())
+    {
+        for (const auto& succ_vertex : digraph.get_targets(vertex.get_index()))
+        {
+            out << "t" << vertex.get_index() << "->"
+                << "t" << succ_vertex.get_index() << "\n";
+        }
+    }
+    out << "}";  // end digraph
+
+    return out;
+}
+
 }

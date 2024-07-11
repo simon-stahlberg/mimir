@@ -18,7 +18,7 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 
-#include "mimir/graphs/coloring.hpp"
+#include "mimir/graphs/color_function.hpp"
 #include "mimir/graphs/digraph.hpp"
 
 #include <ranges>
@@ -58,6 +58,12 @@ static_assert(IsGraph<Digraph>);
 
 extern ColorList compute_vertex_colors(const VertexColoredDigraph& graph);
 extern ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph);
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const VertexColoredDigraph&, const ColorFunction&>& data);
 
 }
 

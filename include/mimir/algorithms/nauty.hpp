@@ -18,7 +18,7 @@
 #ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
-#include "mimir/graphs/coloring.hpp"
+#include "mimir/graphs/color.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <memory>
@@ -38,6 +38,7 @@ private:
 public:
     DenseGraph();
     explicit DenseGraph(size_t num_vertices);
+    explicit DenseGraph(const mimir::VertexColoredDigraph& digraph);
     DenseGraph(const DenseGraph& other);
     DenseGraph& operator=(const DenseGraph& other);
     DenseGraph(DenseGraph&& other) noexcept;
@@ -48,22 +49,12 @@ public:
 
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a certificate for the graph and the given vertex coloring.
     std::string compute_certificate() const;
 
     /// @brief Reinitialize the graph.
     void reset(size_t num_vertices);
 
     bool is_directed() const;
-};
-
-class DenseGraphFactory
-{
-private:
-    DenseGraph m_graph;
-
-public:
-    DenseGraph& create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph);
 };
 
 class SparseGraph
@@ -73,7 +64,8 @@ private:
 
 public:
     SparseGraph();
-    SparseGraph(size_t num_vertices);
+    explicit SparseGraph(size_t num_vertices);
+    explicit SparseGraph(const mimir::VertexColoredDigraph& digraph);
     SparseGraph(const SparseGraph& other);
     SparseGraph& operator=(const SparseGraph& other);
     SparseGraph(SparseGraph&& other) noexcept;
@@ -84,22 +76,12 @@ public:
 
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a certificate for the graph and the given vertex coloring.
     std::string compute_certificate();
 
     /// @brief Reinitialize the graph.
     void reset(size_t num_vertices);
 
     bool is_directed() const;
-};
-
-class SparseGraphFactory
-{
-private:
-    SparseGraph m_graph;
-
-public:
-    SparseGraph& create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph);
 };
 
 }

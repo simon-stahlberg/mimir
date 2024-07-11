@@ -19,7 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
 
 // Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include <mimir/graphs/coloring.hpp>
+#include <mimir/graphs/color.hpp>
 #include <nauty.h>
 #include <sstream>
 #include <string>

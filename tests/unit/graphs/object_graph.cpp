@@ -18,22 +18,18 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
 
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
-    auto object_graph_factory = ObjectGraphFactory(state_space.get_problem(), state_space.get_pddl_factories());
-
-    auto nauty_graph_factory = nauty_wrapper::DenseGraphFactory();
-
+    const auto color_function = ProblemColorFunction(state_space.get_problem());
     auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
     for (const auto& state : state_space.get_states())
     {
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
-        const auto& object_graph = object_graph_factory.create(state);
+        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
-                                       compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
+        auto certificate = Certificate(nauty_wrapper::DenseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
 
         certificates.insert(std::move(certificate));
     }
@@ -49,22 +45,18 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
 
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
-    auto object_graph_factory = ObjectGraphFactory(state_space.get_problem(), state_space.get_pddl_factories(), true);
-
-    auto nauty_graph_factory = nauty_wrapper::SparseGraphFactory();
-
+    const auto color_function = ProblemColorFunction(state_space.get_problem());
     auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
     for (const auto& state : state_space.get_states())
     {
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
-        const auto& object_graph = object_graph_factory.create(state);
+        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
-                                       compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
+        auto certificate = Certificate(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
 
         certificates.insert(std::move(certificate));
     }
@@ -90,19 +82,20 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
         bool prune(const GroundLiteral<Fluent>) const override { return true; }
         bool prune(const GroundLiteral<Derived>) const override { return true; }
     };
-    auto object_graph_factory = ObjectGraphFactory(state_space.get_problem(), state_space.get_pddl_factories());
-    auto nauty_graph_factory = nauty_wrapper::SparseGraphFactory();
+
+    const auto color_function = ProblemColorFunction(state_space.get_problem());
     auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
+
     for (const auto& state : state_space.get_states())
     {
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
-        const auto& object_graph = object_graph_factory.create(state, PruneAllObjects());
+        const auto object_graph =
+            create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state, true, PruneAllObjects());
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
-                                       compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
+        auto certificate = Certificate(nauty_wrapper::SparseGraph(object_graph).compute_certificate(), compute_sorted_vertex_colors(object_graph));
 
         certificates.insert(std::move(certificate));
     }
