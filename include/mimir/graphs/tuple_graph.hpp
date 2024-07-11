@@ -118,6 +118,16 @@ public:
     const std::vector<StateList>& get_states_by_distance() const;
 };
 
+using TupleGraphList = std::vector<TupleGraph>;
+
+struct TupleGraphVertexHelper
+{
+    TupleVertexIndex m_index;
+    TupleIndex m_tuple_index;
+    size_t m_states_begin;
+    size_t m_states_end;
+};
+
 class TupleGraphFactory
 {
 private:
@@ -130,6 +140,9 @@ private:
     {
     private:
         TupleGraph m_tuple_graph;
+
+        // New
+        Digraph m_digraph;
 
     public:
         TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,

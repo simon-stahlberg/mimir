@@ -233,7 +233,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
         assert(succ_state_vertex_index == m_tuple_graph.m_vertices.size());
         m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_index, empty_tuple_index, StateList { succ_state });
         // TODO: make this directed
-        m_tuple_graph.m_digraph.add_undirected_edge(root_state_vertex_index, succ_state_vertex_index);
+        m_tuple_graph.m_digraph.add_directed_edge(root_state_vertex_index, succ_state_vertex_index);
         vertex_indices_layer.push_back(succ_state_vertex_index);
         states_layer.push_back(succ_state);
     }
@@ -282,7 +282,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer(co
     novelty_table.compute_novel_tuple_indices(root_state, novel_tuple_indices);
     if (m_tuple_graph.m_prune_dominated_tuples)
     {
-        const int vertex_index = m_tuple_graph.m_vertices.size();
+        const auto vertex_index = m_tuple_graph.m_digraph.add_vertex();
+        assert(vertex_index == m_tuple_graph.m_vertices.size());
         m_tuple_graph.m_vertices.emplace_back(vertex_index, novel_tuple_indices.front(), StateList { root_state });
         cur_vertices.push_back(vertex_index);
     }
@@ -290,7 +291,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer(co
     {
         for (const auto& novel_tuple_index : novel_tuple_indices)
         {
-            const int vertex_index = m_tuple_graph.m_vertices.size();
+            const auto vertex_index = m_tuple_graph.m_digraph.add_vertex();
+            assert(vertex_index == m_tuple_graph.m_vertices.size());
             m_tuple_graph.m_vertices.emplace_back(vertex_index, novel_tuple_index, StateList { root_state });
             cur_vertices.push_back(vertex_index);
         }
@@ -404,42 +406,47 @@ void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 
             const auto& states_1 = novel_tuple_index_to_states.at(tuple_index_1);
 
-            for (size_t j = i + 1; j < cur_extended_novel_tuple_indices.size(); ++j)
+            for (size_t j = 0; j < cur_extended_novel_tuple_indices.size(); ++j)
             {
                 const auto tuple_index_2 = cur_extended_novel_tuple_indices.at(j);
 
                 const auto& states_2 = novel_tuple_index_to_states.at(tuple_index_2);
 
-                if (states_1 == states_2)
+                if (i < j && states_1 == states_2)
                 {
-                    // Keep only one tuple_index with a specific set of underlying states.
+                    // Keep only smallest tuple_index with a specific set of underlying states.
                     cur_extended_novel_tuple_indices_set.erase(tuple_index_2);
                     continue;
                 }
 
-                const auto is_subseteq = std::all_of(states_2.begin(), states_2.end(), [&states_1](const auto& element) { return states_1.count(element); });
-
-                if (is_subseteq)
+                if (states_1.size() == states_2.size())
                 {
-                    // tuple_index_2 is dominated by tuple_index_1 because states_2 < states_1.
-                    tuple_index_to_dominating_tuple_indices[tuple_index_1].insert(tuple_index_2);
+                    // Cannot be subset.
+                    continue;
+                }
+
+                const auto is_subset = std::all_of(states_2.begin(), states_2.end(), [&states_1](const auto& element) { return states_1.count(element); });
+                if (is_subset)
+                {
+                    // tuple_index_1 is dominated by tuple_index_2 because states_2 < states_1.
+                    tuple_index_to_dominating_tuple_indices[tuple_index_2].insert(tuple_index_1);
                 }
             }
         }
 
         // Keep only tuple indices whose underlying states is a smallest subset.
-        for (const auto& [tuple_index, dominated_by_tuple_indices] : tuple_index_to_dominating_tuple_indices)
+        for (const auto& [dominating_tuple_index, dominated_tuple_indices] : tuple_index_to_dominating_tuple_indices)
         {
-            if (dominated_by_tuple_indices.empty())
+            for (const auto& dominated_tuple_index : dominated_tuple_indices)
             {
-                cur_extended_novel_tuple_indices_set.erase(tuple_index);
+                cur_extended_novel_tuple_indices_set.erase(dominated_tuple_index);
             }
         }
     }
 
     for (const auto& tuple_index : cur_extended_novel_tuple_indices_set)
     {
-        auto cur_vertex_index = m_tuple_graph.m_digraph.add_vertex();
+        const auto cur_vertex_index = m_tuple_graph.m_digraph.add_vertex();
         assert(cur_vertex_index == m_tuple_graph.m_vertices.size());
         const auto& cur_states = novel_tuple_index_to_states.at(tuple_index);
         m_tuple_graph.m_vertices.emplace_back(cur_vertex_index, tuple_index, StateList(cur_states.begin(), cur_states.end()));
@@ -447,7 +454,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 
         for (const auto prev_vertex_index : cur_extended_novel_tuple_index_to_prev_vertices[tuple_index])
         {
-            m_tuple_graph.m_digraph.add_undirected_edge(prev_vertex_index, cur_vertex_index);
+            m_tuple_graph.m_digraph.add_directed_edge(prev_vertex_index, cur_vertex_index);
         }
     }
 
