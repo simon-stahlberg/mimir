@@ -15,12 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
-#define MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
+#ifndef MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
+#define MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
 
-#include "mimir/graphs/coloring_function.hpp"
-#include "mimir/graphs/digraph.hpp"
-
+#include <concepts>
+#include <cstdint>
 #include <ranges>
 #include <span>
 #include <vector>
@@ -28,22 +27,16 @@
 namespace mimir::graphs
 {
 
-class ColoredDigraphVertex
-{
-private:
-    DigraphVertex m_basic;
-    Color m_color;
+using VertexIndex = uint32_t;
 
-public:
-    ColoredDigraphVertex(DigraphVertex basic, Color color);
-
-    VertexIndex get_index() const;
-    Color get_color() const;
+/// @brief Each vertex must be associated with an index.
+template<typename T>
+concept IsVertex = requires(T a) {
+    {
+        a.get_index()
+    } -> std::convertible_to<VertexIndex>;
 };
 
-using VertexColoredDigraph = Graph<ColoredDigraphVertex, DigraphEdge>;
-
-static_assert(IsGraph<Digraph>);
-
 }
+
 #endif

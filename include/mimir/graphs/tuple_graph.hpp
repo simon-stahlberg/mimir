@@ -75,7 +75,7 @@ private:
     // TODO. make this an index grouped vector, grouped by distance
     TupleGraphVertexList m_vertices;
 
-    Digraph m_digraph;
+    graphs::Digraph m_digraph;
 
     // TODO: Remove this, since vertices will be grouped by distance
     std::vector<VertexIndexList> m_vertex_indices_by_distance;
@@ -113,7 +113,7 @@ public:
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
     const TupleGraphVertexList& get_vertices() const;
-    const Digraph& get_digraph() const;
+    const graphs::Digraph& get_digraph() const;
     const std::vector<VertexIndexList>& get_vertex_indices_by_distances() const;
     const std::vector<StateList>& get_states_by_distance() const;
 };

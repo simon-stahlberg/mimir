@@ -32,11 +32,9 @@ class SparseGraphImpl
 {
 private:
     // num_vertices
-    int n_;
+    size_t n_;
     // vertex capacity
-    int c_;
-    // Whether the graph is directed
-    bool is_directed_;
+    size_t c_;
     // Whether a certificate was obtained from the graph
     bool obtained_certificate_;
 
@@ -60,20 +58,21 @@ private:
     void deallocate_graph(sparsegraph& the_graph) const;
 
 public:
-    explicit SparseGraphImpl(int num_vertices, bool is_directed = false);
+    explicit SparseGraphImpl(size_t num_vertices);
     SparseGraphImpl(const SparseGraphImpl& other);
     SparseGraphImpl& operator=(const SparseGraphImpl& other);
     SparseGraphImpl(SparseGraphImpl&& other) noexcept;
     SparseGraphImpl& operator=(SparseGraphImpl&& other) noexcept;
     ~SparseGraphImpl();
 
-    void add_edge(int source, int target);
+    void add_edge(size_t source, size_t target);
 
     std::string compute_certificate(const mimir::Partitioning& partitioning);
 
-    void reset(int num_vertices, bool is_directed = false);
+    void reset(size_t num_vertices);
 
     bool is_directed() const;
+    bool has_loop() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const sparsegraph& graph);

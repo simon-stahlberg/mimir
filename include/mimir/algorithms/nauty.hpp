@@ -36,21 +36,21 @@ private:
     std::unique_ptr<DenseGraphImpl> m_impl;
 
 public:
-    DenseGraph(bool is_directed = false);
-    explicit DenseGraph(int num_vertices, bool is_directed = false);
+    DenseGraph();
+    explicit DenseGraph(size_t num_vertices);
     DenseGraph(const DenseGraph& other);
     DenseGraph& operator=(const DenseGraph& other);
     DenseGraph(DenseGraph&& other) noexcept;
     DenseGraph& operator=(DenseGraph&& other) noexcept;
     ~DenseGraph();
 
-    void add_edge(int source, int target);
+    void add_edge(size_t source, size_t target);
 
     /// @brief Compute a certificate for the graph and the given vertex partitioning.
     std::string compute_certificate(const mimir::Partitioning& partitioning) const;
 
     /// @brief Reinitialize the graph.
-    void reset(int num_vertices, bool is_directed = false);
+    void reset(size_t num_vertices);
 
     bool is_directed() const;
 };
@@ -61,7 +61,7 @@ private:
     DenseGraph m_graph;
 
 public:
-    DenseGraph& create_from_digraph(const mimir::Digraph& digraph);
+    DenseGraph& create_from_digraph(const mimir::graphs::Digraph& digraph);
 };
 
 class SparseGraph
@@ -70,21 +70,21 @@ private:
     std::unique_ptr<SparseGraphImpl> m_impl;
 
 public:
-    explicit SparseGraph(bool is_directed = false);
-    SparseGraph(int num_vertices, bool is_directed = false);
+    SparseGraph();
+    SparseGraph(size_t num_vertices);
     SparseGraph(const SparseGraph& other);
     SparseGraph& operator=(const SparseGraph& other);
     SparseGraph(SparseGraph&& other) noexcept;
     SparseGraph& operator=(SparseGraph&& other) noexcept;
     ~SparseGraph();
 
-    void add_edge(int source, int target);
+    void add_edge(size_t source, size_t target);
 
     /// @brief Compute a certificate for the graph and the given vertex partitioning.
     std::string compute_certificate(const mimir::Partitioning& partitioning);
 
     /// @brief Reinitialize the graph.
-    void reset(int num_vertices, bool is_directed = false);
+    void reset(size_t num_vertices);
 
     bool is_directed() const;
 };
@@ -95,7 +95,7 @@ private:
     SparseGraph m_graph;
 
 public:
-    SparseGraph& create_from_digraph(const mimir::Digraph& digraph);
+    SparseGraph& create_from_digraph(const mimir::graphs::Digraph& digraph);
 };
 
 }

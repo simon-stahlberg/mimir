@@ -95,6 +95,7 @@ private:
                               size_t num_non_isomorphic_states);
 
 public:
+    using StateType = GlobalFaithfulAbstractState;
     using TransitionType = AbstractTransition;
 
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,

@@ -38,9 +38,13 @@
 namespace mimir
 {
 
-Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+graphs::Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
 {
-    auto g = Digraph(num_components);
+    auto g = graphs::Digraph();
+    for (size_t i = 0; i < num_components; ++i)
+    {
+        g.add_vertex();
+    }
     std::set<std::pair<size_t, size_t>> edges;
     for (const auto t : state_space.get_transitions())
     {
@@ -48,7 +52,7 @@ Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, siz
         const auto target = t.get_target_state();
         if (component_map.at(source) != component_map.at(target) && !edges.contains({ source, target }))
         {
-            g.add_edge(component_map.at(source), component_map.at(target));
+            g.add_directed_edge(component_map.at(source), component_map.at(target));
         }
     }
     return g;

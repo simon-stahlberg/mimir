@@ -37,7 +37,7 @@ private:
     std::shared_ptr<const ProblemColorFunction> m_coloring_function;
 
     // Vertex colored graph, uses nauty's graph representation
-    Digraph m_digraph;
+    graphs::Digraph m_digraph;
     ColorList m_vertex_colors;
 
     // Initial color histogram, needed for equivalence test
@@ -51,7 +51,7 @@ public:
     ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function);
 
     const std::shared_ptr<const ProblemColorFunction>& get_coloring_function() const;
-    const Digraph& get_digraph() const;
+    const graphs::Digraph& get_digraph() const;
     const ColorList& get_vertex_colors() const;
     const ColorList& get_sorted_vertex_colors() const;
     const Partitioning& get_partitioning() const;
@@ -160,16 +160,15 @@ extern std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_gra
 template<PredicateCategory P>
 int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int num_vertices)
 {
-    m_object_graph.m_digraph.increase_num_vertices(num_vertices + atom->get_arity());
-
     for (size_t pos = 0; pos < atom->get_arity(); ++pos)
     {
+        m_object_graph.m_digraph.add_vertex();
         const auto vertex_color = m_coloring_function->get_color(atom, pos);
         m_object_graph.m_vertex_colors.push_back(vertex_color);
-        m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_index.at(atom->get_objects().at(pos)));
+        m_object_graph.m_digraph.add_undirected_edge(num_vertices, m_object_to_vertex_index.at(atom->get_objects().at(pos)));
         if (pos > 0)
         {
-            m_object_graph.m_digraph.add_edge(num_vertices - 1, num_vertices);
+            m_object_graph.m_digraph.add_undirected_edge(num_vertices - 1, num_vertices);
         }
         ++num_vertices;
     }
@@ -179,16 +178,15 @@ int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int
 template<PredicateCategory P>
 int ObjectGraphFactory::add_ground_literal_graph_structures(State state, GroundLiteral<P> literal, int num_vertices)
 {
-    m_object_graph.m_digraph.increase_num_vertices(num_vertices + literal->get_atom()->get_arity());
-
     for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
     {
+        m_object_graph.m_digraph.add_vertex();
         const auto vertex_color = m_coloring_function->get_color(state, literal, pos, m_mark_true_goal_literals);
         m_object_graph.m_vertex_colors.push_back(vertex_color);
-        m_object_graph.m_digraph.add_edge(num_vertices, m_object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
+        m_object_graph.m_digraph.add_undirected_edge(num_vertices, m_object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
         if (pos > 0)
         {
-            m_object_graph.m_digraph.add_edge(num_vertices - 1, num_vertices);
+            m_object_graph.m_digraph.add_undirected_edge(num_vertices - 1, num_vertices);
         }
         ++num_vertices;
     }

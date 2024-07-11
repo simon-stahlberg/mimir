@@ -1627,24 +1627,27 @@ void init_pymimir(py::module_& m)
         .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
 
     // DigraphEdge
-    py::class_<DigraphEdge>(m, "DigraphEdge")
-        .def("__eq__", &DigraphEdge::operator==)
-        .def("__hash__", &DigraphEdge::hash)
-        .def("get_index", &DigraphEdge::get_index)
-        .def("get_source", &DigraphEdge::get_source)
-        .def("get_target", &DigraphEdge::get_target)
-        .def("get_weight", &DigraphEdge::get_weight);
+    py::class_<graphs::DigraphEdge>(m, "DigraphEdge")
+        .def("__eq__", &graphs::DigraphEdge::operator==)
+        .def("__hash__", &graphs::DigraphEdge::hash)
+        .def("get_index", &graphs::DigraphEdge::get_index)
+        .def("get_source", &graphs::DigraphEdge::get_source)
+        .def("get_target", &graphs::DigraphEdge::get_target);
 
     // Digraph
-    py::class_<Digraph>(m, "Digraph")  //
-        .def(py::init<bool>(), py::arg("is_directed") = false)
-        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
-        .def("increase_num_vertices", &Digraph::increase_num_vertices)
-        .def("add_edge", &Digraph::add_edge, py::arg("source"), py::arg("target"), py::arg("weight") = 1.)
-        .def("reset", &Digraph::reset, py::arg("num_vertices"), py::arg("is_directed") = false)
+    py::class_<graphs::Digraph>(m, "Digraph")  //
+        .def(py::init<>())
+        .def("add_vertex", [](graphs::Digraph& self) -> graphs::VertexIndex { return self.add_vertex(); })
+        .def("add_directed_edge",
+             [](graphs::Digraph& self, graphs::VertexIndex source, graphs::VertexIndex target) -> graphs::EdgeIndex
+             { return self.add_directed_edge(source, target); })
+        .def("add_undirected_edge",
+             [](graphs::Digraph& self, graphs::VertexIndex source, graphs::VertexIndex target) -> std::pair<graphs::EdgeIndex, graphs::EdgeIndex>
+             { return self.add_undirected_edge(source, target); })
+        .def("reset", &graphs::Digraph::reset)
         .def(
             "get_targets",
-            [](const Digraph& self, StateIndex source)
+            [](const graphs::Digraph& self, StateIndex source)
             {
                 auto iterator = self.get_targets(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1652,31 +1655,15 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_sources",
-            [](const Digraph& self, StateIndex target)
+            [](const graphs::Digraph& self, StateIndex target)
             {
                 auto iterator = self.get_sources(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_forward_edge_indices",
-            [](const Digraph& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_edge_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_edge_indices",
-            [](const Digraph& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_edge_indices(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
             "get_forward_edges",
-            [](const Digraph& self, StateIndex source)
+            [](const graphs::Digraph& self, StateIndex source)
             {
                 auto iterator = self.get_forward_edges(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1684,20 +1671,21 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_edges",
-            [](const Digraph& self, StateIndex target)
+            [](const graphs::Digraph& self, StateIndex target)
             {
                 auto iterator = self.get_backward_edges(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
-        .def("get_num_vertices", &Digraph::get_num_vertices)
-        .def("get_num_edges", &Digraph::get_num_edges)
-        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference_internal);
+        .def("get_vertices", &graphs::Digraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_edges", &graphs::Digraph::get_edges, py::return_value_policy::reference_internal)
+        .def("get_num_vertices", &graphs::Digraph::get_num_vertices)
+        .def("get_num_edges", &graphs::Digraph::get_num_edges);
 
     // DenseNautyGraph
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
-        .def(py::init<bool>(), py::arg("is_directed") = false)
-        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def(py::init<>())
+        .def(py::init<int>())
         .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::DenseGraph::reset);
@@ -1709,8 +1697,8 @@ void init_pymimir(py::module_& m)
 
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
-        .def(py::init<bool>(), py::arg("is_directed") = false)
-        .def(py::init<int, bool>(), py::arg("num_vertices"), py::arg("is_directed") = false)
+        .def(py::init<>())
+        .def(py::init<int>(), py::arg("num_vertices"))
         .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::SparseGraph::reset);

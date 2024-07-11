@@ -31,13 +31,11 @@ class DenseGraphImpl
 {
 private:
     // num_vertices
-    int n_;
+    size_t n_;
     // vertex capacity
-    int c_;
+    size_t c_;
     // blocks_per_vertex
-    int m_;
-    // Whether the graph is directed.
-    bool is_directed_;
+    size_t m_;
     // Whether a certificate was obtained from the graph.
     bool obtained_certificate_;
 
@@ -54,20 +52,22 @@ private:
     void deallocate_graph(graph* out_graph);
 
 public:
-    DenseGraphImpl(int num_vertices, bool is_directed = false);
+    explicit DenseGraphImpl(size_t num_vertices);
     DenseGraphImpl(const DenseGraphImpl& other);
     DenseGraphImpl& operator=(const DenseGraphImpl& other);
     DenseGraphImpl(DenseGraphImpl&& other) noexcept;
     DenseGraphImpl& operator=(DenseGraphImpl&& other) noexcept;
     ~DenseGraphImpl();
 
-    void add_edge(int source, int target);
+    void add_edge(size_t source, size_t target);
 
     std::string compute_certificate(const mimir::Partitioning& partitioning);
 
-    void reset(int num_vertices, bool is_directed = false);
+    void reset(size_t num_vertices);
 
     bool is_directed() const;
+
+    bool has_loop() const;
 };
 
 }

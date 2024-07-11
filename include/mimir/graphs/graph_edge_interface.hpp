@@ -15,8 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_INTERFACE_HPP_
-#define MIMIR_GRAPHS_DIGRAPH_EDGE_INTERFACE_HPP_
+#ifndef MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
+#define MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
+
+#include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <concepts>
 #include <cstdint>
@@ -24,27 +26,23 @@
 #include <span>
 #include <vector>
 
-namespace mimir
+namespace mimir::graphs
 {
 
-using DigraphEdgeIndex = uint32_t;
-using DigraphEdgeWeight = double;
-using DigraphVertexIndex = uint32_t;
+using EdgeIndex = uint32_t;
 
+/// @brief Each vertex must be associated with an index, source index, and target index.
 template<typename T>
-concept IsDigraphEdge = requires(T a) {
+concept IsEdge = requires(T a) {
     {
         a.get_index()
-    } -> std::convertible_to<DigraphEdgeIndex>;
+    } -> std::convertible_to<EdgeIndex>;
     {
         a.get_source()
-    } -> std::convertible_to<DigraphVertexIndex>;
+    } -> std::convertible_to<VertexIndex>;
     {
         a.get_target()
-    } -> std::convertible_to<DigraphVertexIndex>;
-    {
-        a.get_weight()
-    } -> std::convertible_to<DigraphEdgeWeight>;
+    } -> std::convertible_to<VertexIndex>;
 };
 
 }

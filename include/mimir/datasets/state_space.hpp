@@ -89,6 +89,7 @@ private:
                std::vector<double> goal_distances);
 
 public:
+    using StateType = State;
     using TransitionType = Transition;
 
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.

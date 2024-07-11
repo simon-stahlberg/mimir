@@ -41,7 +41,7 @@ void SparseGraphImpl::initialize_graph_data(sparsegraph& out_graph) const
     out_graph.nv = n_;
     out_graph.nde = 0;  // No edges yet
     std::fill(out_graph.d, out_graph.d + n_, 0);
-    for (int i = 0; i < n_; ++i)
+    for (size_t i = 0; i < n_; ++i)
     {
         out_graph.v[i] = i * n_;
     }
@@ -76,10 +76,9 @@ void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph) const
     }
 }
 
-SparseGraphImpl::SparseGraphImpl(int num_vertices, bool is_directed) :
+SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
     n_(num_vertices),
     c_(num_vertices),
-    is_directed_(is_directed),
     obtained_certificate_(false),
     m_adj_matrix_(),
     canon_graph_repr_(),
@@ -92,7 +91,6 @@ SparseGraphImpl::SparseGraphImpl(int num_vertices, bool is_directed) :
 SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     n_(other.n_),
     c_(other.c_),
-    is_directed_(other.is_directed_),
     obtained_certificate_(other.obtained_certificate_),
     m_adj_matrix_(other.m_adj_matrix_),
     canon_graph_repr_(),
@@ -117,7 +115,6 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 
         n_ = other.n_;
         c_ = other.c_;
-        is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
         m_adj_matrix_ = other.m_adj_matrix_;
         canon_graph_repr_.str(other.canon_graph_repr_.str());
@@ -135,7 +132,6 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
     n_(other.n_),
     c_(other.c_),
-    is_directed_(other.is_directed_),
     obtained_certificate_(other.obtained_certificate_),
     m_adj_matrix_(other.m_adj_matrix_),
     graph_(other.graph_),
@@ -157,7 +153,6 @@ SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
 
         n_ = other.n_;
         c_ = other.c_;
-        is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
         m_adj_matrix_ = other.m_adj_matrix_;
         canon_graph_repr_ = std::move(other.canon_graph_repr_);
@@ -178,19 +173,13 @@ SparseGraphImpl::~SparseGraphImpl()
     deallocate_graph(canon_graph_);
 }
 
-void SparseGraphImpl::add_edge(int source, int target)
+void SparseGraphImpl::add_edge(size_t source, size_t target)
 {
-    if (source >= n_ || target >= n_ || source < 0 || target < 0)
+    if (source >= n_ || target >= n_)
     {
         throw std::out_of_range("SparseGraphImpl::add_edge: Source or target vertex out of range.");
     }
-    if (!is_directed_ && source == target)
-    {
-        throw std::logic_error("SparseGraphImpl::add_edge: Nauty does not support loops on undirected graphs.");
-    }
 
-    // Silently skip adding parallel edges because edges are unlabelled, and hence,
-    // parallel edges do not encode additional information on the graph.
     if (!m_adj_matrix_.at(source * n_ + target))
     {
         m_adj_matrix_.at(source * n_ + target) = true;
@@ -198,17 +187,6 @@ void SparseGraphImpl::add_edge(int source, int target)
         graph_.e[source * n_ + graph_.d[source]] = target;
         ++graph_.d[source];
         ++graph_.nde;
-    }
-    if (!is_directed_)
-    {
-        if (!m_adj_matrix_.at(target * n_ + source))
-        {
-            m_adj_matrix_.at(target * n_ + source) = true;
-
-            graph_.e[target * n_ + graph_.d[target]] = source;
-            ++graph_.d[target];
-            ++graph_.nde;
-        }
     }
 }
 
@@ -219,7 +197,7 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
         throw std::runtime_error(
             "SparseGraphImpl::compute_certificate: Tried to compute certificate twice for the same graph. We consider this a bug on the user side.");
     }
-    if (static_cast<int>(partitioning.get_vertex_index_permutation().size()) != n_ || static_cast<int>(partitioning.get_partitioning().size()) != n_)
+    if (partitioning.get_vertex_index_permutation().size() != n_ || partitioning.get_partitioning().size() != n_)
     {
         throw std::out_of_range("SparseGraphImpl::compute_certificate: The arrays lab or ptn are incompatible with number of vertices in the graph.");
     }
@@ -227,6 +205,14 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
     int lab[n_], ptn[n_], orbits[n_];
     std::copy(partitioning.get_vertex_index_permutation().begin(), partitioning.get_vertex_index_permutation().end(), lab);
     std::copy(partitioning.get_partitioning().begin(), partitioning.get_partitioning().end(), ptn);
+
+    bool is_directed_ = is_directed();
+    bool has_loop_ = has_loop();
+
+    if (!is_directed_ && has_loop_)
+    {
+        throw std::logic_error("SparseGraphImpl::compute_certificate: Nauty does not support loops on undirected graphs.");
+    }
 
     static DEFAULTOPTIONS_SPARSEGRAPH(options);
     options.defaultptn = FALSE;
@@ -269,9 +255,8 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
     return canon_graph_compressed_repr_.str();
 }
 
-void SparseGraphImpl::reset(int num_vertices, bool is_directed)
+void SparseGraphImpl::reset(size_t num_vertices)
 {
-    is_directed_ = is_directed;
     obtained_certificate_ = false;
 
     if (num_vertices > c_)
@@ -298,7 +283,32 @@ void SparseGraphImpl::reset(int num_vertices, bool is_directed)
     }
 }
 
-bool SparseGraphImpl::is_directed() const { return is_directed_; }
+bool SparseGraphImpl::is_directed() const
+{
+    for (size_t source = 0; source < n_; ++source)
+    {
+        for (size_t target = source + 1; target < n_; ++target)
+        {
+            if (m_adj_matrix_.at(source * n_ + target) != m_adj_matrix_.at(target * n_ + source))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool SparseGraphImpl::has_loop() const
+{
+    for (size_t source = 0; source < n_; ++source)
+    {
+        if (m_adj_matrix_.at(source * n_ + source))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
 std::ostream& operator<<(std::ostream& out, const sparsegraph& graph)
 {

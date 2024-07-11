@@ -17,82 +17,39 @@
 
 #include "mimir/graphs/digraph.hpp"
 
+#include <cassert>
+#include <loki/loki.hpp>
 #include <stdexcept>
+#include <string>
 
-namespace mimir
+namespace mimir::graphs
 {
 
-Digraph::Digraph(bool is_directed) : m_num_vertices(0), m_is_directed(is_directed), m_edges() {}
+/* DigraphVertex */
 
-Digraph::Digraph(size_t num_vertices, bool is_directed) : m_num_vertices(num_vertices), m_is_directed(is_directed) {}
+DigraphVertex::DigraphVertex(VertexIndex index) : m_index(index) {}
 
-void Digraph::increase_num_vertices(size_t new_num_vertices)
+VertexIndex DigraphVertex::get_index() const { return m_index; }
+
+/* DigraphEdge */
+
+DigraphEdge::DigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target) : m_index(index), m_source(source), m_target(target) {}
+
+bool DigraphEdge::operator==(const DigraphEdge& other) const
 {
-    if (new_num_vertices < m_num_vertices)
+    if (this != &other)
     {
-        throw std::out_of_range("Digraph::increase_num_vertices: new_num_vertices must be greater or equal to m_num_vertices.");
+        return (m_source == other.m_source) && (m_target == other.m_target);
     }
-    m_num_vertices = new_num_vertices;
+    return true;
 }
 
-DigraphEdgeIndex Digraph::add_edge(DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight)
-{
-    if (source >= m_num_vertices || target >= m_num_vertices || source < 0 || target < 0)
-    {
-        throw std::out_of_range("Digraph::add_edge: Source or destination vertex out of range");
-    }
-    const auto index = static_cast<DigraphEdgeIndex>(m_edges.size());
-    m_edges.emplace_back(index, source, target, weight);
-    if (!m_is_directed)
-    {
-        m_edges.emplace_back(index, target, source, weight);
-    }
-    return index;
-}
+size_t DigraphEdge::hash() const { return loki::hash_combine(m_source, m_target); }
 
-void Digraph::reset(size_t num_vertices, bool is_directed)
-{
-    m_num_vertices = num_vertices;
-    m_is_directed = is_directed;
-    m_edges.clear();
-}
+EdgeIndex DigraphEdge::get_index() const { return m_index; }
 
-DigraphTargetIndexIterator<DigraphEdge> Digraph::get_targets(DigraphVertexIndex source) const
-{
-    return DigraphTargetIndexIterator<DigraphEdge>(source, m_edges);
-}
+VertexIndex DigraphEdge::get_source() const { return m_source; }
 
-DigraphSourceIndexIterator<DigraphEdge> Digraph::get_sources(DigraphVertexIndex target) const
-{
-    return DigraphSourceIndexIterator<DigraphEdge>(target, m_edges);
-}
-
-DigraphForwardEdgeIndexIterator<DigraphEdge> Digraph::get_forward_edge_indices(DigraphVertexIndex source) const
-{
-    return DigraphForwardEdgeIndexIterator<DigraphEdge>(source, m_edges);
-}
-
-DigraphBackwardEdgeIndexIterator<DigraphEdge> Digraph::get_backward_edge_indices(DigraphVertexIndex target) const
-{
-    return DigraphBackwardEdgeIndexIterator<DigraphEdge>(target, m_edges);
-}
-
-DigraphForwardEdgeIterator<DigraphEdge> Digraph::get_forward_edges(DigraphVertexIndex source) const
-{
-    return DigraphForwardEdgeIterator<DigraphEdge>(source, m_edges);
-}
-
-DigraphBackwardEdgeIterator<DigraphEdge> Digraph::get_backward_edges(DigraphVertexIndex target) const
-{
-    return DigraphBackwardEdgeIterator<DigraphEdge>(target, m_edges);
-}
-
-size_t Digraph::get_num_vertices() const { return m_num_vertices; }
-
-size_t Digraph::get_num_edges() const { return m_edges.size(); }
-
-bool Digraph::is_directed() const { return m_is_directed; }
-
-const DigraphEdgeList& Digraph::get_edges() const { return m_edges; }
+VertexIndex DigraphEdge::get_target() const { return m_target; }
 
 }

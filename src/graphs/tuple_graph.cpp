@@ -50,7 +50,7 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
     m_tuple_index_mapper(std::move(tuple_index_mapper)),
     m_prune_dominated_tuples(prune_dominated_tuples),
     m_vertices(),
-    m_digraph(true),
+    m_digraph(),
     m_vertex_indices_by_distance(),
     m_states_by_distance()
 {
@@ -97,7 +97,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
             auto admissible_chain = VertexIndexList { cur_vertex_index };
             while (m_digraph.get_sources(cur_vertex_index).begin() != m_digraph.get_sources(cur_vertex_index).end())
             {
-                cur_vertex_index = *m_digraph.get_sources(cur_vertex_index).begin();
+                cur_vertex_index = (*m_digraph.get_sources(cur_vertex_index).begin()).get_index();
                 admissible_chain.push_back(cur_vertex_index);
             }
             std::reverse(admissible_chain.begin(), admissible_chain.end());
@@ -159,7 +159,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
             auto admissible_chain = VertexIndexList { cur_vertex_index };
             while (m_digraph.get_sources(cur_vertex_index).begin() != m_digraph.get_sources(cur_vertex_index).end())
             {
-                cur_vertex_index = *m_digraph.get_sources(cur_vertex_index).begin();
+                cur_vertex_index = (*m_digraph.get_sources(cur_vertex_index).begin()).get_index();
                 admissible_chain.push_back(cur_vertex_index);
             }
             std::reverse(admissible_chain.begin(), admissible_chain.end());
@@ -179,7 +179,7 @@ State TupleGraph::get_root_state() const { return m_states_by_distance.front().f
 
 const TupleGraphVertexList& TupleGraph::get_vertices() const { return m_vertices; }
 
-const Digraph& TupleGraph::get_digraph() const { return m_digraph; }
+const graphs::Digraph& TupleGraph::get_digraph() const { return m_digraph; }
 
 const std::vector<VertexIndexList>& TupleGraph::get_vertex_indices_by_distances() const { return m_vertex_indices_by_distance; }
 
@@ -201,12 +201,13 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_root_state_layer
 {
     // Clear tuple graph
     m_tuple_graph.m_vertices.clear();
-    m_tuple_graph.m_digraph.reset(1, true);
+    m_tuple_graph.m_digraph.reset();
     m_tuple_graph.m_vertex_indices_by_distance.clear();
     m_tuple_graph.m_states_by_distance.clear();
 
     const auto empty_tuple_index = m_tuple_graph.m_tuple_index_mapper->get_empty_tuple_index();
-    const auto root_state_vertex_index = 0;
+    const auto root_state_vertex_index = m_tuple_graph.m_digraph.add_vertex();
+    assert(root_state_vertex_index == 0);
     m_tuple_graph.m_vertices.emplace_back(root_state_vertex_index, empty_tuple_index, StateList { root_state });
     m_tuple_graph.m_vertex_indices_by_distance.push_back({ empty_tuple_index });
     m_tuple_graph.m_states_by_distance.push_back({ root_state });
@@ -227,10 +228,11 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
             // Root state was already visited
             continue;
         }
-        const auto succ_state_vertex_index = m_tuple_graph.m_vertices.size();
+        const auto succ_state_vertex_index = m_tuple_graph.m_digraph.add_vertex();
+        assert(succ_state_vertex_index == m_tuple_graph.m_vertices.size());
         m_tuple_graph.m_vertices.emplace_back(succ_state_vertex_index, empty_tuple_index, StateList { succ_state });
-        m_tuple_graph.m_digraph.increase_num_vertices(succ_state_vertex_index + 1);
-        m_tuple_graph.m_digraph.add_edge(root_state_vertex_index, succ_state_vertex_index);
+        // TODO: make this directed
+        m_tuple_graph.m_digraph.add_undirected_edge(root_state_vertex_index, succ_state_vertex_index);
         vertex_indices_layer.push_back(succ_state_vertex_index);
         states_layer.push_back(succ_state);
     }
@@ -265,7 +267,7 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer(co
 {
     // Clear tuple graph
     m_tuple_graph.m_vertices.clear();
-    m_tuple_graph.m_digraph.reset(1, true);
+    m_tuple_graph.m_digraph.reset();
     m_tuple_graph.m_vertex_indices_by_distance.clear();
     m_tuple_graph.m_states_by_distance.clear();
 
@@ -436,15 +438,15 @@ void TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 
     for (const auto& tuple_index : cur_extended_novel_tuple_indices_set)
     {
-        auto cur_vertex_index = m_tuple_graph.m_vertices.size();
+        auto cur_vertex_index = m_tuple_graph.m_digraph.add_vertex();
+        assert(cur_vertex_index == m_tuple_graph.m_vertices.size());
         const auto& cur_states = novel_tuple_index_to_states.at(tuple_index);
         m_tuple_graph.m_vertices.emplace_back(cur_vertex_index, tuple_index, StateList(cur_states.begin(), cur_states.end()));
         cur_vertices.push_back(cur_vertex_index);
 
         for (const auto prev_vertex_index : cur_extended_novel_tuple_index_to_prev_vertices[tuple_index])
         {
-            m_tuple_graph.m_digraph.increase_num_vertices(cur_vertex_index + 1);
-            m_tuple_graph.m_digraph.add_edge(prev_vertex_index, cur_vertex_index);
+            m_tuple_graph.m_digraph.add_undirected_edge(prev_vertex_index, cur_vertex_index);
         }
     }
 
@@ -589,10 +591,10 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
         out << "{\n";
         for (const auto& vertex_index : vertex_indices)
         {
-            for (const auto& succ_vertex_index : tuple_graph.get_digraph().get_targets(vertex_index))
+            for (const auto& succ_vertex : tuple_graph.get_digraph().get_targets(vertex_index))
             {
                 out << "t" << vertex_index << "->"
-                    << "t" << succ_vertex_index << "\n";
+                    << "t" << succ_vertex.get_index() << "\n";
             }
         }
         out << "}\n";

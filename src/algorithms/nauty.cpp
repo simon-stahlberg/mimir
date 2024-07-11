@@ -27,9 +27,9 @@ namespace nauty_wrapper
 {
 
 /* Graph */
-DenseGraph::DenseGraph(bool is_directed) : m_impl(std::make_unique<DenseGraphImpl>(0, is_directed)) {}
+DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
 
-DenseGraph::DenseGraph(int num_vertices, bool is_directed) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices, is_directed)) {}
+DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices)) {}
 
 DenseGraph::DenseGraph(const DenseGraph& other) : m_impl(std::make_unique<DenseGraphImpl>(*other.m_impl)) {}
 
@@ -55,19 +55,19 @@ DenseGraph& DenseGraph::operator=(DenseGraph&& other) noexcept
 
 DenseGraph::~DenseGraph() = default;
 
-void DenseGraph::add_edge(int source, int target) { m_impl->add_edge(source, target); }
+void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
 std::string DenseGraph::compute_certificate(const mimir::Partitioning& partitioning) const { return m_impl->compute_certificate(partitioning); }
 
-void DenseGraph::reset(int num_vertices, bool is_directed) { m_impl->reset(num_vertices, is_directed); }
+void DenseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
 
 bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
 
 /* DenseGraphFactory */
 
-DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::Digraph& digraph)
+DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::graphs::Digraph& digraph)
 {
-    m_graph.reset(digraph.get_num_vertices(), digraph.is_directed());
+    m_graph.reset(digraph.get_num_vertices());
 
     for (const auto& edge : digraph.get_edges())
     {
@@ -79,9 +79,9 @@ DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::Digraph& digraph
 
 /* SparseGraph*/
 
-SparseGraph::SparseGraph(bool is_directed) : m_impl(std::make_unique<SparseGraphImpl>(0, is_directed)) {}
+SparseGraph::SparseGraph() : m_impl(std::make_unique<SparseGraphImpl>(0)) {}
 
-SparseGraph::SparseGraph(int num_vertices, bool is_directed) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices, is_directed)) {}
+SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices)) {}
 
 SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<SparseGraphImpl>(*other.m_impl)) {}
 
@@ -107,19 +107,19 @@ SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept
 
 SparseGraph::~SparseGraph() = default;
 
-void SparseGraph::add_edge(int source, int target) { m_impl->add_edge(source, target); }
+void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
 std::string SparseGraph::compute_certificate(const mimir::Partitioning& partitioning) { return m_impl->compute_certificate(partitioning); }
 
-void SparseGraph::reset(int num_vertices, bool is_directed) { m_impl->reset(num_vertices, is_directed); }
+void SparseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 
 /* SparseGraphFactory */
 
-SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::Digraph& digraph)
+SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::graphs::Digraph& digraph)
 {
-    m_graph.reset(digraph.get_num_vertices(), digraph.is_directed());
+    m_graph.reset(digraph.get_num_vertices());
 
     for (const auto& edge : digraph.get_edges())
     {

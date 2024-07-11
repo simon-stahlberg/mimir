@@ -119,6 +119,7 @@ private:
                         std::vector<double> goal_distances);
 
 public:
+    using StateType = FaithfulAbstractState;
     using TransitionType = AbstractTransition;
 
     static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,

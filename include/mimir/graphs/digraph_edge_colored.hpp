@@ -15,39 +15,36 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_HPP_
-#define MIMIR_GRAPHS_DIGRAPH_EDGE_HPP_
+#ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
+#define MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
 
-#include "mimir/graphs/digraph_edge_interface.hpp"
+#include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <ranges>
 #include <span>
 #include <vector>
 
-namespace mimir
+namespace mimir::graphs
 {
 
-class DigraphEdge
+class ColoredDigraphEdge
 {
 private:
-    DigraphEdgeIndex m_index;
-    DigraphVertexIndex m_source;
-    DigraphVertexIndex m_target;
-    DigraphEdgeWeight m_weight;
+    DigraphEdge m_basic;
+    Color m_color;
 
 public:
-    DigraphEdge(DigraphEdgeIndex index, DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight = 1.);
+    ColoredDigraphEdge(DigraphEdge basic, Color color);
 
-    bool operator==(const DigraphEdge& other) const;
-    size_t hash() const;
-
-    DigraphEdgeIndex get_index() const;
-    DigraphVertexIndex get_source() const;
-    DigraphVertexIndex get_target() const;
-    DigraphEdgeWeight get_weight() const;
+    EdgeIndex get_index() const;
+    VertexIndex get_source() const;
+    VertexIndex get_target() const;
+    Color get_color() const;
 };
 
-using DigraphEdgeList = std::vector<DigraphEdge>;
+using VertexColoredDigraph = Graph<ColoredDigraphVertex, ColoredDigraphEdge>;
+
+static_assert(IsGraph<Digraph>);
 
 }
 #endif

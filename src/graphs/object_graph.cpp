@@ -105,11 +105,11 @@ const std::unordered_map<Color, std::string>& ProblemColorFunction::get_color_to
  * ObjectGraph
  */
 
-ObjectGraph::ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function) : m_coloring_function(std::move(coloring_function)), m_digraph(false) {}
+ObjectGraph::ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function) : m_coloring_function(std::move(coloring_function)), m_digraph() {}
 
 const std::shared_ptr<const ProblemColorFunction>& ObjectGraph::get_coloring_function() const { return m_coloring_function; }
 
-const Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
+const graphs::Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
 
 const ColorList& ObjectGraph::get_vertex_colors() const { return m_vertex_colors; }
 
@@ -132,7 +132,7 @@ ObjectGraphFactory::ObjectGraphFactory(Problem problem, std::shared_ptr<PDDLFact
 
 int ObjectGraphFactory::add_object_graph_structures(Object object, int num_vertices)
 {
-    m_object_graph.m_digraph.increase_num_vertices(num_vertices + 1);
+    m_object_graph.m_digraph.add_vertex();
 
     const auto vertex_color = m_coloring_function->get_color(object);
     m_object_graph.m_vertex_colors.push_back(vertex_color);
@@ -143,7 +143,7 @@ int ObjectGraphFactory::add_object_graph_structures(Object object, int num_verti
 const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPruningStrategy& pruning_strategy)
 {
     // Reset data structures
-    m_object_graph.m_digraph.reset(false);
+    m_object_graph.m_digraph.reset();
     m_object_graph.m_vertex_colors.clear();
     m_object_graph.m_sorted_vertex_colors.clear();
     m_object_to_vertex_index.clear();
@@ -255,10 +255,10 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 
     for (size_t vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
     {
-        for (const auto& succ_vertex_index : object_graph.get_digraph().get_targets(vertex_index))
+        for (const auto& succ_vertex : object_graph.get_digraph().get_targets(vertex_index))
         {
             out << "t" << vertex_index << "->"
-                << "t" << succ_vertex_index << "\n";
+                << "t" << succ_vertex.get_index() << "\n";
         }
     }
 

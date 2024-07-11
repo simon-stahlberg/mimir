@@ -46,11 +46,10 @@ void DenseGraphImpl::deallocate_graph(graph* the_graph)
     }
 }
 
-DenseGraphImpl::DenseGraphImpl(int num_vertices, bool is_directed) :
+DenseGraphImpl::DenseGraphImpl(size_t num_vertices) :
     n_(num_vertices),
     c_(num_vertices),
     m_(SETWORDSNEEDED(n_)),
-    is_directed_(is_directed),
     obtained_certificate_(false),
     graph_(nullptr),
     canon_graph_(nullptr)
@@ -86,7 +85,6 @@ DenseGraphImpl& DenseGraphImpl::operator=(const DenseGraphImpl& other)
         n_ = other.n_;
         c_ = other.c_;
         m_ = other.m_;
-        is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
         canon_graph_repr_.str(other.canon_graph_repr_.str());
         canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
@@ -104,7 +102,6 @@ DenseGraphImpl::DenseGraphImpl(DenseGraphImpl&& other) noexcept :
     n_(other.n_),
     c_(other.c_),
     m_(other.m_),
-    is_directed_(other.is_directed_),
     obtained_certificate_(other.obtained_certificate_),
     graph_(other.graph_),
     canon_graph_(other.canon_graph_),
@@ -125,7 +122,6 @@ DenseGraphImpl& DenseGraphImpl::operator=(DenseGraphImpl&& other) noexcept
         n_ = other.n_;
         c_ = other.c_;
         m_ = other.m_;
-        is_directed_ = other.is_directed_;
         obtained_certificate_ = other.obtained_certificate_;
         graph_ = other.graph_;
         canon_graph_ = other.canon_graph_;
@@ -144,22 +140,12 @@ DenseGraphImpl::~DenseGraphImpl()
     deallocate_graph(canon_graph_);
 }
 
-void DenseGraphImpl::add_edge(int source, int target)
+void DenseGraphImpl::add_edge(size_t source, size_t target)
 {
-    if (source >= n_ || target >= n_ || source < 0 || target < 0)
+    if (source >= n_ || target >= n_)
     {
         throw std::out_of_range("DenseGraphImpl::add_edge: Source or target vertex out of range.");
     }
-    if (!is_directed_ && source == target)
-    {
-        throw std::logic_error("DenseGraphImpl::add_edge: Nauty does not support loops on undirected graphs.");
-    }
-
-    // Silently skip adding parallel edges because edges are unlabelled, and hence,
-    // parallel edges do not encode additional information on the graph.
-
-    // It is unnecessary to add antiparrallel edge in sparse representation
-    // because nauty automatically takes care of this.
     ADDONEARC0(graph_, source, target, m_);
 }
 
@@ -170,7 +156,7 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
         throw std::runtime_error(
             "DenseGraphImpl::compute_certificate: Tried to compute certificate twice for the same graph. We consider this a bug on the user side.");
     }
-    if (static_cast<int>(partitioning.get_vertex_index_permutation().size()) != n_ || static_cast<int>(partitioning.get_partitioning().size()) != n_)
+    if (partitioning.get_vertex_index_permutation().size() != n_ || partitioning.get_partitioning().size() != n_)
     {
         throw std::out_of_range("DenseGraphImpl::compute_certificate: The arrays lab or ptn are incompatible with number of vertices in the graph.");
     }
@@ -178,6 +164,14 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
     int lab[n_], ptn[n_], orbits[n_];
     std::copy(partitioning.get_vertex_index_permutation().begin(), partitioning.get_vertex_index_permutation().end(), lab);
     std::copy(partitioning.get_partitioning().begin(), partitioning.get_partitioning().end(), ptn);
+
+    const auto is_directed_ = is_directed();
+    const auto has_loop_ = has_loop();
+
+    if (!is_directed_ && has_loop_)
+    {
+        throw std::logic_error("DenseGraphImpl::compute_certificate: Nauty does not support loops on undirected graphs.");
+    }
 
     static DEFAULTOPTIONS_GRAPH(options);
     options.defaultptn = FALSE;
@@ -195,7 +189,7 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
     canon_graph_compressed_repr_.clear();
 
     // Compute conon graph repr.
-    for (int i = 0; i < n_ * m_; ++i)
+    for (size_t i = 0; i < n_ * m_; ++i)
     {
         canon_graph_repr_ << canon_graph_[i] << " ";
     }
@@ -214,9 +208,8 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
     return canon_graph_compressed_repr_.str();
 }
 
-void DenseGraphImpl::reset(int num_vertices, bool is_directed)
+void DenseGraphImpl::reset(size_t num_vertices)
 {
-    is_directed_ = is_directed;
     obtained_certificate_ = false;
 
     if (num_vertices > c_)
@@ -241,5 +234,33 @@ void DenseGraphImpl::reset(int num_vertices, bool is_directed)
     }
 }
 
-bool DenseGraphImpl::is_directed() const { return is_directed_; }
+bool DenseGraphImpl::is_directed() const
+{
+    for (size_t source = 0; source < n_; ++source)
+    {
+        set* source_row = GRAPHROW1(graph_, source, m_);
+        for (size_t target = source + 1; target < n_; ++target)
+        {
+            set* target_row = GRAPHROW1(graph_, target, m_);
+            if (ISELEMENT1(source_row, target) != ISELEMENT1(target_row, source))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool DenseGraphImpl::has_loop() const
+{
+    for (size_t source = 0; source < n_; ++source)
+    {
+        set* source_row = GRAPHROW1(graph_, source, m_);
+        if (ISELEMENT1(source_row, source))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 }

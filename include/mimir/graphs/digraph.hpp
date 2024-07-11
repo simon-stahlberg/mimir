@@ -18,72 +18,44 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_HPP_
 
-#include "mimir/graphs/digraph_edge.hpp"
-#include "mimir/graphs/digraph_interface.hpp"
-#include "mimir/graphs/digraph_iterators.hpp"
+#include "mimir/graphs/graph.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_interface.hpp"
 
-#include <ranges>
-#include <span>
-#include <vector>
-
-namespace mimir
+namespace mimir::graphs
 {
-
-/**
- * Declarations
- */
-
-/* Digraph */
-
-class Digraph
+class DigraphVertex
 {
 private:
-    size_t m_num_vertices;
-    bool m_is_directed;
-
-    DigraphEdgeList m_edges;
+    VertexIndex m_index;
 
 public:
-    using EdgeType = DigraphEdge;
+    explicit DigraphVertex(VertexIndex index);
 
-    explicit Digraph(bool is_directed = false);
-    Digraph(size_t num_vertices, bool is_directed = false);
-
-    /// @brief Extend the current number of vertices beyond the current number of vertices.
-    void increase_num_vertices(size_t new_num_vertices);
-
-    /// @brief Add an edge to the graph and return the index to it.
-    /// If the graph is undirected, then the backward edge has index + 1.
-    DigraphEdgeIndex add_edge(DigraphVertexIndex source, DigraphVertexIndex target, DigraphEdgeWeight weight = 1.);
-
-    /// @brief Reinitialize the graph to an empty graph with num_vertices many vertices.
-    void reset(size_t num_vertices, bool is_directed = false);
-
-    /**
-     * Iterators
-     */
-
-    DigraphTargetIndexIterator<DigraphEdge> get_targets(DigraphVertexIndex source) const;
-    DigraphSourceIndexIterator<DigraphEdge> get_sources(DigraphVertexIndex target) const;
-    DigraphForwardEdgeIndexIterator<DigraphEdge> get_forward_edge_indices(DigraphVertexIndex source) const;
-    DigraphBackwardEdgeIndexIterator<DigraphEdge> get_backward_edge_indices(DigraphVertexIndex target) const;
-    DigraphForwardEdgeIterator<DigraphEdge> get_forward_edges(DigraphVertexIndex source) const;
-    DigraphBackwardEdgeIterator<DigraphEdge> get_backward_edges(DigraphVertexIndex target) const;
-
-    /**
-     * Getters
-     */
-    size_t get_num_vertices() const;
-    size_t get_num_edges() const;
-    bool is_directed() const;
-    const DigraphEdgeList& get_edges() const;
+    VertexIndex get_index() const;
 };
 
-static_assert(IsDigraph<Digraph>);
+class DigraphEdge
+{
+private:
+    EdgeIndex m_index;
+    VertexIndex m_source;
+    VertexIndex m_target;
 
-/* ForwardDigraph */
+public:
+    DigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target);
 
-/* BidirectionalDigraph */
+    bool operator==(const DigraphEdge& other) const;
+    size_t hash() const;
+
+    EdgeIndex get_index() const;
+    VertexIndex get_source() const;
+    VertexIndex get_target() const;
+};
+
+using Digraph = Graph<DigraphVertex, DigraphEdge>;
+
+static_assert(IsGraph<Digraph>);
 
 }
 #endif
