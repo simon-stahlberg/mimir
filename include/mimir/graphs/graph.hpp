@@ -37,9 +37,16 @@ namespace mimir
 
 /* Graph */
 
-/// @brief Graph is a type of graph with functionality to add vertices and edges but never remove them.
-/// @tparam Edge
-/// @tparam Vertex
+/// @brief A `Graph` G consists of vertices V and edges E.
+/// A `Graph` provides functionality for adding vertices and edges, and iterating over vertices and edges.
+/// Iterating over the outgoing or incoming edges,
+/// as well as the ingoing or outgoing adjacent vertices requires time O(|E|).
+///
+/// A `Graph` can be translated into an equivalent ForwardGraph or Bidirectional Graph in O(|V|+|E|*Log2(|E|))
+/// to iterate more efficiently over exactly the outgoing or incoming edges,
+/// as well as the ingoing or outgoing adjacent vertices.
+/// @tparam Vertex is vertex type.
+/// @tparam Edge is the edge type.
 template<IsVertex Vertex, IsEdge Edge>
 class Graph
 {

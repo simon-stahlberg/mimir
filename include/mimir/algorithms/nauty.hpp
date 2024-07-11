@@ -36,24 +36,45 @@ private:
     std::unique_ptr<DenseGraphImpl> m_impl;
 
 public:
+    /// @brief Create an empty `DenseGraph` with zero vertices.
     DenseGraph();
+
+    /// @brief Create a `DenseGraph` with `num_vertices` many vertices and zero edges.
+    /// @param num_vertices is the number of vertices in the graph.
     explicit DenseGraph(size_t num_vertices);
+
+    /// @brief Create a `DenseGraph` from a vertex colored `digraph`.
+    /// @param digraph is the vertex colored digraph.
     explicit DenseGraph(const mimir::VertexColoredDigraph& digraph);
+
     DenseGraph(const DenseGraph& other);
     DenseGraph& operator=(const DenseGraph& other);
     DenseGraph(DenseGraph&& other) noexcept;
     DenseGraph& operator=(DenseGraph&& other) noexcept;
     ~DenseGraph();
 
+    /// @brief Add colors to the vertices of the graph.
+    ///
+    /// Throws an exception if the size of the `vertex_coloring`
+    /// is not equal to the number of vertices in the graph.
+    /// @param vertex_coloring are the colors of the vertices.
     void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
 
+    /// @brief Add a directed edge to the graph.
+    ///
+    /// Throws an exception if `source` or `target` is out of bounds.
+    /// @param source is the index of the source vertex.
+    /// @param target is the index of the target vertex.
     void add_edge(size_t source, size_t target);
 
+    /// @brief Compute a compressed string representation of the canonical graph of the graph.
     std::string compute_certificate() const;
 
-    /// @brief Reinitialize the graph.
+    /// @brief Reinitialize the graph by changing the number of vertices and removing all edges.
+    /// @param num_vertices is the new number of vertices.
     void reset(size_t num_vertices);
 
+    /// @brief Return true iff the graph is directed.
     bool is_directed() const;
 };
 
@@ -63,24 +84,45 @@ private:
     std::unique_ptr<SparseGraphImpl> m_impl;
 
 public:
+    /// @brief Create an empty `SparseGraph` with zero vertices.
     SparseGraph();
+
+    /// @brief Create `SparseGraph` with `num_vertices` many vertices and zero edges.
+    /// @param num_vertices is the number of vertices in the graph.
     explicit SparseGraph(size_t num_vertices);
+
+    /// @brief Create a `SparseGraph` from a vertex colored `digraph`.
+    /// @param digraph is the vertex colored digraph.
     explicit SparseGraph(const mimir::VertexColoredDigraph& digraph);
+
     SparseGraph(const SparseGraph& other);
     SparseGraph& operator=(const SparseGraph& other);
     SparseGraph(SparseGraph&& other) noexcept;
     SparseGraph& operator=(SparseGraph&& other) noexcept;
     ~SparseGraph();
 
+    /// @brief Add colors to the vertices of the graph.
+    ///
+    /// Throws an exception if the size of the `vertex_coloring`
+    /// is not equal to the number of vertices in the graph.
+    /// @param vertex_coloring are the colors of the vertices.
     void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
 
+    /// @brief Add a directed edge to the graph.
+    ///
+    /// Throws an exception if `source` or `target` is out of bounds.
+    /// @param source is the index of the source vertex.
+    /// @param target is the index of the target vertex.
     void add_edge(size_t source, size_t target);
 
+    /// @brief Compute a compressed string representation of the canonical graph of the graph.
     std::string compute_certificate();
 
-    /// @brief Reinitialize the graph.
+    /// @brief Reinitialize the graph by changing the number of vertices and removing all edges.
+    /// @param num_vertices is the new number of vertices.
     void reset(size_t num_vertices);
 
+    /// @brief Return true iff the graph is directed.
     bool is_directed() const;
 };
 

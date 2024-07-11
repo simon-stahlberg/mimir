@@ -32,6 +32,8 @@ namespace mimir
  * ObjectGraphPruningStrategy
  */
 
+/// @brief `ObjectGraphPruningStrategy` is a strategy for pruning information
+/// during the construction of an object graph. The default implementation prunes nothing.
 class ObjectGraphPruningStrategy
 {
 public:
@@ -46,6 +48,10 @@ public:
     virtual bool prune(const GroundLiteral<Derived>) const { return false; }
 };
 
+/// @brief `ObjectGraphStaticPruningStrategy` is a strategy for pruning
+/// irrelevant static information during the construction of an object graph.
+/// Static information is irrelevant if no ground action reachable from
+/// the given state ever uses it in a precondition of effect.
 class ObjectGraphStaticPruningStrategy : public ObjectGraphPruningStrategy
 {
 public:
@@ -94,6 +100,14 @@ private:
  * ObjectGraph
  */
 
+/// @brief Create an object graph as a vertex colored graph for a given state.
+/// @param color_function is the function used to color the vertices in the object graph.
+/// @param pddl_factories is the PDDLFactory.
+/// @param problem is the Problem.
+/// @param state is the state.
+/// @param mark_true_goal_literals represents whether literals that are true should have a special color.
+/// @param pruning_strategy is the strategy used for pruning information from the object graph.
+/// @return a vertex colored graph that represents the object graph.
 extern VertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
                                                 const PDDLFactories& pddl_factories,
                                                 Problem problem,
