@@ -59,6 +59,8 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
 std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms,
                                                                          const GroundAtomList<Derived>& derived_atoms)
 {
+    throw std::runtime_error("Outdated. Backward edges got removed. Must be updated");
+
     // Construct the explict tuple representation
     auto atom_indices = AtomIndexList {};
     for (const auto& atom : fluent_atoms)
@@ -111,6 +113,8 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const G
 
 std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const StateList& states)
 {
+    throw std::runtime_error("Outdated. Backward edges got removed. Must be updated");
+
     if (states.empty())
     {
         // No tuple can optimally goal imply an empty set of states
