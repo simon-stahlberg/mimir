@@ -24,17 +24,19 @@
 #include <span>
 #include <vector>
 
-namespace mimir::graphs
+namespace mimir
 {
 
 class ColoredDigraphEdge
 {
 private:
-    DigraphEdge m_basic;
+    EdgeIndex m_index;
+    VertexIndex m_source;
+    VertexIndex m_target;
     Color m_color;
 
 public:
-    ColoredDigraphEdge(DigraphEdge basic, Color color);
+    ColoredDigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target, Color color);
 
     EdgeIndex get_index() const;
     VertexIndex get_source() const;

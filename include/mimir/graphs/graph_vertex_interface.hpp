@@ -24,7 +24,7 @@
 #include <span>
 #include <vector>
 
-namespace mimir::graphs
+namespace mimir
 {
 
 using VertexIndex = uint32_t;

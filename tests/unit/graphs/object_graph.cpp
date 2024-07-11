@@ -32,8 +32,8 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
-                                       object_graph.get_sorted_vertex_colors());
+        auto certificate = Certificate(nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
+                                       compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
 
         certificates.insert(std::move(certificate));
     }
@@ -63,8 +63,8 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
-                                       object_graph.get_sorted_vertex_colors());
+        auto certificate = Certificate(nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
+                                       compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
 
         certificates.insert(std::move(certificate));
     }
@@ -101,8 +101,8 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(nauty_graph_factory.create_from_digraph(object_graph.get_digraph()).compute_certificate(object_graph.get_partitioning()),
-                                       object_graph.get_sorted_vertex_colors());
+        auto certificate = Certificate(nauty_graph_factory.create_from_vertex_colored_digraph(object_graph.get_vertex_colored_digraph()).compute_certificate(),
+                                       compute_sorted_vertex_colors(object_graph.get_vertex_colored_digraph()));
 
         certificates.insert(std::move(certificate));
     }

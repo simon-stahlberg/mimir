@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_COLORING_FUNCTION_HPP_
 
 #include "mimir/formalism/formalism.hpp"
+#include "mimir/graphs/coloring.hpp"
 #include "mimir/search/state.hpp"
 
 #include <set>
@@ -27,8 +28,6 @@
 
 namespace mimir
 {
-using Color = uint32_t;
-using ColorList = std::vector<Color>;
 
 class ProblemColorFunction
 {

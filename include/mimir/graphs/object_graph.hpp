@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/formalism.hpp"
 #include "mimir/graphs/coloring_function.hpp"
-#include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/partitioning.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
@@ -36,14 +36,7 @@ class ObjectGraph
 private:
     std::shared_ptr<const ProblemColorFunction> m_coloring_function;
 
-    // Vertex colored graph, uses nauty's graph representation
-    graphs::Digraph m_digraph;
-    ColorList m_vertex_colors;
-
-    // Initial color histogram, needed for equivalence test
-    // when using vertex partitioning to take color remapping into account.
-    ColorList m_sorted_vertex_colors;
-    Partitioning m_partitioning;
+    VertexColoredDigraph m_digraph;
 
     friend class ObjectGraphFactory;
 
@@ -51,10 +44,7 @@ public:
     ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_function);
 
     const std::shared_ptr<const ProblemColorFunction>& get_coloring_function() const;
-    const graphs::Digraph& get_digraph() const;
-    const ColorList& get_vertex_colors() const;
-    const ColorList& get_sorted_vertex_colors() const;
-    const Partitioning& get_partitioning() const;
+    const VertexColoredDigraph& get_vertex_colored_digraph() const;
 };
 
 class ObjectGraphPruningStrategy
@@ -162,9 +152,8 @@ int ObjectGraphFactory::add_ground_atom_graph_structures(GroundAtom<P> atom, int
 {
     for (size_t pos = 0; pos < atom->get_arity(); ++pos)
     {
-        m_object_graph.m_digraph.add_vertex();
         const auto vertex_color = m_coloring_function->get_color(atom, pos);
-        m_object_graph.m_vertex_colors.push_back(vertex_color);
+        m_object_graph.m_digraph.add_vertex(vertex_color);
         m_object_graph.m_digraph.add_undirected_edge(num_vertices, m_object_to_vertex_index.at(atom->get_objects().at(pos)));
         if (pos > 0)
         {
@@ -180,9 +169,8 @@ int ObjectGraphFactory::add_ground_literal_graph_structures(State state, GroundL
 {
     for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
     {
-        m_object_graph.m_digraph.add_vertex();
         const auto vertex_color = m_coloring_function->get_color(state, literal, pos, m_mark_true_goal_literals);
-        m_object_graph.m_vertex_colors.push_back(vertex_color);
+        m_object_graph.m_digraph.add_vertex(vertex_color);
         m_object_graph.m_digraph.add_undirected_edge(num_vertices, m_object_to_vertex_index.at(literal->get_atom()->get_objects().at(pos)));
         if (pos > 0)
         {

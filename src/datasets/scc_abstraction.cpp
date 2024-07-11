@@ -38,9 +38,9 @@
 namespace mimir
 {
 
-graphs::Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
 {
-    auto g = graphs::Digraph();
+    auto g = Digraph();
     for (size_t i = 0; i < num_components; ++i)
     {
         g.add_vertex();

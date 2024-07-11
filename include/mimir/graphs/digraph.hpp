@@ -22,7 +22,7 @@
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 
-namespace mimir::graphs
+namespace mimir
 {
 class DigraphVertex
 {
@@ -31,6 +31,9 @@ private:
 
 public:
     explicit DigraphVertex(VertexIndex index);
+
+    bool operator==(const DigraphVertex& other) const;
+    size_t hash() const;
 
     VertexIndex get_index() const;
 };

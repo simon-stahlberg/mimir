@@ -27,7 +27,7 @@
 #include <span>
 #include <vector>
 
-namespace mimir::graphs
+namespace mimir
 {
 
 /**

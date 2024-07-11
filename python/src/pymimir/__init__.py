@@ -138,17 +138,20 @@ from _pymimir import (
 # Graphs
 from _pymimir import (
     Certificate,
+    ColoredDigraphVertex,
     Digraph,
+    DigraphVertex,
+    DigraphEdge,
     DigraphEdge,
     DenseNautyGraph,
     DenseNautyGraphFactory,
     ObjectGraph,
     ObjectGraphFactory,
-    Partitioning,
     ProblemColorFunction,
     SparseNautyGraph,
     SparseNautyGraphFactory,
     TupleGraphVertex,
     TupleGraph,
-    TupleGraphFactory
+    TupleGraphFactory,
+    VertexColoredDigraph
 )

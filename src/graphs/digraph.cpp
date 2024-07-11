@@ -22,12 +22,16 @@
 #include <stdexcept>
 #include <string>
 
-namespace mimir::graphs
+namespace mimir
 {
 
 /* DigraphVertex */
 
 DigraphVertex::DigraphVertex(VertexIndex index) : m_index(index) {}
+
+bool DigraphVertex::operator==(const DigraphVertex& other) const { return m_index == other.m_index; }
+
+size_t DigraphVertex::hash() const { return loki::hash_combine(m_index); }
 
 VertexIndex DigraphVertex::get_index() const { return m_index; }
 
@@ -39,7 +43,7 @@ bool DigraphEdge::operator==(const DigraphEdge& other) const
 {
     if (this != &other)
     {
-        return (m_source == other.m_source) && (m_target == other.m_target);
+        return (m_index == other.m_index) && (m_source == other.m_source) && (m_target == other.m_target);
     }
     return true;
 }

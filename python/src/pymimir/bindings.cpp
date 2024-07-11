@@ -1612,12 +1612,6 @@ void init_pymimir(py::module_& m)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 
-    // Partitioning
-    py::class_<Partitioning>(m, "Partitioning")
-        .def("get_vertex_index_permutation", &Partitioning::get_vertex_index_permutation, py::return_value_policy::reference_internal)
-        .def("get_partitioning", &Partitioning::get_partitioning, py::return_value_policy::reference_internal)
-        .def("get_partition", &Partitioning::get_partition, py::return_value_policy::reference_internal);
-
     // Certificate
     py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
         .def(py::init<std::string, ColorList>())
@@ -1626,28 +1620,31 @@ void init_pymimir(py::module_& m)
         .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
         .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
 
+    // DigraphVertex
+    py::class_<DigraphVertex>(m, "DigraphVertex")
+        .def("__eq__", &DigraphVertex::operator==)
+        .def("__hash__", &DigraphVertex::hash)
+        .def("get_index", &DigraphVertex::get_index);
+
     // DigraphEdge
-    py::class_<graphs::DigraphEdge>(m, "DigraphEdge")
-        .def("__eq__", &graphs::DigraphEdge::operator==)
-        .def("__hash__", &graphs::DigraphEdge::hash)
-        .def("get_index", &graphs::DigraphEdge::get_index)
-        .def("get_source", &graphs::DigraphEdge::get_source)
-        .def("get_target", &graphs::DigraphEdge::get_target);
+    py::class_<DigraphEdge>(m, "DigraphEdge")
+        .def("__eq__", &DigraphEdge::operator==)
+        .def("__hash__", &DigraphEdge::hash)
+        .def("get_index", &DigraphEdge::get_index)
+        .def("get_source", &DigraphEdge::get_source)
+        .def("get_target", &DigraphEdge::get_target);
 
     // Digraph
-    py::class_<graphs::Digraph>(m, "Digraph")  //
+    py::class_<Digraph>(m, "Digraph")  //
         .def(py::init<>())
-        .def("add_vertex", [](graphs::Digraph& self) -> graphs::VertexIndex { return self.add_vertex(); })
-        .def("add_directed_edge",
-             [](graphs::Digraph& self, graphs::VertexIndex source, graphs::VertexIndex target) -> graphs::EdgeIndex
-             { return self.add_directed_edge(source, target); })
+        .def("add_vertex", [](Digraph& self) -> VertexIndex { return self.add_vertex(); })
+        .def("add_directed_edge", [](Digraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
         .def("add_undirected_edge",
-             [](graphs::Digraph& self, graphs::VertexIndex source, graphs::VertexIndex target) -> std::pair<graphs::EdgeIndex, graphs::EdgeIndex>
-             { return self.add_undirected_edge(source, target); })
-        .def("reset", &graphs::Digraph::reset)
+             [](Digraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex> { return self.add_undirected_edge(source, target); })
+        .def("reset", &Digraph::reset)
         .def(
             "get_targets",
-            [](const graphs::Digraph& self, StateIndex source)
+            [](const Digraph& self, StateIndex source)
             {
                 auto iterator = self.get_targets(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1655,7 +1652,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_sources",
-            [](const graphs::Digraph& self, StateIndex target)
+            [](const Digraph& self, StateIndex target)
             {
                 auto iterator = self.get_sources(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1663,7 +1660,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_edges",
-            [](const graphs::Digraph& self, StateIndex source)
+            [](const Digraph& self, StateIndex source)
             {
                 auto iterator = self.get_forward_edges(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1671,16 +1668,70 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_edges",
-            [](const graphs::Digraph& self, StateIndex target)
+            [](const Digraph& self, StateIndex target)
             {
                 auto iterator = self.get_backward_edges(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
-        .def("get_vertices", &graphs::Digraph::get_vertices, py::return_value_policy::reference_internal)
-        .def("get_edges", &graphs::Digraph::get_edges, py::return_value_policy::reference_internal)
-        .def("get_num_vertices", &graphs::Digraph::get_num_vertices)
-        .def("get_num_edges", &graphs::Digraph::get_num_edges);
+        .def("get_vertices", &Digraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference_internal)
+        .def("get_num_vertices", &Digraph::get_num_vertices)
+        .def("get_num_edges", &Digraph::get_num_edges);
+
+    // ColoredDigraphVertex
+    py::class_<ColoredDigraphVertex>(m, "ColoredDigraphVertex")
+        .def("__eq__", &ColoredDigraphVertex::operator==)
+        .def("__hash__", &ColoredDigraphVertex::hash)
+        .def("get_index", &ColoredDigraphVertex::get_index)
+        .def("get_color", &ColoredDigraphVertex::get_color);
+
+    // VertexColoredDigraph
+    py::class_<VertexColoredDigraph>(m, "VertexColoredDigraph")  //
+        .def(py::init<>())
+        .def("add_vertex", [](VertexColoredDigraph& self, Color color) -> VertexIndex { return self.add_vertex(color); })
+        .def("add_directed_edge",
+             [](VertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
+        .def("add_undirected_edge",
+             [](VertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex>
+             { return self.add_undirected_edge(source, target); })
+        .def("reset", &VertexColoredDigraph::reset)
+        .def(
+            "get_targets",
+            [](const VertexColoredDigraph& self, StateIndex source)
+            {
+                auto iterator = self.get_targets(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_sources",
+            [](const VertexColoredDigraph& self, StateIndex target)
+            {
+                auto iterator = self.get_sources(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_edges",
+            [](const VertexColoredDigraph& self, StateIndex source)
+            {
+                auto iterator = self.get_forward_edges(source);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_edges",
+            [](const VertexColoredDigraph& self, StateIndex target)
+            {
+                auto iterator = self.get_backward_edges(target);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def("get_vertices", &VertexColoredDigraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_edges", &VertexColoredDigraph::get_edges, py::return_value_policy::reference_internal)
+        .def("get_num_vertices", &VertexColoredDigraph::get_num_vertices)
+        .def("get_num_edges", &VertexColoredDigraph::get_num_edges);
 
     // DenseNautyGraph
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
@@ -1693,7 +1744,7 @@ void init_pymimir(py::module_& m)
     // DenseNautyGraphFactory
     py::class_<nauty_wrapper::DenseGraphFactory>(m, "DenseNautyGraphFactory")  //
         .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_digraph, py::return_value_policy::reference_internal);
+        .def("create_from_digraph", &nauty_wrapper::DenseGraphFactory::create_from_vertex_colored_digraph, py::return_value_policy::reference_internal);
 
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
@@ -1706,7 +1757,7 @@ void init_pymimir(py::module_& m)
     // SparseNautyGraphFactory
     py::class_<nauty_wrapper::SparseGraphFactory>(m, "SparseNautyGraphFactory")  //
         .def(py::init<>())
-        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_digraph, py::return_value_policy::reference_internal);
+        .def("create_from_digraph", &nauty_wrapper::SparseGraphFactory::create_from_vertex_colored_digraph, py::return_value_policy::reference_internal);
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, std::shared_ptr<ProblemColorFunction>>(m, "ProblemColorFunction")  //
@@ -1740,10 +1791,7 @@ void init_pymimir(py::module_& m)
              })
         .def(py::init<std::shared_ptr<ProblemColorFunction>>())
         .def("get_coloring_function", &ObjectGraph::get_coloring_function)
-        .def("get_digraph", &ObjectGraph::get_digraph, py::return_value_policy::reference_internal)
-        .def("get_vertex_colors", &ObjectGraph::get_vertex_colors, py::return_value_policy::reference_internal)
-        .def("get_sorted_vertex_colors", &ObjectGraph::get_sorted_vertex_colors, py::return_value_policy::reference_internal)
-        .def("get_partitioning", &ObjectGraph::get_partitioning, py::return_value_policy::reference_internal);
+        .def("get_vertex_colored_digraph", &ObjectGraph::get_vertex_colored_digraph, py::return_value_policy::reference_internal);
 
     // ObjectGraph
     py::class_<ObjectGraphFactory>(m, "ObjectGraphFactory")  //

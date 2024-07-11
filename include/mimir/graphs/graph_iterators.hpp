@@ -23,7 +23,7 @@
 
 #include <cassert>
 
-namespace mimir::graphs
+namespace mimir
 {
 
 template<IsVertex Vertex, IsEdge Edge>

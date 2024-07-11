@@ -109,13 +109,7 @@ ObjectGraph::ObjectGraph(std::shared_ptr<const ProblemColorFunction> coloring_fu
 
 const std::shared_ptr<const ProblemColorFunction>& ObjectGraph::get_coloring_function() const { return m_coloring_function; }
 
-const graphs::Digraph& ObjectGraph::get_digraph() const { return m_digraph; }
-
-const ColorList& ObjectGraph::get_vertex_colors() const { return m_vertex_colors; }
-
-const ColorList& ObjectGraph::get_sorted_vertex_colors() const { return m_sorted_vertex_colors; }
-
-const Partitioning& ObjectGraph::get_partitioning() const { return m_partitioning; }
+const VertexColoredDigraph& ObjectGraph::get_vertex_colored_digraph() const { return m_digraph; }
 
 /**
  * ObjectGraphFactory
@@ -132,10 +126,8 @@ ObjectGraphFactory::ObjectGraphFactory(Problem problem, std::shared_ptr<PDDLFact
 
 int ObjectGraphFactory::add_object_graph_structures(Object object, int num_vertices)
 {
-    m_object_graph.m_digraph.add_vertex();
-
     const auto vertex_color = m_coloring_function->get_color(object);
-    m_object_graph.m_vertex_colors.push_back(vertex_color);
+    m_object_graph.m_digraph.add_vertex(vertex_color);
     m_object_to_vertex_index.emplace(object, num_vertices);
     return ++num_vertices;
 }
@@ -144,8 +136,6 @@ const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPrun
 {
     // Reset data structures
     m_object_graph.m_digraph.reset();
-    m_object_graph.m_vertex_colors.clear();
-    m_object_graph.m_sorted_vertex_colors.clear();
     m_object_to_vertex_index.clear();
 
     // Initialize object vertices
@@ -204,37 +194,6 @@ const ObjectGraph& ObjectGraphFactory::create(State state, const ObjectGraphPrun
         }
     }
 
-    // Initialize histogram
-    m_object_graph.m_sorted_vertex_colors = m_object_graph.m_vertex_colors;
-    std::sort(m_object_graph.m_sorted_vertex_colors.begin(), m_object_graph.m_sorted_vertex_colors.end());
-
-    // Initialize partitioning
-    const auto num_vertices = m_object_graph.m_digraph.get_num_vertices();
-    m_vertex_index_and_color.clear();
-    for (size_t vertex_index = 0; vertex_index < num_vertices; ++vertex_index)
-    {
-        m_vertex_index_and_color.emplace_back(vertex_index, m_object_graph.m_vertex_colors.at(vertex_index));
-    }
-    std::sort(m_vertex_index_and_color.begin(), m_vertex_index_and_color.end(), [](const auto& l, const auto& r) { return l.second < r.second; });
-
-    m_object_graph.m_partitioning.m_vertex_index_permutation.clear();
-    m_object_graph.m_partitioning.m_partitioning.clear();
-    m_object_graph.m_partitioning.m_partition_begin.clear();
-    m_object_graph.m_partitioning.m_vertex_index_permutation.resize(num_vertices);
-    m_object_graph.m_partitioning.m_partitioning.resize(num_vertices);
-    m_object_graph.m_partitioning.m_partition_begin.push_back(0);
-    for (size_t i = 0; i < num_vertices; ++i)
-    {
-        const auto& [vertex_index, color] = m_vertex_index_and_color.at(i);
-        const auto next_has_same_color = ((i < num_vertices - 1) && (color == m_vertex_index_and_color[i + 1].second));
-        m_object_graph.m_partitioning.m_vertex_index_permutation.at(i) = vertex_index;
-        m_object_graph.m_partitioning.m_partitioning.at(i) = (next_has_same_color) ? 1 : 0;
-        if (!next_has_same_color)
-        {
-            m_object_graph.m_partitioning.m_partition_begin.push_back(i + 1);
-        }
-    }
-
     return m_object_graph;
 }
 
@@ -244,20 +203,19 @@ std::ostream& operator<<(std::ostream& out, const ObjectGraph& object_graph)
 {
     out << "digraph {\n";
 
-    for (size_t vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
+    for (const auto& vertex : object_graph.get_vertex_colored_digraph().get_vertices())
     {
-        const auto color = object_graph.get_vertex_colors().at(vertex_index);
-        const auto& color_name = object_graph.get_coloring_function()->get_color_name(color);
-        out << "t" << vertex_index << "[";
-        out << "label=\"" << color_name << " (" << color << ")"
+        const auto& color_name = object_graph.get_coloring_function()->get_color_name(vertex.get_color());
+        out << "t" << vertex.get_index() << "[";
+        out << "label=\"" << color_name << " (" << vertex.get_color() << ")"
             << "\"]\n";
     }
 
-    for (size_t vertex_index = 0; vertex_index < object_graph.get_digraph().get_num_vertices(); ++vertex_index)
+    for (const auto& vertex : object_graph.get_vertex_colored_digraph().get_vertices())
     {
-        for (const auto& succ_vertex : object_graph.get_digraph().get_targets(vertex_index))
+        for (const auto& succ_vertex : object_graph.get_vertex_colored_digraph().get_targets(vertex.get_index()))
         {
-            out << "t" << vertex_index << "->"
+            out << "t" << vertex.get_index() << "->"
                 << "t" << succ_vertex.get_index() << "\n";
         }
     }

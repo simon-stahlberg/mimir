@@ -24,14 +24,14 @@ namespace mimir
  * TupleGraphVertex
  */
 
-TupleGraphVertex::TupleGraphVertex(VertexIndex index, TupleIndex tuple_index, StateList states) :
+TupleGraphVertex::TupleGraphVertex(TupleVertexIndex index, TupleIndex tuple_index, StateList states) :
     m_index(index),
     m_tuple_index(tuple_index),
     m_states(std::move(states))
 {
 }
 
-VertexIndex TupleGraphVertex::get_index() const { return m_index; }
+TupleVertexIndex TupleGraphVertex::get_index() const { return m_index; }
 
 TupleIndex TupleGraphVertex::get_tuple_index() const { return m_tuple_index; }
 
@@ -56,7 +56,8 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
 {
 }
 
-std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms)
+std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms,
+                                                                         const GroundAtomList<Derived>& derived_atoms)
 {
     // Construct the explict tuple representation
     auto atom_indices = AtomIndexList {};
@@ -94,7 +95,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
         {
             // Backtrack admissible chain until the root and return an admissible chain that proves the width.
             auto cur_vertex_index = vertex.get_index();
-            auto admissible_chain = VertexIndexList { cur_vertex_index };
+            auto admissible_chain = TupleVertexIndexList { cur_vertex_index };
             while (m_digraph.get_sources(cur_vertex_index).begin() != m_digraph.get_sources(cur_vertex_index).end())
             {
                 cur_vertex_index = (*m_digraph.get_sources(cur_vertex_index).begin()).get_index();
@@ -108,7 +109,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const Ground
     return std::nullopt;
 }
 
-std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateList& states)
+std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const StateList& states)
 {
     if (states.empty())
     {
@@ -156,7 +157,7 @@ std::optional<VertexIndexList> TupleGraph::compute_admissible_chain(const StateL
         {
             // Backtrack admissible chain until the root and return an admissible chain that proves the width.
             auto cur_vertex_index = vertex.get_index();
-            auto admissible_chain = VertexIndexList { cur_vertex_index };
+            auto admissible_chain = TupleVertexIndexList { cur_vertex_index };
             while (m_digraph.get_sources(cur_vertex_index).begin() != m_digraph.get_sources(cur_vertex_index).end())
             {
                 cur_vertex_index = (*m_digraph.get_sources(cur_vertex_index).begin()).get_index();
@@ -179,9 +180,9 @@ State TupleGraph::get_root_state() const { return m_states_by_distance.front().f
 
 const TupleGraphVertexList& TupleGraph::get_vertices() const { return m_vertices; }
 
-const graphs::Digraph& TupleGraph::get_digraph() const { return m_digraph; }
+const Digraph& TupleGraph::get_digraph() const { return m_digraph; }
 
-const std::vector<VertexIndexList>& TupleGraph::get_vertex_indices_by_distances() const { return m_vertex_indices_by_distance; }
+const std::vector<TupleVertexIndexList>& TupleGraph::get_vertex_indices_by_distances() const { return m_vertex_indices_by_distance; }
 
 const std::vector<StateList>& TupleGraph::get_states_by_distance() const { return m_states_by_distance; }
 
@@ -218,7 +219,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer()
     const auto empty_tuple_index = m_tuple_graph.m_tuple_index_mapper->get_empty_tuple_index();
     const auto root_state_vertex_index = 0;
     const auto root_state_index = m_tuple_graph.m_state_space->get_state_index(m_tuple_graph.get_root_state());
-    auto vertex_indices_layer = VertexIndexList {};
+    auto vertex_indices_layer = TupleVertexIndexList {};
     auto states_layer = StateList {};
     for (const auto succ_state_index : m_tuple_graph.m_state_space->get_target_states(root_state_index))
     {

@@ -17,6 +17,8 @@
 
 #include "nauty_sparse_impl.hpp"
 
+#include "nauty_utils.hpp"
+
 #include <algorithm>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
@@ -79,8 +81,10 @@ void SparseGraphImpl::deallocate_graph(sparsegraph& the_graph) const
 SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
     n_(num_vertices),
     c_(num_vertices),
-    obtained_certificate_(false),
     m_adj_matrix_(),
+    use_default_ptn_(true),
+    lab_(num_vertices),
+    ptn_(num_vertices),
     canon_graph_repr_(),
     canon_graph_compressed_repr_()
 {
@@ -91,8 +95,10 @@ SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
 SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     n_(other.n_),
     c_(other.c_),
-    obtained_certificate_(other.obtained_certificate_),
     m_adj_matrix_(other.m_adj_matrix_),
+    use_default_ptn_(other.use_default_ptn_),
+    lab_(other.lab_),
+    ptn_(other.ptn_),
     canon_graph_repr_(),
     canon_graph_compressed_repr_()
 {
@@ -115,8 +121,10 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 
         n_ = other.n_;
         c_ = other.c_;
-        obtained_certificate_ = other.obtained_certificate_;
         m_adj_matrix_ = other.m_adj_matrix_;
+        use_default_ptn_ = other.use_default_ptn_;
+        lab_ = other.lab_;
+        ptn_ = other.ptn_;
         canon_graph_repr_.str(other.canon_graph_repr_.str());
         canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
 
@@ -132,9 +140,11 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
 SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
     n_(other.n_),
     c_(other.c_),
-    obtained_certificate_(other.obtained_certificate_),
     m_adj_matrix_(other.m_adj_matrix_),
     graph_(other.graph_),
+    use_default_ptn_(other.use_default_ptn_),
+    lab_(std::move(other.lab_)),
+    ptn_(std::move(other.ptn_)),
     canon_graph_(other.canon_graph_),
     canon_graph_repr_(std::move(other.canon_graph_repr_)),
     canon_graph_compressed_repr_(std::move(other.canon_graph_compressed_repr_))
@@ -153,8 +163,10 @@ SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
 
         n_ = other.n_;
         c_ = other.c_;
-        obtained_certificate_ = other.obtained_certificate_;
         m_adj_matrix_ = other.m_adj_matrix_;
+        use_default_ptn_ = other.use_default_ptn_;
+        lab_ = std::move(other.lab_);
+        ptn_ = std::move(other.ptn_);
         canon_graph_repr_ = std::move(other.canon_graph_repr_);
         canon_graph_compressed_repr_ = std::move(other.canon_graph_compressed_repr_);
 
@@ -171,6 +183,16 @@ SparseGraphImpl::~SparseGraphImpl()
 {
     deallocate_graph(graph_);
     deallocate_graph(canon_graph_);
+}
+
+void SparseGraphImpl::add_vertex_coloring(const mimir::ColorList& vertex_coloring)
+{
+    if (vertex_coloring.size() != n_)
+    {
+        throw std::out_of_range("SparseGraphImpl::add_vertex_coloring: The vertex coloring is incompatible with number of vertices in the graph.");
+    }
+    initialize_lab_and_ptr(vertex_coloring, lab_, ptn_);
+    use_default_ptn_ = false;
 }
 
 void SparseGraphImpl::add_edge(size_t source, size_t target)
@@ -190,22 +212,8 @@ void SparseGraphImpl::add_edge(size_t source, size_t target)
     }
 }
 
-std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& partitioning)
+std::string SparseGraphImpl::compute_certificate()
 {
-    if (obtained_certificate_)
-    {
-        throw std::runtime_error(
-            "SparseGraphImpl::compute_certificate: Tried to compute certificate twice for the same graph. We consider this a bug on the user side.");
-    }
-    if (partitioning.get_vertex_index_permutation().size() != n_ || partitioning.get_partitioning().size() != n_)
-    {
-        throw std::out_of_range("SparseGraphImpl::compute_certificate: The arrays lab or ptn are incompatible with number of vertices in the graph.");
-    }
-
-    int lab[n_], ptn[n_], orbits[n_];
-    std::copy(partitioning.get_vertex_index_permutation().begin(), partitioning.get_vertex_index_permutation().end(), lab);
-    std::copy(partitioning.get_partitioning().begin(), partitioning.get_partitioning().end(), ptn);
-
     bool is_directed_ = is_directed();
     bool has_loop_ = has_loop();
 
@@ -215,10 +223,12 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
     }
 
     static DEFAULTOPTIONS_SPARSEGRAPH(options);
-    options.defaultptn = FALSE;
+    options.defaultptn = use_default_ptn_;
     options.getcanon = TRUE;
     options.digraph = is_directed_;
     options.writeautoms = FALSE;
+
+    int orbits[n_];
 
     statsblk stats;
 
@@ -226,7 +236,7 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
     std::fill(canon_graph_.v, canon_graph_.v + n_, 0);
     std::fill(canon_graph_.e, canon_graph_.e + n_ * n_, 0);
 
-    sparsenauty(&graph_, lab, ptn, orbits, &options, &stats, &canon_graph_);
+    sparsenauty(&graph_, lab_.data(), ptn_.data(), orbits, &options, &stats, &canon_graph_);
 
     // According to documentation:
     //   canon_graph has contiguous adjacency lists that are not necessarily sorted
@@ -250,14 +260,12 @@ std::string SparseGraphImpl::compute_certificate(const mimir::Partitioning& part
     // We usually see compression ratio ~ 2
     // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
-    obtained_certificate_ = true;
-
     return canon_graph_compressed_repr_.str();
 }
 
 void SparseGraphImpl::reset(size_t num_vertices)
 {
-    obtained_certificate_ = false;
+    use_default_ptn_ = true;
 
     if (num_vertices > c_)
     {
@@ -267,6 +275,8 @@ void SparseGraphImpl::reset(size_t num_vertices)
 
         n_ = num_vertices;
         c_ = num_vertices;
+        lab_ = std::vector<int>(c_);
+        ptn_ = std::vector<int>(c_);
         m_adj_matrix_ = std::vector<bool>(c_ * c_, false);
 
         allocate_graph(graph_);

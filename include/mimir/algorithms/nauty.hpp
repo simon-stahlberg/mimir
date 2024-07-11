@@ -18,8 +18,8 @@
 #ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
-#include "mimir/graphs/digraph.hpp"
-#include "mimir/graphs/partitioning.hpp"
+#include "mimir/graphs/coloring.hpp"
+#include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <memory>
 #include <vector>
@@ -44,10 +44,12 @@ public:
     DenseGraph& operator=(DenseGraph&& other) noexcept;
     ~DenseGraph();
 
+    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a certificate for the graph and the given vertex partitioning.
-    std::string compute_certificate(const mimir::Partitioning& partitioning) const;
+    /// @brief Compute a certificate for the graph and the given vertex coloring.
+    std::string compute_certificate() const;
 
     /// @brief Reinitialize the graph.
     void reset(size_t num_vertices);
@@ -61,7 +63,7 @@ private:
     DenseGraph m_graph;
 
 public:
-    DenseGraph& create_from_digraph(const mimir::graphs::Digraph& digraph);
+    DenseGraph& create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph);
 };
 
 class SparseGraph
@@ -78,10 +80,12 @@ public:
     SparseGraph& operator=(SparseGraph&& other) noexcept;
     ~SparseGraph();
 
+    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a certificate for the graph and the given vertex partitioning.
-    std::string compute_certificate(const mimir::Partitioning& partitioning);
+    /// @brief Compute a certificate for the graph and the given vertex coloring.
+    std::string compute_certificate();
 
     /// @brief Reinitialize the graph.
     void reset(size_t num_vertices);
@@ -95,7 +99,7 @@ private:
     SparseGraph m_graph;
 
 public:
-    SparseGraph& create_from_digraph(const mimir::graphs::Digraph& digraph);
+    SparseGraph& create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph);
 };
 
 }

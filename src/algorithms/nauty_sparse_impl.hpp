@@ -19,7 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 
 // Only include nauty_sparse_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include <mimir/graphs/partitioning.hpp>
+#include <mimir/graphs/coloring.hpp>
 #include <nausparse.h>
 #include <nauty.h>
 #include <sstream>
@@ -35,14 +35,14 @@ private:
     size_t n_;
     // vertex capacity
     size_t c_;
-    // Whether a certificate was obtained from the graph
-    bool obtained_certificate_;
-
     // Track existing edges to avoid duplicates
     std::vector<bool> m_adj_matrix_;
 
     // The input graph
     sparsegraph graph_;
+    bool use_default_ptn_;
+    std::vector<int> lab_;
+    std::vector<int> ptn_;
     // The canonical graph
     sparsegraph canon_graph_;
 
@@ -67,7 +67,9 @@ public:
 
     void add_edge(size_t source, size_t target);
 
-    std::string compute_certificate(const mimir::Partitioning& partitioning);
+    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+
+    std::string compute_certificate();
 
     void reset(size_t num_vertices);
 

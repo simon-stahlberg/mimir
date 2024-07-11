@@ -19,7 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
 
 // Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include <mimir/graphs/partitioning.hpp>
+#include <mimir/graphs/coloring.hpp>
 #include <nauty.h>
 #include <sstream>
 #include <string>
@@ -36,11 +36,11 @@ private:
     size_t c_;
     // blocks_per_vertex
     size_t m_;
-    // Whether a certificate was obtained from the graph.
-    bool obtained_certificate_;
-
     // The input graph
     graph* graph_;
+    bool use_default_ptn_;
+    std::vector<int> lab_;
+    std::vector<int> ptn_;
     // The canonical graph
     graph* canon_graph_;
 
@@ -61,7 +61,9 @@ public:
 
     void add_edge(size_t source, size_t target);
 
-    std::string compute_certificate(const mimir::Partitioning& partitioning);
+    void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
+
+    std::string compute_certificate();
 
     void reset(size_t num_vertices);
 

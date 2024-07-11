@@ -18,24 +18,31 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_VERTEX_COLORED_HPP_
 
-#include "mimir/graphs/coloring_function.hpp"
+#include "mimir/graphs/coloring.hpp"
 #include "mimir/graphs/digraph.hpp"
 
 #include <ranges>
 #include <span>
 #include <vector>
 
-namespace mimir::graphs
+namespace mimir
 {
+
+/**
+ * ColoredDigraphVertex
+ */
 
 class ColoredDigraphVertex
 {
 private:
-    DigraphVertex m_basic;
+    VertexIndex m_index;
     Color m_color;
 
 public:
-    ColoredDigraphVertex(DigraphVertex basic, Color color);
+    ColoredDigraphVertex(VertexIndex index, Color color);
+
+    bool operator==(const ColoredDigraphVertex& other) const;
+    size_t hash() const;
 
     VertexIndex get_index() const;
     Color get_color() const;
@@ -45,5 +52,13 @@ using VertexColoredDigraph = Graph<ColoredDigraphVertex, DigraphEdge>;
 
 static_assert(IsGraph<Digraph>);
 
+/**
+ * Utils
+ */
+
+extern ColorList compute_vertex_colors(const VertexColoredDigraph& graph);
+extern ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph);
+
 }
+
 #endif

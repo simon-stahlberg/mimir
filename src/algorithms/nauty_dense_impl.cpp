@@ -17,6 +17,8 @@
 
 #include "nauty_dense_impl.hpp"
 
+#include "nauty_utils.hpp"
+
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
@@ -50,8 +52,10 @@ DenseGraphImpl::DenseGraphImpl(size_t num_vertices) :
     n_(num_vertices),
     c_(num_vertices),
     m_(SETWORDSNEEDED(n_)),
-    obtained_certificate_(false),
     graph_(nullptr),
+    use_default_ptn_(true),
+    lab_(num_vertices),
+    ptn_(num_vertices),
     canon_graph_(nullptr)
 {
     allocate_graph(&graph_);
@@ -62,6 +66,9 @@ DenseGraphImpl::DenseGraphImpl(const DenseGraphImpl& other) :
     n_(other.n_),
     m_(other.m_),
     graph_(nullptr),
+    use_default_ptn_(other.use_default_ptn_),
+    lab_(other.lab_),
+    ptn_(other.ptn_),
     canon_graph_(nullptr),
     canon_graph_repr_(),
     canon_graph_compressed_repr_()
@@ -85,7 +92,9 @@ DenseGraphImpl& DenseGraphImpl::operator=(const DenseGraphImpl& other)
         n_ = other.n_;
         c_ = other.c_;
         m_ = other.m_;
-        obtained_certificate_ = other.obtained_certificate_;
+        use_default_ptn_ = other.use_default_ptn_;
+        lab_ = other.lab_;
+        ptn_ = other.ptn_;
         canon_graph_repr_.str(other.canon_graph_repr_.str());
         canon_graph_compressed_repr_.str(other.canon_graph_compressed_repr_.str());
 
@@ -102,8 +111,10 @@ DenseGraphImpl::DenseGraphImpl(DenseGraphImpl&& other) noexcept :
     n_(other.n_),
     c_(other.c_),
     m_(other.m_),
-    obtained_certificate_(other.obtained_certificate_),
     graph_(other.graph_),
+    use_default_ptn_(other.use_default_ptn_),
+    lab_(std::move(lab_)),
+    ptn_(std::move(ptn_)),
     canon_graph_(other.canon_graph_),
     canon_graph_repr_(std::move(other.canon_graph_repr_)),
     canon_graph_compressed_repr_(std::move(other.canon_graph_compressed_repr_))
@@ -122,8 +133,10 @@ DenseGraphImpl& DenseGraphImpl::operator=(DenseGraphImpl&& other) noexcept
         n_ = other.n_;
         c_ = other.c_;
         m_ = other.m_;
-        obtained_certificate_ = other.obtained_certificate_;
         graph_ = other.graph_;
+        use_default_ptn_ = other.use_default_ptn_;
+        lab_ = std::move(other.lab_);
+        ptn_ = std::move(other.ptn_);
         canon_graph_ = other.canon_graph_;
         canon_graph_repr_ = std::move(other.canon_graph_repr_);
         canon_graph_compressed_repr_ = std::move(other.canon_graph_compressed_repr_);
@@ -140,6 +153,16 @@ DenseGraphImpl::~DenseGraphImpl()
     deallocate_graph(canon_graph_);
 }
 
+void DenseGraphImpl::add_vertex_coloring(const mimir::ColorList& vertex_coloring)
+{
+    if (vertex_coloring.size() != n_)
+    {
+        throw std::out_of_range("DenseGraphImpl::add_vertex_coloring: The vertex coloring is incompatible with number of vertices in the graph.");
+    }
+    initialize_lab_and_ptr(vertex_coloring, lab_, ptn_);
+    use_default_ptn_ = false;
+}
+
 void DenseGraphImpl::add_edge(size_t source, size_t target)
 {
     if (source >= n_ || target >= n_)
@@ -149,22 +172,8 @@ void DenseGraphImpl::add_edge(size_t source, size_t target)
     ADDONEARC0(graph_, source, target, m_);
 }
 
-std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& partitioning)
+std::string DenseGraphImpl::compute_certificate()
 {
-    if (obtained_certificate_)
-    {
-        throw std::runtime_error(
-            "DenseGraphImpl::compute_certificate: Tried to compute certificate twice for the same graph. We consider this a bug on the user side.");
-    }
-    if (partitioning.get_vertex_index_permutation().size() != n_ || partitioning.get_partitioning().size() != n_)
-    {
-        throw std::out_of_range("DenseGraphImpl::compute_certificate: The arrays lab or ptn are incompatible with number of vertices in the graph.");
-    }
-
-    int lab[n_], ptn[n_], orbits[n_];
-    std::copy(partitioning.get_vertex_index_permutation().begin(), partitioning.get_vertex_index_permutation().end(), lab);
-    std::copy(partitioning.get_partitioning().begin(), partitioning.get_partitioning().end(), ptn);
-
     const auto is_directed_ = is_directed();
     const auto has_loop_ = has_loop();
 
@@ -178,9 +187,12 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
     options.getcanon = TRUE;
     options.digraph = is_directed_;
     options.writeautoms = FALSE;
+
+    int orbits[n_];
+
     statsblk stats;
 
-    densenauty(graph_, lab, ptn, orbits, &options, &stats, m_, n_, canon_graph_);
+    densenauty(graph_, lab_.data(), ptn_.data(), orbits, &options, &stats, m_, n_, canon_graph_);
 
     // Clear streams
     canon_graph_repr_.str(std::string());
@@ -203,14 +215,12 @@ std::string DenseGraphImpl::compute_certificate(const mimir::Partitioning& parti
     // We usually see compression ratio ~ 2
     // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
-    obtained_certificate_ = true;
-
     return canon_graph_compressed_repr_.str();
 }
 
 void DenseGraphImpl::reset(size_t num_vertices)
 {
-    obtained_certificate_ = false;
+    use_default_ptn_ = true;
 
     if (num_vertices > c_)
     {
@@ -221,6 +231,8 @@ void DenseGraphImpl::reset(size_t num_vertices)
         n_ = num_vertices;
         m_ = SETWORDSNEEDED(num_vertices);
         c_ = num_vertices;
+        lab_ = std::vector<int>(c_);
+        ptn_ = std::vector<int>(c_);
 
         allocate_graph(&graph_);
         allocate_graph(&canon_graph_);

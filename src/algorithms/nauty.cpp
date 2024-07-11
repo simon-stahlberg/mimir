@@ -55,9 +55,11 @@ DenseGraph& DenseGraph::operator=(DenseGraph&& other) noexcept
 
 DenseGraph::~DenseGraph() = default;
 
+void DenseGraph::add_vertex_coloring(const mimir::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
+
 void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
-std::string DenseGraph::compute_certificate(const mimir::Partitioning& partitioning) const { return m_impl->compute_certificate(partitioning); }
+std::string DenseGraph::compute_certificate() const { return m_impl->compute_certificate(); }
 
 void DenseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
 
@@ -65,7 +67,7 @@ bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
 
 /* DenseGraphFactory */
 
-DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::graphs::Digraph& digraph)
+DenseGraph& DenseGraphFactory::create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph)
 {
     m_graph.reset(digraph.get_num_vertices());
 
@@ -73,6 +75,8 @@ DenseGraph& DenseGraphFactory::create_from_digraph(const mimir::graphs::Digraph&
     {
         m_graph.add_edge(edge.get_source(), edge.get_target());
     }
+
+    m_graph.add_vertex_coloring(mimir::compute_vertex_colors(digraph));
 
     return m_graph;
 }
@@ -107,9 +111,11 @@ SparseGraph& SparseGraph::operator=(SparseGraph&& other) noexcept
 
 SparseGraph::~SparseGraph() = default;
 
+void SparseGraph::add_vertex_coloring(const mimir::ColorList& vertex_coloring) { m_impl->add_vertex_coloring(vertex_coloring); }
+
 void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
-std::string SparseGraph::compute_certificate(const mimir::Partitioning& partitioning) { return m_impl->compute_certificate(partitioning); }
+std::string SparseGraph::compute_certificate() { return m_impl->compute_certificate(); }
 
 void SparseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
 
@@ -117,7 +123,7 @@ bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 
 /* SparseGraphFactory */
 
-SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::graphs::Digraph& digraph)
+SparseGraph& SparseGraphFactory::create_from_vertex_colored_digraph(const mimir::VertexColoredDigraph& digraph)
 {
     m_graph.reset(digraph.get_num_vertices());
 
@@ -125,6 +131,8 @@ SparseGraph& SparseGraphFactory::create_from_digraph(const mimir::graphs::Digrap
     {
         m_graph.add_edge(edge.get_source(), edge.get_target());
     }
+
+    m_graph.add_vertex_coloring(mimir::compute_vertex_colors(digraph));
 
     return m_graph;
 }

@@ -38,26 +38,26 @@ namespace mimir
 
 class TupleGraphFactory;
 
-using VertexIndex = int;
-using VertexIndexList = std::vector<VertexIndex>;
-using VertexIndexSet = std::unordered_set<VertexIndex>;
+using TupleVertexIndex = int;
+using TupleVertexIndexList = std::vector<TupleVertexIndex>;
+using TupleVertexIndexSet = std::unordered_set<TupleVertexIndex>;
 
 class TupleGraphVertex
 {
 private:
-    VertexIndex m_index;
+    TupleVertexIndex m_index;
     TupleIndex m_tuple_index;
     // TODO: make this a span
     StateList m_states;
 
 public:
-    TupleGraphVertex(VertexIndex identifier, TupleIndex tuple_index, StateList states);
+    TupleGraphVertex(TupleVertexIndex identifier, TupleIndex tuple_index, StateList states);
 
     /**
      * Getters.
      */
 
-    VertexIndex get_index() const;
+    TupleVertexIndex get_index() const;
     TupleIndex get_tuple_index() const;
     const StateList& get_states() const;
 };
@@ -75,10 +75,10 @@ private:
     // TODO. make this an index grouped vector, grouped by distance
     TupleGraphVertexList m_vertices;
 
-    graphs::Digraph m_digraph;
+    Digraph m_digraph;
 
     // TODO: Remove this, since vertices will be grouped by distance
-    std::vector<VertexIndexList> m_vertex_indices_by_distance;
+    std::vector<TupleVertexIndexList> m_vertex_indices_by_distance;
     // TODO: make this an index grouped vector, grouped by vertex to be able to store spans in the vertices
     std::vector<StateList> m_states_by_distance;
 
@@ -98,11 +98,11 @@ private:
 public:
     /// @brief Compute and return an admissible chain for a given tuple of ground atoms.
     /// Return std::nullopt if no such admissible chain exists.
-    std::optional<VertexIndexList> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
+    std::optional<TupleVertexIndexList> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
 
     /// @brief Compute and return an admissible chain for a given set of states.
     /// Return std::nullopt if no such admissible chain exists.
-    std::optional<VertexIndexList> compute_admissible_chain(const StateList& states);
+    std::optional<TupleVertexIndexList> compute_admissible_chain(const StateList& states);
 
     /**
      * Getters.
@@ -113,8 +113,8 @@ public:
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
     const TupleGraphVertexList& get_vertices() const;
-    const graphs::Digraph& get_digraph() const;
-    const std::vector<VertexIndexList>& get_vertex_indices_by_distances() const;
+    const Digraph& get_digraph() const;
+    const std::vector<TupleVertexIndexList>& get_vertex_indices_by_distances() const;
     const std::vector<StateList>& get_states_by_distance() const;
 };
 
@@ -155,7 +155,7 @@ private:
         StateSet visited_states;
         DynamicNoveltyTable novelty_table;
         StateList cur_states;
-        VertexIndexList cur_vertices;
+        TupleVertexIndexList cur_vertices;
 
         /**
          * Four step procedure to compute the next layer in the graph.
@@ -171,7 +171,7 @@ private:
         void compute_next_novel_tuple_indices();
 
         std::unordered_map<TupleIndex, StateSet> cur_novel_tuple_index_to_extended_state;
-        std::unordered_map<TupleIndex, VertexIndexSet> cur_extended_novel_tuple_index_to_prev_vertices;
+        std::unordered_map<TupleIndex, TupleVertexIndexSet> cur_extended_novel_tuple_index_to_prev_vertices;
         TupleIndexSet cur_extended_novel_tuple_indices_set;
         TupleIndexList cur_extended_novel_tuple_indices;
 
