@@ -70,7 +70,7 @@ ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph)
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, std::tuple<const VertexColoredDigraph&, const ColorFunction&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<const VertexColoredDigraph&, const ColorFunction&>& data)
 {
     const auto& [vertex_colored_digraph, color_function] = data;
 
