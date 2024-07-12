@@ -227,7 +227,10 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Static>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Static>::get_identifier)
         .def("get_name", &PredicateImpl<Static>::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", &PredicateImpl<Static>::get_parameters, py::return_value_policy::reference_internal)
+        .def(
+            "get_parameters",
+            [](const PredicateImpl<Static>& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>())
         .def("get_arity", &PredicateImpl<Static>::get_arity);
     static_assert(!py::detail::vector_needs_copy<PredicateList<Static>>::value);  // Ensure return by reference + keep alive
     py::bind_vector<PredicateList<Static>>(m, "StaticPredicateList");
@@ -237,7 +240,10 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Fluent>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Fluent>::get_identifier)
         .def("get_name", &PredicateImpl<Fluent>::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", &PredicateImpl<Fluent>::get_parameters, py::return_value_policy::reference_internal)
+        .def(
+            "get_parameters",
+            [](const PredicateImpl<Fluent>& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>())
         .def("get_arity", &PredicateImpl<Fluent>::get_arity);
     static_assert(!py::detail::vector_needs_copy<PredicateList<Fluent>>::value);  // Ensure return by reference + keep alive
     py::bind_vector<PredicateList<Fluent>>(m, "FluentPredicateList");
@@ -247,7 +253,10 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Derived>>::str, py::const_))
         .def("get_identifier", &PredicateImpl<Derived>::get_identifier)
         .def("get_name", &PredicateImpl<Derived>::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", &PredicateImpl<Derived>::get_parameters, py::return_value_policy::reference_internal)
+        .def(
+            "get_parameters",
+            [](const PredicateImpl<Derived>& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>())
         .def("get_arity", &PredicateImpl<Derived>::get_arity);
     static_assert(!py::detail::vector_needs_copy<PredicateList<Derived>>::value);  // Ensure return by reference + keep alive
     py::bind_vector<PredicateList<Derived>>(m, "DerivedPredicateList");
@@ -290,7 +299,10 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionSkeletonImpl>::str, py::const_))
         .def("get_identifier", &FunctionSkeletonImpl::get_identifier)
         .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::return_value_policy::reference_internal);
+        .def(
+            "get_parameters",
+            [](const FunctionSkeletonImpl& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionSkeletonList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<FunctionSkeletonList>(m, "FunctionSkeletonList");
 
@@ -300,7 +312,7 @@ void init_pymimir(py::module_& m)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
-            [](const FunctionImpl& function) { return to_term_variant_list(function.get_terms()); },
+            [](const FunctionImpl& self) { return to_term_variant_list(self.get_terms()); },
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<FunctionList>(m, "FunctionList");
@@ -309,7 +321,10 @@ void init_pymimir(py::module_& m)
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionImpl>::str, py::const_))
         .def("get_identifier", &GroundFunctionImpl::get_identifier)
         .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def("get_objects", &GroundFunctionImpl::get_objects, py::return_value_policy::reference_internal);
+        .def(
+            "get_objects",
+            [](const GroundFunctionImpl& self) { return ObjectList(self.get_objects()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundFunctionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundFunctionList>(m, "GroundFunctionList");
 
@@ -318,7 +333,10 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &GroundAtomImpl<Static>::get_identifier)
         .def("get_arity", &GroundAtomImpl<Static>::get_arity)
         .def("get_predicate", &GroundAtomImpl<Static>::get_predicate, py::return_value_policy::reference_internal)
-        .def("get_objects", &GroundAtomImpl<Static>::get_objects, py::return_value_policy::reference_internal);
+        .def(
+            "get_objects",
+            [](const GroundAtomImpl<Static>& self) { return ObjectList(self.get_objects()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundAtomList<Static>>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundAtomList<Static>>(m, "StaticGroundAtomList");
 
@@ -327,7 +345,10 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &GroundAtomImpl<Fluent>::get_identifier)
         .def("get_arity", &GroundAtomImpl<Fluent>::get_arity)
         .def("get_predicate", &GroundAtomImpl<Fluent>::get_predicate, py::return_value_policy::reference_internal)
-        .def("get_objects", &GroundAtomImpl<Fluent>::get_objects, py::return_value_policy::reference_internal);
+        .def(
+            "get_objects",
+            [](const GroundAtomImpl<Fluent>& self) { return ObjectList(self.get_objects()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundAtomList<Fluent>>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundAtomList<Fluent>>(m, "FluentGroundAtomList");
 
@@ -336,7 +357,10 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &GroundAtomImpl<Derived>::get_identifier)
         .def("get_arity", &GroundAtomImpl<Derived>::get_arity)
         .def("get_predicate", &GroundAtomImpl<Derived>::get_predicate, py::return_value_policy::reference_internal)
-        .def("get_objects", &GroundAtomImpl<Derived>::get_objects, py::return_value_policy::reference_internal);
+        .def(
+            "get_objects",
+            [](const GroundAtomImpl<Derived>& self) { return ObjectList(self.get_objects()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundAtomList<Derived>>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundAtomList<Derived>>(m, "DerivedGroundAtomList");
 
@@ -408,16 +432,16 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &EffectConditionalImpl::get_identifier)
         .def(
             "get_static_conditions",
-            [](const EffectConditionalImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference_internal)
+            [](const EffectUniversalImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_fluent_conditions",
-            [](const EffectConditionalImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference_internal)
+            [](const EffectUniversalImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_derived_conditions",
-            [](const EffectConditionalImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference_internal)
+            [](const EffectUniversalImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
+            py::keep_alive<0, 1>())
         .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<EffectConditionalList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<EffectConditionalList>(m, "EffectConditionalList");
@@ -434,19 +458,22 @@ void init_pymimir(py::module_& m)
     py::class_<EffectUniversalImpl>(m, "EffectUniversal")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectUniversalImpl>::str, py::const_))
         .def("get_identifier", &EffectUniversalImpl::get_identifier)
-        .def("get_parameters", &EffectUniversalImpl::get_parameters, py::return_value_policy::reference_internal)
+        .def(
+            "get_parameters",
+            [](const EffectUniversalImpl& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_static_conditions",
-            [](const EffectUniversalImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference_internal)
+            [](const EffectUniversalImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_fluent_conditions",
-            [](const EffectUniversalImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference_internal)
+            [](const EffectUniversalImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_derived_conditions",
-            [](const EffectUniversalImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference_internal)
+            [](const EffectUniversalImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
+            py::keep_alive<0, 1>())
         .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<EffectUniversalList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<EffectUniversalList>(m, "EffectUniversalList");
@@ -558,23 +585,35 @@ void init_pymimir(py::module_& m)
     py::class_<ActionImpl>(m, "Action")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ActionImpl>::str, py::const_))
         .def("get_identifier", &ActionImpl::get_identifier)
-        .def("get_name", &ActionImpl::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", &ActionImpl::get_parameters, py::return_value_policy::reference_internal)
+        .def("get_name", &ActionImpl::get_name, py::return_value_policy::copy)
+        .def(
+            "get_parameters",
+            [](const ActionImpl& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_static_conditions",
-            [](const ActionImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference_internal)
+            [](const ActionImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_fluent_conditions",
-            [](const ActionImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference_internal)
+            [](const ActionImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_derived_conditions",
-            [](const ActionImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference_internal)
-        .def("get_simple_effects", &ActionImpl::get_simple_effects, py::return_value_policy::reference_internal)
-        .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::return_value_policy::reference_internal)
-        .def("get_universal_effects", &ActionImpl::get_universal_effects, py::return_value_policy::reference_internal)
+            [](const ActionImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_simple_effects",
+            [](const ActionImpl& self) { return EffectSimpleList(self.get_simple_effects()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_conditional_effects",
+            [](const ActionImpl& self) { return EffectConditionalList(self.get_conditional_effects()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_universal_effects",
+            [](const ActionImpl& self) { return EffectUniversalList(self.get_universal_effects()); },
+            py::keep_alive<0, 1>())
         .def("get_arity", &ActionImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<ActionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<ActionList>(m, "ActionList");
@@ -585,16 +624,16 @@ void init_pymimir(py::module_& m)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference_internal)
         .def(
             "get_static_conditions",
-            [](const AxiomImpl& self) { return self.get_conditions<Static>(); },
-            py::return_value_policy::reference_internal)
+            [](const AxiomImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_fluent_conditions",
-            [](const AxiomImpl& self) { return self.get_conditions<Fluent>(); },
-            py::return_value_policy::reference_internal)
+            [](const AxiomImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_derived_conditions",
-            [](const AxiomImpl& self) { return self.get_conditions<Derived>(); },
-            py::return_value_policy::reference_internal)
+            [](const AxiomImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
+            py::keep_alive<0, 1>())
         .def("get_arity", &AxiomImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<AxiomList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<AxiomList>(m, "AxiomList");
@@ -604,37 +643,46 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &DomainImpl::get_identifier)
         .def(
             "get_filepath",
-            [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; },
+            [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath()->string()) : std::nullopt; },
             py::return_value_policy::copy)
         .def("get_name", &DomainImpl::get_name, py::return_value_policy::copy)
-        .def("get_constants", &DomainImpl::get_constants, py::return_value_policy::reference_internal)
+        .def(
+            "get_constants",
+            [](const DomainImpl& self) { return ObjectList(self.get_constants()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_static_predicates",
-            [](const DomainImpl& self) { return self.get_predicates<Static>(); },
-            py::return_value_policy::reference_internal)
+            [](const DomainImpl& self) { return PredicateList<Static>(self.get_predicates<Static>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_fluent_predicates",
-            [](const DomainImpl& self) { return self.get_predicates<Fluent>(); },
-            py::return_value_policy::reference_internal)
+            [](const DomainImpl& self) { return PredicateList<Fluent>(self.get_predicates<Fluent>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_derived_predicates",
-            [](const DomainImpl& self) { return self.get_predicates<Derived>(); },
-            py::return_value_policy::reference_internal)
-        .def("get_functions", &DomainImpl::get_functions, py::return_value_policy::reference_internal)
-        .def("get_actions", &DomainImpl::get_actions, py::return_value_policy::reference_internal)
+            [](const DomainImpl& self) { return PredicateList<Derived>(self.get_predicates<Derived>()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_functions",
+            [](const DomainImpl& self) { return FunctionSkeletonList(self.get_functions()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_actions",
+            [](const DomainImpl& self) { return ActionList(self.get_actions()); },
+            py::keep_alive<0, 1>())
         .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference_internal)
-        .def(
+        .def(  // TODO: add opague type
             "get_name_to_static_predicate",
-            [](const DomainImpl& self) { return self.get_name_to_predicate<Static>(); },
-            py::return_value_policy::reference_internal)
-        .def(
+            [](const DomainImpl& self) { return ToPredicateMap<std::string, Static>(self.get_name_to_predicate<Static>()); },
+            py::keep_alive<0, 1>())
+        .def(  // TODO: add opague type
             "get_name_to_fluent_predicate",
-            [](const DomainImpl& self) { return self.get_name_to_predicate<Fluent>(); },
-            py::return_value_policy::reference_internal)
-        .def(
+            [](const DomainImpl& self) { return ToPredicateMap<std::string, Fluent>(self.get_name_to_predicate<Fluent>()); },
+            py::keep_alive<0, 1>())
+        .def(  // TODO: add opague type
             "get_name_to_derived_predicate",
-            [](const DomainImpl& self) { return self.get_name_to_predicate<Derived>(); },
-            py::return_value_policy::reference_internal);
+            [](const DomainImpl& self) { return ToPredicateMap<std::string, Derived>(self.get_name_to_predicate<Derived>()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<DomainList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<DomainList>(m, "DomainList");
 
@@ -643,28 +691,41 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &ProblemImpl::get_identifier)
         .def(
             "get_filepath",
-            [](const ProblemImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath().value()) : std::nullopt; },
+            [](const ProblemImpl& self)
+            { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath()->string()) : std::nullopt; },
             py::return_value_policy::copy)
         .def("get_name", &ProblemImpl::get_name, py::return_value_policy::copy)
         .def("get_domain", &ProblemImpl::get_domain, py::return_value_policy::reference_internal)
         .def("get_requirements", &ProblemImpl::get_requirements, py::return_value_policy::reference_internal)
-        .def("get_objects", &ProblemImpl::get_objects, py::return_value_policy::reference_internal)
-        .def("get_static_initial_literals", &ProblemImpl::get_static_initial_literals, py::return_value_policy::reference_internal)
-        .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::return_value_policy::reference_internal)
-        .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::return_value_policy::reference_internal)
+        .def(
+            "get_objects",
+            [](const ProblemImpl& self) { return ObjectList(self.get_objects()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_static_initial_literals",
+            [](const ProblemImpl& self) { return GroundLiteralList<Static>(self.get_static_initial_literals()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_fluent_initial_literals",
+            [](const ProblemImpl& self) { return GroundLiteralList<Fluent>(self.get_fluent_initial_literals()); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_numeric_fluents",
+            [](const ProblemImpl& self) { return NumericFluentList(self.get_numeric_fluents()); },
+            py::keep_alive<0, 1>())
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference_internal)
         .def(
             "get_static_goal_condition",
-            [](const ProblemImpl& self) { return self.get_goal_condition<Static>(); },
-            py::return_value_policy::reference_internal)
+            [](const ProblemImpl& self) { return GroundLiteralList<Static>(self.get_goal_condition<Static>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_fluent_goal_condition",
-            [](const ProblemImpl& self) { return self.get_goal_condition<Fluent>(); },
-            py::return_value_policy::reference_internal)
+            [](const ProblemImpl& self) { return GroundLiteralList<Fluent>(self.get_goal_condition<Fluent>()); },
+            py::keep_alive<0, 1>())
         .def(
             "get_derived_goal_condition",
-            [](const ProblemImpl& self) { return self.get_goal_condition<Derived>(); },
-            py::return_value_policy::reference_internal);
+            [](const ProblemImpl& self) { return GroundLiteralList<Derived>(self.get_goal_condition<Derived>()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<ProblemList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<ProblemList>(m, "ProblemList");
 
@@ -978,6 +1039,8 @@ void init_pymimir(py::module_& m)
             [](const AbstractTransition& self) { return GroundActionList(self.get_actions().begin(), self.get_actions().end()); },
             py::keep_alive<0, 1>())
         .def("get_representative_action", &AbstractTransition::get_representative_action, py::keep_alive<0, 1>());
+
+    // TODO: check return semantics below
 
     // StateSpace
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //

@@ -13,3 +13,4 @@ def test_pddl_parser():
     parser = PDDLParser(domain_filepath, problem_filepath)
 
     assert(parser.get_domain() == parser.get_problem().get_domain())
+
