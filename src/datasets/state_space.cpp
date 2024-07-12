@@ -295,12 +295,12 @@ const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_s
 
 TargetStateIndexIterator<Transition> StateSpace::get_target_states(StateIndex source) const
 {
-    return TargetStateIndexIterator<Transition>(m_transitions.get_group(source));
+    return TargetStateIndexIterator<Transition>(m_transitions.at(source));
 }
 
 SourceStateIndexIterator<Transition> StateSpace::get_source_states(StateIndex target) const
 {
-    return SourceStateIndexIterator<Transition>(target, m_transitions.get_vector());
+    return SourceStateIndexIterator<Transition>(target, m_transitions.data());
 }
 
 size_t StateSpace::get_num_states() const { return get_states().size(); }
@@ -316,34 +316,34 @@ bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_s
 bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
-const TransitionList& StateSpace::get_transitions() const { return m_transitions.get_vector(); }
+const TransitionList& StateSpace::get_transitions() const { return m_transitions.data(); }
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const
 {
-    return (m_use_unit_cost_one) ? 1 : m_transitions.get_vector().at(transition).get_cost();
+    return (m_use_unit_cost_one) ? 1 : m_transitions.data().at(transition).get_cost();
 }
 
 ForwardTransitionIndexIterator<Transition> StateSpace::get_forward_transition_indices(StateIndex source) const
 {
-    return ForwardTransitionIndexIterator<Transition>(m_transitions.get_group(source));
+    return ForwardTransitionIndexIterator<Transition>(m_transitions.at(source));
 }
 
 BackwardTransitionIndexIterator<Transition> StateSpace::get_backward_transition_indices(StateIndex target) const
 {
-    return BackwardTransitionIndexIterator<Transition>(target, m_transitions.get_vector());
+    return BackwardTransitionIndexIterator<Transition>(target, m_transitions.data());
 }
 
 ForwardTransitionIterator<Transition> StateSpace::get_forward_transitions(StateIndex source) const
 {
-    return ForwardTransitionIterator<Transition>(m_transitions.get_group(source));
+    return ForwardTransitionIterator<Transition>(m_transitions.at(source));
 }
 
 BackwardTransitionIterator<Transition> StateSpace::get_backward_transitions(StateIndex target) const
 {
-    return BackwardTransitionIterator<Transition>(target, m_transitions.get_vector());
+    return BackwardTransitionIterator<Transition>(target, m_transitions.data());
 }
 
-size_t StateSpace::get_num_transitions() const { return m_transitions.get_vector().size(); }
+size_t StateSpace::get_num_transitions() const { return m_transitions.data().size(); }
 
 /* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }

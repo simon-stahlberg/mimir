@@ -77,9 +77,9 @@ std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remov
     const auto [num_components, component_map] = strong_components(*pnf_state_space);
     const auto scc_digraph = create_scc_digraph(num_components, component_map, *pnf_state_space);
     const auto partitioning = get_partitioning<StateSpace>(num_components, component_map);
-    for (size_t group_index = 0; group_index < partitioning.get_num_groups(); ++group_index)
+    for (size_t group_index = 0; group_index < partitioning.size(); ++group_index)
     {
-        auto group = partitioning.get_group(group_index);
+        auto group = partitioning.at(group_index);
         auto group_pruning_strategy = ObjectGraphStaticPruningStrategy();
         auto pruned_fluent_ground_atoms = FlatBitsetBuilder<Fluent>(pnf_state_space->get_states()[group.begin()->second].get_atoms<Fluent>());
         for (const auto& [group_index, state_index] : group)

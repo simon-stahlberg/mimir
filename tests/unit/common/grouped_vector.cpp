@@ -20,7 +20,11 @@ TEST(MimirTests, CommonIndexGroupedVectorTest)
     auto group_index_retriever = [](const ElementType& e) { return static_cast<size_t>(e.first); };
     auto index_grouped_vector = IndexGroupedVector<ElementType>::create(vec, 4, group_boundary_checker, group_index_retriever);
 
-    EXPECT_EQ(index_grouped_vector.get_groups_begin(), (std::vector<size_t> { 0, 2, 2, 4, 4 }));
+    EXPECT_EQ(index_grouped_vector.size(), 4);
+    EXPECT_EQ(index_grouped_vector[0].size(), 2);
+    EXPECT_EQ(index_grouped_vector[1].size(), 0);
+    EXPECT_EQ(index_grouped_vector[2].size(), 2);
+    EXPECT_EQ(index_grouped_vector[3].size(), 0);
 }
 
 }

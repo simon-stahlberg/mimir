@@ -46,17 +46,17 @@ class FaithfulAbstractState
 {
 private:
     StateIndex m_index;
-    std::span<State> m_states;
+    std::span<const State> m_states;
     std::shared_ptr<const Certificate> m_certificate;
 
 public:
-    FaithfulAbstractState(StateIndex index, std::span<State> states, std::shared_ptr<const Certificate> certificate);
+    FaithfulAbstractState(StateIndex index, std::span<const State> states, std::shared_ptr<const Certificate> certificate);
 
     bool operator==(const FaithfulAbstractState& other) const;
     size_t hash() const;
 
     StateIndex get_index() const;
-    std::span<State> get_states() const;
+    std::span<const State> get_states() const;
     State get_representative_state() const;
     const std::shared_ptr<const Certificate>& get_certificate() const;
 };

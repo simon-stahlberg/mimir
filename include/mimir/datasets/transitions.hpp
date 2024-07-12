@@ -67,10 +67,10 @@ private:
     TransitionIndex m_index;
     StateIndex m_source_state;
     StateIndex m_target_state;
-    std::span<GroundAction> m_actions;
+    std::span<const GroundAction> m_actions;
 
 public:
-    AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<GroundAction> actions);
+    AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<const GroundAction> actions);
 
     bool operator==(const AbstractTransition& other) const;
     size_t hash() const;
@@ -79,7 +79,7 @@ public:
     StateIndex get_source_state() const;
     StateIndex get_target_state() const;
     TransitionCost get_cost() const;
-    std::span<GroundAction> get_actions() const;
+    std::span<const GroundAction> get_actions() const;
     GroundAction get_representative_action() const;
 };
 

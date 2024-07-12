@@ -57,7 +57,10 @@ GroundAction Transition::get_creating_action() const { return m_creating_action;
  * AbstractTransition
  */
 
-AbstractTransition::AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<GroundAction> creating_actions) :
+AbstractTransition::AbstractTransition(TransitionIndex index,
+                                       StateIndex source_state,
+                                       StateIndex target_state,
+                                       std::span<const GroundAction> creating_actions) :
     m_index(index),
     m_source_state(source_state),
     m_target_state(target_state),
@@ -102,7 +105,7 @@ TransitionCost AbstractTransition::get_cost() const
     return cost;
 }
 
-std::span<GroundAction> AbstractTransition::get_actions() const { return m_actions; }
+std::span<const GroundAction> AbstractTransition::get_actions() const { return m_actions; }
 
 GroundAction AbstractTransition::get_representative_action() const
 {

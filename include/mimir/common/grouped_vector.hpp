@@ -86,10 +86,11 @@ private:
 
     IndexGroupedVector(std::vector<T> vec, std::vector<size_t> groups_begin);
 
-    /// @brief Throws an exception if adding a begin index would be invalid.
-    static void range_check(size_t cur_num_groups, size_t num_groups);
+    void range_check(size_t pos) const;
 
 public:
+    using ValueType = T;
+
     IndexGroupedVector();
 
     /// @brief This implementation creates a new group when the boundary checker returns true,
@@ -115,10 +116,35 @@ public:
         requires IsGroupBoundaryChecker<GroupBoundaryChecker, T>
     static IndexGroupedVector<T> create(std::vector<T> vec, GroupBoundaryChecker group_boundary_checker);
 
-    std::span<const T> get_group(size_t pos) const;
-    const std::vector<T>& get_vector() const;
-    const std::vector<size_t>& get_groups_begin() const;
-    size_t get_num_groups() const;
+    /**
+     * Accessors
+     */
+
+    /// @brief Get group with index pos.
+    /// Throw an exception if out of bounds.
+    /// @param pos
+    /// @return
+    std::span<T> at(size_t pos);
+    const std::span<const T> at(size_t pos) const;
+
+    /// @brief Get group with index pos.
+    /// @param pos
+    /// @return
+    std::span<T> operator[](size_t pos);
+    const std::span<const T> operator[](size_t pos) const;
+
+    /// @brief Get the underlying data.
+    /// @return
+    std::vector<T>& data();
+    const std::vector<T>& data() const;
+
+    /**
+     * Capacity
+     */
+
+    /// @brief Get the number of groups.
+    /// @return
+    size_t size() const;
 };
 
 template<typename T>
@@ -144,6 +170,14 @@ public:
  * Implementations
  */
 
+static void create_range_check(size_t cur_num_groups, size_t num_groups)
+{
+    if (cur_num_groups > num_groups)
+    {
+        throw std::logic_error("IndexGroupedVector::create: Ran out of bounds during grouping.");
+    }
+}
+
 /* IndexGroupedVector */
 
 template<typename T>
@@ -152,11 +186,12 @@ IndexGroupedVector<T>::IndexGroupedVector(std::vector<T> vec, std::vector<size_t
 }
 
 template<typename T>
-void IndexGroupedVector<T>::range_check(size_t cur_num_groups, size_t num_groups)
+void IndexGroupedVector<T>::range_check(size_t pos) const
 {
-    if (cur_num_groups > num_groups)
+    if (pos >= size())
     {
-        throw std::logic_error("IndexGroupedVector::create: Ran out of bounds during grouping.");
+        throw std::out_of_range("IndexGroupedVector::range_check: pos (which is " + std::to_string(pos) + ") >= this->size() (which is "
+                                + std::to_string(size()) + ")");
     }
 }
 
@@ -176,7 +211,7 @@ IndexGroupedVector<T>::create(std::vector<T> vec, size_t num_groups, GroupBounda
     if (vec.size() > 0)
     {
         // Write begin of first group.
-        range_check(groups_begin.size(), num_groups);
+        create_range_check(groups_begin.size(), num_groups);
         groups_begin.push_back(0);
 
         for (size_t i = 1; i < vec.size(); ++i)
@@ -192,7 +227,7 @@ IndexGroupedVector<T>::create(std::vector<T> vec, size_t num_groups, GroupBounda
                 // Write begin i for skipped groups + begin of new group.
                 while (groups_begin.size() <= group_index_retriever(vec[i]))
                 {
-                    range_check(groups_begin.size(), num_groups);
+                    create_range_check(groups_begin.size(), num_groups);
                     groups_begin.push_back(i);
                 }
             }
@@ -200,7 +235,7 @@ IndexGroupedVector<T>::create(std::vector<T> vec, size_t num_groups, GroupBounda
     }
 
     // Write begin of remaining groups + end of last group.
-    range_check(groups_begin.size(), num_groups);
+    create_range_check(groups_begin.size(), num_groups);
     while (groups_begin.size() <= num_groups)
     {
         groups_begin.push_back(vec.size());
@@ -238,29 +273,55 @@ inline IndexGroupedVector<T> IndexGroupedVector<T>::create(std::vector<T> vec, G
 }
 
 template<typename T>
-std::span<const T> IndexGroupedVector<T>::get_group(size_t pos) const
+std::span<T> IndexGroupedVector<T>::at(size_t pos)
 {
+    range_check(pos);
+    return std::span<T>(  //
+        m_vec.begin() + m_groups_begin.at(pos),
+        m_vec.begin() + m_groups_begin.at(pos + 1));
+}
+
+template<typename T>
+const std::span<const T> IndexGroupedVector<T>::at(size_t pos) const
+{
+    range_check(pos);
     return std::span<const T>(  //
         m_vec.begin() + m_groups_begin.at(pos),
         m_vec.begin() + m_groups_begin.at(pos + 1));
 }
 
 template<typename T>
-const std::vector<T>& IndexGroupedVector<T>::get_vector() const
+std::span<T> IndexGroupedVector<T>::operator[](size_t pos)
+{
+    return std::span<T>(  //
+        m_vec.begin() + m_groups_begin[pos],
+        m_vec.begin() + m_groups_begin[pos + 1]);
+}
+
+template<typename T>
+const std::span<const T> IndexGroupedVector<T>::operator[](size_t pos) const
+{
+    return std::span<const T>(  //
+        m_vec.begin() + m_groups_begin[pos],
+        m_vec.begin() + m_groups_begin[pos + 1]);
+}
+
+template<typename T>
+size_t IndexGroupedVector<T>::size() const
+{
+    return m_groups_begin.size() - 1;
+}
+
+template<typename T>
+std::vector<T>& IndexGroupedVector<T>::data()
 {
     return m_vec;
 }
 
 template<typename T>
-const std::vector<size_t>& IndexGroupedVector<T>::get_groups_begin() const
+const std::vector<T>& IndexGroupedVector<T>::data() const
 {
-    return m_groups_begin;
-}
-
-template<typename T>
-size_t IndexGroupedVector<T>::get_num_groups() const
-{
-    return m_groups_begin.size() - 1;
+    return m_vec;
 }
 
 /* IndexGroupedVectorBuilder */

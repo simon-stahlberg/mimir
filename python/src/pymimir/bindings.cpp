@@ -131,6 +131,85 @@ PYBIND11_MAKE_OPAQUE(StateList);
 PYBIND11_MAKE_OPAQUE(GroundActionList);
 
 /**
+ * Common
+ */
+
+template<typename Span, typename holder_type = std::unique_ptr<Span>>
+py::class_<Span, holder_type> bind_const_span(py::handle m, const std::string& name)
+{
+    py::class_<Span, holder_type> cl(m, name.c_str());
+
+    using T = typename Span::value_type;
+    using SizeType = typename Span::size_type;
+    using DiffType = typename Span::difference_type;
+    using ItType = typename Span::iterator;
+
+    auto wrap_i = [](DiffType i, SizeType n)
+    {
+        if (i < 0)
+        {
+            i += n;
+        }
+        if (i < 0 || (SizeType) i >= n)
+        {
+            throw py::index_error();
+        }
+        return i;
+    };
+
+    cl.def(
+        "__getitem__",
+        [wrap_i](Span& v, DiffType i) -> const T&
+        {
+            i = wrap_i(i, v.size());
+            return v[(SizeType) i];
+        },
+        py::return_value_policy::reference_internal  // ref + keepalive
+    );
+
+    cl.def(
+        "__iter__",
+        [](Span& v) { return py::make_iterator<py::return_value_policy::copy, ItType, ItType, T>(v.begin(), v.end()); },
+        py::keep_alive<0, 1>() /* Essential: keep list alive while iterator exists */
+    );
+
+    cl.def("__len__", &Span::size);
+
+    return cl;
+}
+
+template<typename IndexGroupedVector, typename holder_type = std::unique_ptr<IndexGroupedVector>>
+py::class_<IndexGroupedVector, holder_type> bind_const_index_grouped_vector(py::handle m, const std::string& name)
+{
+    py::class_<IndexGroupedVector, holder_type> cl(m, name.c_str());
+
+    using T = typename IndexGroupedVector::ValueType;
+
+    /**
+     * Accessors
+     */
+
+    /* This requires std::vector<T> to be an opague type
+       because weak references to python lists are not allowed.
+    */
+    cl.def(
+        "get_group",
+        [](const IndexGroupedVector& self, size_t pos) { return std::span<const T>(self.get_group(pos)); },
+        py::keep_alive<0, 1>());  // Keep vector alive while iterator is used
+
+    cl.def(
+        "get_vector",
+        [](const IndexGroupedVector& self) { return std::vector<T>(self.get_vector()); },
+        py::keep_alive<0, 1>());
+
+    cl.def("get_groups_begin", [](const IndexGroupedVector& self) { return std::vector<size_t>(self.get_groups_begin()); });
+
+    cl.def("get_num_groups", [](const IndexGroupedVector& self) { return self.get_num_groups(); });
+
+    return cl;
+}
+
+/**
  * Bindings
  */
 void init_pymimir(py::module_& m)
@@ -671,15 +750,15 @@ void init_pymimir(py::module_& m)
             [](const DomainImpl& self) { return ActionList(self.get_actions()); },
             py::keep_alive<0, 1>())
         .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference_internal)
-        .def(  // TODO: add opague type
+        .def(
             "get_name_to_static_predicate",
             [](const DomainImpl& self) { return ToPredicateMap<std::string, Static>(self.get_name_to_predicate<Static>()); },
             py::keep_alive<0, 1>())
-        .def(  // TODO: add opague type
+        .def(
             "get_name_to_fluent_predicate",
             [](const DomainImpl& self) { return ToPredicateMap<std::string, Fluent>(self.get_name_to_predicate<Fluent>()); },
             py::keep_alive<0, 1>())
-        .def(  // TODO: add opague type
+        .def(
             "get_name_to_derived_predicate",
             [](const DomainImpl& self) { return ToPredicateMap<std::string, Derived>(self.get_name_to_predicate<Derived>()); },
             py::keep_alive<0, 1>());
@@ -807,6 +886,7 @@ void init_pymimir(py::module_& m)
         .def("get_id", &State::get_id);
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<StateList>(m, "StateList");
+    bind_const_span<std::span<const State>>(m, "StateConstSpan");
 
     /* Action */
     py::class_<GroundAction>(m, "GroundAction")  //
@@ -848,7 +928,7 @@ void init_pymimir(py::module_& m)
              });
     static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundActionList>(m, "GroundActionList");
-
+    bind_const_span<std::span<const GroundAction>>(m, "GroundActionConstSpan");
     /* AAGs */
 
     py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
