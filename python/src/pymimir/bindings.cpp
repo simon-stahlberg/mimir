@@ -163,7 +163,7 @@ py::class_<Span, holder_type> bind_const_span(py::handle m, const std::string& n
 
     cl.def(
         "__getitem__",
-        [wrap_i](Span& v, DiffType i) -> const T&
+        [wrap_i](const Span& v, DiffType i) -> const T&
         {
             i = wrap_i(i, v.size());
             return v[(SizeType) i];
@@ -173,8 +173,8 @@ py::class_<Span, holder_type> bind_const_span(py::handle m, const std::string& n
 
     cl.def(
         "__iter__",
-        [](Span& v) { return py::make_iterator<py::return_value_policy::copy, ItType, ItType, T>(v.begin(), v.end()); },
-        py::keep_alive<0, 1>() /* Essential: keep list alive while iterator exists */
+        [](const Span& v) { return py::make_iterator<py::return_value_policy::reference_internal, ItType, ItType, const T&>(v.begin(), v.end()); },
+        py::keep_alive<0, 1>() /* Essential: keep span alive while iterator exists */
     );
 
     cl.def("__len__", &Span::size);
@@ -217,18 +217,25 @@ py::class_<IndexGroupedVector, holder_type> bind_const_index_grouped_vector(py::
     */
     cl.def(
         "__getitem__",
-        [wrap_i](IndexGroupedVector& v, DiffType i) -> T
+        [wrap_i](const IndexGroupedVector& v, DiffType i) -> T
         {
             i = wrap_i(i, v.size());
             return v[(SizeType) i];
         },
-        py::return_value_policy::reference_internal  // ref + keepalive
-    );
+        py::return_value_policy::copy,
+        py::keep_alive<0, 1>()); /* Essential keep span alive while copy of element exists */
 
     cl.def(
         "__iter__",
-        [](IndexGroupedVector& v) { return py::make_iterator<py::return_value_policy::reference_internal, ItType, ItType, T&>(v.begin(), v.end()); },
-        py::keep_alive<0, 1>() /* Essential: keep list alive while iterator exists */
+        [](const IndexGroupedVector& v)
+        {
+            return py::make_iterator<py::return_value_policy::copy, ItType, ItType, T>(
+                v.begin(),
+                v.end(),
+                py::return_value_policy::copy,
+                py::keep_alive<0, 1>()); /* Essential: keep iterator alive while copy of element exists. */
+        },
+        py::keep_alive<0, 1>() /* Essential: keep index grouped vector alive while iterator exists */
     );
 
     cl.def("__len__", &IndexGroupedVector::size);
@@ -1752,6 +1759,8 @@ void init_pymimir(py::module_& m)
         .def("get_identifier", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
         .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference_internal);
+    bind_const_span<std::span<const TupleGraphVertex>>(m, "ConstTupleGraphVertexSpan");
+    bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "ConstTupleGraphVertexIndexGroupedVector");
 
     // TupleGraph
     py::class_<TupleGraph>(m, "TupleGraph")  //
