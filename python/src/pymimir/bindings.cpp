@@ -134,6 +134,10 @@ PYBIND11_MAKE_OPAQUE(GroundActionList);
  * Common
  */
 
+/// @brief Binds a std::span<T> as an unmodifiable python object.
+/// Modifiable std::span are more complicated.
+/// Hence, we use std::span exclusively for unmodifiable data,
+/// and std::vector for modifiable data.
 template<typename Span, typename holder_type = std::unique_ptr<Span>>
 py::class_<Span, holder_type> bind_const_span(py::handle m, const std::string& name)
 {
@@ -178,12 +182,31 @@ py::class_<Span, holder_type> bind_const_span(py::handle m, const std::string& n
     return cl;
 }
 
+/// @brief Binds a IndexGroupedVector as an unmodifiable python object.
+/// Modifiable IndexGroupedVector are more complicated because they use std::span.
+/// See section regarding bind_const_span.
 template<typename IndexGroupedVector, typename holder_type = std::unique_ptr<IndexGroupedVector>>
 py::class_<IndexGroupedVector, holder_type> bind_const_index_grouped_vector(py::handle m, const std::string& name)
 {
     py::class_<IndexGroupedVector, holder_type> cl(m, name.c_str());
 
-    using T = typename IndexGroupedVector::ValueType;
+    using T = typename IndexGroupedVector::value_type;
+    using SizeType = typename IndexGroupedVector::size_type;
+    using DiffType = typename IndexGroupedVector::difference_type;
+    using ItType = typename IndexGroupedVector::const_iterator;
+
+    auto wrap_i = [](DiffType i, SizeType n)
+    {
+        if (i < 0)
+        {
+            i += n;
+        }
+        if (i < 0 || (SizeType) i >= n)
+        {
+            throw py::index_error();
+        }
+        return i;
+    };
 
     /**
      * Accessors
@@ -193,18 +216,22 @@ py::class_<IndexGroupedVector, holder_type> bind_const_index_grouped_vector(py::
        because weak references to python lists are not allowed.
     */
     cl.def(
-        "get_group",
-        [](const IndexGroupedVector& self, size_t pos) { return std::span<const T>(self.get_group(pos)); },
-        py::keep_alive<0, 1>());  // Keep vector alive while iterator is used
+        "__getitem__",
+        [wrap_i](IndexGroupedVector& v, DiffType i) -> T
+        {
+            i = wrap_i(i, v.size());
+            return v[(SizeType) i];
+        },
+        py::return_value_policy::reference_internal  // ref + keepalive
+    );
 
     cl.def(
-        "get_vector",
-        [](const IndexGroupedVector& self) { return std::vector<T>(self.get_vector()); },
-        py::keep_alive<0, 1>());
+        "__iter__",
+        [](IndexGroupedVector& v) { return py::make_iterator<py::return_value_policy::reference_internal, ItType, ItType, T&>(v.begin(), v.end()); },
+        py::keep_alive<0, 1>() /* Essential: keep list alive while iterator exists */
+    );
 
-    cl.def("get_groups_begin", [](const IndexGroupedVector& self) { return std::vector<size_t>(self.get_groups_begin()); });
-
-    cl.def("get_num_groups", [](const IndexGroupedVector& self) { return self.get_num_groups(); });
+    cl.def("__len__", &IndexGroupedVector::size);
 
     return cl;
 }

@@ -81,15 +81,17 @@ template<typename T>
 class IndexGroupedVector
 {
 private:
-    std::vector<T> m_vec;
+    std::vector<std::remove_const_t<T>> m_vec;
     std::vector<size_t> m_groups_begin;
 
-    IndexGroupedVector(std::vector<T> vec, std::vector<size_t> groups_begin);
+    IndexGroupedVector(std::vector<std::remove_const_t<T>> vec, std::vector<size_t> groups_begin);
 
     void range_check(size_t pos) const;
 
 public:
-    using ValueType = T;
+    using value_type = std::span<T>;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
 
     IndexGroupedVector();
 
@@ -105,7 +107,7 @@ public:
     template<typename GroupBoundaryChecker, typename GroupIndexRetriever>
         requires IsGroupBoundaryChecker<GroupBoundaryChecker, T> && IsGroupIndexRetriever<GroupIndexRetriever, T>
     static IndexGroupedVector<T>
-    create(std::vector<T> vec, size_t num_groups, GroupBoundaryChecker group_boundary_checker, GroupIndexRetriever group_index_retriever);
+    create(std::vector<std::remove_const_t<T>> vec, GroupBoundaryChecker group_boundary_checker, GroupIndexRetriever group_index_retriever, size_t num_groups);
 
     /// @brief This implementation adds a new group whenever the boundary checker returns true.
     /// @tparam GroupBoundaryChecker
@@ -114,7 +116,37 @@ public:
     /// @return
     template<typename GroupBoundaryChecker>
         requires IsGroupBoundaryChecker<GroupBoundaryChecker, T>
-    static IndexGroupedVector<T> create(std::vector<T> vec, GroupBoundaryChecker group_boundary_checker);
+    static IndexGroupedVector<T> create(std::vector<std::remove_const_t<T>> vec, GroupBoundaryChecker group_boundary_checker);
+
+    /**
+     * Iterators
+     */
+
+    class const_iterator
+    {
+    private:
+        size_t m_pos;
+        const IndexGroupedVector<T>* m_parent;
+
+    public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = typename std::span<const T>;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(const IndexGroupedVector<T>& parent, bool begin);
+
+        value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin() const;
+    const_iterator end() const;
 
     /**
      * Accessors
@@ -135,8 +167,8 @@ public:
 
     /// @brief Get the underlying data.
     /// @return
-    std::vector<T>& data();
-    const std::vector<T>& data() const;
+    std::vector<std::remove_const_t<T>>& data();
+    const std::vector<std::remove_const_t<T>>& data() const;
 
     /**
      * Capacity
@@ -151,7 +183,7 @@ template<typename T>
 class IndexGroupedVectorBuilder
 {
 private:
-    std::vector<T> m_vec;
+    std::vector<std::remove_const_t<T>> m_vec;
     std::vector<size_t> m_groups_begin;
 
 public:
@@ -181,7 +213,9 @@ static void create_range_check(size_t cur_num_groups, size_t num_groups)
 /* IndexGroupedVector */
 
 template<typename T>
-IndexGroupedVector<T>::IndexGroupedVector(std::vector<T> vec, std::vector<size_t> groups_begin) : m_vec(std::move(vec)), m_groups_begin(std::move(groups_begin))
+IndexGroupedVector<T>::IndexGroupedVector(std::vector<std::remove_const_t<T>> vec, std::vector<size_t> groups_begin) :
+    m_vec(std::move(vec)),
+    m_groups_begin(std::move(groups_begin))
 {
 }
 
@@ -203,8 +237,10 @@ IndexGroupedVector<T>::IndexGroupedVector() : m_vec(), m_groups_begin({ 0 })
 template<typename T>
 template<typename GroupBoundaryChecker, typename GroupIndexRetriever>
     requires IsGroupBoundaryChecker<GroupBoundaryChecker, T> && IsGroupIndexRetriever<GroupIndexRetriever, T>
-inline IndexGroupedVector<T>
-IndexGroupedVector<T>::create(std::vector<T> vec, size_t num_groups, GroupBoundaryChecker group_boundary_checker, GroupIndexRetriever group_index_retriever)
+inline IndexGroupedVector<T> IndexGroupedVector<T>::create(std::vector<std::remove_const_t<T>> vec,
+                                                           GroupBoundaryChecker group_boundary_checker,
+                                                           GroupIndexRetriever group_index_retriever,
+                                                           size_t num_groups)
 {
     auto groups_begin = std::vector<size_t> {};
 
@@ -247,7 +283,7 @@ IndexGroupedVector<T>::create(std::vector<T> vec, size_t num_groups, GroupBounda
 template<typename T>
 template<typename GroupBoundaryChecker>
     requires IsGroupBoundaryChecker<GroupBoundaryChecker, T>
-inline IndexGroupedVector<T> IndexGroupedVector<T>::create(std::vector<T> vec, GroupBoundaryChecker group_boundary_checker)
+inline IndexGroupedVector<T> IndexGroupedVector<T>::create(std::vector<std::remove_const_t<T>> vec, GroupBoundaryChecker group_boundary_checker)
 {
     auto groups_begin = std::vector<size_t> {};
 
@@ -273,37 +309,84 @@ inline IndexGroupedVector<T> IndexGroupedVector<T>::create(std::vector<T> vec, G
 }
 
 template<typename T>
+IndexGroupedVector<T>::const_iterator::const_iterator() : m_pos(-1), m_parent(nullptr)
+{
+}
+
+template<typename T>
+IndexGroupedVector<T>::const_iterator::const_iterator(const IndexGroupedVector<T>& parent, bool begin) : m_pos(begin ? 0 : parent.size()), m_parent(&parent)
+{
+}
+
+template<typename T>
+IndexGroupedVector<T>::const_iterator::value_type IndexGroupedVector<T>::const_iterator::operator*() const
+{
+    return m_parent->at(m_pos);
+}
+
+template<typename T>
+IndexGroupedVector<T>::const_iterator& IndexGroupedVector<T>::const_iterator::operator++()
+{
+    ++m_pos;
+    return *this;
+}
+
+template<typename T>
+IndexGroupedVector<T>::const_iterator IndexGroupedVector<T>::const_iterator::operator++(int)
+{
+    const_iterator tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+template<typename T>
+bool IndexGroupedVector<T>::const_iterator::operator==(const const_iterator& other) const
+{
+    return (m_pos == other.m_pos);
+}
+
+template<typename T>
+bool IndexGroupedVector<T>::const_iterator::operator!=(const const_iterator& other) const
+{
+    return !(*this == other);
+}
+
+template<typename T>
+IndexGroupedVector<T>::const_iterator IndexGroupedVector<T>::begin() const
+{
+    return const_iterator(*this, true);
+}
+
+template<typename T>
+IndexGroupedVector<T>::const_iterator IndexGroupedVector<T>::end() const
+{
+    return const_iterator(*this, false);
+}
+
+template<typename T>
 std::span<T> IndexGroupedVector<T>::at(size_t pos)
 {
     range_check(pos);
-    return std::span<T>(  //
-        m_vec.begin() + m_groups_begin.at(pos),
-        m_vec.begin() + m_groups_begin.at(pos + 1));
+    return { m_vec.begin() + m_groups_begin.at(pos), m_vec.begin() + m_groups_begin.at(pos + 1) };
 }
 
 template<typename T>
 const std::span<const T> IndexGroupedVector<T>::at(size_t pos) const
 {
     range_check(pos);
-    return std::span<const T>(  //
-        m_vec.begin() + m_groups_begin.at(pos),
-        m_vec.begin() + m_groups_begin.at(pos + 1));
+    return { m_vec.begin() + m_groups_begin.at(pos), m_vec.begin() + m_groups_begin.at(pos + 1) };
 }
 
 template<typename T>
 std::span<T> IndexGroupedVector<T>::operator[](size_t pos)
 {
-    return std::span<T>(  //
-        m_vec.begin() + m_groups_begin[pos],
-        m_vec.begin() + m_groups_begin[pos + 1]);
+    return { m_vec.begin() + m_groups_begin[pos], m_vec.begin() + m_groups_begin[pos + 1] };
 }
 
 template<typename T>
 const std::span<const T> IndexGroupedVector<T>::operator[](size_t pos) const
 {
-    return std::span<const T>(  //
-        m_vec.begin() + m_groups_begin[pos],
-        m_vec.begin() + m_groups_begin[pos + 1]);
+    return { m_vec.begin() + m_groups_begin[pos], m_vec.begin() + m_groups_begin[pos + 1] };
 }
 
 template<typename T>
@@ -313,13 +396,13 @@ size_t IndexGroupedVector<T>::size() const
 }
 
 template<typename T>
-std::vector<T>& IndexGroupedVector<T>::data()
+std::vector<std::remove_const_t<T>>& IndexGroupedVector<T>::data()
 {
     return m_vec;
 }
 
 template<typename T>
-const std::vector<T>& IndexGroupedVector<T>::data() const
+const std::vector<std::remove_const_t<T>>& IndexGroupedVector<T>::data() const
 {
     return m_vec;
 }
@@ -358,7 +441,6 @@ IndexGroupedVector<T> IndexGroupedVectorBuilder<T>::get_result()
 
     return IndexGroupedVector<T>(m_vec, m_groups_begin);
 }
-
 }
 
 #endif

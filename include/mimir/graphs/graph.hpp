@@ -109,7 +109,7 @@ public:
 private:
     VertexList m_vertices;
 
-    IndexGroupedVector<EdgeType> m_edges_grouped_by_source;
+    IndexGroupedVector<const EdgeType> m_edges_grouped_by_source;
 
 public:
     explicit ForwardGraph(const G& graph);
@@ -148,8 +148,8 @@ public:
 private:
     VertexList m_vertices;
 
-    IndexGroupedVector<EdgeType> m_edges_grouped_by_source;
-    IndexGroupedVector<EdgeType> m_edges_grouped_by_target;
+    IndexGroupedVector<const EdgeType> m_edges_grouped_by_source;
+    IndexGroupedVector<const EdgeType> m_edges_grouped_by_target;
 
 public:
     explicit BidirectionalGraph(const G& graph);
@@ -280,7 +280,7 @@ size_t Graph<Vertex, Edge>::get_num_edges() const
 template<IsGraph G>
 ForwardGraph<G>::ForwardGraph(const G& graph) :
     m_vertices(graph.get_vertices()),
-    m_edges_grouped_by_source(IndexGroupedVector<typename G::EdgeType>::create(
+    m_edges_grouped_by_source(IndexGroupedVector<const typename G::EdgeType>::create(
         graph.get_edges(),
         graph.get_num_vertices(),
         [](const auto& l, const auto& r) { return l.get_source() < r.get_source(); },
@@ -345,12 +345,12 @@ size_t ForwardGraph<G>::get_num_edges() const
 template<IsGraph G>
 BidirectionalGraph<G>::BidirectionalGraph(const G& graph) :
     m_vertices(graph.get_vertices()),
-    m_edges_grouped_by_source(IndexGroupedVector<typename G::EdgeType>::create(
+    m_edges_grouped_by_source(IndexGroupedVector<const typename G::EdgeType>::create(
         graph.get_edges(),
         graph.get_num_vertices(),
         [](const auto& l, const auto& r) { return l.get_source() < r.get_source(); },
         [](const auto& e) { return e.get_source(); })),
-    m_edges_grouped_by_target(IndexGroupedVector<typename G::EdgeType>::create(
+    m_edges_grouped_by_target(IndexGroupedVector<const typename G::EdgeType>::create(
         graph.get_edges(),
         graph.get_num_vertices(),
         [](const auto& l, const auto& r) { return l.get_target() < r.get_target(); },

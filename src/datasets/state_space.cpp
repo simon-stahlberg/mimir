@@ -40,7 +40,7 @@ StateSpace::StateSpace(Problem problem,
                        StateIndex initial_state,
                        StateIndexSet goal_states,
                        StateIndexSet deadend_states,
-                       IndexGroupedVector<Transition> transitions,
+                       IndexGroupedVector<const Transition> transitions,
                        std::vector<double> goal_distances) :
     m_problem(problem),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -176,10 +176,11 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
                    { return Transition(transition_index++, transition.get_source_state(), transition.get_target_state(), transition.get_creating_action()); });
 
     /* Group transitions by source. */
-    auto transitions_group_boundary_checker = [](const Transition& l, const Transition& r) { return l.get_source_state() != r.get_source_state(); };
-    auto transitions_group_index_retriever = [](const Transition& e) { return static_cast<size_t>(e.get_source_state()); };
-    auto grouped_transitions =
-        IndexGroupedVector<Transition>::create(std::move(transitions), states.size(), transitions_group_boundary_checker, transitions_group_index_retriever);
+    auto grouped_transitions = IndexGroupedVector<const Transition>::create(
+        std::move(transitions),
+        [](const auto& l, const auto& r) { return l.get_source_state() != r.get_source_state(); },
+        [](const auto& e) { return e.get_source_state(); },
+        states.size());
 
     return StateSpace(problem,
                       use_unit_cost_one,

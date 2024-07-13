@@ -18,7 +18,7 @@ TEST(MimirTests, CommonIndexGroupedVectorTest)
         return l.first != r.first;
     };
     auto group_index_retriever = [](const ElementType& e) { return static_cast<size_t>(e.first); };
-    auto index_grouped_vector = IndexGroupedVector<ElementType>::create(vec, 4, group_boundary_checker, group_index_retriever);
+    auto index_grouped_vector = IndexGroupedVector<ElementType>::create(vec, group_boundary_checker, group_index_retriever, 4);
 
     EXPECT_EQ(index_grouped_vector.size(), 4);
     EXPECT_EQ(index_grouped_vector[0].size(), 2);

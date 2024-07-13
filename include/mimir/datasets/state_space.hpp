@@ -63,7 +63,7 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Transitions */
-    IndexGroupedVector<Transition> m_transitions;
+    IndexGroupedVector<const Transition> m_transitions;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -85,7 +85,7 @@ private:
                StateIndex initial_state,
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
-               IndexGroupedVector<Transition> transitions,
+               IndexGroupedVector<const Transition> transitions,
                std::vector<double> goal_distances);
 
 public:

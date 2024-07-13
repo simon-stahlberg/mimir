@@ -84,7 +84,7 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          StateIndex initial_state,
                                          StateIndexSet goal_states,
                                          StateIndexSet deadend_states,
-                                         IndexGroupedVector<AbstractTransition> transitions,
+                                         IndexGroupedVector<const AbstractTransition> transitions,
                                          std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                                          std::vector<double> goal_distances) :
     m_problem(problem),
@@ -333,35 +333,32 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                    [](const auto& transition) { return transition.get_creating_action(); });
 
     /* Group concrete transitions by source and target */
-    auto transitions_group_boundary_checker = [](const Transition& l, const Transition& r)
-    { return ((l.get_source_state() != r.get_source_state()) || (l.get_target_state() != r.get_target_state())); };
-    auto grouped_transitions = IndexGroupedVector<Transition>::create(std::move(transitions), transitions_group_boundary_checker);
+    auto grouped_transitions = IndexGroupedVector<const Transition>::create(
+        std::move(transitions),
+        [](const auto& l, const auto& r) { return ((l.get_source_state() != r.get_source_state()) || (l.get_target_state() != r.get_target_state())); });
 
     /* Create abstract transitions from groups. */
     auto abstract_transitions = AbstractTransitionList {};
     abstract_transitions.reserve(grouped_transitions.size());
     auto accumulated_transitions = 0;
-    for (size_t group_index = 0; group_index < grouped_transitions.size(); ++group_index)
+    for (const auto& group : grouped_transitions)
     {
-        const auto group = grouped_transitions.at(group_index);
         assert(!group.empty());
 
         abstract_transitions.emplace_back(abstract_transitions.size(),
                                           group.front().get_source_state(),
                                           group.front().get_target_state(),
-                                          std::span<GroundAction>((*ground_actions_by_source_and_target).begin() + accumulated_transitions,
-                                                                  (*ground_actions_by_source_and_target).begin() + accumulated_transitions + group.size()));
+                                          std::span<const GroundAction>(ground_actions_by_source_and_target->begin() + accumulated_transitions,
+                                                                        ground_actions_by_source_and_target->begin() + accumulated_transitions + group.size()));
         accumulated_transitions += group.size();
     }
 
     /* Group abstract transitions by source. */
-    auto abstract_transitions_group_boundary_checker = [](const AbstractTransition& l, const AbstractTransition& r)
-    { return l.get_source_state() != r.get_source_state(); };
-    auto abstract_transitions_index_retriever = [](const AbstractTransition& e) { return static_cast<size_t>(e.get_source_state()); };
-    auto grouped_abstract_transitions = IndexGroupedVector<AbstractTransition>::create(std::move(abstract_transitions),
-                                                                                       abstract_states.size(),
-                                                                                       abstract_transitions_group_boundary_checker,
-                                                                                       abstract_transitions_index_retriever);
+    auto grouped_abstract_transitions = IndexGroupedVector<const AbstractTransition>::create(
+        std::move(abstract_transitions),
+        [](const auto& l, const auto& r) { return l.get_source_state() != r.get_source_state(); },
+        [](const auto& e) { return e.get_source_state(); },
+        abstract_states.size());
 
     return FaithfulAbstraction(problem,
                                mark_true_goal_literals,
