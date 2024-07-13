@@ -20,6 +20,8 @@
 namespace mimir
 {
 
+using TupleVertexIndexSet = std::unordered_set<TupleVertexIndex>;
+
 /**
  * TupleGraphVertex
  */
@@ -61,68 +63,36 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
 std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms,
                                                                          const GroundAtomList<Derived>& derived_atoms)
 {
-    throw std::runtime_error("Outdated. Backward edges got removed. Must be updated");
-
-    // Construct the explict tuple representation
-    auto atom_indices = AtomIndexList {};
+    // Find all states that satisfy the given set of atoms, then call more general function.
+    auto states = StateList {};
+    auto fluent_atom_bitset = FlatBitsetBuilder<Fluent>();
+    auto derived_atom_bitset = FlatBitsetBuilder<Derived>();
     for (const auto& atom : fluent_atoms)
     {
-        const auto atom_index = atom->get_identifier();
-        const auto remapped_atom_index = m_atom_index_mapper->get_fluent_remap().at(atom_index);
-        assert(remapped_atom_index != -1);
-
-        atom_indices.push_back(remapped_atom_index);
+        fluent_atom_bitset.set(atom->get_identifier());
     }
     for (const auto& atom : derived_atoms)
     {
-        const auto atom_index = atom->get_identifier();
-        const auto remapped_atom_index = m_atom_index_mapper->get_derived_remap().at(atom_index);
-        assert(remapped_atom_index != -1);
-
-        atom_indices.push_back(remapped_atom_index);
+        derived_atom_bitset.set(atom->get_identifier());
     }
-    std::sort(atom_indices.begin(), atom_indices.end());
-
-    if (static_cast<int>(atom_indices.size()) > m_tuple_index_mapper->get_arity())
+    for (const auto group : m_states_grouped_by_distance)
     {
-        // Size of tuple exceeds width, hence, it cannot be in the tuple graph.
-        return std::nullopt;
-    }
-    // Construct the implicit tuple representation by adding placeholders and using the perfect hash function.
-    atom_indices.resize(m_tuple_index_mapper->get_arity(), m_tuple_index_mapper->get_num_atoms());
-    assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
-    const auto tuple_index = m_tuple_index_mapper->to_tuple_index(atom_indices);
-
-    for (const auto& vertex_group : m_vertices_grouped_by_distance)
-    {
-        for (const auto& vertex : vertex_group)
+        for (const auto& state : group)
         {
-            if (vertex.get_tuple_index() == tuple_index)
+            if (state.get_atoms<Fluent>().is_superseteq(fluent_atom_bitset) && state.get_atoms<Derived>().is_superseteq(derived_atom_bitset))
             {
-                // Backtrack admissible chain until the root and return an admissible chain that proves the width.
-                auto cur_vertex_index = vertex.get_index();
-                auto admissible_chain = TupleVertexIndexList { cur_vertex_index };
-                while (m_digraph.get_sources(cur_vertex_index).begin() != m_digraph.get_sources(cur_vertex_index).end())
-                {
-                    cur_vertex_index = (*m_digraph.get_sources(cur_vertex_index).begin()).get_index();
-                    admissible_chain.push_back(cur_vertex_index);
-                }
-                std::reverse(admissible_chain.begin(), admissible_chain.end());
-                return admissible_chain;
+                states.push_back(state);
             }
         }
     }
-    // Tuple was not found in the tuple graph.
-    return std::nullopt;
+    return compute_admissible_chain(states);
 }
 
 std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const StateList& states)
 {
-    throw std::runtime_error("Outdated. Backward edges got removed. Must be updated");
-
     if (states.empty())
     {
-        // No tuple can optimally goal imply an empty set of states
+        // No tuple can optimally goal imply an empty set of states.
         return std::nullopt;
     }
 
@@ -201,10 +171,104 @@ const IndexGroupedVector<const State>& TupleGraph::get_states_grouped_by_distanc
  * TupleGraphFactory
  */
 
-TupleGraphFactory::TupleGraphArityZeroComputation::TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
-                                                                                  std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
-                                                                                  std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                                                                  bool prune_dominated_tuples) :
+class TupleGraphArityZeroComputation
+{
+private:
+    // Input
+    std::shared_ptr<StateSpace> m_state_space;
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+    std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+    bool m_prune_dominated_tuples;
+
+    // Result structures to create tuple graph
+    Digraph m_digraph;
+    IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
+    IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
+
+public:
+    TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
+                                   std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                   std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                   bool prune_dominated_tuples);
+
+    /// @brief Compute the root state layer.
+    void compute_root_state_layer(State root_state);
+
+    /// @brief Compute the layer at distance 1, assumes that the root state layer exists.
+    void compute_first_layer(State root_state);
+
+    /// @brief Return a reference to the tuple graph.
+    TupleGraph get_result();
+};
+
+// Bookkeeping for memory reuse when building tuple graph of width greater 0
+class TupleGraphArityKComputation
+{
+private:
+    // Input
+    std::shared_ptr<StateSpace> m_state_space;
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+    std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+    bool m_prune_dominated_tuples;
+
+    // Result structures to create tuple graph
+    Digraph m_digraph;
+    IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
+    IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
+
+    // Common book-keeping
+    StateList prev_states;
+    StateList curr_states;
+    TupleGraphVertexList prev_vertices;
+    TupleGraphVertexList curr_vertices;
+    StateSet visited_states;
+    DynamicNoveltyTable novelty_table;
+
+    /**
+     * Four step procedure to compute the next layer in the graph.
+     */
+
+    bool compute_next_state_layer();
+
+    TupleIndexSet novel_tuple_indices_set;
+    TupleIndexList novel_tuple_indices;
+    std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_states;
+    std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
+
+    void compute_next_novel_tuple_indices();
+
+    std::unordered_map<TupleIndex, StateSet> cur_novel_tuple_index_to_extended_state;
+    std::unordered_map<TupleIndex, TupleVertexIndexSet> cur_extended_novel_tuple_index_to_prev_vertices;
+    TupleIndexSet cur_extended_novel_tuple_indices_set;
+    TupleIndexList cur_extended_novel_tuple_indices;
+
+    void extend_optimal_plans_from_prev_layer();
+
+    std::unordered_map<TupleIndex, TupleIndexSet> tuple_index_to_dominating_tuple_indices;
+
+    bool instantiate_next_layer();
+
+public:
+    TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
+                                std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                bool prune_dominated_tuples);
+
+    /// @brief Compute the root state layer.
+    void compute_root_state_layer(State root_state);
+
+    /// @brief Compute the next layer, assumes that the root state layer exists
+    /// and return true iff the layer is nonempty.
+    bool compute_next_layer();
+
+    /// @brief Return a reference to the tuple graph.
+    TupleGraph get_result();
+};
+
+TupleGraphArityZeroComputation::TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
+                                                               std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                                               std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                                               bool prune_dominated_tuples) :
     m_state_space(std::move(state_space)),
     m_atom_index_mapper(std::move(atom_index_mapper)),
     m_tuple_index_mapper(std::move(tuple_index_mapper)),
@@ -212,7 +276,7 @@ TupleGraphFactory::TupleGraphArityZeroComputation::TupleGraphArityZeroComputatio
 {
 }
 
-void TupleGraphFactory::TupleGraphArityZeroComputation::compute_root_state_layer(State root_state)
+void TupleGraphArityZeroComputation::compute_root_state_layer(State root_state)
 {
     m_vertices_grouped_by_distance.start_group();
     m_states_grouped_by_distance.start_group();
@@ -224,7 +288,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_root_state_layer
     m_states_grouped_by_distance.add_group_element(root_state);
 }
 
-void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer(State root_state)
+void TupleGraphArityZeroComputation::compute_first_layer(State root_state)
 {
     m_vertices_grouped_by_distance.start_group();
     m_states_grouped_by_distance.start_group();
@@ -247,7 +311,7 @@ void TupleGraphFactory::TupleGraphArityZeroComputation::compute_first_layer(Stat
     }
 }
 
-TupleGraph TupleGraphFactory::TupleGraphArityZeroComputation::get_result()
+TupleGraph TupleGraphArityZeroComputation::get_result()
 {
     return TupleGraph(m_state_space,
                       m_atom_index_mapper,
@@ -258,14 +322,21 @@ TupleGraph TupleGraphFactory::TupleGraphArityZeroComputation::get_result()
                       m_states_grouped_by_distance.get_result());
 }
 
-TupleGraphFactory::TupleGraphArityKComputation::TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
-                                                                            std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
-                                                                            std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                                                            bool prune_dominated_tuples) :
+TupleGraphArityKComputation::TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
+                                                         std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
+                                                         std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
+                                                         bool prune_dominated_tuples) :
     m_state_space(std::move(state_space)),
     m_atom_index_mapper(std::move(atom_index_mapper)),
     m_tuple_index_mapper(std::move(tuple_index_mapper)),
     m_prune_dominated_tuples(prune_dominated_tuples),
+    m_digraph(),
+    m_vertices_grouped_by_distance(),
+    m_states_grouped_by_distance(),
+    prev_states(),
+    curr_states(),
+    prev_vertices(),
+    curr_vertices(),
     visited_states(),
     novelty_table(m_atom_index_mapper, m_tuple_index_mapper),
     novel_tuple_indices_set(),
@@ -280,7 +351,7 @@ TupleGraphFactory::TupleGraphArityKComputation::TupleGraphArityKComputation(std:
 {
 }
 
-void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer(State root_state)
+void TupleGraphArityKComputation::compute_root_state_layer(State root_state)
 {
     m_vertices_grouped_by_distance.start_group();
     m_states_grouped_by_distance.start_group();
@@ -306,12 +377,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_root_state_layer(St
     visited_states.insert(root_state);
 }
 
-bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
+bool TupleGraphArityKComputation::compute_next_state_layer()
 {
-    std::cout << "TupleGraphArityKComputation::compute_next_state_layer" << std::endl;
-    std::cout << "prev_states: " << prev_states.size() << std::endl;
-    std::cout << "curr_states: " << curr_states.size() << std::endl;
-
     bool is_empty = true;
     for (const auto& state : prev_states)
     {
@@ -335,11 +402,8 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_state_layer()
     return false;
 }
 
-void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_indices()
+void TupleGraphArityKComputation::compute_next_novel_tuple_indices()
 {
-    std::cout << "TupleGraphArityKComputation::compute_next_novel_tuple_indices" << std::endl;
-    std::cout << "prev_states: " << prev_states.size() << std::endl;
-    std::cout << "curr_states: " << curr_states.size() << std::endl;
     // Clear data structures
     novel_tuple_indices_set.clear();
     novel_tuple_indices.clear();
@@ -348,8 +412,6 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_in
 
     for (const auto& state : curr_states)
     {
-        std::cout << std::make_tuple(m_state_space->get_problem(), state, std::cref(*m_state_space->get_pddl_factories())) << std::endl;
-        // const auto state_index = m_state_space->get_state_index(state);
         novelty_table.compute_novel_tuple_indices(state, novel_tuple_indices);
         for (const auto& tuple_index : novel_tuple_indices)
         {
@@ -363,25 +425,25 @@ void TupleGraphFactory::TupleGraphArityKComputation::compute_next_novel_tuple_in
     novelty_table.insert_tuple_indices(novel_tuple_indices);
 }
 
-void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
+void TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
 {
-    std::cout << "extend_optimal_plans_from_prev_layer::compute_next_novel_tuple_indices" << std::endl;
-    std::cout << "prev_vertices: " << prev_vertices.size() << std::endl;
-    std::cout << "curr_vertices: " << curr_vertices.size() << std::endl;
-
     // Clear data structures
     cur_extended_novel_tuple_indices_set.clear();
     cur_extended_novel_tuple_indices.clear();
     cur_extended_novel_tuple_index_to_prev_vertices.clear();
 
+    // Part 2 of definition of width: Check whether all optimal plans for tuple t_{i-1}
+    // can be extended into an optimal plan for tuple t_i by means of a single action.
     for (const auto& prev_vertex : prev_vertices)
     {
         cur_novel_tuple_index_to_extended_state.clear();
 
-        // Compute extended plans
+        // Bookkeeping..
         for (const auto state : prev_vertex.get_states())
         {
             const auto state_index = m_state_space->get_state_index(state);
+
+            // "[...] by means of a single action".
             for (const auto& succ_state_index : m_state_space->get_target_states(state_index))
             {
                 const auto succ_state = m_state_space->get_states().at(succ_state_index);
@@ -396,7 +458,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
             }
         }
 
-        // Check whether all plans for tuple t_{i-1} were extended into optimal plan for tuple t_i.
+        // "Check whether all optimal plans for tuple t_{i-1}
+        // can be extended into an optimal plan for tuple t_i [...]""
         for (const auto& [cur_novel_tuple_index, extended_states] : cur_novel_tuple_index_to_extended_state)
         {
             bool all_optimal_plans_extended = (extended_states.size() == prev_vertex.get_states().size());
@@ -413,12 +476,8 @@ void TupleGraphFactory::TupleGraphArityKComputation::extend_optimal_plans_from_p
                                             cur_extended_novel_tuple_indices_set.end());
 }
 
-bool TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
+bool TupleGraphArityKComputation::instantiate_next_layer()
 {
-    std::cout << "TupleGraphArityKComputation::instantiate_next_layer" << std::endl;
-    std::cout << "prev_vertices: " << prev_vertices.size() << std::endl;
-    std::cout << "curr_vertices: " << curr_vertices.size() << std::endl;
-
     // Clear data structures
     tuple_index_to_dominating_tuple_indices.clear();
 
@@ -445,7 +504,7 @@ bool TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
 
                 if (states_1.size() == states_2.size())
                 {
-                    // Cannot be subset.
+                    // Cannot be strict subset.
                     continue;
                 }
 
@@ -468,8 +527,6 @@ bool TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
         }
     }
 
-    std::cout << "Extended tuples: " << cur_extended_novel_tuple_indices_set.size() << std::endl;
-
     if (cur_extended_novel_tuple_indices_set.size() == 0)
     {
         return true;
@@ -490,11 +547,12 @@ bool TupleGraphFactory::TupleGraphArityKComputation::instantiate_next_layer()
     return false;
 }
 
-bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
+bool TupleGraphArityKComputation::compute_next_layer()
 {
+    // Swap prev and curr data structures.
     std::swap(curr_states, prev_states);
-    curr_states.clear();
     std::swap(curr_vertices, prev_vertices);
+    curr_states.clear();
     curr_vertices.clear();
 
     {
@@ -544,7 +602,7 @@ bool TupleGraphFactory::TupleGraphArityKComputation::compute_next_layer()
     return true;
 }
 
-TupleGraph TupleGraphFactory::TupleGraphArityKComputation::get_result()
+TupleGraph TupleGraphArityKComputation::get_result()
 {
     return TupleGraph(m_state_space,
                       m_atom_index_mapper,
@@ -610,74 +668,71 @@ const std::shared_ptr<TupleIndexMapper>& TupleGraphFactory::get_tuple_index_mapp
 
 std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
-    /*
-        const auto problem = tuple_graph.get_state_space()->get_problem();
-        const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_factories();
-        auto combined_atom_indices = AtomIndexList {};
-        auto fluent_atom_indices = AtomIndexList {};
-        auto derived_atom_indices = AtomIndexList {};
+    const auto problem = tuple_graph.get_state_space()->get_problem();
+    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_factories();
+    auto combined_atom_indices = AtomIndexList {};
+    auto fluent_atom_indices = AtomIndexList {};
+    auto derived_atom_indices = AtomIndexList {};
 
-        out << "digraph {\n"
-            << "rankdir=\"LR\""
-            << "\n";
+    out << "digraph {\n"
+        << "rankdir=\"LR\""
+        << "\n";
 
-        // 3. Tuple nodes.
-        for (int node_index : tuple_graph.get_vertex_indices_by_distances().front())
+    // 3. Tuple nodes.
+    for (const auto& vertex : tuple_graph.get_vertices_grouped_by_distance().front())
+    {
+        out << "Dangling" << vertex.get_index() << " [ label = \"\", style = invis ]\n";
+    }
+    for (const auto group : tuple_graph.get_vertices_grouped_by_distance())
+    {
+        for (const auto& vertex : group)
         {
-            out << "Dangling" << node_index << " [ label = \"\", style = invis ]\n";
-        }
-        for (const auto& vertex_indices : tuple_graph.get_vertex_indices_by_distances())
-        {
-            for (int vertex_index : vertex_indices)
+            out << "t" << vertex.get_index() << "[";
+            out << "label=<";
+            out << "index=" << vertex.get_index() << "<BR/>";
+            out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
+
+            tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
+            tuple_graph.get_atom_index_mapper()->inverse_remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
+            const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
+            const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
+            out << "fluent_atoms=" << fluent_atoms << ", derived_atoms=" << derived_atoms << "<BR/>";
+            out << "states=[";
+            for (size_t i = 0; i < vertex.get_states().size(); ++i)
             {
-                const auto& vertex = tuple_graph.get_vertices().at(vertex_index);
-                out << "t" << vertex.get_index() << "[";
-                out << "label=<";
-                out << "index=" << vertex.get_index() << "<BR/>";
-                out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
-
-                tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
-                tuple_graph.get_atom_index_mapper()->inverse_remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
-                const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
-                const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
-                out << "fluent_atoms=" << fluent_atoms << ", derived_atoms=" << derived_atoms << "<BR/>";
-                out << "states=[";
-                for (size_t i = 0; i < vertex.get_states().size(); ++i)
+                const auto& state = vertex.get_states()[i];
+                if (i != 0)
                 {
-                    const auto& state = vertex.get_states()[i];
-                    if (i != 0)
-                    {
-                        out << "<BR/>";
-                    }
-                    out << std::make_tuple(problem, state, std::cref(pddl_factories));
+                    out << "<BR/>";
                 }
-                out << "]>]\n";
+                out << std::make_tuple(problem, state, std::cref(pddl_factories));
             }
+            out << "]>]\n";
         }
-        // 4. Group states with same distance together
-        // 5. Tuple edges
+    }
+    // 4. Group states with same distance together
+    // 5. Tuple edges
+    out << "{\n";
+    for (const auto& vertex : tuple_graph.get_vertices_grouped_by_distance().front())
+    {
+        out << "Dangling" << vertex.get_index() << "->t" << vertex.get_index() << "\n";
+    }
+    out << "}\n";
+    for (const auto group : tuple_graph.get_vertices_grouped_by_distance())
+    {
         out << "{\n";
-        for (const auto& vertex_index : tuple_graph.get_vertex_indices_by_distances().front())
+        for (const auto& vertex : group)
         {
-            const auto& vertex = tuple_graph.get_vertices().at(vertex_index);
-            out << "Dangling" << vertex.get_index() << "->t" << vertex.get_index() << "\n";
+            for (const auto& succ_vertex : tuple_graph.get_digraph().get_targets(vertex.get_index()))
+            {
+                out << "t" << vertex.get_index() << "->"
+                    << "t" << succ_vertex.get_index() << "\n";
+            }
         }
         out << "}\n";
-        for (const auto& vertex_indices : tuple_graph.get_vertex_indices_by_distances())
-        {
-            out << "{\n";
-            for (const auto& vertex_index : vertex_indices)
-            {
-                for (const auto& succ_vertex : tuple_graph.get_digraph().get_targets(vertex_index))
-                {
-                    out << "t" << vertex_index << "->"
-                        << "t" << succ_vertex.get_index() << "\n";
-                }
-            }
-            out << "}\n";
-        }
-        out << "}\n";  // end digraph
-    */
+    }
+    out << "}\n";  // end digraph
+
     return out;
 }
 }

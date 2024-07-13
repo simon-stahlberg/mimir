@@ -116,9 +116,9 @@ PYBIND11_MAKE_OPAQUE(LiteralList<Fluent>);
 PYBIND11_MAKE_OPAQUE(LiteralList<Derived>);
 PYBIND11_MAKE_OPAQUE(NumericFluentList);
 PYBIND11_MAKE_OPAQUE(ObjectList);
-PYBIND11_MAKE_OPAQUE(Predicate<Static>);
-PYBIND11_MAKE_OPAQUE(Predicate<Fluent>);
-PYBIND11_MAKE_OPAQUE(Predicate<Derived>);
+PYBIND11_MAKE_OPAQUE(PredicateList<Static>);
+PYBIND11_MAKE_OPAQUE(PredicateList<Fluent>);
+PYBIND11_MAKE_OPAQUE(PredicateList<Derived>);
 PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Static>);
 PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Fluent>);
 PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Derived>);
@@ -920,8 +920,8 @@ void init_pymimir(py::module_& m)
         .def("get_id", &State::get_id);
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<StateList>(m, "StateList");
-    bind_const_span<std::span<const State>>(m, "ConstStateSpan");
-    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "ConstStateIndexGroupedVector");
+    bind_const_span<std::span<const State>>(m, "StateSpan");
+    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "StateIndexGroupedVector");
 
     /* Action */
     py::class_<GroundAction>(m, "GroundAction")  //
@@ -963,7 +963,7 @@ void init_pymimir(py::module_& m)
              });
     static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundActionList>(m, "GroundActionList");
-    bind_const_span<std::span<const GroundAction>>(m, "GroundActionConstSpan");
+    bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
     /* AAGs */
 
     py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
@@ -1757,11 +1757,14 @@ void init_pymimir(py::module_& m)
 
     // TupleGraphVertex
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
-        .def("get_identifier", &TupleGraphVertex::get_index)
+        .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", &TupleGraphVertex::get_states, py::return_value_policy::reference_internal);
-    bind_const_span<std::span<const TupleGraphVertex>>(m, "ConstTupleGraphVertexSpan");
-    bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "ConstTupleGraphVertexIndexGroupedVector");
+        .def(
+            "get_states",
+            [](const TupleGraphVertex& self) { return StateList(self.get_states()); },
+            py::keep_alive<0, 1>());
+    bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
+    bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
     // TupleGraph
     py::class_<TupleGraph>(m, "TupleGraph")  //
@@ -1778,7 +1781,7 @@ void init_pymimir(py::module_& m)
         .def("get_state_space", &TupleGraph::get_state_space)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
         .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
-        .def("get_root_state", &TupleGraph::get_root_state, py::return_value_policy::reference_internal)
+        .def("get_root_state", &TupleGraph::get_root_state, py::keep_alive<0, 1>())
         .def("get_vertices_grouped_by_distance", &TupleGraph::get_vertices_grouped_by_distance, py::return_value_policy::reference_internal)
         .def("get_digraph", &TupleGraph::get_digraph, py::return_value_policy::reference_internal)
         .def("get_states_grouped_by_distance", &TupleGraph::get_states_grouped_by_distance, py::return_value_policy::reference_internal);
@@ -1786,7 +1789,7 @@ void init_pymimir(py::module_& m)
     // TupleGraphFactory
     py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //
         .def(py::init<std::shared_ptr<StateSpace>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
-        .def("create", &TupleGraphFactory::create, py::return_value_policy::copy)
+        .def("create", &TupleGraphFactory::create)
         .def("get_state_space", &TupleGraphFactory::get_state_space)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);

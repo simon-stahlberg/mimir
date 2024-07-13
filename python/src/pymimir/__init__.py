@@ -103,6 +103,7 @@ from _pymimir import (
     FluentAndDerivedMapper,
     GroundAction,
     GroundActionList,
+    GroundActionSpan,
     GroundedAAG,
     IAAG,
     IAlgorithm,
@@ -120,6 +121,8 @@ from _pymimir import (
     SuccessorStateGenerator,
     State,
     StateList,
+    StateSpan,
+    StateIndexGroupedVector,
     TupleIndexMapper
 )
 
@@ -140,10 +143,6 @@ from _pymimir import (
     Certificate,
     ColoredDigraphVertex,
     ColorFunction,
-    ConstStateSpan,
-    ConstStateIndexGroupedVector,
-    ConstTupleGraphVertexSpan,
-    ConstTupleGraphVertexIndexGroupedVector,
     Digraph,
     DigraphVertex,
     DigraphEdge,
@@ -153,6 +152,8 @@ from _pymimir import (
     ProblemColorFunction,
     SparseNautyGraph,
     TupleGraphVertex,
+    TupleGraphVertexSpan,
+    TupleGraphVertexIndexGroupedVector,
     TupleGraph,
     TupleGraphFactory,
     VertexColoredDigraph

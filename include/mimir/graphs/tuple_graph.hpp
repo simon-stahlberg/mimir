@@ -36,18 +36,17 @@ namespace mimir
  * Source: https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf
  */
 
-class TupleGraphFactory;
+class TupleGraphArityZeroComputation;
+class TupleGraphArityKComputation;
 
 using TupleVertexIndex = int;
 using TupleVertexIndexList = std::vector<TupleVertexIndex>;
-using TupleVertexIndexSet = std::unordered_set<TupleVertexIndex>;
 
 class TupleGraphVertex
 {
 private:
     TupleVertexIndex m_index;
     TupleIndex m_tuple_index;
-    // TODO: make this a span
     StateList m_states;
 
 public:
@@ -84,7 +83,8 @@ private:
                IndexGroupedVector<const TupleGraphVertex> vertices_grouped_by_distance,
                IndexGroupedVector<const State> states_grouped_by_distance);
 
-    friend class TupleGraphFactory;
+    friend class TupleGraphArityZeroComputation;
+    friend class TupleGraphArityKComputation;
 
 public:
     /// @brief Compute and return an admissible chain for a given tuple of ground atoms.
@@ -117,100 +117,6 @@ private:
     std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
-
-    class TupleGraphArityZeroComputation
-    {
-    private:
-        // Input
-        std::shared_ptr<StateSpace> m_state_space;
-        std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
-        std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
-        bool m_prune_dominated_tuples;
-
-        // Result structures to create tuple graph
-        Digraph m_digraph;
-        IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
-        IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
-
-    public:
-        TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
-                                       std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
-                                       std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                       bool prune_dominated_tuples);
-
-        /// @brief Compute the root state layer.
-        void compute_root_state_layer(State root_state);
-
-        /// @brief Compute the layer at distance 1, assumes that the root state layer exists.
-        void compute_first_layer(State root_state);
-
-        /// @brief Return a reference to the tuple graph.
-        TupleGraph get_result();
-    };
-
-    // Bookkeeping for memory reuse when building tuple graph of width greater 0
-    class TupleGraphArityKComputation
-    {
-    private:
-        // Input
-        std::shared_ptr<StateSpace> m_state_space;
-        std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
-        std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
-        bool m_prune_dominated_tuples;
-
-        // Result structures to create tuple graph
-        Digraph m_digraph;
-        IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
-        IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
-
-        // Common book-keeping
-        StateList prev_states;
-        StateList curr_states;
-        TupleGraphVertexList prev_vertices;
-        TupleGraphVertexList curr_vertices;
-        StateSet visited_states;
-        DynamicNoveltyTable novelty_table;
-
-        /**
-         * Four step procedure to compute the next layer in the graph.
-         */
-
-        bool compute_next_state_layer();
-
-        TupleIndexSet novel_tuple_indices_set;
-        TupleIndexList novel_tuple_indices;
-        std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_states;
-        std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
-
-        void compute_next_novel_tuple_indices();
-
-        std::unordered_map<TupleIndex, StateSet> cur_novel_tuple_index_to_extended_state;
-        std::unordered_map<TupleIndex, TupleVertexIndexSet> cur_extended_novel_tuple_index_to_prev_vertices;
-        TupleIndexSet cur_extended_novel_tuple_indices_set;
-        TupleIndexList cur_extended_novel_tuple_indices;
-
-        void extend_optimal_plans_from_prev_layer();
-
-        std::unordered_map<TupleIndex, TupleIndexSet> tuple_index_to_dominating_tuple_indices;
-
-        bool instantiate_next_layer();
-
-    public:
-        TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
-                                    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
-                                    std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-                                    bool prune_dominated_tuples);
-
-        /// @brief Compute the root state layer.
-        void compute_root_state_layer(State root_state);
-
-        /// @brief Compute the next layer, assumes that the root state layer exists
-        /// and return true iff the layer is nonempty.
-        bool compute_next_layer();
-
-        /// @brief Return a reference to the tuple graph.
-        TupleGraph get_result();
-    };
 
     /// @brief Create tuple graph for the special case of width 0, i.e.,
     /// any state with distance at most 1 from the root_state is a subgoal state.
