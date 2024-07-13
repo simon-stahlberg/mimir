@@ -28,9 +28,13 @@
 
 namespace mimir::dl
 {
-struct EvaluationContext;
+namespace grammar
+{
 class ConceptVisitor;
 class RoleVisitor;
+}
+
+struct EvaluationContext;
 
 template<IsConceptOrRole D>
 class Constructor
@@ -68,7 +72,7 @@ public:
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
     /// Uses double dispatch.
-    virtual bool accept(const ConceptVisitor& visitor) const = 0;
+    virtual bool accept(const grammar::ConceptVisitor& visitor) const = 0;
 
     virtual size_t get_id() const = 0;
 };
@@ -103,7 +107,7 @@ public:
     virtual Denotation<Role> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
-    virtual bool accept(const RoleVisitor& visitor) const = 0;
+    virtual bool accept(const grammar::RoleVisitor& visitor) const = 0;
 
     virtual size_t get_id() const = 0;
 };

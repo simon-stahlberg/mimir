@@ -66,7 +66,7 @@ public:
         return context.concept_denotation_repository.insert(this, context.state, context.concept_denotation);
     };
 
-    bool accept(const ConceptVisitor& visitor) const override { return self().accept_impl(visitor); }
+    bool accept(const grammar::ConceptVisitor& visitor) const override { return self().accept_impl(visitor); }
 
     size_t get_id() const override { return self().get_id_impl(); }
 };

@@ -19,7 +19,6 @@
 
 #include "mimir/common/printers.hpp"
 
-#include <flatmemory/flatmemory.hpp>
 #include <ostream>
 #include <tuple>
 

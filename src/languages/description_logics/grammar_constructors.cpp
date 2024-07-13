@@ -93,4 +93,28 @@ const RoleChoice& RoleAnd::get_role_left() const { return m_role_left.get(); }
 
 const RoleChoice& RoleAnd::get_role_right() const { return m_role_right.get(); }
 
+/**
+ * ConceptAndVisitor
+ */
+
+ConceptAndVisitor::ConceptAndVisitor(const ConceptAnd& grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+
+bool ConceptAndVisitor::visit(const dl::ConceptAnd& constructor) const
+{
+    return m_grammar_constructor.test_match(constructor.get_concept_left())  //
+           && m_grammar_constructor.test_match(constructor.get_concept_right());
+}
+
+/**
+ * RoleAndVisitor
+ */
+
+RoleAndVisitor::RoleAndVisitor(const RoleAnd& grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+
+bool RoleAndVisitor::visit(const dl::RoleAnd& constructor) const
+{
+    return m_grammar_constructor.get_role_left().test_match(constructor.get_role_left())
+           && m_grammar_constructor.get_role_right().test_match(constructor.get_role_right());
+}
+
 }

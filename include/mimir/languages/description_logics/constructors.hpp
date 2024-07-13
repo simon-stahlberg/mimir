@@ -58,7 +58,7 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const ConceptVisitor& visitor) const;
+    bool accept_impl(const grammar::ConceptVisitor& visitor) const;
 
     size_t get_id_impl() const;
 
@@ -101,7 +101,7 @@ public:
 
     Denotation<Concept> evaluate(EvaluationContext& context) const override;
 
-    bool accept(const ConceptVisitor& visitor) const override;
+    bool accept(const grammar::ConceptVisitor& visitor) const override;
 
     size_t get_id() const override;
 
@@ -133,7 +133,7 @@ public:
 
     Denotation<Concept> evaluate(EvaluationContext& context) const override;
 
-    bool accept(const ConceptVisitor& visitor) const override;
+    bool accept(const grammar::ConceptVisitor& visitor) const override;
 
     size_t get_id() const override;
 
@@ -170,7 +170,7 @@ public:
 
     Denotation<Role> evaluate(EvaluationContext& context) const override;
 
-    bool accept(const RoleVisitor& visitor) const override;
+    bool accept(const grammar::RoleVisitor& visitor) const override;
 
     size_t get_id() const override;
 
@@ -202,7 +202,7 @@ public:
 
     Denotation<Role> evaluate(EvaluationContext& context) const override;
 
-    bool accept(const RoleVisitor& visitor) const override;
+    bool accept(const grammar::RoleVisitor& visitor) const override;
 
     size_t get_id() const override;
 
@@ -234,7 +234,7 @@ public:
 
     Denotation<Role> evaluate(EvaluationContext& context) const override;
 
-    bool accept(const RoleVisitor& visitor) const override;
+    bool accept(const grammar::RoleVisitor& visitor) const override;
 
     size_t get_id() const override;
 
@@ -309,7 +309,7 @@ inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& cont
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::accept_impl(const ConceptVisitor& visitor) const
+bool ConceptPredicateState<P>::accept_impl(const grammar::ConceptVisitor& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -391,7 +391,7 @@ Denotation<Concept> ConceptPredicateGoal<P>::evaluate(EvaluationContext& context
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::accept(const ConceptVisitor& visitor) const
+bool ConceptPredicateGoal<P>::accept(const grammar::ConceptVisitor& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -511,7 +511,7 @@ inline Denotation<Role> RolePredicateState<Static>::evaluate(EvaluationContext& 
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::accept(const RoleVisitor& visitor) const
+bool RolePredicateState<P>::accept(const grammar::RoleVisitor& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -598,7 +598,7 @@ Denotation<Role> RolePredicateGoal<P>::evaluate(EvaluationContext& context) cons
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::accept(const RoleVisitor& visitor) const
+bool RolePredicateGoal<P>::accept(const grammar::RoleVisitor& visitor) const
 {
     return visitor.visit(*this);
 }

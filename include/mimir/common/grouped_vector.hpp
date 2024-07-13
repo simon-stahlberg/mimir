@@ -172,6 +172,10 @@ public:
     std::span<T> front();
     const std::span<const T> front() const;
 
+    /// @brief Get the last group.
+    std::span<T> back();
+    const std::span<const T> back() const;
+
     /// @brief Get the underlying data.
     /// @return
     std::vector<std::remove_const_t<T>>& data();
@@ -416,6 +420,18 @@ template<typename T>
 const std::span<const T> IndexGroupedVector<T>::front() const
 {
     return this->at(0);
+}
+
+template<typename T>
+std::span<T> IndexGroupedVector<T>::back()
+{
+    return this->at(size() - 1);
+}
+
+template<typename T>
+const std::span<const T> IndexGroupedVector<T>::back() const
+{
+    return this->at(size() - 1);
 }
 
 template<typename T>

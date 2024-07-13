@@ -33,6 +33,15 @@ template<PredicateCategory P>
 class ConceptPredicateGoal;
 class ConceptAnd;
 
+template<PredicateCategory P>
+class RolePredicateState;
+template<PredicateCategory P>
+class RolePredicateGoal;
+class RoleAnd;
+
+namespace grammar
+{
+
 class ConceptVisitor
 {
 public:
@@ -41,24 +50,18 @@ public:
     // Default implementations always return false
 
     /* Concepts */
-    virtual bool visit(const ConceptPredicateState<Static>& constructor) const { return false; }
-    virtual bool visit(const ConceptPredicateState<Fluent>& constructor) const { return false; }
-    virtual bool visit(const ConceptPredicateState<Derived>& constructor) const { return false; }
-    virtual bool visit(const ConceptPredicateGoal<Static>& constructor) const { return false; }
-    virtual bool visit(const ConceptPredicateGoal<Fluent>& constructor) const { return false; }
-    virtual bool visit(const ConceptPredicateGoal<Derived>& constructor) const { return false; }
-    virtual bool visit(const ConceptAnd& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptPredicateState<Static>& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptPredicateState<Fluent>& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptPredicateState<Derived>& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptPredicateGoal<Static>& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptPredicateGoal<Fluent>& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptPredicateGoal<Derived>& constructor) const { return false; }
+    virtual bool visit(const dl::ConceptAnd& constructor) const { return false; }
 };
 
 /**
  * RoleVisitor
  */
-
-template<PredicateCategory P>
-class RolePredicateState;
-template<PredicateCategory P>
-class RolePredicateGoal;
-class RoleAnd;
 
 class RoleVisitor
 {
@@ -68,15 +71,16 @@ public:
     // Default implementations always return false
 
     /* Roles */
-    virtual bool visit(const RolePredicateState<Static>& constructor) const { return false; }
-    virtual bool visit(const RolePredicateState<Fluent>& constructor) const { return false; }
-    virtual bool visit(const RolePredicateState<Derived>& constructor) const { return false; }
-    virtual bool visit(const RolePredicateGoal<Static>& constructor) const { return false; }
-    virtual bool visit(const RolePredicateGoal<Fluent>& constructor) const { return false; }
-    virtual bool visit(const RolePredicateGoal<Derived>& constructor) const { return false; }
-    virtual bool visit(const RoleAnd& constructor) const { return false; }
+    virtual bool visit(const dl::RolePredicateState<Static>& constructor) const { return false; }
+    virtual bool visit(const dl::RolePredicateState<Fluent>& constructor) const { return false; }
+    virtual bool visit(const dl::RolePredicateState<Derived>& constructor) const { return false; }
+    virtual bool visit(const dl::RolePredicateGoal<Static>& constructor) const { return false; }
+    virtual bool visit(const dl::RolePredicateGoal<Fluent>& constructor) const { return false; }
+    virtual bool visit(const dl::RolePredicateGoal<Derived>& constructor) const { return false; }
+    virtual bool visit(const dl::RoleAnd& constructor) const { return false; }
 };
 
+}
 }
 
 #endif

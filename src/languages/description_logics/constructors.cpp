@@ -78,7 +78,7 @@ Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
     return context.concept_denotation_repository.insert(this, context.state, context.concept_denotation);
 }
 
-bool ConceptAnd::accept(const ConceptVisitor& visitor) const { return visitor.visit(*this); }
+bool ConceptAnd::accept(const grammar::ConceptVisitor& visitor) const { return visitor.visit(*this); }
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
@@ -150,7 +150,7 @@ Denotation<Role> RoleAnd::evaluate(EvaluationContext& context) const
     return context.role_denotation_repository.insert(this, context.role_denotation);
 }
 
-bool RoleAnd::accept(const RoleVisitor& visitor) const { return visitor.visit(*this); }
+bool RoleAnd::accept(const grammar::RoleVisitor& visitor) const { return visitor.visit(*this); }
 
 size_t RoleAnd::get_id() const { return m_id; }
 

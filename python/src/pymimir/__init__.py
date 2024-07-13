@@ -138,7 +138,7 @@ from _pymimir import (
     StateSpace
 )
 
-# Graphs
+# Graphs (classes)
 from _pymimir import (
     Certificate,
     ColoredDigraphVertex,
@@ -157,4 +157,11 @@ from _pymimir import (
     TupleGraph,
     TupleGraphFactory,
     VertexColoredDigraph
+)
+
+# Graphs (free functions)
+from _pymimir import (
+    compute_vertex_colors,
+    compute_sorted_vertex_colors,
+    create_object_graph
 )

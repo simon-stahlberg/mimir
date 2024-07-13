@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/common/printers.hpp"
 #include "mimir/search/axiom.hpp"
 
-#include <flatmemory/flatmemory.hpp>
+#include "mimir/common/printers.hpp"
+
 #include <ostream>
 #include <tuple>
 

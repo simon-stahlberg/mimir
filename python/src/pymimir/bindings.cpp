@@ -1323,6 +1323,16 @@ void init_pymimir(py::module_& m)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
         .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference_internal);
 
+    // Certificate
+    py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
+        .def(py::init<size_t, size_t, std::string, ColorList>())
+        .def("__eq__", &Certificate::operator==)
+        .def("__hash__", &Certificate::hash)
+        .def("get_num_vertices", &Certificate::get_num_vertices)
+        .def("get_num_edges", &Certificate::get_num_edges)
+        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
+        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
+
     // FaithfulAbstraction
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_index", &FaithfulAbstractState::get_index)
@@ -1794,16 +1804,6 @@ void init_pymimir(py::module_& m)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 
-    // Certificate
-    py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
-        .def(py::init<size_t, size_t, std::string, ColorList>())
-        .def("__eq__", &Certificate::operator==)
-        .def("__hash__", &Certificate::hash)
-        .def("get_num_vertices", &Certificate::get_num_vertices)
-        .def("get_num_edges", &Certificate::get_num_edges)
-        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
-        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
-
     // DigraphVertex
     py::class_<DigraphVertex>(m, "DigraphVertex")
         .def("__eq__", &DigraphVertex::operator==)
@@ -1954,6 +1954,10 @@ void init_pymimir(py::module_& m)
         .def("get_edges", &VertexColoredDigraph::get_edges, py::return_value_policy::reference_internal)
         .def("get_num_vertices", &VertexColoredDigraph::get_num_vertices)
         .def("get_num_edges", &VertexColoredDigraph::get_num_edges);
+
+    m.def("compute_vertex_colors", &compute_vertex_colors, py::arg("vertex_colored_graph"));
+
+    m.def("compute_sorted_vertex_colors", &compute_sorted_vertex_colors, py::arg("vertex_colored_graph"));
 
     // DenseNautyGraph
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //

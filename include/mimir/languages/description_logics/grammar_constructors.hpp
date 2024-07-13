@@ -20,17 +20,27 @@
 
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_ids.hpp"
+#include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
-#include "mimir/languages/description_logics/grammar_visitors.hpp"
+#include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
+#include <concepts>
+#include <cstddef>
+#include <memory>
 #include <optional>
+#include <vector>
 
+/**
+ * Forward declarations.
+ */
 namespace mimir::dl
 {
 template<typename T>
 class ConstructorRepository;
+}
 
-namespace grammar
+namespace mimir::dl::grammar
 {
 
 /**
@@ -346,6 +356,84 @@ public:
 };
 
 /**
+ * ConceptVisitors
+ */
+
+template<PredicateCategory P>
+class ConceptPredicateStateVisitor : public ConceptVisitor
+{
+private:
+    const grammar::ConceptPredicateState<P>& m_grammar_constructor;
+
+public:
+    explicit ConceptPredicateStateVisitor(const grammar::ConceptPredicateState<P>& grammar_constructor);
+
+    bool visit(const dl::ConceptPredicateState<P>& constructor) const override;
+};
+
+template<PredicateCategory P>
+class ConceptPredicateGoalVisitor : public ConceptVisitor
+{
+private:
+    const ConceptPredicateGoal<P>& m_grammar_constructor;
+
+public:
+    explicit ConceptPredicateGoalVisitor(const ConceptPredicateGoal<P>& grammar_constructor);
+
+    bool visit(const dl::ConceptPredicateGoal<P>& constructor) const override;
+};
+
+class ConceptAndVisitor : public ConceptVisitor
+{
+private:
+    const ConceptAnd& m_grammar_constructor;
+
+public:
+    explicit ConceptAndVisitor(const ConceptAnd& grammar_constructor);
+
+    bool visit(const dl::ConceptAnd& constructor) const override;
+};
+
+/**
+ * RoleVisitors
+ */
+
+template<PredicateCategory P>
+class RolePredicateStateVisitor : public RoleVisitor
+{
+private:
+    const RolePredicateState<P>& m_grammar_constructor;
+
+public:
+    explicit RolePredicateStateVisitor(const RolePredicateState<P>& grammar_constructor);
+
+    bool visit(const dl::RolePredicateState<P>& constructor) const override;
+};
+
+template<PredicateCategory P>
+class RolePredicateGoalVisitor : public RoleVisitor
+{
+private:
+    const RolePredicateGoal<P>& m_grammar_constructor;
+
+public:
+    explicit RolePredicateGoalVisitor(const RolePredicateGoal<P>& grammar_constructor);
+
+    bool visit(const dl::RolePredicateGoal<P>& constructor) const override;
+};
+
+class RoleAndVisitor : public RoleVisitor
+{
+private:
+    const RoleAnd& m_grammar_constructor;
+
+public:
+    explicit RoleAndVisitor(const RoleAnd& grammar_constructor);
+
+    bool visit(const dl::RoleAnd& constructor) const override;
+};
+
+/**
  * Implementations
  */
 
@@ -558,7 +646,7 @@ size_t ConceptPredicateState<P>::hash() const
 template<PredicateCategory P>
 bool ConceptPredicateState<P>::test_match(const dl::Constructor<Concept>& constructor) const
 {
-    return constructor.accept(ConceptPredicateStateVisitor<P>(*this));
+    return constructor.accept(grammar::ConceptPredicateStateVisitor<P>(*this));
 }
 
 template<PredicateCategory P>
@@ -735,7 +823,67 @@ Predicate<P> RolePredicateGoal<P>::get_predicate() const
     return m_predicate;
 }
 
+/**
+ * ConceptPredicateStateVisitor
+ */
+
+template<PredicateCategory P>
+ConceptPredicateStateVisitor<P>::ConceptPredicateStateVisitor(const grammar::ConceptPredicateState<P>& grammar_constructor) :
+    m_grammar_constructor(grammar_constructor)
+{
 }
+
+template<PredicateCategory P>
+bool ConceptPredicateStateVisitor<P>::visit(const dl::ConceptPredicateState<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
+/**
+ * ConceptPredicateGoalVisitor
+ */
+
+template<PredicateCategory P>
+ConceptPredicateGoalVisitor<P>::ConceptPredicateGoalVisitor(const ConceptPredicateGoal<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoalVisitor<P>::visit(const dl::ConceptPredicateGoal<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
+/**
+ * RolePredicateStateVisitor
+ */
+
+template<PredicateCategory P>
+RolePredicateStateVisitor<P>::RolePredicateStateVisitor(const RolePredicateState<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateStateVisitor<P>::visit(const dl::RolePredicateState<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
+/**
+ * RolePredicateGoalVisitor
+ */
+
+template<PredicateCategory P>
+RolePredicateGoalVisitor<P>::RolePredicateGoalVisitor(const RolePredicateGoal<P>& grammar_constructor) : m_grammar_constructor(grammar_constructor)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoalVisitor<P>::visit(const dl::RolePredicateGoal<P>& constructor) const
+{
+    return constructor.get_predicate() == m_grammar_constructor.get_predicate();
+}
+
 }
 
 #endif

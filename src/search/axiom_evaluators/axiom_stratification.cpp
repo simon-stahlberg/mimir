@@ -17,8 +17,6 @@
 
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 
-#include "mimir/common/printers.hpp"
-
 #include <algorithm>
 
 namespace mimir
