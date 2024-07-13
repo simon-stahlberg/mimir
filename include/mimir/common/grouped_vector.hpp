@@ -18,8 +18,6 @@
 #ifndef MIMIR_COMMON_INDEX_GROUPED_VECTOR_HPP_
 #define MIMIR_COMMON_INDEX_GROUPED_VECTOR_HPP_
 
-#include "mimir/common/printers.hpp"
-
 #include <algorithm>
 #include <cassert>
 #include <concepts>
