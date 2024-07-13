@@ -920,7 +920,8 @@ void init_pymimir(py::module_& m)
         .def("get_id", &State::get_id);
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<StateList>(m, "StateList");
-    bind_const_span<std::span<const State>>(m, "StateConstSpan");
+    bind_const_span<std::span<const State>>(m, "ConstStateSpan");
+    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "ConstStateIndexGroupedVector");
 
     /* Action */
     py::class_<GroundAction>(m, "GroundAction")  //
@@ -1778,10 +1779,9 @@ void init_pymimir(py::module_& m)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
         .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
         .def("get_root_state", &TupleGraph::get_root_state, py::return_value_policy::reference_internal)
-        .def("get_vertices", &TupleGraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_vertices_grouped_by_distance", &TupleGraph::get_vertices_grouped_by_distance, py::return_value_policy::reference_internal)
         .def("get_digraph", &TupleGraph::get_digraph, py::return_value_policy::reference_internal)
-        .def("get_vertex_indices_by_distances", &TupleGraph::get_vertex_indices_by_distances, py::return_value_policy::reference_internal)
-        .def("get_states_by_distance", &TupleGraph::get_states_by_distance, py::return_value_policy::reference_internal);
+        .def("get_states_grouped_by_distance", &TupleGraph::get_states_grouped_by_distance, py::return_value_policy::reference_internal);
 
     // TupleGraphFactory
     py::class_<TupleGraphFactory>(m, "TupleGraphFactory")  //

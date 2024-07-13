@@ -72,26 +72,17 @@ private:
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
 
-    // TODO. make this an index grouped vector, grouped by distance
-    TupleGraphVertexList m_vertices;
-
     Digraph m_digraph;
-
-    // TODO: Remove this, since vertices will be grouped by distance
-    std::vector<TupleVertexIndexList> m_vertex_indices_by_distance;
-    // TODO: make this an index grouped vector, grouped by vertex to be able to store spans in the vertices
-    std::vector<StateList> m_states_by_distance;
-
-    // TODO: operation to add a group
-    // IndexGroupedVector<TupleGraphVertex> m_vertices_grouped_by_distance;
-    // IndexGroupedVector<StateIndex> m_states_grouped_by_vertex;
-
-    // IndexGroupedVector<StateIndex> m_states_grouped_by_distance;
+    IndexGroupedVector<const TupleGraphVertex> m_vertices_grouped_by_distance;
+    IndexGroupedVector<const State> m_states_grouped_by_distance;
 
     TupleGraph(std::shared_ptr<StateSpace> state_space,
                std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
-               bool prune_dominated_tuples);
+               bool prune_dominated_tuples,
+               Digraph digraph,
+               IndexGroupedVector<const TupleGraphVertex> vertices_grouped_by_distance,
+               IndexGroupedVector<const State> states_grouped_by_distance);
 
     friend class TupleGraphFactory;
 
@@ -112,21 +103,12 @@ public:
     const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
-    const TupleGraphVertexList& get_vertices() const;
     const Digraph& get_digraph() const;
-    const std::vector<TupleVertexIndexList>& get_vertex_indices_by_distances() const;
-    const std::vector<StateList>& get_states_by_distance() const;
+    const IndexGroupedVector<const TupleGraphVertex>& get_vertices_grouped_by_distance() const;
+    const IndexGroupedVector<const State>& get_states_grouped_by_distance() const;
 };
 
 using TupleGraphList = std::vector<TupleGraph>;
-
-struct TupleGraphVertexHelper
-{
-    TupleVertexIndex m_index;
-    TupleIndex m_tuple_index;
-    size_t m_states_begin;
-    size_t m_states_end;
-};
 
 class TupleGraphFactory
 {
@@ -139,10 +121,16 @@ private:
     class TupleGraphArityZeroComputation
     {
     private:
-        TupleGraph m_tuple_graph;
+        // Input
+        std::shared_ptr<StateSpace> m_state_space;
+        std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+        std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+        bool m_prune_dominated_tuples;
 
-        // New
+        // Result structures to create tuple graph
         Digraph m_digraph;
+        IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
+        IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
 
     public:
         TupleGraphArityZeroComputation(std::shared_ptr<StateSpace> state_space,
@@ -151,30 +139,43 @@ private:
                                        bool prune_dominated_tuples);
 
         /// @brief Compute the root state layer.
-        void compute_root_state_layer(const State root_state);
+        void compute_root_state_layer(State root_state);
 
         /// @brief Compute the layer at distance 1, assumes that the root state layer exists.
-        void compute_first_layer();
+        void compute_first_layer(State root_state);
 
         /// @brief Return a reference to the tuple graph.
-        const TupleGraph& get_tuple_graph();
+        TupleGraph get_result();
     };
 
     // Bookkeeping for memory reuse when building tuple graph of width greater 0
     class TupleGraphArityKComputation
     {
     private:
-        TupleGraph m_tuple_graph;
+        // Input
+        std::shared_ptr<StateSpace> m_state_space;
+        std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+        std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+        bool m_prune_dominated_tuples;
+
+        // Result structures to create tuple graph
+        Digraph m_digraph;
+        IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
+        IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
+
+        // Common book-keeping
+        StateList prev_states;
+        StateList curr_states;
+        TupleGraphVertexList prev_vertices;
+        TupleGraphVertexList curr_vertices;
         StateSet visited_states;
         DynamicNoveltyTable novelty_table;
-        StateList cur_states;
-        TupleVertexIndexList cur_vertices;
 
         /**
          * Four step procedure to compute the next layer in the graph.
          */
 
-        void compute_next_state_layer();
+        bool compute_next_state_layer();
 
         TupleIndexSet novel_tuple_indices_set;
         TupleIndexList novel_tuple_indices;
@@ -192,7 +193,7 @@ private:
 
         std::unordered_map<TupleIndex, TupleIndexSet> tuple_index_to_dominating_tuple_indices;
 
-        void instantiate_next_layer();
+        bool instantiate_next_layer();
 
     public:
         TupleGraphArityKComputation(std::shared_ptr<StateSpace> state_space,
@@ -201,32 +202,28 @@ private:
                                     bool prune_dominated_tuples);
 
         /// @brief Compute the root state layer.
-        void compute_root_state_layer(const State root_state);
+        void compute_root_state_layer(State root_state);
 
         /// @brief Compute the next layer, assumes that the root state layer exists
         /// and return true iff the layer is nonempty.
         bool compute_next_layer();
 
         /// @brief Return a reference to the tuple graph.
-        const TupleGraph& get_tuple_graph();
+        TupleGraph get_result();
     };
-
-    // Preallocated memory and construction logic.
-    TupleGraphArityZeroComputation m_arity_zero_computation;
-    TupleGraphArityKComputation m_arity_k_computation;
 
     /// @brief Create tuple graph for the special case of width 0, i.e.,
     /// any state with distance at most 1 from the root_state is a subgoal state.
-    const TupleGraph& create_for_arity_zero(const State root_state);
+    TupleGraph create_for_arity_zero(State root_state);
 
     /// @brief Create a tuple graph for width k > 0.
-    const TupleGraph& create_for_arity_k(const State root_state);
+    TupleGraph create_for_arity_k(State root_state);
 
 public:
     TupleGraphFactory(std::shared_ptr<StateSpace> state_space, int arity, bool prune_dominated_tuples = false);
 
     /// @brief Create and return a reference to the tuple graph.
-    const TupleGraph& create(const State root_state);
+    TupleGraph create(State root_state);
 
     /**
      * Getters.

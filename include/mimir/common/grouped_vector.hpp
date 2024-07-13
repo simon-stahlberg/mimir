@@ -61,6 +61,9 @@ namespace mimir
  * Declarations
  */
 
+template<typename T>
+class IndexGroupedVectorBuilder;
+
 template<typename T, typename U>
 concept IsGroupBoundaryChecker = requires(T a, U u) {
     // Require an operator to identify when a new group begins.
@@ -85,6 +88,8 @@ private:
     std::vector<size_t> m_groups_begin;
 
     IndexGroupedVector(std::vector<std::remove_const_t<T>> vec, std::vector<size_t> groups_begin);
+
+    friend class IndexGroupedVectorBuilder<T>;
 
     void range_check(size_t pos) const;
 
@@ -165,6 +170,10 @@ public:
     std::span<T> operator[](size_t pos);
     const std::span<const T> operator[](size_t pos) const;
 
+    /// @brief Get the first group.
+    std::span<T> front();
+    const std::span<const T> front() const;
+
     /// @brief Get the underlying data.
     /// @return
     std::vector<std::remove_const_t<T>>& data();
@@ -189,13 +198,23 @@ private:
 public:
     IndexGroupedVectorBuilder();
 
+    /**
+     * Modifiers
+     */
+
     void add_group_element(T element);
 
-    void start_group();
+    size_t start_group();
 
     void clear();
 
+    /**
+     * Access data.
+     */
+
     IndexGroupedVector<T> get_result();
+
+    const std::vector<std::remove_const_t<T>>& data() const;
 };
 
 /**
@@ -390,6 +409,18 @@ const std::span<const T> IndexGroupedVector<T>::operator[](size_t pos) const
 }
 
 template<typename T>
+std::span<T> IndexGroupedVector<T>::front()
+{
+    return this->at(0);
+}
+
+template<typename T>
+const std::span<const T> IndexGroupedVector<T>::front() const
+{
+    return this->at(0);
+}
+
+template<typename T>
 size_t IndexGroupedVector<T>::size() const
 {
     return m_groups_begin.size() - 1;
@@ -421,9 +452,10 @@ void IndexGroupedVectorBuilder<T>::add_group_element(T element)
 }
 
 template<typename T>
-void IndexGroupedVectorBuilder<T>::start_group()
+size_t IndexGroupedVectorBuilder<T>::start_group()
 {
     m_groups_begin.push_back(m_vec.size());
+    return m_vec.size();
 }
 
 template<typename T>
@@ -440,6 +472,12 @@ IndexGroupedVector<T> IndexGroupedVectorBuilder<T>::get_result()
     m_groups_begin.push_back(m_vec.size());
 
     return IndexGroupedVector<T>(m_vec, m_groups_begin);
+}
+
+template<typename T>
+const std::vector<std::remove_const_t<T>>& IndexGroupedVectorBuilder<T>::data() const
+{
+    return m_vec;
 }
 }
 
