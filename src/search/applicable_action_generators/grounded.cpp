@@ -20,6 +20,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
