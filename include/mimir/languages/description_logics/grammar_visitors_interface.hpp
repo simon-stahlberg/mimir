@@ -18,28 +18,9 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VISITOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VISITOR_INTERFACE_HPP_
 
-#include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 
-namespace mimir::dl
-{
-
-/**
- * ConceptVisitor
- */
-
-template<PredicateCategory P>
-class ConceptPredicateState;
-template<PredicateCategory P>
-class ConceptPredicateGoal;
-class ConceptAnd;
-
-template<PredicateCategory P>
-class RolePredicateState;
-template<PredicateCategory P>
-class RolePredicateGoal;
-class RoleAnd;
-
-namespace grammar
+namespace mimir::dl::grammar
 {
 
 class ConceptVisitor
@@ -80,7 +61,6 @@ public:
     virtual bool visit(const dl::RoleAnd& constructor) const { return false; }
 };
 
-}
 }
 
 #endif

@@ -21,6 +21,165 @@ namespace mimir::dl
 {
 
 /**
+ * ConceptPredicateState
+ */
+
+template<PredicateCategory P>
+ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateState<P>::is_equal_impl(const Constructor<Concept>& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const ConceptPredicateState<P>&>(other);
+    return (*this == otherDerived);
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateState<P>::hash_impl() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
+void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
+{
+    auto& bitset = context.concept_denotation.get_bitset();
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            bitset.set(atom->get_objects().at(0)->get_identifier());
+        }
+    }
+}
+
+template<>
+inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
+{
+    auto& bitset = context.concept_denotation.get_bitset();
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            bitset.set(atom->get_identifier());
+        }
+    }
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateState<P>::accept_impl(const grammar::ConceptVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateState<P>::get_id_impl() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> ConceptPredicateState<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class ConceptPredicateState<Static>;
+template class ConceptPredicateState<Fluent>;
+template class ConceptPredicateState<Derived>;
+
+/**
+ * ConceptPredicateGoal
+ */
+
+template<PredicateCategory P>
+ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::is_equal_impl(const Constructor<Concept>& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const ConceptPredicateGoal<P>&>(other);
+    return (*this == otherDerived);
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateGoal<P>::hash_impl() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
+void ConceptPredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitset = context.concept_denotation.get_bitset();
+    bitset.unset_all();
+
+    // Compute result
+    for (const auto& literal : context.problem->get_goal_condition<P>())
+    {
+        if (literal->get_atom()->get_predicate() == m_predicate && !literal->is_negated())
+        {
+            bitset.set(literal->get_atom()->get_objects().at(0)->get_identifier());
+        }
+    }
+}
+
+template<PredicateCategory P>
+bool ConceptPredicateGoal<P>::accept_impl(const grammar::ConceptVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t ConceptPredicateGoal<P>::get_id_impl() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class ConceptPredicateGoal<Static>;
+template class ConceptPredicateGoal<Fluent>;
+template class ConceptPredicateGoal<Derived>;
+
+/**
  * ConceptAnd
  */
 
@@ -40,7 +199,7 @@ bool ConceptAnd::operator==(const ConceptAnd& other) const
     return true;
 }
 
-bool ConceptAnd::is_equal(const Constructor<Concept>& other) const
+bool ConceptAnd::is_equal_impl(const Constructor<Concept>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -50,41 +209,204 @@ bool ConceptAnd::is_equal(const Constructor<Concept>& other) const
     return (*this == otherDerived);
 }
 
-size_t ConceptAnd::hash() const { return loki::hash_combine(&m_concept_left, &m_concept_right); }
+size_t ConceptAnd::hash_impl() const { return loki::hash_combine(&m_concept_left, &m_concept_right); }
 
-Denotation<Concept> ConceptAnd::evaluate(EvaluationContext& context) const
+void ConceptAnd::evaluate_impl(EvaluationContext& context) const
 {
-    // Try to access cached result
-    auto denotation = context.concept_denotation_repository.get_if(this, context.state);
-    if (denotation.has_value())
-    {
-        return denotation.value();
-    }
+    // Evaluate children
+    const auto eval_left = m_concept_left.get().evaluate(context);
+    const auto eval_right = m_concept_left.get().evaluate(context);
 
     // Fetch data
     auto& bitset = context.concept_denotation.get_bitset();
     context.concept_denotation.get_bitset().unset_all();
 
-    // Evaluate children
-    const auto eval_left = m_concept_left.get().evaluate(context);
-    const auto eval_right = m_concept_left.get().evaluate(context);
-
     // Compute result
     bitset |= eval_left.get_bitset();
     bitset &= eval_right.get_bitset();
-
-    // Store and return result;
-    context.concept_denotation.get_flatmemory_builder().finish();
-    return context.concept_denotation_repository.insert(this, context.state, context.concept_denotation);
 }
 
-bool ConceptAnd::accept(const grammar::ConceptVisitor& visitor) const { return visitor.visit(*this); }
+bool ConceptAnd::accept_impl(const grammar::ConceptVisitor& visitor) const { return visitor.visit(*this); }
 
-size_t ConceptAnd::get_id() const { return m_id; }
+size_t ConceptAnd::get_id_impl() const { return m_id; }
 
 const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left.get(); }
 
 const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right.get(); }
+
+/**
+ * RolePredicateState
+ */
+
+template<PredicateCategory P>
+RolePredicateState<P>::RolePredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::is_equal_impl(const Constructor<Role>& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const RolePredicateState<P>&>(other);
+    return (*this == otherDerived);
+}
+
+template<PredicateCategory P>
+size_t RolePredicateState<P>::hash_impl() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
+void RolePredicateState<P>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+
+    // Compute result
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
+            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
+            bitsets.at(object_left_id).set(object_right_id);
+        }
+    }
+}
+
+template<>
+void RolePredicateState<Static>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+
+    // Compute result
+    for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
+    {
+        if (atom->get_predicate() == m_predicate)
+        {
+            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
+            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
+            bitsets.at(object_left_id).set(object_right_id);
+        }
+    }
+}
+
+template<PredicateCategory P>
+bool RolePredicateState<P>::accept_impl(const grammar::RoleVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t RolePredicateState<P>::get_id_impl() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> RolePredicateState<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class RolePredicateState<Static>;
+template class RolePredicateState<Fluent>;
+template class RolePredicateState<Derived>;
+
+/**
+ * RolePredicateGoal
+ */
+
+template<PredicateCategory P>
+RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+{
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
+{
+    if (this != &other)
+    {
+        return (m_predicate == other.m_predicate);
+    }
+    return true;
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoal<P>::is_equal_impl(const Constructor<Role>& other) const
+{
+    if (!this->type_equal(other))
+    {
+        return false;
+    }
+    const auto& otherDerived = static_cast<const RolePredicateGoal<P>&>(other);
+    return (*this == otherDerived);
+}
+
+template<PredicateCategory P>
+size_t RolePredicateGoal<P>::hash_impl() const
+{
+    return loki::hash_combine(m_predicate);
+}
+
+template<PredicateCategory P>
+void RolePredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (const auto& literal : context.problem->get_goal_condition<P>())
+    {
+        if (literal->get_atom()->get_predicate() == m_predicate && !literal->is_negated())
+        {
+            const auto object_left_id = literal->get_atom()->get_objects().at(0)->get_identifier();
+            const auto object_right_id = literal->get_atom()->get_objects().at(1)->get_identifier();
+            bitsets.at(object_left_id).set(object_right_id);
+        }
+    }
+}
+
+template<PredicateCategory P>
+bool RolePredicateGoal<P>::accept_impl(const grammar::RoleVisitor& visitor) const
+{
+    return visitor.visit(*this);
+}
+
+template<PredicateCategory P>
+size_t RolePredicateGoal<P>::get_id_impl() const
+{
+    return m_id;
+}
+
+template<PredicateCategory P>
+Predicate<P> RolePredicateGoal<P>::get_predicate() const
+{
+    return m_predicate;
+}
+
+template class RolePredicateGoal<Static>;
+template class RolePredicateGoal<Fluent>;
+template class RolePredicateGoal<Derived>;
 
 /**
  * RoleAnd
@@ -106,7 +428,7 @@ bool RoleAnd::operator==(const RoleAnd& other) const
     return true;
 }
 
-bool RoleAnd::is_equal(const Constructor<Role>& other) const
+bool RoleAnd::is_equal_impl(const Constructor<Role>& other) const
 {
     if (!this->type_equal(other))
     {
@@ -116,43 +438,33 @@ bool RoleAnd::is_equal(const Constructor<Role>& other) const
     return (*this == otherDerived);
 }
 
-size_t RoleAnd::hash() const { return loki::hash_combine(&m_role_left, &m_role_right); }
+size_t RoleAnd::hash_impl() const { return loki::hash_combine(&m_role_left, &m_role_right); }
 
-Denotation<Role> RoleAnd::evaluate(EvaluationContext& context) const
+void RoleAnd::evaluate_impl(EvaluationContext& context) const
 {
-    // Try to access cached result
-    auto denotation = context.role_denotation_repository.get_if(this, context.state);
-    if (denotation.has_value())
-    {
-        return denotation.value();
-    }
-
-    // Fetch data
-    for (auto& bitset : context.role_denotation.get_bitsets())
-    {
-        bitset.unset_all();
-    }
-
     // Evaluate children
     const auto eval_left = m_role_left.get().evaluate(context);
     const auto eval_right = m_role_left.get().evaluate(context);
 
+    // Fetch data
+    auto& bitsets = context.role_denotation.get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
     // Compute result
     for (size_t i = 0; i < eval_left.get_bitsets().size(); ++i)
     {
-        auto& bitset = context.role_denotation.get_bitsets()[i];
-        bitset |= eval_left.get_bitsets()[i];
-        bitset &= eval_right.get_bitsets()[i];
+        auto& bitset = bitsets.at(i);
+        bitset |= eval_left.get_bitsets().at(i);
+        bitset &= eval_right.get_bitsets().at(i);
     }
-
-    // Store and return result;
-    context.role_denotation.get_flatmemory_builder().finish();
-    return context.role_denotation_repository.insert(this, context.role_denotation);
 }
 
-bool RoleAnd::accept(const grammar::RoleVisitor& visitor) const { return visitor.visit(*this); }
+bool RoleAnd::accept_impl(const grammar::RoleVisitor& visitor) const { return visitor.visit(*this); }
 
-size_t RoleAnd::get_id() const { return m_id; }
+size_t RoleAnd::get_id_impl() const { return m_id; }
 
 const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left.get(); }
 

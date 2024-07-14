@@ -54,10 +54,6 @@ public:
             return denotation.value();
         }
 
-        // Fetch data
-        auto& bitset = context.concept_denotation.get_bitset();
-        bitset.unset_all();
-
         // Compute the result in the derived class
         self().evaluate_impl(context);
 
@@ -91,13 +87,6 @@ public:
         if (denotation.has_value())
         {
             return denotation.value();
-        }
-
-        // Fetch data
-        auto& bitsets = context.role_denotation.get_bitsets();
-        for (auto& bitset : bitsets)
-        {
-            bitset.unset_all();
         }
 
         // Compute the result in the derived class

@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 
 #include "mimir/languages/description_logics/constructor_ids.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 
 #include <concepts>
@@ -28,13 +29,6 @@
 
 namespace mimir::dl
 {
-namespace grammar
-{
-class ConceptVisitor;
-class RoleVisitor;
-}
-
-struct EvaluationContext;
 
 template<IsConceptOrRole D>
 class Constructor
@@ -77,8 +71,6 @@ public:
     virtual size_t get_id() const = 0;
 };
 
-using ConceptConstructorList = std::vector<std::reference_wrapper<const Constructor<Concept>>>;
-
 /**
  * Role
  */
@@ -111,8 +103,6 @@ public:
 
     virtual size_t get_id() const = 0;
 };
-
-using RoleConstructorList = std::vector<std::reference_wrapper<const Constructor<Role>>>;
 
 }
 
