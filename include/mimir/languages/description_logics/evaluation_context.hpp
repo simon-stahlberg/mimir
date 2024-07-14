@@ -36,9 +36,9 @@ struct EvaluationContext
     std::reference_wrapper<const PDDLFactories> factories;
     Problem problem;
     State state;
-    DenotationBuilder<Concept> concept_denotation;
+    DenotationBuilder<Concept> concept_denotation_builder;
     DenotationRepository<Concept> concept_denotation_repository;
-    DenotationBuilder<Role> role_denotation;
+    DenotationBuilder<Role> role_denotation_builder;
     DenotationRepository<Role> role_denotation_repository;
 
     template<IsConceptOrRole D>
@@ -46,11 +46,11 @@ struct EvaluationContext
     {
         if constexpr (std::is_same_v<D, Concept>)
         {
-            return concept_denotation;
+            return concept_denotation_builder;
         }
         else if constexpr (std::is_same_v<D, Role>)
         {
-            return role_denotation;
+            return role_denotation_builder;
         }
         else
         {

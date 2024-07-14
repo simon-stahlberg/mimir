@@ -18,10 +18,26 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
 namespace mimir::dl
 {
+using ConstructorRepositories = VariadicConstructorRepository<ConceptPredicateState<Static>,
+                                                              ConceptPredicateState<Fluent>,
+                                                              ConceptPredicateState<Derived>,
+                                                              ConceptPredicateGoal<Static>,
+                                                              ConceptPredicateGoal<Fluent>,
+                                                              ConceptPredicateGoal<Derived>,
+                                                              ConceptAnd,
+                                                              RolePredicateState<Static>,
+                                                              RolePredicateState<Fluent>,
+                                                              RolePredicateState<Derived>,
+                                                              RolePredicateGoal<Static>,
+                                                              RolePredicateGoal<Fluent>,
+                                                              RolePredicateGoal<Derived>,
+                                                              RoleAnd>;
+
 class Generator
 {
 private:

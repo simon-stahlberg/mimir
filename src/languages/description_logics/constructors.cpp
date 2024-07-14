@@ -59,7 +59,7 @@ size_t ConceptPredicateState<P>::hash_impl() const
 template<PredicateCategory P>
 void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
 {
-    auto& bitset = context.concept_denotation.get_bitset();
+    auto& bitset = context.concept_denotation_builder.get_bitset();
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
     {
         if (atom->get_predicate() == m_predicate)
@@ -72,7 +72,7 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
 template<>
 inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
 {
-    auto& bitset = context.concept_denotation.get_bitset();
+    auto& bitset = context.concept_denotation_builder.get_bitset();
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
     {
         if (atom->get_predicate() == m_predicate)
@@ -144,7 +144,7 @@ template<PredicateCategory P>
 void ConceptPredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitset = context.concept_denotation.get_bitset();
+    auto& bitset = context.concept_denotation_builder.get_bitset();
     bitset.unset_all();
 
     // Compute result
@@ -218,8 +218,8 @@ void ConceptAnd::evaluate_impl(EvaluationContext& context) const
     const auto eval_right = m_concept_left.get().evaluate(context);
 
     // Fetch data
-    auto& bitset = context.concept_denotation.get_bitset();
-    context.concept_denotation.get_bitset().unset_all();
+    auto& bitset = context.concept_denotation_builder.get_bitset();
+    context.concept_denotation_builder.get_bitset().unset_all();
 
     // Compute result
     bitset |= eval_left.get_bitset();
@@ -274,7 +274,7 @@ template<PredicateCategory P>
 void RolePredicateState<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitsets = context.role_denotation.get_bitsets();
+    auto& bitsets = context.role_denotation_builder.get_bitsets();
 
     // Compute result
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<P>(context.state.get_atoms<P>()))
@@ -292,7 +292,7 @@ template<>
 void RolePredicateState<Static>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitsets = context.role_denotation.get_bitsets();
+    auto& bitsets = context.role_denotation_builder.get_bitsets();
 
     // Compute result
     for (const auto& atom : context.factories.get().get_ground_atoms_from_ids<Static>(context.problem->get_static_initial_positive_atoms_bitset()))
@@ -368,7 +368,7 @@ template<PredicateCategory P>
 void RolePredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
-    auto& bitsets = context.role_denotation.get_bitsets();
+    auto& bitsets = context.role_denotation_builder.get_bitsets();
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -447,7 +447,7 @@ void RoleAnd::evaluate_impl(EvaluationContext& context) const
     const auto eval_right = m_role_left.get().evaluate(context);
 
     // Fetch data
-    auto& bitsets = context.role_denotation.get_bitsets();
+    auto& bitsets = context.role_denotation_builder.get_bitsets();
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();

@@ -36,9 +36,9 @@ namespace mimir::dl::grammar
  * Grammar
  */
 
-using GrammarConstructorRepositories = VariadicConstructorRepository<ConceptNonTerminal,
-                                                                     ConceptChoice,
-                                                                     ConceptDerivationRule,
+using GrammarConstructorRepositories = VariadicConstructorRepository<NonTerminal<Concept>,
+                                                                     Choice<Concept>,
+                                                                     DerivationRule<Concept>,
                                                                      ConceptPredicateState<Static>,
                                                                      ConceptPredicateState<Fluent>,
                                                                      ConceptPredicateState<Derived>,
@@ -46,9 +46,9 @@ using GrammarConstructorRepositories = VariadicConstructorRepository<ConceptNonT
                                                                      ConceptPredicateGoal<Fluent>,
                                                                      ConceptPredicateGoal<Derived>,
                                                                      ConceptAnd,
-                                                                     RoleNonTerminal,
-                                                                     RoleChoice,
-                                                                     RoleDerivationRule,
+                                                                     NonTerminal<Role>,
+                                                                     Choice<Role>,
+                                                                     DerivationRule<Role>,
                                                                      RolePredicateState<Static>,
                                                                      RolePredicateState<Fluent>,
                                                                      RolePredicateState<Derived>,
@@ -64,8 +64,8 @@ private:
     GrammarConstructorRepositories m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
-    ConceptDerivationRuleList m_concept_rules;
-    RoleDerivationRuleList m_role_rules;
+    DerivationRuleList<Concept> m_concept_rules;
+    DerivationRuleList<Role> m_role_rules;
 
 public:
     /// @brief Create a grammar from a BNF description.
@@ -84,8 +84,8 @@ public:
     /**
      * Getters
      */
-    const ConceptDerivationRuleList& get_concept_rules() const;
-    const RoleDerivationRuleList& get_role_rules() const;
+    const DerivationRuleList<Concept>& get_concept_rules() const;
+    const DerivationRuleList<Role>& get_role_rules() const;
 };
 }
 

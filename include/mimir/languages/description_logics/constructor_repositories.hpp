@@ -31,7 +31,7 @@ template<typename T>
 class ConstructorRepository
 {
 private:
-    // Persistent storage of constructors to avoid frequent allocations.
+    // Persistent segmented storage of constructors to avoid frequent allocations.
     loki::SegmentedVector<T> m_persistent_vector;
 
     std::unordered_set<const T*, loki::Hash<T*>, loki::EqualTo<T*>> m_uniqueness;

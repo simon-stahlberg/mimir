@@ -26,19 +26,20 @@ namespace mimir::dl::grammar
 
 struct Context
 {
-    std::unordered_map<std::string, std::reference_wrapper<const ConceptDerivationRule>> m_concept_rules_by_name;
-    std::unordered_map<std::string, std::reference_wrapper<const RoleDerivationRule>> m_role_rules_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const DerivationRule<Concept>>> m_concept_rules_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const DerivationRule<Role>>> m_role_rules_by_name;
 
-    std::unordered_map<std::string, std::reference_wrapper<const ConceptNonTerminal>> m_concept_non_terminal_by_name;
-    std::unordered_map<std::string, std::reference_wrapper<const RoleNonTerminal>> m_role_non_terminal_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const NonTerminal<Concept>>> m_concept_non_terminal_by_name;
+    std::unordered_map<std::string, std::reference_wrapper<const NonTerminal<Role>>> m_role_non_terminal_by_name;
 };
 
-static const ConceptChoice& parse(const dl::ast::Concept& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+static const Choice<Concept>&
+parse(const dl::ast::Concept& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return boost::apply_visitor([&](const auto& arg) -> const ConceptChoice& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
+    return boost::apply_visitor([&](const auto& arg) -> const Choice<Concept>& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static const ConceptChoice&
+static const Choice<Concept>&
 parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
@@ -48,7 +49,7 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstruc
         {
             throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateState<Static>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Concept>>(ref_grammar_constructor_repos.create<ConceptPredicateState<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -57,7 +58,7 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstruc
         {
             throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateState<Fluent>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Concept>>(ref_grammar_constructor_repos.create<ConceptPredicateState<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -66,7 +67,7 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstruc
         {
             throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateState<Derived>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Concept>>(ref_grammar_constructor_repos.create<ConceptPredicateState<Derived>>(predicate));
     }
     else
     {
@@ -74,7 +75,7 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, GrammarConstruc
     }
 }
 
-static const ConceptChoice&
+static const Choice<Concept>&
 parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
@@ -84,7 +85,7 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstruct
         {
             throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Static>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Concept>>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -93,7 +94,7 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstruct
         {
             throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Fluent>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Concept>>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -102,7 +103,7 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstruct
         {
             throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template create<ConceptChoice>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Derived>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Concept>>(ref_grammar_constructor_repos.create<ConceptPredicateGoal<Derived>>(predicate));
     }
     else
     {
@@ -110,36 +111,36 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, GrammarConstruct
     }
 }
 
-static const ConceptChoice&
+static const Choice<Concept>&
 parse(const dl::ast::ConceptAnd& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template create<ConceptChoice>(
+    return ref_grammar_constructor_repos.template create<Choice<Concept>>(
         ref_grammar_constructor_repos.create<ConceptAnd>(parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
                                                          parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static const ConceptChoice&
+static const Choice<Concept>&
 parse(const dl::ast::ConceptNonTerminal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    const auto& non_terminal = ref_grammar_constructor_repos.create<ConceptNonTerminal>(node.name);
+    const auto& non_terminal = ref_grammar_constructor_repos.create<NonTerminal<Concept>>(node.name);
     context.m_concept_non_terminal_by_name.emplace(node.name, non_terminal);
-    return ref_grammar_constructor_repos.template create<ConceptChoice>(non_terminal);
+    return ref_grammar_constructor_repos.template create<Choice<Concept>>(non_terminal);
 }
 
-static const ConceptChoice&
+static const Choice<Concept>&
 parse(const dl::ast::ConceptChoice& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return boost::apply_visitor([&](const auto& arg) -> const ConceptChoice& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
+    return boost::apply_visitor([&](const auto& arg) -> const Choice<Concept>& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static const ConceptDerivationRule&
+static const DerivationRule<Concept>&
 parse(const dl::ast::ConceptDerivationRule& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    auto choices = ConceptChoiceList {};
+    auto choices = ChoiceList<Concept> {};
     std::for_each(node.choices.begin(),
                   node.choices.end(),
                   [&](const auto& choice) { choices.push_back(parse(choice, domain, ref_grammar_constructor_repos, context)); });
-    const auto& rule = ref_grammar_constructor_repos.template create<ConceptDerivationRule>(choices);
+    const auto& rule = ref_grammar_constructor_repos.template create<DerivationRule<Concept>>(choices);
     if (context.m_concept_rules_by_name.count(node.non_terminal.name))
     {
         throw std::runtime_error("Got multiple concept rule definitions for non terminal \"" + node.non_terminal.name + "\". Use choice rules instead.");
@@ -148,12 +149,12 @@ parse(const dl::ast::ConceptDerivationRule& node, Domain domain, GrammarConstruc
     return rule;
 }
 
-static const RoleChoice& parse(const dl::ast::Role& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+static const Choice<Role>& parse(const dl::ast::Role& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return boost::apply_visitor([&](const auto& arg) -> const RoleChoice& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
+    return boost::apply_visitor([&](const auto& arg) -> const Choice<Role>& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static const RoleChoice&
+static const Choice<Role>&
 parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
@@ -163,7 +164,7 @@ parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructor
         {
             throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateState<Static>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Role>>(ref_grammar_constructor_repos.create<RolePredicateState<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -172,7 +173,7 @@ parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructor
         {
             throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateState<Fluent>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Role>>(ref_grammar_constructor_repos.create<RolePredicateState<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -181,7 +182,7 @@ parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructor
         {
             throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateState<Derived>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Role>>(ref_grammar_constructor_repos.create<RolePredicateState<Derived>>(predicate));
     }
     else
     {
@@ -189,7 +190,7 @@ parse(const dl::ast::RolePredicateState& node, Domain domain, GrammarConstructor
     }
 }
 
-static const RoleChoice&
+static const Choice<Role>&
 parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
@@ -199,7 +200,7 @@ parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorR
         {
             throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateGoal<Static>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Role>>(ref_grammar_constructor_repos.create<RolePredicateGoal<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -208,7 +209,7 @@ parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorR
         {
             throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateGoal<Fluent>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Role>>(ref_grammar_constructor_repos.create<RolePredicateGoal<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -217,7 +218,7 @@ parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorR
         {
             throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template create<RoleChoice>(ref_grammar_constructor_repos.create<RolePredicateGoal<Derived>>(predicate));
+        return ref_grammar_constructor_repos.template create<Choice<Role>>(ref_grammar_constructor_repos.create<RolePredicateGoal<Derived>>(predicate));
     }
     else
     {
@@ -225,34 +226,35 @@ parse(const dl::ast::RolePredicateGoal& node, Domain domain, GrammarConstructorR
     }
 }
 
-static const RoleChoice& parse(const dl::ast::RoleAnd& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+static const Choice<Role>& parse(const dl::ast::RoleAnd& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template create<RoleChoice>(
+    return ref_grammar_constructor_repos.template create<Choice<Role>>(
         ref_grammar_constructor_repos.create<RoleAnd>(parse(node.role_left, domain, ref_grammar_constructor_repos, context),
                                                       parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static const RoleChoice&
+static const Choice<Role>&
 parse(const dl::ast::RoleNonTerminal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    const auto& non_terminal = ref_grammar_constructor_repos.create<RoleNonTerminal>(node.name);
+    const auto& non_terminal = ref_grammar_constructor_repos.create<NonTerminal<Role>>(node.name);
     context.m_role_non_terminal_by_name.emplace(node.name, non_terminal);
-    return ref_grammar_constructor_repos.template create<RoleChoice>(non_terminal);
+    return ref_grammar_constructor_repos.template create<Choice<Role>>(non_terminal);
 }
 
-static const RoleChoice& parse(const dl::ast::RoleChoice& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+static const Choice<Role>&
+parse(const dl::ast::RoleChoice& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return boost::apply_visitor([&](const auto& arg) -> const RoleChoice& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
+    return boost::apply_visitor([&](const auto& arg) -> const Choice<Role>& { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static const RoleDerivationRule&
+static const DerivationRule<Role>&
 parse(const dl::ast::RoleDerivationRule& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    auto choices = RoleChoiceList {};
+    auto choices = ChoiceList<Role> {};
     std::for_each(node.choices.begin(),
                   node.choices.end(),
                   [&](const auto& choice) { choices.push_back(parse(choice, domain, ref_grammar_constructor_repos, context)); });
-    const auto& rule = ref_grammar_constructor_repos.template create<RoleDerivationRule>(choices);
+    const auto& rule = ref_grammar_constructor_repos.template create<DerivationRule<Role>>(choices);
     if (context.m_role_rules_by_name.count(node.non_terminal.name))
     {
         throw std::runtime_error("Got multiple role rule definitions for non terminal \"" + node.non_terminal.name + "\". Use choice rules instead.");
@@ -261,11 +263,11 @@ parse(const dl::ast::RoleDerivationRule& node, Domain domain, GrammarConstructor
     return rule;
 }
 
-static std::tuple<ConceptDerivationRuleList, RoleDerivationRuleList>
+static std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
 parse(const dl::ast::Grammar& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    auto concept_rules = ConceptDerivationRuleList {};
-    auto role_rules = RoleDerivationRuleList {};
+    auto concept_rules = DerivationRuleList<Concept> {};
+    auto role_rules = DerivationRuleList<Role> {};
 
     std::for_each(node.rules.begin(),
                   node.rules.end(),

@@ -203,10 +203,10 @@ class ConceptAnd : public Constructor<Concept>
 {
 private:
     size_t m_id;
-    std::reference_wrapper<const ConceptChoice> m_concept_left;
-    std::reference_wrapper<const ConceptChoice> m_concept_right;
+    std::reference_wrapper<const Choice<Concept>> m_concept_left;
+    std::reference_wrapper<const Choice<Concept>> m_concept_right;
 
-    ConceptAnd(size_t id, const ConceptChoice& concept_left, const ConceptChoice& concept_right);
+    ConceptAnd(size_t id, const Choice<Concept>& concept_left, const Choice<Concept>& concept_right);
 
     template<typename T>
     friend class dl::ConstructorRepository;
@@ -225,8 +225,8 @@ public:
     bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
     size_t get_id() const override;
-    const ConceptChoice& get_concept_left() const;
-    const ConceptChoice& get_concept_right() const;
+    const Choice<Concept>& get_concept_left() const;
+    const Choice<Concept>& get_concept_right() const;
 };
 
 /**
@@ -295,10 +295,10 @@ class RoleAnd : public Constructor<Role>
 {
 private:
     size_t m_id;
-    std::reference_wrapper<const RoleChoice> m_role_left;
-    std::reference_wrapper<const RoleChoice> m_role_right;
+    std::reference_wrapper<const Choice<Role>> m_role_left;
+    std::reference_wrapper<const Choice<Role>> m_role_right;
 
-    RoleAnd(size_t id, const RoleChoice& role_left, const RoleChoice& role_right);
+    RoleAnd(size_t id, const Choice<Role>& role_left, const Choice<Role>& role_right);
 
     template<typename T>
     friend class dl::ConstructorRepository;
@@ -317,8 +317,8 @@ public:
     bool test_match(const dl::Constructor<Role>& constructor) const override;
 
     size_t get_id() const override;
-    const RoleChoice& get_role_left() const;
-    const RoleChoice& get_role_right() const;
+    const Choice<Role>& get_role_left() const;
+    const Choice<Role>& get_role_right() const;
 };
 
 }

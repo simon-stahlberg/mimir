@@ -35,17 +35,20 @@ struct EvaluationContext;
  * Constructors
  */
 
+/* Constructor */
 template<IsConceptOrRole D>
 class Constructor;
-using ConceptConstructorList = std::vector<std::reference_wrapper<const Constructor<Concept>>>;
-using RoleConstructorList = std::vector<std::reference_wrapper<const Constructor<Role>>>;
+template<IsConceptOrRole D>
+using ConstructorList = std::vector<std::reference_wrapper<const Constructor<D>>>;
 
+/* Concrete concepts */
 template<PredicateCategory P>
 class ConceptPredicateState;
 template<PredicateCategory P>
 class ConceptPredicateGoal;
 class ConceptAnd;
 
+/* Concrete roles */
 template<PredicateCategory P>
 class RolePredicateState;
 template<PredicateCategory P>
@@ -67,16 +70,10 @@ template<dl::IsConceptOrRole D>
 class DerivationRule;
 template<IsConceptOrRole D>
 using DerivationRuleList = std::vector<std::reference_wrapper<const DerivationRule<D>>>;
-using ConceptDerivationRule = DerivationRule<Concept>;
-using ConceptDerivationRuleList = DerivationRuleList<Concept>;
-using RoleDerivationRule = DerivationRule<Role>;
-using RoleDerivationRuleList = DerivationRuleList<Role>;
 
 /* NonTerminal */
 template<dl::IsConceptOrRole D>
 class NonTerminal;
-using ConceptNonTerminal = NonTerminal<Concept>;
-using RoleNonTerminal = NonTerminal<Role>;
 
 /* ConstructorOrNonTerminalChoice */
 template<IsConceptOrRole D>
@@ -87,10 +84,6 @@ template<dl::IsConceptOrRole D>
 class Choice;
 template<dl::IsConceptOrRole D>
 using ChoiceList = std::vector<std::reference_wrapper<const Choice<D>>>;
-using ConceptChoice = Choice<Concept>;
-using ConceptChoiceList = ChoiceList<Concept>;
-using RoleChoice = Choice<Role>;
-using RoleChoiceList = ChoiceList<Role>;
 
 /**
  * Visitors

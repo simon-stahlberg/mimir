@@ -319,7 +319,7 @@ template class ConceptPredicateGoal<Derived>;
 /**
  * ConceptAnd
  */
-ConceptAnd::ConceptAnd(size_t id, const ConceptChoice& concept_left, const ConceptChoice& concept_right) :
+ConceptAnd::ConceptAnd(size_t id, const Choice<Concept>& concept_left, const Choice<Concept>& concept_right) :
     m_id(id),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
@@ -351,9 +351,9 @@ bool ConceptAnd::test_match(const dl::Constructor<Concept>& constructor) const {
 
 size_t ConceptAnd::get_id() const { return m_id; }
 
-const ConceptChoice& ConceptAnd::get_concept_left() const { return m_concept_left.get(); }
+const Choice<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left.get(); }
 
-const ConceptChoice& ConceptAnd::get_concept_right() const { return m_concept_right.get(); }
+const Choice<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right.get(); }
 
 /**
  * RolePredicateState
@@ -474,7 +474,7 @@ template class RolePredicateGoal<Derived>;
 /**
  * RoleAnd
  */
-RoleAnd::RoleAnd(size_t id, const RoleChoice& role_left, const RoleChoice& role_right) : m_id(id), m_role_left(role_left), m_role_right(role_right) {}
+RoleAnd::RoleAnd(size_t id, const Choice<Role>& role_left, const Choice<Role>& role_right) : m_id(id), m_role_left(role_left), m_role_right(role_right) {}
 
 bool RoleAnd::operator==(const RoleAnd& other) const
 {
@@ -501,8 +501,8 @@ bool RoleAnd::test_match(const dl::Constructor<Role>& constructor) const { retur
 
 size_t RoleAnd::get_id() const { return m_id; }
 
-const RoleChoice& RoleAnd::get_role_left() const { return m_role_left.get(); }
+const Choice<Role>& RoleAnd::get_role_left() const { return m_role_left.get(); }
 
-const RoleChoice& RoleAnd::get_role_right() const { return m_role_right.get(); }
+const Choice<Role>& RoleAnd::get_role_right() const { return m_role_right.get(); }
 
 }

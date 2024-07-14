@@ -16,6 +16,7 @@
  */
 
 #include "mimir/formalism/domain.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
 #include <tuple>
