@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_STRATIFICATION_HPP_
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_STRATIFICATION_HPP_
 
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {

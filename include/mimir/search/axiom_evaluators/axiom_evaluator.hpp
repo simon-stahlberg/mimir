@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATOR_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"

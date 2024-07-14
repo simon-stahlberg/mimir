@@ -34,15 +34,15 @@ private:
     /* Implement BrFSAlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>;
 
-    void on_generate_state_impl(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) const;
+    void on_generate_state_impl(Problem problem, GroundAction action, State successor_state, const PDDLFactories& pddl_factories) const;
 
     void on_finish_f_layer_impl(uint64_t f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
-    void on_expand_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const;
+    void on_expand_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const;
 
-    void on_prune_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const;
+    void on_prune_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const;
 
-    void on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const;
+    void on_start_search_impl(Problem problem, State initial_state, const PDDLFactories& pddl_factories) const;
 
     void on_end_search_impl() const;
 

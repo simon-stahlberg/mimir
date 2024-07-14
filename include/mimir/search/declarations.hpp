@@ -15,33 +15,40 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_DECLARATIONS_HPP_
+#define MIMIR_SEARCH_DECLARATIONS_HPP_
 
-#include "mimir/search/flat_types.hpp"
+#include <memory>
 
 namespace mimir
 {
 
-/**
- * Dynamic interface class.
- */
-class IAxiomEvaluator
-{
-public:
-    virtual ~IAxiomEvaluator() = default;
+/* Algorithms */
+class IApplicableActionGenerator;
+using IAAG = IApplicableActionGenerator;
 
-    /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) = 0;
+class IAlgorithm;
 
-    virtual size_t get_num_ground_axioms() const = 0;
-};
+class IPruningStrategy;
+class IGoalStrategy;
 
-/**
- * Type aliases
- */
+class IBrFSAlgorithmEventHandler;
+using BrFSAlgorithmEventHandler = std::shared_ptr<IBrFSAlgorithmEventHandler>;
+class IIWAlgorithmEventHandler;
+using IWAlgorithmEventHandler = std::shared_ptr<IIWAlgorithmEventHandler>;
+class ISIWAlgorithmEventHandler;
+using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
 
-using IAE = IAxiomEvaluator;
+/* Heuristics */
+class IHeuristic;
+
+class GroundAction;
+
+class GroundAxiom;
+
+class State;
+
+class SuccessorStateGenerator;
 
 }
 

@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/state.hpp"
@@ -38,19 +38,19 @@ public:
     virtual ~IBrFSAlgorithmEventHandler() = default;
 
     /// @brief React on generating a successor_state by applying an action.
-    virtual void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state(Problem problem, GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a f-layer.
     virtual void on_finish_f_layer() = 0;
 
     /// @brief React on expanding a state.
-    virtual void on_expand_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_expand_state(Problem problem, State state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on pruning a state.
-    virtual void on_prune_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_prune_state(Problem problem, State state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(Problem problem, State initial_state, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;

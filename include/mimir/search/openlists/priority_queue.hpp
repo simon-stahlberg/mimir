@@ -26,27 +26,17 @@ namespace mimir
 {
 
 /**
- * Derived ID class.
- *
- * Define name and template parameters of your own implementation.
- */
-template<typename T>
-struct PriorityQueueTag : public OpenListTag
-{
-};
-
-/**
  * Implementation class
  */
 template<typename T>
-class OpenList<OpenListDispatcher<PriorityQueueTag<T>>> : public IOpenList<OpenList<OpenListDispatcher<PriorityQueueTag<T>>>>
+class PriorityQueue : public IOpenList<PriorityQueue<T>>
 {
     // Implement configuration specific functionality.
 private:
     std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
 
     /* Implement IOpenList interface */
-    friend class IOpenList<OpenList<OpenListDispatcher<PriorityQueueTag<T>>>>;
+    friend class IOpenList<PriorityQueue>;
 
     void insert_impl(double priority, const T& item) { priority_queue_.emplace(priority, item); }
 
@@ -58,9 +48,6 @@ private:
 
     std::size_t size_impl() const { return priority_queue_.size(); }
 };
-
-template<typename T>
-using PriorityQueue = OpenList<OpenListDispatcher<PriorityQueueTag<T>>>;
 
 }  // namespace mimir
 

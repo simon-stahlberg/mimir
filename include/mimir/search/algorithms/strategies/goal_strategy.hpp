@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_STRATEGIES_GOAL_STRATEGY_HPP_
 
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir

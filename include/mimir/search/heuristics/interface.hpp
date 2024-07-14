@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 #define MIMIR_SEARCH_HEURISTICS_INTERFACE_HPP_
 
-#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir

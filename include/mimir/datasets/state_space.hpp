@@ -26,6 +26,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/successor_state_generator.hpp"
 

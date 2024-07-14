@@ -24,6 +24,7 @@
 #include "mimir/datasets/transitions.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/successor_state_generator.hpp"
 

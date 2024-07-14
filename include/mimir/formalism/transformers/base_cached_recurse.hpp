@@ -19,7 +19,6 @@
 #define MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
 
 #include "mimir/formalism/factories.hpp"
-#include "mimir/formalism/pddl.hpp"
 #include "mimir/formalism/transformers/interface.hpp"
 
 #include <deque>

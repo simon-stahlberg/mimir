@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/state.hpp"
@@ -56,12 +56,6 @@ public:
     virtual Problem get_problem() const = 0;
     virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
 };
-
-/**
- * Type aliases
- */
-
-using IAAG = IApplicableActionGenerator;
 
 }
 

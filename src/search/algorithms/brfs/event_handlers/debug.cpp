@@ -22,9 +22,9 @@
 
 namespace mimir
 {
-void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(const Problem problem,
-                                                            const GroundAction action,
-                                                            const State successor_state,
+void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(Problem problem,
+                                                            GroundAction action,
+                                                            State successor_state,
                                                             const PDDLFactories& pddl_factories) const
 {
     std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_factories)) << "\n"
@@ -38,16 +38,16 @@ void DebugBrFSAlgorithmEventHandler::on_finish_f_layer_impl(uint64_t f_value, ui
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const
+void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[BrFS] ----------------------------------------\n"
               << "[BrFS] State: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << std::endl
               << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_prune_state_impl(const Problem problem, const State state, const PDDLFactories& pddl_factories) const {}
+void DebugBrFSAlgorithmEventHandler::on_prune_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const {}
 
-void DebugBrFSAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const
+void DebugBrFSAlgorithmEventHandler::on_start_search_impl(Problem problem, State initial_state, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[BrFS] Search started.\n"
               << "[BrFS] Initial: " << std::make_tuple(problem, initial_state, std::cref(pddl_factories)) << std::endl;

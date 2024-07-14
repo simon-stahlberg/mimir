@@ -1,9 +1,13 @@
-#include "mimir/formalism/formalism.hpp"
-#include "mimir/search/algorithms.hpp"
+
+#include "mimir/search/algorithms/brfs.hpp"
+
+#include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/successor_state_generator.hpp"
 
 #include <gtest/gtest.h>
 

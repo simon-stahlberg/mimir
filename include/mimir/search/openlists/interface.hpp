@@ -18,8 +18,6 @@
 #ifndef MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
 #define MIMIR_SEARCH_OPENLISTS_INTERFACE_HPP_
 
-#include "mimir/search/openlists/tags.hpp"
-
 #include <concepts>
 #include <cstdint>
 
@@ -47,22 +45,12 @@ public:
         return self().insert_impl(priority, item);
     }
 
-    [[nodiscard]] decltype(auto) top() const { return self().top_impl(); }
+    decltype(auto) top() const { return self().top_impl(); }
 
     void pop() { self().pop_impl(); }
 
-    [[nodiscard]] bool empty() const { return self().empty_impl(); }
-    [[nodiscard]] std::size_t size() const { return self().size_impl(); }
-};
-
-/**
- * General implementation class.
- *
- * Specialize it with your dispatcher.
- */
-template<IsOpenListDispatcher T>
-class OpenList : public IOpenList<OpenList<T>>
-{
+    bool empty() const { return self().empty_impl(); }
+    std::size_t size() const { return self().size_impl(); }
 };
 
 }

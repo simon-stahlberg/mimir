@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 
 namespace mimir

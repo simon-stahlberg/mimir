@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_INTERFACE_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_INTERFACE_HPP_
 
-#include "mimir/formalism/pddl.hpp"
+#include "mimir/formalism/factories.hpp"
 
 #include <algorithm>
 #include <boost/container/small_vector.hpp>

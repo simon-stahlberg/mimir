@@ -18,7 +18,8 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_HPP_
 
-// #include "mimir/formalism/transformers/copy.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
+#include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
+#include "mimir/formalism/transformers/to_positive_normal_form.hpp"
 
 #endif

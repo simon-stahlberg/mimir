@@ -360,7 +360,6 @@ PDDLFactories::ground_literal_generic(const Literal<P> literal, const ObjectList
 
     auto& groundings = grounding_table[literal_id];
 
-    assert(binding.size() >= literal->get_atom()->get_arity());
     const auto it = groundings.find(binding);
     if (it != groundings.end())
     {

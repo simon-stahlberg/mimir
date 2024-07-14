@@ -17,6 +17,10 @@
 
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/term.hpp"
+#include "mimir/formalism/variable.hpp"
+
 namespace mimir
 {
 
@@ -24,13 +28,7 @@ namespace mimir
  * Assignment
  */
 
-Assignment::Assignment(size_t index, size_t object) :
-    first_index(index),
-    first_object(object),
-    second_index(MAX_VALUE),
-    second_object(MAX_VALUE)
-{
-}
+Assignment::Assignment(size_t index, size_t object) : first_index(index), first_object(object), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
 
 Assignment::Assignment(size_t first_index, size_t first_object, size_t second_index, size_t second_object) :
     first_index(first_index),
