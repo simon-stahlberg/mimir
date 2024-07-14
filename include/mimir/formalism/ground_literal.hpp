@@ -69,60 +69,6 @@ using GroundLiteralList = std::vector<GroundLiteral<P>>;
 template<PredicateCategory P>
 using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
 
-/**
- * Implementation details
- */
-
-template<PredicateCategory P>
-GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom) :
-    loki::Base<GroundLiteralImpl<P>>(identifier),
-    m_is_negated(is_negated),
-    m_atom(std::move(atom))
-{
-}
-
-template<PredicateCategory P>
-bool GroundLiteralImpl<P>::is_structurally_equivalent_to_impl(const GroundLiteralImpl<P>& other) const
-{
-    if (this != &other)
-    {
-        return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-size_t GroundLiteralImpl<P>::hash_impl() const
-{
-    return loki::hash_combine(m_is_negated, m_atom);
-}
-
-template<PredicateCategory P>
-void GroundLiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    if (m_is_negated)
-    {
-        out << "(not ";
-        m_atom->str(out, options);
-        out << ")";
-    }
-    else
-    {
-        m_atom->str(out, options);
-    }
-}
-
-template<PredicateCategory P>
-bool GroundLiteralImpl<P>::is_negated() const
-{
-    return m_is_negated;
-}
-
-template<PredicateCategory P>
-const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
-{
-    return m_atom;
-}
 }
 
 #endif

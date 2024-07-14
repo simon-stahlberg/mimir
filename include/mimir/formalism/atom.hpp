@@ -65,62 +65,6 @@ using Atom = const AtomImpl<P>*;
 template<PredicateCategory P>
 using AtomList = std::vector<Atom<P>>;
 
-/**
- * Implementation details
- */
-template<PredicateCategory P>
-AtomImpl<P>::AtomImpl(int identifier, Predicate<P> predicate, TermList terms) :
-    loki::Base<AtomImpl<P>>(identifier),
-    m_predicate(std::move(predicate)),
-    m_terms(std::move(terms))
-{
-}
-
-template<PredicateCategory P>
-bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate) && (m_terms == other.m_terms);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-size_t AtomImpl<P>::hash_impl() const
-{
-    return loki::hash_combine(m_predicate, loki::hash_container(m_terms));
-}
-
-template<PredicateCategory P>
-void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << m_predicate->get_name();
-    for (size_t i = 0; i < m_terms.size(); ++i)
-    {
-        out << " ";
-        std::visit(loki::StringifyVisitor(out, options), *m_terms[i]);
-    }
-    out << ")";
-}
-
-template<PredicateCategory P>
-Predicate<P> AtomImpl<P>::get_predicate() const
-{
-    return m_predicate;
-}
-
-template<PredicateCategory P>
-const TermList& AtomImpl<P>::get_terms() const
-{
-    return m_terms;
-}
-
-template<PredicateCategory P>
-size_t AtomImpl<P>::get_arity() const
-{
-    return m_terms.size();
-}
 }
 
 #endif
