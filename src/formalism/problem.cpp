@@ -18,6 +18,7 @@
 #include "mimir/formalism/problem.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -251,6 +252,8 @@ const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predic
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
+const FlatBitsetBuilder<Static> ProblemImpl::get_static_initial_positive_atoms() const { return m_static_initial_positive_atoms_builder; }
+
 FlatBitset<Static> ProblemImpl::get_static_initial_positive_atoms_bitset() const
 {
     return FlatBitset<Static>(m_static_initial_positive_atoms_builder.buffer().data());
@@ -259,6 +262,31 @@ FlatBitset<Static> ProblemImpl::get_static_initial_positive_atoms_bitset() const
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
+
+template<PredicateCategory P>
+const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_goal_condition;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_goal_condition;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_goal_condition;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const GroundLiteralList<Static>& ProblemImpl::get_goal_condition<Static>() const;
+template const GroundLiteralList<Fluent>& ProblemImpl::get_goal_condition<Fluent>() const;
+template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Derived>() const;
 
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 

@@ -18,11 +18,7 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_HPP_
 #define MIMIR_FORMALISM_FUNCTION_HPP_
 
-#include "mimir/formalism/function_skeleton.hpp"
-#include "mimir/formalism/term.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -51,13 +47,6 @@ public:
     const FunctionSkeleton& get_function_skeleton() const;
     const TermList& get_terms() const;
 };
-
-/**
- * Type aliases
- */
-
-using Function = const FunctionImpl*;
-using FunctionList = std::vector<Function>;
 
 }
 

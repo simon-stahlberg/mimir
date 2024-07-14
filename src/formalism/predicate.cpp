@@ -17,6 +17,10 @@
 
 #include "mimir/formalism/predicate.hpp"
 
+#include "mimir/common/collections.hpp"
+#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/variable.hpp"
+
 namespace mimir
 {
 

@@ -18,10 +18,7 @@
 #ifndef MIMIR_FORMALISM_METRIC_HPP_
 #define MIMIR_FORMALISM_METRIC_HPP_
 
-#include "mimir/formalism/ground_function_expressions.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -51,11 +48,6 @@ public:
     const GroundFunctionExpression& get_function_expression() const;
 };
 
-/**
- * Type aliases
- */
-
-using OptimizationMetric = const OptimizationMetricImpl*;
 }
 
 #endif

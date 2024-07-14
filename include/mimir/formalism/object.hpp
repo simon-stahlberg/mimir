@@ -18,9 +18,7 @@
 #ifndef MIMIR_FORMALISM_OBJECT_HPP_
 #define MIMIR_FORMALISM_OBJECT_HPP_
 
-#include <loki/loki.hpp>
-#include <string>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -54,13 +52,6 @@ private:
 public:
     const std::string& get_name() const;
 };
-
-/**
- * Type aliases
- */
-
-using Object = const ObjectImpl*;
-using ObjectList = std::vector<Object>;
 
 }
 

@@ -18,12 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_GROUND_FUNCTION_HPP_
 #define MIMIR_FORMALISM_GROUND_GROUND_FUNCTION_HPP_
 
-#include "mimir/formalism/function_skeleton.hpp"
-#include "mimir/formalism/object.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -50,13 +45,6 @@ public:
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;
 };
-
-/**
- * Type aliases
- */
-
-using GroundFunction = const GroundFunctionImpl*;
-using GroundFunctionList = std::vector<GroundFunction>;
 
 }
 

@@ -18,12 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_ATOM_HPP_
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate.hpp"
-
-#include <loki/loki.hpp>
-#include <ostream>
-#include <string>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -66,17 +61,6 @@ public:
     const ObjectList& get_objects() const;
     size_t get_arity() const;
 };
-
-/**
- * Type aliases
- */
-
-template<PredicateCategory P>
-using GroundAtom = const GroundAtomImpl<P>*;
-template<PredicateCategory P>
-using GroundAtomList = std::vector<GroundAtom<P>>;
-template<PredicateCategory P>
-using GroundAtomSet = std::unordered_set<GroundAtom<P>>;
 
 }
 

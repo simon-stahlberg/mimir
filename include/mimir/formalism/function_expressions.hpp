@@ -18,35 +18,10 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
-#include "mimir/formalism/function.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <variant>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
-/**
- * Type aliases
- */
-
-class FunctionExpressionNumberImpl;
-using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;
-class FunctionExpressionBinaryOperatorImpl;
-using FunctionExpressionBinaryOperator = const FunctionExpressionBinaryOperatorImpl*;
-class FunctionExpressionMultiOperatorImpl;
-using FunctionExpressionMultiOperator = const FunctionExpressionMultiOperatorImpl*;
-class FunctionExpressionMinusImpl;
-using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
-class FunctionExpressionFunctionImpl;
-using FunctionExpressionImpl = std::variant<FunctionExpressionNumberImpl,
-                                            FunctionExpressionBinaryOperatorImpl,
-                                            FunctionExpressionMultiOperatorImpl,
-                                            FunctionExpressionMinusImpl,
-                                            FunctionExpressionFunctionImpl>;
-using FunctionExpression = const FunctionExpressionImpl*;
-using FunctionExpressionList = std::vector<FunctionExpression>;
 
 /* FunctionExpressionNumber */
 class FunctionExpressionNumberImpl : public loki::Base<FunctionExpressionNumberImpl>

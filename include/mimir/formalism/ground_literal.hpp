@@ -18,11 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 #define MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/predicate.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -57,18 +53,6 @@ public:
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;
 };
-
-/**
- * Type aliases
- */
-
-template<PredicateCategory P>
-using GroundLiteral = const GroundLiteralImpl<P>*;
-template<PredicateCategory P>
-using GroundLiteralList = std::vector<GroundLiteral<P>>;
-template<PredicateCategory P>
-using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
-
 }
 
 #endif

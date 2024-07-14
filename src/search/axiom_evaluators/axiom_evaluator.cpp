@@ -90,7 +90,7 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& 
             {
                 assert(!grounded_axiom.get_derived_effect().is_negated);
 
-                assert(grounded_axiom.is_applicable(fluent_state_atoms, ref_derived_state_atoms, m_problem->get_static_initial_positive_atoms_bitset()));
+                assert(grounded_axiom.is_applicable(fluent_state_atoms, ref_derived_state_atoms, m_problem->get_static_initial_positive_atoms()));
 
                 const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
 

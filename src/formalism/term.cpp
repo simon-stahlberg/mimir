@@ -20,8 +20,6 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/variable.hpp"
 
-#include <loki/loki.hpp>
-
 namespace mimir
 {
 /* TermObjectImpl */

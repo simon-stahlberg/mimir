@@ -18,11 +18,7 @@
 #ifndef MIMIR_FORMALISM_ATOM_HPP_
 #define MIMIR_FORMALISM_ATOM_HPP_
 
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/term.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -55,15 +51,6 @@ public:
     const TermList& get_terms() const;
     size_t get_arity() const;
 };
-
-/**
- * Type aliases
- */
-
-template<PredicateCategory P>
-using Atom = const AtomImpl<P>*;
-template<PredicateCategory P>
-using AtomList = std::vector<Atom<P>>;
 
 }
 

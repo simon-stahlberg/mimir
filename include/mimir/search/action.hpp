@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_ACTION_HPP_
 #define MIMIR_SEARCH_ACTION_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/predicate_category.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
@@ -28,6 +27,8 @@
 
 namespace mimir
 {
+class PDDLFactories;
+
 /**
  * Flatmemory types
  */
@@ -37,14 +38,7 @@ struct FlatSimpleEffect
     bool is_negated;
     size_t atom_id;
 
-    bool operator==(const FlatSimpleEffect& other) const
-    {
-        if (this != &other)
-        {
-            return is_negated == other.is_negated && atom_id == other.atom_id;
-        }
-        return true;
-    }
+    bool operator==(const FlatSimpleEffect& other) const;
 };
 
 using FlatStripsActionPreconditionLayout = flatmemory::Tuple<FlatBitsetLayout<Static>,  //
@@ -93,24 +87,12 @@ using FlatActionVector = flatmemory::VariableSizedTypeVector<FlatActionLayout>;
 
 struct FlatActionHash
 {
-    size_t operator()(FlatAction view) const
-    {
-        const auto action = view.get<2>();
-        const auto objects = view.get<3>();
-        return loki::hash_combine(action, objects.hash());
-    }
+    size_t operator()(FlatAction view) const;
 };
 
 struct FlatActionEqual
 {
-    bool operator()(FlatAction view_left, FlatAction view_right) const
-    {
-        const auto action_left = view_left.get<2>();
-        const auto objects_left = view_left.get<3>();
-        const auto action_right = view_right.get<2>();
-        const auto objects_right = view_right.get<3>();
-        return (action_left == action_right) && (objects_left == objects_right);
-    }
+    bool operator()(FlatAction view_left, FlatAction view_right) const;
 };
 
 using FlatActionSet = flatmemory::UnorderedSet<FlatActionLayout, FlatActionHash, FlatActionEqual>;
@@ -125,51 +107,15 @@ private:
     FlatStripsActionPreconditionBuilder& m_builder;
 
 public:
-    explicit StripsActionPreconditionBuilderProxy(FlatStripsActionPreconditionBuilder& builder) : m_builder(builder) {}
+    explicit StripsActionPreconditionBuilderProxy(FlatStripsActionPreconditionBuilder& builder);
 
     /* Precondition */
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitsetBuilder<P>& get_positive_precondition()
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_builder.get<0>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_builder.get<2>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_builder.get<4>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatBitsetBuilder<P>& get_positive_precondition();
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitsetBuilder<P>& get_negative_precondition()
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_builder.get<1>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_builder.get<3>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_builder.get<5>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatBitsetBuilder<P>& get_negative_precondition();
 };
 
 class StripsActionPrecondition
@@ -178,88 +124,29 @@ private:
     FlatStripsActionPrecondition m_view;
 
 public:
-    explicit StripsActionPrecondition(FlatStripsActionPrecondition view) : m_view(view) {}
+    explicit StripsActionPrecondition(FlatStripsActionPrecondition view);
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_positive_precondition() const
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_view.get<0>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_view.get<2>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_view.get<4>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatBitset<P> get_positive_precondition() const;
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_negative_precondition() const
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_view.get<1>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_view.get<3>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_view.get<5>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatBitset<P> get_negative_precondition() const;
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool is_applicable(State state) const
-    {
-        const auto state_atoms = state.get_atoms<P>();
+    bool is_applicable(State state) const;
 
-        return state_atoms.is_superseteq(get_positive_precondition<P>())  //
-               && state_atoms.are_disjoint(get_negative_precondition<P>());
-    }
+    bool is_dynamically_applicable(State state) const;
 
-    [[nodiscard]] bool is_dynamically_applicable(State state) const
-    {  //
-        return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
-    }
+    bool is_statically_applicable(FlatBitset<Static> static_positive_atoms) const;
 
-    template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset& static_positive_atoms) const
-    {
-        return is_applicable<Static>(static_positive_atoms);
-    }
+    bool is_applicable(Problem problem, State state) const;
 
-    [[nodiscard]] bool is_applicable(Problem problem, State state) const
-    {
-        return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
-    }
+    template<PredicateCategory P>
+    bool is_applicable(const FlatBitsetBuilder<P>& atoms) const;
 
-    template<PredicateCategory P, flatmemory::IsBitset Bitset>
-        requires flatmemory::HasCompatibleTagType<Bitset, P>
-    [[nodiscard]] bool is_applicable(const Bitset& atoms) const
-    {
-        return atoms.is_superseteq(get_positive_precondition<P>())  //
-               && atoms.are_disjoint(get_negative_precondition<P>());
-    }
-
-    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2, flatmemory::IsBitset Bitset3>
-    [[nodiscard]] bool is_applicable(const Bitset1& fluent_state_atoms, const Bitset2& derived_state_atoms, const Bitset3& static_positive_bitset) const
-    {
-        return is_applicable<Fluent>(fluent_state_atoms) && is_applicable<Static>(static_positive_bitset) && is_applicable<Derived>(derived_state_atoms);
-    }
+    bool is_applicable(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
+                       const FlatBitsetBuilder<Derived>& derived_state_atoms,
+                       const FlatBitsetBuilder<Static>& static_initial_atoms) const;
 };
 
 class StripsActionEffectBuilderProxy
@@ -268,10 +155,10 @@ private:
     FlatStripsActionEffectBuilder& m_builder;
 
 public:
-    explicit StripsActionEffectBuilderProxy(FlatStripsActionEffectBuilder& builder) : m_builder(builder) {}
+    explicit StripsActionEffectBuilderProxy(FlatStripsActionEffectBuilder& builder);
 
-    [[nodiscard]] FlatBitsetBuilder<Fluent>& get_positive_effects() { return m_builder.get<0>(); }
-    [[nodiscard]] FlatBitsetBuilder<Fluent>& get_negative_effects() { return m_builder.get<1>(); }
+    FlatBitsetBuilder<Fluent>& get_positive_effects();
+    FlatBitsetBuilder<Fluent>& get_negative_effects();
 };
 
 class StripsActionEffect
@@ -280,10 +167,10 @@ private:
     FlatStripsActionEffect m_view;
 
 public:
-    explicit StripsActionEffect(FlatStripsActionEffect view) : m_view(view) {}
+    explicit StripsActionEffect(FlatStripsActionEffect view);
 
-    [[nodiscard]] FlatBitset<Fluent> get_positive_effects() const { return m_view.get<0>(); }
-    [[nodiscard]] FlatBitset<Fluent> get_negative_effects() const { return m_view.get<1>(); }
+    FlatBitset<Fluent> get_positive_effects() const;
+    FlatBitset<Fluent> get_negative_effects() const;
 };
 
 class ConditionalEffectBuilderProxy
@@ -292,55 +179,19 @@ private:
     FlatConditionalEffectBuilder& m_builder;
 
 public:
-    explicit ConditionalEffectBuilderProxy(FlatConditionalEffectBuilder& builder) : m_builder(builder) {}
+    explicit ConditionalEffectBuilderProxy(FlatConditionalEffectBuilder& builder);
 
     /* Precondition */
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatIndexListBuilder& get_positive_precondition()
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_builder.get<0>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_builder.get<2>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_builder.get<4>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatIndexListBuilder& get_positive_precondition();
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatIndexListBuilder& get_negative_precondition()
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_builder.get<1>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_builder.get<3>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_builder.get<5>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatIndexListBuilder& get_negative_precondition();
 
     /* Simple effects */
 
-    [[nodiscard]] FlatSimpleEffect& get_simple_effect() { return m_builder.get<6>(); }
+    FlatSimpleEffect& get_simple_effect();
 };
 
 class ConditionalEffect
@@ -349,78 +200,27 @@ private:
     FlatConditionalEffect m_view;
 
 public:
-    explicit ConditionalEffect(FlatConditionalEffect view) : m_view(view) {}
+    explicit ConditionalEffect(FlatConditionalEffect view);
 
     /* Precondition */
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatIndexList get_positive_precondition() const
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_view.get<0>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_view.get<2>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_view.get<4>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatIndexList get_positive_precondition() const;
 
     template<PredicateCategory P>
-    [[nodiscard]] FlatIndexList get_negative_precondition() const
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_view.get<1>();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_view.get<3>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_view.get<5>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatIndexList get_negative_precondition() const;
 
     /* Simple effects */
-    [[nodiscard]] const FlatSimpleEffect& get_simple_effect() const { return m_view.get<6>(); }
+    const FlatSimpleEffect& get_simple_effect() const;
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool is_applicable(State state) const
-    {
-        const auto state_atoms = state.get_atoms<P>();
+    bool is_applicable(State state) const;
 
-        return is_superseteq(state_atoms, get_positive_precondition<P>())  //
-               && are_disjoint(state_atoms, get_negative_precondition<P>());
-    }
+    bool is_dynamically_applicable(State state) const;
 
-    [[nodiscard]] bool is_dynamically_applicable(State state) const
-    {  //
-        return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
-    }
+    bool is_statically_applicable(Problem problem) const;
 
-    [[nodiscard]] bool is_statically_applicable(Problem problem) const
-    {
-        const auto static_initial_atoms = problem->get_static_initial_positive_atoms_bitset();
-
-        return is_superseteq(static_initial_atoms, get_positive_precondition<Static>())  //
-               && are_disjoint(static_initial_atoms, get_negative_precondition<Static>());
-    }
-
-    [[nodiscard]] bool is_applicable(Problem problem, State state) const { return is_dynamically_applicable(state) && is_statically_applicable(problem); }
+    bool is_applicable(Problem problem, State state) const;
 };
 
 class GroundActionBuilder
@@ -429,19 +229,19 @@ private:
     FlatActionBuilder m_builder;
 
 public:
-    [[nodiscard]] FlatActionBuilder& get_flatmemory_builder() { return m_builder; }
-    [[nodiscard]] const FlatActionBuilder& get_flatmemory_builder() const { return m_builder; }
+    FlatActionBuilder& get_flatmemory_builder();
+    const FlatActionBuilder& get_flatmemory_builder() const;
 
-    [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] double& get_cost() { return m_builder.get<1>(); }
-    [[nodiscard]] Action& get_action() { return m_builder.get<2>(); }
-    [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<3>(); }
+    uint32_t& get_id();
+    double& get_cost();
+    Action& get_action();
+    FlatObjectListBuilder& get_objects();
 
     /* STRIPS part */
-    [[nodiscard]] FlatStripsActionPreconditionBuilder& get_strips_precondition() { return m_builder.get<4>(); }
-    [[nodiscard]] FlatStripsActionEffectBuilder& get_strips_effect() { return m_builder.get<5>(); }
+    FlatStripsActionPreconditionBuilder& get_strips_precondition();
+    FlatStripsActionEffectBuilder& get_strips_effect();
     /* Conditional effects */
-    [[nodiscard]] FlatConditionalEffectsBuilder& get_conditional_effects() { return m_builder.get<6>(); }
+    FlatConditionalEffectsBuilder& get_conditional_effects();
 };
 
 /**
@@ -456,17 +256,17 @@ private:
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit GroundAction(FlatAction view) : m_view(view) {}
+    explicit GroundAction(FlatAction view);
 
     /// @brief Return a hash value for the grounded action.
     ///
     /// Same argument from operator== applies.
-    [[nodiscard]] size_t hash() const { return loki::hash_combine(m_view.buffer()); }
+    size_t hash() const;
 
-    [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] double get_cost() const { return m_view.get<1>(); }
-    [[nodiscard]] Action get_action() const { return m_view.get<2>(); }
-    [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<3>(); }
+    uint32_t get_id() const;
+    double get_cost() const;
+    Action get_action() const;
+    FlatObjectList get_objects() const;
 
     /// Return true iff two grounded actions are equal.
     ///
@@ -474,29 +274,19 @@ public:
     /// Hence, comparison of the buffer pointer suffices.
     /// For grounded actions in different AAG, buffer pointers are always different.
     /// Hence, comparison always returns false.
-    [[nodiscard]] bool operator==(GroundAction other) const { return m_view.buffer() == other.m_view.buffer(); }
+    bool operator==(GroundAction other) const;
 
     /* STRIPS part */
-    [[nodiscard]] FlatStripsActionPrecondition get_strips_precondition() const { return m_view.get<4>(); }
-    [[nodiscard]] FlatStripsActionEffect get_strips_effect() const { return m_view.get<5>(); }
+    FlatStripsActionPrecondition get_strips_precondition() const;
+    FlatStripsActionEffect get_strips_effect() const;
     /* Conditional effects */
-    [[nodiscard]] FlatConditionalEffects get_conditional_effects() const { return m_view.get<6>(); }
+    FlatConditionalEffects get_conditional_effects() const;
 
-    [[nodiscard]] bool is_dynamically_applicable(State state) const
-    {  //
-        return StripsActionPrecondition(get_strips_precondition()).is_dynamically_applicable(state);
-    }
+    bool is_dynamically_applicable(State state) const;
 
-    template<flatmemory::IsBitset Bitset>
-    [[nodiscard]] bool is_statically_applicable(const Bitset& static_positive_bitset) const
-    {  //
-        return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
-    }
+    bool is_statically_applicable(FlatBitset<Static> static_positive_atoms) const;
 
-    [[nodiscard]] bool is_applicable(Problem problem, State state) const
-    {  //
-        return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
-    }
+    bool is_applicable(Problem problem, State state) const;
 };
 
 /**

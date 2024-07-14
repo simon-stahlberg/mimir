@@ -18,14 +18,7 @@
 #ifndef MIMIR_FORMALISM_PREDICATE_HPP_
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
-#include "mimir/common/collections.hpp"
-#include "mimir/formalism/predicate_category.hpp"
-#include "mimir/formalism/variable.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <unordered_set>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -68,18 +61,6 @@ public:
     const VariableList& get_parameters() const;
     size_t get_arity() const;
 };
-
-/**
- * Type aliases
- */
-template<PredicateCategory P>
-using Predicate = const PredicateImpl<P>*;
-template<PredicateCategory P>
-using PredicateList = std::vector<Predicate<P>>;
-template<PredicateCategory P>
-using PredicateSet = std::unordered_set<Predicate<P>>;
-template<typename Key, PredicateCategory P, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
-using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 
 }
 

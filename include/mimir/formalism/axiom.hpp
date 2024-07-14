@@ -18,15 +18,7 @@
 #ifndef MIMIR_FORMALISM_AXIOM_HPP_
 #define MIMIR_FORMALISM_AXIOM_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/variable.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <unordered_set>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -65,39 +57,6 @@ public:
 
     size_t get_arity() const;
 };
-
-/**
- * Type aliases
- */
-
-using Axiom = const AxiomImpl*;
-using AxiomList = std::vector<Axiom>;
-using AxiomSet = std::unordered_set<Axiom>;
-
-/**
- * Implementations
- */
-
-template<PredicateCategory P>
-const LiteralList<P>& AxiomImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
 
 }
 

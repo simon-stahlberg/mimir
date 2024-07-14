@@ -57,8 +57,8 @@ public:
                                 AbstractionIndex faithful_abstraction_index,
                                 StateIndex faithful_abstract_state_index);
 
-    [[nodiscard]] bool operator==(const GlobalFaithfulAbstractState& other) const;
-    [[nodiscard]] size_t hash() const;
+    bool operator==(const GlobalFaithfulAbstractState& other) const;
+    size_t hash() const;
 
     StateIndex get_index() const;
     StateIndex get_global_index() const;

@@ -247,11 +247,6 @@ public:
     GroundAtomList<P> get_ground_atoms_from_ids(const Iterable& atom_ids) const;
 
     // Object
-    template<std::ranges::forward_range Iterable>
-    void get_objects_from_ids(const Iterable& object_ids, ObjectList& out_objects) const;
-
-    template<std::ranges::forward_range Iterable>
-    ObjectList get_objects_from_ids(const Iterable& object_ids) const;
 
     Object get_object(size_t object_id) const;
 
@@ -298,25 +293,6 @@ GroundAtomList<P> PDDLFactories::get_ground_atoms_from_ids(const Iterable& atom_
 {
     auto result = GroundAtomList<P> {};
     get_ground_atoms_from_ids(atom_ids, result);
-    return result;
-}
-
-template<std::ranges::forward_range Iterable>
-void PDDLFactories::get_objects_from_ids(const Iterable& object_ids, ObjectList& out_objects) const
-{
-    out_objects.clear();
-
-    for (const auto& object_id : object_ids)
-    {
-        out_objects.push_back(get_object(object_id));
-    }
-}
-
-template<std::ranges::forward_range Iterable>
-ObjectList PDDLFactories::get_objects_from_ids(const Iterable& object_ids) const
-{
-    auto result = ObjectList {};
-    get_objects_from_ids(object_ids, result);
     return result;
 }
 

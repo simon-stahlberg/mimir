@@ -18,19 +18,7 @@
 #ifndef MIMIR_FORMALISM_DOMAIN_HPP_
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/formalism/action.hpp"
-#include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/function_skeleton.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/requirements.hpp"
-
-#include <loki/loki.hpp>
-#include <stdexcept>
-#include <string>
-#include <unordered_set>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -91,58 +79,6 @@ public:
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
 };
 
-/**
- * Type alises
- */
-
-using Domain = const DomainImpl*;
-using DomainList = std::vector<Domain>;
-
-/**
- * Implementations
- */
-
-template<PredicateCategory P>
-const PredicateList<P>& DomainImpl::get_predicates() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_predicates;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_predicates;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
-
-template<PredicateCategory P>
-const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_name_to_static_predicate;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_name_to_fluent_predicate;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_name_to_derived_predicate;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
 }
 
 #endif

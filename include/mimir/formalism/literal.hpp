@@ -18,12 +18,7 @@
 #ifndef MIMIR_FORMALISM_LITERAL_HPP_
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
-#include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/predicate.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -58,17 +53,6 @@ public:
     bool is_negated() const;
     const Atom<P>& get_atom() const;
 };
-
-/**
- * Type aliases
- */
-
-template<PredicateCategory P>
-using Literal = const LiteralImpl<P>*;
-template<PredicateCategory P>
-using LiteralList = std::vector<Literal<P>>;
-template<PredicateCategory P>
-using LiteralSet = std::unordered_set<Literal<P>>;
 
 }
 

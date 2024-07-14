@@ -18,8 +18,10 @@
 #include "mimir/formalism/axiom.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <cassert>
 #include <loki/loki.hpp>
@@ -89,6 +91,31 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 
 const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
+
+template<PredicateCategory P>
+const LiteralList<P>& AxiomImpl::get_conditions() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_conditions;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const LiteralList<Static>& AxiomImpl::get_conditions<Static>() const;
+template const LiteralList<Fluent>& AxiomImpl::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& AxiomImpl::get_conditions<Derived>() const;
 
 size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
 

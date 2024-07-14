@@ -18,11 +18,7 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_SKELETON_HPP_
 #define MIMIR_FORMALISM_FUNCTION_SKELETON_HPP_
 
-#include "mimir/formalism/variable.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -51,13 +47,6 @@ public:
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
 };
-
-/**
- * Type aliases
- */
-
-using FunctionSkeleton = const FunctionSkeletonImpl*;
-using FunctionSkeletonList = std::vector<FunctionSkeleton>;
 
 }
 

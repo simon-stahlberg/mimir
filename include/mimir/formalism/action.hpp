@@ -18,17 +18,7 @@
 #ifndef MIMIR_FORMALISM_ACTION_HPP_
 #define MIMIR_FORMALISM_ACTION_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/function_expressions.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/variable.hpp"
-
-#include <functional>
-#include <loki/loki.hpp>
-#include <optional>
-#include <string>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -90,38 +80,6 @@ public:
 
     size_t get_arity() const;
 };
-
-/**
- * Type aliases
- */
-
-using Action = const ActionImpl*;
-using ActionList = std::vector<Action>;
-
-/**
- * Implementations
- */
-
-template<PredicateCategory P>
-const LiteralList<P>& ActionImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
 
 }
 

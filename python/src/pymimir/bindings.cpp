@@ -855,10 +855,7 @@ void init_pymimir(py::module_& m)
         .def("get_derived_ground_atoms_from_ids",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Derived, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
-        .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal)
-        .def("get_objects_from_ids",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_objects_from_ids<std::vector<size_t>>, py::const_),
-             py::keep_alive<0, 1>());
+        .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal);
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())

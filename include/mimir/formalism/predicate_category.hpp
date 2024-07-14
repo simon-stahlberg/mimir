@@ -45,38 +45,6 @@ concept PredicateCategory = std::is_same_v<T, Static> || std::is_same_v<T, Fluen
 template<typename T>
 concept DynamicPredicateCategory = std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
 
-/**
- * Container to map predicate categorized types to some value.
- */
-
-template<template<PredicateCategory> class T, PredicateCategory P, typename Value = T<P>>
-struct PredicateCategorizedMapPair
-{
-    using KeyType = T<P>;
-    using ValueType = Value;
-};
-
-template<typename T>
-concept IsPredicateCategorizedMapPair = requires {
-    typename T::KeyType::Category;                              // Ensure Category is a type member of KeyType
-    requires PredicateCategory<typename T::KeyType::Category>;  // Check that Category is one of the allowed types
-};
-
-template<IsPredicateCategorizedMapPair... PredicateCategorizedMapPairs>
-class PredicateMapContainer
-{
-private:
-    std::tuple<std::unordered_map<typename PredicateCategorizedMapPairs::KeyType, typename PredicateCategorizedMapPairs::ValueType>...> storage;
-
-public:
-    /// @brief Access the respective map
-    template<template<PredicateCategory> class T, PredicateCategory P, typename Value = T<P>>
-    std::unordered_map<T<P>, Value>& get()
-    {
-        return std::get<std::unordered_map<T<P>, Value>>(storage);
-    }
-};
-
 }
 
 #endif

@@ -17,6 +17,9 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
+
 namespace mimir
 {
 template<PredicateCategory P>

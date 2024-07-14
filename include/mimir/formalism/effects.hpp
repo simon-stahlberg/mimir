@@ -18,14 +18,7 @@
 #ifndef MIMIR_FORMALISM_EFFECTS_HPP_
 #define MIMIR_FORMALISM_EFFECTS_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/variable.hpp"
-
-#include <loki/loki.hpp>
-#include <string>
-#include <vector>
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
@@ -130,65 +123,6 @@ public:
 
     size_t get_arity() const;
 };
-
-/**
- * Type aliases
- */
-
-using EffectSimple = const EffectSimpleImpl*;
-using EffectSimpleList = std::vector<EffectSimple>;
-
-using EffectConditional = const EffectConditionalImpl*;
-using EffectConditionalList = std::vector<EffectConditional>;
-
-using EffectUniversal = const EffectUniversalImpl*;
-using EffectUniversalList = std::vector<EffectUniversal>;
-
-/**
- * Implementations
- */
-
-template<PredicateCategory P>
-const LiteralList<P>& EffectConditionalImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
-
-template<PredicateCategory P>
-const LiteralList<P>& EffectUniversalImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
 
 }
 

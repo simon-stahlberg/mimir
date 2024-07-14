@@ -39,14 +39,7 @@ struct FlatDerivedEffect
     bool is_negated;
     size_t atom_id;
 
-    bool operator==(const FlatDerivedEffect& other) const
-    {
-        if (this != &other)
-        {
-            return is_negated == other.is_negated && atom_id == other.atom_id;
-        }
-        return true;
-    }
+    bool operator==(const FlatDerivedEffect& other) const;
 };
 
 using FlatAxiomLayout = flatmemory::Tuple<uint32_t,  //
@@ -61,24 +54,12 @@ using FlatAxiomVector = flatmemory::VariableSizedTypeVector<FlatAxiomLayout>;
 
 struct FlatAxiomHash
 {
-    size_t operator()(const FlatAxiom& view) const
-    {
-        const auto axiom = view.get<1>();
-        const auto objects = view.get<2>();
-        return loki::hash_combine(axiom, objects.hash());
-    }
+    size_t operator()(const FlatAxiom& view) const;
 };
 
 struct FlatAxiomEqual
 {
-    bool operator()(const FlatAxiom& view_left, const FlatAxiom& view_right) const
-    {
-        const auto axiom_left = view_left.get<1>();
-        const auto objects_left = view_left.get<2>();
-        const auto axiom_right = view_right.get<1>();
-        const auto objects_right = view_right.get<2>();
-        return (axiom_left == axiom_right) && (objects_left == objects_right);
-    }
+    bool operator()(const FlatAxiom& view_left, const FlatAxiom& view_right) const;
 };
 
 using FlatAxiomSet = flatmemory::UnorderedSet<FlatAxiomLayout, FlatAxiomHash, FlatAxiomEqual>;
@@ -92,17 +73,17 @@ private:
     FlatAxiomBuilder m_builder;
 
 public:
-    [[nodiscard]] FlatAxiomBuilder& get_flatmemory_builder() { return m_builder; }
-    [[nodiscard]] const FlatAxiomBuilder& get_flatmemory_builder() const { return m_builder; }
+    FlatAxiomBuilder& get_flatmemory_builder();
+    const FlatAxiomBuilder& get_flatmemory_builder() const;
 
-    [[nodiscard]] uint32_t& get_id() { return m_builder.get<0>(); }
-    [[nodiscard]] Axiom& get_axiom() { return m_builder.get<1>(); }
-    [[nodiscard]] FlatObjectListBuilder& get_objects() { return m_builder.get<2>(); }
+    uint32_t& get_id();
+    Axiom& get_axiom();
+    FlatObjectListBuilder& get_objects();
     /* STRIPS part */
-    [[nodiscard]] FlatStripsActionPreconditionBuilder& get_strips_precondition() { return m_builder.get<3>(); }
-    [[nodiscard]] FlatStripsActionEffectBuilder& get_strips_effect() { return m_builder.get<4>(); }
+    FlatStripsActionPreconditionBuilder& get_strips_precondition();
+    FlatStripsActionEffectBuilder& get_strips_effect();
     /* Simple effect */
-    [[nodiscard]] FlatDerivedEffect& get_derived_effect() { return m_builder.get<5>(); }
+    FlatDerivedEffect& get_derived_effect();
 };
 
 /**
@@ -115,16 +96,16 @@ private:
 
 public:
     /// @brief Create a view on a Axiom.
-    explicit GroundAxiom(FlatAxiom view) : m_view(view) {}
+    explicit GroundAxiom(FlatAxiom view);
 
     /// @brief Return a hash value for the grounded action.
     ///
     /// Same argument from operator== applies.
-    [[nodiscard]] size_t _Cxx_hashtable_define_trivial_hash() const { return loki::hash_combine(m_view.buffer()); }
+    size_t hash() const;
 
-    [[nodiscard]] uint32_t get_id() const { return m_view.get<0>(); }
-    [[nodiscard]] Axiom get_axiom() const { return m_view.get<1>(); }
-    [[nodiscard]] FlatObjectList get_objects() const { return m_view.get<2>(); }
+    uint32_t get_id() const;
+    Axiom get_axiom() const;
+    FlatObjectList get_objects() const;
 
     /// Return true iff two grounded axioms are equal.
     ///
@@ -132,25 +113,19 @@ public:
     /// Hence, comparison of the buffer pointer suffices.
     /// For grounded axioms in different AE, buffer pointers are always different.
     /// Hence, comparison always returns false.
-    [[nodiscard]] bool operator==(const GroundAxiom& other) const { return m_view.buffer() == other.m_view.buffer(); }
+    bool operator==(const GroundAxiom& other) const;
 
     /* STRIPS part */
-    [[nodiscard]] FlatStripsActionPrecondition get_strips_precondition() const { return m_view.get<3>(); }
-    [[nodiscard]] FlatStripsActionEffect get_strips_effect() const { return m_view.get<4>(); }
+    FlatStripsActionPrecondition get_strips_precondition() const;
+    FlatStripsActionEffect get_strips_effect() const;
     /* Effect*/
-    [[nodiscard]] FlatDerivedEffect get_derived_effect() const { return m_view.get<5>(); }
+    FlatDerivedEffect get_derived_effect() const;
 
-    [[nodiscard]] bool is_applicable(const FlatBitsetBuilder<Fluent> state_fluent_atoms,
-                                     const FlatBitsetBuilder<Derived> state_derived_atoms,
-                                     const FlatBitset<Static> static_positive_bitset) const
-    {  //
-        return StripsActionPrecondition(get_strips_precondition()).is_applicable(state_fluent_atoms, state_derived_atoms, static_positive_bitset);
-    }
+    bool is_applicable(const FlatBitsetBuilder<Fluent>& state_fluent_atoms,
+                       const FlatBitsetBuilder<Derived>& state_derived_atoms,
+                       const FlatBitsetBuilder<Static>& static_positive_atoms) const;
 
-    [[nodiscard]] bool is_statically_applicable(const FlatBitset<Static> static_positive_bitset) const
-    {  //
-        return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
-    }
+    bool is_statically_applicable(const FlatBitset<Static> static_positive_bitset) const;
 };
 
 /**

@@ -18,21 +18,8 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/metric.hpp"
-#include "mimir/formalism/numeric_fluent.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/requirements.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/flat_types.hpp"
-
-#include <loki/loki.hpp>
-#include <optional>
-#include <string>
-#include <vector>
 
 namespace mimir
 {
@@ -95,6 +82,7 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
+    const FlatBitsetBuilder<Static> get_static_initial_positive_atoms() const;
     FlatBitset<Static> get_static_initial_positive_atoms_bitset() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
@@ -105,38 +93,6 @@ public:
     bool static_goal_holds() const;
     bool static_literal_holds(const GroundLiteral<Static> literal) const;
 };
-
-/**
- * Type aliases
- */
-
-using Problem = const ProblemImpl*;
-using ProblemList = std::vector<Problem>;
-
-/**
- * Implementations
- */
-
-template<PredicateCategory P>
-const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_goal_condition;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_goal_condition;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_goal_condition;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
 
 }
 

@@ -59,15 +59,15 @@ public:
 
         const_iterator();
         const_iterator(std::span<const T> transitions, bool begin);
-        [[nodiscard]] value_type operator*() const;
+        value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 static_assert(std::ranges::forward_range<TargetStateIndexIterator<Transition>>);
@@ -103,15 +103,15 @@ public:
 
         const_iterator();
         const_iterator(StateIndex target, std::span<const T> transitions, bool begin);
-        [[nodiscard]] value_type operator*() const;
+        value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 static_assert(std::ranges::forward_range<SourceStateIndexIterator<Transition>>);
@@ -145,15 +145,15 @@ public:
 
         const_iterator();
         const_iterator(std::span<const T> transitions, bool begin);
-        [[nodiscard]] value_type operator*() const;
+        value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 static_assert(std::ranges::forward_range<ForwardTransitionIndexIterator<Transition>>);
@@ -189,15 +189,15 @@ public:
 
         const_iterator();
         const_iterator(StateIndex target, std::span<const T> transitions, bool begin);
-        [[nodiscard]] value_type operator*() const;
+        value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 static_assert(std::ranges::forward_range<BackwardTransitionIndexIterator<Transition>>);
@@ -231,15 +231,15 @@ public:
 
         const_iterator();
         const_iterator(std::span<const T> transitions, bool begin);
-        [[nodiscard]] reference operator*() const;
+        reference operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 static_assert(std::ranges::forward_range<ForwardTransitionIterator<Transition>>);
@@ -275,15 +275,15 @@ public:
 
         const_iterator();
         const_iterator(StateIndex target, std::span<const T> transitions, bool begin);
-        [[nodiscard]] reference operator*() const;
+        reference operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 static_assert(std::ranges::forward_range<BackwardTransitionIterator<Transition>>);

@@ -18,9 +18,8 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
-#include "mimir/common/concepts.hpp"
-#include "mimir/common/printers.hpp"
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/predicate_category.hpp"
 #include "mimir/search/flat_types.hpp"
 
 #include <flatmemory/flatmemory.hpp>
@@ -52,21 +51,12 @@ using FlatState = flatmemory::ConstView<FlatStateLayout>;
 // The extended portion is computed automatically, when calling ssg.create_state(...)
 struct FlatStateHash
 {
-    size_t operator()(FlatState view) const
-    {
-        const auto fluent_atoms = view.get<1>();
-        return loki::hash_combine(fluent_atoms.hash());
-    }
+    size_t operator()(FlatState view) const;
 };
 
 struct FlatStateEqual
 {
-    bool operator()(FlatState view_left, FlatState view_right) const
-    {
-        const auto fluent_atoms_left = view_left.get<1>();
-        const auto fluent_atoms_right = view_right.get<1>();
-        return (fluent_atoms_left == fluent_atoms_right);
-    }
+    bool operator()(FlatState view_left, FlatState view_right) const;
 };
 
 using FlatStateSet = flatmemory::UnorderedSet<FlatStateLayout, FlatStateHash, FlatStateEqual>;
@@ -81,27 +71,13 @@ private:
     FlatStateBuilder m_builder;
 
 public:
-    [[nodiscard]] FlatStateBuilder& get_flatmemory_builder() { return m_builder; }
-    [[nodiscard]] const FlatStateBuilder& get_flatmemory_builder() const { return m_builder; }
+    FlatStateBuilder& get_flatmemory_builder();
+    const FlatStateBuilder& get_flatmemory_builder() const;
 
-    [[nodiscard]] StateId& get_id() { return m_builder.get<0>(); }
+    StateId& get_id();
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] FlatBitsetBuilder<P>& get_atoms()
-    {
-        if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_builder.get<1>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_builder.get<2>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    FlatBitsetBuilder<P>& get_atoms();
 };
 
 /**
@@ -113,7 +89,7 @@ private:
     FlatState m_view;
 
 public:
-    explicit State(FlatState view) : m_view(view) {}
+    explicit State(FlatState view);
 
     /// @brief Return true iff two states are equal.
     ///
@@ -121,79 +97,29 @@ public:
     /// Hence, comparison of the buffer pointer suffices.
     /// For states in different SuccessorStateGenerator, buffer pointers are always different.
     /// Hence, comparison always returns false.
-    [[nodiscard]] bool operator==(State other) const { return m_view.buffer() == other.m_view.buffer(); }
+    bool operator==(State other) const;
 
     /// @brief Return a hash value for the state.
     ///
     /// Same argument from operator== applies.
-    [[nodiscard]] size_t hash() const { return loki::hash_combine(m_view.buffer()); }
+    size_t hash() const;
 
-    [[nodiscard]] StateId get_id() const { return m_view.get<0>(); }
-
-    [[nodiscard]] auto begin_fluent_ground_atoms() const { return m_view.get<1>().begin(); }
-    [[nodiscard]] auto end_fluent_ground_atoms() const { return m_view.get<1>().end(); }
-    [[nodiscard]] auto begin_derived_ground_atoms() const { return m_view.get<2>().begin(); }
-    [[nodiscard]] auto end_derived_ground_atoms() const { return m_view.get<2>().end(); }
-
-    /**
-     * Fluent and Derived
-     */
-    template<DynamicPredicateCategory P>
-    [[nodiscard]] bool contains(GroundAtom<P> atom) const
-    {
-        return get_atoms<P>().get(atom->get_identifier());
-    }
+    StateId get_id() const;
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool superset_of(const GroundAtomList<P>& atoms) const
-    {
-        for (const auto& atom : atoms)
-        {
-            if (!contains(atom))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    bool contains(GroundAtom<P> atom) const;
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool literal_holds(GroundLiteral<P> literal) const
-    {
-        return literal->is_negated() != contains(literal->get_atom());
-    }
+    bool superset_of(const GroundAtomList<P>& atoms) const;
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] bool literals_hold(const GroundLiteralList<P>& literals) const
-    {
-        for (const auto& literal : literals)
-        {
-            if (!literal_holds(literal))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    bool literal_holds(GroundLiteral<P> literal) const;
 
     template<DynamicPredicateCategory P>
-    [[nodiscard]] FlatBitset<P> get_atoms() const
-    {
-        if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_view.get<1>();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_view.get<2>();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    bool literals_hold(const GroundLiteralList<P>& literals) const;
+
+    template<DynamicPredicateCategory P>
+    FlatBitset<P> get_atoms() const;
 };
 
 /**
@@ -204,7 +130,7 @@ using StateList = std::vector<State>;
 
 struct StateHash
 {
-    size_t operator()(State view) const { return view.hash(); }
+    size_t operator()(State view) const;
 };
 
 template<typename T>

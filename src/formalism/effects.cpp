@@ -18,9 +18,11 @@
 #include "mimir/formalism/effects.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
@@ -108,6 +110,31 @@ void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOp
 
     out << ")";  // end when
 }
+
+template<PredicateCategory P>
+const LiteralList<P>& EffectConditionalImpl::get_conditions() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_conditions;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static>() const;
+template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
 
 const Literal<Fluent>& EffectConditionalImpl::get_effect() const { return m_effect; }
 
@@ -197,6 +224,31 @@ void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOpti
 }
 
 const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
+
+template<PredicateCategory P>
+const LiteralList<P>& EffectUniversalImpl::get_conditions() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_conditions;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const LiteralList<Static>& EffectUniversalImpl::get_conditions<Static>() const;
+template const LiteralList<Fluent>& EffectUniversalImpl::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& EffectUniversalImpl::get_conditions<Derived>() const;
 
 const Literal<Fluent>& EffectUniversalImpl::get_effect() const { return m_effect; }
 
