@@ -10,27 +10,25 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *<
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_TRANSLATIONS_HPP_
-#define MIMIR_SEARCH_TRANSLATIONS_HPP_
+#include "mimir/search/planners/single.hpp"
 
-#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/action.hpp"
 
 namespace mimir
 {
 
-/// @brief Translates a bitset into a list of ground atoms
-template<PredicateCategory P>
-extern void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms);
+SinglePlanner::SinglePlanner(std::shared_ptr<IAlgorithm> algorithm) : m_algorithm(std::move(algorithm)) {}
 
-/// @brief Translates a bitset into a list of ground atoms
-template<PredicateCategory P>
-extern GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals);
-
+std::tuple<SearchStatus, Plan> SinglePlanner::find_solution()
+{
+    auto action_view_list = GroundActionList {};
+    const auto status = m_algorithm->find_solution(action_view_list);
+    return std::make_tuple(status, to_plan(action_view_list));
 }
 
-#endif  // MIMIR_SEARCH_TRANSLATIONS_HPP_
+}

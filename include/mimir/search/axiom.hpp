@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_AXIOM_HPP_
 #define MIMIR_SEARCH_AXIOM_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"

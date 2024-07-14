@@ -18,7 +18,7 @@
 #ifndef MIMIR_GRAPHS_OBJECT_GRAPH_HPP_
 #define MIMIR_GRAPHS_OBJECT_GRAPH_HPP_
 
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
@@ -58,33 +58,17 @@ public:
     ObjectGraphStaticPruningStrategy(FlatBitsetBuilder<> pruned_objects = FlatBitsetBuilder<>(),
                                      FlatBitsetBuilder<Static> pruned_ground_atoms = FlatBitsetBuilder<Static>(),
                                      FlatBitsetBuilder<Fluent> pruned_fluent_ground_atoms = FlatBitsetBuilder<Fluent>(),
-                                     FlatBitsetBuilder<Derived> pruned_derived_ground_atoms = FlatBitsetBuilder<Derived>()) :
-        m_pruned_objects(std::move(pruned_objects)),
-        m_pruned_ground_atoms(std::move(pruned_ground_atoms)),
-        m_pruned_fluent_ground_atoms(std::move(pruned_fluent_ground_atoms)),
-        m_pruned_derived_ground_atoms(std::move(pruned_derived_ground_atoms))
-    {
-    }
+                                     FlatBitsetBuilder<Derived> pruned_derived_ground_atoms = FlatBitsetBuilder<Derived>());
 
-    bool prune(const Object& object) const override { return m_pruned_objects.get(object->get_identifier()); }
-    bool prune(const GroundAtom<Static> atom) const override { return m_pruned_ground_atoms.get(atom->get_identifier()); }
-    bool prune(const GroundAtom<Fluent> atom) const override { return m_pruned_fluent_ground_atoms.get(atom->get_identifier()); }
-    bool prune(const GroundAtom<Derived> atom) const override { return m_pruned_derived_ground_atoms.get(atom->get_identifier()); }
-    bool prune(const GroundLiteral<Static> literal) const override { return m_pruned_ground_literals.get(literal->get_atom()->get_identifier()); }
-    bool prune(const GroundLiteral<Fluent> literal) const override { return m_pruned_fluent_ground_literals.get(literal->get_atom()->get_identifier()); }
-    bool prune(const GroundLiteral<Derived> literal) const override { return m_pruned_derived_ground_literals.get(literal->get_atom()->get_identifier()); }
+    bool prune(const Object& object) const override;
+    bool prune(const GroundAtom<Static> atom) const override;
+    bool prune(const GroundAtom<Fluent> atom) const override;
+    bool prune(const GroundAtom<Derived> atom) const override;
+    bool prune(const GroundLiteral<Static> literal) const override;
+    bool prune(const GroundLiteral<Fluent> literal) const override;
+    bool prune(const GroundLiteral<Derived> literal) const override;
 
-    ObjectGraphStaticPruningStrategy& operator&=(const ObjectGraphStaticPruningStrategy& other)
-    {
-        m_pruned_objects &= other.m_pruned_objects;
-        m_pruned_ground_atoms &= other.m_pruned_ground_atoms;
-        m_pruned_fluent_ground_atoms &= other.m_pruned_fluent_ground_atoms;
-        m_pruned_derived_ground_atoms &= other.m_pruned_derived_ground_atoms;
-        m_pruned_ground_literals &= other.m_pruned_ground_literals;
-        m_pruned_fluent_ground_literals &= other.m_pruned_fluent_ground_literals;
-        m_pruned_derived_ground_literals &= other.m_pruned_derived_ground_literals;
-        return *this;
-    }
+    ObjectGraphStaticPruningStrategy& operator&=(const ObjectGraphStaticPruningStrategy& other);
 
 private:
     FlatBitsetBuilder<> m_pruned_objects;

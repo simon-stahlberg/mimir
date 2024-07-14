@@ -19,7 +19,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/factories.hpp"
 
 #include <ostream>
 #include <tuple>

@@ -18,13 +18,11 @@
 #ifndef MIMIR_GRAPHS_COLOR_FUNCTION_HPP_
 #define MIMIR_GRAPHS_COLOR_FUNCTION_HPP_
 
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/color.hpp"
 #include "mimir/search/state.hpp"
 
-#include <set>
 #include <unordered_map>
-#include <vector>
 
 namespace mimir
 {
@@ -75,24 +73,6 @@ public:
     const std::unordered_map<std::string, Color>& get_name_to_color() const;
     const std::unordered_map<Color, std::string>& get_color_to_name() const;
 };
-
-/**
- * Implementations
- */
-
-template<PredicateCategory P>
-Color ProblemColorFunction::get_color(GroundAtom<P> atom, size_t pos) const
-{
-    return m_name_to_color.at(atom->get_predicate()->get_name() + ":" + std::to_string(pos));
-}
-
-template<DynamicPredicateCategory P>
-Color ProblemColorFunction::get_color(State state, GroundLiteral<P> literal, size_t pos, bool mark_true_goal_literal) const
-{
-    bool is_satisfied_in_goal = state.literal_holds(literal);
-    return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"
-                              + (mark_true_goal_literal ? (is_satisfied_in_goal ? ":true" : ":false") : "") + ":" + std::to_string(pos));
-}
 
 }
 #endif

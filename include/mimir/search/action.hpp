@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_ACTION_HPP_
 #define MIMIR_SEARCH_ACTION_HPP_
 
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 

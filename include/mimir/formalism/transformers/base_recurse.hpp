@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_HPP_
-#define MIMIR_FORMALISM_TRANSFORMERS_BASE_HPP_
+#ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_RECURSE_HPP_
+#define MIMIR_FORMALISM_TRANSFORMERS_BASE_RECURSE_HPP_
 
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/pddl.hpp"
@@ -33,10 +33,10 @@ namespace mimir
  * Base implementation recursively calls prepare, followed by recursively calls transform and caches the results.
  */
 template<typename Derived_>
-class BaseTransformer : public ITransformer<BaseTransformer<Derived_>>
+class BaseRecurseTransformer : public ITransformer<BaseRecurseTransformer<Derived_>>
 {
 private:
-    BaseTransformer() = default;
+    BaseRecurseTransformer() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -46,11 +46,11 @@ private:
 protected:
     PDDLFactories& m_pddl_factories;
 
-    explicit BaseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseRecurseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */
-    friend class ITransformer<BaseTransformer<Derived_>>;
+    friend class ITransformer<BaseRecurseTransformer<Derived_>>;
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.

@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_ENCODE_PARAMETER_INDEX_IN_VARIABLES_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_ENCODE_PARAMETER_INDEX_IN_VARIABLES_HPP_
 
-#include "mimir/formalism/transformers/base.hpp"
+#include "mimir/formalism/transformers/base_recurse.hpp"
 
 #include <unordered_map>
 
@@ -28,15 +28,15 @@ namespace mimir
 /**
  * Introduce an axiom for complicated goals, i.e., goals that are not conjunctions of literals.
  */
-class EncodeParameterIndexInVariables : public BaseTransformer<EncodeParameterIndexInVariables>
+class EncodeParameterIndexInVariables : public BaseRecurseTransformer<EncodeParameterIndexInVariables>
 {
 private:
-    /* Implement BaseTransformer interface. */
-    friend class BaseTransformer<EncodeParameterIndexInVariables>;
+    /* Implement BaseRecurseTransformer interface. */
+    friend class BaseRecurseTransformer<EncodeParameterIndexInVariables>;
 
     // Provide default implementations
-    using BaseTransformer<EncodeParameterIndexInVariables>::prepare_impl;
-    using BaseTransformer<EncodeParameterIndexInVariables>::transform_impl;
+    using BaseRecurseTransformer<EncodeParameterIndexInVariables>::prepare_impl;
+    using BaseRecurseTransformer<EncodeParameterIndexInVariables>::transform_impl;
 
     std::unordered_map<Variable, size_t> m_variable_to_parameter_index;
     bool m_enable_encoding;

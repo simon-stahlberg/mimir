@@ -17,6 +17,8 @@
 
 #include "mimir/graphs/object_graph.hpp"
 
+#include "mimir/formalism/factories.hpp"
+
 namespace mimir
 {
 
@@ -143,6 +145,48 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
             add_ground_literal_graph_structures(color_function, object_to_vertex_index, mark_true_goal_literals, state, literal, out_digraph);
         }
     }
+}
+
+/* ObjectGraphStaticPruningStrategy */
+
+ObjectGraphStaticPruningStrategy::ObjectGraphStaticPruningStrategy(FlatBitsetBuilder<> pruned_objects,
+                                                                   FlatBitsetBuilder<Static> pruned_ground_atoms,
+                                                                   FlatBitsetBuilder<Fluent> pruned_fluent_ground_atoms,
+                                                                   FlatBitsetBuilder<Derived> pruned_derived_ground_atoms) :
+    m_pruned_objects(std::move(pruned_objects)),
+    m_pruned_ground_atoms(std::move(pruned_ground_atoms)),
+    m_pruned_fluent_ground_atoms(std::move(pruned_fluent_ground_atoms)),
+    m_pruned_derived_ground_atoms(std::move(pruned_derived_ground_atoms))
+{
+}
+
+bool ObjectGraphStaticPruningStrategy::prune(const Object& object) const { return m_pruned_objects.get(object->get_identifier()); }
+bool ObjectGraphStaticPruningStrategy::prune(const GroundAtom<Static> atom) const { return m_pruned_ground_atoms.get(atom->get_identifier()); }
+bool ObjectGraphStaticPruningStrategy::prune(const GroundAtom<Fluent> atom) const { return m_pruned_fluent_ground_atoms.get(atom->get_identifier()); }
+bool ObjectGraphStaticPruningStrategy::prune(const GroundAtom<Derived> atom) const { return m_pruned_derived_ground_atoms.get(atom->get_identifier()); }
+bool ObjectGraphStaticPruningStrategy::prune(const GroundLiteral<Static> literal) const
+{
+    return m_pruned_ground_literals.get(literal->get_atom()->get_identifier());
+}
+bool ObjectGraphStaticPruningStrategy::prune(const GroundLiteral<Fluent> literal) const
+{
+    return m_pruned_fluent_ground_literals.get(literal->get_atom()->get_identifier());
+}
+bool ObjectGraphStaticPruningStrategy::prune(const GroundLiteral<Derived> literal) const
+{
+    return m_pruned_derived_ground_literals.get(literal->get_atom()->get_identifier());
+}
+
+ObjectGraphStaticPruningStrategy& ObjectGraphStaticPruningStrategy::operator&=(const ObjectGraphStaticPruningStrategy& other)
+{
+    m_pruned_objects &= other.m_pruned_objects;
+    m_pruned_ground_atoms &= other.m_pruned_ground_atoms;
+    m_pruned_fluent_ground_atoms &= other.m_pruned_fluent_ground_atoms;
+    m_pruned_derived_ground_atoms &= other.m_pruned_derived_ground_atoms;
+    m_pruned_ground_literals &= other.m_pruned_ground_literals;
+    m_pruned_fluent_ground_literals &= other.m_pruned_fluent_ground_literals;
+    m_pruned_derived_ground_literals &= other.m_pruned_derived_ground_literals;
+    return *this;
 }
 
 VertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,

@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include "mimir/formalism/formalism.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers/statistics.hpp"
 #include "mimir/search/axiom.hpp"

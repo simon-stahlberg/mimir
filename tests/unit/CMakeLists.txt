@@ -40,4 +40,4 @@ add_gtest(dense_lifted_test                                "search/applicable_ac
 add_gtest(priority_queue_test                              "search/openlists/priority_queue.cpp")
 add_gtest(single_test                                      "search/planners/single.cpp")
 add_gtest(uninformed_test                                  "search/search_nodes/uninformed.cpp")
-add_gtest(dense_test                                       "search/successor_state_generators/dense.cpp")
+add_gtest(successor_state_generators_test                  "search/successor_state_generator.cpp")

@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/flat_types.hpp"
 
 #include <flatmemory/flatmemory.hpp>

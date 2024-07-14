@@ -1,5 +1,7 @@
-#include "mimir/formalism/formalism.hpp"
 #include "mimir/search/successor_state_generator.hpp"
+
+#include "mimir/formalism/formalism.hpp"
+#include "mimir/search/applicable_action_generators/lifted.hpp"
 
 #include <gtest/gtest.h>
 
@@ -15,7 +17,7 @@ TEST(MimirTests, SearchSSGDenseTest)
     const auto problem = parser.get_problem();
     auto lifted_aag = std::make_shared<LiftedAAG>(problem, parser.get_factories());
     auto ssg = SuccessorStateGenerator(lifted_aag);
-    [[maybe_unused]] const auto initial_state = ssg.get_or_create_initial_state();
+    const auto initial_state = ssg.get_or_create_initial_state();
 }
 
 }

@@ -1,5 +1,6 @@
 #include "mimir/formalism/parser.hpp"
 
+#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/transformers.hpp"
 #include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
 #include "mimir/formalism/translators.hpp"
