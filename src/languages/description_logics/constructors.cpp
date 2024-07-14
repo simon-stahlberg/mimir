@@ -83,7 +83,7 @@ inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& cont
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::accept_impl(const grammar::ConceptVisitor& visitor) const
+bool ConceptPredicateState<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -158,7 +158,7 @@ void ConceptPredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::accept_impl(const grammar::ConceptVisitor& visitor) const
+bool ConceptPredicateGoal<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -226,7 +226,7 @@ void ConceptAnd::evaluate_impl(EvaluationContext& context) const
     bitset &= eval_right.get_bitset();
 }
 
-bool ConceptAnd::accept_impl(const grammar::ConceptVisitor& visitor) const { return visitor.visit(*this); }
+bool ConceptAnd::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(*this); }
 
 size_t ConceptAnd::get_id_impl() const { return m_id; }
 
@@ -307,7 +307,7 @@ void RolePredicateState<Static>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::accept_impl(const grammar::RoleVisitor& visitor) const
+bool RolePredicateState<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -387,7 +387,7 @@ void RolePredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::accept_impl(const grammar::RoleVisitor& visitor) const
+bool RolePredicateGoal<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
     return visitor.visit(*this);
 }
@@ -462,7 +462,7 @@ void RoleAnd::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-bool RoleAnd::accept_impl(const grammar::RoleVisitor& visitor) const { return visitor.visit(*this); }
+bool RoleAnd::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(*this); }
 
 size_t RoleAnd::get_id_impl() const { return m_id; }
 

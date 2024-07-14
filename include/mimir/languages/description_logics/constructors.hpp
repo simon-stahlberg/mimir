@@ -37,7 +37,7 @@ namespace mimir::dl
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public ConceptConstructorEvaluatorBase<ConceptPredicateState<P>>
+class ConceptPredicateState : public ConstructorEvaluatorBase<Concept, ConceptPredicateState<P>>
 {
 private:
     size_t m_id;
@@ -53,11 +53,11 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const grammar::ConceptVisitor& visitor) const;
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
     size_t get_id_impl() const;
 
-    friend class ConceptConstructorEvaluatorBase<ConceptPredicateState<P>>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateState<P>>;
 
 public:
     // Users are not supposed to move these directly.
@@ -72,7 +72,7 @@ public:
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoal : public ConceptConstructorEvaluatorBase<ConceptPredicateGoal<P>>
+class ConceptPredicateGoal : public ConstructorEvaluatorBase<Concept, ConceptPredicateGoal<P>>
 {
 private:
     size_t m_id;
@@ -88,11 +88,11 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const grammar::ConceptVisitor& visitor) const;
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
     size_t get_id_impl() const;
 
-    friend class ConceptConstructorEvaluatorBase<ConceptPredicateGoal<P>>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateGoal<P>>;
 
 public:
     // Users are not supposed to move these directly.
@@ -106,7 +106,7 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-class ConceptAnd : public ConceptConstructorEvaluatorBase<ConceptAnd>
+class ConceptAnd : public ConstructorEvaluatorBase<Concept, ConceptAnd>
 {
 private:
     size_t m_id;
@@ -123,11 +123,11 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const grammar::ConceptVisitor& visitor) const;
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
     size_t get_id_impl() const;
 
-    friend class ConceptConstructorEvaluatorBase<ConceptAnd>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptAnd>;
 
 public:
     // Users are not supposed to move these directly.
@@ -147,7 +147,7 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateState : public RoleConstructorEvaluatorBase<RolePredicateState<P>>
+class RolePredicateState : public ConstructorEvaluatorBase<Role, RolePredicateState<P>>
 {
 private:
     size_t m_id;
@@ -163,11 +163,11 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const grammar::RoleVisitor& visitor) const;
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
     size_t get_id_impl() const;
 
-    friend class RoleConstructorEvaluatorBase<RolePredicateState<P>>;
+    friend class ConstructorEvaluatorBase<Role, RolePredicateState<P>>;
 
 public:
     // Users are not supposed to move these directly.
@@ -182,7 +182,7 @@ public:
 };
 
 template<PredicateCategory P>
-class RolePredicateGoal : public RoleConstructorEvaluatorBase<RolePredicateGoal<P>>
+class RolePredicateGoal : public ConstructorEvaluatorBase<Role, RolePredicateGoal<P>>
 {
 private:
     size_t m_id;
@@ -198,11 +198,11 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const grammar::RoleVisitor& visitor) const;
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
     size_t get_id_impl() const;
 
-    friend class RoleConstructorEvaluatorBase<RolePredicateGoal<P>>;
+    friend class ConstructorEvaluatorBase<Role, RolePredicateGoal<P>>;
 
 public:
     // Users are not supposed to move these directly.
@@ -216,7 +216,7 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-class RoleAnd : public RoleConstructorEvaluatorBase<RoleAnd>
+class RoleAnd : public ConstructorEvaluatorBase<Role, RoleAnd>
 {
 private:
     size_t m_id;
@@ -233,11 +233,11 @@ private:
 
     void evaluate_impl(EvaluationContext& context) const;
 
-    bool accept_impl(const grammar::RoleVisitor& visitor) const;
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
     size_t get_id_impl() const;
 
-    friend class RoleConstructorEvaluatorBase<RoleAnd>;
+    friend class ConstructorEvaluatorBase<Role, RoleAnd>;
 
 public:
     // Users are not supposed to move these directly.

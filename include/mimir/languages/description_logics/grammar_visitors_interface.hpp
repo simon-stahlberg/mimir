@@ -23,10 +23,16 @@
 namespace mimir::dl::grammar
 {
 
-class ConceptVisitor
+template<IsConceptOrRole D>
+class Visitor
+{
+};
+
+template<>
+class Visitor<Concept>
 {
 public:
-    virtual ~ConceptVisitor() {}
+    virtual ~Visitor() {}
 
     // Default implementations always return false
 
@@ -44,10 +50,11 @@ public:
  * RoleVisitor
  */
 
-class RoleVisitor
+template<>
+class Visitor<Role>
 {
 public:
-    virtual ~RoleVisitor() {}
+    virtual ~Visitor() {}
 
     // Default implementations always return false
 

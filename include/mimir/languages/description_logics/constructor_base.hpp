@@ -33,8 +33,8 @@ namespace mimir::dl
  * Concept
  */
 
-template<typename Derived_>
-class ConceptConstructorEvaluatorBase : public Constructor<Concept>
+template<IsConceptOrRole D, typename Derived_>
+class ConstructorEvaluatorBase : public Constructor<D>
 {
 private:
     /// @brief Helper to cast to Derived.
@@ -42,13 +42,13 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    bool is_equal(const Constructor<Concept>& other) const override { return self().is_equal_impl(other); }
+    bool is_equal(const Constructor<D>& other) const override { return self().is_equal_impl(other); }
     size_t hash() const override { return self().hash_impl(); }
 
-    Denotation<Concept> evaluate(EvaluationContext& context) const override
+    Denotation<D> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.concept_denotation_repository.get_if(this, context.state);
+        auto denotation = context.get_denotation_repository<D>().get_if(this, context.state);
         if (denotation.has_value())
         {
             return denotation.value();
@@ -58,44 +58,14 @@ public:
         self().evaluate_impl(context);
 
         // Store and return result;
-        context.concept_denotation.get_flatmemory_builder().finish();
-        return context.concept_denotation_repository.insert(this, context.state, context.concept_denotation);
+        auto& builder = context.get_denotation_builder<D>();
+        builder.get_flatmemory_builder().finish();
+        return context.get_denotation_repository<D>().insert(this, context.state, builder);
     };
 
-    bool accept(const grammar::ConceptVisitor& visitor) const override { return self().accept_impl(visitor); }
+    bool accept(const grammar::Visitor<D>& visitor) const override { return self().accept_impl(visitor); }
 
     size_t get_id() const override { return self().get_id_impl(); }
-};
-
-/**
- * Role
- */
-
-template<typename Derived_>
-class RoleConstructorEvaluatorBase : public Constructor<Role>
-{
-private:
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-    constexpr auto& self() { return static_cast<Derived_&>(*this); }
-
-public:
-    virtual Denotation<Role> evaluate(EvaluationContext& context) const override
-    {
-        // Try to access cached result
-        auto denotation = context.role_denotation_repository.get_if(this, context.state);
-        if (denotation.has_value())
-        {
-            return denotation.value();
-        }
-
-        // Compute the result in the derived class
-        self().evaluate_impl(context);
-
-        // Store and return result;
-        context.role_denotation.get_flatmemory_builder().finish();
-        return context.role_denotation_repository.insert(this, context.state, context.role_denotation);
-    };
 };
 
 }

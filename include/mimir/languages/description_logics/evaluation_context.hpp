@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
@@ -39,8 +40,41 @@ struct EvaluationContext
     DenotationRepository<Concept> concept_denotation_repository;
     DenotationBuilder<Role> role_denotation;
     DenotationRepository<Role> role_denotation_repository;
-};
 
+    template<IsConceptOrRole D>
+    DenotationBuilder<D>& get_denotation_builder()
+    {
+        if constexpr (std::is_same_v<D, Concept>)
+        {
+            return concept_denotation;
+        }
+        else if constexpr (std::is_same_v<D, Role>)
+        {
+            return role_denotation;
+        }
+        else
+        {
+            static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
+        }
+    }
+
+    template<IsConceptOrRole D>
+    DenotationRepository<D>& get_denotation_repository()
+    {
+        if constexpr (std::is_same_v<D, Concept>)
+        {
+            return concept_denotation_repository;
+        }
+        else if constexpr (std::is_same_v<D, Role>)
+        {
+            return role_denotation_repository;
+        }
+        else
+        {
+            static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
+        }
+    }
+};
 }
 
 #endif

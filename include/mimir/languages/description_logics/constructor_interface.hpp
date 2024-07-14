@@ -33,15 +33,6 @@ namespace mimir::dl
 template<IsConceptOrRole D>
 class Constructor
 {
-};
-
-/**
- * Concept
- */
-
-template<>
-class Constructor<Concept>
-{
 protected:
     bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
 
@@ -62,44 +53,11 @@ public:
     virtual size_t hash() const = 0;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
-    virtual Denotation<Concept> evaluate(EvaluationContext& context) const = 0;
+    virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
     /// Uses double dispatch.
-    virtual bool accept(const grammar::ConceptVisitor& visitor) const = 0;
-
-    virtual size_t get_id() const = 0;
-};
-
-/**
- * Role
- */
-
-template<>
-class Constructor<Role>
-{
-protected:
-    bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
-
-    Constructor() = default;
-    Constructor(Constructor&& other) = default;
-    Constructor& operator=(Constructor&& other) = default;
-
-public:
-    // Uncopieable
-    Constructor(const Constructor& other) = delete;
-    Constructor& operator=(const Constructor& other) = delete;
-    virtual ~Constructor() = default;
-
-    bool operator==(const Constructor& other) const { return is_equal(other); }
-    virtual bool is_equal(const Constructor& other) const = 0;
-    virtual size_t hash() const = 0;
-
-    /// @brief Evaluate the dl constructor on the evaluation context.
-    virtual Denotation<Role> evaluate(EvaluationContext& context) const = 0;
-
-    /// @brief Return true iff the symbols match the data in the dl constructor.
-    virtual bool accept(const grammar::RoleVisitor& visitor) const = 0;
+    virtual bool accept(const grammar::Visitor<D>& visitor) const = 0;
 
     virtual size_t get_id() const = 0;
 };

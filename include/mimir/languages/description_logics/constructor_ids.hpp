@@ -25,6 +25,8 @@ namespace mimir::dl
 
 /**
  * ID classes.
+ *
+ * We need those to write generic code independent of concept or role.
  */
 
 struct Concept

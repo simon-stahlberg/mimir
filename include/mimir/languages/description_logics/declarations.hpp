@@ -96,8 +96,8 @@ using RoleChoiceList = ChoiceList<Role>;
  * Visitors
  */
 
-class ConceptVisitor;
-class RoleVisitor;
+template<dl::IsConceptOrRole D>
+class Visitor;
 
 }
 }

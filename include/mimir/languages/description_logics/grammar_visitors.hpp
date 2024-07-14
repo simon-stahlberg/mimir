@@ -35,7 +35,7 @@ namespace mimir::dl::grammar
  */
 
 template<PredicateCategory P>
-class ConceptPredicateStateVisitor : public ConceptVisitor
+class ConceptPredicateStateVisitor : public Visitor<Concept>
 {
 private:
     const grammar::ConceptPredicateState<P>& m_grammar_constructor;
@@ -47,7 +47,7 @@ public:
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoalVisitor : public ConceptVisitor
+class ConceptPredicateGoalVisitor : public Visitor<Concept>
 {
 private:
     const ConceptPredicateGoal<P>& m_grammar_constructor;
@@ -58,7 +58,7 @@ public:
     bool visit(const dl::ConceptPredicateGoal<P>& constructor) const override;
 };
 
-class ConceptAndVisitor : public ConceptVisitor
+class ConceptAndVisitor : public Visitor<Concept>
 {
 private:
     const ConceptAnd& m_grammar_constructor;
@@ -74,7 +74,7 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateStateVisitor : public RoleVisitor
+class RolePredicateStateVisitor : public Visitor<Role>
 {
 private:
     const RolePredicateState<P>& m_grammar_constructor;
@@ -86,7 +86,7 @@ public:
 };
 
 template<PredicateCategory P>
-class RolePredicateGoalVisitor : public RoleVisitor
+class RolePredicateGoalVisitor : public Visitor<Role>
 {
 private:
     const RolePredicateGoal<P>& m_grammar_constructor;
@@ -97,7 +97,7 @@ public:
     bool visit(const dl::RolePredicateGoal<P>& constructor) const override;
 };
 
-class RoleAndVisitor : public RoleVisitor
+class RoleAndVisitor : public Visitor<Role>
 {
 private:
     const RoleAnd& m_grammar_constructor;
