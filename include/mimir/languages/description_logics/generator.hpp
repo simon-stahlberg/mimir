@@ -41,8 +41,16 @@ using ConstructorRepositories = VariadicConstructorRepository<ConceptPredicateSt
 class Generator
 {
 private:
+    /* Memory */
+    ConstructorRepositories m_constructor_repos;
+
+    /* Grammar specification */
+    grammar::Grammar m_grammar;
+
 public:
     Generator(grammar::Grammar grammar);
+
+    /* TODO: refinement operators */
 };
 }
 

@@ -35,6 +35,7 @@ template<IsConceptOrRole D>
 class DenotationRepository
 {
 private:
+    using FlatDenotationBuilderType = typename Denotation<D>::FlatDenotationBuilderType;
     using FlatDenotationType = typename Denotation<D>::FlatDenotationType;
     using FlatDenotationSetType = typename Denotation<D>::FlatDenotationSetType;
 
@@ -64,10 +65,7 @@ private:
         }
     };
 
-    // Cache for fluent and derived infos
     std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
-    // Cache for static infos
-    std::unordered_map<const Constructor<D>*, Denotation<D>> m_cached_static_denotations;
 
 public:
     Denotation<D> insert(const Constructor<D>* constructor, State state, const DenotationBuilder<D>& denotation)
@@ -80,30 +78,10 @@ public:
         return Denotation<D>(*it);
     }
 
-    Denotation<D> insert(const Constructor<D>* constructor, const DenotationBuilder<D>& denotation)
-    {
-        const auto [it, inserted] = m_storage.insert(denotation.get_flatmemory_builder());
-        if (inserted)
-        {
-            m_cached_static_denotations.emplace(constructor, Denotation<D>(*it));
-        }
-        return Denotation<D>(*it);
-    }
-
     std::optional<Denotation<D>> get_if(const Constructor<D>* constructor, State state) const
     {
         auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
         if (it == m_cached_dynamic_denotations.end())
-        {
-            return std::nullopt;
-        }
-        return it->second;
-    }
-
-    std::optional<Denotation<D>> get_if(const Constructor<D>* constructor) const
-    {
-        auto it = m_cached_static_denotations.find(constructor);
-        if (it == m_cached_static_denotations.end())
         {
             return std::nullopt;
         }
