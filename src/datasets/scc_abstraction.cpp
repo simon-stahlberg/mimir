@@ -77,20 +77,154 @@ std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remov
     const auto [num_components, component_map] = strong_components(*pnf_state_space);
     const auto scc_digraph = create_scc_digraph(num_components, component_map, *pnf_state_space);
     const auto partitioning = get_partitioning<StateSpace>(num_components, component_map);
+    auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
+    pruning_components.reserve(partitioning.size());
     for (size_t group_index = 0; group_index < partitioning.size(); ++group_index)
     {
         auto group = partitioning.at(group_index);
-        auto group_pruning_strategy = ObjectGraphStaticPruningStrategy();
+        auto pruned_static_ground_atoms = FlatBitsetBuilder<Static>(pnf_state_space->get_problem()->get_static_initial_positive_atoms_bitset());
         auto pruned_fluent_ground_atoms = FlatBitsetBuilder<Fluent>(pnf_state_space->get_states()[group.begin()->second].get_atoms<Fluent>());
+        auto pruned_derived_ground_atoms = FlatBitsetBuilder<Derived>(pnf_state_space->get_states()[group.begin()->second].get_atoms<Derived>());
+        auto pruned_static_ground_literals = FlatBitsetBuilder<Static>();
+        for (const auto& literal : pnf_state_space->get_problem()->get_goal_condition<Static>())
+        {
+            pruned_static_ground_literals.set(literal->get_identifier());
+        }
+        auto pruned_fluent_ground_literals = FlatBitsetBuilder<Fluent>();
+
+        for (const auto& literal : pnf_state_space->get_problem()->get_goal_condition<Fluent>())
+        {
+            pruned_static_ground_literals.set(literal->get_identifier());
+        }
+        auto pruned_derived_ground_literals = FlatBitsetBuilder<Derived>();
+        for (const auto& literal : pnf_state_space->get_problem()->get_goal_condition<Derived>())
+        {
+            pruned_static_ground_literals.set(literal->get_identifier());
+        }
         for (const auto& [group_index, state_index] : group)
         {
             pruned_fluent_ground_atoms &= pnf_state_space->get_states()[state_index].get_atoms<Fluent>();
+            pruned_derived_ground_atoms &= pnf_state_space->get_states()[state_index].get_atoms<Derived>();
             for (const auto& transition : pnf_state_space->get_forward_transitions(state_index))
             {
-                auto precondition = StripsActionPrecondition(transition.get_creating_action().get_strips_precondition());
-                pruned_fluent_ground_atoms &= precondition.get_negative_precondition<Fluent>();
-                pruned_fluent_ground_atoms &= precondition.get_positive_precondition<Fluent>();
+                const auto& precondition = StripsActionPrecondition(transition.get_creating_action().get_strips_precondition());
+                pruned_static_ground_atoms -= precondition.get_negative_precondition<Static>();
+                pruned_static_ground_atoms -= precondition.get_positive_precondition<Static>();
+                pruned_fluent_ground_atoms -= precondition.get_negative_precondition<Fluent>();
+                pruned_fluent_ground_atoms -= precondition.get_positive_precondition<Fluent>();
+                pruned_derived_ground_atoms -= precondition.get_negative_precondition<Derived>();
+                pruned_derived_ground_atoms -= precondition.get_positive_precondition<Derived>();
+                for (const auto& literal : transition.get_creating_action().get_action()->get_conditions<Static>())
+                {
+                    pruned_static_ground_literals.unset(literal->get_identifier());
+                }
+                for (const auto& literal : transition.get_creating_action().get_action()->get_conditions<Fluent>())
+                {
+                    pruned_fluent_ground_literals.unset(literal->get_identifier());
+                }
+                for (const auto& literal : transition.get_creating_action().get_action()->get_conditions<Derived>())
+                {
+                    pruned_derived_ground_literals.unset(literal->get_identifier());
+                }
             }
+
+            // TODO we may also prune goal literals that occur in a condition but are static in the SCC.
+            auto pruned_static_ground_literals = FlatBitsetBuilder<Static>();
+            for (const auto& literal : pnf_state_space->get_problem()->get_goal_condition<Static>())
+            {
+                if (pruned_static_ground_atoms.get(literal->get_atom()->get_identifier()))
+                {
+                    pruned_static_ground_literals.set(literal->get_identifier());
+                }
+            }
+            auto pruned_fluent_ground_literals = FlatBitsetBuilder<Fluent>();
+            for (const auto& literal : pnf_state_space->get_problem()->get_goal_condition<Fluent>())
+            {
+                if (pruned_fluent_ground_atoms.get(literal->get_atom()->get_identifier()))
+                {
+                    pruned_fluent_ground_literals.set(literal->get_identifier());
+                }
+            }
+            auto pruned_derived_ground_literals = FlatBitsetBuilder<Derived>();
+            for (const auto& literal : pnf_state_space->get_problem()->get_goal_condition<Derived>())
+            {
+                if (pruned_derived_ground_atoms.get(literal->get_atom()->get_identifier()))
+                {
+                    pruned_derived_ground_literals.set(literal->get_identifier());
+                }
+            }
+        }
+        auto pruned_objects = FlatBitsetBuilder<>();
+        for (const auto& object : pnf_state_space->get_problem()->get_objects())
+        {
+            pruned_objects.set(object->get_identifier());
+        }
+        auto unpruned_static_ground_atoms = FlatBitsetBuilder<Static>(pnf_state_space->get_problem()->get_static_initial_positive_atoms_bitset());
+        unpruned_static_ground_atoms -= pruned_static_ground_atoms;
+        auto unpruned_fluent_ground_atoms = FlatBitsetBuilder<Fluent>(pnf_ssg->get_reached_fluent_ground_atoms());
+        unpruned_fluent_ground_atoms -= pruned_fluent_ground_atoms;
+        auto unpruned_derived_ground_atoms = FlatBitsetBuilder<Derived>(pnf_ssg->get_reached_derived_ground_atoms());
+        unpruned_derived_ground_atoms -= pruned_derived_ground_atoms;
+        for (const auto& atom : pnf_factories->get_ground_atoms_from_ids<Static>(unpruned_static_ground_atoms))
+        {
+            for (const auto& object : atom->get_objects())
+            {
+                pruned_objects.unset(object->get_identifier());
+            }
+        }
+        for (const auto& atom : pnf_factories->get_ground_atoms_from_ids<Fluent>(unpruned_fluent_ground_atoms))
+        {
+            for (const auto& object : atom->get_objects())
+            {
+                pruned_objects.unset(object->get_identifier());
+            }
+        }
+        for (const auto& atom : pnf_factories->get_ground_atoms_from_ids<Derived>(unpruned_derived_ground_atoms))
+        {
+            for (const auto& object : atom->get_objects())
+            {
+                pruned_objects.unset(object->get_identifier());
+            }
+        }
+        pruning_components.push_back(ObjectGraphStaticSccPruningStrategy::SccPruningComponent { pruned_objects,
+                                                                                                pruned_static_ground_atoms,
+                                                                                                pruned_fluent_ground_atoms,
+                                                                                                pruned_derived_ground_atoms,
+                                                                                                pruned_static_ground_literals,
+                                                                                                pruned_fluent_ground_literals,
+                                                                                                pruned_derived_ground_literals });
+    }
+    auto computed_components = std::vector<bool>(num_components, false);
+    auto scc_deque = std::deque<size_t>();
+    scc_deque.push_back(component_map.at(pnf_state_space->get_initial_state()));
+    while (!scc_deque.empty())
+    {
+        const auto& scc = scc_deque.front();
+        scc_deque.pop_front();
+        if (computed_components.at(scc))
+        {
+            continue;
+        }
+        auto can_compute = true;
+        for (const auto& succ_scc : scc_digraph.get_targets(scc))
+        {
+            if (!computed_components.at(succ_scc.get_index()))
+            {
+                can_compute = false;
+                scc_deque.push_back(succ_scc.get_index());
+            }
+        }
+        if (can_compute)
+        {
+            for (const auto& succ_scc : scc_digraph.get_targets(scc))
+            {
+                pruning_components.at(scc) &= pruning_components.at(succ_scc.get_index());
+            }
+            computed_components[scc] = true;
+        }
+        else
+        {
+            scc_deque.push_back(scc);
         }
     }
 

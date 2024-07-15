@@ -80,13 +80,13 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     class PruneAllObjects : public ObjectGraphPruningStrategy
     {
     public:
-        bool prune(const Object&) const override { return true; };
-        bool prune(const GroundAtom<Static>) const override { return true; };
-        bool prune(const GroundAtom<Fluent>) const override { return true; };
-        bool prune(const GroundAtom<Derived>) const override { return true; };
-        bool prune(const GroundLiteral<Static>) const override { return true; }
-        bool prune(const GroundLiteral<Fluent>) const override { return true; }
-        bool prune(const GroundLiteral<Derived>) const override { return true; }
+        bool prune(StateIndex, Object) const override { return true; };
+        bool prune(StateIndex, GroundAtom<Static>) const override { return true; };
+        bool prune(StateIndex, GroundAtom<Fluent>) const override { return true; };
+        bool prune(StateIndex, GroundAtom<Derived>) const override { return true; };
+        bool prune(StateIndex, GroundLiteral<Static>) const override { return true; }
+        bool prune(StateIndex, GroundLiteral<Fluent>) const override { return true; }
+        bool prune(StateIndex, GroundLiteral<Derived>) const override { return true; }
     };
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
@@ -97,7 +97,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         const auto object_graph =
-            create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state, true, PruneAllObjects());
+            create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state, 0, true, PruneAllObjects());
 
         // std::cout << object_graph << std::endl;
 
