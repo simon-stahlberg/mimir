@@ -27,7 +27,7 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/visitors.hpp"
-#include "mimir/languages/description_logics/visitors_interface.hpp"
+#include "mimir/languages/description_logics/grammar_visitors.hpp"
+#include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
 #endif

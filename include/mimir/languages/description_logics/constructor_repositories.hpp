@@ -36,17 +36,13 @@ private:
 
     std::unordered_set<const T*, loki::Hash<T*>, loki::EqualTo<T*>> m_uniqueness;
 
-    size_t m_count = 0;
-
 public:
     ConstructorRepository(size_t elements_per_segment) : m_persistent_vector(loki::SegmentedVector<T>(elements_per_segment)) {}
 
     template<typename... Args>
     const T& create(Args&&... args)
     {
-        const auto index = m_count;
-        assert(index == m_persistent_vector.size());
-
+        const auto index = m_persistent_vector.size();
         m_persistent_vector.push_back(T(index, std::forward<Args>(args)...));
         const auto& element = m_persistent_vector.back();
         const auto* element_ptr = &element;
@@ -58,8 +54,6 @@ public:
             /* Element is unique! */
 
             m_uniqueness.emplace(element_ptr);
-            // Validate the element by increasing the identifier to the next free position
-            ++m_count;
         }
         else
         {
@@ -71,7 +65,7 @@ public:
         }
 
         // Ensure that indexing matches size of uniqueness set.
-        assert(m_uniqueness.size() == m_count);
+        assert(m_uniqueness.size() == m_persistent_vector.size());
 
         return element;
     }

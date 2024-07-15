@@ -66,8 +66,8 @@ ConceptAndVisitor::ConceptAndVisitor(const ConceptAnd& grammar_constructor) : m_
 
 bool ConceptAndVisitor::visit(const dl::ConceptAnd& constructor) const
 {
-    return m_grammar_constructor.test_match(constructor.get_concept_left())  //
-           && m_grammar_constructor.test_match(constructor.get_concept_right());
+    return m_grammar_constructor.get_concept_left().test_match(constructor.get_concept_left())  //
+           && m_grammar_constructor.get_concept_right().test_match(constructor.get_concept_right());
 }
 
 /**
