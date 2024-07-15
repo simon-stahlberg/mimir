@@ -32,10 +32,10 @@ class SccAbstractState
 private:
     StateIndex m_index;
     std::span<State> m_states;
-    ObjectGraphStaticPruningStrategy m_pruning_strategy;
+    ObjectGraphStaticSccPruningStrategy m_pruning_strategy;
 
 public:
-    SccAbstractState(StateIndex index, std::span<State> states, ObjectGraphStaticPruningStrategy pruning_strategy) :
+    SccAbstractState(StateIndex index, std::span<State> states, ObjectGraphStaticSccPruningStrategy pruning_strategy) :
         m_index(index),
         m_states(states),
         m_pruning_strategy(pruning_strategy)
