@@ -48,7 +48,7 @@ public:
     Denotation<D> evaluate(EvaluationContext& context) const override
     {
         // Try to access cached result
-        auto denotation = context.get_denotation_repository<D>().get_if(this, context.state);
+        auto denotation = context.get_denotation_repository<D>().get_if(this->get_id(), context.get_state_id());
         if (denotation.has_value())
         {
             return denotation.value();
@@ -60,7 +60,7 @@ public:
         // Store and return result;
         auto& builder = context.get_denotation_builder<D>();
         builder.get_flatmemory_builder().finish();
-        return context.get_denotation_repository<D>().insert(this, context.state, builder);
+        return context.get_denotation_repository<D>().insert(this->get_id(), context.get_state_id(), builder);
     };
 
     bool accept(const grammar::Visitor<D>& visitor) const override { return self().accept_impl(visitor); }

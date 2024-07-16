@@ -41,5 +41,9 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
     const auto& concept_goal_at_robby = constructor_repositories.create<dl::ConceptPredicateGoal<Fluent>>(predicate_at_robby);
     const auto& concept_at_robby_and_goal_at_robby = constructor_repositories.create<dl::ConceptAnd>(concept_at_robby, concept_goal_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby_and_goal_at_robby));
+
+    const auto& concept_goal_at_robby_and_at_robby = constructor_repositories.create<dl::ConceptAnd>(concept_goal_at_robby, concept_at_robby);
+    EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_and_at_robby));
 }
+
 }

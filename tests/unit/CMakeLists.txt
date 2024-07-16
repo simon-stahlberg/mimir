@@ -31,8 +31,9 @@ add_gtest(remove_universal_quantifiers_test                "formalism/translator
 add_gtest(object_graph_test                                "graphs/object_graph.cpp")
 add_gtest(tuple_graph_test                                 "graphs/tuple_graph.cpp")
 
-add_gtest(parser_test                                      "languages/description_logics/parser.cpp")
-add_gtest(grammar_test                                     "languages/description_logics/grammar.cpp")
+add_gtest(dl_constructors_test                                  "languages/description_logics/constructors.cpp")
+add_gtest(dl_parser_test                                   "languages/description_logics/parser.cpp")
+add_gtest(dl_grammar_test                                  "languages/description_logics/grammar.cpp")
 
 add_gtest(brfs_test                                        "search/algorithms/brfs.cpp")
 add_gtest(iw_test                                          "search/algorithms/iw.cpp")

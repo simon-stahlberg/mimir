@@ -23,7 +23,7 @@ namespace mimir::dl
 template<IsConceptOrRole D>
 size_t DenotationRepository<D>::KeyHash::operator()(const Key& key) const
 {
-    return loki::hash_combine(key.constructor, key.state.hash());
+    return loki::hash_combine(key.constructor_identifier, key.state_identifier);
 }
 
 template<IsConceptOrRole D>
@@ -31,26 +31,26 @@ bool DenotationRepository<D>::KeyEqual::operator()(const Key& left, const Key& r
 {
     if (&left != &right)
     {
-        return (left.constructor == right.constructor) && (left.state == right.state);
+        return (left.constructor_identifier == right.constructor_identifier) && (left.state_identifier == right.state_identifier);
     }
     return true;
 }
 
 template<IsConceptOrRole D>
-Denotation<D> DenotationRepository<D>::insert(const Constructor<D>* constructor, State state, const DenotationBuilder<D>& denotation)
+Denotation<D> DenotationRepository<D>::insert(size_t constructor_identifier, size_t state_identifier, const DenotationBuilder<D>& denotation)
 {
     const auto [it, inserted] = m_storage.insert(denotation.get_flatmemory_builder());
     if (inserted)
     {
-        m_cached_dynamic_denotations.emplace(Key { constructor, state }, Denotation<D>(*it));
+        m_cached_dynamic_denotations.emplace(Key { constructor_identifier, state_identifier }, Denotation<D>(*it));
     }
     return Denotation<D>(*it);
 }
 
 template<IsConceptOrRole D>
-std::optional<Denotation<D>> DenotationRepository<D>::get_if(const Constructor<D>* constructor, State state) const
+std::optional<Denotation<D>> DenotationRepository<D>::get_if(size_t constructor_identifier, size_t state_identifier) const
 {
-    auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
+    auto it = m_cached_dynamic_denotations.find(Key { constructor_identifier, state_identifier });
     if (it == m_cached_dynamic_denotations.end())
     {
         return std::nullopt;

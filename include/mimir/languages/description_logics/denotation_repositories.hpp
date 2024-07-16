@@ -18,10 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
-#include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
-#include "mimir/search/state.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -44,8 +42,8 @@ private:
 
     struct Key
     {
-        const Constructor<D>* constructor;
-        State state;
+        size_t constructor_identifier;
+        size_t state_identifier;
     };
 
     struct KeyHash
@@ -61,9 +59,9 @@ private:
     std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(const Constructor<D>* constructor, State state, const DenotationBuilder<D>& denotation);
+    Denotation<D> insert(size_t constructor_identifier, size_t state_identifier, const DenotationBuilder<D>& denotation);
 
-    std::optional<Denotation<D>> get_if(const Constructor<D>* constructor, State state) const;
+    std::optional<Denotation<D>> get_if(size_t constructor_identifier, size_t state_identifier) const;
 };
 
 }
