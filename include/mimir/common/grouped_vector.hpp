@@ -223,7 +223,7 @@ public:
  * Implementations
  */
 
-static void create_range_check(size_t cur_num_groups, size_t num_groups)
+static inline void create_range_check(size_t cur_num_groups, size_t num_groups)
 {
     if (cur_num_groups > num_groups)
     {

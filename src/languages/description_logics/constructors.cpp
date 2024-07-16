@@ -70,7 +70,7 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<>
-inline void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
+void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
 {
     auto& bitset = context.get_denotation_builder<Concept>().get_bitset();
     for (const auto& atom : context.get_state_atoms<Static>())
