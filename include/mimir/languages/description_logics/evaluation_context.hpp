@@ -63,119 +63,36 @@ public:
                       const GroundAtomList<Static>& static_goal_atoms,
                       const GroundAtomList<Fluent>& fluent_goal_atoms,
                       const GroundAtomList<Derived>& derived_goal_atoms,
-                      size_t num_objects) :
-        m_concept_denotation_repository(concept_denotation_repository),
-        m_role_denotation_repository(role_denotation_repository),
-        m_state_id(state_id),
-        m_static_state_atoms(static_state_atoms),
-        m_fluent_state_atoms(fluent_state_atoms),
-        m_derived_state_atoms(derived_state_atoms),
-        m_static_goal_atoms(static_goal_atoms),
-        m_fluent_goal_atoms(fluent_goal_atoms),
-        m_derived_goal_atoms(derived_goal_atoms),
-        m_concept_denotation_builder(),
-        m_role_denotation_builder(num_objects)
-    {
-    }
+                      size_t num_objects);
+
+    /**
+     * Setters
+     */
 
     /// @brief Set the state id used to identify the result for caching.
-    void set_state_id(size_t state_id) { m_state_id = state_id; }
+    void set_state_id(size_t state_id);
 
     /// @brief Set the state atoms.
     template<DynamicPredicateCategory P>
-    void set_state_atoms(const GroundAtomList<P>& state_atoms)
-    {
-        if constexpr (std::is_same_v<P, Fluent>)
-        {
-            m_fluent_state_atoms = state_atoms;
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            m_derived_state_atoms = state_atoms;
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    void set_state_atoms(const GroundAtomList<P>& state_atoms);
+
+    /**
+     * Getters
+     */
 
     template<IsConceptOrRole D>
-    DenotationBuilder<D>& get_denotation_builder()
-    {
-        if constexpr (std::is_same_v<D, Concept>)
-        {
-            return m_concept_denotation_builder;
-        }
-        else if constexpr (std::is_same_v<D, Role>)
-        {
-            return m_role_denotation_builder;
-        }
-        else
-        {
-            static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
-        }
-    }
+    DenotationBuilder<D>& get_denotation_builder();
 
     template<IsConceptOrRole D>
-    DenotationRepository<D>& get_denotation_repository()
-    {
-        if constexpr (std::is_same_v<D, Concept>)
-        {
-            return m_concept_denotation_repository;
-        }
-        else if constexpr (std::is_same_v<D, Role>)
-        {
-            return m_role_denotation_repository;
-        }
-        else
-        {
-            static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
-        }
-    }
+    DenotationRepository<D>& get_denotation_repository();
 
-    size_t get_state_id() const { return m_state_id; }
+    size_t get_state_id() const;
 
     template<PredicateCategory P>
-    const GroundAtomList<P>& get_state_atoms() const
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_static_state_atoms.get();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_fluent_state_atoms.get();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_derived_state_atoms.get();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    const GroundAtomList<P>& get_state_atoms() const;
 
     template<PredicateCategory P>
-    const GroundAtomList<P>& get_goal_atoms() const
-    {
-        if constexpr (std::is_same_v<P, Static>)
-        {
-            return m_static_goal_atoms.get();
-        }
-        else if constexpr (std::is_same_v<P, Fluent>)
-        {
-            return m_fluent_goal_atoms.get();
-        }
-        else if constexpr (std::is_same_v<P, Derived>)
-        {
-            return m_derived_goal_atoms.get();
-        }
-        else
-        {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-        }
-    }
+    const GroundAtomList<P>& get_goal_atoms() const;
 };
 }
 

@@ -29,7 +29,7 @@ namespace mimir::dl
 template<typename T>
 class ConstructorRepository;
 
-struct EvaluationContext;
+class EvaluationContext;
 
 /**
  * Constructors
