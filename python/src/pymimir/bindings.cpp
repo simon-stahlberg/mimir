@@ -1985,6 +1985,7 @@ void init_pymimir(py::module_& m)
           py::arg("pddl_factories"),
           py::arg("problem"),
           py::arg("state"),
+          py::arg("state_index") = 0,
           py::arg("mark_true_goal_literals") = false,
           py::arg("pruning_strategy") = ObjectGraphPruningStrategy(),
           "Creates an object graph based on the provided parameters");

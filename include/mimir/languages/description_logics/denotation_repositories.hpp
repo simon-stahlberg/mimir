@@ -18,8 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
-#include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructor_ids.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 #include "mimir/search/state.hpp"
 
@@ -50,43 +50,20 @@ private:
 
     struct KeyHash
     {
-        size_t operator()(const Key& key) const { return loki::hash_combine(key.constructor, key.state.hash()); }
+        size_t operator()(const Key& key) const;
     };
 
     struct KeyEqual
     {
-        bool operator()(const Key& left, const Key& right) const
-        {
-            if (&left != &right)
-            {
-                return (left.constructor == right.constructor) && (left.state == right.state);
-            }
-            return true;
-        }
+        bool operator()(const Key& left, const Key& right) const;
     };
 
     std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(const Constructor<D>* constructor, State state, const DenotationBuilder<D>& denotation)
-    {
-        const auto [it, inserted] = m_storage.insert(denotation.get_flatmemory_builder());
-        if (inserted)
-        {
-            m_cached_dynamic_denotations.emplace(Key { constructor, state }, Denotation<D>(*it));
-        }
-        return Denotation<D>(*it);
-    }
+    Denotation<D> insert(const Constructor<D>* constructor, State state, const DenotationBuilder<D>& denotation);
 
-    std::optional<Denotation<D>> get_if(const Constructor<D>* constructor, State state) const
-    {
-        auto it = m_cached_dynamic_denotations.find(Key { constructor, state });
-        if (it == m_cached_dynamic_denotations.end())
-        {
-            return std::nullopt;
-        }
-        return it->second;
-    }
+    std::optional<Denotation<D>> get_if(const Constructor<D>* constructor, State state) const;
 };
 
 }

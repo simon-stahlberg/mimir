@@ -228,6 +228,8 @@ std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remov
         }
     }
 
+    auto pruning_strategy = ObjectGraphStaticSccPruningStrategy(std::move(pruning_components), std::move(component_map));
+
     return std::nullopt;
 }
 }
