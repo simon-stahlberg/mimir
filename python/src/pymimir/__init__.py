@@ -132,10 +132,14 @@ from _pymimir import (
     AbstractTransition,
     FaithfulAbstractState,
     FaithfulAbstraction,
+    FaithfulAbstractionOptions,
+    FaithfulAbstractionsOptions,
     GlobalFaithfulAbstractState,
     GlobalFaithfulAbstraction,
     Transition,
-    StateSpace
+    StateSpace,
+    StateSpaceOptions,
+    StateSpacesOptions
 )
 
 # Graphs (classes)
@@ -149,6 +153,7 @@ from _pymimir import (
     DigraphEdge,
     DenseNautyGraph,
     ObjectGraphPruningStrategy,
+    ObjectGraphPruningStrategyEnum,
     ProblemColorFunction,
     SparseNautyGraph,
     TupleGraphVertex,

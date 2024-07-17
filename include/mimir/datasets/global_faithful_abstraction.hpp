@@ -99,25 +99,11 @@ public:
 
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
                                                          const std::vector<fs::path>& problem_filepaths,
-                                                         bool mark_true_goal_literals = false,
-                                                         bool use_unit_cost_one = true,
-                                                         bool remove_if_unsolvable = true,
-                                                         bool compute_complete_abstraction_mapping = false,
-                                                         bool sort_ascending_by_num_states = true,
-                                                         uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                         uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-                                                         uint32_t num_threads = std::thread::hardware_concurrency());
+                                                         const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     static std::vector<GlobalFaithfulAbstraction>
     create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool mark_true_goal_literals = false,
-           bool use_unit_cost_one = true,
-           bool remove_if_unsolvable = true,
-           bool compute_complete_abstraction_mapping = false,
-           bool sort_ascending_by_num_states = true,
-           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-           uint32_t num_threads = std::thread::hardware_concurrency());
+           const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**
      * Abstraction functionality

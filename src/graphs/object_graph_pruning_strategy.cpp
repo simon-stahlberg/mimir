@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Dominik Drexler and Till Hofmann
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +15,74 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
- * 1. PNF
- * 2. state space
- * 3. SCCs
- * 4. prune static atoms in each SCC (and all successors), starting with leafs
- * 5. compute certificate for each state (with pruned atoms) -> faithful abstraction
- */
+#include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
+#include "mimir/datasets/boost_adapter.hpp"
+#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
+#include "mimir/formalism/transformers/to_positive_normal_form.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/action.hpp"
+#include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/flat_types.hpp"
 
-#include <mimir/datasets/boost_adapter.hpp>
-#include <mimir/datasets/scc_abstraction.hpp>
-#include <mimir/formalism/factories.hpp>
-#include <mimir/formalism/transformers/encode_parameter_index_in_variables.hpp>
-#include <mimir/formalism/transformers/to_positive_normal_form.hpp>
-#include <mimir/search/applicable_action_generators/grounded.hpp>
 #include <optional>
 
 namespace mimir
 {
 
-Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+/* ObjectGraphStaticPruningStrategy */
+
+ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(std::vector<SccPruningComponent> pruning_components,
+                                                                         std::map<StateIndex, size_t> component_map) :
+    m_pruning_components(std::move(pruning_components)),
+    m_component_map(std::move(component_map))
+{
+}
+
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_objects.get(object->get_identifier());
+}
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Static> atom) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_static_ground_atoms.get(atom->get_identifier());
+}
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Fluent> atom) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_fluent_ground_atoms.get(atom->get_identifier());
+}
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Derived> atom) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_derived_ground_atoms.get(atom->get_identifier());
+}
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Static> literal) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_static_ground_literals.get(literal->get_atom()->get_identifier());
+}
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Fluent> literal) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_fluent_ground_literals.get(literal->get_atom()->get_identifier());
+}
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Derived> literal) const
+{
+    return m_pruning_components.at(m_component_map.at(state)).m_pruned_derived_ground_literals.get(literal->get_atom()->get_identifier());
+}
+
+ObjectGraphStaticSccPruningStrategy::SccPruningComponent&
+ObjectGraphStaticSccPruningStrategy::SccPruningComponent::operator&=(const ObjectGraphStaticSccPruningStrategy::SccPruningComponent& other)
+{
+    m_pruned_objects &= other.m_pruned_objects;
+    m_pruned_static_ground_atoms &= other.m_pruned_static_ground_atoms;
+    m_pruned_fluent_ground_atoms &= other.m_pruned_fluent_ground_atoms;
+    m_pruned_derived_ground_atoms &= other.m_pruned_derived_ground_atoms;
+    m_pruned_static_ground_literals &= other.m_pruned_static_ground_literals;
+    m_pruned_fluent_ground_literals &= other.m_pruned_fluent_ground_literals;
+    m_pruned_derived_ground_literals &= other.m_pruned_derived_ground_literals;
+    return *this;
+}
+
+static Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
 {
     auto g = Digraph();
     for (size_t i = 0; i < num_components; ++i)
@@ -58,7 +102,7 @@ Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, siz
     return g;
 }
 
-std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remove_if_unsolvable, uint32_t max_num_states, uint32_t timeout_ms)
+std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningStrategy::create(Problem problem, const StateSpaceOptions& options)
 {
     auto pnf_factories = std::make_shared<PDDLFactories>();
     auto pnf_problem = ToPositiveNormalFormTransformer(*pnf_factories).run(*problem);
@@ -69,7 +113,7 @@ std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remov
     std::cout << "PNF problem:\n" << *pnf_problem << std::endl;
     auto pnf_aag = std::make_shared<GroundedAAG>(pnf_problem, pnf_factories);
     auto pnf_ssg = std::make_shared<SuccessorStateGenerator>(pnf_aag);
-    auto pnf_state_space = StateSpace::create(pnf_problem, pnf_factories, pnf_aag, pnf_ssg, true, remove_if_unsolvable, max_num_states, timeout_ms);
+    auto pnf_state_space = StateSpace::create(pnf_problem, pnf_factories, pnf_aag, pnf_ssg, options);
     if (!pnf_state_space)
     {
         return std::nullopt;
@@ -228,8 +272,7 @@ std::optional<SccAbstraction> SccAbstraction::create(Problem problem, bool remov
         }
     }
 
-    auto pruning_strategy = ObjectGraphStaticSccPruningStrategy(std::move(pruning_components), std::move(component_map));
-
-    return std::nullopt;
+    return ObjectGraphStaticSccPruningStrategy(std::move(pruning_components), std::move(component_map));
 }
+
 }

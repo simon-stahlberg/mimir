@@ -42,7 +42,9 @@ int main(int argc, char** argv)
     }
 
     /* State spaces */
-    auto state_spaces = StateSpace::create(domain_file_path, problem_filepaths, true, true, true, max_num_states);
+    auto state_spaces_options = StateSpacesOptions();
+    state_spaces_options.state_space_options.max_num_states = max_num_states;
+    auto state_spaces = StateSpace::create(domain_file_path, problem_filepaths, state_spaces_options);
 
     size_t num_ss_states = 0;
     size_t num_ss_transitions = 0;
@@ -68,7 +70,7 @@ int main(int argc, char** argv)
     }
 
     /* Gfas */
-    auto gfas = FaithfulAbstraction::create(memories, true, true, true, false, true, max_num_states);
+    auto gfas = FaithfulAbstraction::create(memories);
 
     size_t num_gfa_states = 0;
     size_t num_gfa_transitions = 0;

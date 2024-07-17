@@ -1152,98 +1152,64 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def("get_representative_action", &AbstractTransition::get_representative_action, py::keep_alive<0, 1>());
 
-    // TODO: check return semantics below
-
     // StateSpace
+    py::class_<StateSpaceOptions>(m, "StateSpaceOptions")
+        .def(py::init<bool, bool, uint32_t, uint32_t>(),
+             py::arg("use_unit_cost_one") = true,
+             py::arg("remove_if_unsolvable") = true,
+             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+        .def_readwrite("use_unit_cost_one", &StateSpaceOptions::use_unit_cost_one)
+        .def_readwrite("remove_if_unsolvable", &StateSpaceOptions::remove_if_unsolvable)
+        .def_readwrite("max_num_states", &StateSpaceOptions::max_num_states)
+        .def_readwrite("timeout_ms", &StateSpaceOptions::timeout_ms);
+
+    py::class_<StateSpacesOptions>(m, "StateSpacesOptions")
+        .def(py::init<StateSpaceOptions, bool, uint32_t>(),
+             py::arg("state_space_options") = StateSpaceOptions(),
+             py::arg("sort_ascending_by_num_states") = true,
+             py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def_readwrite("state_space_options", &StateSpacesOptions::state_space_options)
+        .def_readwrite("sort_ascending_by_num_states", &StateSpacesOptions::sort_ascending_by_num_states)
+        .def_readwrite("num_threads", &StateSpacesOptions::num_threads);
+
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
         .def_static(
             "create",
-            [](const std::string& domain_filepath,
-               const std::string& problem_filepath,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               uint32_t max_num_states,
-               uint32_t timeout_ms)
-            { return StateSpace::create(domain_filepath, problem_filepath, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); },
+            [](const std::string& domain_filepath, const std::string& problem_filepath, const StateSpaceOptions& options)
+            { return StateSpace::create(domain_filepath, problem_filepath, options); },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+            py::arg("options") = StateSpaceOptions())
         .def_static(
             "create",
             [](Problem problem,
                std::shared_ptr<PDDLFactories> factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               uint32_t max_num_states,
-               uint32_t timeout_ms)
-            { return StateSpace::create(problem, factories, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); },
+               const StateSpaceOptions& options) { return StateSpace::create(problem, factories, aag, ssg, options); },
             py::arg("problem"),
             py::arg("factories"),
             py::arg("aag"),
             py::arg("ssg"),
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+            py::arg("options") = StateSpaceOptions())
         .def_static(
             "create",
-            [](const std::string& domain_filepath,
-               const std::vector<std::string>& problem_filepaths,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool sort_ascending_by_num_states,
-               uint32_t max_num_states,
-               uint32_t timeout_ms,
-               uint32_t num_threads)
+            [](const std::string& domain_filepath, const std::vector<std::string>& problem_filepaths, const StateSpacesOptions& options)
             {
                 auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                return StateSpace::create(domain_filepath,
-                                          problem_filepaths_,
-                                          use_unit_cost_one,
-                                          remove_if_unsolvable,
-                                          sort_ascending_by_num_states,
-                                          max_num_states,
-                                          timeout_ms,
-                                          num_threads);
+                return StateSpace::create(domain_filepath, problem_filepaths_, options);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("sort_ascending_by_num_states") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
-            py::arg("num_threads") = std::thread::hardware_concurrency())
+            py::arg("options") = StateSpacesOptions())
         .def_static(
             "create",
             [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
                    memories,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool sort_ascending_by_num_states,
-               uint32_t max_num_states,
-               uint32_t timeout_ms,
-               uint32_t num_threads) {
-                return StateSpace::create(memories,
-                                          use_unit_cost_one,
-                                          remove_if_unsolvable,
-                                          sort_ascending_by_num_states,
-                                          max_num_states,
-                                          timeout_ms,
-                                          num_threads);
-            },
+               const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
             py::arg("memories"),
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("sort_ascending_by_num_states") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
-            py::arg("num_threads") = std::thread::hardware_concurrency())
+            py::arg("options") = StateSpacesOptions())
         .def("compute_shortest_distances_from_states",
              &StateSpace::compute_shortest_distances_from_states,
              pybind11::arg("states"),
@@ -1331,6 +1297,37 @@ void init_pymimir(py::module_& m)
         .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
 
     // FaithfulAbstraction
+    py::enum_<ObjectGraphPruningStrategyEnum>(m, "ObjectGraphPruningStrategyEnum")
+        .value("None", ObjectGraphPruningStrategyEnum::None)
+        .value("StaticScc", ObjectGraphPruningStrategyEnum::StaticScc)
+        .export_values();
+
+    py::class_<FaithfulAbstractionOptions>(m, "FaithfulAbstractionOptions")
+        .def(py::init<bool, bool, bool, bool, uint32_t, uint32_t, ObjectGraphPruningStrategyEnum>(),
+             py::arg("mark_true_goal_literals") = false,
+             py::arg("use_unit_cost_one") = true,
+             py::arg("remove_if_unsolvable") = true,
+             py::arg("compute_complete_abstraction_mapping") = false,
+             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+             py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
+             py::arg("pruning_strategy") = ObjectGraphPruningStrategyEnum::None)
+        .def_readwrite("mark_true_goal_literals", &FaithfulAbstractionOptions::mark_true_goal_literals)
+        .def_readwrite("use_unit_cost_one", &FaithfulAbstractionOptions::use_unit_cost_one)
+        .def_readwrite("remove_if_unsolvable", &FaithfulAbstractionOptions::remove_if_unsolvable)
+        .def_readwrite("compute_complete_abstraction_mapping", &FaithfulAbstractionOptions::compute_complete_abstraction_mapping)
+        .def_readwrite("max_num_states", &FaithfulAbstractionOptions::max_num_states)
+        .def_readwrite("timeout_ms", &FaithfulAbstractionOptions::timeout_ms)
+        .def_readwrite("pruning_strategy", &FaithfulAbstractionOptions::pruning_strategy);
+
+    py::class_<FaithfulAbstractionsOptions>(m, "FaithfulAbstractionsOptions")
+        .def(py::init<FaithfulAbstractionOptions, bool, uint32_t>(),
+             py::arg("fa_options") = FaithfulAbstractionOptions(),
+             py::arg("sort_ascending_by_num_states") = true,
+             py::arg("num_threads") = std::thread::hardware_concurrency())
+        .def_readwrite("fa_options", &FaithfulAbstractionsOptions::fa_options)
+        .def_readwrite("sort_ascending_by_num_states", &FaithfulAbstractionsOptions::sort_ascending_by_num_states)
+        .def_readwrite("num_threads", &FaithfulAbstractionsOptions::num_threads);
+
     py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
         .def("get_index", &FaithfulAbstractState::get_index)
         .def(
@@ -1343,132 +1340,40 @@ void init_pymimir(py::module_& m)
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def_static(
             "create",
-            [](const std::string& domain_filepath,
-               const std::string& problem_filepath,
-               bool mark_true_goal_literals,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool compute_complete_abstraction_mapping,
-               uint32_t max_num_states,
-               uint32_t timeout_ms)
-            {
-                return FaithfulAbstraction::create(domain_filepath,
-                                                   problem_filepath,
-                                                   mark_true_goal_literals,
-                                                   use_unit_cost_one,
-                                                   remove_if_unsolvable,
-                                                   compute_complete_abstraction_mapping,
-                                                   max_num_states,
-                                                   timeout_ms);
-            },
+            [](const std::string& domain_filepath, const std::string& problem_filepath, const FaithfulAbstractionOptions& options)
+            { return FaithfulAbstraction::create(domain_filepath, problem_filepath, options); },
             py::arg("domain_filepath"),
             py::arg("problem_filepath"),
-            py::arg("mark_true_goal_literals") = false,
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("compute_complete_abstraction_mapping") = false,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+            py::arg("options") = FaithfulAbstractionOptions())
         .def_static(
             "create",
             [](Problem problem,
                std::shared_ptr<PDDLFactories> factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
-               bool mark_true_goal_literals,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool compute_complete_abstraction_mapping,
-               uint32_t max_num_states,
-               uint32_t timeout_ms)
-            {
-                return FaithfulAbstraction::create(problem,
-                                                   factories,
-                                                   aag,
-                                                   ssg,
-                                                   mark_true_goal_literals,
-                                                   use_unit_cost_one,
-                                                   remove_if_unsolvable,
-                                                   max_num_states,
-                                                   timeout_ms);
-            },
+               const FaithfulAbstractionOptions& options) { return FaithfulAbstraction::create(problem, factories, aag, ssg, options); },
             py::arg("problem"),
             py::arg("factories"),
             py::arg("aag"),
             py::arg("ssg"),
-            py::arg("mark_true_goal_literals") = false,
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("compute_complete_abstraction_mapping") = false,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max())
+            py::arg("options") = FaithfulAbstractionOptions())
         .def_static(
             "create",
-            [](const std::string& domain_filepath,
-               const std::vector<std::string>& problem_filepaths,
-               bool mark_true_goal_literals,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool compute_complete_abstraction_mapping,
-               bool sort_ascending_by_num_states,
-               uint32_t max_num_states,
-               uint32_t timeout_ms,
-               uint32_t num_threads)
+            [](const std::string& domain_filepath, const std::vector<std::string>& problem_filepaths, const FaithfulAbstractionsOptions& options)
             {
                 auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
-                return FaithfulAbstraction::create(domain_filepath,
-                                                   problem_filepaths_,
-                                                   mark_true_goal_literals,
-                                                   use_unit_cost_one,
-                                                   remove_if_unsolvable,
-                                                   compute_complete_abstraction_mapping,
-                                                   sort_ascending_by_num_states,
-                                                   max_num_states,
-                                                   timeout_ms,
-                                                   num_threads);
+                return FaithfulAbstraction::create(domain_filepath, problem_filepaths_, options);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("mark_true_goal_literals") = false,
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("compute_complete_abstraction_mapping") = false,
-            py::arg("sort_ascending_by_num_states") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
-            py::arg("num_threads") = std::thread::hardware_concurrency())
+            py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
             [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
                    memories,
-               bool mark_true_goal_literals,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool compute_complete_abstraction_mapping,
-               bool sort_ascending_by_num_states,
-               uint32_t max_num_states,
-               uint32_t timeout_ms,
-               uint32_t num_threads)
-            {
-                return FaithfulAbstraction::create(memories,
-                                                   mark_true_goal_literals,
-                                                   use_unit_cost_one,
-                                                   remove_if_unsolvable,
-                                                   compute_complete_abstraction_mapping,
-                                                   sort_ascending_by_num_states,
-                                                   max_num_states,
-                                                   timeout_ms,
-                                                   num_threads);
-            },
+               const FaithfulAbstractionsOptions& options) { return FaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
-            py::arg("mark_true_goal_literals") = false,
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("compute_complete_abstraction_mapping") = false,
-            py::arg("sort_ascending_by_num_states") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
-            py::arg("num_threads") = std::thread::hardware_concurrency())
+            py::arg("options") = FaithfulAbstractionOptions())
         .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
         .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
@@ -1551,71 +1456,21 @@ void init_pymimir(py::module_& m)
     py::class_<GlobalFaithfulAbstraction, std::shared_ptr<GlobalFaithfulAbstraction>>(m, "GlobalFaithfulAbstraction")
         .def_static(
             "create",
-            [](const std::string& domain_filepath,
-               const std::vector<std::string>& problem_filepaths,
-               bool mark_true_goal_literals,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool compute_complete_abstraction_mapping,
-               bool sort_ascending_by_num_states,
-               uint32_t max_num_states,
-               uint32_t timeout_ms,
-               uint32_t num_threads)
+            [](const std::string& domain_filepath, const std::vector<std::string>& problem_filepaths, const FaithfulAbstractionsOptions& options)
             {
                 std::vector<fs::path> problem_filepaths_(problem_filepaths.begin(), problem_filepaths.end());
-                return GlobalFaithfulAbstraction::create(domain_filepath,
-                                                         problem_filepaths_,
-                                                         mark_true_goal_literals,
-                                                         use_unit_cost_one,
-                                                         remove_if_unsolvable,
-                                                         compute_complete_abstraction_mapping,
-                                                         sort_ascending_by_num_states,
-                                                         max_num_states,
-                                                         timeout_ms,
-                                                         num_threads);
+                return GlobalFaithfulAbstraction::create(domain_filepath, problem_filepaths_, options);
             },
             py::arg("domain_filepath"),
             py::arg("problem_filepaths"),
-            py::arg("mark_true_goal_literals") = false,
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("compute_complete_abstraction_mapping") = false,
-            py::arg("sort_ascending_by_num_states") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
-            py::arg("num_threads") = std::thread::hardware_concurrency())
+            py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
             [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
                    memories,
-               bool mark_true_goal_literals,
-               bool use_unit_cost_one,
-               bool remove_if_unsolvable,
-               bool compute_complete_abstraction_mapping,
-               bool sort_ascending_by_num_states,
-               uint32_t max_num_states,
-               uint32_t timeout_ms,
-               uint32_t num_threads)
-            {
-                return GlobalFaithfulAbstraction::create(memories,
-                                                         mark_true_goal_literals,
-                                                         use_unit_cost_one,
-                                                         remove_if_unsolvable,
-                                                         compute_complete_abstraction_mapping,
-                                                         sort_ascending_by_num_states,
-                                                         max_num_states,
-                                                         timeout_ms,
-                                                         num_threads);
-            },
+               const FaithfulAbstractionsOptions& options) { return GlobalFaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
-            py::arg("mark_true_goal_literals") = false,
-            py::arg("use_unit_cost_one") = true,
-            py::arg("remove_if_unsolvable") = true,
-            py::arg("compute_complete_abstraction_mapping") = false,
-            py::arg("sort_ascending_by_num_states") = true,
-            py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
-            py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
-            py::arg("num_threads") = std::thread::hardware_concurrency())
+            py::arg("options") = FaithfulAbstractionsOptions())
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
         .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &GlobalFaithfulAbstraction::get_pddl_factories)

@@ -40,6 +40,21 @@
 namespace mimir
 {
 
+struct StateSpaceOptions
+{
+    bool use_unit_cost_one = true;
+    bool remove_if_unsolvable = true;
+    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
+};
+
+struct StateSpacesOptions
+{
+    StateSpaceOptions state_space_options = StateSpaceOptions();
+    bool sort_ascending_by_num_states = true;
+    uint32_t num_threads = std::thread::hardware_concurrency();
+};
+
 /// @brief A StateSpace encapsulates the complete dynamics of a PDDL problem.
 /// To keep the memory consumption small, we do not store information dependent on the initial state.
 class StateSpace
@@ -105,18 +120,11 @@ public:
                                             std::shared_ptr<PDDLFactories> factories,
                                             std::shared_ptr<IAAG> aag,
                                             std::shared_ptr<SuccessorStateGenerator> ssg,
-                                            bool use_unit_cost_one = true,
-                                            bool remove_if_unsolvable = true,
-                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+                                            const StateSpaceOptions& options = StateSpaceOptions());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
-    static std::optional<StateSpace> create(const fs::path& domain_filepath,
-                                            const fs::path& problem_filepath,
-                                            bool use_unit_cost_one = true,
-                                            bool remove_if_unsolvable = true,
-                                            uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                            uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+    static std::optional<StateSpace>
+    create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options = StateSpaceOptions());
 
     /// @brief Try to create a StateSpaceList from the given data and the given resource limits.
     /// @param memories External memory to problems, parsers, aags, ssgs.
@@ -129,22 +137,11 @@ public:
     /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
     static std::vector<StateSpace>
     create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool use_unit_cost_one = true,
-           bool remove_if_unsolvable = true,
-           bool sort_ascending_by_num_states = true,
-           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-           uint32_t num_threads = std::thread::hardware_concurrency());
+           const StateSpacesOptions& options = StateSpacesOptions());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
-    static std::vector<StateSpace> create(const fs::path& domain_filepath,
-                                          const std::vector<fs::path>& problem_filepaths,
-                                          bool use_unit_cost_one = true,
-                                          bool remove_if_unsolvable = true,
-                                          bool sort_ascending_by_num_states = true,
-                                          uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                          uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-                                          uint32_t num_threads = std::thread::hardware_concurrency());
+    static std::vector<StateSpace>
+    create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options = StateSpacesOptions());
 
     /**
      * Extended functionality

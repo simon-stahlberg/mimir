@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Dominik Drexler and Till Hofmann
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/parser.hpp"
-
-#include <gtest/gtest.h>
-#include <mimir/datasets/scc_abstraction.hpp>
+#ifndef MIMIR_DATASETS_DECLARATIONS_HPP_
+#define MIMIR_DATASETS_DECLARATIONS_HPP_
 
 namespace mimir
 {
 
-TEST(MimirTests, DatasetsSccAbstractionTest)
-{
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "ferry/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "ferry/test_problem.pddl");
-    const auto parser = PDDLParser(domain_file, problem_file);
-    const auto abstraction = SccAbstraction::create(parser.get_problem());
-}
+struct StateSpaceOptions;
+struct StateSpacesOptions;
+class StateSpace;
+
+struct FaithfulAbstractionOptions;
+struct FaithfulAbstractionsOptions;
+class FaithfulAbstraction;
+class GlobalFaithfulAbstraction;
 
 }
+
+#endif

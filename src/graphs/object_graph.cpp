@@ -150,57 +150,6 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
     }
 }
 
-/* ObjectGraphStaticPruningStrategy */
-
-ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(std::vector<SccPruningComponent> pruning_components,
-                                                                         std::map<StateIndex, size_t> component_map) :
-    m_pruning_components(std::move(pruning_components)),
-    m_component_map(std::move(component_map))
-{
-}
-
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_objects.get(object->get_identifier());
-}
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Static> atom) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_static_ground_atoms.get(atom->get_identifier());
-}
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Fluent> atom) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_fluent_ground_atoms.get(atom->get_identifier());
-}
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Derived> atom) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_derived_ground_atoms.get(atom->get_identifier());
-}
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Static> literal) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_static_ground_literals.get(literal->get_atom()->get_identifier());
-}
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Fluent> literal) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_fluent_ground_literals.get(literal->get_atom()->get_identifier());
-}
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Derived> literal) const
-{
-    return m_pruning_components.at(m_component_map.at(state)).m_pruned_derived_ground_literals.get(literal->get_atom()->get_identifier());
-}
-
-ObjectGraphStaticSccPruningStrategy::SccPruningComponent&
-ObjectGraphStaticSccPruningStrategy::SccPruningComponent::operator&=(const ObjectGraphStaticSccPruningStrategy::SccPruningComponent& other)
-{
-    m_pruned_objects &= other.m_pruned_objects;
-    m_pruned_static_ground_atoms &= other.m_pruned_static_ground_atoms;
-    m_pruned_fluent_ground_atoms &= other.m_pruned_fluent_ground_atoms;
-    m_pruned_derived_ground_atoms &= other.m_pruned_derived_ground_atoms;
-    m_pruned_static_ground_literals &= other.m_pruned_static_ground_literals;
-    m_pruned_fluent_ground_literals &= other.m_pruned_fluent_ground_literals;
-    m_pruned_derived_ground_literals &= other.m_pruned_derived_ground_literals;
-    return *this;
-}
-
 VertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
                                          const PDDLFactories& pddl_factories,
                                          Problem problem,

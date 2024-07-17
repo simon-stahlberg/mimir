@@ -19,7 +19,6 @@ add_gtest(grouped_vector_test                              "common/grouped_vecto
 
 add_gtest(faithful_abstraction_test                        "datasets/faithful_abstraction.cpp")
 add_gtest(global_faithful_abstraction_test                 "datasets/global_faithful_abstraction.cpp")
-add_gtest(scc_abstraction_test                             "datasets/scc_abstraction.cpp")
 add_gtest(state_space_test                                 "datasets/state_space.cpp")
 
 add_gtest(to_positive_normal_form_test                     "formalism/transformers/to_positive_normal_form.cpp")
@@ -29,9 +28,10 @@ add_gtest(remove_types_test                                "formalism/translator
 add_gtest(remove_universal_quantifiers_test                "formalism/translators/remove_universal_quantifiers.cpp")
 
 add_gtest(object_graph_test                                "graphs/object_graph.cpp")
+add_gtest(object_graph_pruning_strategy_test               "graphs/object_graph_pruning_strategy.cpp")
 add_gtest(tuple_graph_test                                 "graphs/tuple_graph.cpp")
 
-add_gtest(dl_constructors_test                                  "languages/description_logics/constructors.cpp")
+add_gtest(dl_constructors_test                             "languages/description_logics/constructors.cpp")
 add_gtest(dl_parser_test                                   "languages/description_logics/parser.cpp")
 add_gtest(dl_grammar_test                                  "languages/description_logics/grammar.cpp")
 

@@ -118,47 +118,27 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     }
 }
 
-std::optional<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& domain_filepath,
-                                                               const fs::path& problem_filepath,
-                                                               bool mark_true_goal_literals,
-                                                               bool use_unit_cost_one,
-                                                               bool remove_if_unsolvable,
-                                                               bool compute_complete_abstraction_mapping,
-                                                               uint32_t max_num_states,
-                                                               uint32_t timeout_ms)
+std::optional<FaithfulAbstraction>
+FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
     auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
 
-    return FaithfulAbstraction::create(parser.get_problem(),
-                                       parser.get_factories(),
-                                       aag,
-                                       ssg,
-                                       mark_true_goal_literals,
-                                       use_unit_cost_one,
-                                       remove_if_unsolvable,
-                                       compute_complete_abstraction_mapping,
-                                       max_num_states,
-                                       timeout_ms);
+    return FaithfulAbstraction::create(parser.get_problem(), parser.get_factories(), aag, ssg, options);
 }
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                                std::shared_ptr<PDDLFactories> factories,
                                                                std::shared_ptr<IAAG> aag,
                                                                std::shared_ptr<SuccessorStateGenerator> ssg,
-                                                               bool mark_true_goal_literals,
-                                                               bool use_unit_cost_one,
-                                                               bool remove_if_unsolvable,
-                                                               bool compute_complete_abstraction_mapping,
-                                                               uint32_t max_num_states,
-                                                               uint32_t timeout_ms)
+                                                               const FaithfulAbstractionOptions& options)
 {
-    auto stop_watch = StopWatch(timeout_ms);
+    auto stop_watch = StopWatch(options.timeout_ms);
 
     auto initial_state = ssg->get_or_create_initial_state();
 
-    if (remove_if_unsolvable && !problem->static_goal_holds())
+    if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
         // Unsolvable
         return std::nullopt;
@@ -169,7 +149,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
-    const auto object_graph = create_object_graph(color_function, *factories, problem, initial_state, mark_true_goal_literals);
+    const auto object_graph = create_object_graph(color_function, *factories, problem, initial_state, options.mark_true_goal_literals);
     auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
                                                            object_graph.get_num_edges(),
                                                            nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
@@ -215,7 +195,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             }
 
             // Compute certificate of successor state
-            const auto object_graph = create_object_graph(color_function, *factories, problem, successor_state, mark_true_goal_literals);
+            const auto object_graph = create_object_graph(color_function, *factories, problem, successor_state, options.mark_true_goal_literals);
             auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
                                                                    object_graph.get_num_edges(),
                                                                    nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
@@ -237,7 +217,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                 abstract_states_by_certificate.emplace(std::move(certificate), abstract_successor_state_index);
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
-                if (next_abstract_state_index >= max_num_states)
+                if (next_abstract_state_index >= options.max_num_states)
                 {
                     // Ran out of state resources
                     return std::nullopt;
@@ -248,7 +228,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
             concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
-            if (compute_complete_abstraction_mapping || !abstract_state_exists)
+            if (options.compute_complete_abstraction_mapping || !abstract_state_exists)
             {
                 lifo_queue.push_back(successor_state);
             }
@@ -261,7 +241,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         return std::nullopt;
     }
 
-    if (remove_if_unsolvable && abstract_goal_states.empty())
+    if (options.remove_if_unsolvable && abstract_goal_states.empty())
     {
         // Skip: unsolvable
         return std::nullopt;
@@ -361,8 +341,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         abstract_states.size());
 
     return FaithfulAbstraction(problem,
-                               mark_true_goal_literals,
-                               use_unit_cost_one,
+                               options.mark_true_goal_literals,
+                               options.use_unit_cost_one,
                                std::move(factories),
                                std::move(aag),
                                std::move(ssg),
@@ -377,16 +357,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                std::move(abstract_goal_distances));
 }
 
-std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& domain_filepath,
-                                                             const std::vector<fs::path>& problem_filepaths,
-                                                             bool mark_true_goal_literals,
-                                                             bool use_unit_cost_one,
-                                                             bool remove_if_unsolvable,
-                                                             bool compute_complete_abstraction_mapping,
-                                                             bool sort_ascending_by_num_states,
-                                                             uint32_t max_num_states,
-                                                             uint32_t timeout_ms,
-                                                             uint32_t num_threads)
+std::vector<FaithfulAbstraction>
+FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
     auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
@@ -397,57 +369,21 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(const fs::path& dom
         memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
-    return FaithfulAbstraction::create(memories,
-                                       mark_true_goal_literals,
-                                       use_unit_cost_one,
-                                       remove_if_unsolvable,
-                                       compute_complete_abstraction_mapping,
-                                       sort_ascending_by_num_states,
-                                       max_num_states,
-                                       timeout_ms,
-                                       num_threads);
+    return FaithfulAbstraction::create(memories, options);
 }
 
 std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
     const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-    bool mark_true_goal_literals,
-    bool use_unit_cost_one,
-    bool remove_if_unsolvable,
-    bool compute_complete_abstraction_mapping,
-    bool sort_ascending_by_num_states,
-    uint32_t max_num_states,
-    uint32_t timeout_ms,
-    uint32_t num_threads)
+    const FaithfulAbstractionsOptions& options)
 {
     auto abstractions_data = std::vector<FaithfulAbstraction> {};
-    auto pool = BS::thread_pool(num_threads);
+    auto pool = BS::thread_pool(options.num_threads);
     auto futures = std::vector<std::future<std::optional<FaithfulAbstraction>>> {};
 
     for (const auto& [problem, factories, aag, ssg] : memories)
     {
-        futures.push_back(pool.submit_task(
-            [problem,
-             factories,
-             aag,
-             ssg,
-             mark_true_goal_literals,
-             use_unit_cost_one,
-             remove_if_unsolvable,
-             compute_complete_abstraction_mapping,
-             max_num_states,
-             timeout_ms]
-            {
-                return FaithfulAbstraction::create(problem,
-                                                   factories,
-                                                   aag,
-                                                   ssg,
-                                                   mark_true_goal_literals,
-                                                   use_unit_cost_one,
-                                                   remove_if_unsolvable,
-                                                   compute_complete_abstraction_mapping,
-                                                   max_num_states,
-                                                   timeout_ms);
-            }));
+        futures.push_back(pool.submit_task([problem, factories, aag, ssg, fa_options = options.fa_options]
+                                           { return FaithfulAbstraction::create(problem, factories, aag, ssg, fa_options); }));
     }
 
     for (auto& future : futures)
@@ -459,7 +395,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
         }
     }
 
-    if (sort_ascending_by_num_states)
+    if (options.sort_ascending_by_num_states)
     {
         std::sort(abstractions_data.begin(), abstractions_data.end(), [](const auto& l, const auto& r) { return l.get_num_states() < r.get_num_states(); });
     }

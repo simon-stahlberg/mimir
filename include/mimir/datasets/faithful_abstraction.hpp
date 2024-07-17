@@ -42,6 +42,26 @@
 namespace mimir
 {
 
+/// @brief FaithfulAbstractionOptions enscapsulates options for creation of a single faithful abstraction with default arguments.
+struct FaithfulAbstractionOptions
+{
+    bool mark_true_goal_literals = false;
+    bool use_unit_cost_one = true;
+    bool remove_if_unsolvable = true;
+    bool compute_complete_abstraction_mapping = false;
+    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
+    ObjectGraphPruningStrategyEnum pruning_strategy = ObjectGraphPruningStrategyEnum::None;
+};
+
+/// @brief FaithfulAbstractionOptions enscapsulates options for creation of a collection of faithful abstractions with default arguments.
+struct FaithfulAbstractionsOptions
+{
+    FaithfulAbstractionOptions fa_options;
+    bool sort_ascending_by_num_states = true;
+    uint32_t num_threads = std::thread::hardware_concurrency();
+};
+
 /// @brief FaithfulAbstractState encapsulates data of an abstract state in a faithful abstraction.
 class FaithfulAbstractState
 {
@@ -123,14 +143,8 @@ public:
     using StateType = FaithfulAbstractState;
     using TransitionType = AbstractTransition;
 
-    static std::optional<FaithfulAbstraction> create(const fs::path& domain_filepath,
-                                                     const fs::path& problem_filepath,
-                                                     bool mark_true_goal_literals = false,
-                                                     bool use_unit_cost_one = true,
-                                                     bool remove_if_unsolvable = true,
-                                                     bool compute_complete_abstraction_mapping = false,
-                                                     uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+    static std::optional<FaithfulAbstraction>
+    create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
     /// @brief Compute a faithful abstraction if within resource limits.
     /// @param problem is the problem.
@@ -148,24 +162,12 @@ public:
                                                      std::shared_ptr<PDDLFactories> factories,
                                                      std::shared_ptr<IAAG> aag,
                                                      std::shared_ptr<SuccessorStateGenerator> ssg,
-                                                     bool mark_true_goal_literals = false,
-                                                     bool use_unit_cost_one = true,
-                                                     bool remove_if_unsolvable = true,
-                                                     bool compute_complete_abstraction_mapping = false,
-                                                     uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max());
+                                                     const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                    const std::vector<fs::path>& problem_filepaths,
-                                                   bool mark_true_goal_literals = false,
-                                                   bool use_unit_cost_one = true,
-                                                   bool remove_if_unsolvable = true,
-                                                   bool compute_complete_abstraction_mapping = false,
-                                                   bool sort_ascending_by_num_states = true,
-                                                   uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-                                                   uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-                                                   uint32_t num_threads = std::thread::hardware_concurrency());
+                                                   const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /// @brief Try to create a FaithfulAbstractionList from the given data and the given resource limits.
     /// @param memories External memory to problem, factories, aags, ssgs.
@@ -179,14 +181,7 @@ public:
     /// @return FaithfulAbstractionList contains the FaithfulAbstractions for which the construction is within the given resource limits.
     static std::vector<FaithfulAbstraction>
     create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           bool mark_true_goal_literals = false,
-           bool use_unit_cost_one = true,
-           bool remove_if_unsolvable = true,
-           bool compute_complete_abstraction_mapping = false,
-           bool sort_ascending_by_num_states = true,
-           uint32_t max_num_states = std::numeric_limits<uint32_t>::max(),
-           uint32_t timeout_ms = std::numeric_limits<uint32_t>::max(),
-           uint32_t num_threads = std::thread::hardware_concurrency());
+           const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**
      * Abstraction functionality

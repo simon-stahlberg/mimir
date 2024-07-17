@@ -62,33 +62,25 @@ StateSpace::StateSpace(Problem problem,
     }
 }
 
-std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath,
-                                             const fs::path& problem_filepath,
-                                             bool use_unit_cost_one,
-                                             bool remove_if_unsolvable,
-                                             uint32_t max_num_states,
-                                             uint32_t timeout_ms)
+std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
     auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
     auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-    return StateSpace::create(parser.get_problem(), parser.get_factories(), aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms);
+    return StateSpace::create(parser.get_problem(), parser.get_factories(), aag, ssg, options);
 }
 
 std::optional<StateSpace> StateSpace::create(Problem problem,
                                              std::shared_ptr<PDDLFactories> factories,
                                              std::shared_ptr<IAAG> aag,
                                              std::shared_ptr<SuccessorStateGenerator> ssg,
-                                             bool use_unit_cost_one,
-                                             bool remove_if_unsolvable,
-                                             uint32_t max_num_states,
-                                             uint32_t timeout_ms)
+                                             const StateSpaceOptions& options)
 {
-    auto stop_watch = StopWatch(timeout_ms);
+    auto stop_watch = StopWatch(options.timeout_ms);
 
     auto initial_state = ssg->get_or_create_initial_state();
 
-    if (remove_if_unsolvable && !problem->static_goal_holds())
+    if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
         // Unsolvable
         return std::nullopt;
@@ -130,7 +122,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
             }
 
             const auto successor_state_index = states.size();
-            if (successor_state_index >= max_num_states)
+            if (successor_state_index >= options.max_num_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
@@ -149,13 +141,13 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    if (remove_if_unsolvable && goal_states.empty())
+    if (options.remove_if_unsolvable && goal_states.empty())
     {
         // Skip: unsolvable
         return std::nullopt;
     }
 
-    auto goal_distances = mimir::compute_shortest_goal_distances(states.size(), goal_states, transitions, use_unit_cost_one);
+    auto goal_distances = mimir::compute_shortest_goal_distances(states.size(), goal_states, transitions, options.use_unit_cost_one);
 
     auto deadend_states = StateIndexSet {};
     for (StateIndex state_id = 0; state_id < states.size(); ++state_id)
@@ -183,7 +175,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         states.size());
 
     return StateSpace(problem,
-                      use_unit_cost_one,
+                      options.use_unit_cost_one,
                       std::move(factories),
                       std::move(aag),
                       std::move(ssg),
@@ -196,14 +188,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
                       std::move(goal_distances));
 }
 
-StateSpaceList StateSpace::create(const fs::path& domain_filepath,
-                                  const std::vector<fs::path>& problem_filepaths,
-                                  bool use_unit_cost_one,
-                                  bool remove_if_unsolvable,
-                                  bool sort_ascending_by_num_states,
-                                  uint32_t max_num_states,
-                                  uint32_t timeout_ms,
-                                  uint32_t num_threads)
+StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options)
 {
     auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
@@ -214,27 +199,21 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath,
         memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
-    return StateSpace::create(memories, use_unit_cost_one, remove_if_unsolvable, sort_ascending_by_num_states, max_num_states, timeout_ms, num_threads);
+    return StateSpace::create(memories, options);
 }
 
 std::vector<StateSpace> StateSpace::create(
     const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-    bool use_unit_cost_one,
-    bool remove_if_unsolvable,
-    bool sort_ascending_by_num_states,
-    uint32_t max_num_states,
-    uint32_t timeout_ms,
-    uint32_t num_threads)
+    const StateSpacesOptions& options)
 {
     auto state_spaces = StateSpaceList {};
-    auto pool = BS::thread_pool(num_threads);
+    auto pool = BS::thread_pool(options.num_threads);
     auto futures = std::vector<std::future<std::optional<StateSpace>>> {};
 
     for (const auto& [problem, factories, aag, ssg] : memories)
     {
-        futures.push_back(pool.submit_task(
-            [problem, factories, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms]
-            { return StateSpace::create(problem, factories, aag, ssg, use_unit_cost_one, remove_if_unsolvable, max_num_states, timeout_ms); }));
+        futures.push_back(pool.submit_task([problem, factories, aag, ssg, state_space_options = options.state_space_options]
+                                           { return StateSpace::create(problem, factories, aag, ssg, state_space_options); }));
     }
 
     for (auto& future : futures)
@@ -246,7 +225,7 @@ std::vector<StateSpace> StateSpace::create(
         }
     }
 
-    if (sort_ascending_by_num_states)
+    if (options.sort_ascending_by_num_states)
     {
         std::sort(state_spaces.begin(), state_spaces.end(), [](const auto& l, const auto& r) { return l.get_num_states() < r.get_num_states(); });
     }

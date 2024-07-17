@@ -88,16 +88,8 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     }
 }
 
-std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const fs::path& domain_filepath,
-                                                                         const std::vector<fs::path>& problem_filepaths,
-                                                                         bool mark_true_goal_literals,
-                                                                         bool use_unit_cost_one,
-                                                                         bool remove_if_unsolvable,
-                                                                         bool compute_complete_abstraction_mapping,
-                                                                         bool sort_ascending_by_num_states,
-                                                                         uint32_t max_num_states,
-                                                                         uint32_t timeout_ms,
-                                                                         uint32_t num_threads)
+std::vector<GlobalFaithfulAbstraction>
+GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
     auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
@@ -108,38 +100,15 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(const f
         memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
-    return GlobalFaithfulAbstraction::create(memories,
-                                             mark_true_goal_literals,
-                                             use_unit_cost_one,
-                                             remove_if_unsolvable,
-                                             compute_complete_abstraction_mapping,
-                                             sort_ascending_by_num_states,
-                                             max_num_states,
-                                             timeout_ms,
-                                             num_threads);
+    return GlobalFaithfulAbstraction::create(memories, options);
 }
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-    bool mark_true_goal_literals,
-    bool use_unit_cost_one,
-    bool remove_if_unsolvable,
-    bool compute_complete_abstraction_mapping,
-    bool sort_ascending_by_num_states,
-    uint32_t max_num_states,
-    uint32_t timeout_ms,
-    uint32_t num_threads)
+    const FaithfulAbstractionsOptions& options)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
-    auto faithful_abstractions = FaithfulAbstraction::create(memories,
-                                                             mark_true_goal_literals,
-                                                             use_unit_cost_one,
-                                                             remove_if_unsolvable,
-                                                             compute_complete_abstraction_mapping,
-                                                             sort_ascending_by_num_states,
-                                                             max_num_states,
-                                                             timeout_ms,
-                                                             num_threads);
+    auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
     auto certificate_to_global_state =
         std::unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>> {};
@@ -190,8 +159,8 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
         relevant_faithful_abstractions->push_back(std::move(faithful_abstraction));
 
-        abstractions.push_back(GlobalFaithfulAbstraction(mark_true_goal_literals,
-                                                         use_unit_cost_one,
+        abstractions.push_back(GlobalFaithfulAbstraction(options.fa_options.mark_true_goal_literals,
+                                                         options.fa_options.use_unit_cost_one,
                                                          abstraction_index,
                                                          std::const_pointer_cast<const FaithfulAbstractionList>(relevant_faithful_abstractions),
                                                          std::move(states),
