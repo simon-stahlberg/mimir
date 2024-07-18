@@ -123,6 +123,8 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     const auto partitioning = get_partitioning<StateSpace>(num_components, component_map);
     auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
     pruning_components.reserve(partitioning.size());
+    // TODO: the prunable sets must be defined over the problem and domain specific structures.
+    // Ideally PNF becomes a default transformation...
     for (size_t group_index = 0; group_index < partitioning.size(); ++group_index)
     {
         auto group = partitioning.at(group_index);

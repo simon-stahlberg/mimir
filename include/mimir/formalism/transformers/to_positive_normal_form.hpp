@@ -94,8 +94,10 @@ void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>&
 {
     for (const auto& literal : conditions)
     {
-        if (literal->is_negated())
+        // Skip equality because it is not needed to distinguish between good and bad effect.
+        if (literal->is_negated() && literal->get_atom()->get_predicate()->get_name() != "=")
         {
+            std::cout << *literal << std::endl;
             const auto& negative_transformed_dual = negative_transformed_duals.at(literal);
             assert(!negative_transformed_dual->is_negated());
             // We need to use the term list from the context, i.e., from the literal of the condition.
@@ -123,6 +125,12 @@ void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
     {
         // Create dual predicate
         const auto& predicate = negative_literal->get_atom()->get_predicate();
+        if (predicate->get_name() == "=")
+        {
+            // Skip equality because it is not needed to distinguish between good and bad effect.
+            continue;
+        }
+
         const auto dual_predicate_name = "not " + predicate->get_name();
         if (domain.get_name_to_predicate<Static>().count(dual_predicate_name)     //
             || domain.get_name_to_predicate<Fluent>().count(dual_predicate_name)  //

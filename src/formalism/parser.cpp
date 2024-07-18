@@ -3,6 +3,7 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/transformers.hpp"
 #include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
+#include "mimir/formalism/transformers/to_positive_normal_form.hpp"
 #include "mimir/formalism/translators.hpp"
 
 #include <loki/loki.hpp>
@@ -61,6 +62,12 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_problem = to_mimir_structures_translator.run(*problem);
     m_domain = m_problem->get_domain();
 
+    // To positive normal form: too expensive in general!
+    // auto to_pnf_transformer = ToPositiveNormalFormTransformer(tmp_mimir_pddl_factories);
+    // m_problem = to_pnf_transformer.run(*m_problem);
+    // m_domain = m_problem->get_domain();
+
+    // Encode parameter index in variables
     auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);
     m_problem = encode_parameter_index_in_variables.run(*m_problem);
     m_domain = m_problem->get_domain();

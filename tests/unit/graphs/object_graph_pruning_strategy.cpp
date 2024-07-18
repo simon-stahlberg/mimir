@@ -25,8 +25,8 @@ namespace mimir
 
 TEST(MimirTests, GraphsObjectGraphPruningStrategyTest)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "ferry/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "ferry/test_problem.pddl");
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
     const auto parser = PDDLParser(domain_file, problem_file);
     const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(parser.get_problem());
 }
