@@ -63,7 +63,7 @@ class ObjectGraphStaticSccPruningStrategy : public ObjectGraphPruningStrategy
 {
 public:
     struct SccPruningComponent;
-    ObjectGraphStaticSccPruningStrategy(std::vector<SccPruningComponent> pruning_components, std::map<StateIndex, size_t> component_map);
+    ObjectGraphStaticSccPruningStrategy(size_t num_components, std::vector<SccPruningComponent> pruning_components, std::map<StateIndex, size_t> component_map);
 
     bool prune(StateIndex, Object object) const override;
     bool prune(StateIndex, GroundAtom<Static> atom) const override;
@@ -86,12 +86,28 @@ public:
         SccPruningComponent& operator&=(const SccPruningComponent& other);
     };
 
-    static std::optional<ObjectGraphStaticSccPruningStrategy> create(Problem problem, const StateSpaceOptions& options = StateSpaceOptions());
+    static std::optional<ObjectGraphStaticSccPruningStrategy> create(Problem problem,
+                                                                     std::shared_ptr<PDDLFactories> factories,
+                                                                     std::shared_ptr<IAAG> aag,
+                                                                     std::shared_ptr<SuccessorStateGenerator> ssg,
+                                                                     const StateSpaceOptions& options = StateSpaceOptions());
+
+    size_t get_num_components() const;
+    const std::vector<SccPruningComponent>& get_pruning_components() const;
+    const std::map<StateIndex, size_t>& get_component_map() const;
 
 private:
+    size_t m_num_components;
     std::vector<SccPruningComponent> m_pruning_components;
     std::map<StateIndex, size_t> m_component_map;
 };
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& out,
+                                const std::tuple<const ObjectGraphStaticSccPruningStrategy::SccPruningComponent&, Problem, const PDDLFactories&>& data);
 
 }
 

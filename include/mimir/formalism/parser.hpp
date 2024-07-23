@@ -47,7 +47,7 @@ public:
     const loki::Problem get_original_problem() const;
 
     /// @brief Get the factories to create additional PDDL objects.
-    const std::shared_ptr<PDDLFactories>& get_factories();
+    const std::shared_ptr<PDDLFactories>& get_factories() const;
 
     /// @brief Get the translated domain.
     const Domain& get_domain() const;

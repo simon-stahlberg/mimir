@@ -93,6 +93,11 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 {
     /* 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects. */
     auto delete_relax_transformer = DeleteRelaxTransformer(*m_pddl_factories, false);
+    // TODO: In the case of positive normal form, we want this problem
+    // to be modified such that grounded actions have no negative preconditions.
+    // We also need access to the dual predicates to set the polarity of the initial literals.
+    // auto to_pnf_grounded_transformer = ToPositiveNormalFormGroundTransformer(m_pddl_factories);
+    // m_problem = to_pnf_grounded_transformer.run(*m_problem);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
     auto delete_free_lifted_aag = std::make_shared<LiftedAAG>(delete_free_problem, m_pddl_factories);
     auto delete_free_ssg = SuccessorStateGenerator(delete_free_lifted_aag);
@@ -148,6 +153,10 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_ids<Derived>(derived_state_atoms), *m_pddl_factories);
 
     // 2. Create ground actions
+    /* TODO: we want ground actions in PNF and problem with modified initial state.
+       Ok, we got the relaxed reachable initial atoms.
+       We still need modified lifted actions for grounding.
+     */
     auto ground_actions = GroundActionList {};
     for (const auto& action : delete_free_lifted_aag->get_ground_actions())
     {
