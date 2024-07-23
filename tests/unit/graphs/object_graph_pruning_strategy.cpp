@@ -51,18 +51,26 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategyMultiSCCTest)
     // initial state, no pruning
     const auto& pruning_component_0 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(0));
     EXPECT_EQ(pruning_component_0.m_pruned_objects.count(), 0);
-    EXPECT_EQ(pruning_component_0.m_pruned_static_ground_atoms.count(), 0);
-    EXPECT_EQ(pruning_component_0.m_pruned_fluent_ground_atoms.count(), 0);
-    EXPECT_EQ(pruning_component_0.m_pruned_static_ground_literals.count(), 0);
-    EXPECT_EQ(pruning_component_0.m_pruned_fluent_ground_literals.count(), 0);
 
-    // goal state, maximum pruning
+    // moved 1 forward
+    const auto& pruning_component_1 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(1));
+    EXPECT_EQ(pruning_component_1.m_pruned_objects.count(), 1);
+
+    // moved 2 forward -> deadend state
+    const auto& pruning_component_2 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(2));
+    EXPECT_EQ(pruning_component_2.m_pruned_objects.count(), 5);
+
+    // moved 1 forward + picked spanner
+    const auto& pruning_component_3 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(3));
+    EXPECT_EQ(pruning_component_3.m_pruned_objects.count(), 1);
+
+    // moved 2 forward + picked spanner
+    const auto& pruning_component_4 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(4));
+    EXPECT_EQ(pruning_component_4.m_pruned_objects.count(), 2);
+
+    // moved 2 forward + picked spanner + tightned nut -> goal state, maximum pruning
     const auto& pruning_component_5 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(5));
-    EXPECT_EQ(pruning_component_5.m_pruned_objects.count(), 1);
-    EXPECT_EQ(pruning_component_5.m_pruned_static_ground_atoms.count(), 11);
-    EXPECT_EQ(pruning_component_5.m_pruned_fluent_ground_atoms.count(), 4);
-    EXPECT_EQ(pruning_component_5.m_pruned_static_ground_literals.count(), 0);
-    EXPECT_EQ(pruning_component_5.m_pruned_fluent_ground_literals.count(), 1);
+    EXPECT_EQ(pruning_component_5.m_pruned_objects.count(), 6);
 }
 
 }
