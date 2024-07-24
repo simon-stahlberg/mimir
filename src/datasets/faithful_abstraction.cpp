@@ -149,7 +149,26 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
-    const auto object_graph = create_object_graph(color_function, *factories, problem, initial_state, options.mark_true_goal_literals);
+
+    auto object_graph_pruning_strategy = std::unique_ptr<ObjectGraphPruningStrategy> { nullptr };
+    if (options.pruning_strategy == ObjectGraphPruningStrategyEnum::StaticScc)
+    {
+        object_graph_pruning_strategy =
+            std::make_unique<ObjectGraphStaticSccPruningStrategy>(ObjectGraphStaticSccPruningStrategy::create(problem, factories, aag, ssg).value());
+    }
+    else
+    {
+        object_graph_pruning_strategy = std::make_unique<ObjectGraphPruningStrategy>(ObjectGraphPruningStrategy());
+    }
+    assert(object_graph_pruning_strategy);
+
+    const auto object_graph = create_object_graph(color_function,
+                                                  *factories,
+                                                  problem,
+                                                  initial_state,
+                                                  initial_state.get_id(),
+                                                  options.mark_true_goal_literals,
+                                                  *object_graph_pruning_strategy);
     auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
                                                            object_graph.get_num_edges(),
                                                            nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
@@ -195,7 +214,15 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             }
 
             // Compute certificate of successor state
-            const auto object_graph = create_object_graph(color_function, *factories, problem, successor_state, options.mark_true_goal_literals);
+            const auto object_graph = create_object_graph(color_function,
+                                                          *factories,
+                                                          problem,
+                                                          successor_state,
+                                                          successor_state.get_id(),
+                                                          options.mark_true_goal_literals,
+                                                          *object_graph_pruning_strategy);
+            // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;
+
             auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
                                                                    object_graph.get_num_edges(),
                                                                    nauty_wrapper::SparseGraph(object_graph).compute_certificate(),

@@ -76,12 +76,6 @@ public:
     struct SccPruningComponent
     {
         FlatBitsetBuilder<> m_pruned_objects;
-        FlatBitsetBuilder<Static> m_pruned_static_ground_atoms;
-        FlatBitsetBuilder<Fluent> m_pruned_fluent_ground_atoms;
-        FlatBitsetBuilder<Derived> m_pruned_derived_ground_atoms;
-        FlatBitsetBuilder<Static> m_pruned_static_ground_literals;
-        FlatBitsetBuilder<Fluent> m_pruned_fluent_ground_literals;
-        FlatBitsetBuilder<Derived> m_pruned_derived_ground_literals;
 
         SccPruningComponent& operator&=(const SccPruningComponent& other);
     };

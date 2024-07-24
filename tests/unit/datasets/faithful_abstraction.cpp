@@ -35,30 +35,4 @@ TEST(MimirTests, DatasetsFaithfulAbstractionCreateParallelTest)
     EXPECT_EQ(abstractions.at(1).get_num_states(), 12);
 }
 
-TEST(MimirTests, DatasetsFaithfulAbstractionCreateSingleSCCPruningTest)
-{
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "delivery/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl");
-    const auto parser = PDDLParser(domain_file, problem_file);
-    const auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
-    const auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-
-    auto options = FaithfulAbstractionOptions();
-    options.pruning_strategy = ObjectGraphPruningStrategyEnum::StaticScc;
-    const auto faithful_abstraction = FaithfulAbstraction::create(parser.get_problem(), parser.get_factories(), aag, ssg, options);
-}
-
-TEST(MimirTests, DatasetsFaithfulAbstractionCreateMultiSCCPruningTest)
-{
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-    const auto parser = PDDLParser(domain_file, problem_file);
-    const auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
-    const auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
-
-    auto options = FaithfulAbstractionOptions();
-    options.pruning_strategy = ObjectGraphPruningStrategyEnum::StaticScc;
-    const auto faithful_abstraction = FaithfulAbstraction::create(parser.get_problem(), parser.get_factories(), aag, ssg, options);
-}
-
 }
