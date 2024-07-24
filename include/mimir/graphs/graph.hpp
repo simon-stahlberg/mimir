@@ -94,6 +94,15 @@ public:
     size_t get_num_edges() const;
 };
 
+/// @brief Sort the given set of edges using the sorting comparator.
+template<IsEdge Edge, typename Comparator>
+std::vector<Edge> get_sorted_edges(const std::vector<Edge>& edges, const Comparator& comparator)
+{
+    auto sorted_edges = edges;
+    std::sort(sorted_edges.begin(), sorted_edges.end(), comparator);
+    return sorted_edges;
+}
+
 /* ForwardGraph */
 
 /// @brief ForwardGraph is a translated Graph for more efficient forward iteration.
@@ -281,10 +290,10 @@ template<IsGraph G>
 ForwardGraph<G>::ForwardGraph(const G& graph) :
     m_vertices(graph.get_vertices()),
     m_edges_grouped_by_source(IndexGroupedVector<const typename G::EdgeType>::create(
-        graph.get_edges(),
-        graph.get_num_vertices(),
+        get_sorted_edges(graph.get_edges(), [](const auto& l, const auto& r) { return l.get_source() < r.get_source(); }),
         [](const auto& l, const auto& r) { return l.get_source() < r.get_source(); },
-        [](const auto& e) { return e.get_source(); }))
+        [](const auto& e) { return e.get_source(); },
+        graph.get_num_vertices()))
 {
 }
 
@@ -293,27 +302,25 @@ TargetVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph
 {
     return TargetVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType>(source,
                                                                                                           m_vertices,
-                                                                                                          m_edges_grouped_by_source.get_group(source));
+                                                                                                          m_edges_grouped_by_source.at(source));
 }
 
 template<IsGraph G>
 SourceVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_sources(VertexIndex target) const
 {
-    return SourceVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType>(target,
-                                                                                                          m_vertices,
-                                                                                                          m_edges_grouped_by_source.get_vector());
+    return SourceVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType>(target, m_vertices, m_edges_grouped_by_source.data());
 }
 
 template<IsGraph G>
 ForwardEdgeIterator<typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_forward_edges(VertexIndex source) const
 {
-    return ForwardEdgeIterator<typename ForwardGraph<G>::EdgeType>(source, m_vertices, m_edges_grouped_by_source.get_group(source));
+    return ForwardEdgeIterator<typename ForwardGraph<G>::EdgeType>(source, m_vertices, m_edges_grouped_by_source.at(source));
 }
 
 template<IsGraph G>
 BackwardEdgeIterator<typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_backward_edges(VertexIndex target) const
 {
-    return BackwardEdgeIterator<typename ForwardGraph<G>::EdgeType>(target, m_vertices, m_edges_grouped_by_source.get_vector());
+    return BackwardEdgeIterator<typename ForwardGraph<G>::EdgeType>(target, m_vertices, m_edges_grouped_by_source.data());
 }
 
 template<IsGraph G>
@@ -325,7 +332,7 @@ const ForwardGraph<G>::VertexList& ForwardGraph<G>::get_vertices() const
 template<IsGraph G>
 const ForwardGraph<G>::EdgeList& ForwardGraph<G>::get_edges() const
 {
-    return m_edges_grouped_by_source.get_vector();
+    return m_edges_grouped_by_source.data();
 }
 
 template<IsGraph G>
@@ -337,7 +344,7 @@ size_t ForwardGraph<G>::get_num_vertices() const
 template<IsGraph G>
 size_t ForwardGraph<G>::get_num_edges() const
 {
-    return m_edges_grouped_by_source.get_vector().size();
+    return m_edges_grouped_by_source.data().size();
 }
 
 /* BidirectionalGraph */
@@ -347,14 +354,16 @@ BidirectionalGraph<G>::BidirectionalGraph(const G& graph) :
     m_vertices(graph.get_vertices()),
     m_edges_grouped_by_source(IndexGroupedVector<const typename G::EdgeType>::create(
         graph.get_edges(),
-        graph.get_num_vertices(),
+        get_sorted_edges(graph.get_edges(), [](const auto& l, const auto& r) { return l.get_source() < r.get_source(); }),
         [](const auto& l, const auto& r) { return l.get_source() < r.get_source(); },
-        [](const auto& e) { return e.get_source(); })),
+        [](const auto& e) { return e.get_source(); },
+        graph.get_num_vertices())),
     m_edges_grouped_by_target(IndexGroupedVector<const typename G::EdgeType>::create(
         graph.get_edges(),
-        graph.get_num_vertices(),
+        get_sorted_edges(graph.get_edges(), [](const auto& l, const auto& r) { return l.get_target() < r.get_target(); }),
         [](const auto& l, const auto& r) { return l.get_target() < r.get_target(); },
-        [](const auto& e) { return e.get_target(); }))
+        [](const auto& e) { return e.get_target(); },
+        graph.get_num_vertices()))
 {
 }
 
@@ -362,32 +371,30 @@ template<IsGraph G>
 TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>
 BidirectionalGraph<G>::get_targets(VertexIndex source) const
 {
-    return TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(
-        source,
-        m_vertices,
-        m_edges_grouped_by_source.get_group(source));
+    return TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(source,
+                                                                                                                      m_vertices,
+                                                                                                                      m_edges_grouped_by_source.at(source));
 }
 
 template<IsGraph G>
 SourceVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>
 BidirectionalGraph<G>::get_sources(VertexIndex target) const
 {
-    return TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(
-        target,
-        m_vertices,
-        m_edges_grouped_by_target.get_group(target));
+    return TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(target,
+                                                                                                                      m_vertices,
+                                                                                                                      m_edges_grouped_by_target.at(target));
 }
 
 template<IsGraph G>
 ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_forward_edges(VertexIndex source) const
 {
-    return ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(source, m_vertices, m_edges_grouped_by_source.get_group(source));
+    return ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(source, m_vertices, m_edges_grouped_by_source.at(source));
 }
 
 template<IsGraph G>
 BackwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_backward_edges(VertexIndex target) const
 {
-    return ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(target, m_vertices, m_edges_grouped_by_target.get_group(target));
+    return ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(target, m_vertices, m_edges_grouped_by_target.at(target));
 }
 
 template<IsGraph G>
@@ -399,7 +406,7 @@ const BidirectionalGraph<G>::VertexList& BidirectionalGraph<G>::get_vertices() c
 template<IsGraph G>
 const BidirectionalGraph<G>::EdgeList& BidirectionalGraph<G>::get_edges() const
 {
-    return m_edges_grouped_by_source.get_vector();
+    return m_edges_grouped_by_source.data();
 }
 
 template<IsGraph G>
@@ -411,7 +418,7 @@ size_t BidirectionalGraph<G>::get_num_vertices() const
 template<IsGraph G>
 size_t BidirectionalGraph<G>::get_num_edges() const
 {
-    return m_edges_grouped_by_source.get_vector().size();
+    return m_edges_grouped_by_source.data().size();
 }
 
 }

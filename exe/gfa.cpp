@@ -24,15 +24,16 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 4)
+    if (argc != 5)
     {
-        std::cout << "Usage: planner_brfs <domain:str> <problems:str> <max_num_state:int>" << std::endl;
+        std::cout << "Usage: gfa <domain:str> <problems:str> <max_num_state:int> <pruning_strategy:int>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
     const auto max_num_states = std::atoi(argv[3]);
+    const auto pruning_strategy = static_cast<ObjectGraphPruningStrategyEnum>(std::atoi(argv[4]));
 
     auto problem_filepaths = std::vector<fs::path> {};
     for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
@@ -70,24 +71,48 @@ int main(int argc, char** argv)
     }
 
     /* Gfas */
-    auto gfas = FaithfulAbstraction::create(memories);
+    auto options = FaithfulAbstractionsOptions();
+    options.fa_options.pruning_strategy = pruning_strategy;
+    auto gfas = GlobalFaithfulAbstraction::create(memories, options);
 
     size_t num_gfa_states = 0;
     size_t num_gfa_transitions = 0;
     size_t num_gfa_ground_actions = 0;
     size_t num_gfa_ground_axioms = 0;
+    size_t num_isomorphic_states = 0;
+    size_t num_non_isomorphic_states = 0;
     for (const auto& gfa : gfas)
     {
+        std::cout << gfa.get_problem()->get_filepath().value() << " " << gfa.get_num_states() << " " << gfa.get_num_isomorphic_states() << " "
+                  << gfa.get_num_non_isomorphic_states() << std::endl;
         num_gfa_states += gfa.get_num_states();
         num_gfa_transitions += gfa.get_num_transitions();
         num_gfa_ground_actions += gfa.get_aag()->get_num_ground_actions();
         num_gfa_ground_axioms += gfa.get_aag()->get_num_ground_axioms();
+        num_isomorphic_states += gfa.get_num_isomorphic_states();
+        num_non_isomorphic_states += gfa.get_num_non_isomorphic_states();
+
+        /*
+        for (const auto& gfa_state : gfa.get_states())
+        {
+            std::cout << std::make_tuple(gfa.get_problem(),
+                                            gfa.get_abstractions()
+                                                .at(gfa_state.get_faithful_abstraction_index())
+                                                .get_states()
+                                                .at(gfa_state.get_faithful_abstract_state_index())
+                                                .get_representative_state(),
+                                            std::cref(*gfa.get_pddl_factories()))
+                        << std::endl;
+        }
+        */
     }
     std::cout << "Num gfas: " << gfas.size() << std::endl;
     std::cout << "Num gfa states: " << num_gfa_states << std::endl;
     std::cout << "Num gfa transitions: " << num_gfa_transitions << std::endl;
     std::cout << "Num gfa ground actions: " << num_gfa_ground_actions << std::endl;
     std::cout << "Num gfa ground axioms: " << num_gfa_ground_axioms << std::endl;
+    std::cout << "Num isomorphic states: " << num_isomorphic_states << std::endl;
+    std::cout << "Num non-isomorphic states: " << num_non_isomorphic_states << std::endl;
 
     return 0;
 }

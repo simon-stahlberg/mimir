@@ -26,6 +26,7 @@
 #include "mimir/search/translations.hpp"
 
 #include <optional>
+#include <stack>
 
 namespace mimir
 {
@@ -47,9 +48,14 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object)
     return pruned_objects.get(object->get_identifier());
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Static> atom) const
+template<PredicateCategory P>
+static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
+                  const std::map<StateIndex, size_t>& component_map,
+                  StateIndex state,
+                  GroundAtom<P> atom)
 {
-    const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
+    // Prune atom if at least one object was pruned.
+    const auto& pruned_objects = pruning_components.at(component_map.at(state)).m_pruned_objects;
     for (const auto& object : atom->get_objects())
     {
         if (pruned_objects.get(object->get_identifier()))
@@ -58,86 +64,92 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Sta
         }
     }
     return false;
+}
+
+bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Static> atom) const
+{
+    return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Fluent> atom) const
 {
-    const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
-    for (const auto& object : atom->get_objects())
-    {
-        if (pruned_objects.get(object->get_identifier()))
-        {
-            return true;
-        }
-    }
-    return false;
+    return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Derived> atom) const
 {
-    const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
-    for (const auto& object : atom->get_objects())
-    {
-        if (pruned_objects.get(object->get_identifier()))
-        {
-            return true;
-        }
-    }
-    return false;
+    return mimir::prune(m_pruning_components, m_component_map, state, atom);
+}
+
+template<PredicateCategory P>
+static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
+                  const std::map<StateIndex, size_t>& component_map,
+                  StateIndex state,
+                  GroundLiteral<P> literal)
+{
+    return pruning_components.at(component_map.at(state)).get_pruned_goal_literals<P>().get(literal->get_identifier());
 }
 
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Static> literal) const
 {
-    const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
-    for (const auto& object : literal->get_atom()->get_objects())
-    {
-        if (pruned_objects.get(object->get_identifier()))
-        {
-            return true;
-        }
-    }
-    return false;
+    return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
+
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Fluent> literal) const
 {
-    const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
-    for (const auto& object : literal->get_atom()->get_objects())
-    {
-        if (pruned_objects.get(object->get_identifier()))
-        {
-            return true;
-        }
-    }
-    return false;
+    return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
+
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Derived> literal) const
 {
-    const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
-    for (const auto& object : literal->get_atom()->get_objects())
-    {
-        if (pruned_objects.get(object->get_identifier()))
-        {
-            return true;
-        }
-    }
-    return false;
+    return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
 
 ObjectGraphStaticSccPruningStrategy::SccPruningComponent&
 ObjectGraphStaticSccPruningStrategy::SccPruningComponent::operator&=(const ObjectGraphStaticSccPruningStrategy::SccPruningComponent& other)
 {
     m_pruned_objects &= other.m_pruned_objects;
+    m_pruned_static_goal_literal &= other.m_pruned_static_goal_literal;
+    m_pruned_fluent_goal_literal &= other.m_pruned_fluent_goal_literal;
+    m_pruned_derived_goal_literal &= other.m_pruned_derived_goal_literal;
     return *this;
 }
 
-static Digraph create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+template<PredicateCategory P>
+const FlatBitsetBuilder<P>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_pruned_static_goal_literal;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_pruned_fluent_goal_literal;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_pruned_derived_goal_literal;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const FlatBitsetBuilder<Static>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Static>() const;
+template const FlatBitsetBuilder<Fluent>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Fluent>() const;
+template const FlatBitsetBuilder<Derived>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Derived>() const;
+
+static ForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
 {
     auto g = Digraph();
     for (size_t i = 0; i < num_components; ++i)
     {
         g.add_vertex();
     }
-    std::set<std::pair<size_t, size_t>> edges;
+    using StatePair = std::pair<size_t, size_t>;
+    const auto state_pair_hash = [](const auto& pair) { return loki::hash_combine(pair.first, pair.second); };
+    std::unordered_set<StatePair, decltype(state_pair_hash)> edges;
     for (const auto t : state_space.get_transitions())
     {
         const auto source = t.get_source_state();
@@ -147,7 +159,33 @@ static Digraph create_scc_digraph(size_t num_components, const std::map<StateInd
             g.add_directed_edge(component_map.at(source), component_map.at(target));
         }
     }
-    return g;
+    return ForwardGraph<Digraph>(std::move(g));
+}
+
+template<PredicateCategory P>
+void mark_objects_as_not_prunable(const GroundLiteralList<P>& goal_condition,
+                                  const FlatBitsetBuilder<P>& always_true_state_atoms,
+                                  const FlatBitsetBuilder<P>& always_false_state_atoms,
+                                  FlatBitsetBuilder<P>& ref_pruned_goal_literals,
+                                  FlatBitsetBuilder<>& ref_pruned_objects)
+{
+    for (const auto& literal : goal_condition)
+    {
+        if ((!literal->is_negated() && !always_true_state_atoms.get(literal->get_atom()->get_identifier()))
+            || (literal->is_negated() && !always_false_state_atoms.get(literal->get_atom()->get_identifier())))
+        {
+            // literal not always satisfied or unsatisfied
+            for (const auto& object : literal->get_atom()->get_objects())
+            {
+                ref_pruned_objects.unset(object->get_identifier());
+            }
+        }
+        if (!literal->is_negated() && always_true_state_atoms.get(literal->get_atom()->get_identifier()))
+        {
+            // literal always satisfied
+            ref_pruned_goal_literals.set(literal->get_identifier());
+        }
+    }
 }
 
 template<PredicateCategory P>
@@ -181,19 +219,35 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
     pruning_components.reserve(partitioning.size());
 
+    /* 1. Compute atoms that are always true or false in the SCC
+       Use default bit value 1 for always false part.
+    */
+    auto always_true_static_atoms = FlatBitsetBuilder<Static>(state_space->get_problem()->get_static_initial_positive_atoms_bitset());
+    auto always_true_fluent_atoms = FlatBitsetBuilder<Fluent>();
+    auto always_true_derived_atoms = FlatBitsetBuilder<Derived>();
+    auto always_false_static_atoms = FlatBitsetBuilder<Static>(0, 1);
+    auto always_false_fluent_atoms = FlatBitsetBuilder<Fluent>(0, 1);
+    auto always_false_derived_atoms = FlatBitsetBuilder<Derived>(0, 1);
+    always_false_static_atoms -= always_true_static_atoms;
+
+    auto pruned_static_goal_literals = FlatBitsetBuilder<Static>();
+    auto pruned_fluent_goal_literals = FlatBitsetBuilder<Fluent>();
+    auto pruned_derived_goal_literals = FlatBitsetBuilder<Derived>();
+
     for (size_t group_index = 0; group_index < partitioning.size(); ++group_index)
     {
         auto group = partitioning.at(group_index);
 
-        /* 1. Compute atoms that are always true/false in the SCC */
-        auto always_true_static_atoms = FlatBitsetBuilder<Static>(state_space->get_problem()->get_static_initial_positive_atoms_bitset());
-        auto always_true_fluent_atoms = FlatBitsetBuilder<Fluent>(state_space->get_states()[group.begin()->second].get_atoms<Fluent>());
-        auto always_true_derived_atoms = FlatBitsetBuilder<Derived>(state_space->get_states()[group.begin()->second].get_atoms<Derived>());
-        // Use default bit value 1 for the false part.
-        auto always_false_static_atoms = FlatBitsetBuilder<Static>(0, 1);
-        auto always_false_fluent_atoms = FlatBitsetBuilder<Fluent>(0, 1);
-        auto always_false_derived_atoms = FlatBitsetBuilder<Derived>(0, 1);
-        always_false_static_atoms -= always_true_static_atoms;
+        // Reuse memory.
+        always_true_fluent_atoms = state_space->get_states().at(group.front().second).get_atoms<Fluent>();
+        always_true_derived_atoms = state_space->get_states().at(group.front().second).get_atoms<Derived>();
+        always_false_fluent_atoms.unset_all();
+        always_false_derived_atoms.unset_all();
+
+        pruned_static_goal_literals.unset_all();
+        pruned_fluent_goal_literals.unset_all();
+        pruned_derived_goal_literals.unset_all();
+
         for (const auto& [group_index, state_index] : group)
         {
             const auto& state = state_space->get_states().at(state_index);
@@ -203,7 +257,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
             always_false_derived_atoms -= state.get_atoms<Derived>();
         }
 
-        /* 2. Initialized prunable objects to all objects.
+        /* 2. Initialize prunable objects to all objects.
          */
         auto pruned_objects = FlatBitsetBuilder<>();
         for (const auto& object : state_space->get_problem()->get_objects())
@@ -213,41 +267,24 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         /* 3. Do not prune objects that appear in unsatisfied goal literals.
          */
-        for (const auto& literal : problem->get_goal_condition<Static>())
-        {
-            if ((!literal->is_negated() && !always_true_static_atoms.get(literal->get_atom()->get_identifier()))
-                || (literal->is_negated() && !always_false_static_atoms.get(literal->get_atom()->get_identifier())))
-            {
-                for (const auto& object : literal->get_atom()->get_objects())
-                {
-                    pruned_objects.unset(object->get_identifier());
-                }
-            }
-        }
-        for (const auto& literal : problem->get_goal_condition<Fluent>())
-        {
-            if ((!literal->is_negated() && !always_true_fluent_atoms.get(literal->get_atom()->get_identifier()))
-                || (literal->is_negated() && !always_false_fluent_atoms.get(literal->get_atom()->get_identifier())))
-            {
-                for (const auto& object : literal->get_atom()->get_objects())
-                {
-                    pruned_objects.unset(object->get_identifier());
-                }
-            }
-        }
-        for (const auto& literal : problem->get_goal_condition<Derived>())
-        {
-            if ((!literal->is_negated() && !always_true_derived_atoms.get(literal->get_atom()->get_identifier()))
-                || (literal->is_negated() && !always_false_derived_atoms.get(literal->get_atom()->get_identifier())))
-            {
-                for (const auto& object : literal->get_atom()->get_objects())
-                {
-                    pruned_objects.unset(object->get_identifier());
-                }
-            }
-        }
 
-        /* Do not prune objects that appear in literals of action conditions.
+        mark_objects_as_not_prunable(problem->get_goal_condition<Static>(),
+                                     always_true_static_atoms,
+                                     always_false_static_atoms,
+                                     pruned_static_goal_literals,
+                                     pruned_objects);
+        mark_objects_as_not_prunable(problem->get_goal_condition<Fluent>(),
+                                     always_true_fluent_atoms,
+                                     always_false_fluent_atoms,
+                                     pruned_fluent_goal_literals,
+                                     pruned_objects);
+        mark_objects_as_not_prunable(problem->get_goal_condition<Derived>(),
+                                     always_true_derived_atoms,
+                                     always_false_derived_atoms,
+                                     pruned_derived_goal_literals,
+                                     pruned_objects);
+
+        /* 4. Do not prune objects that appear in literals of action conditions.
          */
 
         for (const auto& [group_index, state_index] : group)
@@ -299,40 +336,39 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
             }
         }
 
-        pruning_components.push_back(ObjectGraphStaticSccPruningStrategy::SccPruningComponent { pruned_objects });
+        pruning_components.push_back(ObjectGraphStaticSccPruningStrategy::SccPruningComponent { pruned_objects,
+                                                                                                pruned_static_goal_literals,
+                                                                                                pruned_fluent_goal_literals,
+                                                                                                pruned_derived_goal_literals });
     }
 
-    auto computed_components = std::vector<bool>(num_components, false);
-    auto scc_deque = std::deque<size_t>();
-    scc_deque.push_back(component_map.at(state_space->get_initial_state()));
-    while (!scc_deque.empty())
+    /* 5. Propagate info along SCCs using post-order DFS.
+     */
+
+    auto visited_components = std::vector<bool>(num_components, false);
+    auto scc_stack = std::stack<size_t>();
+    scc_stack.push(component_map.at(state_space->get_initial_state()));
+
+    while (!scc_stack.empty())
     {
-        const auto& scc = scc_deque.front();
-        scc_deque.pop_front();
-        if (computed_components.at(scc))
+        const auto& scc = scc_stack.top();
+        if (visited_components.at(scc))
         {
-            continue;
-        }
-        auto can_compute = true;
-        for (const auto& succ_scc : scc_digraph.get_targets(scc))
-        {
-            if (!computed_components.at(succ_scc.get_index()))
-            {
-                can_compute = false;
-                scc_deque.push_back(succ_scc.get_index());
-            }
-        }
-        if (can_compute)
-        {
+            scc_stack.pop();
             for (const auto& succ_scc : scc_digraph.get_targets(scc))
             {
                 pruning_components.at(scc) &= pruning_components.at(succ_scc.get_index());
             }
-            computed_components[scc] = true;
+            continue;
         }
-        else
+        visited_components.at(scc) = true;
+
+        for (const auto& succ_scc : scc_digraph.get_targets(scc))
         {
-            scc_deque.push_back(scc);
+            if (!visited_components.at(succ_scc.get_index()))
+            {
+                scc_stack.push(succ_scc.get_index());
+            }
         }
     }
 

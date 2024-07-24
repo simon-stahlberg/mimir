@@ -169,6 +169,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                   initial_state.get_id(),
                                                   options.mark_true_goal_literals,
                                                   *object_graph_pruning_strategy);
+    // std::cout << problem->get_filepath().value() << std::endl;
+    // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;
     auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
                                                            object_graph.get_num_edges(),
                                                            nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
