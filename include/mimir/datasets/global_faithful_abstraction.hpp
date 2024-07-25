@@ -85,6 +85,9 @@ private:
     size_t m_num_isomorphic_states;
     size_t m_num_non_isomorphic_states;
 
+    /* Additional */
+    std::unordered_map<StateIndex, StateIndex> m_global_state_index_to_state_index;
+
     GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                               bool use_unit_cost_one,
                               AbstractionIndex index,
@@ -110,6 +113,7 @@ public:
      */
 
     StateIndex get_abstract_state_index(State concrete_state) const;
+    StateIndex get_abstract_state_index(StateIndex global_state_index) const;
 
     /**
      * Extended functionality
@@ -138,6 +142,7 @@ public:
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
+    const std::unordered_map<StateIndex, StateIndex>& get_global_state_index_to_state_index() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
@@ -163,6 +168,9 @@ public:
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;
+
+    /* Additional */
+    const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
 };
 
 /**
@@ -170,6 +178,12 @@ public:
  */
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abstraction);
 
 }
 

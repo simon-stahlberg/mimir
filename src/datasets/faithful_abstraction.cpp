@@ -101,7 +101,8 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     m_deadend_states(std::move(deadend_states)),
     m_transitions(std::move(transitions)),
     m_ground_actions_by_source_and_target(std::move(ground_actions_by_source_and_target)),
-    m_goal_distances(std::move(goal_distances))
+    m_goal_distances(std::move(goal_distances)),
+    m_states_by_goal_distance()
 {
     /* Ensure correctness. */
 
@@ -115,6 +116,12 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     for (size_t i = 0; i < get_num_transitions(); ++i)
     {
         assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
+    }
+
+    /* Additional */
+    for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
+    {
+        m_states_by_goal_distance[m_goal_distances.at(state_id)].push_back(state_id);
     }
 }
 
@@ -153,8 +160,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     auto object_graph_pruning_strategy = std::unique_ptr<ObjectGraphPruningStrategy> { nullptr };
     if (options.pruning_strategy == ObjectGraphPruningStrategyEnum::StaticScc)
     {
-        object_graph_pruning_strategy =
-            std::make_unique<ObjectGraphStaticSccPruningStrategy>(ObjectGraphStaticSccPruningStrategy::create(problem, factories, aag, ssg).value());
+        auto scc_pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(problem, factories, aag, ssg);
+        if (!scc_pruning_strategy.has_value())
+        {
+            return std::nullopt;
+        }
+        object_graph_pruning_strategy = std::make_unique<ObjectGraphStaticSccPruningStrategy>(std::move(scc_pruning_strategy.value()));
     }
     else
     {
@@ -542,4 +553,65 @@ size_t FaithfulAbstraction::get_num_transitions() const { return m_transitions.d
 
 /* Distances */
 const std::vector<double>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
+
+/* Additional */
+const std::map<double, StateIndexList>& FaithfulAbstraction::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
+
+/**
+ * Pretty printing
+ */
+
+std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstraction)
+{
+    // 2. Header
+    out << "digraph {"
+        << "\n"
+        << "rankdir=\"LR\""
+        << "\n";
+
+    // 3. Draw states
+    for (size_t state_index = 0; state_index < abstraction.get_num_states(); ++state_index)
+    {
+        out << "s" << state_index << "[";
+        if (abstraction.is_goal_state(state_index))
+        {
+            out << "peripheries=2,";
+        }
+        out << "label=\""
+            << std::make_tuple(abstraction.get_problem(),
+                               abstraction.get_states().at(state_index).get_representative_state(),
+                               std::cref(*abstraction.get_pddl_factories()))
+            << "\"]\n";
+    }
+
+    // 4. Draw initial state and dangling edge
+    out << "Dangling [ label = \"\", style = invis ]\n"
+        << "{ rank = same; Dangling }\n"
+        << "Dangling -> s" << abstraction.get_initial_state() << "\n";
+
+    // 5. Group states with same distance together
+    for (auto it = abstraction.get_states_by_goal_distance().rbegin(); it != abstraction.get_states_by_goal_distance().rend(); ++it)
+    {
+        const auto& [goal_distance, state_indices] = *it;
+        out << "{ rank = same; ";
+        for (auto state_index : state_indices)
+        {
+            out << "s" << state_index;
+            if (state_index != state_indices.back())
+            {
+                out << ",";
+            }
+        }
+        out << "}\n";
+    }
+    // 6. Draw transitions
+    for (const auto& transition : abstraction.get_transitions())
+    {
+        out << "s" << transition.get_source_state() << "->"
+            << "s" << transition.get_target_state() << "\n";
+    }
+    out << "}\n";
+
+    return out;
+}
 }

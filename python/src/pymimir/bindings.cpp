@@ -1345,6 +1345,13 @@ void init_pymimir(py::module_& m)
         .def("get_certificate", &FaithfulAbstractState::get_certificate, py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
+        .def("__str__",
+             [](const FaithfulAbstraction& self)
+             {
+                 std::stringstream ss;
+                 ss << self;
+                 return ss.str();
+             })
         .def_static(
             "create",
             [](const std::string& domain_filepath, const std::string& problem_filepath, const FaithfulAbstractionOptions& options)
@@ -1388,6 +1395,7 @@ void init_pymimir(py::module_& m)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index)
         .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
+        .def("get_concrete_to_abstract_state", &FaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
@@ -1461,11 +1469,18 @@ void init_pymimir(py::module_& m)
         .def("get_faithful_abstract_state_index", &GlobalFaithfulAbstractState::get_faithful_abstract_state_index);
 
     py::class_<GlobalFaithfulAbstraction, std::shared_ptr<GlobalFaithfulAbstraction>>(m, "GlobalFaithfulAbstraction")
+        .def("__str__",
+             [](const GlobalFaithfulAbstraction& self)
+             {
+                 std::stringstream ss;
+                 ss << self;
+                 return ss.str();
+             })
         .def_static(
             "create",
             [](const std::string& domain_filepath, const std::vector<std::string>& problem_filepaths, const FaithfulAbstractionsOptions& options)
             {
-                std::vector<fs::path> problem_filepaths_(problem_filepaths.begin(), problem_filepaths.end());
+                auto problem_filepaths_ = std::vector<fs::path>(problem_filepaths.begin(), problem_filepaths.end());
                 return GlobalFaithfulAbstraction::create(domain_filepath, problem_filepaths_, options);
             },
             py::arg("domain_filepath"),
@@ -1484,8 +1499,15 @@ void init_pymimir(py::module_& m)
         .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
-        .def("get_abstract_state_index", &GlobalFaithfulAbstraction::get_abstract_state_index)
+        .def("get_abstract_state_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("concrete_state"))
+        .def("get_abstract_state_index",
+             py::overload_cast<StateIndex>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_),
+             py::arg("global_state_index"))
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
+        .def("get_concrete_to_abstract_state", &GlobalFaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
+        .def("get_global_state_index_to_state_index",
+             &GlobalFaithfulAbstraction::get_global_state_index_to_state_index,
+             py::return_value_policy::reference_internal)
         .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)

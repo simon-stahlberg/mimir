@@ -213,8 +213,13 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     */
 
     auto state_space = StateSpace::create(problem, factories, aag, ssg, options);
-    const auto [num_components, component_map] = strong_components(*state_space);
-    const auto scc_digraph = create_scc_digraph(num_components, component_map, *state_space);
+    if (!state_space.has_value())
+    {
+        return std::nullopt;
+    }
+
+    const auto [num_components, component_map] = strong_components(state_space.value());
+    const auto scc_digraph = create_scc_digraph(num_components, component_map, state_space.value());
     const auto partitioning = get_partitioning<StateSpace>(num_components, component_map);
     auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
     pruning_components.reserve(partitioning.size());

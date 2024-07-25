@@ -77,7 +77,8 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     m_abstractions(std::move(abstractions)),
     m_states(std::move(states)),
     m_num_isomorphic_states(num_isomorphic_states),
-    m_num_non_isomorphic_states(num_non_isomorphic_states)
+    m_num_non_isomorphic_states(num_non_isomorphic_states),
+    m_global_state_index_to_state_index()
 {
     /* Ensure correctness. */
 
@@ -86,11 +87,19 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     {
         assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
     }
+
+    /* Additional */
+    for (const auto& state : m_states)
+    {
+        m_global_state_index_to_state_index.emplace(state.get_global_index(), state.get_index());
+    }
 }
 
 std::vector<GlobalFaithfulAbstraction>
 GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
+    std::cout << "GlobalFaithfulAbstraction::create" << std::endl;
+
     auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
@@ -108,6 +117,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     const FaithfulAbstractionsOptions& options)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
+    std::cout << "FaithfulAbstraction::create" << std::endl;
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
     auto certificate_to_global_state =
@@ -116,6 +126,8 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();
     auto abstraction_index = AbstractionIndex { 0 };
+
+    std::cout << "GlobalFaithfulAbstraction::loop" << std::endl;
 
     for (auto& faithful_abstraction : faithful_abstractions)
     {
@@ -187,6 +199,11 @@ StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_st
     return m_abstractions->at(m_index).get_abstract_state_index(concrete_state);
 }
 
+StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(StateIndex global_state_index) const
+{
+    return m_global_state_index_to_state_index.at(global_state_index);
+}
+
 /**
  * Extended functionality
  */
@@ -229,6 +246,11 @@ const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() c
 const StateMap<StateIndex>& GlobalFaithfulAbstraction::get_concrete_to_abstract_state() const
 {
     return m_abstractions->at(m_index).get_concrete_to_abstract_state();
+}
+
+const std::unordered_map<StateIndex, StateIndex>& GlobalFaithfulAbstraction::get_global_state_index_to_state_index() const
+{
+    return m_global_state_index_to_state_index;
 }
 
 StateIndex GlobalFaithfulAbstraction::get_initial_state() const { return m_abstractions->at(m_index).get_initial_state(); }
@@ -295,5 +317,74 @@ size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstrac
 
 /* Distances */
 const std::vector<double>& GlobalFaithfulAbstraction::get_goal_distances() const { return m_abstractions->at(m_index).get_goal_distances(); }
+
+/* Additional */
+const std::map<double, StateIndexList>& GlobalFaithfulAbstraction::get_states_by_goal_distance() const
+{
+    return m_abstractions->at(m_index).get_states_by_goal_distance();
+}
+
+/**
+ * Pretty printing
+ */
+
+std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abstraction)
+{
+    // 2. Header
+    out << "digraph {"
+        << "\n"
+        << "rankdir=\"LR\""
+        << "\n";
+
+    // 3. Draw states
+    for (size_t state_index = 0; state_index < abstraction.get_num_states(); ++state_index)
+    {
+        out << "s" << state_index << "[";
+        if (abstraction.is_goal_state(state_index))
+        {
+            out << "peripheries=2,";
+        }
+        const auto& state = abstraction.get_states().at(state_index);
+        out << "label=\""
+            << std::make_tuple(abstraction.get_problem(),
+                               abstraction.get_abstractions()
+                                   .at(state.get_faithful_abstraction_index())
+                                   .get_states()
+                                   .at(state.get_faithful_abstract_state_index())
+                                   .get_representative_state(),
+                               std::cref(*abstraction.get_pddl_factories()))
+            << "\"]\n";
+    }
+
+    // 4. Draw initial state and dangling edge
+    out << "Dangling [ label = \"\", style = invis ]\n"
+        << "{ rank = same; Dangling }\n"
+        << "Dangling -> s" << abstraction.get_initial_state() << "\n";
+
+    // 5. Group states with same distance together
+    for (auto it = abstraction.get_states_by_goal_distance().rbegin(); it != abstraction.get_states_by_goal_distance().rend(); ++it)
+    {
+        const auto& [goal_distance, state_indices] = *it;
+        out << "{ rank = same; ";
+        for (auto state_index : state_indices)
+        {
+            out << "s" << state_index;
+            if (state_index != state_indices.back())
+            {
+                out << ",";
+            }
+        }
+        out << "}\n";
+    }
+    // 6. Draw transitions
+    for (const auto& transition : abstraction.get_transitions())
+    {
+        out << "s" << transition.get_source_state() << "->"
+            << "s" << transition.get_target_state() << "\n";
+    }
+    out << "}\n";
+
+    return out;
+}
 
 }

@@ -119,6 +119,9 @@ private:
     /* Distances */
     std::vector<double> m_goal_distances;
 
+    /* Additional */
+    std::map<double, StateIndexList> m_states_by_goal_distance;
+
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
@@ -237,6 +240,9 @@ public:
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;
+
+    /* Additional */
+    const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
 };
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
@@ -246,6 +252,12 @@ using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
  */
 
 static_assert(IsAbstraction<FaithfulAbstraction>);
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstraction);
 
 }
 
