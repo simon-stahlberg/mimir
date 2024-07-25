@@ -1174,6 +1174,13 @@ void init_pymimir(py::module_& m)
         .def_readwrite("num_threads", &StateSpacesOptions::num_threads);
 
     py::class_<StateSpace, std::shared_ptr<StateSpace>>(m, "StateSpace")  //
+        .def("__str__",
+             [](const StateSpace& self)
+             {
+                 std::stringstream ss;
+                 ss << self;
+                 return ss.str();
+             })
         .def_static(
             "create",
             [](const std::string& domain_filepath, const std::string& problem_filepath, const StateSpaceOptions& options)
@@ -1580,7 +1587,7 @@ void init_pymimir(py::module_& m)
         .def("get_transition_cost", &Abstraction::get_transition_cost)
         .def(
             "get_forward_transition_indices",
-            [](const StateSpace& self, StateIndex source)
+            [](const Abstraction& self, StateIndex source)
             {
                 auto iterator = self.get_forward_transition_indices(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1588,7 +1595,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_transition_indices",
-            [](const StateSpace& self, StateIndex target)
+            [](const Abstraction& self, StateIndex target)
             {
                 auto iterator = self.get_backward_transition_indices(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1596,7 +1603,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_transitions",
-            [](const StateSpace& self, StateIndex source)
+            [](const Abstraction& self, StateIndex source)
             {
                 auto iterator = self.get_forward_transitions(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1604,7 +1611,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_transitions",
-            [](const StateSpace& self, StateIndex target)
+            [](const Abstraction& self, StateIndex target)
             {
                 auto iterator = self.get_backward_transitions(target);
                 return py::make_iterator(iterator.begin(), iterator.end());

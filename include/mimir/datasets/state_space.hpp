@@ -85,7 +85,7 @@ private:
     std::vector<double> m_goal_distances;
 
     /* Additional */
-    std::unordered_map<double, StateIndexList> m_states_by_goal_distance;
+    std::map<double, StateIndexList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -201,6 +201,7 @@ public:
     double get_max_goal_distance() const;
 
     /* Additional */
+    const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
     StateIndex sample_state_with_goal_distance(double goal_distance) const;
 };
 
@@ -215,6 +216,12 @@ static_assert(IsTransitionSystem<StateSpace>);
 /// @brief Compute shortest distances from the given states using Dijkstra.
 extern std::vector<double>
 compute_shortest_goal_distances(size_t num_total_states, const StateIndexSet& goal_states, const TransitionList& transitions, bool use_unit_cost_one = true);
+
+/**
+ * Pretty printing
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const StateSpace& state_space);
 }
 
 #endif

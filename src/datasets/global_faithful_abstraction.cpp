@@ -146,6 +146,12 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                                     it->second.get_faithful_abstraction_index(),
                                     it->second.get_faithful_abstract_state_index());
                 ++num_isomorphic_states;
+
+                // Ensure that goals remain goals and deadends remain deadends.
+                const auto& other_faithful_abstraction = relevant_faithful_abstractions->at(it->second.get_faithful_abstraction_index());
+                const auto& other_state = other_faithful_abstraction.get_states().at(it->second.get_faithful_abstract_state_index());
+                assert(faithful_abstraction.is_goal_state(state.get_index()) == other_faithful_abstraction.is_goal_state(other_state.get_index()));
+                assert(faithful_abstraction.is_deadend_state(state.get_index()) == other_faithful_abstraction.is_deadend_state(other_state.get_index()));
             }
             else
             {

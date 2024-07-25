@@ -333,6 +333,8 @@ double StateSpace::get_goal_distance(State state) const { return m_goal_distance
 double StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
 /* Additional */
+const std::map<double, StateIndexList>& StateSpace::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
+
 StateIndex StateSpace::sample_state_with_goal_distance(double goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);
@@ -391,4 +393,58 @@ compute_shortest_goal_distances(size_t num_total_states, const StateIndexSet& go
     return distances;
 }
 
+/**
+ * Pretty printing
+ */
+
+std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
+{
+    // 2. Header
+    out << "digraph {"
+        << "\n"
+        << "rankdir=\"LR\""
+        << "\n";
+
+    // 3. Draw states
+    for (size_t state_index = 0; state_index < state_space.get_num_states(); ++state_index)
+    {
+        out << "s" << state_index << "[";
+        if (state_space.is_goal_state(state_index))
+        {
+            out << "peripheries=2,";
+        }
+        out << "label=\"" << std::make_tuple(state_space.get_problem(), state_space.get_states().at(state_index), std::cref(*state_space.get_pddl_factories()))
+            << "\"]\n";
+    }
+
+    // 4. Draw initial state and dangling edge
+    out << "Dangling [ label = \"\", style = invis ]\n"
+        << "{ rank = same; Dangling }\n"
+        << "Dangling -> s" << state_space.get_initial_state() << "\n";
+
+    // 5. Group states with same distance together
+    for (auto it = state_space.get_states_by_goal_distance().rbegin(); it != state_space.get_states_by_goal_distance().rend(); ++it)
+    {
+        const auto& [goal_distance, state_indices] = *it;
+        out << "{ rank = same; ";
+        for (auto state_index : state_indices)
+        {
+            out << "s" << state_index;
+            if (state_index != state_indices.back())
+            {
+                out << ",";
+            }
+        }
+        out << "}\n";
+    }
+    // 6. Draw transitions
+    for (const auto& transition : state_space.get_transitions())
+    {
+        out << "s" << transition.get_source_state() << "->"
+            << "s" << transition.get_target_state() << "\n";
+    }
+    out << "}\n";
+
+    return out;
+}
 }
