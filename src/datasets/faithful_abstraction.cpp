@@ -573,15 +573,23 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
     for (size_t state_index = 0; state_index < abstraction.get_num_states(); ++state_index)
     {
         out << "s" << state_index << "[";
+
+        // goal marking
         if (abstraction.is_goal_state(state_index))
         {
             out << "peripheries=2,";
         }
-        out << "label=\""
-            << std::make_tuple(abstraction.get_problem(),
-                               abstraction.get_states().at(state_index).get_representative_state(),
-                               std::cref(*abstraction.get_pddl_factories()))
-            << "\"]\n";
+
+        // label
+        out << "label=\"";
+        out << "state_index=" << state_index << "\n";
+        for (const auto& state : abstraction.get_states().at(state_index).get_states())
+        {
+            out << std::make_tuple(abstraction.get_problem(), state, std::cref(*abstraction.get_pddl_factories())) << "\n";
+        }
+        out << "\"";  // end label
+
+        out << "]\n";
     }
 
     // 4. Draw initial state and dangling edge
@@ -607,8 +615,19 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
     // 6. Draw transitions
     for (const auto& transition : abstraction.get_transitions())
     {
+        // direction
         out << "s" << transition.get_source_state() << "->"
-            << "s" << transition.get_target_state() << "\n";
+            << "s" << transition.get_target_state() << " [";
+
+        // label
+        out << "label=\"";
+        for (const auto& action : transition.get_actions())
+        {
+            out << action << "\n";
+        }
+        out << "\"";  // end label
+
+        out << "]\n";
     }
     out << "}\n";
 

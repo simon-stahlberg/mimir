@@ -413,8 +413,12 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
         {
             out << "peripheries=2,";
         }
+
+        // label
         out << "label=\"" << std::make_tuple(state_space.get_problem(), state_space.get_states().at(state_index), std::cref(*state_space.get_pddl_factories()))
-            << "\"]\n";
+            << "\"";
+
+        out << "]\n";
     }
 
     // 4. Draw initial state and dangling edge
@@ -440,8 +444,14 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
     // 6. Draw transitions
     for (const auto& transition : state_space.get_transitions())
     {
+        // direction
         out << "s" << transition.get_source_state() << "->"
-            << "s" << transition.get_target_state() << "\n";
+            << "s" << transition.get_target_state() << " [";
+
+        // label
+        out << "label=\"" << transition.get_creating_action() << "\"";
+
+        out << "]\n";
     }
     out << "}\n";
 
