@@ -348,16 +348,16 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         }
 
         // label
-        const auto& state = abstraction.get_states().at(state_index);
+        const auto& gfa_state = abstraction.get_states().at(state_index);
         out << "label=\"";
-        out << "state_index=" << state.get_index() << " "
-            << "global_state_index = " << state.get_global_index() << " "
-            << "abstraction_index=" << state.get_faithful_abstraction_index() << " "
-            << "abstract_state_index=" << state.get_faithful_abstract_state_index() << "\n";
-        for (const auto& state :
-             abstraction.get_abstractions().at(state.get_faithful_abstraction_index()).get_states().at(state.get_faithful_abstract_state_index()).get_states())
+        out << "state_index=" << gfa_state.get_index() << " "
+            << "global_state_index = " << gfa_state.get_global_index() << " "
+            << "abstraction_index=" << gfa_state.get_faithful_abstraction_index() << " "
+            << "abstract_state_index=" << gfa_state.get_faithful_abstract_state_index() << "\n";
+        const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
+        for (const auto& state : fa_abstraction.get_states().at(gfa_state.get_faithful_abstract_state_index()).get_states())
         {
-            out << std::make_tuple(abstraction.get_problem(), state, std::cref(*abstraction.get_pddl_factories()));
+            out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_factories()));
         }
         out << "\"";  // end label
 

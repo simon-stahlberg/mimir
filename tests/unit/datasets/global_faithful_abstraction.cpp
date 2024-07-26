@@ -95,11 +95,15 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateSpannerSccPruningTest)
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 8);
 
+    std::cout << abstraction_0 << std::endl;
+
     // Now 6 isomorphic states across instances.
     const auto& abstraction_1 = abstractions.at(1);
     EXPECT_EQ(abstraction_1.get_num_states(), 10);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 6);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 4);
+
+    std::cout << abstraction_1 << std::endl;
 }
 
 }
