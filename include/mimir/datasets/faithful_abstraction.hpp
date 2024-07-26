@@ -49,7 +49,8 @@ struct FaithfulAbstractionOptions
     bool use_unit_cost_one = true;
     bool remove_if_unsolvable = true;
     bool compute_complete_abstraction_mapping = false;
-    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
+    uint32_t max_num_concrete_states = std::numeric_limits<uint32_t>::max();
+    uint32_t max_num_abstract_states = std::numeric_limits<uint32_t>::max();
     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
     ObjectGraphPruningStrategyEnum pruning_strategy = ObjectGraphPruningStrategyEnum::None;
 };
@@ -158,7 +159,7 @@ public:
     /// @param use_unit_cost_one whether to use unit cost one or action costs.
     /// @param remove_if_unsolvable whether an abstraction should be discared if unsolvable.
     /// @param compute_complete_abstraction_mapping whether an to compute the complete abstraction mapping.
-    /// @param max_num_states the maximum number of abstract states.
+    /// @param max_num_concrete_states the maximum number of abstract states.
     /// @param timeout_ms the maximum time to compute the abstraction.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(Problem problem,
@@ -178,7 +179,7 @@ public:
     /// @param use_unit_cost_one whether to use unit cost one or action costs.
     /// @param remove_if_unsolvable whether to remove abstractions of unsolvable problems.
     /// @param sort_ascending_by_num_states whether the abstractions should be sorted ascending by the number of states.
-    /// @param max_num_states The maximum number of states allowed in an abstraction.
+    /// @param max_num_concrete_states The maximum number of states allowed in an abstraction.
     /// @param timeout_ms The maximum time spent on creating an abstraction.
     /// @param num_threads The number of threads used for construction.
     /// @return FaithfulAbstractionList contains the FaithfulAbstractions for which the construction is within the given resource limits.

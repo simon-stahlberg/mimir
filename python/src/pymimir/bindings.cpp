@@ -1310,19 +1310,21 @@ void init_pymimir(py::module_& m)
         .export_values();
 
     py::class_<FaithfulAbstractionOptions>(m, "FaithfulAbstractionOptions")
-        .def(py::init<bool, bool, bool, bool, uint32_t, uint32_t, ObjectGraphPruningStrategyEnum>(),
+        .def(py::init<bool, bool, bool, bool, uint32_t, uint32_t, uint32_t, ObjectGraphPruningStrategyEnum>(),
              py::arg("mark_true_goal_literals") = false,
              py::arg("use_unit_cost_one") = true,
              py::arg("remove_if_unsolvable") = true,
              py::arg("compute_complete_abstraction_mapping") = false,
-             py::arg("max_num_states") = std::numeric_limits<uint32_t>::max(),
+             py::arg("max_num_concrete_states") = std::numeric_limits<uint32_t>::max(),
+             py::arg("max_num_abstract_states") = std::numeric_limits<uint32_t>::max(),
              py::arg("timeout_ms") = std::numeric_limits<uint32_t>::max(),
              py::arg("pruning_strategy") = ObjectGraphPruningStrategyEnum::None)
         .def_readwrite("mark_true_goal_literals", &FaithfulAbstractionOptions::mark_true_goal_literals)
         .def_readwrite("use_unit_cost_one", &FaithfulAbstractionOptions::use_unit_cost_one)
         .def_readwrite("remove_if_unsolvable", &FaithfulAbstractionOptions::remove_if_unsolvable)
         .def_readwrite("compute_complete_abstraction_mapping", &FaithfulAbstractionOptions::compute_complete_abstraction_mapping)
-        .def_readwrite("max_num_states", &FaithfulAbstractionOptions::max_num_states)
+        .def_readwrite("max_num_concrete_states", &FaithfulAbstractionOptions::max_num_concrete_states)
+        .def_readwrite("max_num_abstract_states", &FaithfulAbstractionOptions::max_num_abstract_states)
         .def_readwrite("timeout_ms", &FaithfulAbstractionOptions::timeout_ms)
         .def_readwrite("pruning_strategy", &FaithfulAbstractionOptions::pruning_strategy);
 

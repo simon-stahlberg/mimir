@@ -160,7 +160,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     auto object_graph_pruning_strategy = std::unique_ptr<ObjectGraphPruningStrategy> { nullptr };
     if (options.pruning_strategy == ObjectGraphPruningStrategyEnum::StaticScc)
     {
-        auto scc_pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(problem, factories, aag, ssg);
+        auto state_space_options = StateSpaceOptions();
+        state_space_options.max_num_states = options.max_num_concrete_states;
+        state_space_options.timeout_ms = options.timeout_ms;
+        auto scc_pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(problem, factories, aag, ssg, state_space_options);
         if (!scc_pruning_strategy.has_value())
         {
             return std::nullopt;
@@ -257,7 +260,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                 abstract_states_by_certificate.emplace(std::move(certificate), abstract_successor_state_index);
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
-                if (next_abstract_state_index >= options.max_num_states)
+                if (next_abstract_state_index >= options.max_num_abstract_states)
                 {
                     // Ran out of state resources
                     return std::nullopt;
@@ -267,6 +270,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             const auto abstract_successor_state_index = concrete_to_abstract_state.at(successor_state);
             transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
             concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
+
+            if (concrete_to_abstract_state.size() >= options.max_num_concrete_states)
+            {
+                // Ran out of state resources
+                return std::nullopt;
+            }
 
             if (options.compute_complete_abstraction_mapping || !abstract_state_exists)
             {
