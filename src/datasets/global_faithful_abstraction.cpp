@@ -352,7 +352,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
         for (const auto& state : fa_abstraction.get_states().at(gfa_state.get_faithful_abstract_state_index()).get_states())
         {
-            out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_factories()));
+            out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_factories())) << "\n";
         }
         out << "\"";  // end label
 
