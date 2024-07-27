@@ -95,13 +95,39 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateSpannerSccPruningTest)
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 8);
 
-    std::cout << abstraction_0 << std::endl;
-
     // Now 6 isomorphic states across instances.
     const auto& abstraction_1 = abstractions.at(1);
     EXPECT_EQ(abstraction_1.get_num_states(), 10);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 6);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 4);
+}
+
+TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateMiconicSccPruningTest)
+{
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic/domain.pddl");
+    const auto problem_file_1 = fs::path(std::string(DATA_DIR) + "miconic/test_problem.pddl");
+    const auto problem_file_2 = fs::path(std::string(DATA_DIR) + "miconic/test_problem_2.pddl");
+    const auto problem_files = std::vector<fs::path> { problem_file_1, problem_file_2 };
+
+    auto options = FaithfulAbstractionsOptions();
+    options.fa_options.pruning_strategy = ObjectGraphPruningStrategyEnum::StaticScc;
+    options.num_threads = 1;
+    const auto abstractions = GlobalFaithfulAbstraction::create(domain_file, problem_files, options);
+
+    EXPECT_EQ(abstractions.size(), 2);
+
+    const auto& abstraction_0 = abstractions.at(0);
+    EXPECT_EQ(abstraction_0.get_num_states(), 6);
+    EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
+    EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 6);
+
+    std::cout << abstraction_0 << std::endl;
+
+    // Now 6 isomorphic states across instances.
+    const auto& abstraction_1 = abstractions.at(1);
+    EXPECT_EQ(abstraction_1.get_num_states(), 12);
+    EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 6);
+    EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 6);
 
     std::cout << abstraction_1 << std::endl;
 }

@@ -98,8 +98,6 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
 std::vector<GlobalFaithfulAbstraction>
 GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
-    std::cout << "GlobalFaithfulAbstraction::create" << std::endl;
-
     auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
@@ -117,7 +115,6 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     const FaithfulAbstractionsOptions& options)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
-    std::cout << "FaithfulAbstraction::create" << std::endl;
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
     auto certificate_to_global_state =
@@ -126,8 +123,6 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();
     auto abstraction_index = AbstractionIndex { 0 };
-
-    std::cout << "GlobalFaithfulAbstraction::loop" << std::endl;
 
     for (auto& faithful_abstraction : faithful_abstractions)
     {
