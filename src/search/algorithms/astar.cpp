@@ -15,74 +15,61 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/algorithms/brfs.hpp"
+#include "mimir/search/algorithms/astar.hpp"
 
-#include "mimir/search/algorithms/brfs/event_handlers.hpp"
+#include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
-#include "mimir/search/search_nodes/utils.hpp"
+#include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/successor_state_generator.hpp"
 
 namespace mimir
 {
 
-static auto create_default_search_node_builder()
-{
-    auto builder = UninformedSearchNodeBuilder();
-    builder.set_status(SearchNodeStatus::CLOSED);
-    builder.set_g_value(-1);
-    builder.set_parent_state(std::nullopt);
-    builder.set_creating_action(std::nullopt);
-    builder.finish();
-    return builder.get_flatmemory_builder();
-}
-
-BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
-    BrFSAlgorithm(applicable_action_generator,
-                  std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
-                  std::make_shared<DefaultBrFSAlgorithmEventHandler>())
+AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic) :
+    AStarAlgorithm(applicable_action_generator, std::make_shared<SuccessorStateGenerator>(applicable_action_generator), std::move(heuristic))
 {
 }
 
-BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                             std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
-                             std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
+AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                               std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                               std::shared_ptr<IHeuristic> heuristic) :
     m_aag(std::move(applicable_action_generator)),
     m_ssg(std::move(successor_state_generator)),
     m_initial_state(m_ssg->get_or_create_initial_state()),
-    m_search_nodes(FlatUninformedSearchNodeVector(create_default_search_node_builder())),
-    m_event_handler(std::move(event_handler))
+    m_heuristic(std::move(heuristic))
 {
 }
 
-SearchStatus BrFSAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_initial_state, out_plan); }
+SearchStatus AStarAlgorithm::find_solution(std::vector<GroundAction>& out_plan) { return find_solution(m_initial_state, out_plan); }
 
-SearchStatus BrFSAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
+SearchStatus AStarAlgorithm::find_solution(State start_state, std::vector<GroundAction>& out_plan)
 {
     std::optional<State> unused_out_state = std::nullopt;
     return find_solution(start_state, out_plan, unused_out_state);
 }
 
-SearchStatus BrFSAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
+SearchStatus AStarAlgorithm::find_solution(State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state)
 {
     return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), std::make_unique<DuplicateStatePruning>(), out_plan, out_goal_state);
 }
 
-SearchStatus BrFSAlgorithm::find_solution(State start_state,
-                                          std::unique_ptr<IGoalStrategy>&& goal_strategy,
-                                          std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                                          GroundActionList& out_plan,
-                                          std::optional<State>& out_goal_state)
+SearchStatus AStarAlgorithm::find_solution(State start_state,
+                                           std::unique_ptr<IGoalStrategy>&& goal_strategy,
+                                           std::unique_ptr<IPruningStrategy>&& pruning_strategy,
+                                           std::vector<GroundAction>& out_plan,
+                                           std::optional<State>& out_goal_state)
 {
+    /*
     // Clear data structures
     m_search_nodes.clear();
-    m_queue.clear();
+    m_openlist->clear();
 
     const auto problem = m_aag->get_problem();
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(problem, start_state, pddl_factories);
 
-    auto initial_search_node = UninformedSearchNode(this->m_search_nodes[start_state.get_id()]);
+    auto initial_search_node = InformedSearchNode(this->m_search_nodes[start_state.get_id()]);
     initial_search_node.get_g_value() = 0;
     initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
@@ -110,7 +97,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         m_queue.pop_front();
 
         // We need this before goal test for correct statistics reporting.
-        auto search_node = UninformedSearchNode(this->m_search_nodes[state.get_id()]);
+        auto search_node = InformedSearchNode(this->m_search_nodes[state.get_id()]);
         search_node.get_status() = SearchNodeStatus::CLOSED;
 
         if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
@@ -122,7 +109,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(this->m_search_nodes, ConstUninformedCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
+            set_plan(ConstInformedSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
@@ -149,11 +136,11 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
             if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                auto successor_search_node = UninformedSearchNode(this->m_search_nodes[successor_state.get_id()]);
+                auto successor_search_node = InformedSearchNode(this->m_search_nodes[successor_state.get_id()]);
                 successor_search_node.get_status() = SearchNodeStatus::OPEN;
                 successor_search_node.get_g_value() = search_node.get_g_value() + 1;
-                successor_search_node.get_parent_state() = state;
-                successor_search_node.get_creating_action() = action;
+                successor_search_node.get_parent_state_id() = state.get_id();
+                successor_search_node.get_creating_action_id() = action.get_id();
 
                 m_queue.emplace_back(successor_state);
             }
@@ -167,6 +154,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     m_event_handler->on_end_search();
     m_event_handler->on_exhausted();
 
+    */
     return SearchStatus::EXHAUSTED;
 }
 

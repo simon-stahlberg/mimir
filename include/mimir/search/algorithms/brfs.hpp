@@ -48,14 +48,6 @@ private:
     FlatUninformedSearchNodeVector m_search_nodes;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
 
-    /// @brief Compute the plan consisting of ground actions by collecting the creating actions
-    ///        and reversing them.
-    /// @param view The search node from which backtracking begins for which the goal was
-    ///             satisfied.
-    /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
-    ///                      the to the state underlying the search node.
-    void set_plan(const ConstUninformedCostSearchNode& view, GroundActionList& out_plan) const;
-
 public:
     /// @brief Simplest construction
     explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);

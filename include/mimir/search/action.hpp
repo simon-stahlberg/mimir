@@ -289,6 +289,8 @@ public:
     bool is_applicable(Problem problem, State state) const;
 };
 
+static_assert(std::is_trivially_copyable_v<std::optional<GroundAction>>);
+
 /**
  * Mimir types
  */

@@ -19,10 +19,12 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/heuristics.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/declarations.hpp"
+#include "mimir/search/openlists/priority_queue.hpp"
+#include "mimir/search/search_nodes/informed.hpp"
+#include "mimir/search/state.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace mimir
@@ -39,37 +41,29 @@ private:
     State m_initial_state;
     std::shared_ptr<IHeuristic> m_heuristic;
 
+    FlatInformedSearchNodeVector m_search_nodes;
+    PriorityQueue<State> m_openlist;
+
 public:
     /// @brief Simplest construction
-    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic) :
-        AStarAlgorithm(applicable_action_generator, std::make_shared<SuccessorStateGenerator>(applicable_action_generator), std::move(heuristic))
-    {
-    }
+    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic);
 
     /// @brief Complete construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                    std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
-                   std::shared_ptr<IHeuristic> heuristic) :
-        m_aag(std::move(applicable_action_generator)),
-        m_ssg(std::move(successor_state_generator)),
-        m_initial_state(m_ssg->get_or_create_initial_state()),
-        m_heuristic(std::move(heuristic))
-    {
-    }
+                   std::shared_ptr<IHeuristic> heuristic);
 
-    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override { return find_solution(m_initial_state, out_plan); }
+    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override;
 
-    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan) override
-    {
-        // TODO (Dominik): implement
-        return SearchStatus::FAILED;
-    }
+    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan) override;
 
-    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state) override
-    {
-        // TODO (Dominik): implement
-        return SearchStatus::FAILED;
-    }
+    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state) override;
+
+    SearchStatus find_solution(State start_state,
+                               std::unique_ptr<IGoalStrategy>&& goal_strategy,
+                               std::unique_ptr<IPruningStrategy>&& pruning_strategy,
+                               std::vector<GroundAction>& out_plan,
+                               std::optional<State>& out_goal_state);
 };
 
 }

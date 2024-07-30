@@ -121,6 +121,8 @@ public:
     FlatBitset<P> get_atoms() const;
 };
 
+static_assert(std::is_trivially_copyable_v<std::optional<State>>);
+
 /**
  * Mimir types
  */

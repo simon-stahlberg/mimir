@@ -128,7 +128,7 @@ private:
 public:
     TupleGraphFactory(std::shared_ptr<StateSpace> state_space, int arity, bool prune_dominated_tuples = false);
 
-    /// @brief Create and return a reference to the tuple graph.
+    /// @brief Create and return the tuple graph.
     TupleGraph create(State root_state);
 
     /**

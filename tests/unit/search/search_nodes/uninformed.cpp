@@ -12,18 +12,18 @@ TEST(MimirTests, SearchSearchNodesUninformedBuilderTest)
     auto search_node_builder = UninformedSearchNodeBuilder();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
     search_node_builder.set_g_value(42);
-    search_node_builder.set_parent_state_id(100);
-    search_node_builder.set_creating_action_id(99);
+    search_node_builder.set_parent_state(std::nullopt);
+    search_node_builder.set_creating_action(std::nullopt);
     search_node_builder.finish();
     EXPECT_NE(search_node_builder.get_data(), nullptr);
-    EXPECT_EQ(search_node_builder.get_size(), 20);
+    EXPECT_EQ(search_node_builder.get_size(), 48);
 
     // View the data generated in the builder.
     auto search_node_view = UninformedSearchNode(FlatUninformedSearchNode(search_node_builder.get_data()));
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
     EXPECT_EQ(search_node_view.get_g_value(), 42);
-    EXPECT_EQ(search_node_view.get_parent_state_id(), 100);
-    EXPECT_EQ(search_node_view.get_creating_action_id(), 99);
+    EXPECT_EQ(search_node_view.get_parent_state(), std::nullopt);
+    EXPECT_EQ(search_node_view.get_creating_action(), std::nullopt);
 
     // Test mutation of a search node
     search_node_view.get_status() = SearchNodeStatus::CLOSED;
@@ -41,7 +41,7 @@ TEST(MimirTests, SearchSearchNodesUninformedVectorTest)
     auto builder = UninformedSearchNodeBuilder();
     builder.set_status(SearchNodeStatus::CLOSED);
     builder.set_g_value(42);
-    builder.set_parent_state_id(-1);
+    builder.set_parent_state(std::nullopt);
     builder.get_flatmemory_builder().finish();
 
     auto vector = FlatUninformedSearchNodeVector(std::move(builder.get_flatmemory_builder()));
@@ -50,7 +50,7 @@ TEST(MimirTests, SearchSearchNodesUninformedVectorTest)
     auto search_node_0 = UninformedSearchNode(vector[0]);
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
     EXPECT_EQ(search_node_0.get_g_value(), 42);
-    EXPECT_EQ(search_node_0.get_parent_state_id(), -1);
+    EXPECT_EQ(search_node_0.get_parent_state(), std::nullopt);
 
     // Test mutation of a search node
     search_node_0.get_status() = SearchNodeStatus::OPEN;
