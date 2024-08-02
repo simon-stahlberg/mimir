@@ -136,14 +136,6 @@ private:
         /* Transitions */
         const AbstractTransitionList& get_transitions() const override { return m_abstraction.get_transitions(); }
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
-        ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const override
-        {
-            return m_abstraction.get_forward_transition_indices(source);
-        }
-        BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const override
-        {
-            return m_abstraction.get_backward_transition_indices(target);
-        }
         ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const override
         {
             return m_abstraction.get_forward_transitions(source);
@@ -151,6 +143,14 @@ private:
         BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const override
         {
             return m_abstraction.get_backward_transitions(target);
+        }
+        ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const override
+        {
+            return m_abstraction.get_forward_transition_indices(source);
+        }
+        BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const override
+        {
+            return m_abstraction.get_backward_transition_indices(target);
         }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
@@ -214,6 +214,8 @@ public:
     // Write an adaptor if you need to return different kinds of transitions
     const AbstractTransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
     TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
+    ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_pimpl->get_forward_transitions(source); }
+    BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const { return m_pimpl->get_backward_transitions(target); }
     ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const
     {
         return m_pimpl->get_forward_transition_indices(source);
@@ -222,8 +224,6 @@ public:
     {
         return m_pimpl->get_backward_transition_indices(target);
     }
-    ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_pimpl->get_forward_transitions(source); }
-    BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const { return m_pimpl->get_backward_transitions(target); }
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */
