@@ -72,8 +72,7 @@ private:
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
-        virtual TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const = 0;
-        virtual SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const = 0;
+        virtual VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const = 0;
         virtual bool is_goal_state(StateIndex state) const = 0;
         virtual bool is_deadend_state(StateIndex state) const = 0;
         virtual bool is_alive_state(StateIndex state) const = 0;
@@ -81,10 +80,8 @@ private:
         /* Transitions */
         virtual const AbstractTransitionList& get_transitions() const = 0;
         virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
-        virtual ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const = 0;
-        virtual BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const = 0;
-        virtual ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const = 0;
-        virtual BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const = 0;
+        virtual EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const = 0;
+        virtual EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const = 0;
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
@@ -118,13 +115,9 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
-        TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const override
+        VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const override
         {
-            return m_abstraction.get_target_state_indices(source);
-        }
-        SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const override
-        {
-            return m_abstraction.get_source_state_indices(target);
+            return m_abstraction.get_adjacent_state_indices(state, forward);
         }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
@@ -136,21 +129,13 @@ private:
         /* Transitions */
         const AbstractTransitionList& get_transitions() const override { return m_abstraction.get_transitions(); }
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
-        ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const override
+        EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const override
         {
-            return m_abstraction.get_forward_transitions(source);
+            return m_abstraction.get_adjacent_transitions(state, forward);
         }
-        BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const override
+        EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const override
         {
-            return m_abstraction.get_backward_transitions(target);
-        }
-        ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const override
-        {
-            return m_abstraction.get_forward_transition_indices(source);
-        }
-        BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const override
-        {
-            return m_abstraction.get_backward_transition_indices(target);
+            return m_abstraction.get_adjacent_transition_indices(state, forward);
         }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
@@ -201,8 +186,10 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
-    TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const { return m_pimpl->get_target_state_indices(source); }
-    SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const { return m_pimpl->get_source_state_indices(target); }
+    VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const
+    {
+        return m_pimpl->get_adjacent_state_indices(state, forward);
+    }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }
@@ -214,15 +201,13 @@ public:
     // Write an adaptor if you need to return different kinds of transitions
     const AbstractTransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
     TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
-    ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_pimpl->get_forward_transitions(source); }
-    BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const { return m_pimpl->get_backward_transitions(target); }
-    ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const
+    EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const
     {
-        return m_pimpl->get_forward_transition_indices(source);
+        return m_pimpl->get_adjacent_transitions(state, forward);
     }
-    BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const
+    EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const
     {
-        return m_pimpl->get_backward_transition_indices(target);
+        return m_pimpl->get_adjacent_transition_indices(state, forward);
     }
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 

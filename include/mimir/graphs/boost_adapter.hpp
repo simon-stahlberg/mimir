@@ -57,7 +57,7 @@ struct graph_traits<Graph>
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = mimir::ForwardEdgeIndexIterator<EdgeType>::const_iterator;
+    using out_edge_iterator = mimir::EdgeIndexIterator<EdgeType>::const_iterator;
     using degree_size_type = size_t;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
@@ -126,7 +126,7 @@ template<IsGraph Graph>
 std::pair<typename boost::graph_traits<Graph>::out_edge_iterator, typename boost::graph_traits<Graph>::out_edge_iterator>
 out_edges(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const Graph& g)
 {
-    return { g.get_forward_edge_indices(u).begin(), g.get_forward_edge_indices(u).end() };
+    return { g.get_adjacent_edge_indices(u, true).begin(), g.get_adjacent_edge_indices(u, true).end() };
 }
 
 /// @brief Get the number of out edges of a state.
@@ -136,7 +136,9 @@ out_edges(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const
 template<IsGraph Graph>
 boost::graph_traits<Graph>::degree_size_type out_degree(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const Graph& g)
 {
-    return std::distance(g.get_forward_edge_indices(u).begin(), g.get_forward_edge_indices(u).end());
+    // TODO: this assumes that the graph was translated for forward or bidirectional accordingly.
+    // We must add some assertion here.
+    return std::distance(g.get_adjacent_edge_indices(u, true).begin(), g.get_adjacent_edge_indices(u, true).end());
 }
 
 }

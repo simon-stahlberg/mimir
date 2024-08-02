@@ -143,9 +143,8 @@ public:
 
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
-    VertexIterator<FaithfulAbstractState, AbstractTransition> get_adjacent_states(StateIndex source, bool forward = true) const;
-    TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const;
-    SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const;
+    VertexIterator<FaithfulAbstractState, AbstractTransition> get_adjacent_states(StateIndex state, bool forward) const;
+    VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     const std::unordered_map<StateIndex, StateIndex>& get_global_state_index_to_state_index() const;
     StateIndex get_initial_state() const;
@@ -162,10 +161,8 @@ public:
 
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
-    ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const;
-    BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const;
-    ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const;
-    BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const;
+    EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const;
+    EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

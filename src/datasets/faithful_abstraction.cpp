@@ -510,14 +510,9 @@ VertexIterator<FaithfulAbstractState, AbstractTransition> FaithfulAbstraction::g
     return m_graph.get_adjacent_vertices(state, forward);
 }
 
-TargetVertexIndexIterator<AbstractTransition> FaithfulAbstraction::get_target_state_indices(StateIndex source) const
+VertexIndexIterator<AbstractTransition> FaithfulAbstraction::get_adjacent_state_indices(StateIndex state, bool forward) const
 {
-    return m_graph.get_target_indices(source);
-}
-
-SourceVertexIndexIterator<AbstractTransition> FaithfulAbstraction::get_source_state_indices(StateIndex target) const
-{
-    return m_graph.get_source_indices(target);
+    return m_graph.get_adjacent_vertex_indices(state, forward);
 }
 
 const StateMap<StateIndex>& FaithfulAbstraction::get_concrete_to_abstract_state() const { return m_concrete_to_abstract_state; }
@@ -544,18 +539,14 @@ bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_
 
 const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
 
-ForwardEdgeIterator<AbstractTransition> FaithfulAbstraction::get_forward_transitions(StateIndex source) const { return m_graph.get_forward_edges(source); }
-
-BackwardEdgeIterator<AbstractTransition> FaithfulAbstraction::get_backward_transitions(StateIndex target) const { return m_graph.get_backward_edges(target); }
-
-ForwardEdgeIndexIterator<AbstractTransition> FaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
+EdgeIterator<AbstractTransition> FaithfulAbstraction::get_adjacent_transitions(StateIndex state, bool forward) const
 {
-    return m_graph.get_forward_edge_indices(source);
+    return m_graph.get_adjacent_edges(state, forward);
 }
 
-BackwardEdgeIndexIterator<AbstractTransition> FaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
+EdgeIndexIterator<AbstractTransition> FaithfulAbstraction::get_adjacent_transition_indices(StateIndex state, bool forward) const
 {
-    return m_graph.get_backward_edge_indices(target);
+    return m_graph.get_adjacent_edge_indices(state, forward);
 }
 
 TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const

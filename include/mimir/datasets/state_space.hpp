@@ -171,9 +171,8 @@ public:
     // We cannot ensure that states are having an indexing scheme because
     // users might have created custom states using the successor state generator.
     const ConcreteStateList& get_states() const;
-    VertexIterator<ConcreteState, ConcreteTransition> get_adjacent_states(StateIndex source, bool forward = true) const;
-    TargetVertexIndexIterator<ConcreteTransition> get_target_state_indices(StateIndex source) const;
-    SourceVertexIndexIterator<ConcreteTransition> get_source_state_indices(StateIndex target) const;
+    VertexIterator<ConcreteState, ConcreteTransition> get_adjacent_states(StateIndex state, bool forward) const;
+    VertexIndexIterator<ConcreteTransition> get_adjacent_state_indices(StateIndex state, bool forward) const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -187,10 +186,8 @@ public:
 
     /* Transitions */
     const ConcreteTransitionList& get_transitions() const;
-    ForwardEdgeIterator<ConcreteTransition> get_forward_transitions(StateIndex source) const;
-    BackwardEdgeIterator<ConcreteTransition> get_backward_transitions(StateIndex target) const;
-    ForwardEdgeIndexIterator<ConcreteTransition> get_forward_transition_indices(StateIndex source) const;
-    BackwardEdgeIndexIterator<ConcreteTransition> get_backward_transition_indices(StateIndex target) const;
+    EdgeIterator<ConcreteTransition> get_adjacent_transitions(StateIndex state, bool forward) const;
+    EdgeIndexIterator<ConcreteTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 
@@ -233,7 +230,7 @@ compute_shortest_goal_distances(const BidirectionalGraph<Graph<Vertex, Edge>>& g
         }
         closed.at(state_index) = true;
 
-        for (const auto& transition : graph.get_backward_edges(state_index))
+        for (const auto& transition : graph.get_adjacent_edges(state_index, false))
         {
             const auto successor_state = transition.get_source();
 

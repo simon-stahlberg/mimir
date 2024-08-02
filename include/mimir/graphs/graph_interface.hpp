@@ -42,17 +42,14 @@ concept IsGraph = requires(T a, VertexIndex vertex, bool forward)
         a.get_adjacent_vertices(vertex, forward)
         } -> std::same_as<VertexIterator<typename T::VertexType, typename T::EdgeType>>;
     {
-        a.get_forward_edges(vertex)
-        } -> std::same_as<ForwardEdgeIterator<typename T::EdgeType>>;
+        a.get_adjacent_vertex_indices(vertex, forward)
+        } -> std::same_as<VertexIndexIterator<typename T::EdgeType>>;
     {
-        a.get_backward_edges(vertex)
-        } -> std::same_as<BackwardEdgeIterator<typename T::EdgeType>>;
+        a.get_adjacent_edges(vertex, forward)
+        } -> std::same_as<EdgeIterator<typename T::EdgeType>>;
     {
-        a.get_forward_edge_indices(vertex)
-        } -> std::same_as<ForwardEdgeIndexIterator<typename T::EdgeType>>;
-    {
-        a.get_backward_edge_indices(vertex)
-        } -> std::same_as<BackwardEdgeIndexIterator<typename T::EdgeType>>;
+        a.get_adjacent_edge_indices(vertex, forward)
+        } -> std::same_as<EdgeIndexIterator<typename T::EdgeType>>;
     {
         a.get_vertices()
         } -> std::same_as<const std::vector<typename T::VertexType>&>;

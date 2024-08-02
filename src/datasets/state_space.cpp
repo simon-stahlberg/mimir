@@ -253,9 +253,10 @@ VertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_adjacent_state
     return m_graph.get_adjacent_vertices(state, forward);
 }
 
-TargetVertexIndexIterator<ConcreteTransition> StateSpace::get_target_state_indices(StateIndex source) const { return m_graph.get_target_indices(source); }
-
-SourceVertexIndexIterator<ConcreteTransition> StateSpace::get_source_state_indices(StateIndex target) const { return m_graph.get_source_indices(target); }
+VertexIndexIterator<ConcreteTransition> StateSpace::get_adjacent_state_indices(StateIndex state, bool forward) const
+{
+    return m_graph.get_adjacent_vertex_indices(state, forward);
+}
 
 StateIndex StateSpace::get_state_index(State state) const { return m_state_to_index.at(state); }
 
@@ -280,18 +281,14 @@ bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_stat
 /* Transitions */
 const ConcreteTransitionList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
 
-ForwardEdgeIterator<ConcreteTransition> StateSpace::get_forward_transitions(StateIndex source) const { return m_graph.get_forward_edges(source); }
-
-BackwardEdgeIterator<ConcreteTransition> StateSpace::get_backward_transitions(StateIndex target) const { return m_graph.get_backward_edges(target); }
-
-ForwardEdgeIndexIterator<ConcreteTransition> StateSpace::get_forward_transition_indices(StateIndex source) const
+EdgeIterator<ConcreteTransition> StateSpace::get_adjacent_transitions(StateIndex state, bool forward) const
 {
-    return m_graph.get_forward_edge_indices(source);
+    return m_graph.get_adjacent_edges(state, forward);
 }
 
-BackwardEdgeIndexIterator<ConcreteTransition> StateSpace::get_backward_transition_indices(StateIndex target) const
+EdgeIndexIterator<ConcreteTransition> StateSpace::get_adjacent_transition_indices(StateIndex state, bool forward) const
 {
-    return m_graph.get_backward_edge_indices(target);
+    return m_graph.get_adjacent_edge_indices(state, forward);
 }
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const

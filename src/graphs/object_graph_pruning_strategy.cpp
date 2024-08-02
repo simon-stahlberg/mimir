@@ -296,7 +296,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         for (const auto& [group_index, state_index] : group)
         {
-            for (const auto& transition : state_space->get_graph().get_forward_edges(state_index))
+            for (const auto& transition : state_space->get_graph().get_adjacent_edges(state_index, true))
             {
                 const auto& precondition = StripsActionPrecondition(transition.get_creating_action().get_strips_precondition());
                 mark_objects_as_not_prunable(
