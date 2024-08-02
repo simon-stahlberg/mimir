@@ -57,8 +57,16 @@ public:
 };
 
 using Digraph = Graph<DigraphVertex, DigraphEdge>;
+using ForwardDigraph = ForwardGraph<Graph<DigraphVertex, DigraphEdge>>;
+using BidirectionalDigraph = BidirectionalGraph<Graph<DigraphVertex, DigraphEdge>>;
+
+static_assert(IsConstructibleGraph<Digraph>);
+static_assert(!IsConstructibleGraph<ForwardDigraph>);
+static_assert(!IsConstructibleGraph<BidirectionalDigraph>);
 
 static_assert(IsGraph<Digraph>);
+static_assert(IsGraph<ForwardDigraph>);
+static_assert(IsGraph<BidirectionalDigraph>);
 
 /**
  * Pretty printing

@@ -31,83 +31,85 @@ class TargetVertexIterator
 {
 private:
     VertexIndex m_source;
-    std::span<const Vertex> m_vertices;
-    std::span<const Edge> m_edges;
+    std::reference_wrapper<const std::vector<Vertex>> m_vertices;
+    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    std::span<const EdgeIndex> m_slice;
 
 public:
-    TargetVertexIterator(VertexIndex source, std::span<const Vertex> vertices, std::span<const Edge> edges);
+    TargetVertexIterator(VertexIndex source, const std::vector<Vertex>& vertices, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     class const_iterator
     {
     private:
-        VertexIndex m_source;
         size_t m_pos;
-        std::span<const Vertex> m_vertices;
-        std::span<const Edge> m_edges;
+        VertexIndex m_source;
+        std::reference_wrapper<const std::vector<Vertex>> m_vertices;
+        std::reference_wrapper<const std::vector<Edge>> m_edges;
+        std::span<const EdgeIndex> m_slice;
 
         void advance();
 
     public:
-        using difference_type = int;
+        using difference_type = std::ptrdiff_t;
         using value_type = const Vertex;
         using pointer = value_type*;
         using reference = value_type&;
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(VertexIndex source, std::span<const Vertex> vertices, std::span<const Edge> edges, bool begin);
-        [[nodiscard]] reference operator*() const;
+        const_iterator(VertexIndex source, const std::vector<Vertex>& vertices, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin);
+        reference operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
-
-// static_assert(std::ranges::forward_range<TargetVertexIterator<Edge>>);
 
 template<IsVertex Vertex, IsEdge Edge>
 class SourceVertexIterator
 {
 private:
     VertexIndex m_target;
-    std::span<const Vertex> m_vertices;
-    std::span<const Edge> m_edges;
+    std::reference_wrapper<const std::vector<Vertex>> m_vertices;
+    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    std::span<const EdgeIndex> m_slice;
 
 public:
-    SourceVertexIterator(VertexIndex target, std::span<const Vertex> vertices, std::span<const Edge> edges);
+    SourceVertexIterator(VertexIndex target, const std::vector<Vertex>& vertices, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     class const_iterator
     {
     private:
-        VertexIndex m_target;
         size_t m_pos;
-        std::span<const Vertex> m_vertices;
-        std::span<const Edge> m_edges;
+        VertexIndex m_target;
+        std::reference_wrapper<const std::vector<Vertex>> m_vertices;
+        std::reference_wrapper<const std::vector<Edge>> m_edges;
+        std::span<const EdgeIndex> m_slice;
 
         void advance();
 
     public:
-        using difference_type = int;
+        using difference_type = std::ptrdiff_t;
         using value_type = const Vertex;
         using pointer = value_type*;
         using reference = value_type&;
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(VertexIndex target, std::span<const Vertex> vertices, std::span<const Edge> edges, bool begin);
-        [[nodiscard]] reference operator*() const;
+        const_iterator(VertexIndex target, const std::vector<Vertex>& vertices, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin);
+        reference operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
 template<IsEdge Edge>
@@ -115,82 +117,164 @@ class ForwardEdgeIterator
 {
 private:
     VertexIndex m_source;
-    std::span<const Edge> m_edges;
+    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    std::span<const EdgeIndex> m_slice;
 
 public:
-    ForwardEdgeIterator(VertexIndex source, std::span<const Edge> edges);
+    ForwardEdgeIterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     class const_iterator
     {
     private:
-        VertexIndex m_source;
         size_t m_pos;
-        std::span<const Edge> m_edges;
+        VertexIndex m_source;
+        std::reference_wrapper<const std::vector<Edge>> m_edges;
+        std::span<const EdgeIndex> m_slice;
 
         void advance();
 
     public:
-        using difference_type = int;
+        using difference_type = std::ptrdiff_t;
         using value_type = const Edge;
         using pointer = value_type*;
         using reference = value_type&;
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(VertexIndex source, std::span<const Edge> edges, bool begin);
-        [[nodiscard]] reference operator*() const;
+        const_iterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin);
+        reference operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
-// static_assert(std::ranges::forward_range<ForwardEdgeIterator<Edge>>);
+template<IsEdge Edge>
+class ForwardEdgeIndexIterator
+{
+private:
+    VertexIndex m_source;
+    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    std::span<const EdgeIndex> m_slice;
+
+public:
+    ForwardEdgeIndexIterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
+
+    class const_iterator
+    {
+    private:
+        size_t m_pos;
+        VertexIndex m_source;
+        std::reference_wrapper<const std::vector<Edge>> m_edges;
+        std::span<const EdgeIndex> m_slice;
+
+        void advance();
+
+    public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = EdgeIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin);
+        value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin() const;
+    const_iterator end() const;
+};
 
 template<IsEdge Edge>
 class BackwardEdgeIterator
 {
 private:
     VertexIndex m_target;
-    std::span<const Edge> m_edges;
+    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    std::span<const EdgeIndex> m_slice;
 
 public:
-    BackwardEdgeIterator(VertexIndex target, std::span<const Edge> edges);
+    BackwardEdgeIterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     class const_iterator
     {
     private:
-        VertexIndex m_target;
         size_t m_pos;
-        std::span<const Edge> m_edges;
+        VertexIndex m_target;
+        std::reference_wrapper<const std::vector<Edge>> m_edges;
+        std::span<const EdgeIndex> m_slice;
 
         void advance();
 
     public:
-        using difference_type = int;
+        using difference_type = std::ptrdiff_t;
         using value_type = const Edge;
         using pointer = value_type*;
         using reference = value_type&;
         using iterator_category = std::forward_iterator_tag;
 
         const_iterator();
-        const_iterator(VertexIndex target, std::span<const Edge> edges, bool begin);
-        [[nodiscard]] reference operator*() const;
+        const_iterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin);
+        reference operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
-    [[nodiscard]] const_iterator begin() const;
-    [[nodiscard]] const_iterator end() const;
+    const_iterator begin() const;
+    const_iterator end() const;
 };
 
-// static_assert(std::ranges::forward_range<BackwardEdgeIterator<Edge>>);
+template<IsEdge Edge>
+class BackwardEdgeIndexIterator
+{
+private:
+    VertexIndex m_target;
+    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    std::span<const EdgeIndex> m_slice;
+
+public:
+    BackwardEdgeIndexIterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
+
+    class const_iterator
+    {
+    private:
+        size_t m_pos;
+        VertexIndex m_target;
+        std::reference_wrapper<const std::vector<Edge>> m_edges;
+        std::span<const EdgeIndex> m_slice;
+
+        void advance();
+
+    public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = EdgeIndex;
+        using pointer = value_type*;
+        using reference = value_type&;
+        using iterator_category = std::forward_iterator_tag;
+
+        const_iterator();
+        const_iterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin);
+        value_type operator*() const;
+        const_iterator& operator++();
+        const_iterator operator++(int);
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
+    };
+
+    const_iterator begin() const;
+    const_iterator end() const;
+};
 
 /**
  * Implementations
@@ -199,21 +283,21 @@ public:
 /* TargetVertexIterator */
 
 template<IsVertex Vertex, IsEdge Edge>
-TargetVertexIterator<Vertex, Edge>::TargetVertexIterator(VertexIndex source, std::span<const Vertex> vertices, std::span<const Edge> edges) :
+TargetVertexIterator<Vertex, Edge>::TargetVertexIterator(VertexIndex source,
+                                                         const std::vector<Vertex>& vertices,
+                                                         const std::vector<Edge>& edges,
+                                                         std::span<const EdgeIndex> slice) :
     m_source(source),
     m_vertices(vertices),
-    m_edges(edges)
+    m_edges(edges),
+    m_slice(slice)
 {
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 void TargetVertexIterator<Vertex, Edge>::const_iterator::advance()
 {
-    do
-    {
-        // Always advance 1 before the first loop termination check.
-        ++m_pos;
-    } while (m_pos < m_edges.size() && m_edges[m_pos].get_source() != m_source);
+    ++m_pos;
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -223,26 +307,25 @@ TargetVertexIterator<Vertex, Edge>::const_iterator::const_iterator()
 
 template<IsVertex Vertex, IsEdge Edge>
 TargetVertexIterator<Vertex, Edge>::const_iterator::const_iterator(VertexIndex source,
-                                                                   std::span<const Vertex> vertices,
-                                                                   std::span<const Edge> edges,
+                                                                   const std::vector<Vertex>& vertices,
+                                                                   const std::vector<Edge>& edges,
+                                                                   std::span<const EdgeIndex> slice,
                                                                    bool begin) :
+    m_pos(begin ? 0 : slice.size()),
     m_source(source),
-    m_pos(begin ? 0 : edges.size()),
     m_vertices(vertices),
-    m_edges(edges)
+    m_edges(edges),
+    m_slice(slice)
 {
-    if (begin && m_edges.size() > 0 && m_edges[0].get_source() != m_source)
-    {
-        advance();
-    }
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 TargetVertexIterator<Vertex, Edge>::const_iterator::reference TargetVertexIterator<Vertex, Edge>::const_iterator::operator*() const
 {
-    assert(m_pos < m_edges.size());
-    assert(m_edges[m_pos].get_target() < m_vertices.size());
-    return m_vertices[m_edges[m_pos].get_target()];
+    assert(m_pos < m_slice.size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_target() < m_vertices.get().size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_source() == m_source);
+    return m_vertices.get().at(m_edges.get().at(m_slice[m_pos]).get_target());
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -275,33 +358,33 @@ bool TargetVertexIterator<Vertex, Edge>::const_iterator::operator!=(const const_
 template<IsVertex Vertex, IsEdge Edge>
 TargetVertexIterator<Vertex, Edge>::const_iterator TargetVertexIterator<Vertex, Edge>::begin() const
 {
-    return const_iterator(m_source, m_vertices, m_edges, true);
+    return const_iterator(m_source, m_vertices, m_edges, m_slice, true);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 TargetVertexIterator<Vertex, Edge>::const_iterator TargetVertexIterator<Vertex, Edge>::end() const
 {
-    return const_iterator(m_source, m_vertices, m_edges, false);
+    return const_iterator(m_source, m_vertices, m_edges, m_slice, false);
 }
 
-/* SourceStateIndexIterator */
+/* SourceVertexIterator */
 
 template<IsVertex Vertex, IsEdge Edge>
-SourceVertexIterator<Vertex, Edge>::SourceVertexIterator(VertexIndex target, std::span<const Vertex> vertices, std::span<const Edge> edges) :
+SourceVertexIterator<Vertex, Edge>::SourceVertexIterator(VertexIndex target,
+                                                         const std::vector<Vertex>& vertices,
+                                                         const std::vector<Edge>& edges,
+                                                         std::span<const EdgeIndex> slice) :
     m_target(target),
     m_vertices(vertices),
-    m_edges(edges)
+    m_edges(edges),
+    m_slice(slice)
 {
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 void SourceVertexIterator<Vertex, Edge>::const_iterator::advance()
 {
-    do
-    {
-        // Always advance 1 before the first loop termination check.
-        ++m_pos;
-    } while (m_pos < m_edges.size() && m_edges[m_pos].get_target() != m_target);
+    ++m_pos;
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -311,26 +394,25 @@ SourceVertexIterator<Vertex, Edge>::const_iterator::const_iterator()
 
 template<IsVertex Vertex, IsEdge Edge>
 SourceVertexIterator<Vertex, Edge>::const_iterator::const_iterator(VertexIndex target,
-                                                                   std::span<const Vertex> vertices,
-                                                                   std::span<const Edge> edges,
+                                                                   const std::vector<Vertex>& vertices,
+                                                                   const std::vector<Edge>& edges,
+                                                                   std::span<const EdgeIndex> slice,
                                                                    bool begin) :
+    m_pos(begin ? 0 : slice.size()),
     m_target(target),
-    m_pos(begin ? 0 : edges.size()),
     m_vertices(vertices),
-    m_edges(edges)
+    m_edges(edges),
+    m_slice(slice)
 {
-    if (begin && m_edges.size() > 0 && m_edges[0].get_target() != m_target)
-    {
-        advance();
-    }
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 SourceVertexIterator<Vertex, Edge>::const_iterator::reference SourceVertexIterator<Vertex, Edge>::const_iterator::operator*() const
 {
-    assert(m_pos < m_edges.size());
-    assert(m_edges[m_pos].get_source() < m_vertices.size());
-    return m_vertices[m_edges[m_pos].get_source()];
+    assert(m_pos < m_slice.size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_source() < m_vertices.get().size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_target() == m_target);
+    return m_vertices.get().at(m_edges.get().at(m_slice[m_pos]).get_source());
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -363,30 +445,29 @@ bool SourceVertexIterator<Vertex, Edge>::const_iterator::operator!=(const const_
 template<IsVertex Vertex, IsEdge Edge>
 SourceVertexIterator<Vertex, Edge>::const_iterator SourceVertexIterator<Vertex, Edge>::begin() const
 {
-    return const_iterator(m_target, m_vertices, m_edges, true);
+    return const_iterator(m_target, m_vertices, m_edges, m_slice, true);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 SourceVertexIterator<Vertex, Edge>::const_iterator SourceVertexIterator<Vertex, Edge>::end() const
 {
-    return const_iterator(m_target, m_vertices, m_edges, false);
+    return const_iterator(m_target, m_vertices, m_edges, m_slice, false);
 }
 
 /* ForwardEdgeIterator */
 
 template<IsEdge Edge>
-ForwardEdgeIterator<Edge>::ForwardEdgeIterator(VertexIndex source, std::span<const Edge> edges) : m_source(source), m_edges(edges)
+ForwardEdgeIterator<Edge>::ForwardEdgeIterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+    m_source(source),
+    m_edges(edges),
+    m_slice(slice)
 {
 }
 
 template<IsEdge Edge>
 void ForwardEdgeIterator<Edge>::const_iterator::advance()
 {
-    do
-    {
-        // Always advance 1 before the first loop termination check.
-        ++m_pos;
-    } while (m_pos < m_edges.size() && m_edges[m_pos].get_source() != m_source);
+    ++m_pos;
 }
 
 template<IsEdge Edge>
@@ -395,22 +476,21 @@ ForwardEdgeIterator<Edge>::const_iterator::const_iterator()
 }
 
 template<IsEdge Edge>
-ForwardEdgeIterator<Edge>::const_iterator::const_iterator(VertexIndex source, std::span<const Edge> edges, bool begin) :
+ForwardEdgeIterator<Edge>::const_iterator::const_iterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin) :
+    m_pos(begin ? 0 : slice.size()),
     m_source(source),
-    m_pos(begin ? 0 : edges.size()),
-    m_edges(edges)
+    m_edges(edges),
+    m_slice(slice)
 {
-    if (begin && m_edges.size() > 0 && m_edges[0].get_source() != m_source)
-    {
-        advance();
-    }
 }
 
 template<IsEdge Edge>
 ForwardEdgeIterator<Edge>::const_iterator::reference ForwardEdgeIterator<Edge>::const_iterator::operator*() const
 {
-    assert(m_pos < m_edges.size());
-    return m_edges[m_pos];
+    assert(m_pos < m_slice.size());
+    assert(m_slice[m_pos] < m_edges.get().size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_source() == m_source);
+    return m_edges.get().at(m_slice[m_pos]);
 }
 
 template<IsEdge Edge>
@@ -443,30 +523,110 @@ bool ForwardEdgeIterator<Edge>::const_iterator::operator!=(const const_iterator&
 template<IsEdge Edge>
 ForwardEdgeIterator<Edge>::const_iterator ForwardEdgeIterator<Edge>::begin() const
 {
-    return const_iterator(m_source, m_edges, true);
+    return const_iterator(m_source, m_edges, m_slice, true);
 }
 
 template<IsEdge Edge>
 ForwardEdgeIterator<Edge>::const_iterator ForwardEdgeIterator<Edge>::end() const
 {
-    return const_iterator(m_source, m_edges, false);
+    return const_iterator(m_source, m_edges, m_slice, false);
+}
+
+/* ForwardEdgeIndexIterator */
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::ForwardEdgeIndexIterator(VertexIndex source, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+    m_source(source),
+    m_edges(edges),
+    m_slice(slice)
+{
+}
+
+template<IsEdge Edge>
+void ForwardEdgeIndexIterator<Edge>::const_iterator::advance()
+{
+    ++m_pos;
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator::const_iterator()
+{
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator::const_iterator(VertexIndex source,
+                                                               const std::vector<Edge>& edges,
+                                                               std::span<const EdgeIndex> slice,
+                                                               bool begin) :
+    m_pos(begin ? 0 : slice.size()),
+    m_source(source),
+    m_edges(edges),
+    m_slice(slice)
+{
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator::value_type ForwardEdgeIndexIterator<Edge>::const_iterator::operator*() const
+{
+    assert(m_pos < m_slice.size());
+    assert(m_slice[m_pos] < m_edges.get().size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_source() == m_source);
+    return m_edges.get().at(m_slice[m_pos]).get_index();
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator& ForwardEdgeIndexIterator<Edge>::const_iterator::operator++()
+{
+    advance();
+    return *this;
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator ForwardEdgeIndexIterator<Edge>::const_iterator::operator++(int)
+{
+    const_iterator tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+template<IsEdge Edge>
+bool ForwardEdgeIndexIterator<Edge>::const_iterator::operator==(const const_iterator& other) const
+{
+    return (m_pos == other.m_pos);
+}
+
+template<IsEdge Edge>
+bool ForwardEdgeIndexIterator<Edge>::const_iterator::operator!=(const const_iterator& other) const
+{
+    return !(*this == other);
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator ForwardEdgeIndexIterator<Edge>::begin() const
+{
+    return const_iterator(m_source, m_edges, m_slice, true);
+}
+
+template<IsEdge Edge>
+ForwardEdgeIndexIterator<Edge>::const_iterator ForwardEdgeIndexIterator<Edge>::end() const
+{
+    return const_iterator(m_source, m_edges, m_slice, false);
 }
 
 /* BackwardEdgeIterator */
 
 template<IsEdge Edge>
-BackwardEdgeIterator<Edge>::BackwardEdgeIterator(VertexIndex target, std::span<const Edge> edges) : m_target(target), m_edges(edges)
+BackwardEdgeIterator<Edge>::BackwardEdgeIterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+    m_target(target),
+    m_edges(edges),
+    m_slice(slice)
 {
 }
 
 template<IsEdge Edge>
 void BackwardEdgeIterator<Edge>::const_iterator::advance()
 {
-    do
-    {
-        // Always advance 1 before the first loop termination check.
-        ++m_pos;
-    } while (m_pos < m_edges.size() && m_edges[m_pos].get_target() != m_target);
+    ++m_pos;
 }
 
 template<IsEdge Edge>
@@ -475,22 +635,21 @@ BackwardEdgeIterator<Edge>::const_iterator::const_iterator()
 }
 
 template<IsEdge Edge>
-BackwardEdgeIterator<Edge>::const_iterator::const_iterator(VertexIndex target, std::span<const Edge> edges, bool begin) :
+BackwardEdgeIterator<Edge>::const_iterator::const_iterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice, bool begin) :
+    m_pos(begin ? 0 : slice.size()),
     m_target(target),
-    m_pos(begin ? 0 : edges.size()),
-    m_edges(edges)
+    m_edges(edges),
+    m_slice(slice)
 {
-    if (begin && m_edges.size() > 0 && m_edges[0].get_target() != m_target)
-    {
-        advance();
-    }
 }
 
 template<IsEdge Edge>
 BackwardEdgeIterator<Edge>::const_iterator::reference BackwardEdgeIterator<Edge>::const_iterator::operator*() const
 {
-    assert(m_pos < m_edges.size());
-    return m_edges[m_pos];
+    assert(m_pos < m_slice.size());
+    assert(m_slice[m_pos] < m_edges.get().size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_target() == m_target);
+    return m_edges.get().at(m_slice[m_pos]);
 }
 
 template<IsEdge Edge>
@@ -523,13 +682,94 @@ bool BackwardEdgeIterator<Edge>::const_iterator::operator!=(const const_iterator
 template<IsEdge Edge>
 BackwardEdgeIterator<Edge>::const_iterator BackwardEdgeIterator<Edge>::begin() const
 {
-    return const_iterator(m_target, m_edges, true);
+    return const_iterator(m_target, m_edges, m_slice, true);
 }
 
 template<IsEdge Edge>
 BackwardEdgeIterator<Edge>::const_iterator BackwardEdgeIterator<Edge>::end() const
 {
-    return const_iterator(m_target, m_edges, false);
+    return const_iterator(m_target, m_edges, m_slice, false);
+}
+
+/* BackwardEdgeIndexIterator */
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::BackwardEdgeIndexIterator(VertexIndex target, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+    m_target(target),
+    m_edges(edges),
+    m_slice(slice)
+{
+}
+
+template<IsEdge Edge>
+void BackwardEdgeIndexIterator<Edge>::const_iterator::advance()
+{
+    ++m_pos;
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator::const_iterator()
+{
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator::const_iterator(VertexIndex target,
+                                                                const std::vector<Edge>& edges,
+                                                                std::span<const EdgeIndex> slice,
+                                                                bool begin) :
+    m_pos(begin ? 0 : slice.size()),
+    m_target(target),
+    m_edges(edges),
+    m_slice(slice)
+{
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator::value_type BackwardEdgeIndexIterator<Edge>::const_iterator::operator*() const
+{
+    assert(m_pos < m_slice.size());
+    assert(m_slice[m_pos] < m_edges.get().size());
+    assert(m_edges.get().at(m_slice[m_pos]).get_target() == m_target);
+    return m_edges.get().at(m_slice[m_pos]).get_index();
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator& BackwardEdgeIndexIterator<Edge>::const_iterator::operator++()
+{
+    advance();
+    return *this;
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator BackwardEdgeIndexIterator<Edge>::const_iterator::operator++(int)
+{
+    const_iterator tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+template<IsEdge Edge>
+bool BackwardEdgeIndexIterator<Edge>::const_iterator::operator==(const const_iterator& other) const
+{
+    return (m_pos == other.m_pos);
+}
+
+template<IsEdge Edge>
+bool BackwardEdgeIndexIterator<Edge>::const_iterator::operator!=(const const_iterator& other) const
+{
+    return !(*this == other);
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator BackwardEdgeIndexIterator<Edge>::begin() const
+{
+    return const_iterator(m_target, m_edges, m_slice, true);
+}
+
+template<IsEdge Edge>
+BackwardEdgeIndexIterator<Edge>::const_iterator BackwardEdgeIndexIterator<Edge>::end() const
+{
+    return const_iterator(m_target, m_edges, m_slice, false);
 }
 
 }

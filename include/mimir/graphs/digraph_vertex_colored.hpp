@@ -49,8 +49,16 @@ public:
 };
 
 using VertexColoredDigraph = Graph<ColoredDigraphVertex, DigraphEdge>;
+using VertexColoredForwardDigraph = ForwardGraph<Graph<ColoredDigraphVertex, DigraphEdge>>;
+using VertexColoredBidirectionalDigraph = BidirectionalGraph<Graph<ColoredDigraphVertex, DigraphEdge>>;
+
+static_assert(IsConstructibleGraph<VertexColoredDigraph>);
+static_assert(!IsConstructibleGraph<VertexColoredForwardDigraph>);
+static_assert(!IsConstructibleGraph<VertexColoredBidirectionalDigraph>);
 
 static_assert(IsGraph<VertexColoredDigraph>);
+static_assert(IsGraph<VertexColoredForwardDigraph>);
+static_assert(IsGraph<VertexColoredBidirectionalDigraph>);
 
 /**
  * Utils

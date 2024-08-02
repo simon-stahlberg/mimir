@@ -31,45 +31,59 @@ namespace mimir
 {
 
 template<typename T>
-concept IsGraph = requires(T a, VertexIndex vertex_index) {
+concept IsGraph = requires(T a, VertexIndex vertex_index)
+{
     typename T::VertexType;
     requires IsVertex<typename T::VertexType>;
     typename T::EdgeType;
     requires IsEdge<typename T::EdgeType>;
-    {
-        a.add_vertex()
-    } -> std::same_as<VertexIndex>;
-    {
-        a.add_directed_edge(vertex_index, vertex_index)
-    } -> std::same_as<EdgeIndex>;
-    {
-        a.add_undirected_edge(vertex_index, vertex_index)
-    } -> std::same_as<std::pair<EdgeIndex, EdgeIndex>>;
+
     {
         a.get_targets(vertex_index)
-    } -> std::same_as<TargetVertexIterator<typename T::VertexType, typename T::EdgeType>>;
+        } -> std::same_as<TargetVertexIterator<typename T::VertexType, typename T::EdgeType>>;
     {
         a.get_sources(vertex_index)
-    } -> std::same_as<SourceVertexIterator<typename T::VertexType, typename T::EdgeType>>;
+        } -> std::same_as<SourceVertexIterator<typename T::VertexType, typename T::EdgeType>>;
     {
         a.get_forward_edges(vertex_index)
-    } -> std::same_as<ForwardEdgeIterator<typename T::EdgeType>>;
+        } -> std::same_as<ForwardEdgeIterator<typename T::EdgeType>>;
     {
         a.get_backward_edges(vertex_index)
-    } -> std::same_as<BackwardEdgeIterator<typename T::EdgeType>>;
+        } -> std::same_as<BackwardEdgeIterator<typename T::EdgeType>>;
+    {
+        a.get_forward_edge_indices(vertex_index)
+        } -> std::same_as<ForwardEdgeIndexIterator<typename T::EdgeType>>;
+    {
+        a.get_backward_edge_indices(vertex_index)
+        } -> std::same_as<BackwardEdgeIndexIterator<typename T::EdgeType>>;
     {
         a.get_vertices()
-    } -> std::same_as<const std::vector<typename T::VertexType>&>;
+        } -> std::same_as<const std::vector<typename T::VertexType>&>;
     {
         a.get_edges()
-    } -> std::same_as<const std::vector<typename T::EdgeType>&>;
+        } -> std::same_as<const std::vector<typename T::EdgeType>&>;
     {
         a.get_num_vertices()
-    } -> std::same_as<size_t>;
+        } -> std::same_as<size_t>;
     {
         a.get_num_edges()
-    } -> std::same_as<size_t>;
+        } -> std::same_as<size_t>;
 };
+
+template<typename T>
+concept IsConstructibleGraph = requires(T a, VertexIndex vertex_index)
+{
+    {
+        a.add_vertex()
+        } -> std::same_as<VertexIndex>;
+    {
+        a.add_directed_edge(vertex_index, vertex_index)
+        } -> std::same_as<EdgeIndex>;
+    {
+        a.add_undirected_edge(vertex_index, vertex_index)
+        } -> std::same_as<std::pair<EdgeIndex, EdgeIndex>>;
+};
+
 }
 
 #endif
