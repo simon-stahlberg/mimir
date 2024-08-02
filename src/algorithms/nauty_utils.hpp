@@ -19,7 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_UTILS_HPP_
 
 #include "mimir/common/printers.hpp"
-#include "mimir/graphs/color.hpp"
+#include "mimir/graphs/declarations.hpp"
 
 #include <algorithm>
 #include <cassert>

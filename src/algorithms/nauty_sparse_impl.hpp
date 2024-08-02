@@ -19,7 +19,8 @@
 #define SRC_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 
 // Only include nauty_sparse_impl.hpp in a source file to avoid transitive includes of nauty.h.
-#include <mimir/graphs/color.hpp>
+#include "mimir/graphs/declarations.hpp"
+
 #include <nausparse.h>
 #include <nauty.h>
 #include <sstream>

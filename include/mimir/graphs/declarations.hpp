@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
 #include <cstdint>
+#include <vector>
 
 namespace mimir
 {
@@ -26,6 +27,9 @@ namespace mimir
 using VertexIndex = uint32_t;
 using EdgeIndex = uint32_t;
 using EdgeCost = double;
+
+using Color = uint32_t;
+using ColorList = std::vector<Color>;
 
 }
 

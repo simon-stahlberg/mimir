@@ -31,7 +31,7 @@ namespace mimir
 {
 
 template<typename T>
-concept IsGraph = requires(T a, VertexIndex vertex_index)
+concept IsGraph = requires(T a, VertexIndex vertex, bool forward)
 {
     typename T::VertexType;
     requires IsVertex<typename T::VertexType>;
@@ -39,22 +39,19 @@ concept IsGraph = requires(T a, VertexIndex vertex_index)
     requires IsEdge<typename T::EdgeType>;
 
     {
-        a.get_targets(vertex_index)
-        } -> std::same_as<TargetVertexIterator<typename T::VertexType, typename T::EdgeType>>;
+        a.get_adjacent_vertices(vertex, forward)
+        } -> std::same_as<VertexIterator<typename T::VertexType, typename T::EdgeType>>;
     {
-        a.get_sources(vertex_index)
-        } -> std::same_as<SourceVertexIterator<typename T::VertexType, typename T::EdgeType>>;
-    {
-        a.get_forward_edges(vertex_index)
+        a.get_forward_edges(vertex)
         } -> std::same_as<ForwardEdgeIterator<typename T::EdgeType>>;
     {
-        a.get_backward_edges(vertex_index)
+        a.get_backward_edges(vertex)
         } -> std::same_as<BackwardEdgeIterator<typename T::EdgeType>>;
     {
-        a.get_forward_edge_indices(vertex_index)
+        a.get_forward_edge_indices(vertex)
         } -> std::same_as<ForwardEdgeIndexIterator<typename T::EdgeType>>;
     {
-        a.get_backward_edge_indices(vertex_index)
+        a.get_backward_edge_indices(vertex)
         } -> std::same_as<BackwardEdgeIndexIterator<typename T::EdgeType>>;
     {
         a.get_vertices()
@@ -71,16 +68,16 @@ concept IsGraph = requires(T a, VertexIndex vertex_index)
 };
 
 template<typename T>
-concept IsConstructibleGraph = requires(T a, VertexIndex vertex_index)
+concept IsConstructibleGraph = requires(T a, VertexIndex vertex)
 {
     {
         a.add_vertex()
         } -> std::same_as<VertexIndex>;
     {
-        a.add_directed_edge(vertex_index, vertex_index)
+        a.add_directed_edge(vertex, vertex)
         } -> std::same_as<EdgeIndex>;
     {
-        a.add_undirected_edge(vertex_index, vertex_index)
+        a.add_undirected_edge(vertex, vertex)
         } -> std::same_as<std::pair<EdgeIndex, EdgeIndex>>;
 };
 

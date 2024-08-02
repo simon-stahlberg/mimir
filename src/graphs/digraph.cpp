@@ -48,7 +48,7 @@ bool DigraphEdge::operator==(const DigraphEdge& other) const
     return true;
 }
 
-size_t DigraphEdge::hash() const { return loki::hash_combine(m_source, m_target); }
+size_t DigraphEdge::hash() const { return loki::hash_combine(m_index, m_source, m_target); }
 
 EdgeIndex DigraphEdge::get_index() const { return m_index; }
 
@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& out, const Digraph& digraph)
     }
     for (const auto& vertex : digraph.get_vertices())
     {
-        for (const auto& succ_vertex : digraph.get_targets(vertex.get_index()))
+        for (const auto& succ_vertex : digraph.get_adjacent_vertices(vertex.get_index(), true))
         {
             out << "t" << vertex.get_index() << "->"
                 << "t" << succ_vertex.get_index() << "\n";

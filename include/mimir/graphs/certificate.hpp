@@ -18,7 +18,7 @@
 #ifndef MIMIR_GRAPHS_CERTIFICATE_HPP_
 #define MIMIR_GRAPHS_CERTIFICATE_HPP_
 
-#include "mimir/graphs/color.hpp"
+#include "mimir/graphs/declarations.hpp"
 
 #include <loki/loki.hpp>
 #include <string>

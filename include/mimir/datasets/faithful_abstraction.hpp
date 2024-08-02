@@ -219,8 +219,7 @@ public:
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
-    TargetVertexIterator<FaithfulAbstractState, AbstractTransition> get_target_states(StateIndex source) const;
-    SourceVertexIterator<FaithfulAbstractState, AbstractTransition> get_source_states(StateIndex target) const;
+    VertexIterator<FaithfulAbstractState, AbstractTransition> get_adjacent_states(StateIndex state, bool forward = true) const;
     TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const;
     SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;

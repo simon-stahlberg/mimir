@@ -18,7 +18,7 @@
 #ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
-#include "mimir/graphs/color.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <memory>

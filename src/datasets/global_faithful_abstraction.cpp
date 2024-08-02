@@ -244,14 +244,9 @@ const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& Glob
 /* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
 
-TargetVertexIterator<FaithfulAbstractState, AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex source) const
+VertexIterator<FaithfulAbstractState, AbstractTransition> GlobalFaithfulAbstraction::get_adjacent_states(StateIndex state, bool forward) const
 {
-    return get_graph().get_targets(source);
-}
-
-SourceVertexIterator<FaithfulAbstractState, AbstractTransition> GlobalFaithfulAbstraction::get_source_states(StateIndex target) const
-{
-    return get_graph().get_sources(target);
+    return get_graph().get_adjacent_vertices(state, forward);
 }
 
 TargetVertexIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_state_indices(StateIndex source) const

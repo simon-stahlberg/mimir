@@ -84,7 +84,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const VertexColored
     }
     for (const auto& vertex : vertex_colored_digraph.get_vertices())
     {
-        for (const auto& succ_vertex : vertex_colored_digraph.get_targets(vertex.get_index()))
+        for (const auto& succ_vertex : vertex_colored_digraph.get_adjacent_vertices(vertex.get_index(), true))
         {
             out << "t" << vertex.get_index() << "->"
                 << "t" << succ_vertex.get_index() << "\n";

@@ -171,8 +171,7 @@ public:
     // We cannot ensure that states are having an indexing scheme because
     // users might have created custom states using the successor state generator.
     const ConcreteStateList& get_states() const;
-    TargetVertexIterator<ConcreteState, ConcreteTransition> get_target_states(StateIndex source) const;
-    SourceVertexIterator<ConcreteState, ConcreteTransition> get_source_states(StateIndex target) const;
+    VertexIterator<ConcreteState, ConcreteTransition> get_adjacent_states(StateIndex source, bool forward = true) const;
     TargetVertexIndexIterator<ConcreteTransition> get_target_state_indices(StateIndex source) const;
     SourceVertexIndexIterator<ConcreteTransition> get_source_state_indices(StateIndex target) const;
     StateIndex get_state_index(State state) const;

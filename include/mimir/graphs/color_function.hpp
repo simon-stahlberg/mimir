@@ -19,7 +19,7 @@
 #define MIMIR_GRAPHS_COLOR_FUNCTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/graphs/color.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/search/state.hpp"
 
 #include <unordered_map>

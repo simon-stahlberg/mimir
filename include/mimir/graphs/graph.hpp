@@ -82,8 +82,8 @@ public:
      * Iterators
      */
 
-    TargetVertexIterator<Vertex, Edge> get_targets(VertexIndex source) const;
-    SourceVertexIterator<Vertex, Edge> get_sources(VertexIndex target) const;
+    VertexIterator<Vertex, Edge> get_adjacent_vertices(VertexIndex vertex, bool forward = true) const;
+
     TargetVertexIndexIterator<Edge> get_target_indices(VertexIndex source) const;
     SourceVertexIndexIterator<Edge> get_source_indices(VertexIndex target) const;
     ForwardEdgeIterator<Edge> get_forward_edges(VertexIndex source) const;
@@ -125,8 +125,8 @@ public:
      * Iterators
      */
 
-    TargetVertexIterator<VertexType, EdgeType> get_targets(VertexIndex source) const;
-    SourceVertexIterator<VertexType, EdgeType> get_sources(VertexIndex target) const;
+    VertexIterator<VertexType, EdgeType> get_adjacent_vertices(VertexIndex vertex, bool forward = true) const;
+
     TargetVertexIndexIterator<EdgeType> get_target_indices(VertexIndex source) const;
     SourceVertexIndexIterator<EdgeType> get_source_indices(VertexIndex target) const;
     ForwardEdgeIterator<EdgeType> get_forward_edges(VertexIndex source) const;
@@ -169,8 +169,8 @@ public:
      * Iterators
      */
 
-    TargetVertexIterator<VertexType, EdgeType> get_targets(VertexIndex source) const;
-    SourceVertexIterator<VertexType, EdgeType> get_sources(VertexIndex target) const;
+    VertexIterator<VertexType, EdgeType> get_adjacent_vertices(VertexIndex vertex, bool forward = true) const;
+
     TargetVertexIndexIterator<EdgeType> get_target_indices(VertexIndex source) const;
     SourceVertexIndexIterator<EdgeType> get_source_indices(VertexIndex target) const;
     ForwardEdgeIterator<EdgeType> get_forward_edges(VertexIndex source) const;
@@ -243,15 +243,9 @@ void Graph<Vertex, Edge>::reset()
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-TargetVertexIterator<Vertex, Edge> Graph<Vertex, Edge>::get_targets(VertexIndex source) const
+VertexIterator<Vertex, Edge> Graph<Vertex, Edge>::get_adjacent_vertices(VertexIndex source, bool forward) const
 {
-    return TargetVertexIterator<Vertex, Edge>(source, m_vertices, m_edges, m_slice);
-}
-
-template<IsVertex Vertex, IsEdge Edge>
-SourceVertexIterator<Vertex, Edge> Graph<Vertex, Edge>::get_sources(VertexIndex target) const
-{
-    return SourceVertexIterator<Vertex, Edge>(target, m_vertices, m_edges, m_slice);
+    return VertexIterator<Vertex, Edge>(source, m_vertices, m_edges, m_slice, forward);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -358,18 +352,21 @@ ForwardGraph<G>::ForwardGraph(G graph) : m_graph(std::move(graph)), m_edge_indic
 }
 
 template<IsGraph G>
-TargetVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_targets(VertexIndex source) const
+VertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex,
+                                                                                                                                bool forward) const
 {
-    return TargetVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType>(source,
-                                                                                                          m_graph.get_vertices(),
-                                                                                                          m_graph.get_edges(),
-                                                                                                          m_edge_indices_grouped_by_source.at(source));
-}
-
-template<IsGraph G>
-SourceVertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_sources(VertexIndex target) const
-{
-    return m_graph.get_sources(target);
+    if (forward)
+    {
+        return VertexIterator<typename ForwardGraph<G>::VertexType, typename ForwardGraph<G>::EdgeType>(vertex,
+                                                                                                        m_graph.get_vertices(),
+                                                                                                        m_graph.get_edges(),
+                                                                                                        m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                        forward);
+    }
+    else
+    {
+        return m_graph.get_adjacent_vertices(vertex, forward);
+    }
 }
 
 template<IsGraph G>
@@ -446,25 +443,15 @@ BidirectionalGraph<G>::BidirectionalGraph(G graph) :
 }
 
 template<IsGraph G>
-TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>
-BidirectionalGraph<G>::get_targets(VertexIndex source) const
+VertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>
+BidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex, bool forward) const
 {
-    return TargetVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(
-        source,
+    return VertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(
+        vertex,
         m_graph.get_vertices(),
         m_graph.get_edges(),
-        m_edge_indices_grouped_by_source.at(source));
-}
-
-template<IsGraph G>
-SourceVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>
-BidirectionalGraph<G>::get_sources(VertexIndex target) const
-{
-    return SourceVertexIterator<typename BidirectionalGraph<G>::VertexType, typename BidirectionalGraph<G>::EdgeType>(
-        target,
-        m_graph.get_vertices(),
-        m_graph.get_edges(),
-        m_edge_indices_grouped_by_target.at(target));
+        (forward) ? m_edge_indices_grouped_by_source.at(vertex) : m_edge_indices_grouped_by_target.at(vertex),
+        forward);
 }
 
 template<IsGraph G>

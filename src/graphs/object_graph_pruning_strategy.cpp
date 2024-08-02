@@ -362,7 +362,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         if (visited_components.at(scc))
         {
             scc_stack.pop();
-            for (const auto& succ_scc : scc_digraph.get_targets(scc))
+            for (const auto& succ_scc : scc_digraph.get_adjacent_vertices(scc, true))
             {
                 pruning_components.at(scc) &= pruning_components.at(succ_scc.get_index());
             }
@@ -370,7 +370,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         }
         visited_components.at(scc) = true;
 
-        for (const auto& succ_scc : scc_digraph.get_targets(scc))
+        for (const auto& succ_scc : scc_digraph.get_adjacent_vertices(scc, true))
         {
             if (!visited_components.at(succ_scc.get_index()))
             {

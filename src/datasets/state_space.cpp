@@ -248,9 +248,10 @@ const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& StateSpace::
 /* States */
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
-TargetVertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_target_states(StateIndex source) const { return m_graph.get_targets(source); }
-
-SourceVertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_source_states(StateIndex target) const { return m_graph.get_sources(target); }
+VertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_adjacent_states(StateIndex state, bool forward) const
+{
+    return m_graph.get_adjacent_vertices(state, forward);
+}
 
 TargetVertexIndexIterator<ConcreteTransition> StateSpace::get_target_state_indices(StateIndex source) const { return m_graph.get_target_indices(source); }
 
