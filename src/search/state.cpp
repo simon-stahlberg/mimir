@@ -49,7 +49,7 @@ bool FlatStateEqual::operator()(FlatState view_left, FlatState view_right) const
 FlatStateBuilder& StateBuilder::get_flatmemory_builder() { return m_builder; }
 const FlatStateBuilder& StateBuilder::get_flatmemory_builder() const { return m_builder; }
 
-StateId& StateBuilder::get_id() { return m_builder.get<0>(); }
+StateIndex& StateBuilder::get_id() { return m_builder.get<0>(); }
 
 template<DynamicPredicateCategory P>
 FlatBitsetBuilder<P>& StateBuilder::get_atoms()
@@ -79,7 +79,7 @@ bool State::operator==(State other) const { return m_view.buffer() == other.m_vi
 
 size_t State::hash() const { return loki::hash_combine(m_view.buffer()); }
 
-StateId State::get_id() const { return m_view.get<0>(); }
+StateIndex State::get_id() const { return m_view.get<0>(); }
 
 template<DynamicPredicateCategory P>
 bool State::contains(GroundAtom<P> atom) const

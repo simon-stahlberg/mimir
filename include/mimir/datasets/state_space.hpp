@@ -19,14 +19,15 @@
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/datasets/iterators.hpp"
-#include "mimir/datasets/transition_system_interface.hpp"
-#include "mimir/datasets/transitions.hpp"
+#include "mimir/datasets/concrete_state.hpp"
+#include "mimir/datasets/concrete_transition.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
+#include "mimir/graphs/graph.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/successor_state_generator.hpp"
 
@@ -70,16 +71,11 @@ private:
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     /* States */
-    // Note that state.get_id() does not yield the index within the state_space.
-    // Use state_space.get_state_index(state) instead.
-    StateList m_states;
+    BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>> m_graph;
     StateMap<StateIndex> m_state_to_index;
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
     StateIndexSet m_deadend_states;
-
-    /* Transitions */
-    IndexGroupedVector<const Transition> m_transitions;
 
     /* Distances */
     std::vector<double> m_goal_distances;
@@ -96,17 +92,16 @@ private:
                std::shared_ptr<PDDLFactories> pddl_factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
-               StateList states,
+               BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>> graph,
                StateMap<StateIndex> state_to_index,
                StateIndex initial_state,
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
-               IndexGroupedVector<const Transition> transitions,
                std::vector<double> goal_distances);
 
 public:
     using StateType = State;
-    using TransitionType = Transition;
+    using TransitionType = ConcreteTransition;
 
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.
     /// @param problem The problem from which to create the state space.
@@ -169,16 +164,17 @@ public:
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
+    /* Graph */
+    const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& get_graph() const;
+
     /* States */
     // We cannot ensure that states are having an indexing scheme because
     // users might have created custom states using the successor state generator.
-    const StateList& get_states() const;
+    const ConcreteStateList& get_states() const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    TargetStateIndexIterator<Transition> get_target_states(StateIndex source) const;
-    SourceStateIndexIterator<Transition> get_source_states(StateIndex target) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -187,17 +183,12 @@ public:
     bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
-    const TransitionList& get_transitions() const;
+    const ConcreteTransitionList& get_transitions() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
-    ForwardTransitionIndexIterator<Transition> get_forward_transition_indices(StateIndex source) const;
-    BackwardTransitionIndexIterator<Transition> get_backward_transition_indices(StateIndex target) const;
-    ForwardTransitionIterator<Transition> get_forward_transitions(StateIndex source) const;
-    BackwardTransitionIterator<Transition> get_backward_transitions(StateIndex target) const;
     size_t get_num_transitions() const;
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const;
-    double get_goal_distance(State state) const;
     double get_max_goal_distance() const;
 
     /* Additional */
@@ -205,17 +196,54 @@ public:
     StateIndex sample_state_with_goal_distance(double goal_distance) const;
 };
 
+static_assert(IsGraph<BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>>);
+
 using StateSpaceList = std::vector<StateSpace>;
 
-/**
- * Static assertions
- */
-
-static_assert(IsTransitionSystem<StateSpace>);
-
 /// @brief Compute shortest distances from the given states using Dijkstra.
+template<IsVertex Vertex, IsEdge Edge>
 extern std::vector<double>
-compute_shortest_goal_distances(size_t num_total_states, const StateIndexSet& goal_states, const TransitionList& transitions, bool use_unit_cost_one = true);
+compute_shortest_goal_distances(const BidirectionalGraph<Graph<Vertex, Edge>>& graph, const StateIndexSet& goal_states, bool use_unit_cost_one = true)
+{
+    auto distances = std::vector<double>(graph.get_num_vertices(), std::numeric_limits<double>::max());
+    auto closed = std::vector<bool>(graph.get_num_vertices(), false);
+    auto priority_queue = PriorityQueue<StateIndex>();
+    for (const auto& state : goal_states)
+    {
+        distances.at(state) = 0.;
+        priority_queue.insert(0., state);
+    }
+
+    while (!priority_queue.empty())
+    {
+        const auto state_index = priority_queue.top();
+        priority_queue.pop();
+        const auto cost = distances.at(state_index);
+
+        if (closed.at(state_index))
+        {
+            continue;
+        }
+        closed.at(state_index) = true;
+
+        for (const auto& transition : graph.get_backward_edges(state_index))
+        {
+            const auto successor_state = transition.get_source();
+
+            auto succ_cost = distances.at(successor_state);
+            auto new_succ_cost = cost + ((use_unit_cost_one) ? 1. : transition.get_cost());
+
+            if (new_succ_cost < succ_cost)
+            {
+                distances.at(successor_state) = new_succ_cost;
+                // decrease priority
+                priority_queue.insert(new_succ_cost, successor_state);
+            }
+        }
+    }
+
+    return distances;
+}
 
 /**
  * Pretty printing

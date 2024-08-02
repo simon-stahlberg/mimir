@@ -17,8 +17,10 @@
 
 #include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
-#include "mimir/datasets/boost_adapter.hpp"
+#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/graphs/boost_adapter.hpp"
+#include "mimir/graphs/graph.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
@@ -150,10 +152,10 @@ static ForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std
     using StatePair = std::pair<size_t, size_t>;
     const auto state_pair_hash = [](const auto& pair) { return loki::hash_combine(pair.first, pair.second); };
     std::unordered_set<StatePair, decltype(state_pair_hash)> edges;
-    for (const auto t : state_space.get_transitions())
+    for (const auto t : state_space.get_graph().get_edges())
     {
-        const auto source = t.get_source_state();
-        const auto target = t.get_target_state();
+        const auto source = t.get_source();
+        const auto target = t.get_target();
         if (component_map.at(source) != component_map.at(target) && !edges.contains({ source, target }))
         {
             g.add_directed_edge(component_map.at(source), component_map.at(target));
@@ -218,9 +220,9 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         return std::nullopt;
     }
 
-    const auto [num_components, component_map] = strong_components(state_space.value());
+    const auto [num_components, component_map] = strong_components(state_space.value().get_graph());
     const auto scc_digraph = create_scc_digraph(num_components, component_map, state_space.value());
-    const auto partitioning = get_partitioning<StateSpace>(num_components, component_map);
+    const auto partitioning = get_partitioning<BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>>(num_components, component_map);
     auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
     pruning_components.reserve(partitioning.size());
 
@@ -244,8 +246,8 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         auto group = partitioning.at(group_index);
 
         // Reuse memory.
-        always_true_fluent_atoms = state_space->get_states().at(group.front().second).get_atoms<Fluent>();
-        always_true_derived_atoms = state_space->get_states().at(group.front().second).get_atoms<Derived>();
+        always_true_fluent_atoms = state_space->get_graph().get_vertices().at(group.front().second).get_state().get_atoms<Fluent>();
+        always_true_derived_atoms = state_space->get_graph().get_vertices().at(group.front().second).get_state().get_atoms<Derived>();
         always_false_fluent_atoms.unset_all();
         always_false_derived_atoms.unset_all();
 
@@ -255,7 +257,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         for (const auto& [group_index, state_index] : group)
         {
-            const auto& state = state_space->get_states().at(state_index);
+            const auto& state = state_space->get_graph().get_vertices().at(state_index).get_state();
             always_true_fluent_atoms &= state.get_atoms<Fluent>();
             always_true_derived_atoms &= state.get_atoms<Derived>();
             always_false_fluent_atoms -= state.get_atoms<Fluent>();
@@ -294,7 +296,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         for (const auto& [group_index, state_index] : group)
         {
-            for (const auto& transition : state_space->get_forward_transitions(state_index))
+            for (const auto& transition : state_space->get_graph().get_forward_edges(state_index))
             {
                 const auto& precondition = StripsActionPrecondition(transition.get_creating_action().get_strips_precondition());
                 mark_objects_as_not_prunable(
@@ -382,7 +384,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         auto group = partitioning.at(group_index);
         for (const auto& [group_index, state_index] : group)
         {
-            const auto& state = state_space->get_states().at(state_index);
+            [[maybe_unused]] const auto& state = state_space->get_graph().get_vertices().at(state_index).get_state();
 
             // std::cout << std::make_tuple(problem, state, std::cref(*factories)) << std::endl;
         }

@@ -15,47 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/transitions.hpp"
+#include "mimir/datasets/abstract_transition.hpp"
 
 namespace mimir
 {
-
-/**
- * Transition
- */
-
-Transition::Transition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action) :
-    m_index(index),
-    m_source_state(source_state),
-    m_target_state(target_state),
-    m_creating_action(creating_action)
-{
-}
-
-bool Transition::operator==(const Transition& other) const
-{
-    if (this != &other)
-    {
-        return (m_source_state == other.m_source_state) && (m_target_state == other.m_target_state) && (m_creating_action == other.m_creating_action);
-    }
-    return true;
-}
-
-size_t Transition::hash() const { return loki::hash_combine(m_source_state, m_target_state, m_creating_action.hash()); }
-
-TransitionIndex Transition::get_index() const { return m_index; }
-
-StateIndex Transition::get_source_state() const { return m_source_state; }
-
-StateIndex Transition::get_target_state() const { return m_target_state; }
-
-TransitionCost Transition::get_cost() const { return m_creating_action.get_cost(); }
-
-GroundAction Transition::get_creating_action() const { return m_creating_action; }
-
-/**
- * AbstractTransition
- */
 
 AbstractTransition::AbstractTransition(TransitionIndex index,
                                        StateIndex source_state,
@@ -92,9 +55,9 @@ size_t AbstractTransition::hash() const
 
 TransitionIndex AbstractTransition::get_index() const { return m_index; }
 
-StateIndex AbstractTransition::get_source_state() const { return m_source_state; }
+StateIndex AbstractTransition::get_source() const { return m_source_state; }
 
-StateIndex AbstractTransition::get_target_state() const { return m_target_state; }
+StateIndex AbstractTransition::get_target() const { return m_target_state; }
 
 TransitionCost AbstractTransition::get_cost() const
 {

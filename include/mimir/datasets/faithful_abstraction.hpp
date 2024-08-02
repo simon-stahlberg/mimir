@@ -21,9 +21,9 @@
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
-#include "mimir/datasets/abstraction_interface.hpp"
+#include "mimir/datasets/abstract_transition.hpp"
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transitions.hpp"
 #include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -104,7 +104,7 @@ private:
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     /* States */
-    FaithfulAbstractStateList m_states;
+    BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>> m_graph;
     // Persistent and sorted to store slices in the abstract states.
     std::shared_ptr<const StateList> m_concrete_states_by_abstract_state;
     StateMap<StateIndex> m_concrete_to_abstract_state;
@@ -113,7 +113,6 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Transitions */
-    IndexGroupedVector<const AbstractTransition> m_transitions;
     // Persistent and sorted to store slices in the abstract transitions.
     std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
 
@@ -133,13 +132,12 @@ private:
                         std::shared_ptr<PDDLFactories> factories,
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<SuccessorStateGenerator> ssg,
-                        FaithfulAbstractStateList states,
+                        BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>> graph,
                         std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                         StateMap<StateIndex> concrete_to_abstract_state,
                         StateIndex initial_state,
                         StateIndexSet goal_states,
                         StateIndexSet deadend_states,
-                        IndexGroupedVector<const AbstractTransition> transitions,
                         std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                         std::vector<double> goal_distances);
 
@@ -215,14 +213,15 @@ public:
     const std::shared_ptr<IAAG>& get_aag() const;
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
+    /* Graph */
+    const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
+
     /* States */
     const FaithfulAbstractStateList& get_states() const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    TargetStateIndexIterator<AbstractTransition> get_target_states(StateIndex source) const;
-    SourceStateIndexIterator<AbstractTransition> get_source_states(StateIndex target) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -233,10 +232,6 @@ public:
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
-    ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const;
-    BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const;
-    ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const;
-    BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const;
     size_t get_num_transitions() const;
 
     /* Distances */
@@ -252,7 +247,7 @@ using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
  * Static assertions
  */
 
-static_assert(IsAbstraction<FaithfulAbstraction>);
+// static_assert(IsAbstraction<FaithfulAbstraction>);
 
 /**
  * Pretty printing

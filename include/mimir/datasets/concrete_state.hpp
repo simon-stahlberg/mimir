@@ -15,30 +15,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_ABSTRACTION_INTERFACE_HPP_
-#define MIMIR_DATASETS_ABSTRACTION_INTERFACE_HPP_
+#ifndef MIMIR_DATASETS_CONCRETE_STATE_HPP_
+#define MIMIR_DATASETS_CONCRETE_STATE_HPP_
 
-#include "mimir/datasets/transition_system_interface.hpp"
 #include "mimir/search/state.hpp"
-
-#include <concepts>
-#include <memory>
 
 namespace mimir
 {
+class ConcreteState
+{
+private:
+    StateIndex m_index;
+    State m_state;
 
-using AbstractionIndex = uint32_t;
+public:
+    ConcreteState(StateIndex index, State state);
 
-/**
- * Internal concept
- */
+    bool operator==(const ConcreteState& other) const;
+    size_t hash() const;
 
-template<typename T>
-concept IsAbstraction = IsTransitionSystem<T> && requires(T a, State concrete_state) {
-    {
-        a.get_abstract_state_index(concrete_state)
-    } -> std::same_as<StateIndex>;
+    StateIndex get_index() const;
+    State get_state() const;
 };
+
+using ConcreteStateList = std::vector<ConcreteState>;
 
 }
 

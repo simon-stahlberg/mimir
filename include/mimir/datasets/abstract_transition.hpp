@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_TRANSITION_HPP_
-#define MIMIR_DATASETS_TRANSITION_HPP_
+#ifndef MIMIR_DATASETS_ABSTRACT_TRANSITION_HPP_
+#define MIMIR_DATASETS_ABSTRACT_TRANSITION_HPP_
 
-#include "mimir/datasets/transition_interface.hpp"
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
@@ -27,39 +27,6 @@
 
 namespace mimir
 {
-
-/**
- * Transition
- */
-
-class Transition
-{
-private:
-    TransitionIndex m_index;
-    StateIndex m_source_state;
-    StateIndex m_target_state;
-    GroundAction m_creating_action;
-
-public:
-    Transition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action);
-
-    bool operator==(const Transition& other) const;
-    size_t hash() const;
-
-    TransitionIndex get_index() const;
-    StateIndex get_source_state() const;
-    StateIndex get_target_state() const;
-    TransitionCost get_cost() const;
-    GroundAction get_creating_action() const;
-};
-
-using TransitionList = std::vector<Transition>;
-
-static_assert(IsTransition<Transition>);
-
-/**
- * AbstractTransition
- */
 
 class AbstractTransition
 {
@@ -76,16 +43,14 @@ public:
     size_t hash() const;
 
     TransitionIndex get_index() const;
-    StateIndex get_source_state() const;
-    StateIndex get_target_state() const;
+    StateIndex get_source() const;
+    StateIndex get_target() const;
     TransitionCost get_cost() const;
     std::span<const GroundAction> get_actions() const;
     GroundAction get_representative_action() const;
 };
 
 using AbstractTransitionList = std::vector<AbstractTransition>;
-
-static_assert(IsTransition<AbstractTransition>);
 
 }
 

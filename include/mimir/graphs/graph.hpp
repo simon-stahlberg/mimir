@@ -443,37 +443,25 @@ BidirectionalGraph<G>::get_sources(VertexIndex target) const
 template<IsGraph G>
 ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_forward_edges(VertexIndex source) const
 {
-    return ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(source,
-                                                                         m_graph.get_vertices(),
-                                                                         m_graph.get_edges(),
-                                                                         m_edge_indices_grouped_by_source.at(source));
+    return ForwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(source, m_graph.get_edges(), m_edge_indices_grouped_by_source.at(source));
 }
 
 template<IsGraph G>
 BackwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_backward_edges(VertexIndex target) const
 {
-    return BackwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(target,
-                                                                          m_graph.get_vertices(),
-                                                                          m_graph.get_edges(),
-                                                                          m_edge_indices_grouped_by_target.at(target));
+    return BackwardEdgeIterator<typename BidirectionalGraph<G>::EdgeType>(target, m_graph.get_edges(), m_edge_indices_grouped_by_target.at(target));
 }
 
 template<IsGraph G>
 ForwardEdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_forward_edge_indices(VertexIndex source) const
 {
-    return ForwardEdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType>(source,
-                                                                              m_graph.get_vertices(),
-                                                                              m_graph.get_edges(),
-                                                                              m_edge_indices_grouped_by_source.at(source));
+    return ForwardEdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType>(source, m_graph.get_edges(), m_edge_indices_grouped_by_source.at(source));
 }
 
 template<IsGraph G>
 BackwardEdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_backward_edge_indices(VertexIndex target) const
 {
-    return BackwardEdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType>(target,
-                                                                               m_graph.get_vertices(),
-                                                                               m_graph.get_edges(),
-                                                                               m_edge_indices_grouped_by_target.at(target));
+    return BackwardEdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType>(target, m_graph.get_edges(), m_edge_indices_grouped_by_target.at(target));
 }
 
 template<IsGraph G>
@@ -491,7 +479,7 @@ const BidirectionalGraph<G>::EdgeList& BidirectionalGraph<G>::get_edges() const
 template<IsGraph G>
 size_t BidirectionalGraph<G>::get_num_vertices() const
 {
-    return m_graph().get_num_vertices();
+    return m_graph.get_num_vertices();
 }
 
 template<IsGraph G>

@@ -18,31 +18,27 @@
 #ifndef MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
 #define MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
 
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <concepts>
-#include <cstdint>
-#include <ranges>
-#include <span>
-#include <vector>
 
 namespace mimir
 {
 
-using EdgeIndex = uint32_t;
-
 /// @brief Each vertex must be associated with an index, source index, and target index.
 template<typename T>
-concept IsEdge = requires(T a) {
+concept IsEdge = requires(T a)
+{
     {
         a.get_index()
-    } -> std::convertible_to<EdgeIndex>;
+        } -> std::convertible_to<EdgeIndex>;
     {
         a.get_source()
-    } -> std::convertible_to<VertexIndex>;
+        } -> std::convertible_to<VertexIndex>;
     {
         a.get_target()
-    } -> std::convertible_to<VertexIndex>;
+        } -> std::convertible_to<VertexIndex>;
 };
 
 }

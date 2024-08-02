@@ -21,8 +21,10 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     const auto color_function = ProblemColorFunction(state_space.get_problem());
     auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
-    for (const auto& state : state_space.get_states())
+    for (const auto& vertex : state_space.get_graph().get_vertices())
     {
+        const auto state = vertex.get_state();
+
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
@@ -37,7 +39,7 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_states().size(), 28);
+    EXPECT_EQ(state_space.get_num_states(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
 
@@ -51,8 +53,9 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
     const auto color_function = ProblemColorFunction(state_space.get_problem());
     auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
-    for (const auto& state : state_space.get_states())
+    for (const auto& vertex : state_space.get_graph().get_vertices())
     {
+        const auto state = vertex.get_state();
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
@@ -67,7 +70,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_states().size(), 28);
+    EXPECT_EQ(state_space.get_num_states(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
 
@@ -92,8 +95,9 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     const auto color_function = ProblemColorFunction(state_space.get_problem());
     auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
 
-    for (const auto& state : state_space.get_states())
+    for (const auto& vertex : state_space.get_graph().get_vertices())
     {
+        const auto state = vertex.get_state();
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         const auto object_graph =
@@ -109,7 +113,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_states().size(), 28);
+    EXPECT_EQ(state_space.get_num_states(), 28);
     EXPECT_EQ(certificates.size(), 1);
 }
 

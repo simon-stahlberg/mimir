@@ -127,7 +127,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     for (auto& faithful_abstraction : faithful_abstractions)
     {
         auto has_zero_non_isomorphic_states =
-            certificate_to_global_state.count(faithful_abstraction.get_states().at(faithful_abstraction.get_initial_state()).get_certificate());
+            certificate_to_global_state.count(faithful_abstraction.get_graph().get_vertices().at(faithful_abstraction.get_initial_state()).get_certificate());
 
         if (has_zero_non_isomorphic_states)
         {
@@ -138,7 +138,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
         auto num_isomorphic_states = 0;
         auto num_non_isomorphic_states = 0;
         auto states = GlobalFaithfulAbstractStateList {};
-        for (const auto& state : faithful_abstraction.get_states())
+        for (const auto& state : faithful_abstraction.get_graph().get_vertices())
         {
             // Ensure ordering consistent with state in faithful abstraction.
             assert(state.get_index() == states.size());
@@ -156,7 +156,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
                 // Ensure that goals remain goals and deadends remain deadends.
                 const auto& other_faithful_abstraction = relevant_faithful_abstractions->at(it->second.get_faithful_abstraction_index());
-                const auto& other_state = other_faithful_abstraction.get_states().at(it->second.get_faithful_abstract_state_index());
+                const auto& other_state = other_faithful_abstraction.get_graph().get_vertices().at(it->second.get_faithful_abstract_state_index());
                 assert(faithful_abstraction.is_goal_state(state.get_index()) == other_faithful_abstraction.is_goal_state(other_state.get_index()));
                 assert(faithful_abstraction.is_deadend_state(state.get_index()) == other_faithful_abstraction.is_deadend_state(other_state.get_index()));
             }
@@ -235,6 +235,12 @@ const std::shared_ptr<SuccessorStateGenerator>& GlobalFaithfulAbstraction::get_s
 
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 
+/* Graph */
+const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& GlobalFaithfulAbstraction::get_graph() const
+{
+    return m_abstractions->at(m_index).get_graph();
+}
+
 /* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
 
@@ -254,16 +260,6 @@ const StateIndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return
 
 const StateIndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_index).get_deadend_states(); }
 
-TargetStateIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex source) const
-{
-    return m_abstractions->at(m_index).get_target_states(source);
-}
-
-SourceStateIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_source_states(StateIndex target) const
-{
-    return m_abstractions->at(m_index).get_source_states(target);
-}
-
 size_t GlobalFaithfulAbstraction::get_num_states() const { return get_states().size(); }
 
 size_t GlobalFaithfulAbstraction::get_num_goal_states() const { return get_goal_states().size(); }
@@ -281,31 +277,11 @@ size_t GlobalFaithfulAbstraction::get_num_isomorphic_states() const { return m_n
 size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return m_num_non_isomorphic_states; }
 
 /* Transitions */
-const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_transitions(); }
+const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_graph().get_edges(); }
 
 TransitionCost GlobalFaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
     return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_transition_cost(transition);
-}
-
-ForwardTransitionIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
-{
-    return m_abstractions->at(m_index).get_forward_transition_indices(source);
-}
-
-BackwardTransitionIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
-{
-    return m_abstractions->at(m_index).get_backward_transition_indices(target);
-}
-
-ForwardTransitionIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_transitions(StateIndex source) const
-{
-    return m_abstractions->at(m_index).get_forward_transitions(source);
-}
-
-BackwardTransitionIterator<AbstractTransition> GlobalFaithfulAbstraction::get_backward_transitions(StateIndex target) const
-{
-    return m_abstractions->at(m_index).get_backward_transitions(target);
 }
 
 size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstractions->at(m_index).get_num_transitions(); }
@@ -350,7 +326,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
             << "abstraction_index=" << gfa_state.get_faithful_abstraction_index() << " "
             << "abstract_state_index=" << gfa_state.get_faithful_abstract_state_index() << "\n";
         const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
-        for (const auto& state : fa_abstraction.get_states().at(gfa_state.get_faithful_abstract_state_index()).get_states())
+        for (const auto& state : fa_abstraction.get_graph().get_vertices().at(gfa_state.get_faithful_abstract_state_index()).get_states())
         {
             out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_factories())) << "\n";
         }
@@ -380,11 +356,11 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         out << "}\n";
     }
     // 6. Draw transitions
-    for (const auto& transition : abstraction.get_transitions())
+    for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source_state() << "->"
-            << "s" << transition.get_target_state() << " [";
+        out << "s" << transition.get_source() << "->"
+            << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";

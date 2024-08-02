@@ -29,9 +29,9 @@
 namespace mimir
 {
 
-using StateId = uint32_t;
-using StateIdList = std::vector<StateId>;
-using StateIdSet = std::unordered_set<StateId>;
+using StateIndex = uint32_t;
+using StateIdList = std::vector<StateIndex>;
+using StateIdSet = std::unordered_set<StateIndex>;
 
 // StateIndex is a stronger notion of a StateId,
 // indicating that there is an underlying indexing scheme 0,1,2,...
@@ -42,7 +42,7 @@ using StateIndexSet = std::unordered_set<StateIndex>;
 /**
  * Flatmemory types
  */
-using FlatStateLayout = flatmemory::Tuple<StateId, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
+using FlatStateLayout = flatmemory::Tuple<StateIndex, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
 using FlatStateBuilder = flatmemory::Builder<FlatStateLayout>;
 using FlatState = flatmemory::ConstView<FlatStateLayout>;
 
@@ -73,7 +73,7 @@ public:
     FlatStateBuilder& get_flatmemory_builder();
     const FlatStateBuilder& get_flatmemory_builder() const;
 
-    StateId& get_id();
+    StateIndex& get_id();
 
     template<DynamicPredicateCategory P>
     FlatBitsetBuilder<P>& get_atoms();
@@ -103,7 +103,7 @@ public:
     /// Same argument from operator== applies.
     size_t hash() const;
 
-    StateId get_id() const;
+    StateIndex get_id() const;
 
     template<DynamicPredicateCategory P>
     bool contains(GroundAtom<P> atom) const;

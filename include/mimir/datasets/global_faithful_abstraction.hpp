@@ -18,10 +18,8 @@
 #ifndef MIMIR_DATASETS_GLOBAL_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_GLOBAL_FAITHFUL_ABSTRACTION_HPP_
 
-#include "mimir/datasets/abstraction_interface.hpp"
 #include "mimir/datasets/faithful_abstraction.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/datasets/transitions.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
@@ -47,10 +45,10 @@ private:
     // The index within a GlobalFaithfulAbstraction.
     StateIndex m_index;
     // The index within a GlobalFaithfulAbstractionList.
-    StateId m_global_index;
+    StateIndex m_global_index;
     // The indices to access the corresponding FaithfulAbstractState.
     AbstractionIndex m_faithful_abstraction_index;
-    StateId m_faithful_abstract_state_index;
+    StateIndex m_faithful_abstract_state_index;
 
 public:
     GlobalFaithfulAbstractState(StateIndex index,
@@ -139,6 +137,9 @@ public:
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
     const FaithfulAbstractionList& get_abstractions() const;
 
+    /* Graph */
+    const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
+
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
@@ -146,8 +147,6 @@ public:
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
     const StateIndexSet& get_deadend_states() const;
-    TargetStateIndexIterator<AbstractTransition> get_target_states(StateIndex source) const;
-    SourceStateIndexIterator<AbstractTransition> get_source_states(StateIndex target) const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
@@ -160,10 +159,6 @@ public:
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
-    ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const;
-    BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const;
-    ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const;
-    BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const;
     size_t get_num_transitions() const;
 
     /* Distances */
@@ -177,7 +172,7 @@ public:
  * Static assertions
  */
 
-static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
+// static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
 
 /**
  * Pretty printing

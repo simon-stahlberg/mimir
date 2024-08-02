@@ -78,13 +78,12 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          std::shared_ptr<PDDLFactories> factories,
                                          std::shared_ptr<IAAG> aag,
                                          std::shared_ptr<SuccessorStateGenerator> ssg,
-                                         FaithfulAbstractStateList states,
+                                         BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>> graph,
                                          std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                                          StateMap<StateIndex> concrete_to_abstract_state,
                                          StateIndex initial_state,
                                          StateIndexSet goal_states,
                                          StateIndexSet deadend_states,
-                                         IndexGroupedVector<const AbstractTransition> transitions,
                                          std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                                          std::vector<double> goal_distances) :
     m_problem(problem),
@@ -93,13 +92,12 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     m_pddl_factories(std::move(factories)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
-    m_states(std::move(states)),
+    m_graph(std::move(graph)),
     m_concrete_states_by_abstract_state(std::move(concrete_states_by_abstract_state)),
     m_concrete_to_abstract_state(std::move(concrete_to_abstract_state)),
     m_initial_state(initial_state),
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
-    m_transitions(std::move(transitions)),
     m_ground_actions_by_source_and_target(std::move(ground_actions_by_source_and_target)),
     m_goal_distances(std::move(goal_distances)),
     m_states_by_goal_distance()
@@ -107,21 +105,21 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     /* Ensure correctness. */
 
     // Check correct state ordering
-    for (size_t i = 0; i < get_num_states(); ++i)
-    {
-        assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
-    }
+    // for (size_t i = 0; i < get_num_states(); ++i)
+    //{
+    //    assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
+    //}
 
     // Check correct transition ordering
-    for (size_t i = 0; i < get_num_transitions(); ++i)
-    {
-        assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
-    }
+    // for (size_t i = 0; i < get_num_transitions(); ++i)
+    //{
+    //    assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
+    //}
 
     /* Additional */
-    for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
+    for (size_t state_index = 0; state_index < m_graph.get_num_vertices(); ++state_index)
     {
-        m_states_by_goal_distance[m_goal_distances.at(state_id)].push_back(state_id);
+        m_states_by_goal_distance[m_goal_distances.at(state_index)].push_back(state_index);
     }
 }
 
@@ -196,7 +194,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     /* Initialize search. */
     auto lifo_queue = std::deque<State>();
     lifo_queue.push_back(initial_state);
-    auto transitions = TransitionList {};
+    auto transitions = ConcreteTransitionList {};
     auto abstract_goal_states = StateIndexSet {};
     auto applicable_actions = GroundActionList {};
     auto next_abstract_state_index = StateIndex { 1 };
@@ -298,19 +296,6 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
     const auto num_abstract_states = next_abstract_state_index;
 
-    /* Compute abstract goal distances */
-    auto abstract_goal_distances = mimir::compute_shortest_goal_distances(num_abstract_states, abstract_goal_states, transitions);
-
-    /* Compute deadend states. */
-    auto abstract_deadend_states = StateIndexSet {};
-    for (StateIndex abstract_state_index = 0; abstract_state_index < num_abstract_states; ++abstract_state_index)
-    {
-        if (abstract_goal_distances.at(abstract_state_index) == std::numeric_limits<double>::max())
-        {
-            abstract_deadend_states.insert(abstract_state_index);
-        }
-    }
-
     /* Sort concrete states by abstract state */
     auto concrete_states_by_abstract_state = std::make_shared<StateList>();
     concrete_states_by_abstract_state->reserve(num_abstract_states);
@@ -347,11 +332,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
               transitions.end(),
               [](const auto& l, const auto& r)
               {
-                  if (l.get_source_state() == r.get_source_state())
+                  if (l.get_source() == r.get_source())
                   {
-                      return l.get_target_state() < r.get_target_state();
+                      return l.get_target() < r.get_target();
                   }
-                  return l.get_source_state() < r.get_source_state();
+                  return l.get_source() < r.get_source();
               });
 
     /* Group ground actions by source and target and store persistent to be able to use span. */
@@ -362,9 +347,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                    [](const auto& transition) { return transition.get_creating_action(); });
 
     /* Group concrete transitions by source and target */
-    auto grouped_transitions = IndexGroupedVector<const Transition>::create(
+    auto grouped_transitions = IndexGroupedVector<const ConcreteTransition>::create(
         std::move(transitions),
-        [](const auto& l, const auto& r) { return ((l.get_source_state() != r.get_source_state()) || (l.get_target_state() != r.get_target_state())); });
+        [](const auto& l, const auto& r) { return ((l.get_source() != r.get_source()) || (l.get_target() != r.get_target())); });
 
     /* Create abstract transitions from groups. */
     auto abstract_transitions = AbstractTransitionList {};
@@ -375,19 +360,37 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         assert(!group.empty());
 
         abstract_transitions.emplace_back(abstract_transitions.size(),
-                                          group.front().get_source_state(),
-                                          group.front().get_target_state(),
+                                          group.front().get_source(),
+                                          group.front().get_target(),
                                           std::span<const GroundAction>(ground_actions_by_source_and_target->begin() + accumulated_transitions,
                                                                         ground_actions_by_source_and_target->begin() + accumulated_transitions + group.size()));
         accumulated_transitions += group.size();
     }
 
-    /* Group abstract transitions by source. */
-    auto grouped_abstract_transitions = IndexGroupedVector<const AbstractTransition>::create(
-        std::move(abstract_transitions),
-        [](const auto& l, const auto& r) { return l.get_source_state() != r.get_source_state(); },
-        [](const auto& e) { return e.get_source_state(); },
-        abstract_states.size());
+    /* Create graph */
+    auto graph = Graph<FaithfulAbstractState, AbstractTransition>();
+    for (const auto& abstract_state : abstract_states)
+    {
+        graph.add_vertex(abstract_state.get_states(), abstract_state.get_certificate());
+    }
+    for (const auto& abstract_transition : abstract_transitions)
+    {
+        graph.add_directed_edge(abstract_transition.get_source(), abstract_transition.get_target(), abstract_transition.get_actions());
+    }
+    auto bidirectional_graph = BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>(std::move(graph));
+
+    /* Compute abstract goal distances */
+    auto abstract_goal_distances = mimir::compute_shortest_goal_distances(bidirectional_graph, abstract_goal_states);
+
+    /* Compute deadend states. */
+    auto abstract_deadend_states = StateIndexSet {};
+    for (StateIndex abstract_state_index = 0; abstract_state_index < num_abstract_states; ++abstract_state_index)
+    {
+        if (abstract_goal_distances.at(abstract_state_index) == std::numeric_limits<double>::max())
+        {
+            abstract_deadend_states.insert(abstract_state_index);
+        }
+    }
 
     return FaithfulAbstraction(problem,
                                options.mark_true_goal_literals,
@@ -395,13 +398,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                std::move(factories),
                                std::move(aag),
                                std::move(ssg),
-                               std::move(abstract_states),
+                               std::move(bidirectional_graph),
                                const_pointer_cast<const StateList>(concrete_states_by_abstract_state),
                                std::move(concrete_to_abstract_state),
                                abstract_initial_state_index,
                                std::move(abstract_goal_states),
                                std::move(abstract_deadend_states),
-                               std::move(grouped_abstract_transitions),
                                const_pointer_cast<const GroundActionList>(ground_actions_by_source_and_target),
                                std::move(abstract_goal_distances));
 }
@@ -497,8 +499,11 @@ const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag
 
 const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
+/* Graph */
+const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& FaithfulAbstraction::get_graph() const { return m_graph; }
+
 /* States */
-const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_states; }
+const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
 
 const StateMap<StateIndex>& FaithfulAbstraction::get_concrete_to_abstract_state() const { return m_concrete_to_abstract_state; }
 
@@ -508,17 +513,7 @@ const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goa
 
 const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
-TargetStateIndexIterator<AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex source) const
-{
-    return TargetStateIndexIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.at(source)));
-}
-
-SourceStateIndexIterator<AbstractTransition> FaithfulAbstraction::get_source_states(StateIndex target) const
-{
-    return SourceStateIndexIterator<AbstractTransition>(target, m_transitions.data());
-}
-
-size_t FaithfulAbstraction::get_num_states() const { return get_states().size(); }
+size_t FaithfulAbstraction::get_num_states() const { return m_graph.get_num_vertices(); }
 
 size_t FaithfulAbstraction::get_num_goal_states() const { return get_goal_states().size(); }
 
@@ -531,34 +526,15 @@ bool FaithfulAbstraction::is_deadend_state(StateIndex state) const { return get_
 bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
-const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_transitions.data(); }
+
+const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
 
 TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
-    return (m_use_unit_cost_one) ? 1 : m_transitions.data().at(transition).get_cost();
+    return (m_use_unit_cost_one) ? 1 : m_graph.get_edges().at(transition).get_cost();
 }
 
-ForwardTransitionIndexIterator<AbstractTransition> FaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
-{
-    return ForwardTransitionIndexIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.at(source)));
-}
-
-BackwardTransitionIndexIterator<AbstractTransition> FaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
-{
-    return BackwardTransitionIndexIterator<AbstractTransition>(target, m_transitions.data());
-}
-
-ForwardTransitionIterator<AbstractTransition> FaithfulAbstraction::get_forward_transitions(StateIndex source) const
-{
-    return ForwardTransitionIterator<AbstractTransition>(std::span<const AbstractTransition>(m_transitions.at(source)));
-}
-
-BackwardTransitionIterator<AbstractTransition> FaithfulAbstraction::get_backward_transitions(StateIndex target) const
-{
-    return BackwardTransitionIterator<AbstractTransition>(target, m_transitions.data());
-}
-
-size_t FaithfulAbstraction::get_num_transitions() const { return m_transitions.data().size(); }
+size_t FaithfulAbstraction::get_num_transitions() const { return m_graph.get_num_edges(); }
 
 /* Distances */
 const std::vector<double>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
@@ -592,7 +568,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         // label
         out << "label=\"";
         out << "state_index=" << state_index << "\n";
-        for (const auto& state : abstraction.get_states().at(state_index).get_states())
+        for (const auto& state : abstraction.get_graph().get_vertices().at(state_index).get_states())
         {
             out << std::make_tuple(abstraction.get_problem(), state, std::cref(*abstraction.get_pddl_factories())) << "\n";
         }
@@ -622,11 +598,11 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         out << "}\n";
     }
     // 6. Draw transitions
-    for (const auto& transition : abstraction.get_transitions())
+    for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source_state() << "->"
-            << "s" << transition.get_target_state() << " [";
+        out << "s" << transition.get_source() << "->"
+            << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";

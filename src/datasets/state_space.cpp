@@ -19,7 +19,6 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/search/openlists/priority_queue.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -35,30 +34,28 @@ StateSpace::StateSpace(Problem problem,
                        std::shared_ptr<PDDLFactories> pddl_factories,
                        std::shared_ptr<IAAG> aag,
                        std::shared_ptr<SuccessorStateGenerator> ssg,
-                       StateList states,
+                       BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>> graph,
                        StateMap<StateIndex> state_to_index,
                        StateIndex initial_state,
                        StateIndexSet goal_states,
                        StateIndexSet deadend_states,
-                       IndexGroupedVector<const Transition> transitions,
                        std::vector<double> goal_distances) :
     m_problem(problem),
     m_use_unit_cost_one(use_unit_cost_one),
     m_pddl_factories(std::move(pddl_factories)),
     m_aag(std::move(aag)),
     m_ssg(std::move(ssg)),
-    m_states(std::move(states)),
+    m_graph(std::move(graph)),
     m_state_to_index(std::move(state_to_index)),
     m_initial_state(std::move(initial_state)),
     m_goal_states(std::move(goal_states)),
     m_deadend_states(std::move(deadend_states)),
-    m_transitions(std::move(transitions)),
     m_goal_distances(std::move(goal_distances)),
     m_states_by_goal_distance()
 {
-    for (size_t state_id = 0; state_id < m_states.size(); ++state_id)
+    for (size_t state_index = 0; state_index < m_graph.get_num_vertices(); ++state_index)
     {
-        m_states_by_goal_distance[m_goal_distances.at(state_id)].push_back(state_id);
+        m_states_by_goal_distance[m_goal_distances.at(state_index)].push_back(state_index);
     }
 }
 
@@ -86,52 +83,50 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    auto lifo_queue = std::deque<State>();
-    lifo_queue.push_back(initial_state);
-
-    const auto initial_state_index = 0;
-    auto states = StateList { initial_state };
-    auto state_to_index = StateMap<StateIndex> {};
-    state_to_index[initial_state] = initial_state_index;
-    auto transitions = TransitionList {};
+    auto graph = Graph<ConcreteState, ConcreteTransition>();
+    const auto initial_state_index = graph.add_vertex(initial_state);
     auto goal_states = StateIndexSet {};
+    auto state_to_index = StateMap<StateIndex> {};
+    state_to_index.emplace(initial_state, initial_state_index);
+
+    auto lifo_queue = std::deque<ConcreteState>();
+    lifo_queue.push_back(graph.get_vertices().at(initial_state_index));
 
     auto applicable_actions = GroundActionList {};
     stop_watch.start();
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
         const auto state = lifo_queue.back();
-        const auto state_index = state_to_index.at(state);
+        const auto state_index = state.get_index();
         lifo_queue.pop_back();
-        if (state.literals_hold(problem->get_goal_condition<Fluent>()) && state.literals_hold(problem->get_goal_condition<Derived>()))
+        if (state.get_state().literals_hold(problem->get_goal_condition<Fluent>()) && state.get_state().literals_hold(problem->get_goal_condition<Derived>()))
         {
             goal_states.insert(state_index);
         }
 
-        aag->generate_applicable_actions(state, applicable_actions);
+        aag->generate_applicable_actions(state.get_state(), applicable_actions);
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = ssg->get_or_create_successor_state(state, action);
+            const auto successor_state = ssg->get_or_create_successor_state(state.get_state(), action);
             const auto it = state_to_index.find(successor_state);
             const bool exists = (it != state_to_index.end());
             if (exists)
             {
                 const auto successor_state_index = it->second;
-                transitions.emplace_back(transitions.size(), state_index, successor_state_index, action);
+                graph.add_directed_edge(state_index, successor_state_index, action);
                 continue;
             }
 
-            const auto successor_state_index = states.size();
+            const auto successor_state_index = graph.add_vertex(successor_state);
             if (successor_state_index >= options.max_num_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
             }
 
-            transitions.emplace_back(transitions.size(), state_index, successor_state_index, action);
-            states.push_back(successor_state);
-            state_to_index[successor_state] = successor_state_index;
-            lifo_queue.push_back(successor_state);
+            graph.add_directed_edge(state_index, successor_state_index, action);
+            state_to_index.emplace(successor_state, successor_state_index);
+            lifo_queue.push_back(graph.get_vertices().at(successor_state_index));
         }
     }
 
@@ -147,44 +142,29 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    auto goal_distances = mimir::compute_shortest_goal_distances(states.size(), goal_states, transitions, options.use_unit_cost_one);
+    auto bidirectional_graph = BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>(std::move(graph));
+
+    auto goal_distances = mimir::compute_shortest_goal_distances(bidirectional_graph, goal_states, options.use_unit_cost_one);
 
     auto deadend_states = StateIndexSet {};
-    for (StateIndex state_id = 0; state_id < states.size(); ++state_id)
+    for (StateIndex state_index = 0; state_index < bidirectional_graph.get_num_vertices(); ++state_index)
     {
-        if (goal_distances.at(state_id) == std::numeric_limits<double>::max())
+        if (goal_distances.at(state_index) == std::numeric_limits<double>::max())
         {
-            deadend_states.insert(state_id);
+            deadend_states.insert(state_index);
         }
     }
-
-    /* Sort transitions by source state and recreate indexing. */
-    std::sort(transitions.begin(), transitions.end(), [](const auto& l, const auto& r) { return l.get_source_state() < r.get_source_state(); });
-    auto transition_index = TransitionIndex { 0 };
-    std::transform(transitions.begin(),
-                   transitions.end(),
-                   transitions.begin(),
-                   [&transition_index](const auto& transition)
-                   { return Transition(transition_index++, transition.get_source_state(), transition.get_target_state(), transition.get_creating_action()); });
-
-    /* Group transitions by source. */
-    auto grouped_transitions = IndexGroupedVector<const Transition>::create(
-        std::move(transitions),
-        [](const auto& l, const auto& r) { return l.get_source_state() != r.get_source_state(); },
-        [](const auto& e) { return e.get_source_state(); },
-        states.size());
 
     return StateSpace(problem,
                       options.use_unit_cost_one,
                       std::move(factories),
                       std::move(aag),
                       std::move(ssg),
-                      std::move(states),
+                      std::move(bidirectional_graph),
                       std::move(state_to_index),
                       initial_state_index,
                       std::move(goal_states),
                       std::move(deadend_states),
-                      std::move(grouped_transitions),
                       std::move(goal_distances));
 }
 
@@ -262,8 +242,11 @@ const std::shared_ptr<IAAG>& StateSpace::get_aag() const { return m_aag; }
 
 const std::shared_ptr<SuccessorStateGenerator>& StateSpace::get_ssg() const { return m_ssg; }
 
+/* Graph */
+const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& StateSpace::get_graph() const { return m_graph; }
+
 /* States */
-const StateList& StateSpace::get_states() const { return m_states; }
+const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
 StateIndex StateSpace::get_state_index(State state) const { return m_state_to_index.at(state); }
 
@@ -273,17 +256,7 @@ const StateIndexSet& StateSpace::get_goal_states() const { return m_goal_states;
 
 const StateIndexSet& StateSpace::get_deadend_states() const { return m_deadend_states; }
 
-TargetStateIndexIterator<Transition> StateSpace::get_target_states(StateIndex source) const
-{
-    return TargetStateIndexIterator<Transition>(m_transitions.at(source));
-}
-
-SourceStateIndexIterator<Transition> StateSpace::get_source_states(StateIndex target) const
-{
-    return SourceStateIndexIterator<Transition>(target, m_transitions.data());
-}
-
-size_t StateSpace::get_num_states() const { return get_states().size(); }
+size_t StateSpace::get_num_states() const { return m_graph.get_num_vertices(); }
 
 size_t StateSpace::get_num_goal_states() const { return get_goal_states().size(); }
 
@@ -296,39 +269,17 @@ bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_s
 bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
-const TransitionList& StateSpace::get_transitions() const { return m_transitions.data(); }
+const ConcreteTransitionList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const
 {
-    return (m_use_unit_cost_one) ? 1 : m_transitions.data().at(transition).get_cost();
+    return (m_use_unit_cost_one) ? 1 : m_graph.get_edges().at(transition).get_cost();
 }
 
-ForwardTransitionIndexIterator<Transition> StateSpace::get_forward_transition_indices(StateIndex source) const
-{
-    return ForwardTransitionIndexIterator<Transition>(m_transitions.at(source));
-}
-
-BackwardTransitionIndexIterator<Transition> StateSpace::get_backward_transition_indices(StateIndex target) const
-{
-    return BackwardTransitionIndexIterator<Transition>(target, m_transitions.data());
-}
-
-ForwardTransitionIterator<Transition> StateSpace::get_forward_transitions(StateIndex source) const
-{
-    return ForwardTransitionIterator<Transition>(m_transitions.at(source));
-}
-
-BackwardTransitionIterator<Transition> StateSpace::get_backward_transitions(StateIndex target) const
-{
-    return BackwardTransitionIterator<Transition>(target, m_transitions.data());
-}
-
-size_t StateSpace::get_num_transitions() const { return m_transitions.data().size(); }
+size_t StateSpace::get_num_transitions() const { return m_graph.get_num_edges(); }
 
 /* Distances */
 const std::vector<double>& StateSpace::get_goal_distances() const { return m_goal_distances; }
-
-double StateSpace::get_goal_distance(State state) const { return m_goal_distances.at(get_state_index(state)); }
 
 double StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
@@ -340,57 +291,6 @@ StateIndex StateSpace::sample_state_with_goal_distance(double goal_distance) con
     const auto& states = m_states_by_goal_distance.at(goal_distance);
     const auto index = std::rand() % static_cast<int>(states.size());
     return states.at(index);
-}
-
-/**
- * Distances
- */
-
-std::vector<double>
-compute_shortest_goal_distances(size_t num_total_states, const StateIndexSet& goal_states, const TransitionList& transitions, bool use_unit_cost_one)
-{
-    auto distances = std::vector<double>(num_total_states, std::numeric_limits<double>::max());
-    auto closed = std::vector<bool>(num_total_states, false);
-    auto priority_queue = PriorityQueue<StateIndex>();
-    for (const auto& state : goal_states)
-    {
-        distances.at(state) = 0.;
-        priority_queue.insert(0., state);
-    }
-
-    while (!priority_queue.empty())
-    {
-        const auto state_index = priority_queue.top();
-        priority_queue.pop();
-        const auto cost = distances.at(state_index);
-
-        if (closed.at(state_index))
-        {
-            continue;
-        }
-        closed.at(state_index) = true;
-
-        for (const auto& transition : transitions)
-        {
-            if (transition.get_target_state() != state_index)
-            {
-                continue;
-            }
-            const auto successor_state = transition.get_source_state();
-
-            auto succ_cost = distances.at(successor_state);
-            auto new_succ_cost = cost + ((use_unit_cost_one) ? 1. : transition.get_creating_action().get_cost());
-
-            if (new_succ_cost < succ_cost)
-            {
-                distances.at(successor_state) = new_succ_cost;
-                // decrease priority
-                priority_queue.insert(new_succ_cost, successor_state);
-            }
-        }
-    }
-
-    return distances;
 }
 
 /**
@@ -415,7 +315,10 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
         }
 
         // label
-        out << "label=\"" << std::make_tuple(state_space.get_problem(), state_space.get_states().at(state_index), std::cref(*state_space.get_pddl_factories()))
+        out << "label=\""
+            << std::make_tuple(state_space.get_problem(),
+                               state_space.get_graph().get_vertices().at(state_index).get_state(),
+                               std::cref(*state_space.get_pddl_factories()))
             << "\"";
 
         out << "]\n";
@@ -442,11 +345,11 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
         out << "}\n";
     }
     // 6. Draw transitions
-    for (const auto& transition : state_space.get_transitions())
+    for (const auto& transition : state_space.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source_state() << "->"
-            << "s" << transition.get_target_state() << " [";
+        out << "s" << transition.get_source() << "->"
+            << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"" << transition.get_creating_action() << "\"";

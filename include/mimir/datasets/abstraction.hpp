@@ -18,8 +18,9 @@
 #ifndef MIMIR_DATASETS_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_ABSTRACTION_HPP_
 
-#include "mimir/datasets/abstraction_interface.hpp"
-#include "mimir/datasets/transitions.hpp"
+#include "mimir/datasets/abstract_transition.hpp"
+#include "mimir/graphs/graph_iterators.hpp"
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 
 #include <concepts>
@@ -27,6 +28,18 @@
 
 namespace mimir
 {
+
+/**
+ * Internal concept
+ */
+
+template<typename T>
+concept IsAbstraction = requires(T a, State concrete_state)
+{
+    {
+        a.get_abstract_state_index(concrete_state)
+        } -> std::same_as<StateIndex>;
+};
 
 /**
  * External inheritance hierarchy using type erasure.
@@ -59,8 +72,8 @@ private:
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
-        virtual TargetStateIndexIterator<AbstractTransition> get_target_states(StateIndex source) const = 0;
-        virtual SourceStateIndexIterator<AbstractTransition> get_source_states(StateIndex target) const = 0;
+        virtual TargetVertexIndexIterator<AbstractTransition> get_target_states(StateIndex source) const = 0;
+        virtual SourceVertexIndexIterator<AbstractTransition> get_source_states(StateIndex target) const = 0;
         virtual bool is_goal_state(StateIndex state) const = 0;
         virtual bool is_deadend_state(StateIndex state) const = 0;
         virtual bool is_alive_state(StateIndex state) const = 0;
@@ -68,10 +81,10 @@ private:
         /* Transitions */
         virtual const AbstractTransitionList& get_transitions() const = 0;
         virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
-        virtual ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const = 0;
-        virtual BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const = 0;
-        virtual ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const = 0;
-        virtual BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const = 0;
+        virtual ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const = 0;
+        virtual BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const = 0;
+        virtual ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const = 0;
+        virtual BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const = 0;
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
@@ -182,8 +195,8 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
-    TargetStateIndexIterator<AbstractTransition> get_target_states(StateIndex source) const { return m_pimpl->get_target_states(source); }
-    SourceStateIndexIterator<AbstractTransition> get_source_states(StateIndex target) const { return m_pimpl->get_source_states(target); }
+    TargetVertexIndexIterator<AbstractTransition> get_target_states(StateIndex source) const { return m_pimpl->get_target_states(source); }
+    SourceVertexIndexIterator<AbstractTransition> get_source_states(StateIndex target) const { return m_pimpl->get_source_states(target); }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }
@@ -195,29 +208,25 @@ public:
     // Write an adaptor if you need to return different kinds of transitions
     const AbstractTransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
     TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
-    ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const
+    ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const
     {
         return m_pimpl->get_forward_transition_indices(source);
     }
-    BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const
+    BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const
     {
         return m_pimpl->get_backward_transition_indices(target);
     }
-    ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_pimpl->get_forward_transitions(source); }
-    BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const { return m_pimpl->get_backward_transitions(target); }
+    ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const { return m_pimpl->get_forward_transitions(source); }
+    BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const { return m_pimpl->get_backward_transitions(target); }
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */
     const std::vector<double>& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
 };
 
+static_assert(IsAbstraction<Abstraction>);
+
 using AbstractionList = std::vector<Abstraction>;
-
-/**
- * Static assertions
- */
-
-static_assert(IsTransitionSystem<Abstraction>);
 
 }
 

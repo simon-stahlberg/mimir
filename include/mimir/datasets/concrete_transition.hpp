@@ -15,37 +15,45 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_TRANSITION_INTERFACE_HPP_
-#define MIMIR_DATASETS_TRANSITION_INTERFACE_HPP_
+#ifndef MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
+#define MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
 
+#include "mimir/datasets/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
+#include <span>
 #include <vector>
 
 namespace mimir
 {
 
-using TransitionCost = double;
-using TransitionCostList = std::vector<TransitionCost>;
-using TransitionIndex = uint32_t;
-using TransitionIndexList = std::vector<TransitionIndex>;
+/**
+ * ConcreteTransition
+ */
 
-template<typename T>
-concept IsTransition = requires(T a) {
-    {
-        a.get_index()
-    } -> std::same_as<TransitionIndex>;
-    {
-        a.get_source_state()
-    } -> std::same_as<StateIndex>;
-    {
-        a.get_target_state()
-    } -> std::same_as<StateIndex>;
-    {
-        a.get_cost()
-    } -> std::same_as<TransitionCost>;
+class ConcreteTransition
+{
+private:
+    TransitionIndex m_index;
+    StateIndex m_source_state;
+    StateIndex m_target_state;
+    GroundAction m_creating_action;
+
+public:
+    ConcreteTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action);
+
+    bool operator==(const ConcreteTransition& other) const;
+    size_t hash() const;
+
+    TransitionIndex get_index() const;
+    StateIndex get_source() const;
+    StateIndex get_target() const;
+    TransitionCost get_cost() const;
+    GroundAction get_creating_action() const;
 };
+
+using ConcreteTransitionList = std::vector<ConcreteTransition>;
 
 }
 

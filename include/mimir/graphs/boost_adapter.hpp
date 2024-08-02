@@ -24,6 +24,7 @@
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
+#include <boost/graph/strong_components.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <limits>
 #include <map>
@@ -52,7 +53,7 @@ struct graph_traits<mimir::Graph<Vertex, Edge>>
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = mimir::ForwardEdgeIterator<typename TransitionSystem::TransitionType>::const_iterator;
+    using out_edge_iterator = mimir::ForwardEdgeIndexIterator<Edge>::const_iterator;
     using degree_size_type = size_t;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
@@ -72,7 +73,27 @@ struct graph_traits<mimir::ForwardGraph<mimir::Graph<Vertex, Edge>>>
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = mimir::SliceForwardEdgeIterator<typename TransitionSystem::TransitionType>::const_iterator;
+    using out_edge_iterator = mimir::ForwardEdgeIndexIterator<Edge>::const_iterator;
+    using degree_size_type = size_t;
+    // boost::strong_components
+    constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
+};
+
+template<mimir::IsVertex Vertex, mimir::IsEdge Edge>
+struct graph_traits<mimir::BidirectionalGraph<mimir::Graph<Vertex, Edge>>>
+{
+    // boost::GraphConcept
+    using vertex_descriptor = mimir::VertexIndex;
+    using edge_descriptor = mimir::EdgeIndex;
+    using directed_category = directed_tag;
+    using edge_parallel_category = allow_parallel_edge_tag;
+    using traversal_category = vertex_list_and_incidence_graph_tag;
+    using edges_size_type = size_t;
+    // boost::VertexListGraph
+    using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
+    using vertices_size_type = size_t;
+    // boost::IncidenceGraph
+    using out_edge_iterator = mimir::ForwardEdgeIndexIterator<Edge>::const_iterator;
     using degree_size_type = size_t;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
@@ -208,8 +229,7 @@ IndexGroupedVector<std::pair<typename boost::graph_traits<Graph>::vertices_size_
 get_partitioning(typename boost::graph_traits<Graph>::vertices_size_type num_components,
                  std::map<typename boost::graph_traits<Graph>::vertex_descriptor, typename boost::graph_traits<Graph>::vertices_size_type> component_map)
 {
-    using state_component_pair_t =
-        std::pair<typename boost::graph_traits<TransitionSystem>::vertices_size_type, typename boost::graph_traits<TransitionSystem>::vertex_descriptor>;
+    using state_component_pair_t = std::pair<typename boost::graph_traits<Graph>::vertices_size_type, typename boost::graph_traits<Graph>::vertex_descriptor>;
     auto partitioning = std::vector<state_component_pair_t>();
     for (const auto& [state, component] : component_map)
     {

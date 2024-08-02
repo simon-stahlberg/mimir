@@ -15,29 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_DECLARATIONS_HPP_
-#define MIMIR_DATASETS_DECLARATIONS_HPP_
-
-#include "mimir/graphs/declarations.hpp"
+#ifndef MIMIR_GRAPHS_DECLARATIONS_HPP_
+#define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
 #include <cstdint>
 
 namespace mimir
 {
 
-using AbstractionIndex = uint32_t;
-
-using TransitionIndex = EdgeIndex;
-using TransitionCost = EdgeCost;
-
-struct StateSpaceOptions;
-struct StateSpacesOptions;
-class StateSpace;
-
-struct FaithfulAbstractionOptions;
-struct FaithfulAbstractionsOptions;
-class FaithfulAbstraction;
-class GlobalFaithfulAbstraction;
+using VertexIndex = uint32_t;
+using EdgeIndex = uint32_t;
+using EdgeCost = double;
 
 }
 

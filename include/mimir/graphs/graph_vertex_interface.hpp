@@ -18,23 +18,20 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTEX_INTERFACE_HPP_
 
+#include "mimir/graphs/declarations.hpp"
+
 #include <concepts>
-#include <cstdint>
-#include <ranges>
-#include <span>
-#include <vector>
 
 namespace mimir
 {
 
-using VertexIndex = uint32_t;
-
 /// @brief Each vertex must be associated with an index.
 template<typename T>
-concept IsVertex = requires(T a) {
+concept IsVertex = requires(T a)
+{
     {
         a.get_index()
-    } -> std::convertible_to<VertexIndex>;
+        } -> std::convertible_to<VertexIndex>;
 };
 
 }

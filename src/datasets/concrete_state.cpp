@@ -15,30 +15,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_DECLARATIONS_HPP_
-#define MIMIR_DATASETS_DECLARATIONS_HPP_
-
-#include "mimir/graphs/declarations.hpp"
-
-#include <cstdint>
+#include "mimir/datasets/concrete_state.hpp"
 
 namespace mimir
 {
 
-using AbstractionIndex = uint32_t;
+ConcreteState::ConcreteState(StateIndex index, State state) : m_index(index), m_state(state) {}
 
-using TransitionIndex = EdgeIndex;
-using TransitionCost = EdgeCost;
-
-struct StateSpaceOptions;
-struct StateSpacesOptions;
-class StateSpace;
-
-struct FaithfulAbstractionOptions;
-struct FaithfulAbstractionsOptions;
-class FaithfulAbstraction;
-class GlobalFaithfulAbstraction;
-
+bool ConcreteState::operator==(const ConcreteState& other) const
+{
+    if (this != &other)
+    {
+        return (m_index == other.m_index);
+    }
+    return true;
 }
 
-#endif
+size_t ConcreteState::hash() const { return loki::hash_combine(m_index); }
+
+StateIndex ConcreteState::get_index() const { return m_index; }
+
+State ConcreteState::get_state() const { return m_state; }
+
+}
