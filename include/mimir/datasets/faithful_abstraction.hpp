@@ -219,6 +219,10 @@ public:
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
+    TargetVertexIterator<FaithfulAbstractState, AbstractTransition> get_target_states(StateIndex source) const;
+    SourceVertexIterator<FaithfulAbstractState, AbstractTransition> get_source_states(StateIndex target) const;
+    TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const;
+    SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -232,6 +236,10 @@ public:
 
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
+    ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const;
+    BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const;
+    ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const;
+    BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

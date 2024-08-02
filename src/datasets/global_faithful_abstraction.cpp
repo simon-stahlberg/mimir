@@ -244,6 +244,26 @@ const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& Glob
 /* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
 
+TargetVertexIterator<FaithfulAbstractState, AbstractTransition> GlobalFaithfulAbstraction::get_target_states(StateIndex source) const
+{
+    return get_graph().get_targets(source);
+}
+
+SourceVertexIterator<FaithfulAbstractState, AbstractTransition> GlobalFaithfulAbstraction::get_source_states(StateIndex target) const
+{
+    return get_graph().get_sources(target);
+}
+
+TargetVertexIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_target_state_indices(StateIndex source) const
+{
+    return get_graph().get_target_indices(source);
+}
+
+SourceVertexIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_source_state_indices(StateIndex target) const
+{
+    return get_graph().get_source_indices(target);
+}
+
 const StateMap<StateIndex>& GlobalFaithfulAbstraction::get_concrete_to_abstract_state() const
 {
     return m_abstractions->at(m_index).get_concrete_to_abstract_state();
@@ -277,7 +297,27 @@ size_t GlobalFaithfulAbstraction::get_num_isomorphic_states() const { return m_n
 size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return m_num_non_isomorphic_states; }
 
 /* Transitions */
-const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return m_abstractions->at(m_index).get_graph().get_edges(); }
+const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return get_graph().get_edges(); }
+
+ForwardEdgeIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_transitions(StateIndex source) const
+{
+    return get_graph().get_forward_edges(source);
+}
+
+BackwardEdgeIterator<AbstractTransition> GlobalFaithfulAbstraction::get_backward_transitions(StateIndex target) const
+{
+    return get_graph().get_backward_edges(target);
+}
+
+ForwardEdgeIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
+{
+    return get_graph().get_forward_edge_indices(source);
+}
+
+BackwardEdgeIndexIterator<AbstractTransition> GlobalFaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
+{
+    return get_graph().get_backward_edge_indices(target);
+}
 
 TransitionCost GlobalFaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {

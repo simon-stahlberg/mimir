@@ -130,13 +130,14 @@ from _pymimir import (
 from _pymimir import (
     Abstraction,
     AbstractTransition,
+    ConcreteState,
+    ConcreteTransition,
     FaithfulAbstractState,
     FaithfulAbstraction,
     FaithfulAbstractionOptions,
     FaithfulAbstractionsOptions,
     GlobalFaithfulAbstractState,
     GlobalFaithfulAbstraction,
-    Transition,
     StateSpace,
     StateSpaceOptions,
     StateSpacesOptions

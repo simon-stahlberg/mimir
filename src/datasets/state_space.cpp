@@ -248,6 +248,14 @@ const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& StateSpace::
 /* States */
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
+TargetVertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_target_states(StateIndex source) const { return m_graph.get_targets(source); }
+
+SourceVertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_source_states(StateIndex target) const { return m_graph.get_sources(target); }
+
+TargetVertexIndexIterator<ConcreteTransition> StateSpace::get_target_state_indices(StateIndex source) const { return m_graph.get_target_indices(source); }
+
+SourceVertexIndexIterator<ConcreteTransition> StateSpace::get_source_state_indices(StateIndex target) const { return m_graph.get_source_indices(target); }
+
 StateIndex StateSpace::get_state_index(State state) const { return m_state_to_index.at(state); }
 
 StateIndex StateSpace::get_initial_state() const { return m_initial_state; }
@@ -270,6 +278,20 @@ bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_stat
 
 /* Transitions */
 const ConcreteTransitionList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
+
+ForwardEdgeIterator<ConcreteTransition> StateSpace::get_forward_transitions(StateIndex source) const { return m_graph.get_forward_edges(source); }
+
+BackwardEdgeIterator<ConcreteTransition> StateSpace::get_backward_transitions(StateIndex target) const { return m_graph.get_backward_edges(target); }
+
+ForwardEdgeIndexIterator<ConcreteTransition> StateSpace::get_forward_transition_indices(StateIndex source) const
+{
+    return m_graph.get_forward_edge_indices(source);
+}
+
+BackwardEdgeIndexIterator<ConcreteTransition> StateSpace::get_backward_transition_indices(StateIndex target) const
+{
+    return m_graph.get_backward_edge_indices(target);
+}
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const
 {

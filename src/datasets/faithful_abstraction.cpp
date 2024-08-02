@@ -505,6 +505,26 @@ const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& Fait
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
 
+TargetVertexIterator<FaithfulAbstractState, AbstractTransition> FaithfulAbstraction::get_target_states(StateIndex source) const
+{
+    return m_graph.get_targets(source);
+}
+
+SourceVertexIterator<FaithfulAbstractState, AbstractTransition> FaithfulAbstraction::get_source_states(StateIndex target) const
+{
+    return m_graph.get_sources(target);
+}
+
+TargetVertexIndexIterator<AbstractTransition> FaithfulAbstraction::get_target_state_indices(StateIndex source) const
+{
+    return m_graph.get_target_indices(source);
+}
+
+SourceVertexIndexIterator<AbstractTransition> FaithfulAbstraction::get_source_state_indices(StateIndex target) const
+{
+    return m_graph.get_source_indices(target);
+}
+
 const StateMap<StateIndex>& FaithfulAbstraction::get_concrete_to_abstract_state() const { return m_concrete_to_abstract_state; }
 
 StateIndex FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
@@ -528,6 +548,20 @@ bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_
 /* Transitions */
 
 const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
+
+ForwardEdgeIterator<AbstractTransition> FaithfulAbstraction::get_forward_transitions(StateIndex source) const { return m_graph.get_forward_edges(source); }
+
+BackwardEdgeIterator<AbstractTransition> FaithfulAbstraction::get_backward_transitions(StateIndex target) const { return m_graph.get_backward_edges(target); }
+
+ForwardEdgeIndexIterator<AbstractTransition> FaithfulAbstraction::get_forward_transition_indices(StateIndex source) const
+{
+    return m_graph.get_forward_edge_indices(source);
+}
+
+BackwardEdgeIndexIterator<AbstractTransition> FaithfulAbstraction::get_backward_transition_indices(StateIndex target) const
+{
+    return m_graph.get_backward_edge_indices(target);
+}
 
 TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {

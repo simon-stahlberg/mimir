@@ -72,8 +72,8 @@ private:
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
-        virtual TargetVertexIndexIterator<AbstractTransition> get_target_states(StateIndex source) const = 0;
-        virtual SourceVertexIndexIterator<AbstractTransition> get_source_states(StateIndex target) const = 0;
+        virtual TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const = 0;
+        virtual SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const = 0;
         virtual bool is_goal_state(StateIndex state) const = 0;
         virtual bool is_deadend_state(StateIndex state) const = 0;
         virtual bool is_alive_state(StateIndex state) const = 0;
@@ -118,8 +118,14 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
-        TargetVertexIndexIterator<AbstractTransition> get_target_states(StateIndex source) const override { return m_abstraction.get_target_states(source); }
-        SourceVertexIndexIterator<AbstractTransition> get_source_states(StateIndex target) const override { return m_abstraction.get_source_states(target); }
+        TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const override
+        {
+            return m_abstraction.get_target_state_indices(source);
+        }
+        SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const override
+        {
+            return m_abstraction.get_source_state_indices(target);
+        }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
         size_t get_num_deadend_states() const override { return m_abstraction.get_num_deadend_states(); }
@@ -195,8 +201,8 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
-    TargetVertexIndexIterator<AbstractTransition> get_target_states(StateIndex source) const { return m_pimpl->get_target_states(source); }
-    SourceVertexIndexIterator<AbstractTransition> get_source_states(StateIndex target) const { return m_pimpl->get_source_states(target); }
+    TargetVertexIndexIterator<AbstractTransition> get_target_state_indices(StateIndex source) const { return m_pimpl->get_target_state_indices(source); }
+    SourceVertexIndexIterator<AbstractTransition> get_source_state_indices(StateIndex target) const { return m_pimpl->get_source_state_indices(target); }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }

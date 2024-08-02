@@ -171,6 +171,10 @@ public:
     // We cannot ensure that states are having an indexing scheme because
     // users might have created custom states using the successor state generator.
     const ConcreteStateList& get_states() const;
+    TargetVertexIterator<ConcreteState, ConcreteTransition> get_target_states(StateIndex source) const;
+    SourceVertexIterator<ConcreteState, ConcreteTransition> get_source_states(StateIndex target) const;
+    TargetVertexIndexIterator<ConcreteTransition> get_target_state_indices(StateIndex source) const;
+    SourceVertexIndexIterator<ConcreteTransition> get_source_state_indices(StateIndex target) const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -184,6 +188,10 @@ public:
 
     /* Transitions */
     const ConcreteTransitionList& get_transitions() const;
+    ForwardEdgeIterator<ConcreteTransition> get_forward_transitions(StateIndex source) const;
+    BackwardEdgeIterator<ConcreteTransition> get_backward_transitions(StateIndex target) const;
+    ForwardEdgeIndexIterator<ConcreteTransition> get_forward_transition_indices(StateIndex source) const;
+    BackwardEdgeIndexIterator<ConcreteTransition> get_backward_transition_indices(StateIndex target) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

@@ -914,7 +914,7 @@ void init_pymimir(py::module_& m)
                  ss << std::make_tuple(problem, self, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("get_id", &State::get_id);
+        .def("get_index", &State::get_index);
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<StateList>(m, "StateList");
     bind_const_span<std::span<const State>>(m, "StateSpan");
@@ -944,7 +944,7 @@ void init_pymimir(py::module_& m)
                  ss << std::make_tuple(self, std::cref(pddl_factories));
                  return ss.str();
              })
-        .def("get_id", &GroundAction::get_id)
+        .def("get_index", &GroundAction::get_index)
         .def("__repr__",
              [](GroundAction self)
              {
@@ -1128,23 +1128,30 @@ void init_pymimir(py::module_& m)
     // DataSets
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    // Transition
-    py::class_<Transition>(m, "Transition")  //
-        .def("__eq__", &Transition::operator==)
-        .def("__hash__", &Transition::hash)
-        .def("get_index", &Transition::get_index)
-        .def("get_source_state", &Transition::get_source_state)
-        .def("get_target_state", &Transition::get_target_state)
-        .def("get_cost", &Transition::get_cost)
-        .def("get_creating_action", &Transition::get_creating_action, py::keep_alive<0, 1>());
+    // ConcreteState
+    py::class_<ConcreteState>(m, "ConcreteState")  //
+        .def("__eq__", &ConcreteState::operator==)
+        .def("__hash__", &ConcreteState::hash)
+        .def("get_index", &ConcreteState::get_index)
+        .def("get_state", &ConcreteState::get_state);
+
+    // ConcreteTransition
+    py::class_<ConcreteTransition>(m, "ConcreteTransition")  //
+        .def("__eq__", &ConcreteTransition::operator==)
+        .def("__hash__", &ConcreteTransition::hash)
+        .def("get_index", &ConcreteTransition::get_index)
+        .def("get_source", &ConcreteTransition::get_source)
+        .def("get_target", &ConcreteTransition::get_target)
+        .def("get_cost", &ConcreteTransition::get_cost)
+        .def("get_creating_action", &ConcreteTransition::get_creating_action, py::keep_alive<0, 1>());
 
     // AbstractTransition
     py::class_<AbstractTransition>(m, "AbstractTransition")  //
         .def("__eq__", &AbstractTransition::operator==)
         .def("__hash__", &AbstractTransition::hash)
         .def("get_index", &AbstractTransition::get_index)
-        .def("get_source_state", &AbstractTransition::get_source_state)
-        .def("get_target_state", &AbstractTransition::get_target_state)
+        .def("get_source", &AbstractTransition::get_source)
+        .def("get_target", &AbstractTransition::get_target)
         .def("get_cost", &AbstractTransition::get_cost)
         .def(
             "get_actions",
@@ -1289,7 +1296,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def("get_num_transitions", &StateSpace::get_num_transitions)
         .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference_internal)
-        .def("get_goal_distance", &StateSpace::get_goal_distance)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
         .def("sample_state_with_goal_distance", &StateSpace::sample_state_with_goal_distance, py::return_value_policy::reference_internal);
 
@@ -1587,18 +1593,18 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_target_states",
+            "get_target_state_indices",
             [](const Abstraction& self, StateIndex source)
             {
-                auto iterator = self.get_target_states(source);
+                auto iterator = self.get_target_state_indices(source);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_source_states",
+            "get_source_state_indices",
             [](const Abstraction& self, StateIndex target)
             {
-                auto iterator = self.get_source_states(target);
+                auto iterator = self.get_source_state_indices(target);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
