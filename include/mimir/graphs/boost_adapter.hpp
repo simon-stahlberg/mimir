@@ -99,28 +99,28 @@ boost::graph_traits<Graph>::vertices_size_type num_vertices(const Graph& g)
 // boost::IncidenceGraph
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/// @brief Get the source state of a transition.
-/// @param e the transition.
-/// @param g the transition system.
-/// @return the source state of the transition.
+/// @brief Get the source vertex of an edge.
+/// @param e the edge.
+/// @param g the graph.
+/// @return the source vertex of the edge.
 template<IsGraph Graph>
 typename boost::graph_traits<Graph>::vertex_descriptor source(const typename boost::graph_traits<Graph>::edge_descriptor& e, const Graph& g)
 {
     return g.get_edges()[e].get_source();
 }
 
-/// @brief Get the target state of a transition.
-/// @param e the transition.
-/// @param g the transition system.
-/// @return the target state of the transition.
+/// @brief Get the target vertex of an edge.
+/// @param e the edge.
+/// @param g the graph.
+/// @return the target vertex of the edge.
 template<IsGraph Graph>
 typename boost::graph_traits<Graph>::vertex_descriptor target(const typename boost::graph_traits<Graph>::edge_descriptor& e, const Graph& g)
 {
     return g.get_edges()[e].get_target();
 }
 
-/// @brief Get the transitions of the transition system.
-/// @param g the transition system.
+/// @brief Get the transitions of the graph.
+/// @param g the graph.
 /// @return an iterator-range providing access to all the forward transitions (i.e., the out edges) in the transition system.
 template<IsGraph Graph>
 std::pair<typename boost::graph_traits<Graph>::out_edge_iterator, typename boost::graph_traits<Graph>::out_edge_iterator>
@@ -129,10 +129,10 @@ out_edges(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const
     return { g.get_adjacent_edge_indices(u, true).begin(), g.get_adjacent_edge_indices(u, true).end() };
 }
 
-/// @brief Get the number of out edges of a state.
-/// @param u the state.
+/// @brief Get the number of out edges of a vertex.
+/// @param u the vertex.
 /// @param g the transition system.
-/// @return the number of out edges of the state.
+/// @return the number of out edges of the vertex.
 template<IsGraph Graph>
 boost::graph_traits<Graph>::degree_size_type out_degree(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const Graph& g)
 {

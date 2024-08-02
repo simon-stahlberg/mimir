@@ -176,6 +176,86 @@ public:
     size_t get_num_edges() const;
 };
 
+/* InverseGraph */
+
+/// @brief InverseGraph is an adapted graph where iterators are inverted.
+template<IsGraph G>
+class InverseGraph
+{
+public:
+    using VertexType = typename G::VertexType;
+    using EdgeType = typename G::EdgeType;
+    using VertexList = std::vector<VertexType>;
+    using EdgeList = std::vector<EdgeType>;
+
+private:
+    std::reference_wrapper<const G> m_graph;
+
+public:
+    explicit InverseGraph(const G& graph);
+
+    /**
+     * Iterators
+     */
+
+    VertexIterator<VertexType, EdgeType> get_adjacent_vertices(VertexIndex vertex, bool forward) const;
+    VertexIndexIterator<EdgeType> get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const;
+    EdgeIterator<EdgeType> get_adjacent_edges(VertexIndex vertex, bool forward) const;
+    EdgeIndexIterator<EdgeType> get_adjacent_edge_indices(VertexIndex vertex, bool forward) const;
+
+    /**
+     * Getters
+     */
+
+    const VertexList& get_vertices() const;
+    const EdgeList& get_edges() const;
+    size_t get_num_vertices() const;
+    size_t get_num_edges() const;
+};
+
+/* SuperSourceGraph */
+
+/// @brief SuperSourceGraph is a graph with an additional super source node that connects to several other nodes.
+template<IsGraph G>
+class SuperSourceGraph
+{
+public:
+    using VertexType = typename G::VertexType;
+    using EdgeType = typename G::EdgeType;
+    using VertexList = std::vector<VertexType>;
+    using EdgeList = std::vector<EdgeType>;
+
+private:
+    std::reference_wrapper<const G> m_graph;
+
+    // Edges cannot be traversed in backward direction because we cannot inject them to the iterators directly.
+    // This is usually not an issue, because the super sources are intended for forward traversal only.
+    VertexType m_super_source;
+    EdgeList m_super_edges;
+    std::vector<EdgeIndex> m_super_slice;
+
+public:
+    explicit SuperSourceGraph(const G& graph, VertexType super_source, EdgeList super_edges);
+
+    /**
+     * Iterators
+     */
+
+    VertexIterator<VertexType, EdgeType> get_adjacent_vertices(VertexIndex vertex, bool forward) const;
+    VertexIndexIterator<EdgeType> get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const;
+    EdgeIterator<EdgeType> get_adjacent_edges(VertexIndex vertex, bool forward) const;
+    EdgeIndexIterator<EdgeType> get_adjacent_edge_indices(VertexIndex vertex, bool forward) const;
+
+    /**
+     * Getters
+     */
+
+    const VertexList& get_vertices() const;
+    const EdgeList& get_edges() const;
+    size_t get_num_vertices() const;
+    size_t get_num_edges() const;
+};
+
 /**
  * Implementations
  */
@@ -231,9 +311,9 @@ void Graph<Vertex, Edge>::reset()
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-VertexIterator<Vertex, Edge> Graph<Vertex, Edge>::get_adjacent_vertices(VertexIndex source, bool forward) const
+VertexIterator<Vertex, Edge> Graph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex, bool forward) const
 {
-    return VertexIterator<Vertex, Edge>(source, m_vertices, m_edges, m_slice, forward);
+    return VertexIterator<Vertex, Edge>(vertex, m_vertices, m_edges, m_slice, forward);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -481,5 +561,172 @@ size_t BidirectionalGraph<G>::get_num_edges() const
 {
     return m_graph.get_num_edges();
 }
+
+/* InverseGraph */
+
+template<IsGraph G>
+InverseGraph<G>::InverseGraph(const G& graph) : m_graph(graph)
+{
+}
+
+template<IsGraph G>
+VertexIterator<typename InverseGraph<G>::VertexType, typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_vertices(VertexIndex vertex,
+                                                                                                                                bool forward) const
+{
+    return m_graph.get().get_adjacent_vertices(vertex, !forward);
+}
+
+template<IsGraph G>
+VertexIndexIterator<typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const
+{
+    return m_graph.get().get_adjacent_vertex_indices(vertex, !forward);
+}
+
+template<IsGraph G>
+EdgeIterator<typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_edges(VertexIndex vertex, bool forward) const
+{
+    return m_graph.get().get_adjacent_edges(vertex, !forward);
+}
+
+template<IsGraph G>
+EdgeIndexIterator<typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_edge_indices(VertexIndex vertex, bool forward) const
+{
+    return m_graph.get().get_adjacent_edge_indices(vertex, !forward);
+}
+
+template<IsGraph G>
+const typename InverseGraph<G>::VertexList& InverseGraph<G>::get_vertices() const
+{
+    return m_graph.get().get_vertices();
+}
+
+template<IsGraph G>
+const typename InverseGraph<G>::EdgeList& InverseGraph<G>::get_edges() const
+{
+    return m_graph.get().get_edges();
+}
+
+template<IsGraph G>
+size_t InverseGraph<G>::get_num_vertices() const
+{
+    return m_graph.get().get_num_vertices();
+}
+
+template<IsGraph G>
+size_t InverseGraph<G>::get_num_edges() const
+{
+    return m_graph.get().get_num_edges();
+}
+
+/* SuperSourceGraph */
+
+template<IsGraph G>
+SuperSourceGraph<G>::SuperSourceGraph(const G& graph, VertexType super_source, EdgeList super_edges) :
+    m_graph(graph),
+    m_super_source(std::move(super_source)),
+    m_super_edges(std::move(super_edges)),
+    m_super_slice()
+{
+    // Ensure that super source has correct index.
+    assert(m_super_source.get_index() == m_graph.get().get_num_vertices());
+    // Ensure that the edge indices for the super edges follow the original graph's edges
+    auto start_index = m_graph.get().get_num_edges();
+    for (size_t i = 0; i < m_super_edges.size(); ++i)
+    {
+        assert(m_super_edges[i].get_index() == start_index + i);
+    }
+
+    m_super_slice.reserve(super_edges.size());
+    for (const auto& edge : super_edges)
+    {
+        m_super_slice.push_back(edge.get_index());
+    }
+}
+
+template<IsGraph G>
+VertexIterator<typename SuperSourceGraph<G>::VertexType, typename SuperSourceGraph<G>::EdgeType> SuperSourceGraph<G>::get_adjacent_vertices(VertexIndex vertex,
+                                                                                                                                            bool forward) const
+{
+    if (vertex == m_super_source.get_index())
+    {
+        assert(forward);
+        return VertexIterator<typename SuperSourceGraph<G>::VertexType, typename SuperSourceGraph<G>::EdgeType>(vertex,
+                                                                                                                m_graph.get().get_vertices(),
+                                                                                                                m_super_edges,
+                                                                                                                m_super_slice,
+                                                                                                                forward);
+    }
+    else
+    {
+        return m_graph.get().get_adjacent_vertices(vertex, forward);
+    }
+}
+
+template<IsGraph G>
+VertexIndexIterator<typename SuperSourceGraph<G>::EdgeType> SuperSourceGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const
+{
+    if (vertex == m_super_source.get_index())
+    {
+        assert(forward);
+        return VertexIndexIterator<typename SuperSourceGraph<G>::EdgeType>(vertex, m_super_edges, m_super_slice, forward);
+    }
+    else
+    {
+        return m_graph.get().get_adjacent_vertex_indices(vertex, forward);
+    }
+}
+
+template<IsGraph G>
+EdgeIterator<typename SuperSourceGraph<G>::EdgeType> SuperSourceGraph<G>::get_adjacent_edges(VertexIndex vertex, bool forward) const
+{
+    if (vertex == m_super_source.get_index())
+    {
+        assert(forward);
+        return EdgeIterator<typename SuperSourceGraph<G>::EdgeType>(vertex, m_super_edges, m_super_slice, forward);
+    }
+    else
+    {
+        return m_graph.get().get_adjacent_edges(vertex, forward);
+    }
+}
+
+template<IsGraph G>
+EdgeIndexIterator<typename SuperSourceGraph<G>::EdgeType> SuperSourceGraph<G>::get_adjacent_edge_indices(VertexIndex vertex, bool forward) const
+{
+    if (vertex == m_super_source.get_index())
+    {
+        assert(forward);
+        return EdgeIndexIterator<typename SuperSourceGraph<G>::EdgeType>(vertex, m_super_edges, m_super_slice, forward);
+    }
+    else
+    {
+        return m_graph.get().get_adjacent_edge_indices(vertex, forward);
+    }
+}
+
+template<IsGraph G>
+const typename SuperSourceGraph<G>::VertexList& SuperSourceGraph<G>::get_vertices() const
+{
+    return m_graph.get().get_vertices();
+}
+
+template<IsGraph G>
+const typename SuperSourceGraph<G>::EdgeList& SuperSourceGraph<G>::get_edges() const
+{
+    return m_graph.get().get_edges();
+}
+
+template<IsGraph G>
+size_t SuperSourceGraph<G>::get_num_vertices() const
+{
+    return m_graph.get().get_num_vertices() + 1;
+}
+
+template<IsGraph G>
+size_t SuperSourceGraph<G>::get_num_edges() const
+{
+    return m_graph.get().get_num_edges() + m_super_edges.size();
+}
+
 }
 #endif

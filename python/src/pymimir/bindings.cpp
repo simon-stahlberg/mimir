@@ -1239,34 +1239,18 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_target_states",
-            [](const StateSpace& self, StateIndex source)
+            "get_adjacent_states",
+            [](const StateSpace& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_target_states(source);
+                auto iterator = self.get_adjacent_states(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_source_states",
-            [](const StateSpace& self, StateIndex target)
+            "get_adjacent_state_indices",
+            [](const StateSpace& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_source_states(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_target_state_indices",
-            [](const StateSpace& self, StateIndex source)
-            {
-                auto iterator = self.get_target_state_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_source_state_indices",
-            [](const StateSpace& self, StateIndex target)
-            {
-                auto iterator = self.get_source_state_indices(target);
+                auto iterator = self.get_adjacent_state_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1279,34 +1263,18 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &StateSpace::get_transition_cost)
         .def(
-            "get_forward_transitions",
-            [](const StateSpace& self, StateIndex source)
+            "get_adjacent_transitions",
+            [](const StateSpace& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_forward_transitions(source);
+                auto iterator = self.get_adjacent_transitions(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_backward_transitions",
-            [](const StateSpace& self, StateIndex target)
+            "get_adjacent_transition_indices",
+            [](const StateSpace& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_backward_transitions(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_forward_transition_indices",
-            [](const StateSpace& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_transition_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_transition_indices",
-            [](const StateSpace& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_transition_indices(target);
+                auto iterator = self.get_adjacent_transition_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1424,34 +1392,18 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_target_states",
-            [](const FaithfulAbstraction& self, StateIndex source)
+            "get_adjacent_states",
+            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_target_states(source);
+                auto iterator = self.get_adjacent_states(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_source_states",
-            [](const FaithfulAbstraction& self, StateIndex target)
+            "get_adjacent_state_indices",
+            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_source_states(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_target_state_indices",
-            [](const FaithfulAbstraction& self, StateIndex source)
-            {
-                auto iterator = self.get_target_state_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_source_state_indices",
-            [](const FaithfulAbstraction& self, StateIndex target)
-            {
-                auto iterator = self.get_source_state_indices(target);
+                auto iterator = self.get_adjacent_state_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1464,34 +1416,18 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost)
         .def(
-            "get_forward_transitions",
-            [](const FaithfulAbstraction& self, StateIndex source)
+            "get_adjacent_transitions",
+            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_forward_transitions(source);
+                auto iterator = self.get_adjacent_transitions(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_backward_transitions",
-            [](const FaithfulAbstraction& self, StateIndex target)
+            "get_adjacent_transition_indices",
+            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_backward_transitions(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_forward_transition_indices",
-            [](const FaithfulAbstraction& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_transition_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_transition_indices",
-            [](const FaithfulAbstraction& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_transition_indices(target);
+                auto iterator = self.get_adjacent_transition_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1552,34 +1488,18 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_target_states",
-            [](const GlobalFaithfulAbstraction& self, StateIndex source)
+            "get_adjacent_states",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_target_states(source);
+                auto iterator = self.get_adjacent_states(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_source_states",
-            [](const GlobalFaithfulAbstraction& self, StateIndex target)
+            "get_adjacent_state_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_source_states(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_target_state_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex source)
-            {
-                auto iterator = self.get_target_state_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_source_state_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex target)
-            {
-                auto iterator = self.get_source_state_indices(target);
+                auto iterator = self.get_adjacent_state_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1594,34 +1514,18 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
         .def(
-            "get_forward_transitions",
-            [](const GlobalFaithfulAbstraction& self, StateIndex source)
+            "get_adjacent_transitions",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_forward_transitions(source);
+                auto iterator = self.get_adjacent_transitions(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_backward_transitions",
-            [](const GlobalFaithfulAbstraction& self, StateIndex target)
+            "get_adjacent_transition_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_backward_transitions(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_forward_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_transition_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_transition_indices(target);
+                auto iterator = self.get_adjacent_transition_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1641,18 +1545,10 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_target_state_indices",
-            [](const Abstraction& self, StateIndex source)
+            "get_adjacent_state_indices",
+            [](const Abstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_target_state_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_source_state_indices",
-            [](const Abstraction& self, StateIndex target)
-            {
-                auto iterator = self.get_source_state_indices(target);
+                auto iterator = self.get_adjacent_state_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1664,34 +1560,18 @@ void init_pymimir(py::module_& m)
         .def("is_alive_state", &Abstraction::is_alive_state)
         .def("get_transition_cost", &Abstraction::get_transition_cost)
         .def(
-            "get_forward_transitions",
-            [](const Abstraction& self, StateIndex source)
+            "get_adjacent_transitions",
+            [](const Abstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_forward_transitions(source);
+                auto iterator = self.get_adjacent_transitions(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_backward_transitions",
-            [](const Abstraction& self, StateIndex target)
+            "get_adjacent_transition_indices",
+            [](const Abstraction& self, StateIndex state, bool forward)
             {
-                auto iterator = self.get_backward_transitions(target);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_forward_transition_indices",
-            [](const Abstraction& self, StateIndex source)
-            {
-                auto iterator = self.get_forward_transition_indices(source);
-                return py::make_iterator(iterator.begin(), iterator.end());
-            },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_backward_transition_indices",
-            [](const Abstraction& self, StateIndex target)
-            {
-                auto iterator = self.get_backward_transition_indices(target);
+                auto iterator = self.get_adjacent_transition_indices(state, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1771,34 +1651,34 @@ void init_pymimir(py::module_& m)
              [](Digraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex> { return self.add_undirected_edge(source, target); })
         .def("reset", &Digraph::reset)
         .def(
-            "get_targets",
-            [](const Digraph& self, StateIndex source)
+            "get_adjacent_vertices",
+            [](const Digraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_targets(source);
+                auto iterator = self.get_adjacent_vertices(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_sources",
-            [](const Digraph& self, StateIndex target)
+            "get_adjacent_vertex_indices",
+            [](const Digraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_sources(target);
+                auto iterator = self.get_adjacent_vertex_indices(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_forward_edges",
-            [](const Digraph& self, StateIndex source)
+            "get_adjacent_edges",
+            [](const Digraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_forward_edges(source);
+                auto iterator = self.get_adjacent_edges(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_backward_edges",
-            [](const Digraph& self, StateIndex target)
+            "get_adjacent_edge_indices",
+            [](const Digraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_backward_edges(target);
+                auto iterator = self.get_adjacent_edge_indices(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1856,34 +1736,34 @@ void init_pymimir(py::module_& m)
              { return self.add_undirected_edge(source, target); })
         .def("reset", &VertexColoredDigraph::reset)
         .def(
-            "get_targets",
-            [](const VertexColoredDigraph& self, StateIndex source)
+            "get_adjacent_vertices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_targets(source);
+                auto iterator = self.get_adjacent_vertices(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_sources",
-            [](const VertexColoredDigraph& self, StateIndex target)
+            "get_adjacent_vertex_indices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_sources(target);
+                auto iterator = self.get_adjacent_vertex_indices(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_forward_edges",
-            [](const VertexColoredDigraph& self, StateIndex source)
+            "get_adjacent_edges",
+            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_forward_edges(source);
+                auto iterator = self.get_adjacent_edges(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_backward_edges",
-            [](const VertexColoredDigraph& self, StateIndex target)
+            "get_adjacent_edge_indices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
             {
-                auto iterator = self.get_backward_edges(target);
+                auto iterator = self.get_adjacent_edge_indices(vertex, forward);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
