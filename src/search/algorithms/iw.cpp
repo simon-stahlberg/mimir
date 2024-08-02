@@ -923,24 +923,24 @@ ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms, std::shared
 
 bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 {
-    if (m_generated_states.count(state.get_id()))
+    if (m_generated_states.count(state.get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state));
         return true;
     }
-    m_generated_states.insert(state.get_id());
+    m_generated_states.insert(state.get_index());
 
     return !m_novelty_table.test_novelty_and_update_table(state);
 }
 
 bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
-    if (m_generated_states.count(succ_state.get_id()))
+    if (m_generated_states.count(succ_state.get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state, succ_state));
         return true;
     }
-    m_generated_states.insert(succ_state.get_id());
+    m_generated_states.insert(succ_state.get_index());
 
     return !m_novelty_table.test_novelty_and_update_table(state, succ_state);
 }

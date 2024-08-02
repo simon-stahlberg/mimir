@@ -178,7 +178,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                   *factories,
                                                   problem,
                                                   initial_state,
-                                                  initial_state.get_id(),
+                                                  initial_state.get_index(),
                                                   options.mark_true_goal_literals,
                                                   *object_graph_pruning_strategy);
     // std::cout << problem->get_filepath().value() << std::endl;
@@ -232,7 +232,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                           *factories,
                                                           problem,
                                                           successor_state,
-                                                          successor_state.get_id(),
+                                                          successor_state.get_index(),
                                                           options.mark_true_goal_literals,
                                                           *object_graph_pruning_strategy);
             // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;

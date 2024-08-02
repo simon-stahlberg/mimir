@@ -49,7 +49,7 @@ bool FlatStateEqual::operator()(FlatState view_left, FlatState view_right) const
 FlatStateBuilder& StateBuilder::get_flatmemory_builder() { return m_builder; }
 const FlatStateBuilder& StateBuilder::get_flatmemory_builder() const { return m_builder; }
 
-StateIndex& StateBuilder::get_id() { return m_builder.get<0>(); }
+StateIndex& StateBuilder::get_index() { return m_builder.get<0>(); }
 
 template<DynamicPredicateCategory P>
 FlatBitsetBuilder<P>& StateBuilder::get_atoms()
@@ -79,7 +79,7 @@ bool State::operator==(State other) const { return m_view.buffer() == other.m_vi
 
 size_t State::hash() const { return loki::hash_combine(m_view.buffer()); }
 
-StateIndex State::get_id() const { return m_view.get<0>(); }
+StateIndex State::get_index() const { return m_view.get<0>(); }
 
 template<DynamicPredicateCategory P>
 bool State::contains(GroundAtom<P> atom) const
@@ -174,7 +174,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
     pddl_factories.get_ground_atoms_from_ids(state.get_atoms<Derived>(), out_derived_ground_atoms);
 
     os << "State("
-       << "state id=" << state.get_id() << ", "
+       << "index=" << state.get_index() << ", "
        << "fluent atoms=" << out_fluent_ground_atoms << ", "
        << "static atoms=" << out_static_ground_atoms << ", "
        << "derived atoms=" << out_derived_ground_atoms << ")";

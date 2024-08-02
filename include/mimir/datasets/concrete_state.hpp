@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_CONCRETE_STATE_HPP_
 #define MIMIR_DATASETS_CONCRETE_STATE_HPP_
 
+#include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
@@ -37,6 +38,8 @@ public:
     StateIndex get_index() const;
     State get_state() const;
 };
+
+static_assert(IsVertex<ConcreteState>);
 
 using ConcreteStateList = std::vector<ConcreteState>;
 

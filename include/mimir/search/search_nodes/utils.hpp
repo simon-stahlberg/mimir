@@ -46,7 +46,7 @@ void set_plan(const flatmemory::FixedSizedTypeVector<typename SearchNode::Layout
 
         out_plan.push_back(cur_search_node.get_creating_action().value());
 
-        cur_search_node = SearchNode(search_nodes.at(cur_search_node.get_parent_state().value().get_id()));
+        cur_search_node = SearchNode(search_nodes.at(cur_search_node.get_parent_state().value().get_index()));
     }
 
     std::reverse(out_plan.begin(), out_plan.end());

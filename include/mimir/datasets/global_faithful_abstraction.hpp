@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_GLOBAL_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_GLOBAL_FAITHFUL_ABSTRACTION_HPP_
 
+#include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/faithful_abstraction.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/object_graph.hpp"
@@ -168,11 +169,8 @@ public:
     const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
 };
 
-/**
- * Static assertions
- */
-
-// static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
+static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
+static_assert(IsGraph<BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>>);
 
 /**
  * Pretty printing

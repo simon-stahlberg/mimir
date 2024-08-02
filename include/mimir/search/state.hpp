@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_STATE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/flat_types.hpp"
 
 #include <flatmemory/flatmemory.hpp>
@@ -28,16 +29,6 @@
 
 namespace mimir
 {
-
-using StateIndex = uint32_t;
-using StateIdList = std::vector<StateIndex>;
-using StateIdSet = std::unordered_set<StateIndex>;
-
-// StateIndex is a stronger notion of a StateId,
-// indicating that there is an underlying indexing scheme 0,1,2,...
-using StateIndex = uint32_t;
-using StateIndexList = std::vector<StateIndex>;
-using StateIndexSet = std::unordered_set<StateIndex>;
 
 /**
  * Flatmemory types
@@ -73,7 +64,7 @@ public:
     FlatStateBuilder& get_flatmemory_builder();
     const FlatStateBuilder& get_flatmemory_builder() const;
 
-    StateIndex& get_id();
+    StateIndex& get_index();
 
     template<DynamicPredicateCategory P>
     FlatBitsetBuilder<P>& get_atoms();
@@ -103,7 +94,7 @@ public:
     /// Same argument from operator== applies.
     size_t hash() const;
 
-    StateIndex get_id() const;
+    StateIndex get_index() const;
 
     template<DynamicPredicateCategory P>
     bool contains(GroundAtom<P> atom) const;

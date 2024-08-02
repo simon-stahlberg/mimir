@@ -19,6 +19,8 @@
 #define MIMIR_SEARCH_DECLARATIONS_HPP_
 
 #include <memory>
+#include <unordered_set>
+#include <vector>
 
 namespace mimir
 {
@@ -43,10 +45,16 @@ using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
 class IHeuristic;
 
 class GroundAction;
+using GroundActionIndex = uint32_t;
+using GroundActionCost = double;
 
 class GroundAxiom;
+using GroundAxiomIndex = uint32_t;
 
 class State;
+using StateIndex = uint32_t;
+using StateIndexList = std::vector<StateIndex>;
+using StateIndexSet = std::unordered_set<StateIndex>;
 
 class SuccessorStateGenerator;
 

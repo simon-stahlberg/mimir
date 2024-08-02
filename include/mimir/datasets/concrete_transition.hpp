@@ -19,6 +19,7 @@
 #define MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
 
 #include "mimir/datasets/declarations.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
@@ -52,6 +53,8 @@ public:
     TransitionCost get_cost() const;
     GroundAction get_creating_action() const;
 };
+
+static_assert(IsEdge<ConcreteTransition>);
 
 using ConcreteTransitionList = std::vector<ConcreteTransition>;
 

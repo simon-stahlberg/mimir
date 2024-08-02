@@ -19,6 +19,7 @@
 #define MIMIR_DATASETS_ABSTRACT_TRANSITION_HPP_
 
 #include "mimir/datasets/declarations.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
@@ -49,6 +50,8 @@ public:
     std::span<const GroundAction> get_actions() const;
     GroundAction get_representative_action() const;
 };
+
+static_assert(IsEdge<AbstractTransition>);
 
 using AbstractTransitionList = std::vector<AbstractTransition>;
 

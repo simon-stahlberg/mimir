@@ -47,7 +47,7 @@ State SuccessorStateGenerator::get_or_create_state(const GroundAtomList<Fluent>&
     /* Fetch member references for non extended construction. */
 
     auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-    auto& state_id = m_state_builder.get_id();
+    auto& state_id = m_state_builder.get_index();
     auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
     fluent_state_atoms.unset_all();
 
@@ -99,7 +99,7 @@ State SuccessorStateGenerator::get_or_create_successor_state(State state, Ground
     /* Fetch member references for non extended construction. */
 
     auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-    auto& state_id = m_state_builder.get_id();
+    auto& state_id = m_state_builder.get_index();
     auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
     fluent_state_atoms.unset_all();
 

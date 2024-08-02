@@ -63,7 +63,7 @@ FlatAxiomBuilder& GroundAxiomBuilder::get_flatmemory_builder() { return m_builde
 
 const FlatAxiomBuilder& GroundAxiomBuilder::get_flatmemory_builder() const { return m_builder; }
 
-uint32_t& GroundAxiomBuilder::get_id() { return m_builder.get<0>(); }
+GroundAxiomIndex& GroundAxiomBuilder::get_index() { return m_builder.get<0>(); }
 
 Axiom& GroundAxiomBuilder::get_axiom() { return m_builder.get<1>(); }
 
@@ -81,7 +81,7 @@ GroundAxiom::GroundAxiom(FlatAxiom view) : m_view(view) {}
 
 size_t GroundAxiom::hash() const { return loki::hash_combine(m_view.buffer()); }
 
-uint32_t GroundAxiom::get_id() const { return m_view.get<0>(); }
+GroundAxiomIndex GroundAxiom::get_index() const { return m_view.get<0>(); }
 
 Axiom GroundAxiom::get_axiom() const { return m_view.get<1>(); }
 
@@ -145,7 +145,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const P
     auto strips_precondition = StripsActionPrecondition(axiom.get_strips_precondition());
 
     os << "Axiom("                                                                                      //
-       << "id=" << axiom.get_id() << ", "                                                               //
+       << "index=" << axiom.get_index() << ", "                                                         //
        << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
        << "binding=" << binding << ", "                                                                 //
        << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                       //

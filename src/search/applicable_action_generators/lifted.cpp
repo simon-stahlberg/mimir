@@ -135,7 +135,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
     /* Header */
 
-    m_action_builder.get_id() = m_flat_actions.size();
+    m_action_builder.get_index() = m_flat_actions.size();
     m_action_builder.get_cost() =
         std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_factories), *action->get_function_expression());
     m_action_builder.get_action() = action;

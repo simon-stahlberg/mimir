@@ -82,7 +82,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(problem, start_state, pddl_factories);
 
-    auto initial_search_node = UninformedSearchNode(this->m_search_nodes[start_state.get_id()]);
+    auto initial_search_node = UninformedSearchNode(this->m_search_nodes[start_state.get_index()]);
     initial_search_node.get_g_value() = 0;
     initial_search_node.get_status() = SearchNodeStatus::OPEN;
 
@@ -110,7 +110,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         m_queue.pop_front();
 
         // We need this before goal test for correct statistics reporting.
-        auto search_node = UninformedSearchNode(this->m_search_nodes[state.get_id()]);
+        auto search_node = UninformedSearchNode(this->m_search_nodes[state.get_index()]);
         search_node.get_status() = SearchNodeStatus::CLOSED;
 
         if (static_cast<uint64_t>(search_node.get_g_value()) > g_value)
@@ -122,7 +122,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(this->m_search_nodes, ConstUninformedCostSearchNode(this->m_search_nodes[state.get_id()]), out_plan);
+            set_plan(this->m_search_nodes, ConstUninformedCostSearchNode(this->m_search_nodes[state.get_index()]), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
@@ -149,7 +149,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
             if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                auto successor_search_node = UninformedSearchNode(this->m_search_nodes[successor_state.get_id()]);
+                auto successor_search_node = UninformedSearchNode(this->m_search_nodes[successor_state.get_index()]);
                 successor_search_node.get_status() = SearchNodeStatus::OPEN;
                 successor_search_node.get_g_value() = search_node.get_g_value() + 1;
                 successor_search_node.get_parent_state() = state;

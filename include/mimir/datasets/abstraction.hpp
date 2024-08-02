@@ -118,8 +118,8 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
-        TargetStateIndexIterator<AbstractTransition> get_target_states(StateIndex source) const override { return m_abstraction.get_target_states(source); }
-        SourceStateIndexIterator<AbstractTransition> get_source_states(StateIndex target) const override { return m_abstraction.get_source_states(target); }
+        TargetVertexIndexIterator<AbstractTransition> get_target_states(StateIndex source) const override { return m_abstraction.get_target_states(source); }
+        SourceVertexIndexIterator<AbstractTransition> get_source_states(StateIndex target) const override { return m_abstraction.get_source_states(target); }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
         size_t get_num_deadend_states() const override { return m_abstraction.get_num_deadend_states(); }
@@ -130,19 +130,19 @@ private:
         /* Transitions */
         const AbstractTransitionList& get_transitions() const override { return m_abstraction.get_transitions(); }
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
-        ForwardTransitionIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const override
+        ForwardEdgeIndexIterator<AbstractTransition> get_forward_transition_indices(StateIndex source) const override
         {
             return m_abstraction.get_forward_transition_indices(source);
         }
-        BackwardTransitionIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const override
+        BackwardEdgeIndexIterator<AbstractTransition> get_backward_transition_indices(StateIndex target) const override
         {
             return m_abstraction.get_backward_transition_indices(target);
         }
-        ForwardTransitionIterator<AbstractTransition> get_forward_transitions(StateIndex source) const override
+        ForwardEdgeIterator<AbstractTransition> get_forward_transitions(StateIndex source) const override
         {
             return m_abstraction.get_forward_transitions(source);
         }
-        BackwardTransitionIterator<AbstractTransition> get_backward_transitions(StateIndex target) const override
+        BackwardEdgeIterator<AbstractTransition> get_backward_transitions(StateIndex target) const override
         {
             return m_abstraction.get_backward_transitions(target);
         }

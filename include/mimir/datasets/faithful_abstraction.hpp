@@ -22,6 +22,7 @@
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/datasets/abstract_transition.hpp"
+#include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/certificate.hpp"
@@ -240,6 +241,9 @@ public:
     /* Additional */
     const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
 };
+
+static_assert(IsAbstraction<FaithfulAbstraction>);
+static_assert(IsGraph<BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>>);
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
 

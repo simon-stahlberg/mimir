@@ -42,7 +42,7 @@ struct FlatDerivedEffect
     bool operator==(const FlatDerivedEffect& other) const;
 };
 
-using FlatAxiomLayout = flatmemory::Tuple<uint32_t,  //
+using FlatAxiomLayout = flatmemory::Tuple<GroundAxiomIndex,  //
                                           Axiom,
                                           FlatObjectListLayout,
                                           FlatStripsActionPreconditionLayout,
@@ -76,7 +76,7 @@ public:
     FlatAxiomBuilder& get_flatmemory_builder();
     const FlatAxiomBuilder& get_flatmemory_builder() const;
 
-    uint32_t& get_id();
+    GroundAxiomIndex& get_index();
     Axiom& get_axiom();
     FlatObjectListBuilder& get_objects();
     /* STRIPS part */
@@ -103,7 +103,7 @@ public:
     /// Same argument from operator== applies.
     size_t hash() const;
 
-    uint32_t get_id() const;
+    GroundAxiomIndex get_index() const;
     Axiom get_axiom() const;
     FlatObjectList get_objects() const;
 

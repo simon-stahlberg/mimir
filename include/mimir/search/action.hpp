@@ -74,8 +74,8 @@ using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
 using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
 using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
 
-using FlatActionLayout = flatmemory::Tuple<uint32_t,  //
-                                           double,
+using FlatActionLayout = flatmemory::Tuple<GroundActionIndex,  //
+                                           GroundActionCost,
                                            Action,
                                            FlatObjectListLayout,
                                            FlatStripsActionPreconditionLayout,
@@ -232,8 +232,8 @@ public:
     FlatActionBuilder& get_flatmemory_builder();
     const FlatActionBuilder& get_flatmemory_builder() const;
 
-    uint32_t& get_id();
-    double& get_cost();
+    GroundActionIndex& get_index();
+    GroundActionCost& get_cost();
     Action& get_action();
     FlatObjectListBuilder& get_objects();
 
@@ -263,8 +263,8 @@ public:
     /// Same argument from operator== applies.
     size_t hash() const;
 
-    uint32_t get_id() const;
-    double get_cost() const;
+    GroundActionIndex get_index() const;
+    GroundActionCost get_cost() const;
     Action get_action() const;
     FlatObjectList get_objects() const;
 

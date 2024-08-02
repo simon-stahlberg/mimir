@@ -364,9 +364,9 @@ FlatActionBuilder& GroundActionBuilder::get_flatmemory_builder() { return m_buil
 
 const FlatActionBuilder& GroundActionBuilder::get_flatmemory_builder() const { return m_builder; }
 
-uint32_t& GroundActionBuilder::get_id() { return m_builder.get<0>(); }
+GroundActionIndex& GroundActionBuilder::get_index() { return m_builder.get<0>(); }
 
-double& GroundActionBuilder::get_cost() { return m_builder.get<1>(); }
+GroundActionCost& GroundActionBuilder::get_cost() { return m_builder.get<1>(); }
 
 Action& GroundActionBuilder::get_action() { return m_builder.get<2>(); }
 
@@ -384,9 +384,9 @@ GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
 size_t GroundAction::hash() const { return loki::hash_combine(m_view.buffer()); }
 
-uint32_t GroundAction::get_id() const { return m_view.get<0>(); }
+GroundActionIndex GroundAction::get_index() const { return m_view.get<0>(); }
 
-double GroundAction::get_cost() const { return m_view.get<1>(); }
+GroundActionCost GroundAction::get_cost() const { return m_view.get<1>(); }
 
 Action GroundAction::get_action() const { return m_view.get<2>(); }
 
@@ -546,7 +546,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
     auto cond_effects = action.get_conditional_effects();
 
     os << "Action("                                                                //
-       << "id=" << action.get_id() << ", "                                         //
+       << "index=" << action.get_index() << ", "                                   //
        << "name=" << action.get_action()->get_name() << ", "                       //
        << "binding=" << binding << ", "                                            //
        << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "  //
