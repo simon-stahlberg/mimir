@@ -18,6 +18,7 @@
 #ifndef MIMIR_GRAPHS_BOOST_ADAPTER_HPP_
 #define MIMIR_GRAPHS_BOOST_ADAPTER_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph.hpp"
@@ -27,9 +28,42 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/strong_components.hpp>
 #include <boost/property_map/property_map.hpp>
+#include <concepts>
 #include <limits>
 #include <map>
 #include <ranges>
+
+namespace mimir
+{
+
+struct ForwardTraversal
+{
+};
+struct BackwardTraversal
+{
+};
+
+template<typename T>
+concept IsTraversalDirection = std::same_as<T, ForwardTraversal> || std::same_as<T, BackwardTraversal>;
+
+template<IsGraph Graph, IsTraversalDirection Direction>
+class GraphWithDirection
+{
+public:
+    using VertexType = typename Graph::VertexType;
+    using EdgeType = typename Graph::EdgeType;
+    using VertexList = std::vector<VertexType>;
+    using EdgeList = std::vector<EdgeType>;
+
+private:
+    std::reference_wrapper<const Graph> m_graph;
+
+public:
+    explicit GraphWithDirection(const Graph& graph, Direction) : m_graph(graph) {}
+
+    const Graph& get_graph() const { return m_graph.get(); }
+};
+}
 
 namespace boost
 {
@@ -72,9 +106,9 @@ namespace mimir
 // boost::VertexListGraph
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/// @brief Get the vertices of the transition system.
-/// @param g the transition system.
-/// @return an iterator-range providing access to all the vertices in the transition system.
+/// @brief Get the vertices of the graph.
+/// @param g the graph.
+/// @return an iterator-range providing access to all the vertices in the graph.
 template<IsGraph Graph>
 std::pair<typename boost::graph_traits<Graph>::vertex_iterator, typename boost::graph_traits<Graph>::vertex_iterator> vertices(const Graph& g)
 {
@@ -86,9 +120,9 @@ std::pair<typename boost::graph_traits<Graph>::vertex_iterator, typename boost::
     return std::make_pair(range.begin(), range.end());
 }
 
-/// @brief Get the number of vertices in the transition system.
-/// @param g the transition system.
-/// @return the number of vertices in the transition system.
+/// @brief Get the number of vertices in the graph.
+/// @param g the graph.
+/// @return the number of vertices in the graph.
 template<IsGraph Graph>
 boost::graph_traits<Graph>::vertices_size_type num_vertices(const Graph& g)
 {
@@ -119,19 +153,24 @@ typename boost::graph_traits<Graph>::vertex_descriptor target(const typename boo
     return g.get_edges()[e].get_target();
 }
 
-/// @brief Get the transitions of the graph.
+/// @brief Get the edges of the graph.
 /// @param g the graph.
-/// @return an iterator-range providing access to all the forward transitions (i.e., the out edges) in the transition system.
+/// @return an iterator-range providing access to all the forward edges (i.e., the out edges) in the graph.
 template<IsGraph Graph>
 std::pair<typename boost::graph_traits<Graph>::out_edge_iterator, typename boost::graph_traits<Graph>::out_edge_iterator>
 out_edges(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const Graph& g)
 {
+    // std::cout << "Out edges: " << u << std::endl;
+    // for (const auto e : g.get_adjacent_edge_indices(u, true))
+    //{
+    //     std::cout << e << std::endl;
+    // }
     return { g.get_adjacent_edge_indices(u, true).begin(), g.get_adjacent_edge_indices(u, true).end() };
 }
 
 /// @brief Get the number of out edges of a vertex.
 /// @param u the vertex.
-/// @param g the transition system.
+/// @param g the graph.
 /// @return the number of out edges of the vertex.
 template<IsGraph Graph>
 boost::graph_traits<Graph>::degree_size_type out_degree(typename boost::graph_traits<Graph>::vertex_descriptor const& u, const Graph& g)
@@ -179,7 +218,7 @@ namespace mimir
 /// @brief Get the index of a state.
 /// @param key the state.
 /// @return the index of the state, which is just the input key.
-inline boost::property_traits<VertexIndexMap>::reference get(VertexIndexMap, boost::property_traits<VertexIndexMap>::key_type key) { return key; }
+inline boost::property_traits<VertexIndexMap>::reference get(const VertexIndexMap&, boost::property_traits<VertexIndexMap>::key_type key) { return key; }
 
 /// @brief Wrapper function for boost's strong_components algorithm.
 /// @param g the transition system.
@@ -236,13 +275,53 @@ private:
 public:
     explicit WeightMap(const std::vector<EdgeCost>& edge_costs) : m_edge_costs(edge_costs) {}
 
-    EdgeCost get_edge_cost(EdgeIndex edge) const { return m_edge_costs.get().at(edge); }
+    EdgeCost get(EdgeIndex key) const
+    {
+        // std::cout << "WeightMap::get: key=" << key << " " << m_edge_costs.get().at(key) << std::endl;
+        return m_edge_costs.get().at(key);
+    }
+};
+
+class PredecessorMap
+{
+private:
+    std::reference_wrapper<std::vector<VertexIndex>> m_predecessors;
+
+public:
+    explicit PredecessorMap(std::vector<VertexIndex>& predecessors) : m_predecessors(predecessors) {}
+
+    VertexIndex get(VertexIndex key) const { return m_predecessors.get().at(key); }
+    void set(VertexIndex key, VertexIndex value)
+    {
+        // std::cout << "PredecessorMap::set: key=" << key << " value=" << value << std::endl;
+        m_predecessors.get().at(key) = value;
+    }
+};
+
+class DistanceMap
+{
+private:
+    std::reference_wrapper<std::vector<EdgeCost>> m_distances;
+
+public:
+    explicit DistanceMap(std::vector<EdgeCost>& distances) : m_distances(distances) {}
+
+    EdgeCost get(VertexIndex key) const
+    {
+        // std::cout << "DistanceMap::get: key=" << key << " value=" << m_distances.get().at(key) << std::endl;
+        return m_distances.get().at(key);
+    }
+    void set(VertexIndex key, EdgeCost value)
+    {
+        // std::cout << "DistanceMap::set: key=" << key << " value=" << value << std::endl;
+        m_distances.get().at(key) = value;
+    }
 };
 }
 
 namespace boost
 {
-/// @brief Traits for the VertexIndexMap property map, required for boost::strong_components.
+/// @brief Traits for the WeightMap property map, required for boost::dijkstra_shortest_path.
 template<>
 struct property_traits<mimir::WeightMap>
 {
@@ -250,6 +329,26 @@ struct property_traits<mimir::WeightMap>
     using key_type = mimir::EdgeIndex;
     using reference = mimir::EdgeCost;
     using category = boost::readable_property_map_tag;
+};
+
+/// @brief Traits for the PredecessorMap property map, required for boost::dijkstra_shortest_path.
+template<>
+struct property_traits<mimir::PredecessorMap>
+{
+    using value_type = mimir::VertexIndex;
+    using key_type = mimir::VertexIndex;
+    using reference = mimir::VertexIndex;
+    using category = boost::read_write_property_map_tag;
+};
+
+/// @brief Traits for the DistanceMap property map, required for boost::dijkstra_shortest_path.
+template<>
+struct property_traits<mimir::DistanceMap>
+{
+    using value_type = mimir::EdgeCost;
+    using key_type = mimir::VertexIndex;
+    using reference = mimir::EdgeCost;
+    using category = boost::read_write_property_map_tag;
 };
 
 }
@@ -260,32 +359,68 @@ namespace mimir
 /// @param WeightMap the weight map.
 /// @param key the edge.
 /// @return the weight of the edge.
-inline boost::property_traits<WeightMap>::reference get(WeightMap m, boost::property_traits<WeightMap>::key_type key) { return m.get_edge_cost(key); }
+inline boost::property_traits<WeightMap>::reference get(const WeightMap& m, boost::property_traits<WeightMap>::key_type key) { return m.get(key); }
 
-template<IsGraph Graph>
-std::tuple<std::vector<typename boost::graph_traits<Graph>::vertex_descriptor>, std::vector<double>>
-dijkstra_shortest_paths(const Graph& g,
-                        const std::vector<EdgeCost>& edge_costs,
-                        typename boost::graph_traits<Graph>::vertex_descriptor s,
-                        bool forward = true,
-                        bool unit_cost_one = true)
+inline boost::property_traits<PredecessorMap>::reference get(const PredecessorMap& m, boost::property_traits<PredecessorMap>::key_type key)
 {
-    using VertexDescriptor = typename boost::graph_traits<Graph>::vertex_descriptor;
+    return m.get(key);
+}
 
-    // predecessor map
-    std::vector<VertexDescriptor> p(num_vertices(g));
-    auto predecessor_map = boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g));
+inline void put(PredecessorMap& m, boost::property_traits<PredecessorMap>::key_type key, boost::property_traits<PredecessorMap>::value_type value)
+{
+    m.set(key, value);
+}
 
-    // distance map
-    auto d = std::vector<double>(num_vertices(g));
-    auto distance_map = boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g));
+inline boost::property_traits<DistanceMap>::reference get(const DistanceMap& m, boost::property_traits<DistanceMap>::key_type key) { return m.get(key); }
 
-    boost::dijkstra_shortest_paths(g,
-                                   s,
-                                   boost::predecessor_map(predecessor_map)  //
-                                       .distance_map(distance_map)
-                                       .weight_map(WeightMap(edge_costs))
-                                       .vertex_index_map(VertexIndexMap()));
+inline void put(DistanceMap& m, boost::property_traits<DistanceMap>::key_type key, boost::property_traits<DistanceMap>::value_type value) { m.set(key, value); }
+
+template<IsGraph Graph, class SourceInputIter>
+std::tuple<std::vector<typename boost::graph_traits<Graph>::vertex_descriptor>, std::vector<double>>
+dijkstra_shortest_paths(const Graph& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
+{
+    auto p = std::vector<typename boost::graph_traits<Graph>::vertex_descriptor>(g.get_num_vertices());
+    auto d = std::vector<double>(g.get_num_vertices());
+    auto compare = std::less<EdgeCost>();
+    auto combine = std::plus<EdgeCost>();
+    auto inf = std::numeric_limits<EdgeCost>::max();
+    auto zero = EdgeCost();
+
+    // Custom visitor to add debug information
+    class DebugVisitor : public boost::default_dijkstra_visitor
+    {
+    private:
+        DistanceMap d;
+        WeightMap w;
+
+    public:
+        DebugVisitor(DistanceMap d, WeightMap w) : d(d), w(w) {}
+
+        void edge_relaxed(EdgeIndex e, const Graph& g) { std::cout << "Edge relaxed: (" << source(e, g) << ", " << target(e, g) << ")" << std::endl; }
+
+        void edge_not_relaxed(EdgeIndex e, const Graph& g)
+        {
+            std::cout << "Edge not relaxed: (" << source(e, g) << ", " << target(e, g) << ") " << d.get(source(e, g)) << " " << get(w, e) << " "
+                      << d.get(target(e, g)) << std::endl;
+        }
+    };
+
+    // multiple source shortest path
+    boost::dijkstra_shortest_paths(g,  //
+                                   s_begin,
+                                   s_end,
+                                   PredecessorMap(p),
+                                   DistanceMap(d),
+                                   WeightMap(w),
+                                   VertexIndexMap(),
+                                   compare,
+                                   combine,
+                                   inf,
+                                   zero,
+                                   DebugVisitor(DistanceMap(d), WeightMap(w)));
+
+    std::cout << p << std::endl;
+    std::cout << d << std::endl;
 
     return std::make_tuple(p, d);
 };

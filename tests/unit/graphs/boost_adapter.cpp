@@ -95,8 +95,9 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        const auto edge_costs = std::vector<double>(state_space.get_num_states(), 1);
-        // const auto [predecessor_map, distance_map] = dijkstra_shortest_paths(state_space.get_graph(), edge_costs, state_space.get_initial_state());
+        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        auto states = StateIndexList { state_space.get_initial_state() };
+        const auto [predecessor_map, distance_map] = dijkstra_shortest_paths(state_space.get_graph(), edge_costs, states.begin(), states.end());
     }
     /*
     {
