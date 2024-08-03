@@ -370,9 +370,9 @@ struct property_traits<mimir::PredecessorMap>
 template<>
 struct property_traits<mimir::DistanceMap>
 {
-    using value_type = mimir::EdgeCost;
+    using value_type = mimir::Distance;
     using key_type = mimir::VertexIndex;
-    using reference = mimir::EdgeCost;
+    using reference = mimir::Distance;
     using category = boost::read_write_property_map_tag;
 };
 
@@ -401,15 +401,15 @@ inline boost::property_traits<DistanceMap>::reference get(const DistanceMap& m, 
 inline void put(DistanceMap& m, boost::property_traits<DistanceMap>::key_type key, boost::property_traits<DistanceMap>::value_type value) { m.set(key, value); }
 
 template<IsGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, std::vector<double>>
+std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, std::vector<Distance>>
 dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
 {
     auto p = std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>(g.get_graph().get_num_vertices());
-    auto d = std::vector<double>(g.get_graph().get_num_vertices());
-    auto compare = std::less<EdgeCost>();
-    auto combine = std::plus<EdgeCost>();
-    auto inf = std::numeric_limits<EdgeCost>::max();
-    auto zero = EdgeCost();
+    auto d = std::vector<Distance>(g.get_graph().get_num_vertices());
+    auto compare = std::less<Distance>();
+    auto combine = std::plus<Distance>();
+    auto inf = std::numeric_limits<Distance>::max();
+    auto zero = Distance();
 
     // Custom visitor to add debug information
     /*

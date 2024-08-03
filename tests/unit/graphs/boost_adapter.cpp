@@ -112,29 +112,23 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         {
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
+        // There are zero deadend state.
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<double>::max()), 0);
     }
-    /*
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        const auto [num_components, component_map] = strong_components(state_space.get_graph());
+        auto graph = GraphWithDirection(state_space.get_graph(), BackwardTraversal());
 
-        // Each state should have its own component.
-        EXPECT_EQ(num_components, num_vertices(state_space.get_graph()));
+        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        const auto [predecessor_map, distance_map] =
+            dijkstra_shortest_paths(graph, edge_costs, state_space.get_goal_states().begin(), state_space.get_goal_states().end());
 
-        // Each component should only have one state.
-        std::map<size_t, size_t> num_states_per_component;
-        for (auto [it, last] = vertices(state_space.get_graph()); it != last; ++it)
-        {
-            num_states_per_component[component_map.at(*it)]++;
-        }
-        for (const auto& [key, val] : num_states_per_component)
-        {
-            EXPECT_EQ(val, 1);
-        }
+        EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 4);
+        // There is one deadend state.
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<double>::max()), 1);
     }
-    */
 }
 
 }

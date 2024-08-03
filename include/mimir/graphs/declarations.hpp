@@ -28,6 +28,8 @@ using VertexIndex = uint32_t;
 using EdgeIndex = uint32_t;
 using EdgeCost = double;
 
+using Distance = double;
+
 using Color = uint32_t;
 using ColorList = std::vector<Color>;
 
