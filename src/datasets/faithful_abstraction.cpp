@@ -505,10 +505,16 @@ const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& Fait
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
 
-VertexIterator<FaithfulAbstractState, AbstractTransition> FaithfulAbstraction::get_adjacent_states(StateIndex state, bool forward) const
+template<IsTraversalDirection Direction>
+VertexIterator<FaithfulAbstractState, AbstractTransition, Direction> FaithfulAbstraction::get_adjacent_states(StateIndex state) const
 {
-    return m_graph.get_adjacent_vertices(state, forward);
+    return m_graph.get_adjacent_vertices<Direction>(state);
 }
+
+template VertexIterator<FaithfulAbstractState, AbstractTransition, ForwardTraversal>
+FaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template VertexIterator<FaithfulAbstractState, AbstractTransition, BackwardTraversal>
+FaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 VertexIndexIterator<AbstractTransition> FaithfulAbstraction::get_adjacent_state_indices(StateIndex state, bool forward) const
 {

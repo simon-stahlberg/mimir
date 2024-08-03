@@ -219,7 +219,8 @@ public:
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
-    VertexIterator<FaithfulAbstractState, AbstractTransition> get_adjacent_states(StateIndex state, bool forward) const;
+    template<IsTraversalDirection Direction>
+    VertexIterator<FaithfulAbstractState, AbstractTransition, Direction> get_adjacent_states(StateIndex state) const;
     VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     StateIndex get_initial_state() const;

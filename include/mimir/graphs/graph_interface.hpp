@@ -20,6 +20,7 @@
 
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_iterators.hpp"
+#include "mimir/graphs/graph_traversal_interface.hpp"
 
 #include <concepts>
 #include <cstdint>
@@ -29,9 +30,8 @@
 
 namespace mimir
 {
-
 template<typename T>
-concept IsGraph = requires(T a, VertexIndex vertex, bool forward)
+concept IsGraph = requires(T a, VertexIndex vertex)
 {
     typename T::VertexType;
     requires IsVertex<typename T::VertexType>;
@@ -39,17 +39,29 @@ concept IsGraph = requires(T a, VertexIndex vertex, bool forward)
     requires IsEdge<typename T::EdgeType>;
 
     {
-        a.get_adjacent_vertices(vertex, forward)
-        } -> std::same_as<VertexIterator<typename T::VertexType, typename T::EdgeType>>;
+        a.template get_adjacent_vertices<ForwardTraversal>(vertex)
+        } -> std::same_as<VertexIterator<typename T::VertexType, typename T::EdgeType, ForwardTraversal>>;
     {
-        a.get_adjacent_vertex_indices(vertex, forward)
-        } -> std::same_as<VertexIndexIterator<typename T::EdgeType>>;
+        a.template get_adjacent_vertices<BackwardTraversal>(vertex)
+        } -> std::same_as<VertexIterator<typename T::VertexType, typename T::EdgeType, BackwardTraversal>>;
     {
-        a.get_adjacent_edges(vertex, forward)
-        } -> std::same_as<EdgeIterator<typename T::EdgeType>>;
+        a.template get_adjacent_vertex_indices<ForwardTraversal>(vertex)
+        } -> std::same_as<VertexIndexIterator<typename T::EdgeType, ForwardTraversal>>;
     {
-        a.get_adjacent_edge_indices(vertex, forward)
-        } -> std::same_as<EdgeIndexIterator<typename T::EdgeType>>;
+        a.template get_adjacent_vertex_indices<BackwardTraversal>(vertex)
+        } -> std::same_as<VertexIndexIterator<typename T::EdgeType, BackwardTraversal>>;
+    {
+        a.template get_adjacent_edges<ForwardTraversal>(vertex)
+        } -> std::same_as<EdgeIterator<typename T::EdgeType, ForwardTraversal>>;
+    {
+        a.template get_adjacent_edges<BackwardTraversal>(vertex)
+        } -> std::same_as<EdgeIterator<typename T::EdgeType, BackwardTraversal>>;
+    {
+        a.template get_adjacent_edge_indices<ForwardTraversal>(vertex)
+        } -> std::same_as<EdgeIndexIterator<typename T::EdgeType, ForwardTraversal>>;
+    {
+        a.template get_adjacent_edge_indices<BackwardTraversal>(vertex)
+        } -> std::same_as<EdgeIndexIterator<typename T::EdgeType, BackwardTraversal>>;
     {
         a.get_vertices()
         } -> std::same_as<const std::vector<typename T::VertexType>&>;

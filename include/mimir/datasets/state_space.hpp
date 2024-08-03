@@ -171,7 +171,8 @@ public:
     // We cannot ensure that states are having an indexing scheme because
     // users might have created custom states using the successor state generator.
     const ConcreteStateList& get_states() const;
-    VertexIterator<ConcreteState, ConcreteTransition> get_adjacent_states(StateIndex state, bool forward) const;
+    template<IsTraversalDirection Direction>
+    VertexIterator<ConcreteState, ConcreteTransition, Direction> get_adjacent_states(StateIndex state) const;
     VertexIndexIterator<ConcreteTransition> get_adjacent_state_indices(StateIndex state, bool forward) const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;

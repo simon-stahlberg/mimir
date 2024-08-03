@@ -248,10 +248,14 @@ const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& StateSpace::
 /* States */
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
-VertexIterator<ConcreteState, ConcreteTransition> StateSpace::get_adjacent_states(StateIndex state, bool forward) const
+template<IsTraversalDirection Direction>
+VertexIterator<ConcreteState, ConcreteTransition, Direction> StateSpace::get_adjacent_states(StateIndex state) const
 {
-    return m_graph.get_adjacent_vertices(state, forward);
+    return m_graph.get_adjacent_vertices<Direction>(state);
 }
+
+template VertexIterator<ConcreteState, ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template VertexIterator<ConcreteState, ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 VertexIndexIterator<ConcreteTransition> StateSpace::get_adjacent_state_indices(StateIndex state, bool forward) const
 {
