@@ -114,8 +114,8 @@ DenseGraphImpl::DenseGraphImpl(DenseGraphImpl&& other) noexcept :
     m_(other.m_),
     graph_(other.graph_),
     use_default_ptn_(other.use_default_ptn_),
-    lab_(std::move(lab_)),
-    ptn_(std::move(ptn_)),
+    lab_(std::move(other.lab_)),
+    ptn_(std::move(other.ptn_)),
     canon_graph_(other.canon_graph_),
     canon_graph_repr_(std::move(other.canon_graph_repr_)),
     canon_graph_compressed_repr_(std::move(other.canon_graph_compressed_repr_))

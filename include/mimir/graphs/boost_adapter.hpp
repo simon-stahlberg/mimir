@@ -83,7 +83,7 @@ struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = typename mimir::EdgeIndexIterator<EdgeType, Direction>::const_iterator<Direction>;
+    using out_edge_iterator = typename mimir::EdgeIndexIterator<EdgeType, Direction>::template const_iterator<Direction>;
     using degree_size_type = size_t;
     // boost::EdgeListGraph
     using edge_iterator = typename std::vector<edge_descriptor>::const_iterator;
