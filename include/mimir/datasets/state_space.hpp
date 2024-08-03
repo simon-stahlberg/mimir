@@ -77,10 +77,10 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Distances */
-    std::vector<double> m_goal_distances;
+    std::vector<Distance> m_goal_distances;
 
     /* Additional */
-    std::map<double, StateIndexList> m_states_by_goal_distance;
+    std::map<Distance, StateIndexList> m_states_by_goal_distance;
 
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
@@ -96,7 +96,7 @@ private:
                StateIndex initial_state,
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
-               std::vector<double> goal_distances);
+               std::vector<Distance> goal_distances);
 
 public:
     using StateType = State;
@@ -146,13 +146,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states) const;
+    std::vector<Distance> compute_shortest_distances_from_states(const StateIndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances() const;
+    std::vector<std::vector<Distance>> compute_pairwise_shortest_state_distances() const;
 
     /**
      *  Getters
@@ -171,8 +171,6 @@ public:
     const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& get_graph() const;
 
     /* States */
-    // We cannot ensure that states are having an indexing scheme because
-    // users might have created custom states using the successor state generator.
     const ConcreteStateList& get_states() const;
     template<IsTraversalDirection Direction>
     VertexIterator<ConcreteState, ConcreteTransition, Direction> get_adjacent_states(StateIndex state) const;
@@ -199,12 +197,12 @@ public:
     size_t get_num_transitions() const;
 
     /* Distances */
-    const std::vector<double>& get_goal_distances() const;
-    double get_max_goal_distance() const;
+    const std::vector<Distance>& get_goal_distances() const;
+    Distance get_max_goal_distance() const;
 
     /* Additional */
-    const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
-    StateIndex sample_state_with_goal_distance(double goal_distance) const;
+    const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
+    StateIndex sample_state_with_goal_distance(Distance goal_distance) const;
 };
 
 static_assert(IsGraph<BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>>);

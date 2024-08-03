@@ -123,13 +123,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states) const;
+    std::vector<Distance> compute_shortest_distances_from_states(const StateIndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances() const;
+    std::vector<std::vector<Distance>> compute_pairwise_shortest_state_distances() const;
 
     /**
      * Getters
@@ -180,10 +180,10 @@ public:
     size_t get_num_transitions() const;
 
     /* Distances */
-    const std::vector<double>& get_goal_distances() const;
+    const std::vector<Distance>& get_goal_distances() const;
 
     /* Additional */
-    const std::map<double, StateIndexList>& get_states_by_goal_distance() const;
+    const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);

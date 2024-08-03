@@ -173,7 +173,7 @@ static std::vector<PredicateSet<Derived>> compute_stratification(const AxiomList
             remaining.erase(predicate);
         }
 
-        stratification.push_back(move(stratum));
+        stratification.push_back(std::move(stratum));
     }
 
     return stratification;

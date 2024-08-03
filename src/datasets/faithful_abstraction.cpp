@@ -86,7 +86,7 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          StateIndexSet goal_states,
                                          StateIndexSet deadend_states,
                                          std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
-                                         std::vector<double> goal_distances) :
+                                         std::vector<Distance> goal_distances) :
     m_problem(problem),
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -382,7 +382,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
     /* Compute abstract goal distances */
 
-    auto abstract_goal_distances = std::vector<double> {};
+    auto abstract_goal_distances = std::vector<Distance> {};
     if (options.use_unit_cost_one
         || std::all_of(bidirectional_graph.get_edges().begin(),
                        bidirectional_graph.get_edges().end(),
@@ -411,7 +411,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     auto abstract_deadend_states = StateIndexSet {};
     for (StateIndex abstract_state_index = 0; abstract_state_index < num_abstract_states; ++abstract_state_index)
     {
-        if (abstract_goal_distances.at(abstract_state_index) == std::numeric_limits<double>::max())
+        if (abstract_goal_distances.at(abstract_state_index) == DISTANCE_INFINITY)
         {
             abstract_deadend_states.insert(abstract_state_index);
         }
@@ -497,9 +497,9 @@ StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state) c
  */
 
 template<IsTraversalDirection Direction>
-std::vector<double> FaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& states) const
+std::vector<Distance> FaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& states) const
 {
-    auto distances = std::vector<double> {};
+    auto distances = std::vector<Distance> {};
     if (m_use_unit_cost_one
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return transition.get_cost() == 1; }))
     {
@@ -521,11 +521,11 @@ std::vector<double> FaithfulAbstraction::compute_shortest_distances_from_states(
     return distances;
 }
 
-template std::vector<double> FaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& states) const;
-template std::vector<double> FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
+template std::vector<Distance> FaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& states) const;
+template std::vector<Distance> FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
 
 template<IsTraversalDirection Direction>
-std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_state_distances() const
+std::vector<std::vector<Distance>> FaithfulAbstraction::compute_pairwise_shortest_state_distances() const
 {
     auto transition_costs = std::vector<TransitionCost> {};
     if (m_use_unit_cost_one)
@@ -544,8 +544,8 @@ std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_
     return floyd_warshall_all_pairs_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs).get_matrix();
 }
 
-template std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template std::vector<std::vector<double>> FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template std::vector<std::vector<Distance>> FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template std::vector<std::vector<Distance>> FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  * Getters
@@ -642,10 +642,10 @@ TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transiti
 size_t FaithfulAbstraction::get_num_transitions() const { return m_graph.get_num_edges(); }
 
 /* Distances */
-const std::vector<double>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
+const std::vector<Distance>& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
 
 /* Additional */
-const std::map<double, StateIndexList>& FaithfulAbstraction::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
+const std::map<Distance, StateIndexList>& FaithfulAbstraction::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
 
 /**
  * Pretty printing
