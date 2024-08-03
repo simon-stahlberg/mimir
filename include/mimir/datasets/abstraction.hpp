@@ -121,11 +121,11 @@ private:
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
         VertexIndexIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_state_indices(StateIndex state) const override
         {
-            return m_abstraction.get_forward_adjacent_state_indices(state);
+            return m_abstraction.template get_adjacent_state_indices<ForwardTraversal>(state);
         }
         VertexIndexIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_state_indices(StateIndex state) const override
         {
-            return m_abstraction.get_backward_adjacent_state_indices(state);
+            return m_abstraction.template get_adjacent_state_indices<BackwardTraversal>(state);
         }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
@@ -139,19 +139,19 @@ private:
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
         EdgeIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_transitions(StateIndex state) const override
         {
-            return m_abstraction.get_forward_adjacent_transitions(state);
+            return m_abstraction.template get_adjacent_transitions<ForwardTraversal>(state);
         }
         EdgeIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_transitions(StateIndex state) const override
         {
-            return m_abstraction.get_backward_adjacent_transitions(state);
+            return m_abstraction.template get_adjacent_transitions<BackwardTraversal>(state);
         }
         EdgeIndexIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_transition_indices(StateIndex state) const override
         {
-            return m_abstraction.get_forward_adjacent_transition_indices(state);
+            return m_abstraction.template get_adjacent_transition_indices<ForwardTraversal>(state);
         }
         EdgeIndexIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_transition_indices(StateIndex state) const override
         {
-            return m_abstraction.get_backward_adjacent_transition_indices(state);
+            return m_abstraction.template get_adjacent_transition_indices<BackwardTraversal>(state);
         }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
@@ -203,7 +203,7 @@ public:
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
     template<IsTraversalDirection Direction>
-    VertexIndexIterator<ForwardTraversal, Direction> get_adjacent_state_indices(StateIndex state) const
+    VertexIndexIterator<AbstractTransition, Direction> get_adjacent_state_indices(StateIndex state) const
     {
         if constexpr (std::is_same_v<Direction, ForwardTraversal>)
         {

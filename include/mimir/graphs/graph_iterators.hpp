@@ -452,7 +452,7 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator
         }
         else if constexpr (std::is_same_v<Direction_, BackwardTraversal>)
         {
-            if (m_edges.at(m_slice[0]).get_target() == m_vertex)
+            if (m_edges->at(m_slice[0]).get_target() == m_vertex)
             {
                 return;
             }

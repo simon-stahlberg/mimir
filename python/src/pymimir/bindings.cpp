@@ -1224,11 +1224,10 @@ void init_pymimir(py::module_& m)
                const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = StateSpacesOptions())
-        .def("compute_shortest_distances_from_states",
-             &StateSpace::compute_shortest_distances_from_states,
-             pybind11::arg("states"),
-             pybind11::arg("forward") = true)
-        .def("compute_pairwise_shortest_state_distances", &StateSpace::compute_pairwise_shortest_state_distances, pybind11::arg("forward") = true)
+        .def("compute_shortest_forward_distances_from_states", &StateSpace::compute_shortest_distances_from_states<ForwardTraversal>)
+        .def("compute_shortest_backward_distances_from_states", &StateSpace::compute_shortest_distances_from_states<BackwardTraversal>)
+        .def("compute_pairwise_shortest_forward_state_distances", &StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>)
+        .def("compute_pairwise_shortest_backward_state_distances", &StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>)
         .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
@@ -1239,18 +1238,34 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_adjacent_states",
-            [](const StateSpace& self, StateIndex state, bool forward)
+            "get_forward_adjacent_states",
+            [](const StateSpace& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_states(state, forward);
+                auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_state_indices",
-            [](const StateSpace& self, StateIndex state, bool forward)
+            "get_backward_adjacent_states",
+            [](const StateSpace& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_state_indices(state, forward);
+                auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_state_indices",
+            [](const StateSpace& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_state_indices",
+            [](const StateSpace& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1263,18 +1278,34 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &StateSpace::get_transition_cost)
         .def(
-            "get_adjacent_transitions",
-            [](const StateSpace& self, StateIndex state, bool forward)
+            "get_forward_adjacent_transitions",
+            [](const StateSpace& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transitions(state, forward);
+                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_transition_indices",
-            [](const StateSpace& self, StateIndex state, bool forward)
+            "get_backward_adjacent_transitions",
+            [](const StateSpace& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transition_indices(state, forward);
+                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_transition_indices",
+            [](const StateSpace& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_transition_indices",
+            [](const StateSpace& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1380,7 +1411,10 @@ void init_pymimir(py::module_& m)
                const FaithfulAbstractionsOptions& options) { return FaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionOptions())
-        .def("compute_shortest_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states)
+        .def("compute_shortest_forward_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>)
+        .def("compute_shortest_backward_distances_from_states", &FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>)
+        .def("compute_pairwise_shortest_forward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>)
+        .def("compute_pairwise_shortest_backward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>)
         .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &FaithfulAbstraction::get_aag)
@@ -1392,18 +1426,34 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_adjacent_states",
-            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_forward_adjacent_states",
+            [](const FaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_states(state, forward);
+                auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_state_indices",
-            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_backward_adjacent_states",
+            [](const FaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_state_indices(state, forward);
+                auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_state_indices",
+            [](const FaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_state_indices",
+            [](const FaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1416,18 +1466,34 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost)
         .def(
-            "get_adjacent_transitions",
-            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_forward_adjacent_transitions",
+            [](const FaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transitions(state, forward);
+                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_transition_indices",
-            [](const FaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_backward_adjacent_transitions",
+            [](const FaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transition_indices(state, forward);
+                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_transition_indices",
+            [](const FaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_transition_indices",
+            [](const FaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1469,6 +1535,10 @@ void init_pymimir(py::module_& m)
                const FaithfulAbstractionsOptions& options) { return GlobalFaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionsOptions())
+        .def("compute_shortest_forward_distances_from_states", &GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>)
+        .def("compute_shortest_backward_distances_from_states", &GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>)
+        .def("compute_pairwise_shortest_forward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>)
+        .def("compute_pairwise_shortest_backward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>)
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
         .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &GlobalFaithfulAbstraction::get_pddl_factories)
@@ -1488,18 +1558,34 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_adjacent_states",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_forward_adjacent_states",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_states(state, forward);
+                auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_state_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_backward_adjacent_states",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_state_indices(state, forward);
+                auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_state_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_state_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1514,18 +1600,34 @@ void init_pymimir(py::module_& m)
         .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
         .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
         .def(
-            "get_adjacent_transitions",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_forward_adjacent_transitions",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transitions(state, forward);
+                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state, bool forward)
+            "get_backward_adjacent_transitions",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transition_indices(state, forward);
+                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_transition_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_transition_indices",
+            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1545,10 +1647,18 @@ void init_pymimir(py::module_& m)
         .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
-            "get_adjacent_state_indices",
-            [](const Abstraction& self, StateIndex state, bool forward)
+            "get_forward_adjacent_state_indices",
+            [](const Abstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_state_indices(state, forward);
+                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_state_indices",
+            [](const Abstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1560,18 +1670,34 @@ void init_pymimir(py::module_& m)
         .def("is_alive_state", &Abstraction::is_alive_state)
         .def("get_transition_cost", &Abstraction::get_transition_cost)
         .def(
-            "get_adjacent_transitions",
-            [](const Abstraction& self, StateIndex state, bool forward)
+            "get_forward_adjacent_transitions",
+            [](const Abstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transitions(state, forward);
+                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_transition_indices",
-            [](const Abstraction& self, StateIndex state, bool forward)
+            "get_backward_adjacent_transitions",
+            [](const Abstraction& self, StateIndex state)
             {
-                auto iterator = self.get_adjacent_transition_indices(state, forward);
+                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_transition_indices",
+            [](const Abstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_transition_indices",
+            [](const Abstraction& self, StateIndex state)
+            {
+                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1651,34 +1777,66 @@ void init_pymimir(py::module_& m)
              [](Digraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex> { return self.add_undirected_edge(source, target); })
         .def("reset", &Digraph::reset)
         .def(
-            "get_adjacent_vertices",
-            [](const Digraph& self, VertexIndex vertex, bool forward)
+            "get_forward_adjacent_vertices",
+            [](const Digraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_vertices(vertex, forward);
+                auto iterator = self.get_adjacent_vertices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_vertex_indices",
-            [](const Digraph& self, VertexIndex vertex, bool forward)
+            "get_backward_adjacent_vertices",
+            [](const Digraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_vertex_indices(vertex, forward);
+                auto iterator = self.get_adjacent_vertices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_edges",
-            [](const Digraph& self, VertexIndex vertex, bool forward)
+            "get_forward_adjacent_vertex_indices",
+            [](const Digraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_edges(vertex, forward);
+                auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_edge_indices",
-            [](const Digraph& self, VertexIndex vertex, bool forward)
+            "get_backward_adjacent_vertex_indices",
+            [](const Digraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_edge_indices(vertex, forward);
+                auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_edges",
+            [](const Digraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_edges",
+            [](const Digraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_edge_indices",
+            [](const Digraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_edge_indices",
+            [](const Digraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
@@ -1736,34 +1894,66 @@ void init_pymimir(py::module_& m)
              { return self.add_undirected_edge(source, target); })
         .def("reset", &VertexColoredDigraph::reset)
         .def(
-            "get_adjacent_vertices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
+            "get_forward_adjacent_vertices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_vertices(vertex, forward);
+                auto iterator = self.get_adjacent_vertices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_vertex_indices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
+            "get_backward_adjacent_vertices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_vertex_indices(vertex, forward);
+                auto iterator = self.get_adjacent_vertices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_edges",
-            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
+            "get_forward_adjacent_vertex_indices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_edges(vertex, forward);
+                auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
         .def(
-            "get_adjacent_edge_indices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex, bool forward)
+            "get_backward_adjacent_vertex_indices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
             {
-                auto iterator = self.get_adjacent_edge_indices(vertex, forward);
+                auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_edges",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_edges",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_forward_adjacent_edge_indices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
+                return py::make_iterator(iterator.begin(), iterator.end());
+            },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_backward_adjacent_edge_indices",
+            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            {
+                auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
