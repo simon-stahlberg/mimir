@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 namespace mimir
@@ -29,6 +30,7 @@ using EdgeIndex = uint32_t;
 using EdgeCost = double;
 
 using Distance = double;
+inline const Distance DISTANCE_INFINITY = std::numeric_limits<Distance>::max();
 
 using Color = uint32_t;
 using ColorList = std::vector<Color>;

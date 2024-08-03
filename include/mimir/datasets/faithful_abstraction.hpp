@@ -196,7 +196,12 @@ public:
      * Extended functionality
      */
 
-    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states, bool forward = true) const;
+    /// @brief Compute the shortest distances from the given states.
+    /// @tparam Direction the direction of traversal.
+    /// @param states the list of states from which shortest distances are computed.
+    /// @return the shortest distances from the given states to all other states.
+    template<IsTraversalDirection Direction>
+    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states) const;
 
     std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
 

@@ -141,10 +141,12 @@ public:
      * Extended functionality
      */
 
-    /// @brief Compute shortest distances from the given states computed using BrFS.
-    /// @param states A list of states from which shortest distances are computed.
-    /// @param forward If true, forward transitions are used, and otherwise, backward transitions
-    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states, bool forward = true) const;
+    /// @brief Compute the shortest distances from the given states.
+    /// @tparam Direction the direction of traversal.
+    /// @param states the list of states from which shortest distances are computed.
+    /// @return the shortest distances from the given states to all other states.
+    template<IsTraversalDirection Direction>
+    std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states) const;
 
     /// @brief Compute pairwise state distances using Floyd-Warshall.
     /// @param forward If true, forward transitions are used, and otherwise, backward transitions

@@ -203,10 +203,14 @@ StateIndex GlobalFaithfulAbstraction::get_abstract_state_index(StateIndex global
  * Extended functionality
  */
 
-std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& abstract_states, bool forward) const
+template<IsTraversalDirection Direction>
+std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& abstract_states) const
 {
-    throw std::runtime_error("Not implemented");
+    return m_abstractions->at(m_index).compute_shortest_distances_from_states<Direction>(abstract_states);
 }
+
+template std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& abstract_states) const;
+template std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& abstract_states) const;
 
 std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances(bool forward) const
 {

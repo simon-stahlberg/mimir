@@ -239,10 +239,33 @@ std::vector<StateSpace> StateSpace::create(
  * Extended functionality
  */
 
-std::vector<double> StateSpace::compute_shortest_distances_from_states(const StateIndexList& states, const bool forward) const
+template<IsTraversalDirection Direction>
+std::vector<double> StateSpace::compute_shortest_distances_from_states(const StateIndexList& states) const
 {
-    throw std::runtime_error("Not implemented");
+    auto distances = std::vector<double> {};
+    if (m_use_unit_cost_one
+        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return transition.get_cost() == 1; }))
+    {
+        auto [predecessors_, distances_] = breadth_first_search(GraphWithDirection(m_graph, Direction()), states.begin(), states.end());
+        distances = std::move(distances_);
+    }
+    else
+    {
+        auto transition_costs = std::vector<TransitionCost> {};
+        transition_costs.reserve(m_graph.get_num_edges());
+        for (const auto& transition : m_graph.get_edges())
+        {
+            transition_costs.push_back(transition.get_cost());
+        }
+        auto [predecessors_, distances_] = dijkstra_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs, states.begin(), states.end());
+        distances = std::move(distances_);
+    }
+
+    return distances;
 }
+
+template std::vector<double> StateSpace::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& states) const;
+template std::vector<double> StateSpace::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
 
 std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_distances(const bool forward) const
 {
