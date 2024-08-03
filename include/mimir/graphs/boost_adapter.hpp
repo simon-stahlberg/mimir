@@ -31,7 +31,6 @@
 #include <boost/property_map/property_map.hpp>
 #include <concepts>
 #include <limits>
-#include <map>
 #include <ranges>
 
 namespace mimir
@@ -189,84 +188,15 @@ template<IsGraph Graph, IsTraversalDirection Direction>
 boost::graph_traits<GraphWithDirection<Graph, Direction>>::degree_size_type
 out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
 {
-    // TODO: this assumes that the graph was translated for forward or bidirectional accordingly.
-    // We must add some assertion here.
+    // Ensure that iterator yield only edges with source vertex equal to u,
+    // indicating that the graph was translated to ForwardGraph or BidirectionalGraph.
+    // If such a translation did not occur, the std::distance does not guarantee to return the correct out degree.
+    assert(std::all_of(g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(),
+                       g.get_graph().template get_adjacent_edge_indices<Direction>(u).end(),
+                       [u, &g](const auto& e) { return source(e, g) == u; }));
+
     return std::distance(g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(),
                          g.get_graph().template get_adjacent_edge_indices<Direction>(u).end());
-}
-
-}
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// boost::strong_components
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-// boost::strong_components requires a vertex_index that translates vertex->index, where the index is an index into the vertex list.
-// In our case, the vertex is described with a StateIndex and so vertex and index are the same.
-// To avoid storing a map of the size of the graph, we provide a custom index that just returns the key.
-namespace mimir
-{
-/// @brief A property map that maps a vertex to its index.
-struct VertexIndexMap
-{
-};
-}
-
-namespace boost
-{
-
-/// @brief Traits for the VertexIndexMap property map, required for boost::strong_components.
-template<>
-struct property_traits<mimir::VertexIndexMap>
-{
-    using value_type = mimir::VertexIndex;
-    using key_type = mimir::VertexIndex;
-    using reference = mimir::VertexIndex;
-    using category = boost::readable_property_map_tag;
-};
-
-}
-
-namespace mimir
-{
-
-/// @brief Get the index of a state.
-/// @param key the state.
-/// @return the index of the state, which is just the input key.
-inline boost::property_traits<VertexIndexMap>::reference get(const VertexIndexMap&, boost::property_traits<VertexIndexMap>::key_type key) { return key; }
-
-/// @brief Wrapper function for boost's strong_components algorithm.
-/// @param g the transition system.
-/// @return a pair of the number of strong components and a map from state to component.
-template<IsGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
-          std::map<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor,
-                   typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type>>
-strong_components(const GraphWithDirection<Graph, Direction>& g)
-{
-    std::map<StateIndex, size_t> component_map;
-    boost::associative_property_map component_map_property(component_map);
-    const auto num_components = boost::strong_components(g, component_map_property, boost::vertex_index_map(VertexIndexMap()));
-    return std::make_pair(num_components, component_map);
-}
-
-template<IsGraph Graph, IsTraversalDirection Direction>
-IndexGroupedVector<std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
-                             typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>>
-get_partitioning(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type num_components,
-                 std::map<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor,
-                          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type> component_map)
-{
-    using state_component_pair_t = std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
-                                             typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>;
-    auto partitioning = std::vector<state_component_pair_t>();
-    for (const auto& [state, component] : component_map)
-    {
-        partitioning.push_back({ component, state });
-    }
-    std::sort(std::begin(partitioning), std::end(partitioning));
-    return IndexGroupedVector<state_component_pair_t>::create(std::move(partitioning),
-                                                              [](const auto& prev, const auto& cur) { return prev.first != cur.first; });
 }
 
 /* Assert that the concepts are satisfied */
@@ -277,12 +207,133 @@ BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<Digraph, 
 BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
 
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<VertexColoredDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<VertexColoredDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<VertexColoredDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<VertexColoredDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<VertexColoredDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<VertexColoredDigraph, BackwardTraversal>>) );
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// PropertyMaps
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/// @brief A property map that returns its key as value.
+///
+/// boost requires a vertex_index that translates vertex->index, where the index is an index into the vertex list.
+/// In our case, the vertex is described with a StateIndex and so vertex and index are the same.
+/// To avoid storing a map of the size of the graph, we use TrivialReadPropertyMap that just returns the key.
+template<typename Key, typename Value>
+struct TrivialReadPropertyMap
+{
+    using value_type = Value;
+    using key_type = Key;
+    using reference = Value;
+    using category = boost::read_write_property_map_tag;
+};
+
+/// @brief Get the index of a state.
+/// @param key the state.
+/// @return the index of the state, which is just the input key.
+template<typename Key, typename Value>
+inline Value get(const TrivialReadPropertyMap<Key, Value>&, Key key)
+{
+    return key;
+}
+
+template<IsUnsignedIntegral Key, typename Value>
+class VectorReadPropertyMap
+{
+public:
+    using value_type = Value;
+    using key_type = Key;
+    using reference = Value;
+    using category = boost::read_write_property_map_tag;
+
+    explicit VectorReadPropertyMap(const std::vector<Value>& distances) : m_distances(distances) {}
+
+    Value get(Key key) const { return m_distances.get().at(key); }
+
+private:
+    std::reference_wrapper<const std::vector<Value>> m_distances;
+};
+
+template<typename Key, typename Value>
+inline Value get(const VectorReadPropertyMap<Key, Value>& m, Key key)
+{
+    return m.get(key);
+}
+
+template<IsUnsignedIntegral Key, typename Value>
+class VectorReadWritePropertyMap
+{
+public:
+    using value_type = Value;
+    using key_type = Key;
+    using reference = Value;
+    using category = boost::read_write_property_map_tag;
+
+    explicit VectorReadWritePropertyMap(std::vector<Value>& distances) : m_distances(distances) {}
+
+    Value get(Key key) const { return m_distances.get().at(key); }
+    void set(Key key, Value value) { m_distances.get().at(key) = value; }
+
+private:
+    std::reference_wrapper<std::vector<Value>> m_distances;
+};
+
+template<typename Key, typename Value>
+inline Value get(const VectorReadWritePropertyMap<Key, Value>& m, Key key)
+{
+    return m.get(key);
+}
+
+template<typename Key, typename Value>
+inline void put(VectorReadWritePropertyMap<Key, Value>& m, Key key, Value value)
+{
+    m.set(key, value);
+}
+
+}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::strong_components
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+namespace mimir
+{
+
+/// @brief Wrapper function for boost's strong_components algorithm.
+/// @param g the graph.
+/// @return a pair of the number of strong components and a map from state to component.
+template<IsGraph Graph, IsTraversalDirection Direction>
+std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
+          std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type>>
+strong_components(const GraphWithDirection<Graph, Direction>& g)
+{
+    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
+    using vertices_size_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type;
+
+    auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
+    auto c = std::vector<vertices_size_type>(g.get_graph().get_num_vertices());
+    auto component_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>(c);
+
+    const auto num_components = boost::strong_components(g, component_map, boost::vertex_index_map(vertex_index_map));
+    return std::make_pair(num_components, c);
+}
+
+template<IsGraph Graph, IsTraversalDirection Direction>
+IndexGroupedVector<std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
+                             typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>>
+get_partitioning(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type num_components,
+                 std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type> component_map)
+{
+    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
+    using vertices_size_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type;
+    using state_component_pair_t = std::pair<vertices_size_type, vertex_descriptor_type>;
+
+    auto partitioning = std::vector<state_component_pair_t>();
+    for (vertex_descriptor_type v = 0; v < component_map.size(); ++v)
+    {
+        partitioning.push_back({ component_map.at(v), v });
+    }
+    std::sort(std::begin(partitioning), std::end(partitioning));
+    return IndexGroupedVector<state_component_pair_t>::create(std::move(partitioning),
+                                                              [](const auto& prev, const auto& cur) { return prev.first != cur.first; });
+}
 
 }
 
@@ -292,165 +343,45 @@ BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<VertexColo
 
 namespace mimir
 {
-class WeightMap
-{
-private:
-    std::reference_wrapper<const std::vector<EdgeCost>> m_edge_costs;
-
-public:
-    explicit WeightMap(const std::vector<EdgeCost>& edge_costs) : m_edge_costs(edge_costs) {}
-
-    EdgeCost get(EdgeIndex key) const
-    {
-        // std::cout << "WeightMap::get: key=" << key << " " << m_edge_costs.get().at(key) << std::endl;
-        return m_edge_costs.get().at(key);
-    }
-};
-
-class PredecessorMap
-{
-private:
-    std::reference_wrapper<std::vector<VertexIndex>> m_predecessors;
-
-public:
-    explicit PredecessorMap(std::vector<VertexIndex>& predecessors) : m_predecessors(predecessors) {}
-
-    VertexIndex get(VertexIndex key) const { return m_predecessors.get().at(key); }
-    void set(VertexIndex key, VertexIndex value)
-    {
-        // std::cout << "PredecessorMap::set: key=" << key << " value=" << value << std::endl;
-        m_predecessors.get().at(key) = value;
-    }
-};
-
-class DistanceMap
-{
-private:
-    std::reference_wrapper<std::vector<EdgeCost>> m_distances;
-
-public:
-    explicit DistanceMap(std::vector<EdgeCost>& distances) : m_distances(distances) {}
-
-    EdgeCost get(VertexIndex key) const
-    {
-        // std::cout << "DistanceMap::get: key=" << key << " value=" << m_distances.get().at(key) << std::endl;
-        return m_distances.get().at(key);
-    }
-    void set(VertexIndex key, EdgeCost value)
-    {
-        // std::cout << "DistanceMap::set: key=" << key << " value=" << value << std::endl;
-        m_distances.get().at(key) = value;
-    }
-};
-}
-
-namespace boost
-{
-/// @brief Traits for the WeightMap property map, required for boost::dijkstra_shortest_path.
-template<>
-struct property_traits<mimir::WeightMap>
-{
-    using value_type = mimir::EdgeCost;
-    using key_type = mimir::EdgeIndex;
-    using reference = mimir::EdgeCost;
-    using category = boost::readable_property_map_tag;
-};
-
-/// @brief Traits for the PredecessorMap property map, required for boost::dijkstra_shortest_path.
-template<>
-struct property_traits<mimir::PredecessorMap>
-{
-    using value_type = mimir::VertexIndex;
-    using key_type = mimir::VertexIndex;
-    using reference = mimir::VertexIndex;
-    using category = boost::read_write_property_map_tag;
-};
-
-/// @brief Traits for the DistanceMap property map, required for boost::dijkstra_shortest_path.
-template<>
-struct property_traits<mimir::DistanceMap>
-{
-    using value_type = mimir::Distance;
-    using key_type = mimir::VertexIndex;
-    using reference = mimir::Distance;
-    using category = boost::read_write_property_map_tag;
-};
-
-}
-
-namespace mimir
-{
-/// @brief Get the weight of the edge.
-/// @param WeightMap the weight map.
-/// @param key the edge.
-/// @return the weight of the edge.
-inline boost::property_traits<WeightMap>::reference get(const WeightMap& m, boost::property_traits<WeightMap>::key_type key) { return m.get(key); }
-
-inline boost::property_traits<PredecessorMap>::reference get(const PredecessorMap& m, boost::property_traits<PredecessorMap>::key_type key)
-{
-    return m.get(key);
-}
-
-inline void put(PredecessorMap& m, boost::property_traits<PredecessorMap>::key_type key, boost::property_traits<PredecessorMap>::value_type value)
-{
-    m.set(key, value);
-}
-
-inline boost::property_traits<DistanceMap>::reference get(const DistanceMap& m, boost::property_traits<DistanceMap>::key_type key) { return m.get(key); }
-
-inline void put(DistanceMap& m, boost::property_traits<DistanceMap>::key_type key, boost::property_traits<DistanceMap>::value_type value) { m.set(key, value); }
 
 template<IsGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
 std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, std::vector<Distance>>
 dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
 {
-    auto p = std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>(g.get_graph().get_num_vertices());
+    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
+    using edge_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor;
+
+    auto p = std::vector<vertex_descriptor_type>(g.get_graph().get_num_vertices());
+    auto predecessor_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
     auto d = std::vector<Distance>(g.get_graph().get_num_vertices());
+    auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, Distance>(d);
+    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
+    auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
     auto compare = std::less<Distance>();
     auto combine = std::plus<Distance>();
     auto inf = std::numeric_limits<Distance>::max();
     auto zero = Distance();
 
-    // Custom visitor to add debug information
-    /*
-    class DebugVisitor : public boost::default_dijkstra_visitor
-    {
-    private:
-        DistanceMap d;
-        WeightMap w;
-
-    public:
-        DebugVisitor(DistanceMap d, WeightMap w) : d(d), w(w) {}
-
-        void edge_relaxed(EdgeIndex e, const Graph& g) { std::cout << "Edge relaxed: (" << source(e, g) << ", " << target(e, g) << ")" << std::endl; }
-
-        void edge_not_relaxed(EdgeIndex e, const Graph& g)
-        {
-            std::cout << "Edge not relaxed: (" << source(e, g) << ", " << target(e, g) << ") " << d.get(source(e, g)) << " " << get(w, e) << " "
-                      << d.get(target(e, g)) << std::endl;
-        }
-    };
-    */
-
-    // multiple source shortest path
+    // multiple source shortest path version.
     boost::dijkstra_shortest_paths(g,  //
                                    s_begin,
                                    s_end,
-                                   PredecessorMap(p),
-                                   DistanceMap(d),
-                                   WeightMap(w),
-                                   VertexIndexMap(),
+                                   predecessor_map,
+                                   distance_map,
+                                   weight_map,
+                                   vertex_index_map,
                                    compare,
                                    combine,
                                    inf,
                                    zero,
                                    boost::default_dijkstra_visitor());
 
-    std::cout << p << std::endl;
-    std::cout << d << std::endl;
-
     return std::make_tuple(p, d);
 };
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::breadth_first_search
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 }
 
 #endif

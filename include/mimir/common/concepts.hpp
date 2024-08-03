@@ -31,18 +31,23 @@ struct dependent_false : std::false_type
 };
 
 template<typename T>
-concept IsHashable = requires(T a) {
+concept IsHashable = requires(T a)
+{
     {
         a.hash()
-    } -> std::same_as<size_t>;
+        } -> std::same_as<size_t>;
 };
 
 template<typename T>
-concept IsComparable = requires(T a, T b) {
+concept IsComparable = requires(T a, T b)
+{
     {
         a == b
-    } -> std::same_as<bool>;
+        } -> std::same_as<bool>;
 };
+
+template<typename T>
+concept IsUnsignedIntegral = std::is_integral_v<T> && std::is_unsigned_v<T>;
 
 }
 

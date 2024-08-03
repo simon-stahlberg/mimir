@@ -63,7 +63,7 @@ class ObjectGraphStaticSccPruningStrategy : public ObjectGraphPruningStrategy
 {
 public:
     struct SccPruningComponent;
-    ObjectGraphStaticSccPruningStrategy(size_t num_components, std::vector<SccPruningComponent> pruning_components, std::map<StateIndex, size_t> component_map);
+    ObjectGraphStaticSccPruningStrategy(size_t num_components, std::vector<SccPruningComponent> pruning_components, std::vector<size_t> component_map);
 
     bool prune(StateIndex, Object object) const override;
     bool prune(StateIndex, GroundAtom<Static> atom) const override;
@@ -94,12 +94,12 @@ public:
 
     size_t get_num_components() const;
     const std::vector<SccPruningComponent>& get_pruning_components() const;
-    const std::map<StateIndex, size_t>& get_component_map() const;
+    const std::vector<size_t>& get_component_map() const;
 
 private:
     size_t m_num_components;
     std::vector<SccPruningComponent> m_pruning_components;
-    std::map<StateIndex, size_t> m_component_map;
+    std::vector<size_t> m_component_map;
 };
 
 /**

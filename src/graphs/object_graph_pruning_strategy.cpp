@@ -37,7 +37,7 @@ namespace mimir
 
 ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(size_t num_components,
                                                                          std::vector<SccPruningComponent> pruning_components,
-                                                                         std::map<StateIndex, size_t> component_map) :
+                                                                         std::vector<size_t> component_map) :
     m_num_components(num_components),
     m_pruning_components(std::move(pruning_components)),
     m_component_map(std::move(component_map))
@@ -52,7 +52,7 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object)
 
 template<PredicateCategory P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
-                  const std::map<StateIndex, size_t>& component_map,
+                  const std::vector<size_t>& component_map,
                   StateIndex state,
                   GroundAtom<P> atom)
 {
@@ -85,7 +85,7 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Der
 
 template<PredicateCategory P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
-                  const std::map<StateIndex, size_t>& component_map,
+                  const std::vector<size_t>& component_map,
                   StateIndex state,
                   GroundLiteral<P> literal)
 {
@@ -142,7 +142,7 @@ template const FlatBitsetBuilder<Static>& ObjectGraphStaticSccPruningStrategy::S
 template const FlatBitsetBuilder<Fluent>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Fluent>() const;
 template const FlatBitsetBuilder<Derived>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Derived>() const;
 
-static ForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std::map<StateIndex, size_t>& component_map, const StateSpace& state_space)
+static ForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std::vector<size_t>& component_map, const StateSpace& state_space)
 {
     auto g = Digraph();
     for (size_t i = 0; i < num_components; ++i)
@@ -403,7 +403,7 @@ const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& Obj
     return m_pruning_components;
 }
 
-const std::map<StateIndex, size_t>& ObjectGraphStaticSccPruningStrategy::get_component_map() const { return m_component_map; }
+const std::vector<size_t>& ObjectGraphStaticSccPruningStrategy::get_component_map() const { return m_component_map; }
 
 /**
  * Pretty printing
