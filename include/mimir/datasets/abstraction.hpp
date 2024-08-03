@@ -18,6 +18,7 @@
 #ifndef MIMIR_DATASETS_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_ABSTRACTION_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/datasets/abstract_transition.hpp"
 #include "mimir/graphs/graph_iterators.hpp"
 #include "mimir/search/declarations.hpp"
@@ -72,7 +73,8 @@ private:
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
-        virtual VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const = 0;
+        virtual VertexIndexIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_state_indices(StateIndex state) const = 0;
+        virtual VertexIndexIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_state_indices(StateIndex state) const = 0;
         virtual bool is_goal_state(StateIndex state) const = 0;
         virtual bool is_deadend_state(StateIndex state) const = 0;
         virtual bool is_alive_state(StateIndex state) const = 0;
@@ -80,8 +82,10 @@ private:
         /* Transitions */
         virtual const AbstractTransitionList& get_transitions() const = 0;
         virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
-        virtual EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const = 0;
-        virtual EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const = 0;
+        virtual EdgeIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_transitions(StateIndex state) const = 0;
+        virtual EdgeIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_transitions(StateIndex state) const = 0;
+        virtual EdgeIndexIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_transition_indices(StateIndex state) const = 0;
+        virtual EdgeIndexIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_transition_indices(StateIndex state) const = 0;
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
@@ -115,9 +119,13 @@ private:
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
         const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
         const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
-        VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const override
+        VertexIndexIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_state_indices(StateIndex state) const override
         {
-            return m_abstraction.get_adjacent_state_indices(state, forward);
+            return m_abstraction.get_forward_adjacent_state_indices(state);
+        }
+        VertexIndexIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_state_indices(StateIndex state) const override
+        {
+            return m_abstraction.get_backward_adjacent_state_indices(state);
         }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
@@ -129,13 +137,21 @@ private:
         /* Transitions */
         const AbstractTransitionList& get_transitions() const override { return m_abstraction.get_transitions(); }
         TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
-        EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const override
+        EdgeIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_transitions(StateIndex state) const override
         {
-            return m_abstraction.get_adjacent_transitions(state, forward);
+            return m_abstraction.get_forward_adjacent_transitions(state);
         }
-        EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const override
+        EdgeIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_transitions(StateIndex state) const override
         {
-            return m_abstraction.get_adjacent_transition_indices(state, forward);
+            return m_abstraction.get_backward_adjacent_transitions(state);
+        }
+        EdgeIndexIterator<AbstractTransition, ForwardTraversal> get_forward_adjacent_transition_indices(StateIndex state) const override
+        {
+            return m_abstraction.get_forward_adjacent_transition_indices(state);
+        }
+        EdgeIndexIterator<AbstractTransition, BackwardTraversal> get_backward_adjacent_transition_indices(StateIndex state) const override
+        {
+            return m_abstraction.get_backward_adjacent_transition_indices(state);
         }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
@@ -186,9 +202,21 @@ public:
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
     const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
     const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
-    VertexIndexIterator<AbstractTransition> get_adjacent_state_indices(StateIndex state, bool forward) const
+    template<IsTraversalDirection Direction>
+    VertexIndexIterator<ForwardTraversal, Direction> get_adjacent_state_indices(StateIndex state) const
     {
-        return m_pimpl->get_adjacent_state_indices(state, forward);
+        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        {
+            return m_pimpl->get_forward_adjacent_state_indices(state);
+        }
+        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        {
+            return m_pimpl->get_backward_adjacent_state_indices(state);
+        }
+        else
+        {
+            static_assert(dependent_false<Direction>::value, "Abstraction::get_adjacent_state_indices(...): Missing implementation for IsTraversalDirection.");
+        }
     }
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
@@ -201,13 +229,38 @@ public:
     // Write an adaptor if you need to return different kinds of transitions
     const AbstractTransitionList& get_transitions() const { return m_pimpl->get_transitions(); }
     TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
-    EdgeIterator<AbstractTransition> get_adjacent_transitions(StateIndex state, bool forward) const
+    template<IsTraversalDirection Direction>
+    EdgeIterator<AbstractTransition, Direction> get_adjacent_transitions(StateIndex state) const
     {
-        return m_pimpl->get_adjacent_transitions(state, forward);
+        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        {
+            return m_pimpl->get_forward_adjacent_transitions(state);
+        }
+        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        {
+            return m_pimpl->get_backward_adjacent_transitions(state);
+        }
+        else
+        {
+            static_assert(dependent_false<Direction>::value, "Abstraction::get_adjacent_transitions(...): Missing implementation for IsTraversalDirection.");
+        }
     }
-    EdgeIndexIterator<AbstractTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const
+    template<IsTraversalDirection Direction>
+    EdgeIndexIterator<AbstractTransition, Direction> get_adjacent_transition_indices(StateIndex state) const
     {
-        return m_pimpl->get_adjacent_transition_indices(state, forward);
+        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+        {
+            return m_pimpl->get_forward_adjacent_transition_indices(state);
+        }
+        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+        {
+            return m_pimpl->get_backward_adjacent_transition_indices(state);
+        }
+        else
+        {
+            static_assert(dependent_false<Direction>::value,
+                          "Abstraction::get_adjacent_transition_indices(...): Missing implementation for IsTraversalDirection.");
+        }
     }
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 

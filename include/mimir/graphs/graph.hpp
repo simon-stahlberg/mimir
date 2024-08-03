@@ -85,9 +85,12 @@ public:
 
     template<IsTraversalDirection Direction>
     VertexIterator<Vertex, Edge, Direction> get_adjacent_vertices(VertexIndex vertex) const;
-    VertexIndexIterator<Edge> get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const;
-    EdgeIterator<Edge> get_adjacent_edges(VertexIndex vertex, bool forward) const;
-    EdgeIndexIterator<Edge> get_adjacent_edge_indices(VertexIndex vertex, bool forward) const;
+    template<IsTraversalDirection Direction>
+    VertexIndexIterator<Edge, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    template<IsTraversalDirection Direction>
+    EdgeIterator<Edge, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    template<IsTraversalDirection Direction>
+    EdgeIndexIterator<Edge, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters
@@ -125,9 +128,12 @@ public:
 
     template<IsTraversalDirection Direction>
     VertexIterator<VertexType, EdgeType, Direction> get_adjacent_vertices(VertexIndex vertex) const;
-    VertexIndexIterator<EdgeType> get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const;
-    EdgeIterator<EdgeType> get_adjacent_edges(VertexIndex vertex, bool forward) const;
-    EdgeIndexIterator<EdgeType> get_adjacent_edge_indices(VertexIndex vertex, bool forward) const;
+    template<IsTraversalDirection Direction>
+    VertexIndexIterator<EdgeType, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    template<IsTraversalDirection Direction>
+    EdgeIterator<EdgeType, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    template<IsTraversalDirection Direction>
+    EdgeIndexIterator<EdgeType, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters
@@ -166,9 +172,12 @@ public:
 
     template<IsTraversalDirection Direction>
     VertexIterator<VertexType, EdgeType, Direction> get_adjacent_vertices(VertexIndex vertex) const;
-    VertexIndexIterator<EdgeType> get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const;
-    EdgeIterator<EdgeType> get_adjacent_edges(VertexIndex vertex, bool forward) const;
-    EdgeIndexIterator<EdgeType> get_adjacent_edge_indices(VertexIndex vertex, bool forward) const;
+    template<IsTraversalDirection Direction>
+    VertexIndexIterator<EdgeType, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    template<IsTraversalDirection Direction>
+    EdgeIterator<EdgeType, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    template<IsTraversalDirection Direction>
+    EdgeIndexIterator<EdgeType, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters
@@ -242,21 +251,24 @@ VertexIterator<Vertex, Edge, Direction> Graph<Vertex, Edge>::get_adjacent_vertic
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-VertexIndexIterator<Edge> Graph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+VertexIndexIterator<Edge, Direction> Graph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    return VertexIndexIterator<Edge>(vertex, m_edges, m_slice, forward);
+    return VertexIndexIterator<Edge, Direction>(vertex, m_edges, m_slice);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-EdgeIterator<Edge> Graph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIterator<Edge, Direction> Graph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
 {
-    return EdgeIterator<Edge>(vertex, m_edges, m_slice, forward);
+    return EdgeIterator<Edge, Direction>(vertex, m_edges, m_slice);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-EdgeIndexIterator<Edge> Graph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIndexIterator<Edge, Direction> Graph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    return EdgeIndexIterator<Edge>(vertex, m_edges, m_slice, forward);
+    return EdgeIndexIterator<Edge, Direction>(vertex, m_edges, m_slice);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -341,7 +353,7 @@ ForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return m_graph.get_adjacent_vertices(vertex);
+        return m_graph.template get_adjacent_vertices<BackwardTraversal>(vertex);
     }
     else
     {
@@ -350,45 +362,61 @@ ForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 }
 
 template<IsGraph G>
-VertexIndexIterator<typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+VertexIndexIterator<typename ForwardGraph<G>::EdgeType, Direction> ForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    if (forward)
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return VertexIndexIterator<typename ForwardGraph<G>::EdgeType>(vertex, m_graph.get_edges(), m_edge_indices_grouped_by_source.at(vertex));
+        return VertexIndexIterator<typename ForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
+                                                                                         m_graph.get_edges(),
+                                                                                         m_edge_indices_grouped_by_source.at(vertex));
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_graph.template get_adjacent_vertex_indices<BackwardTraversal>(vertex);
     }
     else
     {
-        return m_graph.get_adjacent_vertex_indices(vertex, forward);
+        static_assert(dependent_false<Direction>::value, "ForwardGraph<G>::get_adjacent_vertex_indices: Missing implementation for IsTraversalDirection.");
     }
 }
 
 template<IsGraph G>
-EdgeIterator<typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_adjacent_edges(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIterator<typename ForwardGraph<G>::EdgeType, Direction> ForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
-    if (forward)
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return EdgeIterator<typename ForwardGraph<G>::EdgeType>(vertex, m_graph.get_edges(), m_edge_indices_grouped_by_source.at(vertex), forward);
+        return EdgeIterator<typename ForwardGraph<G>::EdgeType, Direction>(vertex, m_graph.get_edges(), m_edge_indices_grouped_by_source.at(vertex));
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_graph.template get_backward_edges<BackwardTraversal>(vertex);
     }
     else
     {
-        return m_graph.get_backward_edges(vertex, forward);
+        static_assert(dependent_false<Direction>::value, "ForwardGraph<G>::get_adjacent_edges: Missing implementation for IsTraversalDirection.");
     }
 }
 
 template<IsGraph G>
-EdgeIndexIterator<typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIndexIterator<typename ForwardGraph<G>::EdgeType, Direction> ForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    if (forward)
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return EdgeIndexIterator<typename ForwardGraph<G>::EdgeType>(vertex,
-                                                                     m_graph.get_vertices(),
-                                                                     m_graph.get_edges(),
-                                                                     m_edge_indices_grouped_by_source.at(vertex),
-                                                                     forward);
+        return EdgeIndexIterator<typename ForwardGraph<G>::EdgeType, Direction>(vertex,
+                                                                                m_graph.get_vertices(),
+                                                                                m_graph.get_edges(),
+                                                                                m_edge_indices_grouped_by_source.at(vertex));
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_graph.template get_backward_edge_indices<BackwardTraversal>(vertex);
     }
     else
     {
-        return m_graph.get_backward_edges(vertex, forward);
+        static_assert(dependent_false<Direction>::value, "ForwardGraph<G>::get_adjacent_edge_indices: Missing implementation for IsTraversalDirection.");
     }
 }
 
@@ -454,33 +482,66 @@ BidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 }
 
 template<IsGraph G>
-VertexIndexIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+VertexIndexIterator<typename BidirectionalGraph<G>::EdgeType, Direction> BidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    return VertexIndexIterator<typename BidirectionalGraph<G>::EdgeType>(vertex,
-                                                                         m_graph.get_edges(),
-                                                                         (forward) ? m_edge_indices_grouped_by_source.at(vertex) :
-                                                                                     m_edge_indices_grouped_by_target.at(vertex),
-                                                                         forward);
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return VertexIndexIterator<typename ForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
+                                                                                         m_graph.get_edges(),
+                                                                                         m_edge_indices_grouped_by_source.at(vertex));
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return VertexIndexIterator<typename ForwardGraph<G>::EdgeType, BackwardTraversal>(vertex,
+                                                                                          m_graph.get_edges(),
+                                                                                          m_edge_indices_grouped_by_target.at(vertex));
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value,
+                      "BidirectionalGraph<G>::get_adjacent_vertex_indices: Missing implementation for IsTraversalDirection.");
+    }
 }
 
 template<IsGraph G>
-EdgeIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIterator<typename BidirectionalGraph<G>::EdgeType, Direction> BidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
-    return EdgeIterator<typename BidirectionalGraph<G>::EdgeType>(vertex,
-                                                                  m_graph.get_edges(),
-                                                                  (forward) ? m_edge_indices_grouped_by_source.at(vertex) :
-                                                                              m_edge_indices_grouped_by_target.at(vertex),
-                                                                  forward);
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return EdgeIterator<typename ForwardGraph<G>::EdgeType, ForwardTraversal>(vertex, m_graph.get_edges(), m_edge_indices_grouped_by_source.at(vertex));
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return EdgeIterator<typename ForwardGraph<G>::EdgeType, BackwardTraversal>(vertex, m_graph.get_edges(), m_edge_indices_grouped_by_target.at(vertex));
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "BidirectionalGraph<G>::get_adjacent_edges: Missing implementation for IsTraversalDirection.");
+    }
 }
 
 template<IsGraph G>
-EdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType, Direction> BidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    return EdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType>(vertex,
-                                                                       m_graph.get_edges(),
-                                                                       (forward) ? m_edge_indices_grouped_by_source.at(vertex) :
-                                                                                   m_edge_indices_grouped_by_target.at(vertex),
-                                                                       forward);
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return EdgeIndexIterator<typename ForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
+                                                                                       m_graph.get_edges(),
+                                                                                       m_edge_indices_grouped_by_source.at(vertex));
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return EdgeIndexIterator<typename ForwardGraph<G>::EdgeType, BackwardTraversal>(vertex,
+                                                                                        m_graph.get_edges(),
+                                                                                        m_edge_indices_grouped_by_target.at(vertex));
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "BidirectionalGraph<G>::get_adjacent_edge_indices: Missing implementation for IsTraversalDirection.");
+    }
 }
 
 template<IsGraph G>

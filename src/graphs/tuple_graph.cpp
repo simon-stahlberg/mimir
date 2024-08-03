@@ -140,9 +140,10 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const S
                 // Backtrack admissible chain until the root and return an admissible chain that proves the width.
                 auto cur_vertex_index = vertex.get_index();
                 auto admissible_chain = TupleVertexIndexList { cur_vertex_index };
-                while (m_digraph.get_adjacent_vertices(cur_vertex_index, false).begin() != m_digraph.get_adjacent_vertices(cur_vertex_index, false).end())
+                while (m_digraph.get_adjacent_vertices<BackwardTraversal>(cur_vertex_index).begin()
+                       != m_digraph.get_adjacent_vertices<BackwardTraversal>(cur_vertex_index).end())
                 {
-                    cur_vertex_index = (*m_digraph.get_adjacent_vertices(cur_vertex_index, false).begin()).get_index();
+                    cur_vertex_index = (*m_digraph.get_adjacent_vertices<BackwardTraversal>(cur_vertex_index).begin()).get_index();
                     admissible_chain.push_back(cur_vertex_index);
                 }
                 std::reverse(admissible_chain.begin(), admissible_chain.end());
@@ -296,7 +297,7 @@ void TupleGraphArityZeroComputation::compute_first_layer(State root_state)
     const auto empty_tuple_index = m_tuple_index_mapper->get_empty_tuple_index();
     const auto root_state_vertex_index = 0;
     const auto root_state_index = m_state_space->get_state_index(root_state);
-    for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices(root_state_index, true))
+    for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(root_state_index))
     {
         const auto succ_state = concrete_succ_state.get_state();
         if (succ_state == root_state)
@@ -383,7 +384,7 @@ bool TupleGraphArityKComputation::compute_next_state_layer()
     for (const auto& state : prev_states)
     {
         const auto state_index = m_state_space->get_state_index(state);
-        for (const auto concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices(state_index, true))
+        for (const auto concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))
         {
             const auto succ_state = concrete_succ_state.get_state();
             if (!visited_states.count(succ_state))
@@ -444,7 +445,7 @@ void TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
             const auto state_index = m_state_space->get_state_index(state);
 
             // "[...] by means of a single action".
-            for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices(state_index, true))
+            for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))
             {
                 const auto succ_state = concrete_succ_state.get_state();
 
@@ -723,7 +724,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
         out << "{\n";
         for (const auto& vertex : group)
         {
-            for (const auto& succ_vertex : tuple_graph.get_digraph().get_adjacent_vertices(vertex.get_index(), true))
+            for (const auto& succ_vertex : tuple_graph.get_digraph().get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
             {
                 out << "t" << vertex.get_index() << "->"
                     << "t" << succ_vertex.get_index() << "\n";

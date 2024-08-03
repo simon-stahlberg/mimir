@@ -173,7 +173,8 @@ public:
     const ConcreteStateList& get_states() const;
     template<IsTraversalDirection Direction>
     VertexIterator<ConcreteState, ConcreteTransition, Direction> get_adjacent_states(StateIndex state) const;
-    VertexIndexIterator<ConcreteTransition> get_adjacent_state_indices(StateIndex state, bool forward) const;
+    template<IsTraversalDirection Direction>
+    VertexIndexIterator<ConcreteTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -187,8 +188,10 @@ public:
 
     /* Transitions */
     const ConcreteTransitionList& get_transitions() const;
-    EdgeIterator<ConcreteTransition> get_adjacent_transitions(StateIndex state, bool forward) const;
-    EdgeIndexIterator<ConcreteTransition> get_adjacent_transition_indices(StateIndex state, bool forward) const;
+    template<IsTraversalDirection Direction>
+    EdgeIterator<ConcreteTransition, Direction> get_adjacent_transitions(StateIndex state) const;
+    template<IsTraversalDirection Direction>
+    EdgeIndexIterator<ConcreteTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 
@@ -231,7 +234,7 @@ compute_shortest_goal_distances(const BidirectionalGraph<Graph<Vertex, Edge>>& g
         }
         closed.at(state_index) = true;
 
-        for (const auto& transition : graph.get_adjacent_edges(state_index, false))
+        for (const auto& transition : graph.template get_adjacent_edges<BackwardTraversal>(state_index))
         {
             const auto successor_state = transition.get_source();
 

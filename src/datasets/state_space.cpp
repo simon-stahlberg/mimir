@@ -257,10 +257,14 @@ VertexIterator<ConcreteState, ConcreteTransition, Direction> StateSpace::get_adj
 template VertexIterator<ConcreteState, ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
 template VertexIterator<ConcreteState, ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
-VertexIndexIterator<ConcreteTransition> StateSpace::get_adjacent_state_indices(StateIndex state, bool forward) const
+template<IsTraversalDirection Direction>
+VertexIndexIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_state_indices(StateIndex state) const
 {
-    return m_graph.get_adjacent_vertex_indices(state, forward);
+    return m_graph.get_adjacent_vertex_indices<Direction>(state);
 }
+
+template VertexIndexIterator<ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_state_indices<ForwardTraversal>(StateIndex state) const;
+template VertexIndexIterator<ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_state_indices<BackwardTraversal>(StateIndex state) const;
 
 StateIndex StateSpace::get_state_index(State state) const { return m_state_to_index.at(state); }
 
@@ -285,15 +289,23 @@ bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_stat
 /* Transitions */
 const ConcreteTransitionList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
 
-EdgeIterator<ConcreteTransition> StateSpace::get_adjacent_transitions(StateIndex state, bool forward) const
+template<IsTraversalDirection Direction>
+EdgeIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_transitions(StateIndex state) const
 {
-    return m_graph.get_adjacent_edges(state, forward);
+    return m_graph.get_adjacent_edges<Direction>(state);
 }
 
-EdgeIndexIterator<ConcreteTransition> StateSpace::get_adjacent_transition_indices(StateIndex state, bool forward) const
+template EdgeIterator<ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_transitions<ForwardTraversal>(StateIndex state) const;
+template EdgeIterator<ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_transitions<BackwardTraversal>(StateIndex state) const;
+
+template<IsTraversalDirection Direction>
+EdgeIndexIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_transition_indices(StateIndex state) const
 {
-    return m_graph.get_adjacent_edge_indices(state, forward);
+    return m_graph.get_adjacent_edge_indices<Direction>(state);
 }
+
+template EdgeIndexIterator<ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_transition_indices<ForwardTraversal>(StateIndex state) const;
+template EdgeIndexIterator<ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_transition_indices<BackwardTraversal>(StateIndex state) const;
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const
 {

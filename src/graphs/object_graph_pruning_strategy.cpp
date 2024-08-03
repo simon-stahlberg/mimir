@@ -297,7 +297,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         for (const auto& [group_index, state_index] : group)
         {
-            for (const auto& transition : state_space->get_graph().get_adjacent_edges(state_index, true))
+            for (const auto& transition : state_space->get_graph().template get_adjacent_edges<ForwardTraversal>(state_index))
             {
                 const auto& precondition = StripsActionPrecondition(transition.get_creating_action().get_strips_precondition());
                 mark_objects_as_not_prunable(
@@ -363,7 +363,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         if (visited_components.at(scc))
         {
             scc_stack.pop();
-            for (const auto& succ_scc : scc_digraph.get_adjacent_vertices(scc, true))
+            for (const auto& succ_scc : scc_digraph.template get_adjacent_vertices<ForwardTraversal>(scc))
             {
                 pruning_components.at(scc) &= pruning_components.at(succ_scc.get_index());
             }
@@ -371,7 +371,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         }
         visited_components.at(scc) = true;
 
-        for (const auto& succ_scc : scc_digraph.get_adjacent_vertices(scc, true))
+        for (const auto& succ_scc : scc_digraph.template get_adjacent_vertices<ForwardTraversal>(scc))
         {
             if (!visited_components.at(succ_scc.get_index()))
             {

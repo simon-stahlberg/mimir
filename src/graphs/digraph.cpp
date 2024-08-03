@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& out, const Digraph& digraph)
     }
     for (const auto& vertex : digraph.get_vertices())
     {
-        for (const auto& succ_vertex : digraph.get_adjacent_vertices(vertex.get_index(), true))
+        for (const auto& succ_vertex : digraph.template get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
         {
             out << "t" << vertex.get_index() << "->"
                 << "t" << succ_vertex.get_index() << "\n";

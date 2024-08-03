@@ -18,6 +18,7 @@
 #ifndef MIMIR_GRAPHS_BOOST_ADAPTER_HPP_
 #define MIMIR_GRAPHS_BOOST_ADAPTER_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
@@ -64,8 +65,8 @@ struct vertex_list_and_incidence_graph_tag : public vertex_list_graph_tag, publi
 };
 
 /// Traits for a graph that are needed for the boost graph library.
-template<mimir::IsGraph Graph>
-struct graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>
+template<mimir::IsGraph Graph, mimir::IsTraversalDirection Direction>
+struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
 {
     using VertexType = typename Graph::VertexType;
     using EdgeType = typename Graph::EdgeType;
@@ -81,30 +82,7 @@ struct graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = mimir::EdgeIndexIterator<EdgeType>::const_iterator;
-    using degree_size_type = size_t;
-    // boost::strong_components
-    constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
-};
-
-template<mimir::IsGraph Graph>
-struct graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>
-{
-    using VertexType = typename Graph::VertexType;
-    using EdgeType = typename Graph::EdgeType;
-
-    // boost::GraphConcept
-    using vertex_descriptor = mimir::VertexIndex;
-    using edge_descriptor = mimir::EdgeIndex;
-    using directed_category = directed_tag;
-    using edge_parallel_category = allow_parallel_edge_tag;
-    using traversal_category = vertex_list_and_incidence_graph_tag;
-    using edges_size_type = size_t;
-    // boost::VertexListGraph
-    using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
-    using vertices_size_type = size_t;
-    // boost::IncidenceGraph
-    using out_edge_iterator = mimir::EdgeIndexIterator<EdgeType>::const_iterator;
+    using out_edge_iterator = typename mimir::EdgeIndexIterator<EdgeType, Direction>::const_iterator<Direction>;
     using degree_size_type = size_t;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
@@ -152,80 +130,69 @@ boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertices_size_
 /// @param e the edge.
 /// @param g the graph.
 /// @return the source vertex of the edge.
-template<IsGraph Graph>
-typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::vertex_descriptor
-source(const typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::edge_descriptor& e,
-       const mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>& g)
+template<IsGraph Graph, IsTraversalDirection Direction>
+typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor
+source(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor& e, const GraphWithDirection<Graph, Direction>& g)
 {
-    return g.get_graph().get_edges()[e].get_source();
-}
-template<IsGraph Graph>
-typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::vertex_descriptor
-source(const typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::edge_descriptor& e,
-       const mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>& g)
-{
-    return g.get_graph().get_edges()[e].get_target();
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return g.get_graph().get_edges()[e].get_source();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return g.get_graph().get_edges()[e].get_target();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "source: Missing implementation for IsTraversalDirection.");
+    }
 }
 
 /// @brief Get the target vertex of an edge.
 /// @param e the edge.
 /// @param g the graph.
 /// @return the target vertex of the edge.
-template<IsGraph Graph>
-typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::vertex_descriptor
-target(const typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::edge_descriptor& e,
-       const mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>& g)
+template<IsGraph Graph, IsTraversalDirection Direction>
+typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor
+target(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor& e, const GraphWithDirection<Graph, Direction>& g)
 {
-    return g.get_graph().get_edges()[e].get_target();
-}
-template<IsGraph Graph>
-typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::vertex_descriptor
-target(const typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::edge_descriptor& e,
-       const mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>& g)
-{
-    return g.get_graph().get_edges()[e].get_source();
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return g.get_graph().get_edges()[e].get_target();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return g.get_graph().get_edges()[e].get_source();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "source: Missing implementation for IsTraversalDirection.");
+    }
 }
 
 /// @brief Get the edges of the graph.
 /// @param g the graph.
 /// @return an iterator-range providing access to all the forward edges (i.e., the out edges) in the graph.
-template<IsGraph Graph>
-std::pair<typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::out_edge_iterator,
-          typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::out_edge_iterator>
-out_edges(typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::vertex_descriptor const& u,
-          const mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>& g)
+template<IsGraph Graph, IsTraversalDirection Direction>
+std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::out_edge_iterator,
+          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::out_edge_iterator>
+out_edges(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
 {
-    return { g.get_graph().get_adjacent_edge_indices(u, true).begin(), g.get_graph().get_adjacent_edge_indices(u, true).end() };
-}
-template<IsGraph Graph>
-std::pair<typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::out_edge_iterator,
-          typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::out_edge_iterator>
-out_edges(typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::vertex_descriptor const& u,
-          const mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>& g)
-{
-    return { g.get_graph().get_adjacent_edge_indices(u, false).begin(), g.get_graph().get_adjacent_edge_indices(u, false).end() };
+    return { g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(), g.get_graph().template get_adjacent_edge_indices<Direction>(u).end() };
 }
 
 /// @brief Get the number of out edges of a vertex.
 /// @param u the vertex.
 /// @param g the graph.
 /// @return the number of out edges of the vertex.
-template<IsGraph Graph>
-boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::degree_size_type
-out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>>::vertex_descriptor const& u,
-           const mimir::GraphWithDirection<Graph, mimir::ForwardTraversal>& g)
+template<IsGraph Graph, IsTraversalDirection Direction>
+boost::graph_traits<GraphWithDirection<Graph, Direction>>::degree_size_type
+out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
 {
     // TODO: this assumes that the graph was translated for forward or bidirectional accordingly.
     // We must add some assertion here.
-    return std::distance(g.get_graph().get_adjacent_edge_indices(u, true).begin(), g.get_graph().get_adjacent_edge_indices(u, true).end());
-}
-template<IsGraph Graph>
-boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::degree_size_type
-out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>>::vertex_descriptor const& u,
-           const mimir::GraphWithDirection<Graph, mimir::BackwardTraversal>& g)
-{
-    // TODO: same as above.
-    return std::distance(g.get_graph().get_adjacent_edge_indices(u, false).begin(), g.get_graph().get_adjacent_edge_indices(u, false).end());
+    return std::distance(g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(),
+                         g.get_graph().template get_adjacent_edge_indices<Direction>(u).end());
 }
 
 }
