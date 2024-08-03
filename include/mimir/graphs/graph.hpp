@@ -35,6 +35,16 @@ namespace mimir
  * Declarations
  */
 
+struct ForwardTraversal
+{
+};
+struct BackwardTraversal
+{
+};
+
+template<typename T>
+concept IsTraversalDirection = std::same_as<T, ForwardTraversal> || std::same_as<T, BackwardTraversal>;
+
 /* Graph */
 
 /// @brief A `Graph` G consists of vertices V and edges E.
@@ -156,43 +166,6 @@ private:
 
 public:
     explicit BidirectionalGraph(G graph);
-
-    /**
-     * Iterators
-     */
-
-    VertexIterator<VertexType, EdgeType> get_adjacent_vertices(VertexIndex vertex, bool forward) const;
-    VertexIndexIterator<EdgeType> get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const;
-    EdgeIterator<EdgeType> get_adjacent_edges(VertexIndex vertex, bool forward) const;
-    EdgeIndexIterator<EdgeType> get_adjacent_edge_indices(VertexIndex vertex, bool forward) const;
-
-    /**
-     * Getters
-     */
-
-    const VertexList& get_vertices() const;
-    const EdgeList& get_edges() const;
-    size_t get_num_vertices() const;
-    size_t get_num_edges() const;
-};
-
-/* InverseGraph */
-
-/// @brief InverseGraph is an adapted graph where iterators are inverted.
-template<IsGraph G>
-class InverseGraph
-{
-public:
-    using VertexType = typename G::VertexType;
-    using EdgeType = typename G::EdgeType;
-    using VertexList = std::vector<VertexType>;
-    using EdgeList = std::vector<EdgeType>;
-
-private:
-    std::reference_wrapper<const G> m_graph;
-
-public:
-    explicit InverseGraph(const G& graph);
 
     /**
      * Iterators
@@ -517,62 +490,6 @@ template<IsGraph G>
 size_t BidirectionalGraph<G>::get_num_edges() const
 {
     return m_graph.get_num_edges();
-}
-
-/* InverseGraph */
-
-template<IsGraph G>
-InverseGraph<G>::InverseGraph(const G& graph) : m_graph(graph)
-{
-}
-
-template<IsGraph G>
-VertexIterator<typename InverseGraph<G>::VertexType, typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_vertices(VertexIndex vertex,
-                                                                                                                                bool forward) const
-{
-    return m_graph.get().get_adjacent_vertices(vertex, !forward);
-}
-
-template<IsGraph G>
-VertexIndexIterator<typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex, bool forward) const
-{
-    return m_graph.get().get_adjacent_vertex_indices(vertex, !forward);
-}
-
-template<IsGraph G>
-EdgeIterator<typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_edges(VertexIndex vertex, bool forward) const
-{
-    return m_graph.get().get_adjacent_edges(vertex, !forward);
-}
-
-template<IsGraph G>
-EdgeIndexIterator<typename InverseGraph<G>::EdgeType> InverseGraph<G>::get_adjacent_edge_indices(VertexIndex vertex, bool forward) const
-{
-    return m_graph.get().get_adjacent_edge_indices(vertex, !forward);
-}
-
-template<IsGraph G>
-const typename InverseGraph<G>::VertexList& InverseGraph<G>::get_vertices() const
-{
-    return m_graph.get().get_vertices();
-}
-
-template<IsGraph G>
-const typename InverseGraph<G>::EdgeList& InverseGraph<G>::get_edges() const
-{
-    return m_graph.get().get_edges();
-}
-
-template<IsGraph G>
-size_t InverseGraph<G>::get_num_vertices() const
-{
-    return m_graph.get().get_num_vertices();
-}
-
-template<IsGraph G>
-size_t InverseGraph<G>::get_num_edges() const
-{
-    return m_graph.get().get_num_edges();
 }
 
 }

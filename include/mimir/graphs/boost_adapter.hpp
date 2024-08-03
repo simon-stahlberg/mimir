@@ -36,16 +36,6 @@
 namespace mimir
 {
 
-struct ForwardTraversal
-{
-};
-struct BackwardTraversal
-{
-};
-
-template<typename T>
-concept IsTraversalDirection = std::same_as<T, ForwardTraversal> || std::same_as<T, BackwardTraversal>;
-
 template<IsGraph Graph, IsTraversalDirection Direction>
 class GraphWithDirection
 {

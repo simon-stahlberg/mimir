@@ -106,6 +106,12 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
         auto states = StateIndexList { state_space.get_initial_state() };
         const auto [predecessor_map, distance_map] = dijkstra_shortest_paths(graph, edge_costs, states.begin(), states.end());
+
+        EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 0);
+        for (const auto& goal_state : state_space.get_goal_states())
+        {
+            EXPECT_GT(distance_map.at(goal_state), 0);
+        }
     }
     /*
     {
