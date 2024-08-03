@@ -20,6 +20,7 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/graphs/boost_adapter.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -380,7 +381,31 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     auto bidirectional_graph = BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>(std::move(graph));
 
     /* Compute abstract goal distances */
-    auto abstract_goal_distances = mimir::compute_shortest_goal_distances(bidirectional_graph, abstract_goal_states);
+
+    auto abstract_goal_distances = std::vector<double> {};
+    if (options.use_unit_cost_one
+        || std::all_of(bidirectional_graph.get_edges().begin(),
+                       bidirectional_graph.get_edges().end(),
+                       [](const auto& transition) { return transition.get_cost() == 1; }))
+    {
+        auto [predecessors_, goal_distances_] =
+            breadth_first_search(GraphWithDirection(bidirectional_graph, BackwardTraversal()), abstract_goal_states.begin(), abstract_goal_states.end());
+        abstract_goal_distances = std::move(goal_distances_);
+    }
+    else
+    {
+        auto transition_costs = std::vector<TransitionCost> {};
+        transition_costs.reserve(bidirectional_graph.get_num_edges());
+        for (const auto& transition : bidirectional_graph.get_edges())
+        {
+            transition_costs.push_back(transition.get_cost());
+        }
+        auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(GraphWithDirection(bidirectional_graph, BackwardTraversal()),
+                                                                        transition_costs,
+                                                                        abstract_goal_states.begin(),
+                                                                        abstract_goal_states.end());
+        abstract_goal_distances = std::move(goal_distances_);
+    }
 
     /* Compute deadend states. */
     auto abstract_deadend_states = StateIndexSet {};

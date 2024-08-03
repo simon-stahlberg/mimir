@@ -24,6 +24,7 @@
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph.hpp"
 
+#include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -382,6 +383,51 @@ dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // boost::breadth_first_search
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+template<typename VertexDescriptor, typename Distance>
+struct CustomBFSVisitor : public boost::bfs_visitor<>
+{
+    std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
+    std::reference_wrapper<std::vector<Distance>> distances;
+
+    CustomBFSVisitor(std::vector<VertexDescriptor>& p, std::vector<Distance>& d) : predecessors(p), distances(d) {}
+
+    template<typename Edge, typename Graph>
+    void tree_edge(Edge e, const Graph& g) const
+    {
+        auto u = source(e, g);
+        auto v = target(e, g);
+        predecessors.get().at(v) = u;
+        distances.get().at(v) = distances.get().at(u) + 1;
+    }
+};
+
+template<IsGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
+std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, std::vector<Distance>>
+breadth_first_search(const GraphWithDirection<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
+{
+    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
+    using ColorMap = boost::iterator_property_map<std::vector<boost::default_color_type>::iterator, boost::identity_property_map>;
+
+    auto buffer = boost::queue<vertex_descriptor_type>();
+    auto p = std::vector<vertex_descriptor_type>(g.get_graph().get_num_vertices());
+    for (vertex_descriptor_type v = 0; v < g.get_graph().get_num_vertices(); ++v)
+    {
+        p.at(v) = v;
+    }
+    auto inf = std::numeric_limits<Distance>::max();
+    auto d = std::vector<Distance>(g.get_graph().get_num_vertices(), inf);
+    for (auto it = s_begin; it != s_end; ++it)
+    {
+        d.at(*it) = 0;
+    }
+    auto visitor = CustomBFSVisitor(p, d);
+    auto color_vector = std::vector<boost::default_color_type>(g.get_graph().get_num_vertices(), boost::white_color);
+    auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
+    boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
+
+    return std::make_tuple(p, d);
+}
 }
 
 #endif

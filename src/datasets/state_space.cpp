@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/graphs/boost_adapter.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -144,7 +145,28 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
 
     auto bidirectional_graph = BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>(std::move(graph));
 
-    auto goal_distances = mimir::compute_shortest_goal_distances(bidirectional_graph, goal_states, options.use_unit_cost_one);
+    auto goal_distances = std::vector<double> {};
+    if (options.use_unit_cost_one
+        || std::all_of(bidirectional_graph.get_edges().begin(),
+                       bidirectional_graph.get_edges().end(),
+                       [](const auto& transition) { return transition.get_cost() == 1; }))
+    {
+        auto [predecessors_, goal_distances_] =
+            breadth_first_search(GraphWithDirection(bidirectional_graph, BackwardTraversal()), goal_states.begin(), goal_states.end());
+        goal_distances = std::move(goal_distances_);
+    }
+    else
+    {
+        auto transition_costs = std::vector<TransitionCost> {};
+        transition_costs.reserve(bidirectional_graph.get_num_edges());
+        for (const auto& transition : bidirectional_graph.get_edges())
+        {
+            transition_costs.push_back(transition.get_cost());
+        }
+        auto [predecessors_, goal_distances_] =
+            dijkstra_shortest_paths(GraphWithDirection(bidirectional_graph, BackwardTraversal()), transition_costs, goal_states.begin(), goal_states.end());
+        goal_distances = std::move(goal_distances_);
+    }
 
     auto deadend_states = StateIndexSet {};
     for (StateIndex state_index = 0; state_index < bidirectional_graph.get_num_vertices(); ++state_index)

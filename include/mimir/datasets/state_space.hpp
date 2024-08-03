@@ -27,7 +27,6 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/successor_state_generator.hpp"
 
@@ -207,51 +206,6 @@ public:
 static_assert(IsGraph<BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>>);
 
 using StateSpaceList = std::vector<StateSpace>;
-
-/// @brief Compute shortest distances from the given states using Dijkstra.
-template<IsVertex Vertex, IsEdge Edge>
-extern std::vector<double>
-compute_shortest_goal_distances(const BidirectionalGraph<Graph<Vertex, Edge>>& graph, const StateIndexSet& goal_states, bool use_unit_cost_one = true)
-{
-    auto distances = std::vector<double>(graph.get_num_vertices(), std::numeric_limits<double>::max());
-    auto closed = std::vector<bool>(graph.get_num_vertices(), false);
-    auto priority_queue = PriorityQueue<StateIndex>();
-    for (const auto& state : goal_states)
-    {
-        distances.at(state) = 0.;
-        priority_queue.insert(0., state);
-    }
-
-    while (!priority_queue.empty())
-    {
-        const auto state_index = priority_queue.top();
-        priority_queue.pop();
-        const auto cost = distances.at(state_index);
-
-        if (closed.at(state_index))
-        {
-            continue;
-        }
-        closed.at(state_index) = true;
-
-        for (const auto& transition : graph.template get_adjacent_edges<BackwardTraversal>(state_index))
-        {
-            const auto successor_state = transition.get_source();
-
-            auto succ_cost = distances.at(successor_state);
-            auto new_succ_cost = cost + ((use_unit_cost_one) ? 1. : transition.get_cost());
-
-            if (new_succ_cost < succ_cost)
-            {
-                distances.at(successor_state) = new_succ_cost;
-                // decrease priority
-                priority_queue.insert(new_succ_cost, successor_state);
-            }
-        }
-    }
-
-    return distances;
-}
 
 /**
  * Pretty printing
