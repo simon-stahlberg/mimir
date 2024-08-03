@@ -26,6 +26,7 @@
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/floyd_warshall_shortest.hpp>
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/strong_components.hpp>
@@ -60,7 +61,7 @@ namespace boost
 {
 
 /// A tag for a graph that is both a vertex list graph and an incidence graph.
-struct vertex_list_and_incidence_graph_tag : public vertex_list_graph_tag, public incidence_graph_tag
+struct vertex_list_and_incidence_graph_and_edge_list_graph_tag : public vertex_list_graph_tag, public incidence_graph_tag, public edge_list_graph_tag
 {
 };
 
@@ -70,20 +71,23 @@ struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
 {
     using VertexType = typename Graph::VertexType;
     using EdgeType = typename Graph::EdgeType;
+    using EdgeList = typename Graph::EdgeList;
 
     // boost::GraphConcept
     using vertex_descriptor = mimir::VertexIndex;
     using edge_descriptor = mimir::EdgeIndex;
     using directed_category = directed_tag;
     using edge_parallel_category = allow_parallel_edge_tag;
-    using traversal_category = vertex_list_and_incidence_graph_tag;
-    using edges_size_type = size_t;
+    using traversal_category = vertex_list_and_incidence_graph_and_edge_list_graph_tag;
     // boost::VertexListGraph
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
     using out_edge_iterator = typename mimir::EdgeIndexIterator<EdgeType, Direction>::const_iterator<Direction>;
     using degree_size_type = size_t;
+    // boost::EdgeListGraph
+    using edge_iterator = typename std::vector<edge_descriptor>::const_iterator;
+    using edges_size_type = size_t;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
 };
@@ -200,6 +204,20 @@ out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Directi
                          g.get_graph().template get_adjacent_edge_indices<Direction>(u).end());
 }
 
+template<IsGraph Graph, IsTraversalDirection Direction>
+std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_iterator,
+          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_iterator>
+edges(const GraphWithDirection<Graph, Direction>& g)
+{
+    return { g.get_graph().get_slice().begin(), g.get_graph().get_slice().end() };
+}
+
+template<IsGraph Graph, IsTraversalDirection Direction>
+boost::graph_traits<GraphWithDirection<Graph, Direction>>::edges_size_type num_edges(const GraphWithDirection<Graph, Direction>& g)
+{
+    return g.get_graph().get_num_edges();
+}
+
 /* Assert that the concepts are satisfied */
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
@@ -207,6 +225,30 @@ BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<Digraph, 
 BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// BasicMatrix
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+template<typename I, typename V>
+class VectorBasicMatrix
+{
+public:
+    VectorBasicMatrix(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max()) : m_matrix(num_vertices, std::vector<V>(num_vertices, init_value))
+    {
+    }
+
+    std::vector<V>& operator[](I i) { return m_matrix[i]; }
+
+    const std::vector<V>& operator[](I i) const { return m_matrix[i]; }
+
+    const std::vector<std::vector<V>>& get_matrix() const { return m_matrix; }
+
+private:
+    std::vector<std::vector<V>> m_matrix;
+};
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // PropertyMaps
@@ -427,6 +469,25 @@ breadth_first_search(const GraphWithDirection<Graph, Direction>& g, SourceInputI
     boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
 
     return std::make_tuple(p, d);
+}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::floyd_warshall_all_pairs_shortest_paths
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+template<IsGraph Graph, IsTraversalDirection Direction>
+VectorBasicMatrix<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor, Distance>
+floyd_warshall_all_pairs_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std::vector<EdgeCost>& w)
+{
+    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
+    using edge_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor;
+
+    auto d = VectorBasicMatrix<vertex_descriptor_type, Distance>(g.get_graph().get_num_vertices());
+    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
+
+    boost::floyd_warshall_all_pairs_shortest_paths(g, d, boost::weight_map(weight_map));
+
+    return d;
 }
 }
 

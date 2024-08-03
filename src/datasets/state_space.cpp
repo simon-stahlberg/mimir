@@ -267,10 +267,28 @@ std::vector<double> StateSpace::compute_shortest_distances_from_states(const Sta
 template std::vector<double> StateSpace::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& states) const;
 template std::vector<double> StateSpace::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
 
-std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_distances(const bool forward) const
+template<IsTraversalDirection Direction>
+std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_distances() const
 {
-    throw std::runtime_error("Not implemented");
+    auto transition_costs = std::vector<TransitionCost> {};
+    if (m_use_unit_cost_one)
+    {
+        transition_costs = std::vector<TransitionCost>(m_graph.get_num_edges(), 1);
+    }
+    else
+    {
+        transition_costs.reserve(m_graph.get_num_edges());
+        for (const auto& transition : m_graph.get_edges())
+        {
+            transition_costs.push_back(transition.get_cost());
+        }
+    }
+
+    return floyd_warshall_all_pairs_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs).get_matrix();
 }
+
+template std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template std::vector<std::vector<double>> StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  *  Getters

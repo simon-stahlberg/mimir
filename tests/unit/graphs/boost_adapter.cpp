@@ -164,4 +164,62 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     }
 }
 
+TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
+{
+    {
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
+        const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
+        const auto state_space = StateSpace::create(domain_file, problem_file).value();
+        auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+
+        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
+
+        auto min_goal_distance = DISTANCE_INFINITY;
+        for (const auto& goal_state : state_space.get_goal_states())
+        {
+            min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_state()]);
+        }
+        EXPECT_GT(min_goal_distance, 0);
+        EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
+        auto max_pairwise_distance = Distance();
+        for (auto v1 = StateIndex(); v1 < graph.get_graph().get_num_vertices(); ++v1)
+        {
+            for (auto v2 = StateIndex(); v2 < graph.get_graph().get_num_vertices(); ++v2)
+            {
+                max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
+            }
+        }
+        // All states are pairwise reachable
+        EXPECT_NE(max_pairwise_distance, DISTANCE_INFINITY);
+    }
+    {
+        const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
+        const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
+        const auto state_space = StateSpace::create(domain_file, problem_file).value();
+        auto graph = GraphWithDirection(state_space.get_graph(), BackwardTraversal());
+
+        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
+
+        auto min_goal_distance = DISTANCE_INFINITY;
+        for (const auto& goal_state : state_space.get_goal_states())
+        {
+            min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_state()]);
+        }
+        EXPECT_GT(min_goal_distance, 0);
+        EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
+        auto max_pairwise_distance = Distance();
+        for (auto v1 = StateIndex(); v1 < graph.get_graph().get_num_vertices(); ++v1)
+        {
+            for (auto v2 = StateIndex(); v2 < graph.get_graph().get_num_vertices(); ++v2)
+            {
+                max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
+            }
+        }
+        // There exist deadend states
+        EXPECT_EQ(max_pairwise_distance, DISTANCE_INFINITY);
+    }
+}
+
 }

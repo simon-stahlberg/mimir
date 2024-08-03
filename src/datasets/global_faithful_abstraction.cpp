@@ -212,10 +212,14 @@ std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_s
 template std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& abstract_states) const;
 template std::vector<double> GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& abstract_states) const;
 
-std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances(bool forward) const
+template<IsTraversalDirection Direction>
+std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances() const
 {
-    throw std::runtime_error("Not implemented");
+    return m_abstractions->at(m_index).compute_pairwise_shortest_state_distances<Direction>();
 }
+
+template std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template std::vector<std::vector<double>> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  * Getters

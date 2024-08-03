@@ -148,9 +148,11 @@ public:
     template<IsTraversalDirection Direction>
     std::vector<double> compute_shortest_distances_from_states(const StateIndexList& states) const;
 
-    /// @brief Compute pairwise state distances using Floyd-Warshall.
-    /// @param forward If true, forward transitions are used, and otherwise, backward transitions
-    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances(bool forward = true) const;
+    /// @brief Compute pairwise shortest distances using Floyd-Warshall.
+    /// @tparam Direction the direction of traversal.
+    /// @return the pairwise shortest distances.
+    template<IsTraversalDirection Direction>
+    std::vector<std::vector<double>> compute_pairwise_shortest_state_distances() const;
 
     /**
      *  Getters

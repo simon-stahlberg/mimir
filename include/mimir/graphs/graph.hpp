@@ -100,6 +100,7 @@ public:
     const EdgeList& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+    const std::vector<EdgeIndex>& get_slice() const;
 };
 
 /* ForwardGraph */
@@ -143,6 +144,7 @@ public:
     const EdgeList& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+    const std::vector<EdgeIndex>& get_slice() const;
 };
 
 /* BidirectionalGraph */
@@ -187,6 +189,7 @@ public:
     const EdgeList& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+    const std::vector<EdgeIndex>& get_slice() const;
 };
 
 /**
@@ -219,6 +222,7 @@ EdgeIndex Graph<Vertex, Edge>::add_directed_edge(VertexIndex source, VertexIndex
     }
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
+    m_slice.push_back(index);
     return index;
 }
 
@@ -233,6 +237,8 @@ std::pair<EdgeIndex, EdgeIndex> Graph<Vertex, Edge>::add_undirected_edge(VertexI
     // Need to copy args to keep them in valid state.
     const auto forward_edge_index = add_directed_edge(source, target, args...);
     const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
+    m_slice.push_back(forward_edge_index);
+    m_slice.push_back(backward_edge_index);
     return std::make_pair(forward_edge_index, backward_edge_index);
 }
 
@@ -293,6 +299,12 @@ template<IsVertex Vertex, IsEdge Edge>
 size_t Graph<Vertex, Edge>::get_num_edges() const
 {
     return m_edges.size();
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+const std::vector<EdgeIndex>& Graph<Vertex, Edge>::get_slice() const
+{
+    return m_slice;
 }
 
 /* ForwardGraph */
@@ -444,6 +456,12 @@ size_t ForwardGraph<G>::get_num_edges() const
     return m_graph.get_num_edges();
 }
 
+template<IsGraph G>
+const std::vector<EdgeIndex>& ForwardGraph<G>::get_slice() const
+{
+    return m_graph.get_slice();
+}
+
 /* BidirectionalGraph */
 
 template<IsGraph G>
@@ -566,6 +584,12 @@ template<IsGraph G>
 size_t BidirectionalGraph<G>::get_num_edges() const
 {
     return m_graph.get_num_edges();
+}
+
+template<IsGraph G>
+const std::vector<EdgeIndex>& BidirectionalGraph<G>::get_slice() const
+{
+    return m_graph.get_slice();
 }
 
 }
