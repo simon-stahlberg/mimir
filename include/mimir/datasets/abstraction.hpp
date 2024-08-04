@@ -95,7 +95,7 @@ private:
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
-        virtual const std::vector<Distance>& get_goal_distances() const = 0;
+        virtual const DistanceList& get_goal_distances() const = 0;
 
         // The Prototype Design Pattern
         virtual std::unique_ptr<AbstractionConcept> clone() const = 0;
@@ -167,7 +167,7 @@ private:
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
         /* Distances */
-        const std::vector<Distance>& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
+        const DistanceList& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
 
         // The Prototype Design Pattern
         std::unique_ptr<AbstractionConcept> clone() const override { return std::make_unique<AbstractionModel<A>>(*this); }
@@ -285,7 +285,7 @@ public:
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */
-    const std::vector<Distance>& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
+    const DistanceList& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
 };
 
 static_assert(IsAbstraction<Abstraction>);

@@ -455,7 +455,7 @@ namespace mimir
 {
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, std::vector<Distance>>
+std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, DistanceList>
 dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
@@ -463,13 +463,13 @@ dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std
 
     auto p = std::vector<vertex_descriptor_type>(g.get_graph().get_num_vertices());
     auto predecessor_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
-    auto d = std::vector<Distance>(g.get_graph().get_num_vertices());
+    auto d = DistanceList(g.get_graph().get_num_vertices());
     auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, Distance>(d);
     auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
     auto compare = std::less<Distance>();
     auto combine = std::plus<Distance>();
-    auto inf = std::numeric_limits<Distance>::max();
+    auto inf = DISTANCE_INFINITY;
     auto zero = Distance();
 
     // multiple source shortest path version.
@@ -493,13 +493,13 @@ dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std
 // boost::breadth_first_search
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-template<typename VertexDescriptor, typename Distance>
+template<typename VertexDescriptor>
 struct CustomBFSVisitor : public boost::bfs_visitor<>
 {
     std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
-    std::reference_wrapper<std::vector<Distance>> distances;
+    std::reference_wrapper<DistanceList> distances;
 
-    CustomBFSVisitor(std::vector<VertexDescriptor>& p, std::vector<Distance>& d) : predecessors(p), distances(d) {}
+    CustomBFSVisitor(std::vector<VertexDescriptor>& p, DistanceList& d) : predecessors(p), distances(d) {}
 
     template<typename Edge, typename Graph>
     void tree_edge(Edge e, const Graph& g) const
@@ -512,7 +512,7 @@ struct CustomBFSVisitor : public boost::bfs_visitor<>
 };
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, std::vector<Distance>>
+std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, DistanceList>
 breadth_first_search(const GraphWithDirection<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
@@ -524,8 +524,8 @@ breadth_first_search(const GraphWithDirection<Graph, Direction>& g, SourceInputI
     {
         p.at(v) = v;
     }
-    auto inf = std::numeric_limits<Distance>::max();
-    auto d = std::vector<Distance>(g.get_graph().get_num_vertices(), inf);
+    auto inf = DISTANCE_INFINITY;
+    auto d = DistanceList(g.get_graph().get_num_vertices(), inf);
     for (auto it = s_begin; it != s_end; ++it)
     {
         d.at(*it) = 0;

@@ -21,6 +21,7 @@
 #include "mimir/graphs/declarations.hpp"
 
 #include <cstdint>
+#include <vector>
 
 namespace mimir
 {
@@ -29,6 +30,7 @@ using AbstractionIndex = uint32_t;
 
 using TransitionIndex = EdgeIndex;
 using TransitionCost = EdgeCost;
+using TransitionCostList = std::vector<TransitionCost>;
 
 struct StateSpaceOptions;
 struct StateSpacesOptions;

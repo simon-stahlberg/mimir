@@ -44,7 +44,7 @@ namespace mimir
 /// A `StaticGraph` provides functionality for adding vertices and edges, and iterating over vertices and edges.
 /// Iterating over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices requires time O(|E|).
 ///
-/// A `StaticGraph` can be translated into an equivalent StaticForwardGraph or Bidirectional StaticGraph in O(|V|+|E|*Log2(|E|))
+/// A `StaticGraph` can be translated into an equivalent StaticForwardGraph or StaticBidirectional in O(|V|+|E|*Log2(|E|))
 /// to iterate more efficiently over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices.
 /// @tparam Vertex is vertex type.
 /// @tparam Edge is the edge type.

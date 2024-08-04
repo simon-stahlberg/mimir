@@ -148,7 +148,6 @@ from _pymimir import (
     Certificate,
     ColoredDigraphVertex,
     ColorFunction,
-    StaticDigraph,
     DigraphVertex,
     DigraphEdge,
     DigraphEdge,
@@ -156,13 +155,14 @@ from _pymimir import (
     ObjectGraphPruningStrategy,
     ObjectGraphPruningStrategyEnum,
     ProblemColorFunction,
+    StaticDigraph,
+    StaticVertexColoredDigraph,
     SparseNautyGraph,
     TupleGraphVertex,
     TupleGraphVertexSpan,
     TupleGraphVertexIndexGroupedVector,
     TupleGraph,
-    TupleGraphFactory,
-    VertexColoredDigraph
+    TupleGraphFactory
 )
 
 # Graphs (free functions)

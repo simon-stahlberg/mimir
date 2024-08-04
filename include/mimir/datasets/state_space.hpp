@@ -77,7 +77,7 @@ private:
     StateIndexSet m_deadend_states;
 
     /* Distances */
-    std::vector<Distance> m_goal_distances;
+    DistanceList m_goal_distances;
 
     /* Additional */
     std::map<Distance, StateIndexList> m_states_by_goal_distance;
@@ -96,7 +96,7 @@ private:
                StateIndex initial_state,
                StateIndexSet goal_states,
                StateIndexSet deadend_states,
-               std::vector<Distance> goal_distances);
+               DistanceList goal_distances);
 
 public:
     using StateType = ConcreteState;
@@ -161,13 +161,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    std::vector<Distance> compute_shortest_distances_from_states(const StateIndexList& states) const;
+    DistanceList compute_shortest_distances_from_states(const StateIndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    std::vector<std::vector<Distance>> compute_pairwise_shortest_state_distances() const;
+    std::vector<DistanceList> compute_pairwise_shortest_state_distances() const;
 
     /**
      *  Getters
@@ -212,7 +212,7 @@ public:
     size_t get_num_transitions() const;
 
     /* Distances */
-    const std::vector<Distance>& get_goal_distances() const;
+    const DistanceList& get_goal_distances() const;
     Distance get_max_goal_distance() const;
 
     /* Additional */
