@@ -153,9 +153,9 @@ public:
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    VertexIterator<FaithfulAbstractState, AbstractTransition, Direction> get_adjacent_states(StateIndex state) const;
+    AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, Direction> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    VertexIndexIterator<AbstractTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
+    AdjacentVertexIndexIterator<AbstractTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     const std::unordered_map<StateIndex, StateIndex>& get_global_state_index_to_state_index() const;
     StateIndex get_initial_state() const;
@@ -173,9 +173,9 @@ public:
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    EdgeIterator<AbstractTransition, Direction> get_adjacent_transitions(StateIndex state) const;
+    AdjacentEdgeIterator<AbstractTransition, Direction> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    EdgeIndexIterator<AbstractTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
+    AdjacentEdgeIndexIterator<AbstractTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

@@ -61,7 +61,11 @@ namespace boost
 {
 
 /// A tag for a graph that is both a vertex list graph and an incidence graph.
-struct vertex_list_and_incidence_graph_and_edge_list_graph_tag : public vertex_list_graph_tag, public incidence_graph_tag, public edge_list_graph_tag
+struct vertex_list_and_incidence_graph_and_edge_list_graph_and_adjacency_graph_tag :
+    public vertex_list_graph_tag,
+    public incidence_graph_tag,
+    public edge_list_graph_tag,
+    public adjacency_graph_tag
 {
 };
 
@@ -78,16 +82,18 @@ struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
     using edge_descriptor = mimir::EdgeIndex;
     using directed_category = directed_tag;
     using edge_parallel_category = allow_parallel_edge_tag;
-    using traversal_category = vertex_list_and_incidence_graph_and_edge_list_graph_tag;
+    using traversal_category = vertex_list_and_incidence_graph_and_edge_list_graph_and_adjacency_graph_tag;
     // boost::VertexListGraph
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = typename mimir::EdgeIndexIterator<EdgeType, Direction>::template const_iterator<Direction>;
+    using out_edge_iterator = typename mimir::AdjacentEdgeIndexIterator<EdgeType, Direction>::template const_iterator<Direction>;
     using degree_size_type = size_t;
     // boost::EdgeListGraph
     using edge_iterator = typename std::vector<edge_descriptor>::const_iterator;
     using edges_size_type = size_t;
+    // boost::AdjacencyGraph
+    using adjacency_iterator = typename mimir::AdjacentVertexIndexIterator<EdgeType, Direction>::template const_iterator<Direction>;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
 };
@@ -193,16 +199,10 @@ template<IsGraph Graph, IsTraversalDirection Direction>
 boost::graph_traits<GraphWithDirection<Graph, Direction>>::degree_size_type
 out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
 {
-    // Ensure that iterator yield only edges with source vertex equal to u,
-    // indicating that the graph was translated to ForwardGraph or BidirectionalGraph.
-    // If such a translation did not occur, the std::distance does not guarantee to return the correct out degree.
-    assert(std::all_of(g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(),
-                       g.get_graph().template get_adjacent_edge_indices<Direction>(u).end(),
-                       [u, &g](const auto& e) { return source(e, g) == u; }));
-
-    return std::distance(g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(),
-                         g.get_graph().template get_adjacent_edge_indices<Direction>(u).end());
+    return g.get_graph().template get_degree<Direction>(u);
 }
+
+/* boost::EdgeListGraph */
 
 template<IsGraph Graph, IsTraversalDirection Direction>
 std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_iterator,
@@ -218,6 +218,17 @@ boost::graph_traits<GraphWithDirection<Graph, Direction>>::edges_size_type num_e
     return g.get_graph().get_num_edges();
 }
 
+/* boost::AdjacencyGraph */
+
+template<IsGraph Graph, IsTraversalDirection Direction>
+std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::adjacency_iterator,
+          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::adjacency_iterator>
+adjacent_vertices(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u,
+                  const GraphWithDirection<Graph, Direction>& g)
+{
+    return { g.get_graph().template get_adjacent_vertex_indices<Direction>(u).begin(), g.get_graph().template get_adjacent_vertex_indices<Direction>(u).end() };
+}
+
 /* Assert that the concepts are satisfied */
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
@@ -227,6 +238,8 @@ BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, F
 BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // BasicMatrix

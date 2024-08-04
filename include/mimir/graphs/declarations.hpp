@@ -30,7 +30,12 @@ using EdgeIndex = uint32_t;
 using EdgeCost = double;
 
 using Distance = double;
+using DistanceList = std::vector<Distance>;
+using DistanceMatrix = std::vector<DistanceList>;
 inline const Distance DISTANCE_INFINITY = std::numeric_limits<Distance>::max();
+
+using Degree = uint32_t;
+using DegreeList = std::vector<Degree>;
 
 using Color = uint32_t;
 using ColorList = std::vector<Color>;

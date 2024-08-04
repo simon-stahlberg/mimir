@@ -173,9 +173,9 @@ public:
     /* States */
     const ConcreteStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    VertexIterator<ConcreteState, ConcreteTransition, Direction> get_adjacent_states(StateIndex state) const;
+    AdjacentVertexIterator<ConcreteState, ConcreteTransition, Direction> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    VertexIndexIterator<ConcreteTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
+    AdjacentVertexIndexIterator<ConcreteTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -190,9 +190,9 @@ public:
     /* Transitions */
     const ConcreteTransitionList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    EdgeIterator<ConcreteTransition, Direction> get_adjacent_transitions(StateIndex state) const;
+    AdjacentEdgeIterator<ConcreteTransition, Direction> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    EdgeIndexIterator<ConcreteTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
+    AdjacentEdgeIndexIterator<ConcreteTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

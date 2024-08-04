@@ -29,7 +29,7 @@ namespace mimir
 {
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-class VertexIterator
+class AdjacentVertexIterator
 {
 private:
     VertexIndex m_vertex;
@@ -38,7 +38,7 @@ private:
     std::span<const EdgeIndex> m_slice;
 
 public:
-    VertexIterator(VertexIndex vertex, const std::vector<Vertex>& vertices, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
+    AdjacentVertexIterator(VertexIndex vertex, const std::vector<Vertex>& vertices, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     template<IsTraversalDirection Direction_>
     class const_iterator
@@ -73,7 +73,7 @@ public:
 };
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-class VertexIndexIterator
+class AdjacentVertexIndexIterator
 {
 private:
     VertexIndex m_vertex;
@@ -81,7 +81,7 @@ private:
     std::span<const EdgeIndex> m_slice;
 
 public:
-    VertexIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
+    AdjacentVertexIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     template<IsTraversalDirection Direction_>
     class const_iterator
@@ -115,7 +115,7 @@ public:
 };
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-class EdgeIterator
+class AdjacentEdgeIterator
 {
 private:
     VertexIndex m_vertex;
@@ -123,7 +123,7 @@ private:
     std::span<const EdgeIndex> m_slice;
 
 public:
-    EdgeIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
+    AdjacentEdgeIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     template<IsTraversalDirection Direction_>
     class const_iterator
@@ -157,7 +157,7 @@ public:
 };
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-class EdgeIndexIterator
+class AdjacentEdgeIndexIterator
 {
 private:
     VertexIndex m_vertex;
@@ -165,7 +165,7 @@ private:
     std::span<const EdgeIndex> m_slice;
 
 public:
-    EdgeIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
+    AdjacentEdgeIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice);
 
     template<IsTraversalDirection Direction_>
     class const_iterator
@@ -205,10 +205,10 @@ public:
 /* VertexIterator */
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-VertexIterator<Vertex, Edge, Direction>::VertexIterator(VertexIndex vertex,
-                                                        const std::vector<Vertex>& vertices,
-                                                        const std::vector<Edge>& edges,
-                                                        std::span<const EdgeIndex> slice) :
+AdjacentVertexIterator<Vertex, Edge, Direction>::AdjacentVertexIterator(VertexIndex vertex,
+                                                                        const std::vector<Vertex>& vertices,
+                                                                        const std::vector<Edge>& edges,
+                                                                        std::span<const EdgeIndex> slice) :
     m_vertex(vertex),
     m_vertices(vertices),
     m_edges(edges),
@@ -218,7 +218,7 @@ VertexIterator<Vertex, Edge, Direction>::VertexIterator(VertexIndex vertex,
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-void VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::advance()
+void AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::advance()
 {
     do
     {
@@ -254,7 +254,7 @@ void VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::advanc
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::const_iterator() :
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::const_iterator() :
     m_pos(-1),
     m_vertex(-1),
     m_vertices(nullptr),
@@ -265,11 +265,11 @@ VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::const_itera
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
-                                                                                    const std::vector<Vertex>& vertices,
-                                                                                    const std::vector<Edge>& edges,
-                                                                                    std::span<const EdgeIndex> slice,
-                                                                                    bool begin) :
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
+                                                                                            const std::vector<Vertex>& vertices,
+                                                                                            const std::vector<Edge>& edges,
+                                                                                            std::span<const EdgeIndex> slice,
+                                                                                            bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_vertices(&vertices),
@@ -308,8 +308,8 @@ VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::const_itera
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::reference
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator*() const
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::reference
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator*() const
 {
     assert(m_vertices);
     assert(m_edges);
@@ -335,7 +335,8 @@ VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator*()
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>& VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator++()
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>&
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator++()
 {
     advance();
     return *this;
@@ -343,7 +344,8 @@ VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>& VertexItera
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_> VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator++(int)
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator++(int)
 {
     const_iterator tmp = *this;
     ++(*this);
@@ -352,34 +354,36 @@ VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_> VertexIterat
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
+bool AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
+bool AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
 {
     return !(*this == other);
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction> VertexIterator<Vertex, Edge, Direction>::begin() const
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction> AdjacentVertexIterator<Vertex, Edge, Direction>::begin() const
 {
     return const_iterator<Direction>(m_vertex, m_vertices, m_edges, m_slice, true);
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-VertexIterator<Vertex, Edge, Direction>::const_iterator<Direction> VertexIterator<Vertex, Edge, Direction>::end() const
+AdjacentVertexIterator<Vertex, Edge, Direction>::const_iterator<Direction> AdjacentVertexIterator<Vertex, Edge, Direction>::end() const
 {
     return const_iterator<Direction>(m_vertex, m_vertices, m_edges, m_slice, false);
 }
 
-/* VertexIndexIterator */
+/* AdjacentVertexIndexIterator */
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-VertexIndexIterator<Edge, Direction>::VertexIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+AdjacentVertexIndexIterator<Edge, Direction>::AdjacentVertexIndexIterator(VertexIndex vertex,
+                                                                          const std::vector<Edge>& edges,
+                                                                          std::span<const EdgeIndex> slice) :
     m_vertex(vertex),
     m_edges(edges),
     m_slice(slice)
@@ -388,7 +392,7 @@ VertexIndexIterator<Edge, Direction>::VertexIndexIterator(VertexIndex vertex, co
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-void VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance()
+void AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance()
 {
     do
     {
@@ -416,24 +420,25 @@ void VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance()
         }
         else
         {
-            static_assert(dependent_false<Direction_>::value,
-                          "VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance(): Missing implementation for IsTraversalDirection.");
+            static_assert(
+                dependent_false<Direction_>::value,
+                "AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance(): Missing implementation for IsTraversalDirection.");
         }
     } while (true);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
-                                                                                 const std::vector<Edge>& edges,
-                                                                                 std::span<const EdgeIndex> slice,
-                                                                                 bool begin) :
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
+                                                                                         const std::vector<Edge>& edges,
+                                                                                         std::span<const EdgeIndex> slice,
+                                                                                         bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_edges(&edges),
@@ -460,7 +465,7 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator
         else
         {
             static_assert(dependent_false<Direction_>::value,
-                          "VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(...): Missing implementation for "
+                          "AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(...): Missing implementation for "
                           "IsTraversalDirection.");
         }
 
@@ -470,7 +475,8 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::value_type VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*() const
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::value_type
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_slice.size());
@@ -488,14 +494,15 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::value_type Ver
     }
     else
     {
-        static_assert(dependent_false<Direction_>::value,
-                      "VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*(): Missing implementation for IsTraversalDirection.");
+        static_assert(
+            dependent_false<Direction_>::value,
+            "AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*(): Missing implementation for IsTraversalDirection.");
     }
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>& VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++()
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>& AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++()
 {
     advance();
     return *this;
@@ -503,7 +510,8 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>& VertexIndexIte
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction_> VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++(int)
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++(int)
 {
     const_iterator tmp = *this;
     ++(*this);
@@ -512,26 +520,26 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction_> VertexIndexIter
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
+bool AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool VertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
+bool AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
 {
     return !(*this == other);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction> VertexIndexIterator<Edge, Direction>::begin() const
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction> AdjacentVertexIndexIterator<Edge, Direction>::begin() const
 {
     return const_iterator<Direction>(m_vertex, m_edges, m_slice, true);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-VertexIndexIterator<Edge, Direction>::const_iterator<Direction> VertexIndexIterator<Edge, Direction>::end() const
+AdjacentVertexIndexIterator<Edge, Direction>::const_iterator<Direction> AdjacentVertexIndexIterator<Edge, Direction>::end() const
 {
     return const_iterator<Direction>(m_vertex, m_edges, m_slice, false);
 }
@@ -539,7 +547,7 @@ VertexIndexIterator<Edge, Direction>::const_iterator<Direction> VertexIndexItera
 /* EdgeIterator */
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-EdgeIterator<Edge, Direction>::EdgeIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+AdjacentEdgeIterator<Edge, Direction>::AdjacentEdgeIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
     m_vertex(vertex),
     m_edges(edges),
     m_slice(slice)
@@ -548,7 +556,7 @@ EdgeIterator<Edge, Direction>::EdgeIterator(VertexIndex vertex, const std::vecto
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-void EdgeIterator<Edge, Direction>::const_iterator<Direction_>::advance()
+void AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::advance()
 {
     do
     {
@@ -584,16 +592,16 @@ void EdgeIterator<Edge, Direction>::const_iterator<Direction_>::advance()
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
-                                                                          const std::vector<Edge>& edges,
-                                                                          std::span<const EdgeIndex> slice,
-                                                                          bool begin) :
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
+                                                                                  const std::vector<Edge>& edges,
+                                                                                  std::span<const EdgeIndex> slice,
+                                                                                  bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_edges(&edges),
@@ -630,7 +638,8 @@ EdgeIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(Vertex
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIterator<Edge, Direction>::const_iterator<Direction_>::reference EdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator*() const
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::reference
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_slice.size());
@@ -655,7 +664,7 @@ EdgeIterator<Edge, Direction>::const_iterator<Direction_>::reference EdgeIterato
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIterator<Edge, Direction>::const_iterator<Direction_>& EdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator++()
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>& AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator++()
 {
     advance();
     return *this;
@@ -663,7 +672,7 @@ EdgeIterator<Edge, Direction>::const_iterator<Direction_>& EdgeIterator<Edge, Di
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIterator<Edge, Direction>::const_iterator<Direction_> EdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator++(int)
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_> AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator++(int)
 {
     const_iterator tmp = *this;
     ++(*this);
@@ -672,34 +681,34 @@ EdgeIterator<Edge, Direction>::const_iterator<Direction_> EdgeIterator<Edge, Dir
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool EdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
+bool AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool EdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
+bool AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
 {
     return !(*this == other);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-EdgeIterator<Edge, Direction>::const_iterator<Direction> EdgeIterator<Edge, Direction>::begin() const
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction> AdjacentEdgeIterator<Edge, Direction>::begin() const
 {
     return const_iterator<Direction>(m_vertex, m_edges, m_slice, true);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-EdgeIterator<Edge, Direction>::const_iterator<Direction> EdgeIterator<Edge, Direction>::end() const
+AdjacentEdgeIterator<Edge, Direction>::const_iterator<Direction> AdjacentEdgeIterator<Edge, Direction>::end() const
 {
     return const_iterator<Direction>(m_vertex, m_edges, m_slice, false);
 }
 
-/* EdgeIndexIterator */
+/* AdjacentEdgeIndexIterator */
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-EdgeIndexIterator<Edge, Direction>::EdgeIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
+AdjacentEdgeIndexIterator<Edge, Direction>::AdjacentEdgeIndexIterator(VertexIndex vertex, const std::vector<Edge>& edges, std::span<const EdgeIndex> slice) :
     m_vertex(vertex),
     m_edges(edges),
     m_slice(slice)
@@ -708,7 +717,7 @@ EdgeIndexIterator<Edge, Direction>::EdgeIndexIterator(VertexIndex vertex, const 
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-void EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance()
+void AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance()
 {
     do
     {
@@ -736,24 +745,25 @@ void EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance()
         }
         else
         {
-            static_assert(dependent_false<Direction_>::value,
-                          "EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance(): Missing implementation for IsTraversalDirection.");
+            static_assert(
+                dependent_false<Direction_>::value,
+                "AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::advance(): Missing implementation for IsTraversalDirection.");
         }
     } while (true);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator() : m_pos(-1), m_vertex(-1), m_edges(nullptr), m_slice()
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
-                                                                               const std::vector<Edge>& edges,
-                                                                               std::span<const EdgeIndex> slice,
-                                                                               bool begin) :
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(VertexIndex vertex,
+                                                                                       const std::vector<Edge>& edges,
+                                                                                       std::span<const EdgeIndex> slice,
+                                                                                       bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_edges(&edges),
@@ -780,7 +790,7 @@ EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(V
         else
         {
             static_assert(dependent_false<Direction_>::value,
-                          "EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(...): Missing implementation for "
+                          "AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(...): Missing implementation for "
                           "IsTraversalDirection.");
         }
 
@@ -790,7 +800,8 @@ EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::const_iterator(V
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::value_type EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*() const
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::value_type
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_slice.size());
@@ -809,13 +820,13 @@ EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::value_type EdgeI
     else
     {
         static_assert(dependent_false<Direction_>::value,
-                      "EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*(): Missing implementation for IsTraversalDirection.");
+                      "AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator*(): Missing implementation for IsTraversalDirection.");
     }
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>& EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++()
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>& AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++()
 {
     advance();
     return *this;
@@ -823,7 +834,7 @@ EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>& EdgeIndexIterato
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_> EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++(int)
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_> AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator++(int)
 {
     const_iterator tmp = *this;
     ++(*this);
@@ -832,26 +843,26 @@ EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_> EdgeIndexIterator
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
+bool AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator==(const const_iterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 template<IsTraversalDirection Direction_>
-bool EdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
+bool AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction_>::operator!=(const const_iterator& other) const
 {
     return !(*this == other);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction> EdgeIndexIterator<Edge, Direction>::begin() const
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction> AdjacentEdgeIndexIterator<Edge, Direction>::begin() const
 {
     return const_iterator<Direction>(m_vertex, m_edges, m_slice, true);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-EdgeIndexIterator<Edge, Direction>::const_iterator<Direction> EdgeIndexIterator<Edge, Direction>::end() const
+AdjacentEdgeIndexIterator<Edge, Direction>::const_iterator<Direction> AdjacentEdgeIndexIterator<Edge, Direction>::end() const
 {
     return const_iterator<Direction>(m_vertex, m_edges, m_slice, false);
 }
