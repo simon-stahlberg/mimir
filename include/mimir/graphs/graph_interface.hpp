@@ -90,23 +90,11 @@ concept IsGraph = requires(T a, VertexIndex vertex)
     /* Getters */
 
     {
-        a.get_vertices()
-        } -> std::same_as<const std::vector<typename T::VertexType>&>;
-    {
-        a.get_edges()
-        } -> std::same_as<const std::vector<typename T::EdgeType>&>;
-    {
         a.get_num_vertices()
         } -> std::same_as<size_t>;
     {
         a.get_num_edges()
         } -> std::same_as<size_t>;
-    {
-        a.template get_degrees<ForwardTraversal>()
-        } -> std::same_as<const DegreeList&>;
-    {
-        a.template get_degrees<BackwardTraversal>()
-        } -> std::same_as<const DegreeList&>;
     {
         a.template get_degree<ForwardTraversal>(vertex)
         } -> std::same_as<Degree>;
@@ -153,6 +141,19 @@ concept IsStaticGraph = requires(T a)
 {
     typename T::GraphType;
     requires std::same_as<typename T::GraphType, StaticGraphTag>;
+
+    {
+        a.get_vertices()
+        } -> std::same_as<const std::vector<typename T::VertexType>&>;
+    {
+        a.get_edges()
+        } -> std::same_as<const std::vector<typename T::EdgeType>&>;
+    {
+        a.template get_degrees<ForwardTraversal>()
+        } -> std::same_as<const DegreeList&>;
+    {
+        a.template get_degrees<BackwardTraversal>()
+        } -> std::same_as<const DegreeList&>;
 };
 
 template<typename T>
@@ -160,6 +161,19 @@ concept IsDynamicGraph = requires(T a)
 {
     typename T::GraphType;
     requires std::same_as<typename T::GraphType, DynamicGraphTag>;
+
+    {
+        a.get_vertices()
+        } -> std::same_as<const std::unordered_map<VertexIndex, typename T::VertexType>&>;
+    {
+        a.get_edges()
+        } -> std::same_as<const std::unordered_map<EdgeIndex, typename T::EdgeType>&>;
+    {
+        a.template get_degrees<ForwardTraversal>()
+        } -> std::same_as<const DegreeMap&>;
+    {
+        a.template get_degrees<BackwardTraversal>()
+        } -> std::same_as<const DegreeMap&>;
 };
 
 }

@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <unordered_map>
 #include <vector>
 
 namespace mimir
@@ -34,11 +35,14 @@ using EdgeCost = double;
 
 using Distance = double;
 using DistanceList = std::vector<Distance>;
+using DistanceMap = std::unordered_map<VertexIndex, Distance>;
 using DistanceMatrix = std::vector<DistanceList>;
+using DistanceMatrixMap = std::unordered_map<VertexIndex, DistanceMap>;
 inline const Distance DISTANCE_INFINITY = std::numeric_limits<Distance>::max();
 
 using Degree = uint32_t;
 using DegreeList = std::vector<Degree>;
+using DegreeMap = std::unordered_map<VertexIndex, Degree>;
 
 using Color = uint32_t;
 using ColorList = std::vector<Color>;
