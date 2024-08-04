@@ -56,40 +56,28 @@ public:
 };
 
 template<IsEdge Edge>
-class EdgeIndexIterator
+class EdgeIndexConstIterator
 {
 private:
-    std::reference_wrapper<const std::vector<Edge>> m_edges;
+    size_t m_pos;
+    const std::vector<Edge>* m_edges;
+
+    void advance();
 
 public:
-    explicit EdgeIndexIterator(const std::vector<Edge>& edges);
+    using difference_type = std::ptrdiff_t;
+    using value_type = EdgeIndex;
+    using pointer = value_type*;
+    using reference = const value_type&;
+    using iterator_category = std::forward_iterator_tag;
 
-    class const_iterator
-    {
-    private:
-        size_t m_pos;
-        const std::vector<Edge>* m_edges;
-
-        void advance();
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using value_type = EdgeIndex;
-        using pointer = value_type*;
-        using reference = const value_type&;
-        using iterator_category = std::forward_iterator_tag;
-
-        const_iterator();
-        const_iterator(const std::vector<Edge>& edges, bool begin);
-        value_type operator*() const;
-        const_iterator& operator++();
-        const_iterator operator++(int);
-        bool operator==(const const_iterator& other) const;
-        bool operator!=(const const_iterator& other) const;
-    };
-
-    const_iterator begin() const;
-    const_iterator end() const;
+    EdgeIndexConstIterator();
+    EdgeIndexConstIterator(const std::vector<Edge>& edges, bool begin);
+    value_type operator*() const;
+    EdgeIndexConstIterator& operator++();
+    EdgeIndexConstIterator operator++(int);
+    bool operator==(const EdgeIndexConstIterator& other) const;
+    bool operator!=(const EdgeIndexConstIterator& other) const;
 };
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
@@ -312,28 +300,23 @@ bool VertexIndexConstIterator<Vertex>::operator!=(const VertexIndexConstIterator
 /* EdgeIndexIterator */
 
 template<IsEdge Edge>
-EdgeIndexIterator<Edge>::EdgeIndexIterator(const std::vector<Edge>& edges) : m_edges(edges)
-{
-}
-
-template<IsEdge Edge>
-void EdgeIndexIterator<Edge>::const_iterator::advance()
+void EdgeIndexConstIterator<Edge>::advance()
 {
     ++m_pos;
 }
 
 template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator::const_iterator() : m_pos(-1), m_edges(nullptr)
+EdgeIndexConstIterator<Edge>::EdgeIndexConstIterator() : m_pos(-1), m_edges(nullptr)
 {
 }
 
 template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator::const_iterator(const std::vector<Edge>& edges, bool begin) : m_pos(begin ? 0 : edges.size()), m_edges(&edges)
+EdgeIndexConstIterator<Edge>::EdgeIndexConstIterator(const std::vector<Edge>& edges, bool begin) : m_pos(begin ? 0 : edges.size()), m_edges(&edges)
 {
 }
 
 template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator::value_type EdgeIndexIterator<Edge>::const_iterator::operator*() const
+EdgeIndexConstIterator<Edge>::value_type EdgeIndexConstIterator<Edge>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_edges->size());
@@ -341,42 +324,30 @@ EdgeIndexIterator<Edge>::const_iterator::value_type EdgeIndexIterator<Edge>::con
 }
 
 template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator& EdgeIndexIterator<Edge>::const_iterator::operator++()
+EdgeIndexConstIterator<Edge>& EdgeIndexConstIterator<Edge>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator EdgeIndexIterator<Edge>::const_iterator::operator++(int)
+EdgeIndexConstIterator<Edge> EdgeIndexConstIterator<Edge>::operator++(int)
 {
-    const_iterator tmp = *this;
+    EdgeIndexConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsEdge Edge>
-bool EdgeIndexIterator<Edge>::const_iterator::operator==(const const_iterator& other) const
+bool EdgeIndexConstIterator<Edge>::operator==(const EdgeIndexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsEdge Edge>
-bool EdgeIndexIterator<Edge>::const_iterator::operator!=(const const_iterator& other) const
+bool EdgeIndexConstIterator<Edge>::operator!=(const EdgeIndexConstIterator& other) const
 {
     return !(*this == other);
-}
-
-template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator EdgeIndexIterator<Edge>::begin() const
-{
-    return const_iterator(m_edges, true);
-}
-
-template<IsEdge Edge>
-EdgeIndexIterator<Edge>::const_iterator EdgeIndexIterator<Edge>::end() const
-{
-    return const_iterator(m_edges, false);
 }
 
 /* AdjacentVertexConstIterator */

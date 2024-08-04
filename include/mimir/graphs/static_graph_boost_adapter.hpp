@@ -91,7 +91,7 @@ struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
     using out_edge_iterator = typename mimir::AdjacentEdgeIndexIterator<EdgeType, Direction>::template const_iterator<Direction>;
     using degree_size_type = size_t;
     // boost::EdgeListGraph
-    using edge_iterator = typename mimir::EdgeIndexIterator<EdgeType>::const_iterator;
+    using edge_iterator = typename Graph::EdgeIndexConstIteratorType;
     using edges_size_type = size_t;
     // boost::AdjacencyGraph
     using adjacency_iterator = typename mimir::AdjacentVertexIndexIterator<EdgeType, Direction>::template const_iterator<Direction>;
