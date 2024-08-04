@@ -1,6 +1,5 @@
-#include "mimir/graphs/boost_adapter.hpp"
-
 #include "mimir/datasets/state_space.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/properties.hpp>

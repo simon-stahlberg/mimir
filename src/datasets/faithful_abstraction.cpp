@@ -20,7 +20,7 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/graphs/boost_adapter.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -79,7 +79,7 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          std::shared_ptr<PDDLFactories> factories,
                                          std::shared_ptr<IAAG> aag,
                                          std::shared_ptr<SuccessorStateGenerator> ssg,
-                                         BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>> graph,
+                                         StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>> graph,
                                          std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                                          StateMap<StateIndex> concrete_to_abstract_state,
                                          StateIndex initial_state,
@@ -369,7 +369,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     /* Create graph */
-    auto graph = Graph<FaithfulAbstractState, AbstractTransition>();
+    auto graph = StaticGraph<FaithfulAbstractState, AbstractTransition>();
     for (const auto& abstract_state : abstract_states)
     {
         graph.add_vertex(abstract_state.get_states(), abstract_state.get_certificate());
@@ -378,7 +378,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     {
         graph.add_directed_edge(abstract_transition.get_source(), abstract_transition.get_target(), abstract_transition.get_actions());
     }
-    auto bidirectional_graph = BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>(std::move(graph));
+    auto bidirectional_graph = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>(std::move(graph));
 
     /* Compute abstract goal distances */
 
@@ -566,21 +566,19 @@ const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag
 const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
 /* Graph */
-const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& FaithfulAbstraction::get_graph() const { return m_graph; }
+const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& FaithfulAbstraction::get_graph() const { return m_graph; }
 
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
 
 template<IsTraversalDirection Direction>
-AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, Direction> FaithfulAbstraction::get_adjacent_states(StateIndex state) const
+auto FaithfulAbstraction::get_adjacent_states(StateIndex state) const
 {
     return m_graph.get_adjacent_vertices<Direction>(state);
 }
 
-template AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, ForwardTraversal>
-FaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
-template AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, BackwardTraversal>
-FaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
+template auto FaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template auto FaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
 AdjacentVertexIndexIterator<AbstractTransition, Direction> FaithfulAbstraction::get_adjacent_state_indices(StateIndex state) const

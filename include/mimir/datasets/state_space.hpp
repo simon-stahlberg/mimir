@@ -23,7 +23,7 @@
 #include "mimir/datasets/concrete_transition.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
-#include "mimir/graphs/graph.hpp"
+#include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
@@ -70,7 +70,7 @@ private:
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     /* States */
-    BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>> m_graph;
+    StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>> m_graph;
     StateMap<StateIndex> m_state_to_index;
     StateIndex m_initial_state;
     StateIndexSet m_goal_states;
@@ -91,7 +91,7 @@ private:
                std::shared_ptr<PDDLFactories> pddl_factories,
                std::shared_ptr<IAAG> aag,
                std::shared_ptr<SuccessorStateGenerator> ssg,
-               BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>> graph,
+               StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>> graph,
                StateMap<StateIndex> state_to_index,
                StateIndex initial_state,
                StateIndexSet goal_states,
@@ -168,12 +168,12 @@ public:
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
     /* Graph */
-    const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& get_graph() const;
+    const StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>& get_graph() const;
 
     /* States */
     const ConcreteStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIterator<ConcreteState, ConcreteTransition, Direction> get_adjacent_states(StateIndex state) const;
+    auto get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
     AdjacentVertexIndexIterator<ConcreteTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
     StateIndex get_state_index(State state) const;
@@ -205,7 +205,7 @@ public:
     StateIndex sample_state_with_goal_distance(Distance goal_distance) const;
 };
 
-static_assert(IsGraph<BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>>);
+static_assert(IsGraph<StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>>);
 
 using StateSpaceList = std::vector<StateSpace>;
 

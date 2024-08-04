@@ -20,9 +20,9 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/utils.hpp"
-#include "mimir/graphs/boost_adapter.hpp"
-#include "mimir/graphs/graph.hpp"
 #include "mimir/graphs/object_graph.hpp"
+#include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/flat_types.hpp"
@@ -142,7 +142,7 @@ template const FlatBitsetBuilder<Static>& ObjectGraphStaticSccPruningStrategy::S
 template const FlatBitsetBuilder<Fluent>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Fluent>() const;
 template const FlatBitsetBuilder<Derived>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Derived>() const;
 
-static ForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std::vector<size_t>& component_map, const StateSpace& state_space)
+static StaticForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std::vector<size_t>& component_map, const StateSpace& state_space)
 {
     auto g = Digraph();
     for (size_t i = 0; i < num_components; ++i)
@@ -161,7 +161,7 @@ static ForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std
             g.add_directed_edge(component_map.at(source), component_map.at(target));
         }
     }
-    return ForwardGraph<Digraph>(std::move(g));
+    return StaticForwardGraph<Digraph>(std::move(g));
 }
 
 template<PredicateCategory P>
@@ -223,7 +223,8 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     auto graph = GraphWithDirection(state_space.value().get_graph(), ForwardTraversal());
     const auto [num_components, component_map] = strong_components(graph);
     const auto scc_digraph = create_scc_digraph(num_components, component_map, state_space.value());
-    const auto partitioning = get_partitioning<BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>, ForwardTraversal>(num_components, component_map);
+    const auto partitioning =
+        get_partitioning<StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>, ForwardTraversal>(num_components, component_map);
     auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
     pruning_components.reserve(partitioning.size());
 

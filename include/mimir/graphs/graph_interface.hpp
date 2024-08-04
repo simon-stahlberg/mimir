@@ -19,8 +19,8 @@
 #define MIMIR_GRAPHS_GRAPH_INTERFACE_HPP_
 
 #include "mimir/graphs/graph_edge_interface.hpp"
-#include "mimir/graphs/graph_iterators.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
+#include "mimir/graphs/static_graph_iterators.hpp"
 
 #include <concepts>
 #include <cstdint>
@@ -30,6 +30,9 @@
 
 namespace mimir
 {
+template<typename T, typename Value>
+concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, Value>;
+
 template<typename T>
 concept IsGraph = requires(T a, VertexIndex vertex)
 {
@@ -48,10 +51,10 @@ concept IsGraph = requires(T a, VertexIndex vertex)
         } -> std::same_as<EdgeIndexIterator<typename T::EdgeType>>;
     {
         a.template get_adjacent_vertices<ForwardTraversal>(vertex)
-        } -> std::same_as<AdjacentVertexIterator<typename T::VertexType, typename T::EdgeType, ForwardTraversal>>;
+        } -> IsRangeOver<typename T::VertexType>;
     {
         a.template get_adjacent_vertices<BackwardTraversal>(vertex)
-        } -> std::same_as<AdjacentVertexIterator<typename T::VertexType, typename T::EdgeType, BackwardTraversal>>;
+        } -> IsRangeOver<typename T::VertexType>;
     {
         a.template get_adjacent_vertex_indices<ForwardTraversal>(vertex)
         } -> std::same_as<AdjacentVertexIndexIterator<typename T::EdgeType, ForwardTraversal>>;
@@ -118,6 +121,32 @@ concept IsDestructibleGraph = requires(T a, VertexIndex vertex, EdgeIndex edge)
 {
     { a.remove_vertex(vertex) };
     { a.remove_edge(edge) };
+};
+
+/**
+ * Static graphs require a contiguous indexing scheme, allowing us to use efficient vector data structures.
+ * For dynamic graphs, we must use less efficient data structures.
+ */
+
+struct StaticGraphTag
+{
+};
+struct DynamicGraphTag
+{
+};
+
+template<typename T>
+concept IsStaticGraph = requires(T a)
+{
+    typename T::GraphType;
+    std::same_as<typename T::GraphType, StaticGraphTag>;
+};
+
+template<typename T>
+concept IsDynamicGraph = requires(T a)
+{
+    typename T::GraphType;
+    std::same_as<typename T::GraphType, DynamicGraphTag>;
 };
 
 }

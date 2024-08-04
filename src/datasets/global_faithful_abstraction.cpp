@@ -245,7 +245,7 @@ const std::shared_ptr<SuccessorStateGenerator>& GlobalFaithfulAbstraction::get_s
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 
 /* Graph */
-const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& GlobalFaithfulAbstraction::get_graph() const
+const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& GlobalFaithfulAbstraction::get_graph() const
 {
     return m_abstractions->at(m_index).get_graph();
 }
@@ -254,15 +254,13 @@ const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& Glob
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
 
 template<IsTraversalDirection Direction>
-AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, Direction> GlobalFaithfulAbstraction::get_adjacent_states(StateIndex state) const
+auto GlobalFaithfulAbstraction::get_adjacent_states(StateIndex state) const
 {
     return get_graph().get_adjacent_vertices<Direction>(state);
 }
 
-template AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, ForwardTraversal>
-GlobalFaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
-template AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, BackwardTraversal>
-GlobalFaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
+template auto GlobalFaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template auto GlobalFaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
 AdjacentVertexIndexIterator<AbstractTransition, Direction> GlobalFaithfulAbstraction::get_adjacent_state_indices(StateIndex state) const

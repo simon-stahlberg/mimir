@@ -18,9 +18,9 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_HPP_
 
-#include "mimir/graphs/graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/static_graph.hpp"
 
 namespace mimir
 {
@@ -56,9 +56,9 @@ public:
     VertexIndex get_target() const;
 };
 
-using Digraph = Graph<DigraphVertex, DigraphEdge>;
-using ForwardDigraph = ForwardGraph<Graph<DigraphVertex, DigraphEdge>>;
-using BidirectionalDigraph = BidirectionalGraph<Graph<DigraphVertex, DigraphEdge>>;
+using Digraph = StaticGraph<DigraphVertex, DigraphEdge>;
+using ForwardDigraph = StaticForwardGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
+using BidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
 
 static_assert(IsConstructibleGraph<Digraph>);
 static_assert(!IsConstructibleGraph<ForwardDigraph>);

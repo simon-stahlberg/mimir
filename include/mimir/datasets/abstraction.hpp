@@ -20,7 +20,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/datasets/abstract_transition.hpp"
-#include "mimir/graphs/graph_iterators.hpp"
+#include "mimir/graphs/static_graph_iterators.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 

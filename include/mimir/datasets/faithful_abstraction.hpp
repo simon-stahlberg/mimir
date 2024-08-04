@@ -104,7 +104,7 @@ private:
     std::shared_ptr<SuccessorStateGenerator> m_ssg;
 
     /* States */
-    BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>> m_graph;
+    StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>> m_graph;
     // Persistent and sorted to store slices in the abstract states.
     std::shared_ptr<const StateList> m_concrete_states_by_abstract_state;
     StateMap<StateIndex> m_concrete_to_abstract_state;
@@ -132,7 +132,7 @@ private:
                         std::shared_ptr<PDDLFactories> factories,
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<SuccessorStateGenerator> ssg,
-                        BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>> graph,
+                        StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>> graph,
                         std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                         StateMap<StateIndex> concrete_to_abstract_state,
                         StateIndex initial_state,
@@ -223,12 +223,12 @@ public:
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
     /* Graph */
-    const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
+    const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, Direction> get_adjacent_states(StateIndex state) const;
+    auto get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
     AdjacentVertexIndexIterator<AbstractTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
@@ -259,7 +259,7 @@ public:
 };
 
 static_assert(IsAbstraction<FaithfulAbstraction>);
-static_assert(IsGraph<BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>>);
+static_assert(IsGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
 

@@ -48,9 +48,9 @@ public:
     Color get_color() const;
 };
 
-using VertexColoredDigraph = Graph<ColoredDigraphVertex, DigraphEdge>;
-using VertexColoredForwardDigraph = ForwardGraph<Graph<ColoredDigraphVertex, DigraphEdge>>;
-using VertexColoredBidirectionalDigraph = BidirectionalGraph<Graph<ColoredDigraphVertex, DigraphEdge>>;
+using VertexColoredDigraph = StaticGraph<ColoredDigraphVertex, DigraphEdge>;
+using VertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
+using VertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
 
 static_assert(IsConstructibleGraph<VertexColoredDigraph>);
 static_assert(!IsConstructibleGraph<VertexColoredForwardDigraph>);

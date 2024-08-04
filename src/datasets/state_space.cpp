@@ -19,7 +19,7 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/graphs/boost_adapter.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -35,7 +35,7 @@ StateSpace::StateSpace(Problem problem,
                        std::shared_ptr<PDDLFactories> pddl_factories,
                        std::shared_ptr<IAAG> aag,
                        std::shared_ptr<SuccessorStateGenerator> ssg,
-                       BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>> graph,
+                       StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>> graph,
                        StateMap<StateIndex> state_to_index,
                        StateIndex initial_state,
                        StateIndexSet goal_states,
@@ -84,7 +84,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    auto graph = Graph<ConcreteState, ConcreteTransition>();
+    auto graph = StaticGraph<ConcreteState, ConcreteTransition>();
     const auto initial_state_index = graph.add_vertex(initial_state);
     auto goal_states = StateIndexSet {};
     auto state_to_index = StateMap<StateIndex> {};
@@ -143,7 +143,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    auto bidirectional_graph = BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>(std::move(graph));
+    auto bidirectional_graph = StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>(std::move(graph));
 
     auto goal_distances = std::vector<Distance> {};
     if (options.use_unit_cost_one
@@ -306,20 +306,19 @@ const std::shared_ptr<IAAG>& StateSpace::get_aag() const { return m_aag; }
 const std::shared_ptr<SuccessorStateGenerator>& StateSpace::get_ssg() const { return m_ssg; }
 
 /* Graph */
-const BidirectionalGraph<Graph<ConcreteState, ConcreteTransition>>& StateSpace::get_graph() const { return m_graph; }
+const StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>& StateSpace::get_graph() const { return m_graph; }
 
 /* States */
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
 template<IsTraversalDirection Direction>
-AdjacentVertexIterator<ConcreteState, ConcreteTransition, Direction> StateSpace::get_adjacent_states(StateIndex state) const
+auto StateSpace::get_adjacent_states(StateIndex state) const
 {
     return m_graph.get_adjacent_vertices<Direction>(state);
 }
 
-template AdjacentVertexIterator<ConcreteState, ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
-template AdjacentVertexIterator<ConcreteState, ConcreteTransition, BackwardTraversal>
-StateSpace::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
+template auto StateSpace::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template auto StateSpace::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
 AdjacentVertexIndexIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_state_indices(StateIndex state) const

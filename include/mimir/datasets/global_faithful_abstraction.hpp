@@ -148,12 +148,12 @@ public:
     const FaithfulAbstractionList& get_abstractions() const;
 
     /* Graph */
-    const BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
+    const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
 
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIterator<FaithfulAbstractState, AbstractTransition, Direction> get_adjacent_states(StateIndex state) const;
+    auto get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
     AdjacentVertexIndexIterator<AbstractTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
@@ -187,7 +187,7 @@ public:
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
-static_assert(IsGraph<BidirectionalGraph<Graph<FaithfulAbstractState, AbstractTransition>>>);
+static_assert(IsGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
 
 /**
  * Pretty printing

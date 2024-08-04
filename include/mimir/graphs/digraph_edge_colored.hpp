@@ -44,9 +44,9 @@ public:
     Color get_color() const;
 };
 
-using EdgeColoredDigraph = Graph<ColoredDigraphVertex, ColoredDigraphEdge>;
-using EdgeColoredForwardDigraph = ForwardGraph<Graph<ColoredDigraphVertex, ColoredDigraphEdge>>;
-using EdgeColoredBidirectionalDigraph = BidirectionalGraph<Graph<ColoredDigraphVertex, ColoredDigraphEdge>>;
+using EdgeColoredDigraph = StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>;
+using EdgeColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>>;
+using EdgeColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>>;
 
 static_assert(IsConstructibleGraph<EdgeColoredDigraph>);
 static_assert(!IsConstructibleGraph<EdgeColoredForwardDigraph>);
