@@ -18,10 +18,10 @@
 #ifndef MIMIR_GRAPHS_DYNAMIC_GRAPH_HPP_
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_HPP_
 
+#include "mimir/graphs/dynamic_graph_iterators.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
-#include "mimir/graphs/static_graph_iterators.hpp"
 
 #include <ranges>
 #include <span>
@@ -43,10 +43,23 @@ template<IsVertex Vertex, IsEdge Edge>
 class DynamicGraph
 {
 public:
+    using GraphType = DynamicGraphTag;
     using VertexType = Vertex;
     using VertexList = std::vector<Vertex>;
     using EdgeType = Edge;
     using EdgeList = std::vector<Edge>;
+
+    using VertexIndexConstIteratorType = DynamicVertexIndexConstIterator<VertexType>;
+    using EdgeIndexConstIteratorType = DynamicEdgeIndexConstIterator<EdgeType>;
+
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexConstIteratorType = DynamicAdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType = DynamicAdjacentVertexIndexConstIterator<EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = DynamicAdjacentEdgeConstIterator<EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType = DynamicAdjacentEdgeIndexConstIterator<EdgeType, Direction>;
 
     DynamicGraph();
 
@@ -78,17 +91,17 @@ public:
      * Iterators
      */
 
-    VertexIndexIterator<Vertex> get_vertex_indices() const;
-    EdgeIndexIterator<Edge> get_edge_indices() const;
+    std::ranges::subrange<VertexIndexConstIteratorType> get_vertex_indices() const;
+    std::ranges::subrange<EdgeIndexConstIteratorType> get_edge_indices() const;
 
     template<IsTraversalDirection Direction>
-    AdjacentVertexIterator<Vertex, Edge, Direction> get_adjacent_vertices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_vertices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIndexIterator<Edge, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_vertex_indices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIterator<Edge, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIndexIterator<Edge, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters

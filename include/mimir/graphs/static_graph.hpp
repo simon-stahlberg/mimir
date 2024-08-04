@@ -661,7 +661,7 @@ std::ranges::subrange<typename StaticBidirectionalGraph<G>::EdgeIndexConstIterat
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentVertexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentVertexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -701,7 +701,7 @@ StaticBidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -737,7 +737,7 @@ StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) con
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -772,7 +772,7 @@ StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
