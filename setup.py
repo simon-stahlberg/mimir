@@ -40,7 +40,7 @@ class CMakeBuild(build_ext):
         # Create the temporary build directory, if it does not already exist
         os.makedirs(temp_directory, exist_ok=True)
 
-        # 1. Build dependencies
+        # 1. Build and install dependencies and delete the build directory
 
         subprocess.run(
             ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
@@ -49,6 +49,8 @@ class CMakeBuild(build_ext):
         subprocess.run(
             ["cmake", "--build", f"{str(temp_directory)}/dependencies/build", f"-j{multiprocessing.cpu_count()}"]
         )
+
+        shutil.rmtree(f"{str(temp_directory)}/dependencies/build")
 
         # 2. Build mimir
 
