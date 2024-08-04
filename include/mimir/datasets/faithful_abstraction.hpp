@@ -145,6 +145,21 @@ public:
     using StateType = FaithfulAbstractState;
     using TransitionType = AbstractTransition;
 
+    using VertexIndexConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::VertexIndexConstIteratorType;
+    using EdgeIndexConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::EdgeIndexConstIteratorType;
+
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexConstIteratorType =
+        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentVertexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType =
+        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentVertexIndexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentEdgeConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType =
+        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentEdgeIndexConstIteratorType<Direction>;
+
     static std::optional<FaithfulAbstraction>
     create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
@@ -228,9 +243,9 @@ public:
     /* States */
     const FaithfulAbstractStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    auto get_adjacent_states(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIndexIterator<AbstractTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(StateIndex state) const;
     const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -245,9 +260,9 @@ public:
     /* Transitions */
     const AbstractTransitionList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIterator<AbstractTransition, Direction> get_adjacent_transitions(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIndexIterator<AbstractTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(StateIndex state) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

@@ -57,22 +57,22 @@ concept IsGraph = requires(T a, VertexIndex vertex)
         } -> IsRangeOver<typename T::VertexType>;
     {
         a.template get_adjacent_vertex_indices<ForwardTraversal>(vertex)
-        } -> std::same_as<AdjacentVertexIndexIterator<typename T::EdgeType, ForwardTraversal>>;
+        } -> IsRangeOver<VertexIndex>;
     {
         a.template get_adjacent_vertex_indices<BackwardTraversal>(vertex)
-        } -> std::same_as<AdjacentVertexIndexIterator<typename T::EdgeType, BackwardTraversal>>;
+        } -> IsRangeOver<VertexIndex>;
     {
         a.template get_adjacent_edges<ForwardTraversal>(vertex)
-        } -> std::same_as<AdjacentEdgeIterator<typename T::EdgeType, ForwardTraversal>>;
+        } -> IsRangeOver<typename T::EdgeType>;
     {
         a.template get_adjacent_edges<BackwardTraversal>(vertex)
-        } -> std::same_as<AdjacentEdgeIterator<typename T::EdgeType, BackwardTraversal>>;
+        } -> IsRangeOver<typename T::EdgeType>;
     {
         a.template get_adjacent_edge_indices<ForwardTraversal>(vertex)
-        } -> std::same_as<AdjacentEdgeIndexIterator<typename T::EdgeType, ForwardTraversal>>;
+        } -> IsRangeOver<EdgeIndex>;
     {
         a.template get_adjacent_edge_indices<BackwardTraversal>(vertex)
-        } -> std::same_as<AdjacentEdgeIndexIterator<typename T::EdgeType, BackwardTraversal>>;
+        } -> IsRangeOver<EdgeIndex>;
 
     /* Getters */
 

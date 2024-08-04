@@ -63,6 +63,12 @@ public:
 
     template<IsTraversalDirection Direction>
     using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<Vertex, Edge, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType = AdjacentVertexIndexConstIterator<Edge, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = AdjacentEdgeConstIterator<Edge, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType = AdjacentEdgeIndexConstIterator<Edge, Direction>;
 
     StaticGraph();
 
@@ -92,11 +98,11 @@ public:
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_vertices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIndexIterator<Edge, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_vertex_indices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIterator<Edge, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIndexIterator<Edge, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters
@@ -140,6 +146,12 @@ public:
 
     template<IsTraversalDirection Direction>
     using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType = AdjacentVertexIndexConstIterator<EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = AdjacentEdgeConstIterator<EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType = AdjacentEdgeIndexConstIterator<EdgeType, Direction>;
 
     explicit StaticForwardGraph(G graph);
 
@@ -153,11 +165,11 @@ public:
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_vertices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIndexIterator<EdgeType, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_vertex_indices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIterator<EdgeType, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIndexIterator<EdgeType, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters
@@ -196,6 +208,12 @@ public:
 
     template<IsTraversalDirection Direction>
     using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType = AdjacentVertexIndexConstIterator<EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = AdjacentEdgeConstIterator<EdgeType, Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType = AdjacentEdgeIndexConstIterator<EdgeType, Direction>;
 
     explicit StaticBidirectionalGraph(G graph);
 
@@ -209,11 +227,11 @@ public:
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_vertices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIndexIterator<EdgeType, Direction> get_adjacent_vertex_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_vertex_indices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIterator<EdgeType, Direction> get_adjacent_edges(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIndexIterator<EdgeType, Direction> get_adjacent_edge_indices(VertexIndex vertex) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(VertexIndex vertex) const;
 
     /**
      * Getters
@@ -328,23 +346,29 @@ StaticGraph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex) const
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-AdjacentVertexIndexIterator<Edge, Direction> StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>>
+StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    return AdjacentVertexIndexIterator<Edge, Direction>(vertex, m_edges, m_slice);
+    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
+                                 typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-AdjacentEdgeIterator<Edge, Direction> StaticGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>>
+StaticGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
 {
-    return AdjacentEdgeIterator<Edge, Direction>(vertex, m_edges, m_slice);
+    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
+                                 typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-AdjacentEdgeIndexIterator<Edge, Direction> StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>>
+StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    return AdjacentEdgeIndexIterator<Edge, Direction>(vertex, m_edges, m_slice);
+    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
+                                 typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -495,13 +519,20 @@ StaticForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-AdjacentVertexIndexIterator<typename StaticForwardGraph<G>::EdgeType, Direction> StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>>
+StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return AdjacentVertexIndexIterator<typename StaticForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
-                                                                                                       m_graph.get_edges(),
-                                                                                                       m_edge_indices_grouped_by_source.at(vertex));
+        return std::ranges::subrange(
+            typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                   m_graph.get_edges(),
+                                                                                                   m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                   true),
+            typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                   m_graph.get_edges(),
+                                                                                                   m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                   false));
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
@@ -516,17 +547,24 @@ AdjacentVertexIndexIterator<typename StaticForwardGraph<G>::EdgeType, Direction>
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-AdjacentEdgeIterator<typename StaticForwardGraph<G>::EdgeType, Direction> StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
+std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<Direction>>
+StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return AdjacentEdgeIterator<typename StaticForwardGraph<G>::EdgeType, Direction>(vertex,
-                                                                                         m_graph.get_edges(),
-                                                                                         m_edge_indices_grouped_by_source.at(vertex));
+        return std::ranges::subrange(
+            typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<ForwardTraversal>(vertex,
+                                                                                            m_graph.get_edges(),
+                                                                                            m_edge_indices_grouped_by_source.at(vertex),
+                                                                                            true),
+            typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<ForwardTraversal>(vertex,
+                                                                                            m_graph.get_edges(),
+                                                                                            m_edge_indices_grouped_by_source.at(vertex),
+                                                                                            false));
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return m_graph.template get_backward_edges<BackwardTraversal>(vertex);
+        return m_graph.template get_adjacent_edges<BackwardTraversal>(vertex);
     }
     else
     {
@@ -536,18 +574,24 @@ AdjacentEdgeIterator<typename StaticForwardGraph<G>::EdgeType, Direction> Static
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-AdjacentEdgeIndexIterator<typename StaticForwardGraph<G>::EdgeType, Direction> StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>>
+StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return AdjacentEdgeIndexIterator<typename StaticForwardGraph<G>::EdgeType, Direction>(vertex,
-                                                                                              m_graph.get_vertices(),
-                                                                                              m_graph.get_edges(),
-                                                                                              m_edge_indices_grouped_by_source.at(vertex));
+        return std::ranges::subrange(
+            typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                 m_graph.get_edges(),
+                                                                                                 m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                 true),
+            typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                 m_graph.get_edges(),
+                                                                                                 m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                 false));
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return m_graph.template get_backward_edge_indices<BackwardTraversal>(vertex);
+        return m_graph.template get_adjacent_edge_indices<BackwardTraversal>(vertex);
     }
     else
     {
@@ -657,20 +701,32 @@ StaticBidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-AdjacentVertexIndexIterator<typename StaticBidirectionalGraph<G>::EdgeType, Direction>
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return AdjacentVertexIndexIterator<typename StaticForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
-                                                                                                       m_graph.get_edges(),
-                                                                                                       m_edge_indices_grouped_by_source.at(vertex));
+        return std::ranges::subrange(
+            typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                         m_graph.get_edges(),
+                                                                                                         m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                         true),
+            typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                         m_graph.get_edges(),
+                                                                                                         m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                         false));
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return AdjacentVertexIndexIterator<typename StaticForwardGraph<G>::EdgeType, BackwardTraversal>(vertex,
-                                                                                                        m_graph.get_edges(),
-                                                                                                        m_edge_indices_grouped_by_target.at(vertex));
+        return std::ranges::subrange(
+            typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<BackwardTraversal>(vertex,
+                                                                                                          m_graph.get_edges(),
+                                                                                                          m_edge_indices_grouped_by_target.at(vertex),
+                                                                                                          true),
+            typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<BackwardTraversal>(vertex,
+                                                                                                          m_graph.get_edges(),
+                                                                                                          m_edge_indices_grouped_by_target.at(vertex),
+                                                                                                          false));
     }
     else
     {
@@ -681,19 +737,32 @@ StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) con
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-AdjacentEdgeIterator<typename StaticBidirectionalGraph<G>::EdgeType, Direction> StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<Direction>>
+StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return AdjacentEdgeIterator<typename StaticForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
-                                                                                                m_graph.get_edges(),
-                                                                                                m_edge_indices_grouped_by_source.at(vertex));
+        return std::ranges::subrange(
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                  m_graph.get_edges(),
+                                                                                                  m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                  true),
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                  m_graph.get_edges(),
+                                                                                                  m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                  false));
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return AdjacentEdgeIterator<typename StaticForwardGraph<G>::EdgeType, BackwardTraversal>(vertex,
-                                                                                                 m_graph.get_edges(),
-                                                                                                 m_edge_indices_grouped_by_target.at(vertex));
+        return std::ranges::subrange(
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<BackwardTraversal>(vertex,
+                                                                                                   m_graph.get_edges(),
+                                                                                                   m_edge_indices_grouped_by_target.at(vertex),
+                                                                                                   true),
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<BackwardTraversal>(vertex,
+                                                                                                   m_graph.get_edges(),
+                                                                                                   m_edge_indices_grouped_by_target.at(vertex),
+                                                                                                   false));
     }
     else
     {
@@ -703,20 +772,32 @@ AdjacentEdgeIterator<typename StaticBidirectionalGraph<G>::EdgeType, Direction> 
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-AdjacentEdgeIndexIterator<typename StaticBidirectionalGraph<G>::EdgeType, Direction>
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return AdjacentEdgeIndexIterator<typename StaticForwardGraph<G>::EdgeType, ForwardTraversal>(vertex,
-                                                                                                     m_graph.get_edges(),
-                                                                                                     m_edge_indices_grouped_by_source.at(vertex));
+        return std::ranges::subrange(
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                       m_graph.get_edges(),
+                                                                                                       m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                       true),
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>(vertex,
+                                                                                                       m_graph.get_edges(),
+                                                                                                       m_edge_indices_grouped_by_source.at(vertex),
+                                                                                                       false));
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return AdjacentEdgeIndexIterator<typename StaticForwardGraph<G>::EdgeType, BackwardTraversal>(vertex,
-                                                                                                      m_graph.get_edges(),
-                                                                                                      m_edge_indices_grouped_by_target.at(vertex));
+        return std::ranges::subrange(
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>(vertex,
+                                                                                                        m_graph.get_edges(),
+                                                                                                        m_edge_indices_grouped_by_target.at(vertex),
+                                                                                                        true),
+            typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>(vertex,
+                                                                                                        m_graph.get_edges(),
+                                                                                                        m_edge_indices_grouped_by_target.at(vertex),
+                                                                                                        false));
     }
     else
     {

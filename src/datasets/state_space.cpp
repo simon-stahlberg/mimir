@@ -312,22 +312,26 @@ const StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>& 
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
 template<IsTraversalDirection Direction>
-auto StateSpace::get_adjacent_states(StateIndex state) const
+std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<Direction>> StateSpace::get_adjacent_states(StateIndex state) const
 {
     return m_graph.get_adjacent_vertices<Direction>(state);
 }
 
-template auto StateSpace::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
-template auto StateSpace::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<ForwardTraversal>>
+StateSpace::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<BackwardTraversal>>
+StateSpace::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
-AdjacentVertexIndexIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_state_indices(StateIndex state) const
+std::ranges::subrange<StateSpace::AdjacentVertexIndexConstIteratorType<Direction>> StateSpace::get_adjacent_state_indices(StateIndex state) const
 {
     return m_graph.get_adjacent_vertex_indices<Direction>(state);
 }
 
-template AdjacentVertexIndexIterator<ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_state_indices<ForwardTraversal>(StateIndex state) const;
-template AdjacentVertexIndexIterator<ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_state_indices<BackwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentVertexIndexConstIteratorType<ForwardTraversal>>
+StateSpace::get_adjacent_state_indices<ForwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentVertexIndexConstIteratorType<BackwardTraversal>>
+StateSpace::get_adjacent_state_indices<BackwardTraversal>(StateIndex state) const;
 
 StateIndex StateSpace::get_state_index(State state) const { return m_state_to_index.at(state); }
 
@@ -353,22 +357,25 @@ bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_stat
 const ConcreteTransitionList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
 
 template<IsTraversalDirection Direction>
-AdjacentEdgeIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_transitions(StateIndex state) const
+std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<Direction>> StateSpace::get_adjacent_transitions(StateIndex state) const
 {
     return m_graph.get_adjacent_edges<Direction>(state);
 }
 
-template AdjacentEdgeIterator<ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_transitions<ForwardTraversal>(StateIndex state) const;
-template AdjacentEdgeIterator<ConcreteTransition, BackwardTraversal> StateSpace::get_adjacent_transitions<BackwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<ForwardTraversal>>
+StateSpace::get_adjacent_transitions<ForwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<BackwardTraversal>>
+StateSpace::get_adjacent_transitions<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
-AdjacentEdgeIndexIterator<ConcreteTransition, Direction> StateSpace::get_adjacent_transition_indices(StateIndex state) const
+std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<Direction>> StateSpace::get_adjacent_transition_indices(StateIndex state) const
 {
     return m_graph.get_adjacent_edge_indices<Direction>(state);
 }
 
-template AdjacentEdgeIndexIterator<ConcreteTransition, ForwardTraversal> StateSpace::get_adjacent_transition_indices<ForwardTraversal>(StateIndex state) const;
-template AdjacentEdgeIndexIterator<ConcreteTransition, BackwardTraversal>
+template std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>>
+StateSpace::get_adjacent_transition_indices<ForwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
 StateSpace::get_adjacent_transition_indices<BackwardTraversal>(StateIndex state) const;
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const

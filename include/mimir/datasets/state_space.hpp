@@ -99,8 +99,23 @@ private:
                std::vector<Distance> goal_distances);
 
 public:
-    using StateType = State;
+    using StateType = ConcreteState;
     using TransitionType = ConcreteTransition;
+
+    using VertexIndexConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::VertexIndexConstIteratorType;
+    using EdgeIndexConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::EdgeIndexConstIteratorType;
+
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexConstIteratorType =
+        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentVertexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType =
+        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentVertexIndexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentEdgeConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType =
+        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentEdgeIndexConstIteratorType<Direction>;
 
     /// @brief Try to create a StateSpace from the given input files with the given resource limits.
     /// @param problem The problem from which to create the state space.
@@ -173,9 +188,9 @@ public:
     /* States */
     const ConcreteStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    auto get_adjacent_states(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    AdjacentVertexIndexIterator<ConcreteTransition, Direction> get_adjacent_state_indices(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(StateIndex state) const;
     StateIndex get_state_index(State state) const;
     StateIndex get_initial_state() const;
     const StateIndexSet& get_goal_states() const;
@@ -190,9 +205,9 @@ public:
     /* Transitions */
     const ConcreteTransitionList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIterator<ConcreteTransition, Direction> get_adjacent_transitions(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>
-    AdjacentEdgeIndexIterator<ConcreteTransition, Direction> get_adjacent_transition_indices(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(StateIndex state) const;
     TransitionCost get_transition_cost(TransitionIndex transition) const;
     size_t get_num_transitions() const;
 

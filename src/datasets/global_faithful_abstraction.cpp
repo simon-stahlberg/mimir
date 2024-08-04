@@ -254,23 +254,27 @@ const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransi
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
 
 template<IsTraversalDirection Direction>
-auto GlobalFaithfulAbstraction::get_adjacent_states(StateIndex state) const
+std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexConstIteratorType<Direction>>
+GlobalFaithfulAbstraction::get_adjacent_states(StateIndex state) const
 {
     return get_graph().get_adjacent_vertices<Direction>(state);
 }
 
-template auto GlobalFaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
-template auto GlobalFaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexConstIteratorType<ForwardTraversal>>
+GlobalFaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexConstIteratorType<BackwardTraversal>>
+GlobalFaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
-AdjacentVertexIndexIterator<AbstractTransition, Direction> GlobalFaithfulAbstraction::get_adjacent_state_indices(StateIndex state) const
+std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexIndexConstIteratorType<Direction>>
+GlobalFaithfulAbstraction::get_adjacent_state_indices(StateIndex state) const
 {
-    return get_graph().template get_adjacent_vertex_indices<Direction>(state);
+    return get_graph().get_adjacent_vertex_indices<Direction>(state);
 }
 
-template AdjacentVertexIndexIterator<AbstractTransition, ForwardTraversal>
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexIndexConstIteratorType<ForwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_state_indices<ForwardTraversal>(StateIndex state) const;
-template AdjacentVertexIndexIterator<AbstractTransition, BackwardTraversal>
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexIndexConstIteratorType<BackwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_state_indices<BackwardTraversal>(StateIndex state) const;
 
 const StateMap<StateIndex>& GlobalFaithfulAbstraction::get_concrete_to_abstract_state() const
@@ -309,25 +313,27 @@ size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return
 const AbstractTransitionList& GlobalFaithfulAbstraction::get_transitions() const { return get_graph().get_edges(); }
 
 template<IsTraversalDirection Direction>
-AdjacentEdgeIterator<AbstractTransition, Direction> GlobalFaithfulAbstraction::get_adjacent_transitions(StateIndex state) const
+std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>>
+GlobalFaithfulAbstraction::get_adjacent_transitions(StateIndex state) const
 {
-    return get_graph().template get_adjacent_edges<Direction>(state);
+    return get_graph().get_adjacent_edges<Direction>(state);
 }
 
-template AdjacentEdgeIterator<AbstractTransition, ForwardTraversal>
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<ForwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_transitions<ForwardTraversal>(StateIndex state) const;
-template AdjacentEdgeIterator<AbstractTransition, BackwardTraversal>
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<BackwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_transitions<BackwardTraversal>(StateIndex state) const;
 
 template<IsTraversalDirection Direction>
-AdjacentEdgeIndexIterator<AbstractTransition, Direction> GlobalFaithfulAbstraction::get_adjacent_transition_indices(StateIndex state) const
+std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<Direction>>
+GlobalFaithfulAbstraction::get_adjacent_transition_indices(StateIndex state) const
 {
-    return get_graph().template get_adjacent_edge_indices<Direction>(state);
+    return get_graph().get_adjacent_edge_indices<Direction>(state);
 }
 
-template AdjacentEdgeIndexIterator<AbstractTransition, ForwardTraversal>
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_transition_indices<ForwardTraversal>(StateIndex state) const;
-template AdjacentEdgeIndexIterator<AbstractTransition, BackwardTraversal>
+template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_transition_indices<BackwardTraversal>(StateIndex state) const;
 
 TransitionCost GlobalFaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
