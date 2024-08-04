@@ -202,7 +202,9 @@ out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Directi
     return g.get_graph().template get_degree<Direction>(u);
 }
 
-/* boost::EdgeListGraph */
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::EdgeListGraph
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsGraph Graph, IsTraversalDirection Direction>
 std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_iterator,
@@ -218,7 +220,9 @@ boost::graph_traits<GraphWithDirection<Graph, Direction>>::edges_size_type num_e
     return g.get_graph().get_num_edges();
 }
 
-/* boost::AdjacencyGraph */
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// boost::AdjacencyGraph
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsGraph Graph, IsTraversalDirection Direction>
 std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::adjacency_iterator,

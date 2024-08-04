@@ -270,6 +270,9 @@ void Graph<Vertex, Edge>::reset()
 {
     m_vertices.clear();
     m_edges.clear();
+    m_in_degrees.clear();
+    m_out_degrees.clear();
+    m_slice.clear();
 }
 
 template<IsVertex Vertex, IsEdge Edge>
