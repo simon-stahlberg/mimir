@@ -41,10 +41,10 @@ concept IsGraph = requires(T a, VertexIndex vertex)
     /* Iterators */
 
     {
-        a.template get_vertex_indices()
+        a.get_vertex_indices()
         } -> std::same_as<VertexIndexIterator<typename T::VertexType>>;
     {
-        a.template get_edge_indices()
+        a.get_edge_indices()
         } -> std::same_as<EdgeIndexIterator<typename T::EdgeType>>;
     {
         a.template get_adjacent_vertices<ForwardTraversal>(vertex)
@@ -111,6 +111,13 @@ concept IsConstructibleGraph = requires(T a, VertexIndex vertex)
     {
         a.add_undirected_edge(vertex, vertex)
         } -> std::same_as<std::pair<EdgeIndex, EdgeIndex>>;
+};
+
+template<typename T>
+concept IsDestructibleGraph = requires(T a, VertexIndex vertex, EdgeIndex edge)
+{
+    { a.remove_vertex(vertex) };
+    { a.remove_edge(edge) };
 };
 
 }

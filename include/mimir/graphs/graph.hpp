@@ -70,6 +70,13 @@ private:
 public:
     Graph();
 
+    /// @brief Reinitialize the graph to an empty graph.
+    void reset();
+
+    /**
+     * Constructible functionality.
+     */
+
     template<typename... Args>
     VertexIndex add_vertex(Args&&... args);
 
@@ -78,9 +85,6 @@ public:
 
     template<typename... Args>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args);
-
-    /// @brief Reinitialize the graph to an empty graph.
-    void reset();
 
     /**
      * Iterators
