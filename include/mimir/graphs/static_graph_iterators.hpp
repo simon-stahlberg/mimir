@@ -31,40 +31,28 @@ namespace mimir
 {
 
 template<IsVertex Vertex>
-class VertexIndexIterator
+class VertexIndexConstIterator
 {
 private:
-    std::reference_wrapper<const std::vector<Vertex>> m_vertices;
+    size_t m_pos;
+    const std::vector<Vertex>* m_vertices;
+
+    void advance();
 
 public:
-    explicit VertexIndexIterator(const std::vector<Vertex>& vertices);
+    using difference_type = std::ptrdiff_t;
+    using value_type = VertexIndex;
+    using pointer = value_type*;
+    using reference = const value_type&;
+    using iterator_category = std::forward_iterator_tag;
 
-    class const_iterator
-    {
-    private:
-        size_t m_pos;
-        const std::vector<Vertex>* m_vertices;
-
-        void advance();
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using value_type = VertexIndex;
-        using pointer = value_type*;
-        using reference = const value_type&;
-        using iterator_category = std::forward_iterator_tag;
-
-        const_iterator();
-        const_iterator(const std::vector<Vertex>& vertices, bool begin);
-        value_type operator*() const;
-        const_iterator& operator++();
-        const_iterator operator++(int);
-        bool operator==(const const_iterator& other) const;
-        bool operator!=(const const_iterator& other) const;
-    };
-
-    const_iterator begin() const;
-    const_iterator end() const;
+    VertexIndexConstIterator();
+    VertexIndexConstIterator(const std::vector<Vertex>& vertices, bool begin);
+    value_type operator*() const;
+    VertexIndexConstIterator& operator++();
+    VertexIndexConstIterator operator++(int);
+    bool operator==(const VertexIndexConstIterator& other) const;
+    bool operator!=(const VertexIndexConstIterator& other) const;
 };
 
 template<IsEdge Edge>
@@ -269,30 +257,25 @@ public:
 /* VertexIndexIterator */
 
 template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::VertexIndexIterator(const std::vector<Vertex>& vertices) : m_vertices(vertices)
-{
-}
-
-template<IsVertex Vertex>
-void VertexIndexIterator<Vertex>::const_iterator::advance()
+void VertexIndexConstIterator<Vertex>::advance()
 {
     ++m_pos;
 }
 
 template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator::const_iterator() : m_pos(-1), m_vertices(nullptr)
+VertexIndexConstIterator<Vertex>::VertexIndexConstIterator() : m_pos(-1), m_vertices(nullptr)
 {
 }
 
 template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator::const_iterator(const std::vector<Vertex>& vertices, bool begin) :
+VertexIndexConstIterator<Vertex>::VertexIndexConstIterator(const std::vector<Vertex>& vertices, bool begin) :
     m_pos(begin ? 0 : vertices.size()),
     m_vertices(&vertices)
 {
 }
 
 template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator::value_type VertexIndexIterator<Vertex>::const_iterator::operator*() const
+VertexIndexConstIterator<Vertex>::value_type VertexIndexConstIterator<Vertex>::operator*() const
 {
     assert(m_vertices);
     assert(m_pos < m_vertices->size());
@@ -300,42 +283,30 @@ VertexIndexIterator<Vertex>::const_iterator::value_type VertexIndexIterator<Vert
 }
 
 template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator& VertexIndexIterator<Vertex>::const_iterator::operator++()
+VertexIndexConstIterator<Vertex>& VertexIndexConstIterator<Vertex>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator VertexIndexIterator<Vertex>::const_iterator::operator++(int)
+VertexIndexConstIterator<Vertex> VertexIndexConstIterator<Vertex>::operator++(int)
 {
-    const_iterator tmp = *this;
+    VertexIndexConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsVertex Vertex>
-bool VertexIndexIterator<Vertex>::const_iterator::operator==(const const_iterator& other) const
+bool VertexIndexConstIterator<Vertex>::operator==(const VertexIndexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsVertex Vertex>
-bool VertexIndexIterator<Vertex>::const_iterator::operator!=(const const_iterator& other) const
+bool VertexIndexConstIterator<Vertex>::operator!=(const VertexIndexConstIterator& other) const
 {
     return !(*this == other);
-}
-
-template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator VertexIndexIterator<Vertex>::begin() const
-{
-    return const_iterator(m_vertices, true);
-}
-
-template<IsVertex Vertex>
-VertexIndexIterator<Vertex>::const_iterator VertexIndexIterator<Vertex>::end() const
-{
-    return const_iterator(m_vertices, false);
 }
 
 /* EdgeIndexIterator */

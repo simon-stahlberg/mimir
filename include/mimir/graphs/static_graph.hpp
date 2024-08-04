@@ -58,6 +58,8 @@ public:
     using EdgeType = Edge;
     using EdgeList = std::vector<Edge>;
 
+    using VertexIndexConstIteratorType = VertexIndexConstIterator<Vertex>;
+
     template<IsTraversalDirection Direction>
     using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<Vertex, Edge, Direction>;
 
@@ -83,7 +85,7 @@ public:
      * Iterators
      */
 
-    VertexIndexIterator<Vertex> get_vertex_indices() const;
+    std::ranges::subrange<VertexIndexConstIteratorType> get_vertex_indices() const;
     EdgeIndexIterator<Edge> get_edge_indices() const;
 
     template<IsTraversalDirection Direction>
@@ -132,6 +134,8 @@ public:
     using VertexList = std::vector<VertexType>;
     using EdgeList = std::vector<EdgeType>;
 
+    using VertexIndexConstIteratorType = VertexIndexConstIterator<VertexType>;
+
     template<IsTraversalDirection Direction>
     using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
 
@@ -141,7 +145,7 @@ public:
      * Iterators
      */
 
-    VertexIndexIterator<VertexType> get_vertex_indices() const;
+    std::ranges::subrange<VertexIndexConstIteratorType> get_vertex_indices() const;
     EdgeIndexIterator<EdgeType> get_edge_indices() const;
 
     template<IsTraversalDirection Direction>
@@ -185,6 +189,8 @@ public:
     using VertexList = std::vector<VertexType>;
     using EdgeList = std::vector<EdgeType>;
 
+    using VertexIndexConstIteratorType = VertexIndexConstIterator<VertexType>;
+
     template<IsTraversalDirection Direction>
     using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
 
@@ -194,7 +200,7 @@ public:
      * Iterators
      */
 
-    VertexIndexIterator<VertexType> get_vertex_indices() const;
+    std::ranges::subrange<VertexIndexConstIteratorType> get_vertex_indices() const;
     EdgeIndexIterator<EdgeType> get_edge_indices() const;
 
     template<IsTraversalDirection Direction>
@@ -295,9 +301,10 @@ void StaticGraph<Vertex, Edge>::reset()
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-VertexIndexIterator<Vertex> StaticGraph<Vertex, Edge>::get_vertex_indices() const
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType> StaticGraph<Vertex, Edge>::get_vertex_indices() const
 {
-    return VertexIndexIterator<Vertex>(m_vertices);
+    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType(m_vertices, true),
+                                 typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType(m_vertices, false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -442,7 +449,7 @@ StaticForwardGraph<G>::StaticForwardGraph(G graph) :
 }
 
 template<IsGraph G>
-VertexIndexIterator<typename StaticForwardGraph<G>::VertexType> StaticForwardGraph<G>::get_vertex_indices() const
+std::ranges::subrange<typename StaticForwardGraph<G>::VertexIndexConstIteratorType> StaticForwardGraph<G>::get_vertex_indices() const
 {
     return m_graph.get_vertex_indices();
 }
@@ -593,7 +600,7 @@ StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) :
 }
 
 template<IsGraph G>
-VertexIndexIterator<typename StaticBidirectionalGraph<G>::VertexType> StaticBidirectionalGraph<G>::get_vertex_indices() const
+std::ranges::subrange<typename StaticBidirectionalGraph<G>::VertexIndexConstIteratorType> StaticBidirectionalGraph<G>::get_vertex_indices() const
 {
     return m_graph.get_vertex_indices();
 }

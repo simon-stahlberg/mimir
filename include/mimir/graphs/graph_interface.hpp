@@ -45,7 +45,7 @@ concept IsGraph = requires(T a, VertexIndex vertex)
 
     {
         a.get_vertex_indices()
-        } -> std::same_as<VertexIndexIterator<typename T::VertexType>>;
+        } -> IsRangeOver<VertexIndex>;
     {
         a.get_edge_indices()
         } -> std::same_as<EdgeIndexIterator<typename T::EdgeType>>;
