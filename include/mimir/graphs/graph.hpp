@@ -64,8 +64,8 @@ private:
     DegreeList m_in_degrees;
     DegreeList m_out_degrees;
 
-    // Slice over all edges for iteration.
-    std::vector<EdgeIndex> m_slice;
+    // Slice over all edges for using the iterators.
+    EdgeIndexList m_slice;
 
 public:
     Graph();
@@ -85,6 +85,9 @@ public:
     /**
      * Iterators
      */
+
+    VertexIndexIterator<Vertex> get_vertex_indices() const;
+    EdgeIndexIterator<Edge> get_edge_indices() const;
 
     template<IsTraversalDirection Direction>
     AdjacentVertexIterator<Vertex, Edge, Direction> get_adjacent_vertices(VertexIndex vertex) const;
@@ -107,7 +110,6 @@ public:
     const DegreeList& get_degrees() const;
     template<IsTraversalDirection Direction>
     Degree get_degree(VertexIndex vertex) const;
-    const std::vector<EdgeIndex>& get_slice() const;
 };
 
 /* ForwardGraph */
@@ -134,6 +136,9 @@ public:
      * Iterators
      */
 
+    VertexIndexIterator<VertexType> get_vertex_indices() const;
+    EdgeIndexIterator<EdgeType> get_edge_indices() const;
+
     template<IsTraversalDirection Direction>
     AdjacentVertexIterator<VertexType, EdgeType, Direction> get_adjacent_vertices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
@@ -155,7 +160,6 @@ public:
     const DegreeList& get_degrees() const;
     template<IsTraversalDirection Direction>
     Degree get_degree(VertexIndex vertex) const;
-    const std::vector<EdgeIndex>& get_slice() const;
 };
 
 /* BidirectionalGraph */
@@ -183,6 +187,9 @@ public:
      * Iterators
      */
 
+    VertexIndexIterator<VertexType> get_vertex_indices() const;
+    EdgeIndexIterator<EdgeType> get_edge_indices() const;
+
     template<IsTraversalDirection Direction>
     AdjacentVertexIterator<VertexType, EdgeType, Direction> get_adjacent_vertices(VertexIndex vertex) const;
     template<IsTraversalDirection Direction>
@@ -204,7 +211,6 @@ public:
     const DegreeList& get_degrees() const;
     template<IsTraversalDirection Direction>
     Degree get_degree(VertexIndex vertex) const;
-    const std::vector<EdgeIndex>& get_slice() const;
 };
 
 /**
@@ -273,6 +279,18 @@ void Graph<Vertex, Edge>::reset()
     m_in_degrees.clear();
     m_out_degrees.clear();
     m_slice.clear();
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+VertexIndexIterator<Vertex> Graph<Vertex, Edge>::get_vertex_indices() const
+{
+    return VertexIndexIterator<Vertex>(m_vertices);
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+EdgeIndexIterator<Edge> Graph<Vertex, Edge>::get_edge_indices() const
+{
+    return EdgeIndexIterator<Edge>(m_edges);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -363,12 +381,6 @@ Degree Graph<Vertex, Edge>::get_degree(VertexIndex vertex) const
     }
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-const std::vector<EdgeIndex>& Graph<Vertex, Edge>::get_slice() const
-{
-    return m_slice;
-}
-
 /* ForwardGraph */
 
 /// @brief Groups edge indices by source or target, depending on forward is true or false.
@@ -410,6 +422,18 @@ static IndexGroupedVector<const EdgeIndex> compute_index_grouped_edge_indices(co
 template<IsGraph G>
 ForwardGraph<G>::ForwardGraph(G graph) : m_graph(std::move(graph)), m_edge_indices_grouped_by_source(compute_index_grouped_edge_indices(m_graph, true))
 {
+}
+
+template<IsGraph G>
+VertexIndexIterator<typename ForwardGraph<G>::VertexType> ForwardGraph<G>::get_vertex_indices() const
+{
+    return m_graph.get_vertex_indices();
+}
+
+template<IsGraph G>
+EdgeIndexIterator<typename ForwardGraph<G>::EdgeType> ForwardGraph<G>::get_edge_indices() const
+{
+    return m_graph.get_edge_indices();
 }
 
 template<IsGraph G>
@@ -532,12 +556,6 @@ Degree ForwardGraph<G>::get_degree(VertexIndex vertex) const
     return m_graph.template get_degree<Direction>(vertex);
 }
 
-template<IsGraph G>
-const std::vector<EdgeIndex>& ForwardGraph<G>::get_slice() const
-{
-    return m_graph.get_slice();
-}
-
 /* BidirectionalGraph */
 
 template<IsGraph G>
@@ -546,6 +564,18 @@ BidirectionalGraph<G>::BidirectionalGraph(G graph) :
     m_edge_indices_grouped_by_source(compute_index_grouped_edge_indices(m_graph, true)),
     m_edge_indices_grouped_by_target(compute_index_grouped_edge_indices(m_graph, false))
 {
+}
+
+template<IsGraph G>
+VertexIndexIterator<typename BidirectionalGraph<G>::VertexType> BidirectionalGraph<G>::get_vertex_indices() const
+{
+    return m_graph.get_vertex_indices();
+}
+
+template<IsGraph G>
+EdgeIndexIterator<typename BidirectionalGraph<G>::EdgeType> BidirectionalGraph<G>::get_edge_indices() const
+{
+    return m_graph.get_edge_indices();
 }
 
 template<IsGraph G>
@@ -678,12 +708,6 @@ template<IsTraversalDirection Direction>
 Degree BidirectionalGraph<G>::get_degree(VertexIndex vertex) const
 {
     return m_graph.template get_degree<Direction>(vertex);
-}
-
-template<IsGraph G>
-const std::vector<EdgeIndex>& BidirectionalGraph<G>::get_slice() const
-{
-    return m_graph.get_slice();
 }
 
 }

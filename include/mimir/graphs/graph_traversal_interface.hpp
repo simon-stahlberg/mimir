@@ -33,6 +33,25 @@ struct BackwardTraversal
 template<typename T>
 concept IsTraversalDirection = std::same_as<T, ForwardTraversal> || std::same_as<T, BackwardTraversal>;
 
+/**
+ * Type trait to obtain the opposite traversal direction.
+ */
+
+template<typename Direction>
+struct InverseTraversalDirection;
+
+template<>
+struct InverseTraversalDirection<ForwardTraversal>
+{
+    using type = BackwardTraversal;
+};
+
+template<>
+struct InverseTraversalDirection<BackwardTraversal>
+{
+    using type = ForwardTraversal;
+};
+
 }
 
 #endif

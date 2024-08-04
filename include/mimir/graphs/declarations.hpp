@@ -26,7 +26,10 @@ namespace mimir
 {
 
 using VertexIndex = uint32_t;
+using VertexIndexList = std::vector<VertexIndex>;
+
 using EdgeIndex = uint32_t;
+using EdgeIndexList = std::vector<EdgeIndex>;
 using EdgeCost = double;
 
 using Distance = double;
