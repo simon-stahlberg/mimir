@@ -337,7 +337,7 @@ std::ranges::subrange<typename StaticGraph<Vertex, Edge>::EdgeIndexConstIterator
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentVertexConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex) const
 {
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, true),
@@ -346,7 +346,7 @@ StaticGraph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex) const
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
@@ -355,7 +355,7 @@ StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
 {
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
@@ -364,7 +364,7 @@ StaticGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
@@ -490,7 +490,7 @@ std::ranges::subrange<typename StaticForwardGraph<G>::EdgeIndexConstIteratorType
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentVertexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentVertexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -519,7 +519,7 @@ StaticForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -547,7 +547,7 @@ StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentEdgeConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -574,7 +574,7 @@ StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 
 template<IsGraph G>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticForwardGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>>
+std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
