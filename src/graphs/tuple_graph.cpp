@@ -47,7 +47,7 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
                        std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                        std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                        bool prune_dominated_tuples,
-                       Digraph digraph,
+                       StaticDigraph digraph,
                        IndexGroupedVector<const TupleGraphVertex> vertices_grouped_by_distance,
                        IndexGroupedVector<const State> states_grouped_by_distance) :
     m_state_space(std::move(state_space)),
@@ -162,7 +162,7 @@ const std::shared_ptr<TupleIndexMapper>& TupleGraph::get_tuple_index_mapper() co
 
 State TupleGraph::get_root_state() const { return m_states_grouped_by_distance.front().front(); }
 
-const Digraph& TupleGraph::get_digraph() const { return m_digraph; }
+const StaticDigraph& TupleGraph::get_digraph() const { return m_digraph; }
 
 const IndexGroupedVector<const TupleGraphVertex>& TupleGraph::get_vertices_grouped_by_distance() const { return m_vertices_grouped_by_distance; }
 
@@ -182,7 +182,7 @@ private:
     bool m_prune_dominated_tuples;
 
     // Result structures to create tuple graph
-    Digraph m_digraph;
+    StaticDigraph m_digraph;
     IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
     IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
 
@@ -213,7 +213,7 @@ private:
     bool m_prune_dominated_tuples;
 
     // Result structures to create tuple graph
-    Digraph m_digraph;
+    StaticDigraph m_digraph;
     IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
     IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
 

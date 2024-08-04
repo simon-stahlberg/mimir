@@ -20,6 +20,10 @@
 
 #include "mimir/graphs/color_function.hpp"
 #include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/dynamic_graph.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/static_graph.hpp"
 
 #include <ranges>
 #include <span>
@@ -48,30 +52,60 @@ public:
     Color get_color() const;
 };
 
-using VertexColoredDigraph = StaticGraph<ColoredDigraphVertex, DigraphEdge>;
-using VertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
-using VertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
+/**
+ * Type aliases
+ */
 
-static_assert(IsConstructibleGraph<VertexColoredDigraph>);
-static_assert(!IsConstructibleGraph<VertexColoredForwardDigraph>);
-static_assert(!IsConstructibleGraph<VertexColoredBidirectionalDigraph>);
+using StaticVertexColoredDigraph = StaticGraph<ColoredDigraphVertex, DigraphEdge>;
+using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
+using StaticVertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
 
-static_assert(IsGraph<VertexColoredDigraph>);
-static_assert(IsGraph<VertexColoredForwardDigraph>);
-static_assert(IsGraph<VertexColoredBidirectionalDigraph>);
+using DynamicVertexColoredDigraph = DynamicGraph<ColoredDigraphVertex, DigraphEdge>;
+
+/**
+ * Static graph assertions
+ */
+
+static_assert(IsConstructibleGraph<StaticVertexColoredDigraph>);
+static_assert(!IsConstructibleGraph<StaticVertexColoredForwardDigraph>);
+static_assert(!IsConstructibleGraph<StaticVertexColoredBidirectionalDigraph>);
+static_assert(!IsDestructibleGraph<StaticVertexColoredDigraph>);
+static_assert(!IsDestructibleGraph<StaticVertexColoredForwardDigraph>);
+static_assert(!IsDestructibleGraph<StaticVertexColoredBidirectionalDigraph>);
+
+static_assert(IsGraph<StaticVertexColoredDigraph>);
+static_assert(IsStaticGraph<StaticVertexColoredDigraph>);
+static_assert(!IsDynamicGraph<StaticVertexColoredDigraph>);
+static_assert(IsGraph<StaticVertexColoredForwardDigraph>);
+static_assert(IsStaticGraph<StaticVertexColoredForwardDigraph>);
+static_assert(!IsDynamicGraph<StaticVertexColoredForwardDigraph>);
+static_assert(IsGraph<StaticVertexColoredBidirectionalDigraph>);
+static_assert(IsStaticGraph<StaticVertexColoredBidirectionalDigraph>);
+static_assert(!IsDynamicGraph<StaticVertexColoredBidirectionalDigraph>);
+
+/**
+ * Dynamic graph assertions
+ */
+
+static_assert(IsConstructibleGraph<DynamicVertexColoredDigraph>);
+static_assert(IsDestructibleGraph<DynamicVertexColoredDigraph>);
+
+static_assert(IsGraph<DynamicVertexColoredDigraph>);
+static_assert(!IsStaticGraph<DynamicVertexColoredDigraph>);
+static_assert(IsDynamicGraph<DynamicVertexColoredDigraph>);
 
 /**
  * Utils
  */
 
-extern ColorList compute_vertex_colors(const VertexColoredDigraph& graph);
-extern ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph);
+extern ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph);
+extern ColorList compute_sorted_vertex_colors(const StaticVertexColoredDigraph& graph);
 
 /**
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<const VertexColoredDigraph&, const ColorFunction&>& data);
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const StaticVertexColoredDigraph&, const ColorFunction&>& data);
 
 }
 

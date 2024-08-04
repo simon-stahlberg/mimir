@@ -19,11 +19,13 @@
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_ITERATORS_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <cassert>
+#include <functional>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -31,7 +33,7 @@ namespace mimir
 {
 
 template<IsVertex Vertex>
-class DynamicVertexIndexIterator
+class DynamicVertexIndexConstIterator
 {
 private:
     size_t m_pos;
@@ -46,17 +48,17 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    DynamicVertexIndexIterator();
-    DynamicVertexIndexIterator(const std::unordered_map<VertexIndex, Vertex>& vertices, bool begin);
+    DynamicVertexIndexConstIterator();
+    DynamicVertexIndexConstIterator(const std::unordered_map<VertexIndex, Vertex>& vertices, bool begin);
     value_type operator*() const;
-    DynamicVertexIndexIterator& operator++();
-    DynamicVertexIndexIterator operator++(int);
-    bool operator==(const DynamicVertexIndexIterator& other) const;
-    bool operator!=(const DynamicVertexIndexIterator& other) const;
+    DynamicVertexIndexConstIterator& operator++();
+    DynamicVertexIndexConstIterator operator++(int);
+    bool operator==(const DynamicVertexIndexConstIterator& other) const;
+    bool operator!=(const DynamicVertexIndexConstIterator& other) const;
 };
 
 template<IsEdge Edge>
-class DynamicEdgeIndexIterator
+class DynamicEdgeIndexConstIterator
 {
 private:
     size_t m_pos;
@@ -71,23 +73,22 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    DynamicEdgeIndexIterator();
-    DynamicEdgeIndexIterator(const std::unordered_map<EdgeIndex, Edge>& edges, bool begin);
+    DynamicEdgeIndexConstIterator();
+    DynamicEdgeIndexConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges, bool begin);
     value_type operator*() const;
-    DynamicEdgeIndexIterator& operator++();
-    DynamicEdgeIndexIterator operator++(int);
-    bool operator==(const DynamicEdgeIndexIterator& other) const;
-    bool operator!=(const DynamicEdgeIndexIterator& other) const;
+    DynamicEdgeIndexConstIterator& operator++();
+    DynamicEdgeIndexConstIterator operator++(int);
+    bool operator==(const DynamicEdgeIndexConstIterator& other) const;
+    bool operator!=(const DynamicEdgeIndexConstIterator& other) const;
 };
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-class DynamicAdjacentVertexIterator
+class DynamicAdjacentVertexConstIterator
 {
 private:
-    size_t m_pos;
     const std::unordered_map<VertexIndex, Vertex>* m_vertices;
     const std::unordered_map<EdgeIndex, Edge>* m_edges;
-    const std::unordered_set<EdgeIndex>* m_slice;
+    std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 
     void advance();
 
@@ -98,25 +99,25 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    DynamicAdjacentVertexIterator();
-    DynamicAdjacentVertexIterator(const std::unordered_map<VertexIndex, Vertex>& vertices,
-                                  const std::unordered_map<EdgeIndex, Edge>& edges,
-                                  const std::unordered_set<EdgeIndex>& slice,
-                                  bool begin);
+    DynamicAdjacentVertexConstIterator();
+    DynamicAdjacentVertexConstIterator(const std::unordered_map<VertexIndex, Vertex>& vertices,
+                                       const std::unordered_map<EdgeIndex, Edge>& edges,
+                                       const std::unordered_set<EdgeIndex>& slice,
+                                       bool begin);
     reference operator*() const;
-    DynamicAdjacentVertexIterator& operator++();
-    DynamicAdjacentVertexIterator operator++(int);
-    bool operator==(const DynamicAdjacentVertexIterator& other) const;
-    bool operator!=(const DynamicAdjacentVertexIterator& other) const;
+    DynamicAdjacentVertexConstIterator& operator++();
+    DynamicAdjacentVertexConstIterator operator++(int);
+    bool operator==(const DynamicAdjacentVertexConstIterator& other) const;
+    bool operator!=(const DynamicAdjacentVertexConstIterator& other) const;
 };
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-class DynamicAdjacentVertexIndexIterator
+class DynamicAdjacentVertexIndexConstIterator
 {
 private:
     size_t m_pos;
-    std::reference_wrapper<const std::unordered_map<EdgeIndex, Edge>> m_edges;
-    std::reference_wrapper<const std::unordered_set<EdgeIndex>> m_slice;
+    const std::unordered_map<EdgeIndex, Edge>* m_edges;
+    std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 
     void advance();
 
@@ -127,22 +128,22 @@ public:
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    DynamicAdjacentVertexIndexIterator();
-    DynamicAdjacentVertexIndexIterator(const std::unordered_map<EdgeIndex, Edge>& edges, const std::unordered_set<EdgeIndex>& slice, bool begin);
+    DynamicAdjacentVertexIndexConstIterator();
+    DynamicAdjacentVertexIndexConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges, const std::unordered_set<EdgeIndex>& slice, bool begin);
     value_type operator*() const;
-    DynamicAdjacentVertexIndexIterator& operator++();
-    DynamicAdjacentVertexIndexIterator operator++(int);
-    bool operator==(const DynamicAdjacentVertexIndexIterator& other) const;
-    bool operator!=(const DynamicAdjacentVertexIndexIterator& other) const;
+    DynamicAdjacentVertexIndexConstIterator& operator++();
+    DynamicAdjacentVertexIndexConstIterator operator++(int);
+    bool operator==(const DynamicAdjacentVertexIndexConstIterator& other) const;
+    bool operator!=(const DynamicAdjacentVertexIndexConstIterator& other) const;
 };
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-class DynamicAdjacentEdgeIterator
+class DynamicAdjacentEdgeConstIterator
 {
 private:
     size_t m_pos;
-    std::reference_wrapper<const std::unordered_map<EdgeIndex, Edge>> m_edges;
-    std::reference_wrapper<const std::unordered_set<EdgeIndex>> m_slice;
+    const std::unordered_map<EdgeIndex, Edge>* m_edges;
+    std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 
     void advance();
 
@@ -153,22 +154,22 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    DynamicAdjacentEdgeIterator();
-    DynamicAdjacentEdgeIterator(const std::unordered_map<EdgeIndex, Edge>& edges, const std::unordered_set<EdgeIndex>& slice, bool begin);
+    DynamicAdjacentEdgeConstIterator();
+    DynamicAdjacentEdgeConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges, const std::unordered_set<EdgeIndex>& slice, bool begin);
     reference operator*() const;
-    DynamicAdjacentEdgeIterator& operator++();
-    DynamicAdjacentEdgeIterator operator++(int);
-    bool operator==(const DynamicAdjacentEdgeIterator& other) const;
-    bool operator!=(const DynamicAdjacentEdgeIterator& other) const;
+    DynamicAdjacentEdgeConstIterator& operator++();
+    DynamicAdjacentEdgeConstIterator operator++(int);
+    bool operator==(const DynamicAdjacentEdgeConstIterator& other) const;
+    bool operator!=(const DynamicAdjacentEdgeConstIterator& other) const;
 };
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-class DynamicAdjacentEdgeIndexIterator
+class DynamicAdjacentEdgeIndexConstIterator
 {
 private:
     size_t m_pos;
-    std::reference_wrapper<const std::unordered_map<EdgeIndex, Edge>> m_edges;
-    std::reference_wrapper<const std::unordered_set<EdgeIndex>> m_slice;
+    const std::unordered_map<EdgeIndex, Edge>* m_edges;
+    std::unordered_set<EdgeIndex>::const_iterator m_slice_iter;
 
     void advance();
 
@@ -179,41 +180,41 @@ public:
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    DynamicAdjacentEdgeIndexIterator();
-    DynamicAdjacentEdgeIndexIterator(const std::unordered_map<EdgeIndex, Edge>& edges, const std::unordered_set<EdgeIndex>& slice, bool begin);
+    DynamicAdjacentEdgeIndexConstIterator();
+    DynamicAdjacentEdgeIndexConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges, const std::unordered_set<EdgeIndex>& slice, bool begin);
     value_type operator*() const;
-    DynamicAdjacentEdgeIndexIterator& operator++();
-    DynamicAdjacentEdgeIndexIterator operator++(int);
-    bool operator==(const DynamicAdjacentEdgeIndexIterator& other) const;
-    bool operator!=(const DynamicAdjacentEdgeIndexIterator& other) const;
+    DynamicAdjacentEdgeIndexConstIterator& operator++();
+    DynamicAdjacentEdgeIndexConstIterator operator++(int);
+    bool operator==(const DynamicAdjacentEdgeIndexConstIterator& other) const;
+    bool operator!=(const DynamicAdjacentEdgeIndexConstIterator& other) const;
 };
 
 /**
  * Implementations
  */
 
-/* DynamicVertexIndexIterator */
+/* DynamicVertexIndexConstIterator */
 
 template<IsVertex Vertex>
-void DynamicVertexIndexIterator<Vertex>::advance()
+void DynamicVertexIndexConstIterator<Vertex>::advance()
 {
     ++m_pos;
 }
 
 template<IsVertex Vertex>
-DynamicVertexIndexIterator<Vertex>::DynamicVertexIndexIterator() : m_pos(-1), m_vertices(nullptr)
+DynamicVertexIndexConstIterator<Vertex>::DynamicVertexIndexConstIterator() : m_pos(-1), m_vertices(nullptr)
 {
 }
 
 template<IsVertex Vertex>
-DynamicVertexIndexIterator<Vertex>::DynamicVertexIndexIterator(const std::unordered_map<VertexIndex, Vertex>& vertices, bool begin) :
+DynamicVertexIndexConstIterator<Vertex>::DynamicVertexIndexConstIterator(const std::unordered_map<VertexIndex, Vertex>& vertices, bool begin) :
     m_pos(begin ? 0 : vertices.size()),
     m_vertices(&vertices)
 {
 }
 
 template<IsVertex Vertex>
-DynamicVertexIndexIterator<Vertex>::value_type DynamicVertexIndexIterator<Vertex>::operator*() const
+DynamicVertexIndexConstIterator<Vertex>::value_type DynamicVertexIndexConstIterator<Vertex>::operator*() const
 {
     assert(m_vertices);
     assert(m_pos < m_vertices->size());
@@ -221,54 +222,54 @@ DynamicVertexIndexIterator<Vertex>::value_type DynamicVertexIndexIterator<Vertex
 }
 
 template<IsVertex Vertex>
-DynamicVertexIndexIterator<Vertex>& DynamicVertexIndexIterator<Vertex>::operator++()
+DynamicVertexIndexConstIterator<Vertex>& DynamicVertexIndexConstIterator<Vertex>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsVertex Vertex>
-DynamicVertexIndexIterator<Vertex> DynamicVertexIndexIterator<Vertex>::operator++(int)
+DynamicVertexIndexConstIterator<Vertex> DynamicVertexIndexConstIterator<Vertex>::operator++(int)
 {
-    DynamicVertexIndexIterator tmp = *this;
+    DynamicVertexIndexConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsVertex Vertex>
-bool DynamicVertexIndexIterator<Vertex>::operator==(const DynamicVertexIndexIterator& other) const
+bool DynamicVertexIndexConstIterator<Vertex>::operator==(const DynamicVertexIndexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsVertex Vertex>
-bool DynamicVertexIndexIterator<Vertex>::operator!=(const DynamicVertexIndexIterator& other) const
+bool DynamicVertexIndexConstIterator<Vertex>::operator!=(const DynamicVertexIndexConstIterator& other) const
 {
     return !(*this == other);
 }
 
-/* DynamicEdgeIndexIterator */
+/* DynamicEdgeIndexConstIterator */
 
 template<IsEdge Edge>
-void DynamicEdgeIndexIterator<Edge>::advance()
+void DynamicEdgeIndexConstIterator<Edge>::advance()
 {
     ++m_pos;
 }
 
 template<IsEdge Edge>
-DynamicEdgeIndexIterator<Edge>::DynamicEdgeIndexIterator() : m_pos(-1), m_edges(nullptr)
+DynamicEdgeIndexConstIterator<Edge>::DynamicEdgeIndexConstIterator() : m_pos(-1), m_edges(nullptr)
 {
 }
 
 template<IsEdge Edge>
-DynamicEdgeIndexIterator<Edge>::DynamicEdgeIndexIterator(const std::unordered_map<EdgeIndex, Edge>& edges, bool begin) :
+DynamicEdgeIndexConstIterator<Edge>::DynamicEdgeIndexConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges, bool begin) :
     m_pos(begin ? 0 : edges.size()),
     m_edges(&edges)
 {
 }
 
 template<IsEdge Edge>
-DynamicEdgeIndexIterator<Edge>::value_type DynamicEdgeIndexIterator<Edge>::operator*() const
+DynamicEdgeIndexConstIterator<Edge>::value_type DynamicEdgeIndexConstIterator<Edge>::operator*() const
 {
     assert(m_edges);
     assert(m_pos < m_edges->size());
@@ -276,267 +277,259 @@ DynamicEdgeIndexIterator<Edge>::value_type DynamicEdgeIndexIterator<Edge>::opera
 }
 
 template<IsEdge Edge>
-DynamicEdgeIndexIterator<Edge>& DynamicEdgeIndexIterator<Edge>::operator++()
+DynamicEdgeIndexConstIterator<Edge>& DynamicEdgeIndexConstIterator<Edge>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsEdge Edge>
-DynamicEdgeIndexIterator<Edge> DynamicEdgeIndexIterator<Edge>::operator++(int)
+DynamicEdgeIndexConstIterator<Edge> DynamicEdgeIndexConstIterator<Edge>::operator++(int)
 {
-    DynamicEdgeIndexIterator tmp = *this;
+    DynamicEdgeIndexConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsEdge Edge>
-bool DynamicEdgeIndexIterator<Edge>::operator==(const DynamicEdgeIndexIterator& other) const
+bool DynamicEdgeIndexConstIterator<Edge>::operator==(const DynamicEdgeIndexConstIterator& other) const
 {
     return (m_pos == other.m_pos);
 }
 
 template<IsEdge Edge>
-bool DynamicEdgeIndexIterator<Edge>::operator!=(const DynamicEdgeIndexIterator& other) const
+bool DynamicEdgeIndexConstIterator<Edge>::operator!=(const DynamicEdgeIndexConstIterator& other) const
 {
     return !(*this == other);
 }
 
-/* DynamicAdjacentVertexIterator */
+/* DynamicAdjacentVertexConstIterator */
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-void DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::advance()
+void DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::advance()
 {
-    ++m_pos;
+    ++m_slice_iter;
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::DynamicAdjacentVertexIterator() : m_pos(-1), m_vertices(nullptr), m_edges(nullptr), m_slice()
+DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::DynamicAdjacentVertexConstIterator() : m_vertices(nullptr), m_edges(nullptr), m_slice_iter()
 {
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::DynamicAdjacentVertexIterator(const std::unordered_map<VertexIndex, Vertex>& vertices,
-                                                                                      const std::unordered_map<EdgeIndex, Edge>& edges,
-                                                                                      const std::unordered_set<EdgeIndex>& slice,
-                                                                                      bool begin) :
-    m_pos(begin ? 0 : slice.size()),
+DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::DynamicAdjacentVertexConstIterator(const std::unordered_map<VertexIndex, Vertex>& vertices,
+                                                                                                const std::unordered_map<EdgeIndex, Edge>& edges,
+                                                                                                const std::unordered_set<EdgeIndex>& slice,
+                                                                                                bool begin) :
     m_vertices(&vertices),
     m_edges(&edges),
-    m_slice(slice)
+    m_slice_iter(begin ? slice.begin() : slice.end())
 {
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::reference DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::operator*() const
+DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator*() const
 {
     assert(m_vertices);
     assert(m_edges);
-    assert(m_pos < m_slice.size());
 
-    return m_vertices->at(m_edges->at(m_slice[m_pos]).get_source());
+    return m_vertices->at(m_edges->at(*m_slice_iter).get_source());
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIterator<Vertex, Edge, Direction>& DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::operator++()
+DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>& DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIterator<Vertex, Edge, Direction> DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::operator++(int)
+DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction> DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator++(int)
 {
-    const_iterator tmp = *this;
+    DynamicAdjacentVertexConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::operator==(const DynamicAdjacentVertexIterator& other) const
+bool DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator==(const DynamicAdjacentVertexConstIterator& other) const
 {
-    return (m_pos == other.m_pos);
+    return (m_slice_iter == other.m_slice_iter);
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentVertexIterator<Vertex, Edge, Direction>::operator!=(const DynamicAdjacentVertexIterator& other) const
+bool DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::operator!=(const DynamicAdjacentVertexConstIterator& other) const
 {
     return !(*this == other);
 }
 
-/* DynamicAdjacentVertexIndexIterator */
+/* DynamicAdjacentVertexIndexConstIterator */
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-void DynamicAdjacentVertexIndexIterator<Edge, Direction>::advance()
+void DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::advance()
 {
-    ++m_pos;
+    ++m_slice_iter;
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIndexIterator<Edge, Direction>::DynamicAdjacentVertexIndexIterator() : m_pos(-1), m_edges(nullptr), m_slice()
+DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::DynamicAdjacentVertexIndexConstIterator() : m_edges(nullptr), m_slice_iter()
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIndexIterator<Edge, Direction>::DynamicAdjacentVertexIndexIterator(const std::unordered_map<EdgeIndex, Edge>& edges,
-                                                                                        const std::unordered_set<EdgeIndex>& slice,
-                                                                                        bool begin) :
-    m_pos(begin ? 0 : slice.size()),
+DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::DynamicAdjacentVertexIndexConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges,
+                                                                                                  const std::unordered_set<EdgeIndex>& slice,
+                                                                                                  bool begin) :
     m_edges(&edges),
-    m_slice(slice)
+    m_slice_iter(begin ? slice.begin() : slice.end())
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIndexIterator<Edge, Direction>::value_type DynamicAdjacentVertexIndexIterator<Edge, Direction>::operator*() const
+DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::value_type DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::operator*() const
 {
     assert(m_edges);
-    assert(m_pos < m_slice.size());
 
-    return m_edges->at(m_slice[m_pos]).get_source();
+    return m_edges->at(*m_slice_iter).get_source();
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIndexIterator<Edge, Direction>& DynamicAdjacentVertexIndexIterator<Edge, Direction>::operator++()
+DynamicAdjacentVertexIndexConstIterator<Edge, Direction>& DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentVertexIndexIterator<Edge, Direction> DynamicAdjacentVertexIndexIterator<Edge, Direction>::operator++(int)
+DynamicAdjacentVertexIndexConstIterator<Edge, Direction> DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::operator++(int)
 {
-    DynamicAdjacentVertexIndexIterator tmp = *this;
+    DynamicAdjacentVertexIndexConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentVertexIndexIterator<Edge, Direction>::operator==(const DynamicAdjacentVertexIndexIterator& other) const
+bool DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::operator==(const DynamicAdjacentVertexIndexConstIterator& other) const
 {
-    return (m_pos == other.m_pos);
+    return (m_slice_iter == other.m_slice_iter);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentVertexIndexIterator<Edge, Direction>::operator!=(const DynamicAdjacentVertexIndexIterator& other) const
-{
-    return !(*this == other);
-}
-
-/* DynamicAdjacentEdgeIterator */
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-void DynamicAdjacentEdgeIterator<Edge, Direction>::advance()
-{
-    ++m_pos;
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIterator<Edge, Direction>::DynamicAdjacentEdgeIterator() : m_pos(-1), m_edges(nullptr), m_slice()
-{
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIterator<Edge, Direction>::DynamicAdjacentEdgeIterator(const std::unordered_map<EdgeIndex, Edge>& edges,
-                                                                          const std::unordered_set<EdgeIndex>& slice,
-                                                                          bool begin) :
-    m_pos(begin ? 0 : slice.size()),
-    m_edges(&edges),
-    m_slice(slice)
-{
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIterator<Edge, Direction>::reference DynamicAdjacentEdgeIterator<Edge, Direction>::operator*() const
-{
-    assert(m_edges);
-    assert(m_pos < m_slice.size());
-
-    return m_edges->at(m_slice[m_pos]);
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIterator<Edge, Direction>& DynamicAdjacentEdgeIterator<Edge, Direction>::operator++()
-{
-    advance();
-    return *this;
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIterator<Edge, Direction> DynamicAdjacentEdgeIterator<Edge, Direction>::operator++(int)
-{
-    DynamicAdjacentEdgeIterator tmp = *this;
-    ++(*this);
-    return tmp;
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentEdgeIterator<Edge, Direction>::operator==(const DynamicAdjacentEdgeIterator& other) const
-{
-    return (m_pos == other.m_pos);
-}
-
-template<IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentEdgeIterator<Edge, Direction>::operator!=(const DynamicAdjacentEdgeIterator& other) const
+bool DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::operator!=(const DynamicAdjacentVertexIndexConstIterator& other) const
 {
     return !(*this == other);
 }
 
-/* DynamicAdjacentEdgeIndexIterator */
+/* DynamicAdjacentEdgeConstIterator */
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-void DynamicAdjacentEdgeIndexIterator<Edge, Direction>::advance()
+void DynamicAdjacentEdgeConstIterator<Edge, Direction>::advance()
 {
-    ++m_pos;
+    ++m_slice_iter;
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIndexIterator<Edge, Direction>::DynamicAdjacentEdgeIndexIterator() : m_pos(-1), m_edges(nullptr), m_slice()
+DynamicAdjacentEdgeConstIterator<Edge, Direction>::DynamicAdjacentEdgeConstIterator() : m_edges(nullptr), m_slice_iter()
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIndexIterator<Edge, Direction>::DynamicAdjacentEdgeIndexIterator(const std::unordered_map<EdgeIndex, Edge>& edges,
+DynamicAdjacentEdgeConstIterator<Edge, Direction>::DynamicAdjacentEdgeConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges,
                                                                                     const std::unordered_set<EdgeIndex>& slice,
                                                                                     bool begin) :
-    m_pos(begin ? 0 : slice.size()),
     m_edges(&edges),
-    m_slice(slice)
+    m_slice_iter(begin ? slice.begin() : slice.end())
 {
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIndexIterator<Edge, Direction>::value_type DynamicAdjacentEdgeIndexIterator<Edge, Direction>::operator*() const
+DynamicAdjacentEdgeConstIterator<Edge, Direction>::reference DynamicAdjacentEdgeConstIterator<Edge, Direction>::operator*() const
 {
     assert(m_edges);
-    assert(m_pos < m_slice.size());
 
-    return m_edges->at(m_slice[m_pos]).get_index();
+    return m_edges->at(*m_slice_iter);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIndexIterator<Edge, Direction>& DynamicAdjacentEdgeIndexIterator<Edge, Direction>::operator++()
+DynamicAdjacentEdgeConstIterator<Edge, Direction>& DynamicAdjacentEdgeConstIterator<Edge, Direction>::operator++()
 {
     advance();
     return *this;
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-DynamicAdjacentEdgeIndexIterator<Edge, Direction> DynamicAdjacentEdgeIndexIterator<Edge, Direction>::operator++(int)
+DynamicAdjacentEdgeConstIterator<Edge, Direction> DynamicAdjacentEdgeConstIterator<Edge, Direction>::operator++(int)
 {
-    DynamicAdjacentEdgeIndexIterator tmp = *this;
+    DynamicAdjacentEdgeConstIterator tmp = *this;
     ++(*this);
     return tmp;
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentEdgeIndexIterator<Edge, Direction>::operator==(const DynamicAdjacentEdgeIndexIterator& other) const
+bool DynamicAdjacentEdgeConstIterator<Edge, Direction>::operator==(const DynamicAdjacentEdgeConstIterator& other) const
 {
-    return (m_pos == other.m_pos);
+    return (m_slice_iter == other.m_slice_iter);
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
-bool DynamicAdjacentEdgeIndexIterator<Edge, Direction>::operator!=(const DynamicAdjacentEdgeIndexIterator& other) const
+bool DynamicAdjacentEdgeConstIterator<Edge, Direction>::operator!=(const DynamicAdjacentEdgeConstIterator& other) const
+{
+    return !(*this == other);
+}
+
+/* DynamicAdjacentEdgeIndexConstIterator */
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+void DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::advance()
+{
+    ++m_slice_iter;
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::DynamicAdjacentEdgeIndexConstIterator() : m_edges(nullptr), m_slice_iter()
+{
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::DynamicAdjacentEdgeIndexConstIterator(const std::unordered_map<EdgeIndex, Edge>& edges,
+                                                                                              const std::unordered_set<EdgeIndex>& slice,
+                                                                                              bool begin) :
+    m_edges(&edges),
+    m_slice_iter(begin ? slice.begin() : slice.end())
+{
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::value_type DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::operator*() const
+{
+    assert(m_edges);
+
+    return m_edges->at(*m_slice_iter).get_index();
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>& DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::operator++()
+{
+    advance();
+    return *this;
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+DynamicAdjacentEdgeIndexConstIterator<Edge, Direction> DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::operator++(int)
+{
+    DynamicAdjacentEdgeIndexConstIterator tmp = *this;
+    ++(*this);
+    return tmp;
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+bool DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::operator==(const DynamicAdjacentEdgeIndexConstIterator& other) const
+{
+    return (m_slice_iter == other.m_slice_iter);
+}
+
+template<IsEdge Edge, IsTraversalDirection Direction>
+bool DynamicAdjacentEdgeIndexConstIterator<Edge, Direction>::operator!=(const DynamicAdjacentEdgeIndexConstIterator& other) const
 {
     return !(*this == other);
 }

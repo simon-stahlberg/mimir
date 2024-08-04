@@ -148,7 +148,7 @@ from _pymimir import (
     Certificate,
     ColoredDigraphVertex,
     ColorFunction,
-    Digraph,
+    StaticDigraph,
     DigraphVertex,
     DigraphEdge,
     DigraphEdge,

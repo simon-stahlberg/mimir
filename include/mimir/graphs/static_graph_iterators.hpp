@@ -24,6 +24,7 @@
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <cassert>
+#include <functional>
 #include <span>
 #include <vector>
 
@@ -197,7 +198,7 @@ public:
  * Implementations
  */
 
-/* VertexIndexIterator */
+/* VertexIndexConstIterator */
 
 template<IsVertex Vertex>
 void VertexIndexConstIterator<Vertex>::advance()
@@ -252,7 +253,7 @@ bool VertexIndexConstIterator<Vertex>::operator!=(const VertexIndexConstIterator
     return !(*this == other);
 }
 
-/* EdgeIndexIterator */
+/* EdgeIndexConstIterator */
 
 template<IsEdge Edge>
 void EdgeIndexConstIterator<Edge>::advance()

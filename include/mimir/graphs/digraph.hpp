@@ -18,6 +18,7 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_HPP_
 
+#include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/static_graph.hpp"
@@ -56,23 +57,45 @@ public:
     VertexIndex get_target() const;
 };
 
-using Digraph = StaticGraph<DigraphVertex, DigraphEdge>;
-using ForwardDigraph = StaticForwardGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
-using BidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
+/**
+ * Type aliases
+ */
 
-static_assert(IsConstructibleGraph<Digraph>);
-static_assert(!IsConstructibleGraph<ForwardDigraph>);
-static_assert(!IsConstructibleGraph<BidirectionalDigraph>);
+using StaticDigraph = StaticGraph<DigraphVertex, DigraphEdge>;
+using StaticForwardDigraph = StaticForwardGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
+using StaticBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
 
-static_assert(IsGraph<Digraph>);
-static_assert(IsGraph<ForwardDigraph>);
-static_assert(IsGraph<BidirectionalDigraph>);
+using DynamicDigraph = DynamicGraph<DigraphVertex, DigraphEdge>;
+
+/**
+ * Static graph assertions
+ */
+
+static_assert(IsConstructibleGraph<StaticDigraph>);
+static_assert(!IsConstructibleGraph<StaticForwardDigraph>);
+static_assert(!IsConstructibleGraph<StaticBidirectionalDigraph>);
+static_assert(!IsDestructibleGraph<StaticDigraph>);
+static_assert(!IsDestructibleGraph<StaticForwardDigraph>);
+static_assert(!IsDestructibleGraph<StaticBidirectionalDigraph>);
+
+static_assert(IsGraph<StaticDigraph>);
+static_assert(IsGraph<StaticForwardDigraph>);
+static_assert(IsGraph<StaticBidirectionalDigraph>);
+
+/**
+ * Dynamic graph assertions
+ */
+
+static_assert(IsConstructibleGraph<DynamicDigraph>);
+static_assert(IsDestructibleGraph<DynamicDigraph>);
+
+static_assert(IsGraph<DynamicDigraph>);
 
 /**
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& out, const Digraph& digraph);
+extern std::ostream& operator<<(std::ostream& out, const StaticDigraph& digraph);
 
 }
 #endif

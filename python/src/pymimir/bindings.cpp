@@ -1761,24 +1761,26 @@ void init_pymimir(py::module_& m)
         .def("get_source", &DigraphEdge::get_source)
         .def("get_target", &DigraphEdge::get_target);
 
-    // Digraph
-    py::class_<Digraph>(m, "Digraph")  //
+    // StaticDigraph
+    py::class_<StaticDigraph>(m, "StaticDigraph")  //
         .def(py::init<>())
         .def("__str__",
-             [](const Digraph& self)
+             [](const StaticDigraph& self)
              {
                  std::stringstream ss;
                  ss << self;
                  return ss.str();
              })
-        .def("add_vertex", [](Digraph& self) -> VertexIndex { return self.add_vertex(); })
-        .def("add_directed_edge", [](Digraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
+        .def("add_vertex", [](StaticDigraph& self) -> VertexIndex { return self.add_vertex(); })
+        .def("add_directed_edge",
+             [](StaticDigraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
         .def("add_undirected_edge",
-             [](Digraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex> { return self.add_undirected_edge(source, target); })
-        .def("reset", &Digraph::reset)
+             [](StaticDigraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex>
+             { return self.add_undirected_edge(source, target); })
+        .def("reset", &StaticDigraph::reset)
         .def(
             "get_forward_adjacent_vertices",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1786,7 +1788,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_vertices",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1794,7 +1796,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_adjacent_vertex_indices",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1802,7 +1804,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_vertex_indices",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1810,7 +1812,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_adjacent_edges",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1818,7 +1820,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_edges",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1826,7 +1828,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_adjacent_edge_indices",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1834,16 +1836,16 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_edge_indices",
-            [](const Digraph& self, VertexIndex vertex)
+            [](const StaticDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
-        .def("get_vertices", &Digraph::get_vertices, py::return_value_policy::reference_internal)
-        .def("get_edges", &Digraph::get_edges, py::return_value_policy::reference_internal)
-        .def("get_num_vertices", &Digraph::get_num_vertices)
-        .def("get_num_edges", &Digraph::get_num_edges);
+        .def("get_vertices", &StaticDigraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_edges", &StaticDigraph::get_edges, py::return_value_policy::reference_internal)
+        .def("get_num_vertices", &StaticDigraph::get_num_vertices)
+        .def("get_num_edges", &StaticDigraph::get_num_edges);
 
     // ColorFunction
     py::class_<ColorFunction>(m, "ColorFunction")  //
@@ -1876,26 +1878,26 @@ void init_pymimir(py::module_& m)
         .def("get_index", &ColoredDigraphVertex::get_index)
         .def("get_color", &ColoredDigraphVertex::get_color);
 
-    // VertexColoredDigraph
-    py::class_<VertexColoredDigraph>(m, "VertexColoredDigraph")  //
+    // StaticVertexColoredDigraph
+    py::class_<StaticVertexColoredDigraph>(m, "StaticVertexColoredDigraph")  //
         .def(py::init<>())
         .def("to_string",
-             [](const VertexColoredDigraph& self, const ColorFunction& color_function)
+             [](const StaticVertexColoredDigraph& self, const ColorFunction& color_function)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(std::cref(self), std::cref(color_function));
                  return ss.str();
              })
-        .def("add_vertex", [](VertexColoredDigraph& self, Color color) -> VertexIndex { return self.add_vertex(color); })
+        .def("add_vertex", [](StaticVertexColoredDigraph& self, Color color) -> VertexIndex { return self.add_vertex(color); })
         .def("add_directed_edge",
-             [](VertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
+             [](StaticVertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> EdgeIndex { return self.add_directed_edge(source, target); })
         .def("add_undirected_edge",
-             [](VertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex>
+             [](StaticVertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex>
              { return self.add_undirected_edge(source, target); })
-        .def("reset", &VertexColoredDigraph::reset)
+        .def("reset", &StaticVertexColoredDigraph::reset)
         .def(
             "get_forward_adjacent_vertices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1903,7 +1905,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_vertices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1911,7 +1913,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_adjacent_vertex_indices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1919,7 +1921,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_vertex_indices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1927,7 +1929,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_adjacent_edges",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1935,7 +1937,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_edges",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1943,7 +1945,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_forward_adjacent_edge_indices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1951,16 +1953,16 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def(
             "get_backward_adjacent_edge_indices",
-            [](const VertexColoredDigraph& self, VertexIndex vertex)
+            [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
             {
                 auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>())
-        .def("get_vertices", &VertexColoredDigraph::get_vertices, py::return_value_policy::reference_internal)
-        .def("get_edges", &VertexColoredDigraph::get_edges, py::return_value_policy::reference_internal)
-        .def("get_num_vertices", &VertexColoredDigraph::get_num_vertices)
-        .def("get_num_edges", &VertexColoredDigraph::get_num_edges);
+        .def("get_vertices", &StaticVertexColoredDigraph::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_edges", &StaticVertexColoredDigraph::get_edges, py::return_value_policy::reference_internal)
+        .def("get_num_vertices", &StaticVertexColoredDigraph::get_num_vertices)
+        .def("get_num_edges", &StaticVertexColoredDigraph::get_num_edges);
 
     m.def("compute_vertex_colors", &compute_vertex_colors, py::arg("vertex_colored_graph"));
 
@@ -1970,7 +1972,7 @@ void init_pymimir(py::module_& m)
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
         .def(py::init<>())
         .def(py::init<int>())
-        .def(py::init<VertexColoredDigraph>())
+        .def(py::init<StaticVertexColoredDigraph>())
         .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::DenseGraph::reset);
@@ -1979,7 +1981,7 @@ void init_pymimir(py::module_& m)
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
         .def(py::init<>())
         .def(py::init<int>())
-        .def(py::init<VertexColoredDigraph>())
+        .def(py::init<StaticVertexColoredDigraph>())
         .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
         .def("reset", &nauty_wrapper::SparseGraph::reset);

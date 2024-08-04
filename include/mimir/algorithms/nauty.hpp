@@ -45,7 +45,7 @@ public:
 
     /// @brief Create a `DenseGraph` from a vertex colored `digraph`.
     /// @param digraph is the vertex colored digraph.
-    explicit DenseGraph(const mimir::VertexColoredDigraph& digraph);
+    explicit DenseGraph(const mimir::StaticVertexColoredDigraph& digraph);
 
     DenseGraph(const DenseGraph& other);
     DenseGraph& operator=(const DenseGraph& other);
@@ -93,7 +93,7 @@ public:
 
     /// @brief Create a `SparseGraph` from a vertex colored `digraph`.
     /// @param digraph is the vertex colored digraph.
-    explicit SparseGraph(const mimir::VertexColoredDigraph& digraph);
+    explicit SparseGraph(const mimir::StaticVertexColoredDigraph& digraph);
 
     SparseGraph(const SparseGraph& other);
     SparseGraph& operator=(const SparseGraph& other);

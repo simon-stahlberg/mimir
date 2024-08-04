@@ -48,7 +48,7 @@ Color ColoredDigraphVertex::get_color() const { return m_color; }
  * Utils
  */
 
-ColorList compute_vertex_colors(const VertexColoredDigraph& graph)
+ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph)
 {
     auto coloring = ColorList {};
     coloring.reserve(graph.get_num_vertices());
@@ -59,7 +59,7 @@ ColorList compute_vertex_colors(const VertexColoredDigraph& graph)
     return coloring;
 }
 
-ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph)
+ColorList compute_sorted_vertex_colors(const StaticVertexColoredDigraph& graph)
 {
     auto coloring = compute_vertex_colors(graph);
     std::sort(coloring.begin(), coloring.end());
@@ -70,7 +70,7 @@ ColorList compute_sorted_vertex_colors(const VertexColoredDigraph& graph)
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, const std::tuple<const VertexColoredDigraph&, const ColorFunction&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<const StaticVertexColoredDigraph&, const ColorFunction&>& data)
 {
     const auto& [vertex_colored_digraph, color_function] = data;
 

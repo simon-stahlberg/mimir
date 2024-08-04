@@ -30,7 +30,7 @@ static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(cons
                                                                             Problem problem,
                                                                             StateIndex state_index,
                                                                             const ObjectGraphPruningStrategy& pruning_strategy,
-                                                                            VertexColoredDigraph& out_digraph)
+                                                                            StaticVertexColoredDigraph& out_digraph)
 {
     std::unordered_map<Object, VertexIndex> object_to_vertex_index;
 
@@ -51,7 +51,7 @@ template<PredicateCategory P>
 static void add_ground_atom_graph_structures(const ProblemColorFunction& color_function,
                                              const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                              GroundAtom<P> atom,
-                                             VertexColoredDigraph& out_digraph)
+                                             StaticVertexColoredDigraph& out_digraph)
 {
     for (size_t pos = 0; pos < atom->get_arity(); ++pos)
     {
@@ -72,7 +72,7 @@ static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_
                                               StateIndex state_index,
                                               const ObjectGraphPruningStrategy& pruning_strategy,
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
-                                              VertexColoredDigraph& out_digraph)
+                                              StaticVertexColoredDigraph& out_digraph)
 {
     for (const auto& atom : pddl_factories.get_ground_atoms_from_ids<Static>(problem->get_static_initial_positive_atoms_bitset()))
     {
@@ -103,7 +103,7 @@ static void add_ground_literal_graph_structures(const ProblemColorFunction& colo
                                                 bool mark_true_goal_literals,
                                                 State state,
                                                 GroundLiteral<P> literal,
-                                                VertexColoredDigraph& out_digraph)
+                                                StaticVertexColoredDigraph& out_digraph)
 {
     for (size_t pos = 0; pos < literal->get_atom()->get_arity(); ++pos)
     {
@@ -125,7 +125,7 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
                                                       StateIndex state_index,
                                                       const ObjectGraphPruningStrategy& pruning_strategy,
                                                       const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
-                                                      VertexColoredDigraph& out_digraph)
+                                                      StaticVertexColoredDigraph& out_digraph)
 {
     for (const auto& literal : problem->get_goal_condition<Static>())
     {
@@ -150,15 +150,15 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
     }
 }
 
-VertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                         const PDDLFactories& pddl_factories,
-                                         Problem problem,
-                                         State state,
-                                         StateIndex state_index,
-                                         bool mark_true_goal_literals,
-                                         const ObjectGraphPruningStrategy& pruning_strategy)
+StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
+                                               const PDDLFactories& pddl_factories,
+                                               Problem problem,
+                                               State state,
+                                               StateIndex state_index,
+                                               bool mark_true_goal_literals,
+                                               const ObjectGraphPruningStrategy& pruning_strategy)
 {
-    auto vertex_colored_digraph = VertexColoredDigraph();
+    auto vertex_colored_digraph = StaticVertexColoredDigraph();
 
     const auto object_to_vertex_index = add_objects_graph_structures(color_function, problem, state_index, pruning_strategy, vertex_colored_digraph);
 

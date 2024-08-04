@@ -19,6 +19,10 @@
 #define MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
 
 #include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/dynamic_graph.hpp"
+#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/static_graph.hpp"
 
 #include <ranges>
 #include <span>
@@ -44,17 +48,39 @@ public:
     Color get_color() const;
 };
 
-using EdgeColoredDigraph = StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>;
-using EdgeColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>>;
-using EdgeColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>>;
+/**
+ * Type aliases
+ */
 
-static_assert(IsConstructibleGraph<EdgeColoredDigraph>);
-static_assert(!IsConstructibleGraph<EdgeColoredForwardDigraph>);
-static_assert(!IsConstructibleGraph<EdgeColoredBidirectionalDigraph>);
+using StaticEdgeColoredDigraph = StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>;
+using StaticEdgeColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>>;
+using StaticEdgeColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, ColoredDigraphEdge>>;
 
-static_assert(IsGraph<EdgeColoredDigraph>);
-static_assert(IsGraph<EdgeColoredForwardDigraph>);
-static_assert(IsGraph<EdgeColoredBidirectionalDigraph>);
+using DynamicEdgeColoredDigraph = DynamicGraph<ColoredDigraphVertex, ColoredDigraphEdge>;
+
+/**
+ * Static graph assertions
+ */
+
+static_assert(IsConstructibleGraph<StaticEdgeColoredDigraph>);
+static_assert(!IsConstructibleGraph<StaticEdgeColoredForwardDigraph>);
+static_assert(!IsConstructibleGraph<StaticEdgeColoredBidirectionalDigraph>);
+static_assert(!IsDestructibleGraph<StaticEdgeColoredDigraph>);
+static_assert(!IsDestructibleGraph<StaticEdgeColoredForwardDigraph>);
+static_assert(!IsDestructibleGraph<StaticEdgeColoredBidirectionalDigraph>);
+
+static_assert(IsGraph<StaticEdgeColoredDigraph>);
+static_assert(IsGraph<StaticEdgeColoredForwardDigraph>);
+static_assert(IsGraph<StaticEdgeColoredBidirectionalDigraph>);
+
+/**
+ * Dynamic graph assertions
+ */
+
+static_assert(IsConstructibleGraph<DynamicEdgeColoredDigraph>);
+static_assert(IsDestructibleGraph<DynamicEdgeColoredDigraph>);
+
+static_assert(IsGraph<DynamicEdgeColoredDigraph>);
 
 }
 #endif

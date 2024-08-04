@@ -71,7 +71,7 @@ private:
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
 
-    Digraph m_digraph;
+    StaticDigraph m_digraph;
     IndexGroupedVector<const TupleGraphVertex> m_vertices_grouped_by_distance;
     IndexGroupedVector<const State> m_states_grouped_by_distance;
 
@@ -79,7 +79,7 @@ private:
                std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                bool prune_dominated_tuples,
-               Digraph digraph,
+               StaticDigraph digraph,
                IndexGroupedVector<const TupleGraphVertex> vertices_grouped_by_distance,
                IndexGroupedVector<const State> states_grouped_by_distance);
 
@@ -103,7 +103,7 @@ public:
     const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
-    const Digraph& get_digraph() const;
+    const StaticDigraph& get_digraph() const;
     const IndexGroupedVector<const TupleGraphVertex>& get_vertices_grouped_by_distance() const;
     const IndexGroupedVector<const State>& get_states_grouped_by_distance() const;
 };

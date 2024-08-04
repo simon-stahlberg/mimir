@@ -152,14 +152,14 @@ template<typename T>
 concept IsStaticGraph = requires(T a)
 {
     typename T::GraphType;
-    std::same_as<typename T::GraphType, StaticGraphTag>;
+    requires std::same_as<typename T::GraphType, StaticGraphTag>;
 };
 
 template<typename T>
 concept IsDynamicGraph = requires(T a)
 {
     typename T::GraphType;
-    std::same_as<typename T::GraphType, DynamicGraphTag>;
+    requires std::same_as<typename T::GraphType, DynamicGraphTag>;
 };
 
 }

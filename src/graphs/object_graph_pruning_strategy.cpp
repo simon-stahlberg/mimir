@@ -142,9 +142,9 @@ template const FlatBitsetBuilder<Static>& ObjectGraphStaticSccPruningStrategy::S
 template const FlatBitsetBuilder<Fluent>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Fluent>() const;
 template const FlatBitsetBuilder<Derived>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Derived>() const;
 
-static StaticForwardGraph<Digraph> create_scc_digraph(size_t num_components, const std::vector<size_t>& component_map, const StateSpace& state_space)
+static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_components, const std::vector<size_t>& component_map, const StateSpace& state_space)
 {
-    auto g = Digraph();
+    auto g = StaticDigraph();
     for (size_t i = 0; i < num_components; ++i)
     {
         g.add_vertex();
@@ -161,7 +161,7 @@ static StaticForwardGraph<Digraph> create_scc_digraph(size_t num_components, con
             g.add_directed_edge(component_map.at(source), component_map.at(target));
         }
     }
-    return StaticForwardGraph<Digraph>(std::move(g));
+    return StaticForwardGraph<StaticDigraph>(std::move(g));
 }
 
 template<PredicateCategory P>

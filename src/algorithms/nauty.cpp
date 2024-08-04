@@ -32,7 +32,7 @@ DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
 
 DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraphImpl>(num_vertices)) {}
 
-DenseGraph::DenseGraph(const mimir::VertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
+DenseGraph::DenseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
 {
     for (const auto& edge : digraph.get_edges())
     {
@@ -82,7 +82,7 @@ SparseGraph::SparseGraph() : m_impl(std::make_unique<SparseGraphImpl>(0)) {}
 
 SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGraphImpl>(num_vertices)) {}
 
-SparseGraph::SparseGraph(const mimir::VertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
+SparseGraph::SparseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
 {
     for (const auto& edge : digraph.get_edges())
     {

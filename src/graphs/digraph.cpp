@@ -60,7 +60,7 @@ VertexIndex DigraphEdge::get_target() const { return m_target; }
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, const Digraph& digraph)
+std::ostream& operator<<(std::ostream& out, const StaticDigraph& digraph)
 {
     out << "digraph {\n";
     for (const auto& vertex : digraph.get_vertices())

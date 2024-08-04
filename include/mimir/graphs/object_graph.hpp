@@ -41,13 +41,13 @@ namespace mimir
 /// @param mark_true_goal_literals represents whether literals that are true should have a special color.
 /// @param pruning_strategy is the strategy used for pruning information from the object graph.
 /// @return a vertex colored graph that represents the object graph.
-extern VertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                                const PDDLFactories& pddl_factories,
-                                                Problem problem,
-                                                State state,
-                                                StateIndex state_index = 0,
-                                                bool mark_true_goal_literals = false,
-                                                const ObjectGraphPruningStrategy& pruning_strategy = ObjectGraphPruningStrategy());
+extern StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
+                                                      const PDDLFactories& pddl_factories,
+                                                      Problem problem,
+                                                      State state,
+                                                      StateIndex state_index = 0,
+                                                      bool mark_true_goal_literals = false,
+                                                      const ObjectGraphPruningStrategy& pruning_strategy = ObjectGraphPruningStrategy());
 
 }
 

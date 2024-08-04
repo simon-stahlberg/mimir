@@ -88,16 +88,16 @@ struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
     using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
-    using out_edge_iterator = typename Graph::AdjacentEdgeIndexConstIteratorType<Direction>;
+    using out_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<Direction>;
     using degree_size_type = size_t;
     // boost::EdgeListGraph
     using edge_iterator = typename Graph::EdgeIndexConstIteratorType;
     using edges_size_type = size_t;
     // boost::AdjacencyGraph
-    using adjacency_iterator = typename Graph::AdjacentVertexIndexConstIteratorType<Direction>;
+    using adjacency_iterator = typename Graph::template AdjacentVertexIndexConstIteratorType<Direction>;
     // boost::BidirectionalGraph
     using inverse_direction = typename mimir::InverseTraversalDirection<Direction>::type;
-    using in_edge_iterator = typename Graph::AdjacentEdgeIndexConstIteratorType<inverse_direction>;
+    using in_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<inverse_direction>;
     // boost::strong_components
     constexpr static vertex_descriptor null_vertex() { return std::numeric_limits<vertex_descriptor>::max(); }
 };
@@ -282,18 +282,18 @@ degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>
 }
 
 /* Assert that the concepts are satisfied */
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<GraphWithDirection<Digraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<GraphWithDirection<Digraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // BasicMatrix
