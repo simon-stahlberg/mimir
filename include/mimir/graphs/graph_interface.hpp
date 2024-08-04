@@ -36,10 +36,23 @@ concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_v
 template<typename T>
 concept IsGraph = requires(T a, VertexIndex vertex)
 {
+    typename T::GraphType;
     typename T::VertexType;
     requires IsVertex<typename T::VertexType>;
     typename T::EdgeType;
     requires IsEdge<typename T::EdgeType>;
+
+    typename T::VertexIndexConstIteratorType;
+    typename T::EdgeIndexConstIteratorType;
+
+    typename T::template AdjacentVertexConstIteratorType<ForwardTraversal>;
+    typename T::template AdjacentVertexConstIteratorType<BackwardTraversal>;
+    typename T::template AdjacentVertexIndexConstIteratorType<ForwardTraversal>;
+    typename T::template AdjacentVertexIndexConstIteratorType<BackwardTraversal>;
+    typename T::template AdjacentEdgeConstIteratorType<ForwardTraversal>;
+    typename T::template AdjacentEdgeConstIteratorType<BackwardTraversal>;
+    typename T::template AdjacentEdgeIndexConstIteratorType<ForwardTraversal>;
+    typename T::template AdjacentEdgeIndexConstIteratorType<BackwardTraversal>;
 
     /* Iterators */
 
