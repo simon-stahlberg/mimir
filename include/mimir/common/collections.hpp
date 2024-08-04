@@ -24,49 +24,65 @@
 namespace mimir
 {
 
-/// @brief Return true iff left vector is a subset of right vector
+/// @brief A wrapper around std::includes.
+/// @tparam T the vector value type.
+/// @param vec1 the first vector.
+/// @param vec2 the second vector.
+/// @return true iff the first vector is a subset or equal to the second vector, and false otherwise.
 template<typename T>
-bool is_subseteq(const std::vector<T>& left, const std::vector<T>& right)
+bool is_subseteq(const std::vector<T>& vec1, const std::vector<T>& vec2)
 {
-    const auto right_set = std::unordered_set<T>(right.begin(), right.end());
-    for (const auto& element : left)
+    assert(std::is_sorted(vec1.begin(), vec1.end()));
+    assert(std::is_sorted(vec2.begin(), vec2.end()));
+
+    return std::includes(vec2.begin(), vec2.end(), vec1.begin(), vec1.end());
+}
+
+/// @brief A version of std::set_intersection that does not produce the intersection.
+/// @tparam T the vector value type.
+/// @param vec1 the first vector.
+/// @param vec2 the second vector.
+/// @return true iff first and second vector are disjoint, i.e., do not share a common element, and false otherwise.
+template<typename T>
+bool are_disjoint(const std::vector<T>& vec1, const std::vector<T>& vec2)
+{
+    assert(std::is_sorted(vec1.begin(), vec1.end()));
+    assert(std::is_sorted(vec2.begin(), vec2.end()));
+
+    // Use two iterators to traverse both vectors simultaneously
+    auto it1 = vec1.begin();
+    auto it2 = vec2.begin();
+
+    while (it1 != vec1.end() && it2 != vec2.end())
     {
-        if (!right_set.count(element))
+        if (*it1 < *it2)
         {
+            ++it1;
+        }
+        else if (*it2 < *it1)
+        {
+            ++it2;
+        }
+        else
+        {
+            // Common element found
             return false;
         }
     }
+
+    // No common element found
     return true;
 }
 
-/// @brief Return true iff left vector is disjoint of right vector
-template<typename T>
-bool are_disjoint(const std::vector<T>& left, const std::vector<T>& right)
-{
-    const auto right_set = std::unordered_set<T>(right.begin(), right.end());
-    for (const auto& element : left)
-    {
-        if (right_set.count(element))
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-/// @brief Return true iff all elements in the vector are unique.
+/// @brief Check whether all elements in the vector are unique.
+/// @tparam T the vector value type.
+/// @param vec the vector.
+/// @return true iff all element in the vector are unique, i.e., do not occur more than once, and false otherwise.
 template<typename T>
 bool is_all_unique(const std::vector<T>& vec)
 {
     auto set = std::unordered_set<T>(vec.begin(), vec.end());
     return vec.size() == set.size();
-}
-
-/// @brief Return a set representation
-template<typename T>
-std::unordered_set<T> to_set(const std::vector<T>& vec)
-{
-    return std::unordered_set<T>(vec.begin(), vec.end());
 }
 
 }

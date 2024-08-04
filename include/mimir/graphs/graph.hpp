@@ -44,7 +44,7 @@ namespace mimir
 /// as well as the ingoing or outgoing adjacent vertices requires time O(|E|).
 ///
 /// A `Graph` can be translated into an equivalent ForwardGraph or Bidirectional Graph in O(|V|+|E|*Log2(|E|))
-/// to iterate more efficiently over exactly the outgoing or incoming edges,
+/// to iterate more efficiently over the outgoing or incoming edges,
 /// as well as the ingoing or outgoing adjacent vertices.
 /// @tparam Vertex is vertex type.
 /// @tparam Edge is the edge type.

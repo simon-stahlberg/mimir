@@ -20,4 +20,4 @@
 
 #include "mimir/search/axiom_evaluators/axiom_evaluator.hpp"
 
-#endif  // MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
+#endif

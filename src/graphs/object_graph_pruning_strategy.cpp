@@ -19,13 +19,13 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/utils.hpp"
 #include "mimir/graphs/boost_adapter.hpp"
 #include "mimir/graphs/graph.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/flat_types.hpp"
-#include "mimir/search/translations.hpp"
 
 #include <optional>
 #include <stack>

@@ -15,22 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_TRANSLATIONS_HPP_
-#define MIMIR_SEARCH_TRANSLATIONS_HPP_
+#ifndef MIMIR_FORMALISM_HPP_
+#define MIMIR_FORMALISM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
 
-/// @brief Translates a bitset into a list of ground atoms
+/// @brief Translates a ground literal list into a list of ground atoms.
 template<PredicateCategory P>
 extern void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms);
 
-/// @brief Translates a bitset into a list of ground atoms
+/// @brief Translates a ground literal list into a list of ground atoms.
 template<PredicateCategory P>
 extern GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals);
 
 }
 
-#endif  // MIMIR_SEARCH_TRANSLATIONS_HPP_
+#endif

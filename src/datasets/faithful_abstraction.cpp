@@ -106,16 +106,16 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     /* Ensure correctness. */
 
     // Check correct state ordering
-    // for (size_t i = 0; i < get_num_states(); ++i)
-    //{
-    //    assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
-    //}
+    for (size_t i = 0; i < get_num_states(); ++i)
+    {
+        assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
+    }
 
     // Check correct transition ordering
-    // for (size_t i = 0; i < get_num_transitions(); ++i)
-    //{
-    //    assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
-    //}
+    for (size_t i = 0; i < get_num_transitions(); ++i)
+    {
+        assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
+    }
 
     /* Additional */
     for (size_t state_index = 0; state_index < m_graph.get_num_vertices(); ++state_index)
@@ -300,7 +300,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     /* Sort concrete states by abstract state */
     auto concrete_states_by_abstract_state = std::make_shared<StateList>();
     concrete_states_by_abstract_state->reserve(num_abstract_states);
-    auto concrete_states_begin_by_abstract_state = BeginIndexList {};
+    auto concrete_states_begin_by_abstract_state = std::vector<StateIndex> {};
     for (StateIndex cur_abstract_state_index = 0; cur_abstract_state_index < num_abstract_states; ++cur_abstract_state_index)
     {
         concrete_states_begin_by_abstract_state.push_back(concrete_states_by_abstract_state->size());

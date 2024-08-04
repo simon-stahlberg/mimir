@@ -23,4 +23,4 @@
  */
 #include "mimir/search/planners/single.hpp"
 
-#endif  // MIMIR_SEARCH_PLANNERS_HPP_
+#endif

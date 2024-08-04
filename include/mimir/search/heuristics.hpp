@@ -20,4 +20,4 @@
 
 #include "mimir/search/heuristics/blind.hpp"
 
-#endif  // MIMIR_SEARCH_HEURISTICS_HPP_
+#endif

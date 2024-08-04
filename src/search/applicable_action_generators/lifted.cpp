@@ -21,10 +21,10 @@
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/condition_grounders.hpp"
-#include "mimir/search/translations.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <stdexcept>

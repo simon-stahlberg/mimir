@@ -38,6 +38,14 @@ concept IsGraph = requires(T a, VertexIndex vertex)
     typename T::EdgeType;
     requires IsEdge<typename T::EdgeType>;
 
+    /* Iterators */
+
+    {
+        a.template get_vertex_indices()
+        } -> std::same_as<VertexIndexIterator<typename T::VertexType>>;
+    {
+        a.template get_edge_indices()
+        } -> std::same_as<EdgeIndexIterator<typename T::EdgeType>>;
     {
         a.template get_adjacent_vertices<ForwardTraversal>(vertex)
         } -> std::same_as<AdjacentVertexIterator<typename T::VertexType, typename T::EdgeType, ForwardTraversal>>;
@@ -62,6 +70,9 @@ concept IsGraph = requires(T a, VertexIndex vertex)
     {
         a.template get_adjacent_edge_indices<BackwardTraversal>(vertex)
         } -> std::same_as<AdjacentEdgeIndexIterator<typename T::EdgeType, BackwardTraversal>>;
+
+    /* Getters */
+
     {
         a.get_vertices()
         } -> std::same_as<const std::vector<typename T::VertexType>&>;
@@ -74,6 +85,18 @@ concept IsGraph = requires(T a, VertexIndex vertex)
     {
         a.get_num_edges()
         } -> std::same_as<size_t>;
+    {
+        a.template get_degrees<ForwardTraversal>()
+        } -> std::same_as<const DegreeList&>;
+    {
+        a.template get_degrees<BackwardTraversal>()
+        } -> std::same_as<const DegreeList&>;
+    {
+        a.template get_degree<ForwardTraversal>(vertex)
+        } -> std::same_as<Degree>;
+    {
+        a.template get_degree<BackwardTraversal>(vertex)
+        } -> std::same_as<Degree>;
 };
 
 template<typename T>

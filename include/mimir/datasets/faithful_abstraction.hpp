@@ -20,7 +20,6 @@
 
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/common/types.hpp"
 #include "mimir/datasets/abstract_transition.hpp"
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/declarations.hpp"

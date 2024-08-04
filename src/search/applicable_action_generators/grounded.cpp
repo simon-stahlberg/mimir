@@ -21,12 +21,12 @@
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
+#include "mimir/formalism/utils.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/successor_state_generator.hpp"
-#include "mimir/search/translations.hpp"
 
 #include <deque>
 #include <memory>

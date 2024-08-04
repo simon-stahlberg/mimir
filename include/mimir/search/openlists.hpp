@@ -23,4 +23,4 @@
  */
 #include "mimir/search/openlists/priority_queue.hpp"
 
-#endif  // MIMIR_SEARCH_OPENLISTS_HPP_
+#endif

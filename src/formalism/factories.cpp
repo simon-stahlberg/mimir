@@ -348,63 +348,41 @@ void PDDLFactories::ground_variables(const TermList& terms, const ObjectList& bi
 }
 
 template<PredicateCategory P>
-GroundLiteral<P>
-PDDLFactories::ground_literal_generic(const Literal<P> literal, const ObjectList& binding, std::vector<GroundingTable<GroundLiteral<P>>>& grounding_table)
+GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const ObjectList& binding)
 {
-    /* 1. Check if grounding is cached */
+    /* 1. Access the type specific grounding tables. */
+    auto& grounding_tables = m_grounding_tables.get<GroundLiteral<P>>();
+
+    /* 2. Access the literal specific grounding table */
     const auto literal_id = literal->get_identifier();
-    if (literal_id >= grounding_table.size())
+    if (literal_id >= grounding_tables.size())
     {
-        grounding_table.resize(literal_id + 1);
+        grounding_tables.resize(literal_id + 1);
     }
 
-    auto& groundings = grounding_table[literal_id];
+    auto& grounding_table = grounding_tables.at(literal_id);
 
-    const auto it = groundings.find(binding);
-    if (it != groundings.end())
+    /* 3. Check if grounding is cached */
+    const auto it = grounding_table.find(binding);
+    if (it != grounding_table.end())
     {
         return it->second;
     }
 
-    /* 2. Ground the literal */
+    /* 4. Ground the literal */
 
-    ObjectList grounded_terms;
+    auto grounded_terms = ObjectList {};
     ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
     auto grounded_atom = get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
     auto grounded_literal = get_or_create_ground_literal(literal->is_negated(), grounded_atom);
 
-    /* 3. Insert to groundings table */
+    /* 5. Insert to grounding_table table */
 
-    groundings.emplace(ObjectList(binding), GroundLiteral<P>(grounded_literal));
+    grounding_table.emplace(ObjectList(binding), GroundLiteral<P>(grounded_literal));
 
-    /* 4. Return the resulting ground literal */
+    /* 6. Return the resulting ground literal */
 
     return grounded_literal;
-}
-
-template GroundLiteral<Static> PDDLFactories::ground_literal_generic(const Literal<Static> literal,
-                                                                     const ObjectList& binding,
-                                                                     std::vector<GroundingTable<GroundLiteral<Static>>>& grounding_table);
-template GroundLiteral<Fluent> PDDLFactories::ground_literal_generic(const Literal<Fluent> literal,
-                                                                     const ObjectList& binding,
-                                                                     std::vector<GroundingTable<GroundLiteral<Fluent>>>& grounding_table);
-template GroundLiteral<Derived> PDDLFactories::ground_literal_generic(const Literal<Derived> literal,
-                                                                      const ObjectList& binding,
-                                                                      std::vector<GroundingTable<GroundLiteral<Derived>>>& grounding_table);
-
-GroundLiteral<Static> PDDLFactories::ground_literal(const Literal<Static> literal, const ObjectList& binding)
-{
-    return ground_literal_generic(literal, binding, m_groundings_by_static_literal);
-}
-
-GroundLiteral<Fluent> PDDLFactories::ground_literal(const Literal<Fluent> literal, const ObjectList& binding)
-{
-    return ground_literal_generic(literal, binding, m_groundings_by_fluent_literal);
-}
-
-GroundLiteral<Derived> PDDLFactories::ground_literal(const Literal<Derived> literal, const ObjectList& binding)
-{
-    return ground_literal_generic(literal, binding, m_groundings_by_derived_literal);
 }
 
 template<PredicateCategory P>
@@ -460,6 +438,8 @@ void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& litera
             ref_positive_indices.push_back(grounded_literal->get_atom()->get_identifier());
         }
     }
+    std::sort(ref_positive_indices.begin(), ref_positive_indices.end());
+    std::sort(ref_negative_indices.begin(), ref_negative_indices.end());
 }
 
 template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Static>>& literals,

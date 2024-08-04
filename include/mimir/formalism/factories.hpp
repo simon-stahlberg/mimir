@@ -81,22 +81,12 @@ using VariadicPDDLFactories = loki::VariadicPDDLFactory<RequirementsImpl,
                                                         ProblemImpl>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
-///
-/// TODO: we would like to use the pddl objects of the domain in the problem
 class PDDLFactories
 {
 private:
     VariadicPDDLFactories m_factories;
 
-    // TODO: provide more efficient grounding tables for arity 0, 1
-    // that do not store the actual binding but instead compute a perfect hash value.
-    std::vector<GroundingTable<GroundLiteral<Static>>> m_groundings_by_static_literal;
-    std::vector<GroundingTable<GroundLiteral<Fluent>>> m_groundings_by_fluent_literal;
-    std::vector<GroundingTable<GroundLiteral<Derived>>> m_groundings_by_derived_literal;
-
-    template<PredicateCategory P>
-    GroundLiteral<P>
-    ground_literal_generic(const Literal<P> literal, const ObjectList& binding, std::vector<GroundingTable<GroundLiteral<P>>>& grounding_table);
+    VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
 
 public:
     PDDLFactories();
@@ -279,11 +269,8 @@ public:
 
     void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms);
 
-    GroundLiteral<Static> ground_literal(const Literal<Static> literal, const ObjectList& binding);
-
-    GroundLiteral<Fluent> ground_literal(const Literal<Fluent> literal, const ObjectList& binding);
-
-    GroundLiteral<Derived> ground_literal(const Literal<Derived> literal, const ObjectList& binding);
+    template<PredicateCategory P>
+    GroundLiteral<P> ground_literal(const Literal<P> literal, const ObjectList& binding);
 
     template<PredicateCategory P>
     void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,

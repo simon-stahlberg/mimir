@@ -27,6 +27,31 @@ public:
     auto end() const { return m_table.end(); }
 };
 
+template<typename T>
+using GroundingTableList = std::vector<GroundingTable<T>>;
+
+template<typename... Ts>
+class VariadicGroundingTableList
+{
+private:
+    std::tuple<GroundingTableList<Ts>...> m_grounding_tables;
+
+public:
+    VariadicGroundingTableList() : m_grounding_tables(std::make_tuple(GroundingTableList<Ts>()...)) {}
+
+    template<typename T>
+    GroundingTableList<T>& get()
+    {
+        return std::get<GroundingTableList<T>>(m_grounding_tables);
+    }
+
+    template<typename T>
+    const GroundingTableList<T>& get() const
+    {
+        return std::get<GroundingTableList<T>>(m_grounding_tables);
+    }
+};
+
 }
 
 #endif

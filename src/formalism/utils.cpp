@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/translations.hpp"
+#include "mimir/formalism/utils.hpp"
 
 #include "mimir/formalism/ground_literal.hpp"
 

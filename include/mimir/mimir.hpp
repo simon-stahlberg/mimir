@@ -66,7 +66,7 @@
  * DataSet
  */
 
-// #include "mimir/datasets/abstraction.hpp"
+#include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/faithful_abstraction.hpp"
 #include "mimir/datasets/global_faithful_abstraction.hpp"
 #include "mimir/datasets/state_space.hpp"

@@ -41,17 +41,18 @@ namespace mimir
 {
 
 template<typename S>
-concept HasLiteralHolds = requires(S state, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal) {
+concept HasLiteralHolds = requires(S state, GroundLiteral<Fluent> fluent_literal, GroundLiteral<Derived> derived_literal)
+{
     {
         state.literal_holds(fluent_literal)
-    } -> std::convertible_to<bool>;
+        } -> std::convertible_to<bool>;
     {
         state.literal_holds(derived_literal)
-    } -> std::convertible_to<bool>;
+        } -> std::convertible_to<bool>;
 };
 
 template<typename State>
-    requires HasLiteralHolds<State>
+requires HasLiteralHolds<State>
 class ConditionGrounder
 {
 private:
@@ -322,4 +323,4 @@ public:
 
 }
 
-#endif  // MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
+#endif

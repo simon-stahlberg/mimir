@@ -29,4 +29,4 @@
 #include "mimir/search/algorithms/siw.hpp"
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 
-#endif  // MIMIR_SEARCH_ALGORITHM_HPP_
+#endif
