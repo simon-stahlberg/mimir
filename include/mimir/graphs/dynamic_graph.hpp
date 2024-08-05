@@ -129,8 +129,8 @@ private:
     EdgeIndexList m_free_edges;
     size_t m_next_edge_index;
 
-    std::unordered_map<VertexIndex, std::unordered_set<EdgeIndex>> m_forward_adjacent_edges;
-    std::unordered_map<VertexIndex, std::unordered_set<EdgeIndex>> m_backward_adjacent_edges;
+    std::unordered_map<VertexIndex, EdgeIndexSet> m_forward_adjacent_edges;
+    std::unordered_map<VertexIndex, EdgeIndexSet> m_backward_adjacent_edges;
 
     DegreeMap m_in_degrees;
     DegreeMap m_out_degrees;
@@ -176,14 +176,55 @@ template<IsVertex Vertex, IsEdge Edge>
 template<typename... Args>
 VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(Args&&... args)
 {
-    throw std::runtime_error("Not implemented");
+    /* Get the vertex index. */
+    auto index = m_free_vertices.empty() ? m_next_vertex_index++ : m_free_vertices.back();
+
+    /* Create the vertex. */
+    m_vertices.emplace_back(index, std::forward<Args>(args)...);
+
+    /* Initialize the data structures. */
+    if (m_free_vertices.empty())
+    {
+        m_forward_adjacent_edges.emplace(index, EdgeIndexSet());
+        m_backward_adjacent_edges.emplace(index, EdgeIndexSet());
+        m_in_degrees.emplace(index, 0);
+        m_out_degrees.emplace(index, 0);
+    }
+    else
+    {
+        // If free_vertices was non empty, we additionally need to pop_back the used index.
+        m_free_vertices.pop_back();
+        m_forward_adjacent_edges.at(index).clear();
+        m_backward_adjacent_edges.at(index).clear();
+        m_in_degrees.at(index) = 0;
+        m_out_degrees.at(index) = 0;
+    }
+
+    return index;
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 template<typename... Args>
 EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, VertexIndex target, Args&&... args)
 {
-    throw std::runtime_error("Not implemented");
+    if (!m_vertices.contains(source) || !m_vertices.contains(target))
+    {
+        throw std::out_of_range("DynamicGraph<Vertex, Edge>::add_directed_edge(...): Source or destination vertex out of range");
+    }
+
+    /* Get the edge index */
+    const auto index = m_free_edges.empty() ? m_next_edge_index++ : m_free_edges.back();
+
+    /* Create the edge */
+    m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
+
+    if (m_free_edges.empty()) {}
+    else
+    {
+        m_free_edges.pop_back();
+    }
+
+    return index;
 }
 
 template<IsVertex Vertex, IsEdge Edge>

@@ -296,7 +296,7 @@ EdgeIndex StaticGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Verte
 {
     if (source >= get_num_vertices() || target >= get_num_vertices() || source < 0 || target < 0)
     {
-        throw std::out_of_range("Source or destination vertex out of range");
+        throw std::out_of_range("StaticGraph<Vertex, Edge>::add_directed_edge(...): Source or destination vertex out of range");
     }
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
@@ -312,7 +312,7 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(V
 {
     if (source >= get_num_vertices() || target >= get_num_vertices() || source < 0 || target < 0)
     {
-        throw std::out_of_range("Source or destination vertex out of range");
+        throw std::out_of_range("StaticGraph<Vertex, Edge>::add_undirected_edge(...): Source or destination vertex out of range");
     }
     // Need to copy args to keep them in valid state.
     const auto forward_edge_index = add_directed_edge(source, target, args...);

@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <limits>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
@@ -28,9 +29,11 @@ namespace mimir
 
 using VertexIndex = uint32_t;
 using VertexIndexList = std::vector<VertexIndex>;
+using VertexIndexSet = std::unordered_set<VertexIndex>;
 
 using EdgeIndex = uint32_t;
 using EdgeIndexList = std::vector<EdgeIndex>;
+using EdgeIndexSet = std::unordered_set<EdgeIndex>;
 using EdgeCost = double;
 
 using Distance = double;
