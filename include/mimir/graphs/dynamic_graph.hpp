@@ -129,11 +129,9 @@ private:
     EdgeIndexList m_free_edges;
     size_t m_next_edge_index;
 
-    std::unordered_map<VertexIndex, EdgeIndexList> m_forward_adjacent_edges;
-    std::unordered_map<VertexIndex, EdgeIndexList> m_backward_adjacent_edges;
+    TraversalDirectionStorage<std::unordered_map<VertexIndex, EdgeIndexSet>> m_adjacent_edges;
 
-    DegreeMap m_in_degrees;
-    DegreeMap m_out_degrees;
+    TraversalDirectionStorage<DegreeMap> m_degrees;
 };
 
 /**
@@ -150,10 +148,8 @@ DynamicGraph<Vertex, Edge>::DynamicGraph() :
     m_edges(),
     m_free_edges(),
     m_next_edge_index(0),
-    m_forward_adjacent_edges(),
-    m_backward_adjacent_edges(),
-    m_in_degrees(),
-    m_out_degrees()
+    m_adjacent_edges(),
+    m_degrees()
 {
 }
 
@@ -166,10 +162,10 @@ void DynamicGraph<Vertex, Edge>::reset()
     m_edges.clear();
     m_free_edges.clear();
     m_next_edge_index = 0;
-    m_forward_adjacent_edges.clear();
-    m_backward_adjacent_edges.clear();
-    m_in_degrees.clear();
-    m_out_degrees.clear();
+    m_adjacent_edges.get<ForwardTraversal>().clear();
+    m_adjacent_edges.get<BackwardTraversal>().clear();
+    m_degrees.get<ForwardTraversal>().clear();
+    m_degrees.get<BackwardTraversal>().clear();
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -190,17 +186,17 @@ VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(Args&&... args)
     /* Initialize the data structures. */
     if (m_free_vertices.empty())
     {
-        m_forward_adjacent_edges.emplace(index, EdgeIndexList());
-        m_backward_adjacent_edges.emplace(index, EdgeIndexList());
-        m_in_degrees.emplace(index, 0);
-        m_out_degrees.emplace(index, 0);
+        m_adjacent_edges.get<ForwardTraversal>().emplace(index, EdgeIndexSet());
+        m_adjacent_edges.get<BackwardTraversal>().emplace(index, EdgeIndexSet());
+        m_degrees.get<ForwardTraversal>().emplace(index, 0);
+        m_degrees.get<BackwardTraversal>().emplace(index, 0);
     }
     else
     {
-        m_forward_adjacent_edges.at(index).clear();
-        m_backward_adjacent_edges.at(index).clear();
-        m_in_degrees.at(index) = 0;
-        m_out_degrees.at(index) = 0;
+        m_adjacent_edges.get<ForwardTraversal>().at(index).clear();
+        m_adjacent_edges.get<ForwardTraversal>().at(index).clear();
+        m_degrees.get<ForwardTraversal>().at(index) = 0;
+        m_degrees.get<ForwardTraversal>().at(index) = 0;
     }
 
     return index;
@@ -227,10 +223,10 @@ EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Vert
     m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
 
     /* Initialize the data structures. */
-    m_forward_adjacent_edges.at(source).push_back(index);
-    m_backward_adjacent_edges.at(target).push_back(index);
-    ++m_out_degrees.at(source);
-    ++m_in_degrees.at(target);
+    m_adjacent_edges.get<ForwardTraversal>().at(source).insert(index);
+    m_adjacent_edges.get<BackwardTraversal>().at(target).insert(index);
+    ++m_degrees.get<ForwardTraversal>().at(source);   // out degree
+    ++m_degrees.get<BackwardTraversal>().at(target);  // in degree
 
     return index;
 }
@@ -257,25 +253,69 @@ void DynamicGraph<Vertex, Edge>::remove_vertex(VertexIndex vertex)
         throw std::out_of_range("DynamicGraph<Vertex, Edge>::remove_vertex(...): Tried to remove non-existing vertex.");
     }
 
+    /* Remove backward adjacent edges from vertex of adjacent vertices */
+    for (const auto& edge : get_adjacent_edge_indices<ForwardTraversal>(vertex))
+    {
+        const auto source = get_source<ForwardTraversal>(edge);
+        if (source == vertex)
+        {
+            // Ignore loops over vertex.
+            continue;
+        }
+        const auto target = get_target<ForwardTraversal>(edge);
+
+        m_adjacent_edges.get<BackwardTraversal>().at(target).erase(edge);
+        --m_degrees.get<BackwardTraversal>().at(target);
+        m_edges.erase(edge);
+        m_free_edges.push_back(edge);
+    }
+    /* Remove forward adjacent edges to vertex of adjacent vertices */
+    for (const auto& edge : get_adjacent_edge_indices<BackwardTraversal>(vertex))
+    {
+        const auto source = get_source<BackwardTraversal>(edge);
+        if (source == vertex)
+        {
+            // Ignore loops over vertex.
+            continue;
+        }
+        const auto target = get_target<BackwardTraversal>(edge);
+
+        m_adjacent_edges.get<ForwardTraversal>().at(target).erase(edge);
+        --m_degrees.get<ForwardTraversal>().at(target);
+        m_edges.erase(edge);
+        m_free_edges.push_back(edge);
+    }
+
     m_vertices.erase(vertex);
+    m_free_vertices.push_back(vertex);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 void DynamicGraph<Vertex, Edge>::remove_edge(EdgeIndex edge)
 {
-    throw std::runtime_error("Not implemented");
+    const auto source = get_source<ForwardTraversal>(edge);
+    const auto target = get_target<ForwardTraversal>(edge);
+
+    m_adjacent_edges.get<ForwardTraversal>().at(source).erase(edge);
+    m_adjacent_edges.get<BackwardTraversal>().at(target).erase(edge);
+    --m_degrees.get<ForwardTraversal>().at(source);
+    --m_degrees.get<BackwardTraversal>().at(target);
+    m_edges.erase(edge);
+    m_free_edges.push_back(edge);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 std::ranges::subrange<typename DynamicGraph<Vertex, Edge>::VertexIndexConstIteratorType> DynamicGraph<Vertex, Edge>::get_vertex_indices() const
 {
-    throw std::runtime_error("Not implemented");
+    return std::ranges::subrange(typename DynamicGraph<Vertex, Edge>::VertexIndexConstIteratorType(m_vertices, true),
+                                 typename DynamicGraph<Vertex, Edge>::VertexIndexConstIteratorType(m_vertices, false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 std::ranges::subrange<typename DynamicGraph<Vertex, Edge>::EdgeIndexConstIteratorType> DynamicGraph<Vertex, Edge>::get_edge_indices() const
 {
-    throw std::runtime_error("Not implemented");
+    return std::ranges::subrange(typename DynamicGraph<Vertex, Edge>::EdgeIndexConstIteratorType(m_edges, true),
+                                 typename DynamicGraph<Vertex, Edge>::EdgeIndexConstIteratorType(m_edges, false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -283,7 +323,15 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename DynamicGraph<Vertex, Edge>::template AdjacentVertexConstIteratorType<Direction>>
 DynamicGraph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex) const
 {
-    throw std::runtime_error("Not implemented");
+    return std::ranges::subrange(
+        typename DynamicGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<ForwardTraversal>(m_vertices,
+                                                                                               m_edges,
+                                                                                               m_adjacent_edges.get<Direction>().at(vertex),
+                                                                                               true),
+        typename DynamicGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<ForwardTraversal>(m_vertices,
+                                                                                               m_edges,
+                                                                                               m_adjacent_edges.get<Direction>().at(vertex),
+                                                                                               false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -291,7 +339,13 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename DynamicGraph<Vertex, Edge>::template AdjacentVertexIndexConstIteratorType<Direction>>
 DynamicGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    throw std::runtime_error("Not implemented");
+    return std::ranges::subrange(
+        typename DynamicGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<ForwardTraversal>(m_edges,
+                                                                                                    m_adjacent_edges.get<Direction>().at(vertex),
+                                                                                                    true),
+        typename DynamicGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<ForwardTraversal>(m_edges,
+                                                                                                    m_adjacent_edges.get<Direction>().at(vertex),
+                                                                                                    false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -299,7 +353,9 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename DynamicGraph<Vertex, Edge>::template AdjacentEdgeConstIteratorType<Direction>>
 DynamicGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
 {
-    throw std::runtime_error("Not implemented");
+    return std::ranges::subrange(
+        typename DynamicGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<ForwardTraversal>(m_edges, m_adjacent_edges.get<Direction>().at(vertex), true),
+        typename DynamicGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<ForwardTraversal>(m_edges, m_adjacent_edges.get<Direction>().at(vertex), false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -307,7 +363,11 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename DynamicGraph<Vertex, Edge>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 DynamicGraph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    throw std::runtime_error("Not implemented");
+    return std::ranges::subrange(
+        typename DynamicGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>(m_edges, m_adjacent_edges.get<Direction>().at(vertex), true),
+        typename DynamicGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>(m_edges,
+                                                                                                  m_adjacent_edges.get<Direction>().at(vertex),
+                                                                                                  false));
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -374,36 +434,14 @@ template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
 const DegreeMap& DynamicGraph<Vertex, Edge>::get_degrees() const
 {
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
-    {
-        return m_out_degrees;
-    }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
-    {
-        return m_in_degrees;
-    }
-    else
-    {
-        static_assert(dependent_false<Direction>::value, "DynamicGraph<Vertex, Edge>::get_degrees(): Missing implementation for IsTraversalDirection.");
-    }
+    return m_degrees.get<Direction>();
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
 Degree DynamicGraph<Vertex, Edge>::get_degree(VertexIndex vertex) const
 {
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
-    {
-        return m_out_degrees.at(vertex);
-    }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
-    {
-        return m_in_degrees.at(vertex);
-    }
-    else
-    {
-        static_assert(dependent_false<Direction>::value, "DynamicGraph<Vertex, Edge>::get_degree(...): Missing implementation for IsTraversalDirection.");
-    }
+    return m_degrees.get<Direction>().at(vertex);
 }
 
 }
