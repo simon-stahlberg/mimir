@@ -333,7 +333,19 @@ DynamicAdjacentVertexConstIterator<Vertex, Edge, Direction>::reference DynamicAd
     assert(m_vertices);
     assert(m_edges);
 
-    return m_vertices->at(m_edges->at(*m_slice_iter).get_source());
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return m_vertices->at(m_edges->at(*m_slice_iter).get_target());
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_vertices->at(m_edges->at(*m_slice_iter).get_source());
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value,
+                      "DynamicAdjacentVertexConstIterator<Edge, Direction>::operator*(): Missing implementation for IsTraversalDirection.");
+    }
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
@@ -390,7 +402,19 @@ DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::value_type DynamicAdja
 {
     assert(m_edges);
 
-    return m_edges->at(*m_slice_iter).get_source();
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return m_edges->at(*m_slice_iter).get_target();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_edges->at(*m_slice_iter).get_source();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value,
+                      "DynamicAdjacentVertexIndexConstIterator<Edge, Direction>::operator*(): Missing implementation for IsTraversalDirection.");
+    }
 }
 
 template<IsEdge Edge, IsTraversalDirection Direction>
