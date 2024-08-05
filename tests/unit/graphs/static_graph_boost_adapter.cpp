@@ -35,11 +35,11 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
     size_t transition_count = 0;
     for (auto [state_it, state_last] = vertices(graph); state_it != state_last; ++state_it)
     {
-        const auto& state_id = *state_it;
+        const auto& state_index = *state_it;
         size_t state_transition_count = 0;
-        for (auto [out_it, out_last] = out_edges(state_id, graph); out_it != out_last; ++out_it)
+        for (auto [out_it, out_last] = out_edges(state_index, graph); out_it != out_last; ++out_it)
         {
-            EXPECT_EQ(source(*out_it, graph), state_id);
+            EXPECT_EQ(source(*out_it, graph), state_index);
             transition_count++;
             state_transition_count++;
         }

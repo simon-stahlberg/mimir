@@ -27,7 +27,8 @@ add_gtest(formalism_to_negation_normal_form_test           "formalism/translator
 add_gtest(formalism_remove_types_test                      "formalism/translators/remove_types.cpp")
 add_gtest(formalism_remove_universal_quantifiers_test      "formalism/translators/remove_universal_quantifiers.cpp")
 
-add_gtest(graphs_boost_adapter_test                        "graphs/boost_adapter.cpp")
+add_gtest(graphs_static_graph_boost_adapter_test           "graphs/static_graph_boost_adapter.cpp")
+add_gtest(graphs_dynamic_graph_test                        "graphs/dynamic_graph.cpp")
 add_gtest(graphs_object_graph_test                         "graphs/object_graph.cpp")
 add_gtest(graphs_object_graph_pruning_strategy_test        "graphs/object_graph_pruning_strategy.cpp")
 add_gtest(graphs_tuple_graph_test                          "graphs/tuple_graph.cpp")
