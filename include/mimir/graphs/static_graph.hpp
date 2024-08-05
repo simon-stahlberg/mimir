@@ -302,6 +302,7 @@ VertexIndex StaticGraph<Vertex, Edge>::add_vertex(Args&&... args)
     m_vertices.emplace_back(index, std::forward<Args>(args)...);
     m_degrees.get<ForwardTraversal>().resize(index + 1, 0);
     m_degrees.get<BackwardTraversal>().resize(index + 1, 0);
+
     return index;
 }
 
@@ -313,11 +314,13 @@ EdgeIndex StaticGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Verte
     {
         throw std::out_of_range("StaticGraph<Vertex, Edge>::add_directed_edge(...): Source or destination vertex out of range");
     }
+
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
     ++m_degrees.get<ForwardTraversal>().at(source);
     ++m_degrees.get<BackwardTraversal>().at(target);
     m_slice.push_back(index);
+
     return index;
 }
 
@@ -329,9 +332,11 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(V
     {
         throw std::out_of_range("StaticGraph<Vertex, Edge>::add_undirected_edge(...): Source or destination vertex out of range");
     }
+
     // Need to copy args to keep them in valid state.
     const auto forward_edge_index = add_directed_edge(source, target, args...);
     const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
+
     return std::make_pair(forward_edge_index, backward_edge_index);
 }
 

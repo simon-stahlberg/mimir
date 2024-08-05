@@ -68,7 +68,7 @@ public:
  *
  * Collect statistics and call implementation of derived class.
  */
-template<typename Derived>
+template<typename Derived_>
 class SIWAlgorithmEventHandlerBase : public ISIWAlgorithmEventHandler
 {
 protected:
@@ -77,11 +77,11 @@ protected:
 
 private:
     SIWAlgorithmEventHandlerBase() = default;
-    friend Derived;
+    friend Derived_;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     explicit SIWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}

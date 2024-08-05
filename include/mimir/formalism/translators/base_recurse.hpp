@@ -30,16 +30,16 @@ namespace mimir
 /**
  * Base implementation recursively calls translate.
  */
-template<typename Derived>
-class BaseRecurseTranslator : public ITranslator<BaseRecurseTranslator<Derived>>
+template<typename Derived_>
+class BaseRecurseTranslator : public ITranslator<BaseRecurseTranslator<Derived_>>
 {
 private:
     BaseRecurseTranslator() = default;
-    friend Derived;
+    friend Derived_;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
     loki::PDDLFactories& m_pddl_factories;
@@ -48,7 +48,7 @@ protected:
 
 protected:
     /* Implement ITranslator interface */
-    friend class ITranslator<BaseRecurseTranslator<Derived>>;
+    friend class ITranslator<BaseRecurseTranslator<Derived_>>;
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.

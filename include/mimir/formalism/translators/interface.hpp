@@ -31,16 +31,16 @@ namespace mimir
 /**
  * Interface class.
  */
-template<typename Derived>
+template<typename Derived_>
 class ITranslator
 {
 private:
     ITranslator() = default;
-    friend Derived;
+    friend Derived_;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
     /// @brief Prepare all elements in a container.

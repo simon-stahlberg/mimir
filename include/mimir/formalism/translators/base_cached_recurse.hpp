@@ -30,16 +30,16 @@ namespace mimir
 /**
  * Base implementation recursively calls translate and caches the results.
  */
-template<typename Derived>
-class BaseCachedRecurseTranslator : public ITranslator<BaseCachedRecurseTranslator<Derived>>
+template<typename Derived_>
+class BaseCachedRecurseTranslator : public ITranslator<BaseCachedRecurseTranslator<Derived_>>
 {
 private:
     BaseCachedRecurseTranslator() = default;
-    friend Derived;
+    friend Derived_;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived&>(*this); }
-    constexpr auto& self() { return static_cast<Derived&>(*this); }
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
     std::unordered_map<loki::Requirements, loki::Requirements> m_translated_requirements;
     std::unordered_map<loki::Type, loki::Type> m_translated_types;
@@ -69,7 +69,7 @@ protected:
 
 protected:
     /* Implement ITranslator interface */
-    friend class ITranslator<BaseCachedRecurseTranslator<Derived>>;
+    friend class ITranslator<BaseCachedRecurseTranslator<Derived_>>;
 
     /**
      * Collect information.

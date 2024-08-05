@@ -32,6 +32,10 @@
 namespace mimir
 {
 
+/**
+ * A collection of graph concepts required by many graph algorithms.
+ */
+
 template<typename T>
 concept IsVertexListGraph = requires(T a, VertexIndex vertex)
 {

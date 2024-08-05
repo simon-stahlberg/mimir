@@ -225,8 +225,8 @@ EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Vert
     /* Initialize the data structures. */
     m_adjacent_edges.get<ForwardTraversal>().at(source).insert(index);
     m_adjacent_edges.get<BackwardTraversal>().at(target).insert(index);
-    ++m_degrees.get<ForwardTraversal>().at(source);   // out degree
-    ++m_degrees.get<BackwardTraversal>().at(target);  // in degree
+    ++m_degrees.get<ForwardTraversal>().at(source);
+    ++m_degrees.get<BackwardTraversal>().at(target);
 
     return index;
 }
@@ -242,6 +242,7 @@ std::pair<EdgeIndex, EdgeIndex> DynamicGraph<Vertex, Edge>::add_undirected_edge(
     // Need to copy args to keep them in valid state.
     const auto forward_edge_index = add_directed_edge(source, target, args...);
     const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
+
     return std::make_pair(forward_edge_index, backward_edge_index);
 }
 

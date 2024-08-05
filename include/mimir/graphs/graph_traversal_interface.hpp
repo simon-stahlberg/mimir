@@ -25,9 +25,16 @@
 namespace mimir
 {
 
+/**
+ * We traverse graphs in forward and backward direction.
+ * The direction is chosen by adding a traversal direction tag to the graph before passing it to the graph algorithm.
+ */
+
+/// @brief ForwardTraversal represents traversal of edges in forward direction.
 struct ForwardTraversal
 {
 };
+/// @brief BackwardTraversal represents traversal of edges in backward direction.
 struct BackwardTraversal
 {
 };
@@ -54,6 +61,9 @@ struct InverseTraversalDirection<BackwardTraversal>
     using type = ForwardTraversal;
 };
 
+/// @brief TraversalDirectionTaggedType associates a type T with a traversal direction.
+/// @tparam T is the type to be associated.
+/// @tparam Direction is the associated traversal direction.
 template<typename T, IsTraversalDirection Direction>
 class TraversalDirectionTaggedType
 {
@@ -69,8 +79,8 @@ private:
     std::reference_wrapper<T> m_data;
 };
 
-/// @brief TraversalDirectionContainer contains a type T for ForwardTraversal and BackwardTraversal.
-/// @tparam T
+/// @brief TraversalDirectionContainer contains a type T for forward and backward traversal.
+/// @tparam T is the type that we want to store for forward and backward traversal.
 template<typename T>
 class TraversalDirectionStorage
 {
