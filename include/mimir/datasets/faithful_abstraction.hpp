@@ -274,7 +274,7 @@ public:
 };
 
 static_assert(IsAbstraction<FaithfulAbstraction>);
-static_assert(IsGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
+static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
 

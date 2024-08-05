@@ -199,7 +199,7 @@ public:
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
-static_assert(IsGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
+static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
 
 /**
  * Pretty printing

@@ -62,25 +62,15 @@ using DynamicEdgeColoredDigraph = DynamicGraph<ColoredDigraphVertex, ColoredDigr
  * Static graph assertions
  */
 
-static_assert(IsConstructibleGraph<StaticEdgeColoredDigraph>);
-static_assert(!IsConstructibleGraph<StaticEdgeColoredForwardDigraph>);
-static_assert(!IsConstructibleGraph<StaticEdgeColoredBidirectionalDigraph>);
-static_assert(!IsDestructibleGraph<StaticEdgeColoredDigraph>);
-static_assert(!IsDestructibleGraph<StaticEdgeColoredForwardDigraph>);
-static_assert(!IsDestructibleGraph<StaticEdgeColoredBidirectionalDigraph>);
-
-static_assert(IsGraph<StaticEdgeColoredDigraph>);
-static_assert(IsGraph<StaticEdgeColoredForwardDigraph>);
-static_assert(IsGraph<StaticEdgeColoredBidirectionalDigraph>);
+static_assert(IsStaticGraph<StaticEdgeColoredDigraph>);
+static_assert(IsStaticGraph<StaticEdgeColoredForwardDigraph>);
+static_assert(IsStaticGraph<StaticEdgeColoredBidirectionalDigraph>);
 
 /**
  * Dynamic graph assertions
  */
 
-static_assert(IsConstructibleGraph<DynamicEdgeColoredDigraph>);
-static_assert(IsDestructibleGraph<DynamicEdgeColoredDigraph>);
-
-static_assert(IsGraph<DynamicEdgeColoredDigraph>);
+static_assert(IsDynamicGraph<DynamicEdgeColoredDigraph>);
 
 }
 #endif

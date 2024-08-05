@@ -10,48 +10,38 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *<
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_CONCEPTS_HPP_
-#define MIMIR_COMMON_CONCEPTS_HPP_
+#ifndef MIMIR_GRAPHS_STATIC_GRAPH_INTERFACE_HPP_
+#define MIMIR_GRAPHS_STATIC_GRAPH_INTERFACE_HPP_
 
-#include <concepts>
-#include <cstddef>
-#include <ranges>
-#include <type_traits>
+#include "mimir/graphs/graph_interface.hpp"
 
 namespace mimir
 {
 
-template<typename T>
-struct dependent_false : std::false_type
+/**
+ * Static graphs do not allow for deletion of vertices and edges, allowing vector data structures.
+ */
+
+struct StaticGraphTag
 {
 };
 
 template<typename T>
-concept IsHashable = requires(T a)
+concept IsStaticGraph = requires(T a)
 {
-    {
-        a.hash()
-        } -> std::same_as<size_t>;
+    typename T::GraphType;
+    requires std::same_as<typename T::GraphType, StaticGraphTag>;
+
+    requires IsVertexListGraph<T>;
+    requires IsEdgeListGraph<T>;
+    requires IsIncidenceGraph<T>;
+    requires IsAdjacencyGraph<T>;
 };
-
-template<typename T>
-concept IsComparable = requires(T a, T b)
-{
-    {
-        a == b
-        } -> std::same_as<bool>;
-};
-
-template<typename T>
-concept IsUnsignedIntegral = std::is_integral_v<T> && std::is_unsigned_v<T>;
-
-template<typename T, typename Value>
-concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, Value>;
 
 }
 

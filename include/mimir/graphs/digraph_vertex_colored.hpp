@@ -66,20 +66,10 @@ using DynamicVertexColoredDigraph = DynamicGraph<ColoredDigraphVertex, DigraphEd
  * Static graph assertions
  */
 
-static_assert(IsConstructibleGraph<StaticVertexColoredDigraph>);
-static_assert(!IsConstructibleGraph<StaticVertexColoredForwardDigraph>);
-static_assert(!IsConstructibleGraph<StaticVertexColoredBidirectionalDigraph>);
-static_assert(!IsDestructibleGraph<StaticVertexColoredDigraph>);
-static_assert(!IsDestructibleGraph<StaticVertexColoredForwardDigraph>);
-static_assert(!IsDestructibleGraph<StaticVertexColoredBidirectionalDigraph>);
-
-static_assert(IsGraph<StaticVertexColoredDigraph>);
 static_assert(IsStaticGraph<StaticVertexColoredDigraph>);
 static_assert(!IsDynamicGraph<StaticVertexColoredDigraph>);
-static_assert(IsGraph<StaticVertexColoredForwardDigraph>);
 static_assert(IsStaticGraph<StaticVertexColoredForwardDigraph>);
 static_assert(!IsDynamicGraph<StaticVertexColoredForwardDigraph>);
-static_assert(IsGraph<StaticVertexColoredBidirectionalDigraph>);
 static_assert(IsStaticGraph<StaticVertexColoredBidirectionalDigraph>);
 static_assert(!IsDynamicGraph<StaticVertexColoredBidirectionalDigraph>);
 
@@ -87,10 +77,6 @@ static_assert(!IsDynamicGraph<StaticVertexColoredBidirectionalDigraph>);
  * Dynamic graph assertions
  */
 
-static_assert(IsConstructibleGraph<DynamicVertexColoredDigraph>);
-static_assert(IsDestructibleGraph<DynamicVertexColoredDigraph>);
-
-static_assert(IsGraph<DynamicVertexColoredDigraph>);
 static_assert(!IsStaticGraph<DynamicVertexColoredDigraph>);
 static_assert(IsDynamicGraph<DynamicVertexColoredDigraph>);
 

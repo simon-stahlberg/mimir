@@ -148,18 +148,7 @@ template<IsStaticGraph Graph, IsTraversalDirection Direction>
 typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor
 source(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor& e, const GraphWithDirection<Graph, Direction>& g)
 {
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
-    {
-        return g.get_graph().get_edges()[e].get_source();
-    }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
-    {
-        return g.get_graph().get_edges()[e].get_target();
-    }
-    else
-    {
-        static_assert(dependent_false<Direction>::value, "source: Missing implementation for IsTraversalDirection.");
-    }
+    return g.get_graph().template get_source<Direction>(e);
 }
 
 /// @brief Get the target vertex of an edge.
@@ -170,18 +159,7 @@ template<IsStaticGraph Graph, IsTraversalDirection Direction>
 typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor
 target(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor& e, const GraphWithDirection<Graph, Direction>& g)
 {
-    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
-    {
-        return g.get_graph().get_edges()[e].get_target();
-    }
-    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
-    {
-        return g.get_graph().get_edges()[e].get_source();
-    }
-    else
-    {
-        static_assert(dependent_false<Direction>::value, "source: Missing implementation for IsTraversalDirection.");
-    }
+    return g.get_graph().template get_target<Direction>(e);
 }
 
 /// @brief Get the out edges of a vertex in the graph.

@@ -71,25 +71,15 @@ using DynamicDigraph = DynamicGraph<DigraphVertex, DigraphEdge>;
  * Static graph assertions
  */
 
-static_assert(IsConstructibleGraph<StaticDigraph>);
-static_assert(!IsConstructibleGraph<StaticForwardDigraph>);
-static_assert(!IsConstructibleGraph<StaticBidirectionalDigraph>);
-static_assert(!IsDestructibleGraph<StaticDigraph>);
-static_assert(!IsDestructibleGraph<StaticForwardDigraph>);
-static_assert(!IsDestructibleGraph<StaticBidirectionalDigraph>);
-
-static_assert(IsGraph<StaticDigraph>);
-static_assert(IsGraph<StaticForwardDigraph>);
-static_assert(IsGraph<StaticBidirectionalDigraph>);
+static_assert(IsStaticGraph<StaticDigraph>);
+static_assert(IsStaticGraph<StaticForwardDigraph>);
+static_assert(IsStaticGraph<StaticBidirectionalDigraph>);
 
 /**
  * Dynamic graph assertions
  */
 
-static_assert(IsConstructibleGraph<DynamicDigraph>);
-static_assert(IsDestructibleGraph<DynamicDigraph>);
-
-static_assert(IsGraph<DynamicDigraph>);
+static_assert(IsDynamicGraph<DynamicDigraph>);
 
 /**
  * Pretty printing

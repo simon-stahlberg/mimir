@@ -220,7 +220,7 @@ public:
     StateIndex sample_state_with_goal_distance(Distance goal_distance) const;
 };
 
-static_assert(IsGraph<StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>>);
+static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>>);
 
 using StateSpaceList = std::vector<StateSpace>;
 

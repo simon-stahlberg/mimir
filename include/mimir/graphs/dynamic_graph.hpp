@@ -19,9 +19,9 @@
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/dynamic_graph_iterators.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
-#include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <ranges>
@@ -111,6 +111,11 @@ public:
     const EdgeMap& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+
+    template<IsTraversalDirection>
+    VertexIndex get_source(EdgeIndex edge) const;
+    template<IsTraversalDirection>
+    VertexIndex get_target(EdgeIndex edge) const;
     template<IsTraversalDirection Direction>
     const DegreeMap& get_degrees() const;
     template<IsTraversalDirection Direction>
@@ -266,6 +271,42 @@ template<IsVertex Vertex, IsEdge Edge>
 size_t DynamicGraph<Vertex, Edge>::get_num_edges() const
 {
     return m_edges.size();
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+template<IsTraversalDirection Direction>
+VertexIndex DynamicGraph<Vertex, Edge>::get_source(EdgeIndex edge) const
+{
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return m_edges.at(edge).get_source();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_edges.at(edge).get_target();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "DynamicGraph<Vertex, Edge>::get_source(...): Missing implementation for IsTraversalDirection.");
+    }
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+template<IsTraversalDirection Direction>
+VertexIndex DynamicGraph<Vertex, Edge>::get_target(EdgeIndex edge) const
+{
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return m_edges.at(edge).get_target();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_edges.at(edge).get_source();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "DynamicGraph<Vertex, Edge>::get_target(...): Missing implementation for IsTraversalDirection.");
+    }
 }
 
 template<IsVertex Vertex, IsEdge Edge>

@@ -21,8 +21,8 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
-#include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/static_graph_interface.hpp"
 #include "mimir/graphs/static_graph_iterators.hpp"
 
 #include <ranges>
@@ -112,6 +112,11 @@ public:
     const EdgeList& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+
+    template<IsTraversalDirection>
+    VertexIndex get_source(EdgeIndex edge) const;
+    template<IsTraversalDirection>
+    VertexIndex get_target(EdgeIndex edge) const;
     template<IsTraversalDirection Direction>
     const DegreeList& get_degrees() const;
     template<IsTraversalDirection Direction>
@@ -131,7 +136,7 @@ private:
 /* StaticForwardGraph */
 
 /// @brief StaticForwardGraph is a translated StaticGraph for more efficient forward traversal.
-template<IsGraph G>
+template<IsStaticGraph G>
 class StaticForwardGraph
 {
 public:
@@ -179,6 +184,11 @@ public:
     const EdgeList& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+
+    template<IsTraversalDirection>
+    VertexIndex get_source(EdgeIndex edge) const;
+    template<IsTraversalDirection>
+    VertexIndex get_target(EdgeIndex edge) const;
     template<IsTraversalDirection Direction>
     const DegreeList& get_degrees() const;
     template<IsTraversalDirection Direction>
@@ -193,7 +203,7 @@ private:
 /* BidirectionalGraph */
 
 /// @brief BidirectionalGraph is a translated StaticGraph for more efficient bidirectional traversal.
-template<IsGraph G>
+template<IsStaticGraph G>
 class StaticBidirectionalGraph
 {
 public:
@@ -241,6 +251,11 @@ public:
     const EdgeList& get_edges() const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
+
+    template<IsTraversalDirection>
+    VertexIndex get_source(EdgeIndex edge) const;
+    template<IsTraversalDirection>
+    VertexIndex get_target(EdgeIndex edge) const;
     template<IsTraversalDirection Direction>
     const DegreeList& get_degrees() const;
     template<IsTraversalDirection Direction>
@@ -397,6 +412,42 @@ size_t StaticGraph<Vertex, Edge>::get_num_edges() const
 
 template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
+VertexIndex StaticGraph<Vertex, Edge>::get_source(EdgeIndex edge) const
+{
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return m_edges.at(edge).get_source();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_edges.at(edge).get_target();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "StaticGraph<Vertex, Edge>::get_source(...): Missing implementation for IsTraversalDirection.");
+    }
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+template<IsTraversalDirection Direction>
+VertexIndex StaticGraph<Vertex, Edge>::get_target(EdgeIndex edge) const
+{
+    if constexpr (std::is_same_v<Direction, ForwardTraversal>)
+    {
+        return m_edges.at(edge).get_target();
+    }
+    else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
+    {
+        return m_edges.at(edge).get_source();
+    }
+    else
+    {
+        static_assert(dependent_false<Direction>::value, "StaticGraph<Vertex, Edge>::get_target(...): Missing implementation for IsTraversalDirection.");
+    }
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+template<IsTraversalDirection Direction>
 const DegreeList& StaticGraph<Vertex, Edge>::get_degrees() const
 {
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
@@ -469,26 +520,26 @@ static IndexGroupedVector<const EdgeIndex> compute_index_grouped_edge_indices(co
     return edge_index_grouped_by_source_builder.get_result();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 StaticForwardGraph<G>::StaticForwardGraph(G graph) :
     m_graph(std::move(graph)),
     m_edge_indices_grouped_by_source(compute_index_grouped_edge_indices(m_graph, true))
 {
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 std::ranges::subrange<typename StaticForwardGraph<G>::VertexIndexConstIteratorType> StaticForwardGraph<G>::get_vertex_indices() const
 {
     return m_graph.get_vertex_indices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 std::ranges::subrange<typename StaticForwardGraph<G>::EdgeIndexConstIteratorType> StaticForwardGraph<G>::get_edge_indices() const
 {
     return m_graph.get_edge_indices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentVertexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
@@ -517,7 +568,7 @@ StaticForwardGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
@@ -545,7 +596,7 @@ StaticForwardGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
@@ -572,7 +623,7 @@ StaticForwardGraph<G>::get_adjacent_edges(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticForwardGraph<G>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
@@ -599,38 +650,52 @@ StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 const StaticForwardGraph<G>::VertexList& StaticForwardGraph<G>::get_vertices() const
 {
     return m_graph.get_vertices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 const StaticForwardGraph<G>::EdgeList& StaticForwardGraph<G>::get_edges() const
 {
     return m_graph.get_edges();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 size_t StaticForwardGraph<G>::get_num_vertices() const
 {
     return m_graph.get_num_vertices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 size_t StaticForwardGraph<G>::get_num_edges() const
 {
     return m_graph.get_num_edges();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
+template<IsTraversalDirection Direction>
+VertexIndex StaticForwardGraph<G>::get_source(EdgeIndex edge) const
+{
+    return m_graph.template get_source<Direction>(edge);
+}
+
+template<IsStaticGraph G>
+template<IsTraversalDirection Direction>
+VertexIndex StaticForwardGraph<G>::get_target(EdgeIndex edge) const
+{
+    return m_graph.template get_target<Direction>(edge);
+}
+
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 const DegreeList& StaticForwardGraph<G>::get_degrees() const
 {
     return m_graph.template get_degrees<Direction>();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 Degree StaticForwardGraph<G>::get_degree(VertexIndex vertex) const
 {
@@ -639,7 +704,7 @@ Degree StaticForwardGraph<G>::get_degree(VertexIndex vertex) const
 
 /* BidirectionalGraph */
 
-template<IsGraph G>
+template<IsStaticGraph G>
 StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) :
     m_graph(std::move(graph)),
     m_edge_indices_grouped_by_source(compute_index_grouped_edge_indices(m_graph, true)),
@@ -647,19 +712,19 @@ StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) :
 {
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::VertexIndexConstIteratorType> StaticBidirectionalGraph<G>::get_vertex_indices() const
 {
     return m_graph.get_vertex_indices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::EdgeIndexConstIteratorType> StaticBidirectionalGraph<G>::get_edge_indices() const
 {
     return m_graph.get_edge_indices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentVertexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
@@ -699,7 +764,7 @@ StaticBidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
@@ -735,7 +800,7 @@ StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) con
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
@@ -770,7 +835,7 @@ StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
@@ -806,38 +871,52 @@ StaticBidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
     }
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 const StaticBidirectionalGraph<G>::VertexList& StaticBidirectionalGraph<G>::get_vertices() const
 {
     return m_graph.get_vertices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 const StaticBidirectionalGraph<G>::EdgeList& StaticBidirectionalGraph<G>::get_edges() const
 {
     return m_graph.get_edges();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 size_t StaticBidirectionalGraph<G>::get_num_vertices() const
 {
     return m_graph.get_num_vertices();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 size_t StaticBidirectionalGraph<G>::get_num_edges() const
 {
     return m_graph.get_num_edges();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
+template<IsTraversalDirection Direction>
+VertexIndex StaticBidirectionalGraph<G>::get_source(EdgeIndex edge) const
+{
+    return m_graph.template get_source<Direction>(edge);
+}
+
+template<IsStaticGraph G>
+template<IsTraversalDirection Direction>
+VertexIndex StaticBidirectionalGraph<G>::get_target(EdgeIndex edge) const
+{
+    return m_graph.template get_target<Direction>(edge);
+}
+
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 const DegreeList& StaticBidirectionalGraph<G>::get_degrees() const
 {
     return m_graph.template get_degrees<Direction>();
 }
 
-template<IsGraph G>
+template<IsStaticGraph G>
 template<IsTraversalDirection Direction>
 Degree StaticBidirectionalGraph<G>::get_degree(VertexIndex vertex) const
 {
