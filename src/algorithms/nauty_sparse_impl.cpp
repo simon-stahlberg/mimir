@@ -263,7 +263,7 @@ std::string SparseGraphImpl::compute_certificate()
     return canon_graph_compressed_repr_.str();
 }
 
-void SparseGraphImpl::reset(size_t num_vertices)
+void SparseGraphImpl::clear(size_t num_vertices)
 {
     use_default_ptn_ = true;
 

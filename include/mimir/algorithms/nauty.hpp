@@ -70,9 +70,9 @@ public:
     /// @brief Compute a compressed string representation of the canonical graph of the graph.
     std::string compute_certificate() const;
 
-    /// @brief Reinitialize the graph by changing the number of vertices and removing all edges.
+    /// @brief Clear the graph data structures by changing the number of vertices and removing all edges.
     /// @param num_vertices is the new number of vertices.
-    void reset(size_t num_vertices);
+    void clear(size_t num_vertices);
 
     /// @brief Return true iff the graph is directed.
     bool is_directed() const;
@@ -118,9 +118,9 @@ public:
     /// @brief Compute a compressed string representation of the canonical graph of the graph.
     std::string compute_certificate();
 
-    /// @brief Reinitialize the graph by changing the number of vertices and removing all edges.
+    /// @brief Clear the graph data structures by changing the number of vertices and removing all edges.
     /// @param num_vertices is the new number of vertices.
-    void reset(size_t num_vertices);
+    void clear(size_t num_vertices);
 
     /// @brief Return true iff the graph is directed.
     bool is_directed() const;

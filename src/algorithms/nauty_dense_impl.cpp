@@ -219,7 +219,7 @@ std::string DenseGraphImpl::compute_certificate()
     return canon_graph_compressed_repr_.str();
 }
 
-void DenseGraphImpl::reset(size_t num_vertices)
+void DenseGraphImpl::clear(size_t num_vertices)
 {
     use_default_ptn_ = true;
 

@@ -72,7 +72,7 @@ void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(sourc
 
 std::string DenseGraph::compute_certificate() const { return m_impl->compute_certificate(); }
 
-void DenseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
+void DenseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool DenseGraph::is_directed() const { return m_impl->is_directed(); }
 
@@ -122,7 +122,7 @@ void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(sour
 
 std::string SparseGraph::compute_certificate() { return m_impl->compute_certificate(); }
 
-void SparseGraph::reset(size_t num_vertices) { m_impl->reset(num_vertices); }
+void SparseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 

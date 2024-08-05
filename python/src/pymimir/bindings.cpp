@@ -1777,7 +1777,7 @@ void init_pymimir(py::module_& m)
         .def("add_undirected_edge",
              [](StaticDigraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex>
              { return self.add_undirected_edge(source, target); })
-        .def("reset", &StaticDigraph::reset)
+        .def("clear", &StaticDigraph::clear)
         .def(
             "get_forward_adjacent_vertices",
             [](const StaticDigraph& self, VertexIndex vertex)
@@ -1894,7 +1894,7 @@ void init_pymimir(py::module_& m)
         .def("add_undirected_edge",
              [](StaticVertexColoredDigraph& self, VertexIndex source, VertexIndex target) -> std::pair<EdgeIndex, EdgeIndex>
              { return self.add_undirected_edge(source, target); })
-        .def("reset", &StaticVertexColoredDigraph::reset)
+        .def("clear", &StaticVertexColoredDigraph::clear)
         .def(
             "get_forward_adjacent_vertices",
             [](const StaticVertexColoredDigraph& self, VertexIndex vertex)
@@ -1975,7 +1975,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<StaticVertexColoredDigraph>())
         .def("add_edge", &nauty_wrapper::DenseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
-        .def("reset", &nauty_wrapper::DenseGraph::reset);
+        .def("clear", &nauty_wrapper::DenseGraph::clear);
 
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
@@ -1984,7 +1984,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<StaticVertexColoredDigraph>())
         .def("add_edge", &nauty_wrapper::SparseGraph::add_edge)
         .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
-        .def("reset", &nauty_wrapper::SparseGraph::reset);
+        .def("clear", &nauty_wrapper::SparseGraph::clear);
 
     // ObjectGraphPruningStrategy
     py::class_<ObjectGraphPruningStrategy>(m, "ObjectGraphPruningStrategy")  //

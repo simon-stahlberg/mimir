@@ -39,6 +39,14 @@ namespace mimir
 
 /* DynamicGraph */
 
+/// @brief A `DynamicGraph` G consists of vertices V and edges E that allows for vertex and edge removal
+/// and as a result requires less efficient hash sets and hash map.
+///
+/// A `DynamicGraph` provides functionality for adding or removing vertices and edges, and iterating over vertices and edges.
+/// Iterating over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices requires time O(|E|),
+/// which is usually much smaller due to storing and exploiting adjacency list in forward and backward direction.
+/// @tparam Vertex is vertex type.
+/// @tparam Edge is the edge type.
 template<IsVertex Vertex, IsEdge Edge>
 class DynamicGraph
 {
@@ -64,18 +72,35 @@ public:
     DynamicGraph();
 
     /// @brief Reinitialize the graph to an empty graph.
-    void reset();
+    void clear();
 
     /**
      * Constructible functionality.
      */
 
+    /// @brief Add a vertex to the graph with vertex properties args.
+    /// @tparam ...Args the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
+    /// @param ...args the properties.
+    /// @return the index of the newly created vertex.
     template<typename... Args>
     VertexIndex add_vertex(Args&&... args);
 
+    /// @brief Add a directed edge from source to target to the graph with edge properties args.
+    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @param source the source vertex.
+    /// @param target the target vertex.
+    /// @param ...args the properties.
+    /// @return the index of the newly created edge.
     template<typename... Args>
     EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, Args&&... args);
 
+    /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
+    /// If the edge properties are heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
+    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @param source the source vertex.
+    /// @param target the target vertex.
+    /// @param ...args the properties.
+    /// @return the index pair of the two newly created edges.
     template<typename... Args>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args);
 
@@ -83,8 +108,12 @@ public:
      * Destructible functionality.
      */
 
+    /// @brief Remove the given vertex and all its adjacent edges from the graph.
+    /// @param vertex the vertex to be removed.
     void remove_vertex(VertexIndex vertex);
 
+    /// @brief Remove the given edge from the graph.
+    /// @param edge
     void remove_edge(EdgeIndex edge);
 
     /**
@@ -154,7 +183,7 @@ DynamicGraph<Vertex, Edge>::DynamicGraph() :
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-void DynamicGraph<Vertex, Edge>::reset()
+void DynamicGraph<Vertex, Edge>::clear()
 {
     m_vertices.clear();
     m_free_edges.clear();

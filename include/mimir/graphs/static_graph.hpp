@@ -42,9 +42,9 @@ namespace mimir
 /// allowing for using efficient vector data structure.
 ///
 /// A `StaticGraph` provides functionality for adding vertices and edges, and iterating over vertices and edges.
-/// Iterating over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices requires time O(|E|).
+/// Iterating over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices requires time Θ(|E|).
 ///
-/// A `StaticGraph` can be translated into an equivalent StaticForwardGraph or StaticBidirectional in O(|V|+|E|*Log2(|E|))
+/// A `StaticGraph` can be translated into an equivalent StaticForwardGraph or StaticBidirectionalGraph in O(|V|+|E|*Log2(|E|))
 /// to iterate more efficiently over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices.
 /// @tparam Vertex is vertex type.
 /// @tparam Edge is the edge type.
@@ -73,7 +73,7 @@ public:
     StaticGraph();
 
     /// @brief Reinitialize the graph to an empty graph.
-    void reset();
+    void clear();
 
     /**
      * Constructible functionality.
@@ -341,7 +341,7 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(V
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-void StaticGraph<Vertex, Edge>::reset()
+void StaticGraph<Vertex, Edge>::clear()
 {
     m_vertices.clear();
     m_edges.clear();

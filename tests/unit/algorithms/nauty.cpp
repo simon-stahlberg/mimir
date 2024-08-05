@@ -12,7 +12,7 @@ TEST(MimirTests, AlgorithmsNautyDenseGraphConstructorEmptyTest)
     EXPECT_ANY_THROW(graph.add_edge(0, 1));
     EXPECT_ANY_THROW(graph.add_vertex_coloring({ 0, 0 }));
 
-    graph.reset(2);
+    graph.clear(2);
 
     EXPECT_NO_THROW(graph.add_edge(0, 1));
     EXPECT_NO_THROW(graph.add_vertex_coloring({ 0, 0 }));
@@ -25,7 +25,7 @@ TEST(MimirTests, AlgorithmsNautySparseGraphConstructorEmptyTest)
     EXPECT_ANY_THROW(graph.add_edge(0, 1));
     EXPECT_ANY_THROW(graph.add_vertex_coloring({ 0, 0 }));
 
-    graph.reset(2);
+    graph.clear(2);
 
     EXPECT_NO_THROW(graph.add_edge(0, 1));
     EXPECT_NO_THROW(graph.add_vertex_coloring({ 0, 0 }));

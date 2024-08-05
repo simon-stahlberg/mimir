@@ -72,7 +72,7 @@ public:
 
     std::string compute_certificate();
 
-    void reset(size_t num_vertices);
+    void clear(size_t num_vertices);
 
     bool is_directed() const;
     bool has_loop() const;
