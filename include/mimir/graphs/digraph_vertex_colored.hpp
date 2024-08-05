@@ -22,7 +22,9 @@
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 
 #include <ranges>
@@ -33,34 +35,14 @@ namespace mimir
 {
 
 /**
- * ColoredDigraphVertex
- */
-
-class ColoredDigraphVertex
-{
-private:
-    VertexIndex m_index;
-    Color m_color;
-
-public:
-    ColoredDigraphVertex(VertexIndex index, Color color);
-
-    bool operator==(const ColoredDigraphVertex& other) const;
-    size_t hash() const;
-
-    VertexIndex get_index() const;
-    Color get_color() const;
-};
-
-/**
  * Type aliases
  */
 
-using StaticVertexColoredDigraph = StaticGraph<ColoredDigraphVertex, DigraphEdge>;
-using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
-using StaticVertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredDigraphVertex, DigraphEdge>>;
+using StaticVertexColoredDigraph = StaticGraph<ColoredVertex, EmptyPropertiesEdge>;
+using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, EmptyPropertiesEdge>>;
+using StaticVertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyPropertiesEdge>>;
 
-using DynamicVertexColoredDigraph = DynamicGraph<ColoredDigraphVertex, DigraphEdge>;
+using DynamicVertexColoredDigraph = DynamicGraph<ColoredVertex, EmptyPropertiesEdge>;
 
 /**
  * Static graph assertions

@@ -20,52 +20,22 @@
 
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 
 namespace mimir
 {
-class DigraphVertex
-{
-private:
-    VertexIndex m_index;
-
-public:
-    explicit DigraphVertex(VertexIndex index);
-
-    bool operator==(const DigraphVertex& other) const;
-    size_t hash() const;
-
-    VertexIndex get_index() const;
-};
-
-class DigraphEdge
-{
-private:
-    EdgeIndex m_index;
-    VertexIndex m_source;
-    VertexIndex m_target;
-
-public:
-    DigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target);
-
-    bool operator==(const DigraphEdge& other) const;
-    size_t hash() const;
-
-    EdgeIndex get_index() const;
-    VertexIndex get_source() const;
-    VertexIndex get_target() const;
-};
-
 /**
  * Type aliases
  */
 
-using StaticDigraph = StaticGraph<DigraphVertex, DigraphEdge>;
-using StaticForwardDigraph = StaticForwardGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
-using StaticBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<DigraphVertex, DigraphEdge>>;
+using StaticDigraph = StaticGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>;
+using StaticForwardDigraph = StaticForwardGraph<StaticGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>>;
+using StaticBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>>;
 
-using DynamicDigraph = DynamicGraph<DigraphVertex, DigraphEdge>;
+using DynamicDigraph = DynamicGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>;
 
 /**
  * Static graph assertions

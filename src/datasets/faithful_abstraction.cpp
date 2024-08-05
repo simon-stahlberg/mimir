@@ -35,29 +35,30 @@ namespace mimir
  */
 
 FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<const State> states, std::shared_ptr<const Certificate> certificate) :
-    m_index(index),
+    BaseVertex<FaithfulAbstractState>(index),
     m_states(states),
     m_certificate(std::move(certificate))
 {
 }
 
-bool FaithfulAbstractState::operator==(const FaithfulAbstractState& other) const
+bool FaithfulAbstractState::is_equal_impl(const FaithfulAbstractState& other) const
 {
     if (this != &other)
     {
-        // FaithfulAbstractStates are unique by index within a FaithfulAbstraction;
-        return (m_index == other.m_index);
+        return std::equal(m_states.begin(), m_states.end(), other.m_states.begin());
     }
     return true;
 }
 
-size_t FaithfulAbstractState::hash() const
+size_t FaithfulAbstractState::hash_impl() const
 {
-    // FaithfulAbstractStates are unique by index within a FaithfulAbstraction;
-    return loki::hash_combine(m_index);
+    size_t states_hash = m_states.size();
+    for (const auto& state : m_states)
+    {
+        loki::hash_combine(states_hash, state.hash());
+    }
+    return states_hash;
 }
-
-StateIndex FaithfulAbstractState::get_index() const { return m_index; }
 
 std::span<const State> FaithfulAbstractState::get_states() const { return m_states; }
 

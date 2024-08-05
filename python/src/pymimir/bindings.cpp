@@ -1871,12 +1871,12 @@ void init_pymimir(py::module_& m)
         .def("get_name_to_color", &ProblemColorFunction::get_name_to_color, py::return_value_policy::reference_internal)
         .def("get_color_to_name", &ProblemColorFunction::get_color_to_name, py::return_value_policy::reference_internal);
 
-    // ColoredDigraphVertex
-    py::class_<ColoredDigraphVertex>(m, "ColoredDigraphVertex")
-        .def("__eq__", &ColoredDigraphVertex::operator==)
-        .def("__hash__", &ColoredDigraphVertex::hash)
-        .def("get_index", &ColoredDigraphVertex::get_index)
-        .def("get_color", &ColoredDigraphVertex::get_color);
+    // ColoredVertex
+    py::class_<ColoredVertex>(m, "ColoredVertex")
+        .def("__eq__", &ColoredVertex::operator==)
+        .def("__hash__", &ColoredVertex::hash)
+        .def("get_index", &ColoredVertex::get_index)
+        .def("get_color", &ColoredVertex::get_color);
 
     // StaticVertexColoredDigraph
     py::class_<StaticVertexColoredDigraph>(m, "StaticVertexColoredDigraph")  //

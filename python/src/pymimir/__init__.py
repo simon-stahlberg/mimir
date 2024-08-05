@@ -146,7 +146,7 @@ from _pymimir import (
 # Graphs (classes)
 from _pymimir import (
     Certificate,
-    ColoredDigraphVertex,
+    ColoredVertex,
     ColorFunction,
     DigraphVertex,
     DigraphEdge,

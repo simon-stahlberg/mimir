@@ -19,7 +19,7 @@
 #define MIMIR_DATASETS_ABSTRACT_TRANSITION_HPP_
 
 #include "mimir/datasets/declarations.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
@@ -29,26 +29,22 @@
 namespace mimir
 {
 
-class AbstractTransition
+class AbstractTransition : public BaseEdge<AbstractTransition>
 {
-private:
-    TransitionIndex m_index;
-    StateIndex m_source_state;
-    StateIndex m_target_state;
-    std::span<const GroundAction> m_actions;
-
 public:
     AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<const GroundAction> actions);
 
-    bool operator==(const AbstractTransition& other) const;
-    size_t hash() const;
-
-    TransitionIndex get_index() const;
-    StateIndex get_source() const;
-    StateIndex get_target() const;
     TransitionCost get_cost() const;
     std::span<const GroundAction> get_actions() const;
     GroundAction get_representative_action() const;
+
+private:
+    std::span<const GroundAction> m_actions;
+
+    bool is_equal_impl(const AbstractTransition& other) const;
+    size_t hash_impl() const;
+
+    friend class BaseEdge<AbstractTransition>;
 };
 
 static_assert(IsEdge<AbstractTransition>);

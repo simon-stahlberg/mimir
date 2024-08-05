@@ -20,30 +20,22 @@
 namespace mimir
 {
 
-ConcreteTransition::ConcreteTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action) :
-    m_index(index),
-    m_source_state(source_state),
-    m_target_state(target_state),
+ConcreteTransition::ConcreteTransition(TransitionIndex index, StateIndex source, StateIndex target, GroundAction creating_action) :
+    BaseEdge<ConcreteTransition>(index, source, target),
     m_creating_action(creating_action)
 {
 }
 
-bool ConcreteTransition::operator==(const ConcreteTransition& other) const
+bool ConcreteTransition::is_equal_impl(const ConcreteTransition& other) const
 {
     if (this != &other)
     {
-        return (m_source_state == other.m_source_state) && (m_target_state == other.m_target_state) && (m_creating_action == other.m_creating_action);
+        return (m_creating_action == other.m_creating_action);
     }
     return true;
 }
 
-size_t ConcreteTransition::hash() const { return loki::hash_combine(m_source_state, m_target_state, m_creating_action.hash()); }
-
-TransitionIndex ConcreteTransition::get_index() const { return m_index; }
-
-StateIndex ConcreteTransition::get_source() const { return m_source_state; }
-
-StateIndex ConcreteTransition::get_target() const { return m_target_state; }
+size_t ConcreteTransition::hash_impl() const { return loki::hash_combine(m_creating_action.hash()); }
 
 TransitionCost ConcreteTransition::get_cost() const { return m_creating_action.get_cost(); }
 

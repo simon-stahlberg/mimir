@@ -25,37 +25,6 @@
 namespace mimir
 {
 
-/* DigraphVertex */
-
-DigraphVertex::DigraphVertex(VertexIndex index) : m_index(index) {}
-
-bool DigraphVertex::operator==(const DigraphVertex& other) const { return m_index == other.m_index; }
-
-size_t DigraphVertex::hash() const { return loki::hash_combine(m_index); }
-
-VertexIndex DigraphVertex::get_index() const { return m_index; }
-
-/* DigraphEdge */
-
-DigraphEdge::DigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target) : m_index(index), m_source(source), m_target(target) {}
-
-bool DigraphEdge::operator==(const DigraphEdge& other) const
-{
-    if (this != &other)
-    {
-        return (m_index == other.m_index) && (m_source == other.m_source) && (m_target == other.m_target);
-    }
-    return true;
-}
-
-size_t DigraphEdge::hash() const { return loki::hash_combine(m_index, m_source, m_target); }
-
-EdgeIndex DigraphEdge::get_index() const { return m_index; }
-
-VertexIndex DigraphEdge::get_source() const { return m_source; }
-
-VertexIndex DigraphEdge::get_target() const { return m_target; }
-
 /**
  * Pretty printing
  */

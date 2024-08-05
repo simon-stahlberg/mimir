@@ -22,25 +22,4 @@
 
 namespace mimir
 {
-
-/**
- * ColoredDigraphEdge
- */
-
-ColoredDigraphEdge::ColoredDigraphEdge(EdgeIndex index, VertexIndex source, VertexIndex target, Color color) :
-    m_index(index),
-    m_source(source),
-    m_target(target),
-    m_color(color)
-{
-}
-
-EdgeIndex ColoredDigraphEdge::get_index() const { return m_index; }
-
-VertexIndex ColoredDigraphEdge::get_source() const { return m_source; }
-
-VertexIndex ColoredDigraphEdge::get_target() const { return m_target; }
-
-Color ColoredDigraphEdge::get_color() const { return m_color; }
-
 }

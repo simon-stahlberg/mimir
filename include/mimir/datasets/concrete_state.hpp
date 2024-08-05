@@ -18,25 +18,25 @@
 #ifndef MIMIR_DATASETS_CONCRETE_STATE_HPP_
 #define MIMIR_DATASETS_CONCRETE_STATE_HPP_
 
-#include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
 {
-class ConcreteState
+class ConcreteState : public BaseVertex<ConcreteState>
 {
-private:
-    StateIndex m_index;
-    State m_state;
-
 public:
     ConcreteState(StateIndex index, State state);
 
-    bool operator==(const ConcreteState& other) const;
-    size_t hash() const;
-
-    StateIndex get_index() const;
     State get_state() const;
+
+private:
+    State m_state;
+
+    bool is_equal_impl(const ConcreteState& other) const;
+    size_t hash_impl() const;
+
+    friend class BaseVertex<ConcreteState>;
 };
 
 static_assert(IsVertex<ConcreteState>);

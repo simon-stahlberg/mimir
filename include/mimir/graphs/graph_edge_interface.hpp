@@ -19,7 +19,6 @@
 #define MIMIR_GRAPHS_GRAPH_EDGE_INTERFACE_HPP_
 
 #include "mimir/graphs/declarations.hpp"
-#include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <concepts>
 

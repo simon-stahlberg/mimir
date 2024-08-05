@@ -79,12 +79,29 @@ public:
      * Constructible functionality.
      */
 
+    /// @brief Add a vertex to the graph with vertex properties args.
+    /// @tparam ...Args the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
+    /// @param ...args the properties.
+    /// @return the index of the newly created vertex.
     template<typename... Args>
     VertexIndex add_vertex(Args&&... args);
 
+    /// @brief Add a directed edge from source to target to the graph with edge properties args.
+    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @param source the source vertex.
+    /// @param target the target vertex.
+    /// @param ...args the properties.
+    /// @return the index of the newly created edge.
     template<typename... Args>
     EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, Args&&... args);
 
+    /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
+    /// If the edge properties are heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
+    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @param source the source vertex.
+    /// @param target the target vertex.
+    /// @param ...args the properties.
+    /// @return the index pair of the two newly created edges.
     template<typename... Args>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args);
 

@@ -15,24 +15,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/concrete_state.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 
 namespace mimir
 {
 
-ConcreteState::ConcreteState(StateIndex index, State state) : BaseVertex<ConcreteState>(index), m_state(state) {}
+/* EmptyPropertiesVertex */
 
-bool ConcreteState::is_equal_impl(const ConcreteState& other) const
+EmptyPropertiesVertex::EmptyPropertiesVertex(VertexIndex index) : BaseVertex<EmptyPropertiesVertex>(index) {}
+
+bool EmptyPropertiesVertex::is_equal_impl(const EmptyPropertiesVertex& other) const { return true; }
+
+size_t EmptyPropertiesVertex::hash_impl() const { return loki::hash_combine(0); }
+
+/* ColoredVertex */
+
+ColoredVertex::ColoredVertex(VertexIndex index, Color color) : BaseVertex<ColoredVertex>(index), m_color(color) {}
+
+bool ColoredVertex::is_equal_impl(const ColoredVertex& other) const
 {
     if (this != &other)
     {
-        return (m_state == other.m_state);
+        return (m_color == other.m_color);
     }
     return true;
 }
 
-size_t ConcreteState::hash_impl() const { return loki::hash_combine(m_state.hash()); }
+size_t ColoredVertex::hash_impl() const { return loki::hash_combine(m_color); }
 
-State ConcreteState::get_state() const { return m_state; }
+Color ColoredVertex::get_color() const { return m_color; }
 
 }

@@ -19,7 +19,7 @@
 #define MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
 
 #include "mimir/datasets/declarations.hpp"
-#include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
@@ -33,25 +33,21 @@ namespace mimir
  * ConcreteTransition
  */
 
-class ConcreteTransition
+class ConcreteTransition : public BaseEdge<ConcreteTransition>
 {
-private:
-    TransitionIndex m_index;
-    StateIndex m_source_state;
-    StateIndex m_target_state;
-    GroundAction m_creating_action;
-
 public:
     ConcreteTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action);
 
-    bool operator==(const ConcreteTransition& other) const;
-    size_t hash() const;
-
-    TransitionIndex get_index() const;
-    StateIndex get_source() const;
-    StateIndex get_target() const;
     TransitionCost get_cost() const;
     GroundAction get_creating_action() const;
+
+private:
+    GroundAction m_creating_action;
+
+    bool is_equal_impl(const ConcreteTransition& other) const;
+    size_t hash_impl() const;
+
+    friend class BaseEdge<ConcreteTransition>;
 };
 
 static_assert(IsEdge<ConcreteTransition>);

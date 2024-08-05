@@ -24,27 +24,6 @@ namespace mimir
 {
 
 /**
- * ColoredDigraphVertex
- */
-
-ColoredDigraphVertex::ColoredDigraphVertex(VertexIndex index, Color color) : m_index(index), m_color(color) {}
-
-bool ColoredDigraphVertex::operator==(const ColoredDigraphVertex& other) const
-{
-    if (this != &other)
-    {
-        return (m_index == other.m_index) && (m_color == other.m_color);
-    }
-    return true;
-}
-
-size_t ColoredDigraphVertex::hash() const { return loki::hash_combine(m_index, m_color); }
-
-VertexIndex ColoredDigraphVertex::get_index() const { return m_index; }
-
-Color ColoredDigraphVertex::get_color() const { return m_color; }
-
-/**
  * Utils
  */
 

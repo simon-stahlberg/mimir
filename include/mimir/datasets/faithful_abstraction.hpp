@@ -25,6 +25,7 @@
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/certificate.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
@@ -64,23 +65,23 @@ struct FaithfulAbstractionsOptions
 };
 
 /// @brief FaithfulAbstractState encapsulates data of an abstract state in a faithful abstraction.
-class FaithfulAbstractState
+class FaithfulAbstractState : public BaseVertex<FaithfulAbstractState>
 {
-private:
-    StateIndex m_index;
-    std::span<const State> m_states;
-    std::shared_ptr<const Certificate> m_certificate;
-
 public:
     FaithfulAbstractState(StateIndex index, std::span<const State> states, std::shared_ptr<const Certificate> certificate);
 
-    bool operator==(const FaithfulAbstractState& other) const;
-    size_t hash() const;
-
-    StateIndex get_index() const;
     std::span<const State> get_states() const;
     State get_representative_state() const;
     const std::shared_ptr<const Certificate>& get_certificate() const;
+
+private:
+    std::span<const State> m_states;
+    std::shared_ptr<const Certificate> m_certificate;
+
+    bool is_equal_impl(const FaithfulAbstractState& other) const;
+    size_t hash_impl() const;
+
+    friend class BaseVertex<FaithfulAbstractState>;
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
