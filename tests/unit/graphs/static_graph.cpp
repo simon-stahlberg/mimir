@@ -141,11 +141,11 @@ TEST(MimirTests, GraphsStaticDigraphTest)
             EdgeSetType(graph.get_adjacent_edges<BackwardTraversal>(v0).begin(), graph.get_adjacent_edges<BackwardTraversal>(v0).end());
 
         EXPECT_EQ(v0_forward_adjacent_edge.size(), 2);
-        EXPECT_TRUE(v0_forward_adjacent_edge.contains(graph.get_edges().at(e0)));
-        EXPECT_TRUE(v0_forward_adjacent_edge.contains(graph.get_edges().at(e5)));
+        EXPECT_TRUE(v0_forward_adjacent_edge.contains(graph.get_edge(e0)));
+        EXPECT_TRUE(v0_forward_adjacent_edge.contains(graph.get_edge(e5)));
 
         EXPECT_EQ(v0_backward_adjacent_edge.size(), 1);
-        EXPECT_TRUE(v0_backward_adjacent_edge.contains(graph.get_edges().at(e4)));
+        EXPECT_TRUE(v0_backward_adjacent_edge.contains(graph.get_edge(e4)));
     }
 
     /**
@@ -241,11 +241,11 @@ TEST(MimirTests, GraphsStaticDigraphTest)
             EdgeSetType(forward_graph.get_adjacent_edges<BackwardTraversal>(v0).begin(), forward_graph.get_adjacent_edges<BackwardTraversal>(v0).end());
 
         EXPECT_EQ(v0_forward_adjacent_edge.size(), 2);
-        EXPECT_TRUE(v0_forward_adjacent_edge.contains(forward_graph.get_edges().at(e0)));
-        EXPECT_TRUE(v0_forward_adjacent_edge.contains(forward_graph.get_edges().at(e5)));
+        EXPECT_TRUE(v0_forward_adjacent_edge.contains(forward_graph.get_edge(e0)));
+        EXPECT_TRUE(v0_forward_adjacent_edge.contains(forward_graph.get_edge(e5)));
 
         EXPECT_EQ(v0_backward_adjacent_edge.size(), 1);
-        EXPECT_TRUE(v0_backward_adjacent_edge.contains(forward_graph.get_edges().at(e4)));
+        EXPECT_TRUE(v0_backward_adjacent_edge.contains(forward_graph.get_edge(e4)));
     }
 
     /**
@@ -341,11 +341,11 @@ TEST(MimirTests, GraphsStaticDigraphTest)
                                                      bidirectional_graph.get_adjacent_edges<BackwardTraversal>(v0).end());
 
         EXPECT_EQ(v0_forward_adjacent_edge.size(), 2);
-        EXPECT_TRUE(v0_forward_adjacent_edge.contains(bidirectional_graph.get_edges().at(e0)));
-        EXPECT_TRUE(v0_forward_adjacent_edge.contains(bidirectional_graph.get_edges().at(e5)));
+        EXPECT_TRUE(v0_forward_adjacent_edge.contains(bidirectional_graph.get_edge(e0)));
+        EXPECT_TRUE(v0_forward_adjacent_edge.contains(bidirectional_graph.get_edge(e5)));
 
         EXPECT_EQ(v0_backward_adjacent_edge.size(), 1);
-        EXPECT_TRUE(v0_backward_adjacent_edge.contains(bidirectional_graph.get_edges().at(e4)));
+        EXPECT_TRUE(v0_backward_adjacent_edge.contains(bidirectional_graph.get_edge(e4)));
     }
 }
 

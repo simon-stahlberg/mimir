@@ -40,12 +40,19 @@ namespace mimir
 
 /* DynamicGraph */
 
-/// @brief A `DynamicGraph` G consists of vertices V and edges E that allows for vertex and edge removal
-/// and as a result requires less efficient hash sets and hash map.
+/// @brief A `DynamicGraph` G implements a dynamic version of a directed graph with vertices V
+/// and edges E satisfying the graph concepts:
+///   1) VertexListGraph,
+///   2) EdgeListGraph,
+///   3) IncidenceGraph, and
+///   4) AdjacencyGraph.
+/// The meaning of dynamic is that the graph allows for the addition and removal of vertices
+/// and edges.
+/// Due to the removal functionality, the implementation uses less efficient hash sets and
+/// hash maps compared to a `StaticGraph`.
 ///
-/// A `DynamicGraph` provides functionality for adding or removing vertices and edges, and iterating over vertices and edges.
-/// Iterating over the outgoing or incoming edges, or the ingoing or outgoing adjacent vertices requires time O(|E|),
-/// which is usually much smaller due to storing and exploiting adjacency list in forward and backward direction.
+/// A `DynamicGraph` supports efficient traversal of adjacent vertices and edges in forward and
+/// backward directions.
 /// @tparam Vertex is vertex type.
 /// @tparam Edge is the edge type.
 template<IsVertex Vertex, IsEdge Edge>
@@ -70,6 +77,7 @@ public:
     template<IsTraversalDirection Direction>
     using AdjacentEdgeIndexConstIteratorType = DynamicAdjacentEdgeIndexConstIterator<EdgeType, Direction>;
 
+    /// @brief Construct an empty graph.
     DynamicGraph();
 
     /// @brief Reinitialize the graph to an empty graph.
@@ -80,30 +88,30 @@ public:
      */
 
     /// @brief Add a vertex to the graph with vertex properties args.
-    /// @tparam ...Args the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
-    /// @param ...args the properties.
+    /// @tparam ...VertexProperties the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
+    /// @param ...properties the vertex properties.
     /// @return the index of the newly created vertex.
-    template<typename... Args>
-    VertexIndex add_vertex(Args&&... args);
+    template<typename... VertexProperties>
+    VertexIndex add_vertex(VertexProperties&&... properties);
 
     /// @brief Add a directed edge from source to target to the graph with edge properties args.
-    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.
-    /// @param ...args the properties.
+    /// @param ...properties the edge properties.
     /// @return the index of the newly created edge.
-    template<typename... Args>
-    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, Args&&... args);
+    template<typename... EdgeProperties>
+    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
 
     /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
     /// If the edge properties are heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
-    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.
-    /// @param ...args the properties.
+    /// @param ...properties the edge properties.
     /// @return the index pair of the two newly created edges.
-    template<typename... Args>
-    std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args);
+    template<typename... EdgeProperties>
+    std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
 
     /**
      * Destructible functionality.
@@ -138,7 +146,9 @@ public:
      */
 
     const VertexMap& get_vertices() const;
+    const Vertex& get_vertex(VertexIndex vertex) const;
     const EdgeMap& get_edges() const;
+    const Edge& get_edge(EdgeIndex edge) const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
 
@@ -206,14 +216,14 @@ void DynamicGraph<Vertex, Edge>::clear()
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-template<typename... Args>
-VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(Args&&... args)
+template<typename... VertexProperties>
+VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(VertexProperties&&... properties)
 {
     /* Get the vertex index. */
     auto index = m_free_vertices.empty() ? m_next_vertex_index++ : m_free_vertices.back();
 
     /* Create the vertex. */
-    m_vertices.emplace(index, Vertex(index, std::forward<Args>(args)...));
+    m_vertices.emplace(index, Vertex(index, std::forward<VertexProperties>(properties)...));
 
     /* Initialize the data structures. */
     if (m_free_vertices.empty())
@@ -241,8 +251,8 @@ VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(Args&&... args)
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-template<typename... Args>
-EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, VertexIndex target, Args&&... args)
+template<typename... EdgeProperties>
+EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
 {
     vertex_index_check(source, "DynamicGraph<Vertex, Edge>::add_directed_edge(...): Source vertex does not exist.");
     vertex_index_check(target, "DynamicGraph<Vertex, Edge>::add_directed_edge(...): Target vertex does not exist.");
@@ -251,7 +261,7 @@ EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Vert
     const auto index = m_free_edges.empty() ? m_next_edge_index++ : m_free_edges.back();
 
     /* Create the edge */
-    m_edges.emplace(index, Edge(index, source, target, std::forward<Args>(args)...));
+    m_edges.emplace(index, Edge(index, source, target, std::forward<EdgeProperties>(properties)...));
 
     /* Initialize the data structures. */
     m_adjacent_edges.get<ForwardTraversal>().at(source).insert(index);
@@ -269,12 +279,12 @@ EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Vert
 }
 
 template<IsVertex Vertex, IsEdge Edge>
-template<typename... Args>
-std::pair<EdgeIndex, EdgeIndex> DynamicGraph<Vertex, Edge>::add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args)
+template<typename... EdgeProperties>
+std::pair<EdgeIndex, EdgeIndex> DynamicGraph<Vertex, Edge>::add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
 {
-    // Need to copy args to keep them in valid state.
-    const auto forward_edge_index = add_directed_edge(source, target, args...);
-    const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
+    // Need to copy properties to keep them in valid state.
+    const auto forward_edge_index = add_directed_edge(source, target, properties...);
+    const auto backward_edge_index = add_directed_edge(target, source, std::forward<EdgeProperties>(properties)...);
 
     return std::make_pair(forward_edge_index, backward_edge_index);
 }
@@ -409,9 +419,25 @@ const typename DynamicGraph<Vertex, Edge>::VertexMap& DynamicGraph<Vertex, Edge>
 }
 
 template<IsVertex Vertex, IsEdge Edge>
+const Vertex& DynamicGraph<Vertex, Edge>::get_vertex(VertexIndex vertex) const
+{
+    vertex_index_check(vertex, "DynamicGraph<Vertex, Edge>::get_vertex(...): Vertex does not exist.");
+
+    return m_vertices.at(vertex);
+}
+
+template<IsVertex Vertex, IsEdge Edge>
 const typename DynamicGraph<Vertex, Edge>::EdgeMap& DynamicGraph<Vertex, Edge>::get_edges() const
 {
     return m_edges;
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+const Edge& DynamicGraph<Vertex, Edge>::get_edge(EdgeIndex edge) const
+{
+    edge_index_check(edge, "DynamicGraph<Vertex, Edge>::get_edge(...): Edge does not exist.");
+
+    return m_edges.at(edge);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
@@ -478,7 +504,6 @@ template<IsTraversalDirection Direction>
 Degree DynamicGraph<Vertex, Edge>::get_degree(VertexIndex vertex) const
 {
     vertex_index_check(vertex, "DynamicGraph<Vertex, Edge>::get_degree(...): Vertex does not exist.");
-    assert(m_degrees.get<Direction>().contains(vertex));
 
     return m_degrees.get<Direction>().at(vertex);
 }

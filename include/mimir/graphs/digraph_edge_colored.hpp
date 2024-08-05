@@ -18,7 +18,6 @@
 #ifndef MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
 #define MIMIR_GRAPHS_DIGRAPH_EDGE_COLORED_HPP_
 
-#include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/dynamic_graph.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_edges.hpp"

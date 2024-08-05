@@ -155,11 +155,11 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
         VertexSetType(graph.get_adjacent_vertices<BackwardTraversal>(v1).begin(), graph.get_adjacent_vertices<BackwardTraversal>(v1).end());
 
     EXPECT_EQ(v1_foward_adjacent_vertices.size(), 1);
-    EXPECT_TRUE(v1_foward_adjacent_vertices.contains(graph.get_vertices().at(v5)));
+    EXPECT_TRUE(v1_foward_adjacent_vertices.contains(graph.get_vertex(v5)));
 
     EXPECT_EQ(v1_backward_adjacent_vertices.size(), 2);
-    EXPECT_TRUE(v1_backward_adjacent_vertices.contains(graph.get_vertices().at(v2)));
-    EXPECT_TRUE(v1_backward_adjacent_vertices.contains(graph.get_vertices().at(v5)));
+    EXPECT_TRUE(v1_backward_adjacent_vertices.contains(graph.get_vertex(v2)));
+    EXPECT_TRUE(v1_backward_adjacent_vertices.contains(graph.get_vertex(v5)));
 
     // AdjacentEdgeIndexIterator
     auto v1_forward_adjacent_edge_indices =
@@ -181,11 +181,11 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
         EdgeSetType(graph.get_adjacent_edges<BackwardTraversal>(v1).begin(), graph.get_adjacent_edges<BackwardTraversal>(v1).end());
 
     EXPECT_EQ(v1_forward_adjacent_edge.size(), 1);
-    EXPECT_TRUE(v1_forward_adjacent_edge.contains(graph.get_edges().at(e6)));
+    EXPECT_TRUE(v1_forward_adjacent_edge.contains(graph.get_edge(e6)));
 
     EXPECT_EQ(v1_backward_adjacent_edge.size(), 2);
-    EXPECT_TRUE(v1_backward_adjacent_edge.contains(graph.get_edges().at(e2)));
-    EXPECT_TRUE(v1_backward_adjacent_edge.contains(graph.get_edges().at(e7)));
+    EXPECT_TRUE(v1_backward_adjacent_edge.contains(graph.get_edge(e2)));
+    EXPECT_TRUE(v1_backward_adjacent_edge.contains(graph.get_edge(e7)));
 }
 
 }

@@ -19,7 +19,6 @@
 #define MIMIR_GRAPHS_STATIC_GRAPH_BOOST_ADAPTER_HPP_
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/static_graph.hpp"
