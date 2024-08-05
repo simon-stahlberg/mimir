@@ -52,6 +52,21 @@ struct InverseTraversalDirection<BackwardTraversal>
     using type = ForwardTraversal;
 };
 
+template<typename T, IsTraversalDirection Direction>
+class TraversalDirectionTaggedType
+{
+public:
+    using DirectionType = Direction;
+
+    explicit TraversalDirectionTaggedType(T& data, Direction) : m_data(data) {}
+
+    const T& get() const { return m_data.get(); }
+    T& get() { return m_data.get(); }
+
+private:
+    std::reference_wrapper<T> m_data;
+};
+
 }
 
 #endif

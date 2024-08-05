@@ -35,28 +35,6 @@
 #include <limits>
 #include <ranges>
 
-namespace mimir
-{
-
-template<IsStaticGraph Graph, IsTraversalDirection Direction>
-class GraphWithDirection
-{
-public:
-    using VertexType = typename Graph::VertexType;
-    using EdgeType = typename Graph::EdgeType;
-    using VertexList = std::vector<VertexType>;
-    using EdgeList = std::vector<EdgeType>;
-
-private:
-    std::reference_wrapper<const Graph> m_graph;
-
-public:
-    explicit GraphWithDirection(const Graph& graph, Direction) : m_graph(graph) {}
-
-    const Graph& get_graph() const { return m_graph.get(); }
-};
-}
-
 namespace boost
 {
 
@@ -72,7 +50,7 @@ struct vertex_list_and_incidence_graph_and_edge_list_graph_and_adjacency_graph_a
 
 /// Traits for a graph that are needed for the boost graph library.
 template<mimir::IsStaticGraph Graph, mimir::IsTraversalDirection Direction>
-struct graph_traits<mimir::GraphWithDirection<Graph, Direction>>
+struct graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>
 {
     using VertexType = typename Graph::VertexType;
     using EdgeType = typename Graph::EdgeType;
@@ -115,13 +93,13 @@ namespace mimir
 /// @param g the graph.
 /// @return an iterator-range providing access to all the vertices in the graph.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_iterator,
-          typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_iterator>
-vertices(const mimir::GraphWithDirection<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_iterator,
+          typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_iterator>
+vertices(const mimir::TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    std::ranges::iota_view<typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor,
-                           typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor>
-        range(0, g.get_graph().get_num_vertices());
+    std::ranges::iota_view<typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor,
+                           typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>
+        range(0, g.get().get_num_vertices());
     // Make sure we can return dangling iterators.
     static_assert(std::ranges::borrowed_range<decltype(range)>);
     return std::make_pair(range.begin(), range.end());
@@ -131,9 +109,10 @@ vertices(const mimir::GraphWithDirection<Graph, Direction>& g)
 /// @param g the graph.
 /// @return the number of vertices in the graph.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertices_size_type num_vertices(const mimir::GraphWithDirection<Graph, Direction>& g)
+boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type
+num_vertices(const mimir::TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get_graph().get_num_vertices();
+    return g.get().get_num_vertices();
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,10 +124,11 @@ boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertices_size_
 /// @param g the graph.
 /// @return the source vertex of the edge.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor
-source(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor& e, const GraphWithDirection<Graph, Direction>& g)
+typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor
+source(const typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_descriptor& e,
+       const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get_graph().template get_source<Direction>(e);
+    return g.get().template get_source<Direction>(e);
 }
 
 /// @brief Get the target vertex of an edge.
@@ -156,10 +136,11 @@ source(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>:
 /// @param g the graph.
 /// @return the target vertex of the edge.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor
-target(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor& e, const GraphWithDirection<Graph, Direction>& g)
+typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor
+target(const typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_descriptor& e,
+       const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get_graph().template get_target<Direction>(e);
+    return g.get().template get_target<Direction>(e);
 }
 
 /// @brief Get the out edges of a vertex in the graph.
@@ -167,11 +148,12 @@ target(const typename boost::graph_traits<GraphWithDirection<Graph, Direction>>:
 /// @param g the graph.
 /// @return an iterator-range providing access to all the ou edges in the graph.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::out_edge_iterator,
-          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::out_edge_iterator>
-out_edges(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::out_edge_iterator,
+          typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::out_edge_iterator>
+out_edges(typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+          const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return { g.get_graph().template get_adjacent_edge_indices<Direction>(u).begin(), g.get_graph().template get_adjacent_edge_indices<Direction>(u).end() };
+    return { g.get().template get_adjacent_edge_indices<Direction>(u).begin(), g.get().template get_adjacent_edge_indices<Direction>(u).end() };
 }
 
 /// @brief Get the out degree of a vertex in the graph.
@@ -179,10 +161,11 @@ out_edges(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::ve
 /// @param g the graph.
 /// @return the number of out edges of the vertex.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-boost::graph_traits<GraphWithDirection<Graph, Direction>>::degree_size_type
-out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
+boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::degree_size_type
+out_degree(typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+           const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get_graph().template get_degree<Direction>(u);
+    return g.get().template get_degree<Direction>(u);
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,17 +173,17 @@ out_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Directi
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_iterator,
-          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_iterator>
-edges(const GraphWithDirection<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_iterator,
+          typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_iterator>
+edges(const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return { g.get_graph().get_edge_indices().begin(), g.get_graph().get_edge_indices().end() };
+    return { g.get().get_edge_indices().begin(), g.get().get_edge_indices().end() };
 }
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-boost::graph_traits<GraphWithDirection<Graph, Direction>>::edges_size_type num_edges(const GraphWithDirection<Graph, Direction>& g)
+boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edges_size_type num_edges(const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get_graph().get_num_edges();
+    return g.get().get_num_edges();
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -208,12 +191,12 @@ boost::graph_traits<GraphWithDirection<Graph, Direction>>::edges_size_type num_e
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::adjacency_iterator,
-          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::adjacency_iterator>
-adjacent_vertices(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u,
-                  const GraphWithDirection<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::adjacency_iterator,
+          typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::adjacency_iterator>
+adjacent_vertices(typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+                  const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return { g.get_graph().template get_adjacent_vertex_indices<Direction>(u).begin(), g.get_graph().template get_adjacent_vertex_indices<Direction>(u).end() };
+    return { g.get().template get_adjacent_vertex_indices<Direction>(u).begin(), g.get().template get_adjacent_vertex_indices<Direction>(u).end() };
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -225,14 +208,14 @@ adjacent_vertices(typename boost::graph_traits<mimir::GraphWithDirection<Graph, 
 /// @param g the graph.
 /// @return an iterator-range providing access to all the in edges in the graph.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::in_edge_iterator,
-          typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::in_edge_iterator>
-in_edges(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::in_edge_iterator,
+          typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::in_edge_iterator>
+in_edges(typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+         const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    using InverseDirection = boost::graph_traits<GraphWithDirection<Graph, Direction>>::inverse_direction;
+    using InverseDirection = boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::inverse_direction;
 
-    return { g.get_graph().template get_adjacent_edge_indices<InverseDirection>(u).begin(),
-             g.get_graph().template get_adjacent_edge_indices<InverseDirection>(u).end() };
+    return { g.get().template get_adjacent_edge_indices<InverseDirection>(u).begin(), g.get().template get_adjacent_edge_indices<InverseDirection>(u).end() };
 }
 
 /// @brief Get the in degree of a vertex in the graph.
@@ -240,12 +223,13 @@ in_edges(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::ver
 /// @param g the graph.
 /// @return the number of in edges of the vertex.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-boost::graph_traits<GraphWithDirection<Graph, Direction>>::degree_size_type
-in_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
+boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::degree_size_type
+in_degree(typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+          const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    using InverseDirection = boost::graph_traits<GraphWithDirection<Graph, Direction>>::inverse_direction;
+    using InverseDirection = boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::inverse_direction;
 
-    return g.get_graph().template get_degree<InverseDirection>(u);
+    return g.get().template get_degree<InverseDirection>(u);
 }
 
 /// @brief Get the toal degree (in + out) of a vertex in the graph.
@@ -253,25 +237,26 @@ in_degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Directio
 /// @param g the graph.
 /// @return the number of in and out edges of the vertex.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-boost::graph_traits<GraphWithDirection<Graph, Direction>>::degree_size_type
-degree(typename boost::graph_traits<mimir::GraphWithDirection<Graph, Direction>>::vertex_descriptor const& u, const GraphWithDirection<Graph, Direction>& g)
+boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::degree_size_type
+degree(typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor const& u,
+       const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    return g.get_graph().template get_degree<ForwardTraversal>(u) + g.get_graph().template get_degree<BackwardTraversal>(u);
+    return g.get().template get_degree<ForwardTraversal>(u) + g.get().template get_degree<BackwardTraversal>(u);
 }
 
 /* Assert that the concepts are satisfied */
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<GraphWithDirection<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<GraphWithDirection<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::GraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::GraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
+BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // BasicMatrix
@@ -388,15 +373,15 @@ namespace mimir
 /// @param g the graph.
 /// @return a pair of the number of strong components and a map from state to component.
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
-          std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type>>
-strong_components(const GraphWithDirection<Graph, Direction>& g)
+std::pair<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type,
+          std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type>>
+strong_components(const TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
-    using vertices_size_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type;
+    using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
+    using vertices_size_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type;
 
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
-    auto c = std::vector<vertices_size_type>(g.get_graph().get_num_vertices());
+    auto c = std::vector<vertices_size_type>(g.get().get_num_vertices());
     auto component_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertices_size_type>(c);
 
     const auto num_components = boost::strong_components(g, component_map, boost::vertex_index_map(vertex_index_map));
@@ -404,13 +389,13 @@ strong_components(const GraphWithDirection<Graph, Direction>& g)
 }
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-IndexGroupedVector<std::pair<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type,
-                             typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>>
-get_partitioning(typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type num_components,
-                 std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type> component_map)
+IndexGroupedVector<std::pair<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type,
+                             typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>>
+get_partitioning(typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type num_components,
+                 std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type> component_map)
 {
-    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
-    using vertices_size_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertices_size_type;
+    using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
+    using vertices_size_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertices_size_type;
     using state_component_pair_t = std::pair<vertices_size_type, vertex_descriptor_type>;
 
     auto partitioning = std::vector<state_component_pair_t>();
@@ -433,15 +418,15 @@ namespace mimir
 {
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, DistanceList>
-dijkstra_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
+std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DistanceList>
+dijkstra_shortest_paths(const TraversalDirectionTaggedType<Graph, Direction>& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
 {
-    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
-    using edge_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor;
+    using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
+    using edge_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    auto p = std::vector<vertex_descriptor_type>(g.get_graph().get_num_vertices());
+    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
     auto predecessor_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
-    auto d = DistanceList(g.get_graph().get_num_vertices());
+    auto d = DistanceList(g.get().get_num_vertices());
     auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, Distance>(d);
     auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
@@ -490,26 +475,26 @@ struct CustomBFSVisitor : public boost::bfs_visitor<>
 };
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor>, DistanceList>
-breadth_first_search(const GraphWithDirection<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
+std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DistanceList>
+breadth_first_search(const TraversalDirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
-    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
+    using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using ColorMap = boost::iterator_property_map<std::vector<boost::default_color_type>::iterator, boost::identity_property_map>;
 
     auto buffer = boost::queue<vertex_descriptor_type>();
-    auto p = std::vector<vertex_descriptor_type>(g.get_graph().get_num_vertices());
-    for (vertex_descriptor_type v = 0; v < g.get_graph().get_num_vertices(); ++v)
+    auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
+    for (vertex_descriptor_type v = 0; v < g.get().get_num_vertices(); ++v)
     {
         p.at(v) = v;
     }
     auto inf = DISTANCE_INFINITY;
-    auto d = DistanceList(g.get_graph().get_num_vertices(), inf);
+    auto d = DistanceList(g.get().get_num_vertices(), inf);
     for (auto it = s_begin; it != s_end; ++it)
     {
         d.at(*it) = 0;
     }
     auto visitor = CustomBFSVisitor(p, d);
-    auto color_vector = std::vector<boost::default_color_type>(g.get_graph().get_num_vertices(), boost::white_color);
+    auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);
     auto color_map = ColorMap(color_vector.begin(), boost::identity_property_map());
     boost::breadth_first_search(g, s_begin, s_end, buffer, visitor, color_map);
 
@@ -521,13 +506,13 @@ breadth_first_search(const GraphWithDirection<Graph, Direction>& g, SourceInputI
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-VectorBasicMatrix<typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor, Distance>
-floyd_warshall_all_pairs_shortest_paths(const GraphWithDirection<Graph, Direction>& g, const std::vector<EdgeCost>& w)
+VectorBasicMatrix<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor, Distance>
+floyd_warshall_all_pairs_shortest_paths(const TraversalDirectionTaggedType<Graph, Direction>& g, const std::vector<EdgeCost>& w)
 {
-    using vertex_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::vertex_descriptor;
-    using edge_descriptor_type = typename boost::graph_traits<GraphWithDirection<Graph, Direction>>::edge_descriptor;
+    using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
+    using edge_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    auto d = VectorBasicMatrix<vertex_descriptor_type, Distance>(g.get_graph().get_num_vertices());
+    auto d = VectorBasicMatrix<vertex_descriptor_type, Distance>(g.get().get_num_vertices());
     auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
 
     boost::floyd_warshall_all_pairs_shortest_paths(g, d, boost::weight_map(weight_map));

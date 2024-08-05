@@ -13,7 +13,7 @@ TEST(MimirTests, GraphsVertexListGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
-    auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+    auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
     EXPECT_EQ(num_vertices(graph), 28);
 
@@ -30,7 +30,7 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
-    auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+    auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
     size_t transition_count = 0;
     for (auto [state_it, state_last] = vertices(graph); state_it != state_last; ++state_it)
@@ -61,7 +61,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
         const auto [num_components, component_map] = strong_components(graph);
         EXPECT_EQ(num_components, 1);
@@ -74,7 +74,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
         const auto [num_components, component_map] = strong_components(graph);
 
@@ -100,7 +100,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
         auto states = StateIndexList { state_space.get_initial_state() };
@@ -118,7 +118,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), BackwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
         const auto [predecessor_map, distance_map] =
@@ -136,7 +136,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
         auto states = StateIndexList { state_space.get_initial_state() };
         const auto [predecessor_map, distance_map] = breadth_first_search(graph, states.begin(), states.end());
@@ -153,7 +153,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), BackwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
         const auto [predecessor_map, distance_map] = breadth_first_search(graph, state_space.get_goal_states().begin(), state_space.get_goal_states().end());
 
@@ -169,7 +169,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), ForwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
@@ -182,9 +182,9 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
         auto max_pairwise_distance = Distance();
-        for (auto v1 = StateIndex(); v1 < graph.get_graph().get_num_vertices(); ++v1)
+        for (auto v1 = StateIndex(); v1 < graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = StateIndex(); v2 < graph.get_graph().get_num_vertices(); ++v2)
+            for (auto v2 = StateIndex(); v2 < graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }
@@ -196,7 +196,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
-        auto graph = GraphWithDirection(state_space.get_graph(), BackwardTraversal());
+        auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
@@ -209,9 +209,9 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
         auto max_pairwise_distance = Distance();
-        for (auto v1 = StateIndex(); v1 < graph.get_graph().get_num_vertices(); ++v1)
+        for (auto v1 = StateIndex(); v1 < graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = StateIndex(); v2 < graph.get_graph().get_num_vertices(); ++v2)
+            for (auto v2 = StateIndex(); v2 < graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }

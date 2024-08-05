@@ -220,7 +220,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         return std::nullopt;
     }
 
-    auto graph = GraphWithDirection(state_space.value().get_graph(), ForwardTraversal());
+    auto graph = TraversalDirectionTaggedType(state_space.value().get_graph(), ForwardTraversal());
     const auto [num_components, component_map] = strong_components(graph);
     const auto scc_digraph = create_scc_digraph(num_components, component_map, state_space.value());
     const auto partitioning =

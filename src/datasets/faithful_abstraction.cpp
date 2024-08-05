@@ -388,8 +388,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                        bidirectional_graph.get_edges().end(),
                        [](const auto& transition) { return transition.get_cost() == 1; }))
     {
-        auto [predecessors_, goal_distances_] =
-            breadth_first_search(GraphWithDirection(bidirectional_graph, BackwardTraversal()), abstract_goal_states.begin(), abstract_goal_states.end());
+        auto [predecessors_, goal_distances_] = breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
+                                                                     abstract_goal_states.begin(),
+                                                                     abstract_goal_states.end());
         abstract_goal_distances = std::move(goal_distances_);
     }
     else
@@ -400,7 +401,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         {
             transition_costs.push_back(transition.get_cost());
         }
-        auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(GraphWithDirection(bidirectional_graph, BackwardTraversal()),
+        auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
                                                                         transition_costs,
                                                                         abstract_goal_states.begin(),
                                                                         abstract_goal_states.end());
@@ -503,7 +504,7 @@ DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const S
     if (m_use_unit_cost_one
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return transition.get_cost() == 1; }))
     {
-        auto [predecessors_, distances_] = breadth_first_search(GraphWithDirection(m_graph, Direction()), states.begin(), states.end());
+        auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
         distances = std::move(distances_);
     }
     else
@@ -514,7 +515,8 @@ DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const S
         {
             transition_costs.push_back(transition.get_cost());
         }
-        auto [predecessors_, distances_] = dijkstra_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs, states.begin(), states.end());
+        auto [predecessors_, distances_] =
+            dijkstra_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs, states.begin(), states.end());
         distances = std::move(distances_);
     }
 
@@ -541,7 +543,7 @@ std::vector<DistanceList> FaithfulAbstraction::compute_pairwise_shortest_state_d
         }
     }
 
-    return floyd_warshall_all_pairs_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs).get_matrix();
+    return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
 
 template std::vector<DistanceList> FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;

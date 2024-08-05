@@ -152,7 +152,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
                        [](const auto& transition) { return transition.get_cost() == 1; }))
     {
         auto [predecessors_, goal_distances_] =
-            breadth_first_search(GraphWithDirection(bidirectional_graph, BackwardTraversal()), goal_states.begin(), goal_states.end());
+            breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()), goal_states.begin(), goal_states.end());
         goal_distances = std::move(goal_distances_);
     }
     else
@@ -163,8 +163,10 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         {
             transition_costs.push_back(transition.get_cost());
         }
-        auto [predecessors_, goal_distances_] =
-            dijkstra_shortest_paths(GraphWithDirection(bidirectional_graph, BackwardTraversal()), transition_costs, goal_states.begin(), goal_states.end());
+        auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
+                                                                        transition_costs,
+                                                                        goal_states.begin(),
+                                                                        goal_states.end());
         goal_distances = std::move(goal_distances_);
     }
 
@@ -246,7 +248,7 @@ DistanceList StateSpace::compute_shortest_distances_from_states(const StateIndex
     if (m_use_unit_cost_one
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return transition.get_cost() == 1; }))
     {
-        auto [predecessors_, distances_] = breadth_first_search(GraphWithDirection(m_graph, Direction()), states.begin(), states.end());
+        auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
         distances = std::move(distances_);
     }
     else
@@ -257,7 +259,8 @@ DistanceList StateSpace::compute_shortest_distances_from_states(const StateIndex
         {
             transition_costs.push_back(transition.get_cost());
         }
-        auto [predecessors_, distances_] = dijkstra_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs, states.begin(), states.end());
+        auto [predecessors_, distances_] =
+            dijkstra_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs, states.begin(), states.end());
         distances = std::move(distances_);
     }
 
@@ -284,7 +287,7 @@ std::vector<DistanceList> StateSpace::compute_pairwise_shortest_state_distances(
         }
     }
 
-    return floyd_warshall_all_pairs_shortest_paths(GraphWithDirection(m_graph, Direction()), transition_costs).get_matrix();
+    return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
 
 template std::vector<DistanceList> StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
