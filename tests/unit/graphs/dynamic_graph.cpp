@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "mimir/graphs/digraph.hpp"
 
 #include <gtest/gtest.h>
@@ -35,6 +52,7 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_EQ(e3, 3);
     EXPECT_EQ(e4, 4);
     EXPECT_EQ(e5, 5);
+    // Non exhaustive test because it should work for others as well.
     EXPECT_EQ(graph.get_source<ForwardTraversal>(e0), v0);
     EXPECT_EQ(graph.get_source<BackwardTraversal>(e0), v1);
     EXPECT_EQ(graph.get_target<ForwardTraversal>(e0), v1);
@@ -64,7 +82,8 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_EQ(v4, v0);
     EXPECT_EQ(v5, 4);
 
-    /* Add five more edges resulting in a reuse from the free edge list, and an index obtained from next_edge_index. */
+    /* Add five more edges resulting in a reuse from the free edge list, and an index obtained from next_edge_index.
+     */
     auto [e6, e7] = graph.add_undirected_edge(v1, v5);
     auto [e8, e9] = graph.add_undirected_edge(v2, v5);
     auto e10 = graph.add_directed_edge(v3, v5);
@@ -92,7 +111,9 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_EQ(graph.get_degree<BackwardTraversal>(v4), 0);
     EXPECT_EQ(graph.get_degree<BackwardTraversal>(v5), 3);
 
-    /* Test that iterators yield correct values. */
+    /* Test that iterators yield correct values.
+       Non exhaustive test because it should work for other vertices as well. */
+
     // VertexIndexIterator
     auto vertex_indices = VertexIndexSet(graph.get_vertex_indices().begin(), graph.get_vertex_indices().end());
     EXPECT_EQ(vertex_indices.size(), 5);

@@ -31,6 +31,7 @@ add_gtest(graphs_static_graph_boost_adapter_test           "graphs/static_graph_
 add_gtest(graphs_dynamic_graph_test                        "graphs/dynamic_graph.cpp")
 add_gtest(graphs_object_graph_test                         "graphs/object_graph.cpp")
 add_gtest(graphs_object_graph_pruning_strategy_test        "graphs/object_graph_pruning_strategy.cpp")
+add_gtest(graphs_static_graph_test                        "graphs/static_graph.cpp")
 add_gtest(graphs_tuple_graph_test                          "graphs/tuple_graph.cpp")
 
 add_gtest(languages_dl_constructors_test                   "languages/description_logics/constructors.cpp")

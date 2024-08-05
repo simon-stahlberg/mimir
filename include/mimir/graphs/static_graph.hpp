@@ -147,6 +147,13 @@ private:
 
     // Slice over all edges for using the iterators.
     EdgeIndexList m_slice;
+
+    /**
+     * Error handling
+     */
+
+    void vertex_index_check(VertexIndex vertex, const std::string& error_message) const;
+    void edge_index_check(EdgeIndex edge, const std::string& error_message) const;
 };
 
 /* StaticForwardGraph */
@@ -310,10 +317,8 @@ template<IsVertex Vertex, IsEdge Edge>
 template<typename... Args>
 EdgeIndex StaticGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, VertexIndex target, Args&&... args)
 {
-    if (source >= get_num_vertices() || target >= get_num_vertices() || source < 0 || target < 0)
-    {
-        throw std::out_of_range("StaticGraph<Vertex, Edge>::add_directed_edge(...): Source or destination vertex out of range");
-    }
+    vertex_index_check(source, "StaticGraph<Vertex, Edge>::add_directed_edge(...): Source vertex out of range");
+    vertex_index_check(target, "StaticGraph<Vertex, Edge>::add_directed_edge(...): Source vertex out of range");
 
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
@@ -328,11 +333,6 @@ template<IsVertex Vertex, IsEdge Edge>
 template<typename... Args>
 std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args)
 {
-    if (source >= get_num_vertices() || target >= get_num_vertices() || source < 0 || target < 0)
-    {
-        throw std::out_of_range("StaticGraph<Vertex, Edge>::add_undirected_edge(...): Source or destination vertex out of range");
-    }
-
     // Need to copy args to keep them in valid state.
     const auto forward_edge_index = add_directed_edge(source, target, args...);
     const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
@@ -369,6 +369,8 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentVertexConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex) const
 {
+    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_vertices(...): Vertex out of range");
+
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, true),
                                  typename StaticGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, false));
 }
@@ -378,6 +380,8 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
+    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(...): Vertex out of range");
+
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
                                  typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
@@ -387,6 +391,8 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
 {
+    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_edges(...): Vertex out of range");
+
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
                                  typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
@@ -396,6 +402,8 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
+    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(...): Vertex out of range");
+
     return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
                                  typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
@@ -428,13 +436,15 @@ template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
 VertexIndex StaticGraph<Vertex, Edge>::get_source(EdgeIndex edge) const
 {
+    edge_index_check(edge, "StaticGraph<Vertex, Edge>::get_source(...): Edge out of range");
+
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return m_edges.at(edge).get_source();
+        return m_edges[edge].get_source();
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return m_edges.at(edge).get_target();
+        return m_edges[edge].get_target();
     }
     else
     {
@@ -446,13 +456,15 @@ template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
 VertexIndex StaticGraph<Vertex, Edge>::get_target(EdgeIndex edge) const
 {
+    edge_index_check(edge, "StaticGraph<Vertex, Edge>::get_target(...): Edge out of range");
+
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
-        return m_edges.at(edge).get_target();
+        return m_edges[edge].get_target();
     }
     else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
     {
-        return m_edges.at(edge).get_source();
+        return m_edges[edge].get_source();
     }
     else
     {
@@ -471,7 +483,27 @@ template<IsVertex Vertex, IsEdge Edge>
 template<IsTraversalDirection Direction>
 Degree StaticGraph<Vertex, Edge>::get_degree(VertexIndex vertex) const
 {
-    return m_degrees.get<Direction>().at(vertex);
+    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_degree(...): Vertex out of range");
+
+    return m_degrees.get<Direction>()[vertex];
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+void StaticGraph<Vertex, Edge>::vertex_index_check(VertexIndex vertex, const std::string& error_message) const
+{
+    if (vertex >= get_num_vertices() || vertex >= get_num_vertices() || vertex < 0 || vertex < 0)
+    {
+        throw std::out_of_range(error_message);
+    }
+}
+
+template<IsVertex Vertex, IsEdge Edge>
+void StaticGraph<Vertex, Edge>::edge_index_check(EdgeIndex edge, const std::string& error_message) const
+{
+    if (edge >= get_num_edges() || edge >= get_num_edges() || edge < 0 || edge < 0)
+    {
+        throw std::out_of_range(error_message);
+    }
 }
 
 /* StaticForwardGraph */
