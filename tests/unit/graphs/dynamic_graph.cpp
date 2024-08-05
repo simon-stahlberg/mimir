@@ -104,6 +104,8 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
         EdgeIndexSet(graph.get_adjacent_edge_indices<ForwardTraversal>(v1).begin(), graph.get_adjacent_edge_indices<ForwardTraversal>(v1).end());
     auto v1_backward_adjacent_edge_indices =
         EdgeIndexSet(graph.get_adjacent_edge_indices<BackwardTraversal>(v1).begin(), graph.get_adjacent_edge_indices<BackwardTraversal>(v1).end());
+
+    // TODO: finish test
 }
 
 }
