@@ -78,7 +78,7 @@ private:
     std::span<const State> m_states;
     std::shared_ptr<const Certificate> m_certificate;
 
-    bool is_equal_impl(const FaithfulAbstractState& other) const;
+    bool is_equal_impl(const BaseVertex<FaithfulAbstractState>& other) const;
     size_t hash_impl() const;
 
     friend class BaseVertex<FaithfulAbstractState>;

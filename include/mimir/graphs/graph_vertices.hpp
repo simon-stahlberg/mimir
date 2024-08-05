@@ -54,7 +54,7 @@ private:
 class EmptyPropertiesVertex : public BaseVertex<EmptyPropertiesVertex>
 {
 private:
-    bool is_equal_impl(const EmptyPropertiesVertex& other) const;
+    bool is_equal_impl(const BaseVertex<EmptyPropertiesVertex>& other) const;
     size_t hash_impl() const;
 
     friend class BaseVertex<EmptyPropertiesVertex>;
@@ -74,7 +74,7 @@ public:
 private:
     Color m_color;
 
-    bool is_equal_impl(const ColoredVertex& other) const;
+    bool is_equal_impl(const BaseVertex<ColoredVertex>& other) const;
     size_t hash_impl() const;
 
     friend class BaseVertex<ColoredVertex>;

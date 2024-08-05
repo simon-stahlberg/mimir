@@ -334,12 +334,6 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(V
     // Need to copy args to keep them in valid state.
     const auto forward_edge_index = add_directed_edge(source, target, args...);
     const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
-    ++m_in_degrees.at(source);
-    ++m_in_degrees.at(target);
-    ++m_out_degrees.at(source);
-    ++m_out_degrees.at(target);
-    m_slice.push_back(forward_edge_index);
-    m_slice.push_back(backward_edge_index);
     return std::make_pair(forward_edge_index, backward_edge_index);
 }
 

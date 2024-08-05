@@ -129,8 +129,8 @@ private:
     EdgeIndexList m_free_edges;
     size_t m_next_edge_index;
 
-    std::unordered_map<VertexIndex, EdgeIndexSet> m_forward_adjacent_edges;
-    std::unordered_map<VertexIndex, EdgeIndexSet> m_backward_adjacent_edges;
+    std::unordered_map<VertexIndex, EdgeIndexList> m_forward_adjacent_edges;
+    std::unordered_map<VertexIndex, EdgeIndexList> m_backward_adjacent_edges;
 
     DegreeMap m_in_degrees;
     DegreeMap m_out_degrees;
@@ -178,6 +178,11 @@ VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(Args&&... args)
 {
     /* Get the vertex index. */
     auto index = m_free_vertices.empty() ? m_next_vertex_index++ : m_free_vertices.back();
+    if (!m_free_vertices.empty())
+    {
+        // If m_free_vertices was non-empty, we additionally need to pop_back the used index.
+        m_free_vertices.pop_back();
+    }
 
     /* Create the vertex. */
     m_vertices.emplace_back(index, std::forward<Args>(args)...);
@@ -185,15 +190,13 @@ VertexIndex DynamicGraph<Vertex, Edge>::add_vertex(Args&&... args)
     /* Initialize the data structures. */
     if (m_free_vertices.empty())
     {
-        m_forward_adjacent_edges.emplace(index, EdgeIndexSet());
-        m_backward_adjacent_edges.emplace(index, EdgeIndexSet());
+        m_forward_adjacent_edges.emplace(index, EdgeIndexList());
+        m_backward_adjacent_edges.emplace(index, EdgeIndexList());
         m_in_degrees.emplace(index, 0);
         m_out_degrees.emplace(index, 0);
     }
     else
     {
-        // If free_vertices was non empty, we additionally need to pop_back the used index.
-        m_free_vertices.pop_back();
         m_forward_adjacent_edges.at(index).clear();
         m_backward_adjacent_edges.at(index).clear();
         m_in_degrees.at(index) = 0;
@@ -214,15 +217,20 @@ EdgeIndex DynamicGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Vert
 
     /* Get the edge index */
     const auto index = m_free_edges.empty() ? m_next_edge_index++ : m_free_edges.back();
+    if (!m_free_edges.empty())
+    {
+        // If m_free_edges was non-empty, we additionally need to pop_back the used index.
+        m_free_edges.pop_back();
+    }
 
     /* Create the edge */
     m_edges.emplace_back(index, source, target, std::forward<Args>(args)...);
 
-    if (m_free_edges.empty()) {}
-    else
-    {
-        m_free_edges.pop_back();
-    }
+    /* Initialize the data structures. */
+    m_forward_adjacent_edges.at(source).push_back(index);
+    m_backward_adjacent_edges.at(target).push_back(index);
+    ++m_out_degrees.at(source);
+    ++m_in_degrees.at(target);
 
     return index;
 }
@@ -231,13 +239,25 @@ template<IsVertex Vertex, IsEdge Edge>
 template<typename... Args>
 std::pair<EdgeIndex, EdgeIndex> DynamicGraph<Vertex, Edge>::add_undirected_edge(VertexIndex source, VertexIndex target, Args&&... args)
 {
-    throw std::runtime_error("Not implemented");
+    if (!m_vertices.contains(source) || !m_vertices.contains(target))
+    {
+        throw std::out_of_range("DynamicGraph<Vertex, Edge>::add_undirected_edge(...): Source or destination vertex out of range");
+    }
+    // Need to copy args to keep them in valid state.
+    const auto forward_edge_index = add_directed_edge(source, target, args...);
+    const auto backward_edge_index = add_directed_edge(target, source, std::forward<Args>(args)...);
+    return std::make_pair(forward_edge_index, backward_edge_index);
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 void DynamicGraph<Vertex, Edge>::remove_vertex(VertexIndex vertex)
 {
-    throw std::runtime_error("Not implemented");
+    if (!m_vertices.contains(vertex))
+    {
+        throw std::out_of_range("DynamicGraph<Vertex, Edge>::remove_vertex(...): Tried to remove non-existing vertex.");
+    }
+
+    m_vertices.erase(vertex);
 }
 
 template<IsVertex Vertex, IsEdge Edge>

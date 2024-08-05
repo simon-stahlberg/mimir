@@ -1747,19 +1747,19 @@ void init_pymimir(py::module_& m)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 
-    // DigraphVertex
-    py::class_<DigraphVertex>(m, "DigraphVertex")
-        .def("__eq__", &DigraphVertex::operator==)
-        .def("__hash__", &DigraphVertex::hash)
-        .def("get_index", &DigraphVertex::get_index);
+    // EmptyPropertiesVertex (used in StaticDigraph)
+    py::class_<EmptyPropertiesVertex>(m, "EmptyPropertiesVertex")
+        .def("__eq__", &EmptyPropertiesVertex::operator==)
+        .def("__hash__", &EmptyPropertiesVertex::hash)
+        .def("get_index", &EmptyPropertiesVertex::get_index);
 
-    // DigraphEdge
-    py::class_<DigraphEdge>(m, "DigraphEdge")
-        .def("__eq__", &DigraphEdge::operator==)
-        .def("__hash__", &DigraphEdge::hash)
-        .def("get_index", &DigraphEdge::get_index)
-        .def("get_source", &DigraphEdge::get_source)
-        .def("get_target", &DigraphEdge::get_target);
+    // EmptyPropertiesEdge (used in StaticDigraph)
+    py::class_<EmptyPropertiesEdge>(m, "EmptyPropertiesEdge")
+        .def("__eq__", &EmptyPropertiesEdge::operator==)
+        .def("__hash__", &EmptyPropertiesEdge::hash)
+        .def("get_index", &EmptyPropertiesEdge::get_index)
+        .def("get_source", &EmptyPropertiesEdge::get_source)
+        .def("get_target", &EmptyPropertiesEdge::get_target);
 
     // StaticDigraph
     py::class_<StaticDigraph>(m, "StaticDigraph")  //

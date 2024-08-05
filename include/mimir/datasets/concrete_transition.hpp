@@ -44,7 +44,7 @@ public:
 private:
     GroundAction m_creating_action;
 
-    bool is_equal_impl(const ConcreteTransition& other) const;
+    bool is_equal_impl(const BaseEdge<ConcreteTransition>& other) const;
     size_t hash_impl() const;
 
     friend class BaseEdge<ConcreteTransition>;

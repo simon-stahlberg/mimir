@@ -33,7 +33,7 @@ public:
 private:
     State m_state;
 
-    bool is_equal_impl(const ConcreteState& other) const;
+    bool is_equal_impl(const BaseVertex<ConcreteState>& other) const;
     size_t hash_impl() const;
 
     friend class BaseVertex<ConcreteState>;

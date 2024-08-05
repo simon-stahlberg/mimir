@@ -41,7 +41,7 @@ public:
 private:
     std::span<const GroundAction> m_actions;
 
-    bool is_equal_impl(const AbstractTransition& other) const;
+    bool is_equal_impl(const BaseEdge<AbstractTransition>& other) const;
     size_t hash_impl() const;
 
     friend class BaseEdge<AbstractTransition>;

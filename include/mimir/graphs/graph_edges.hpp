@@ -61,7 +61,7 @@ public:
     EmptyPropertiesEdge(EdgeIndex index, VertexIndex source, VertexIndex target);
 
 private:
-    bool is_equal_impl(const EmptyPropertiesEdge& other) const;
+    bool is_equal_impl(const BaseEdge<EmptyPropertiesEdge>& other) const;
     size_t hash_impl() const;
 
     friend class BaseEdge<EmptyPropertiesEdge>;
@@ -78,7 +78,7 @@ public:
 private:
     Color m_color;
 
-    bool is_equal_impl(const ColoredEdge& other) const;
+    bool is_equal_impl(const BaseEdge<ColoredEdge>& other) const;
     size_t hash_impl() const;
 
     friend class BaseEdge<ColoredEdge>;

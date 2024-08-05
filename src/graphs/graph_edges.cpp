@@ -24,7 +24,7 @@ namespace mimir
 
 EmptyPropertiesEdge::EmptyPropertiesEdge(EdgeIndex index, VertexIndex source, VertexIndex target) : BaseEdge<EmptyPropertiesEdge>(index, source, target) {}
 
-bool EmptyPropertiesEdge::is_equal_impl(const EmptyPropertiesEdge& other) const { return true; }
+bool EmptyPropertiesEdge::is_equal_impl(const BaseEdge<EmptyPropertiesEdge>& other) const { return true; }
 
 size_t EmptyPropertiesEdge::hash_impl() const { return loki::hash_combine(0); }
 
@@ -32,11 +32,12 @@ size_t EmptyPropertiesEdge::hash_impl() const { return loki::hash_combine(0); }
 
 ColoredEdge::ColoredEdge(EdgeIndex index, VertexIndex source, VertexIndex target, Color color) : BaseEdge<ColoredEdge>(index, source, target), m_color(color) {}
 
-bool ColoredEdge::is_equal_impl(const ColoredEdge& other) const
+bool ColoredEdge::is_equal_impl(const BaseEdge<ColoredEdge>& other) const
 {
     if (this != &other)
     {
-        return (m_color == other.m_color);
+        const auto& otherDerived = static_cast<const ColoredEdge&>(other);
+        return (m_color == otherDerived.m_color);
     }
     return true;
 }

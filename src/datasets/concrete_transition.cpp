@@ -26,11 +26,12 @@ ConcreteTransition::ConcreteTransition(TransitionIndex index, StateIndex source,
 {
 }
 
-bool ConcreteTransition::is_equal_impl(const ConcreteTransition& other) const
+bool ConcreteTransition::is_equal_impl(const BaseEdge<ConcreteTransition>& other) const
 {
     if (this != &other)
     {
-        return (m_creating_action == other.m_creating_action);
+        const auto& otherDerived = static_cast<const ConcreteTransition&>(other);
+        return (m_creating_action == otherDerived.m_creating_action);
     }
     return true;
 }

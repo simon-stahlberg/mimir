@@ -41,11 +41,12 @@ FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<const S
 {
 }
 
-bool FaithfulAbstractState::is_equal_impl(const FaithfulAbstractState& other) const
+bool FaithfulAbstractState::is_equal_impl(const BaseVertex<FaithfulAbstractState>& other) const
 {
     if (this != &other)
     {
-        return std::equal(m_states.begin(), m_states.end(), other.m_states.begin());
+        const auto& otherDerived = static_cast<const FaithfulAbstractState&>(other);
+        return std::equal(m_states.begin(), m_states.end(), otherDerived.m_states.begin());
     }
     return true;
 }

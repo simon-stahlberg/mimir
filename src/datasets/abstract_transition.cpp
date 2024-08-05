@@ -26,11 +26,12 @@ AbstractTransition::AbstractTransition(TransitionIndex index, StateIndex source,
 {
 }
 
-bool AbstractTransition::is_equal_impl(const AbstractTransition& other) const
+bool AbstractTransition::is_equal_impl(const BaseEdge<AbstractTransition>& other) const
 {
     if (this != &other)
     {
-        return std::equal(m_actions.begin(), m_actions.end(), other.m_actions.begin());
+        const auto& otherDerived = static_cast<const AbstractTransition&>(other);
+        return std::equal(m_actions.begin(), m_actions.end(), otherDerived.m_actions.begin());
     }
     return true;
 }
