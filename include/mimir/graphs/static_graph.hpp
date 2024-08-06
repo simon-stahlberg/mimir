@@ -186,13 +186,13 @@ public:
     using EdgeIndexConstIteratorType = typename G::EdgeIndexConstIteratorType;
 
     template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = typename G::AdjacentVertexConstIteratorType<Direction>;
+    using AdjacentVertexConstIteratorType = typename G::template AdjacentVertexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = typename G::AdjacentVertexIndexConstIteratorType<Direction>;
+    using AdjacentVertexIndexConstIteratorType = typename G::template AdjacentVertexIndexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = typename G::AdjacentEdgeConstIteratorType<Direction>;
+    using AdjacentEdgeConstIteratorType = typename G::template AdjacentEdgeConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = typename G::AdjacentEdgeIndexConstIteratorType<Direction>;
+    using AdjacentEdgeIndexConstIteratorType = typename G::template AdjacentEdgeIndexConstIteratorType<Direction>;
 
     explicit StaticForwardGraph(G graph);
 
@@ -255,13 +255,13 @@ public:
     using EdgeIndexConstIteratorType = typename G::EdgeIndexConstIteratorType;
 
     template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = typename G::AdjacentVertexConstIteratorType<Direction>;
+    using AdjacentVertexConstIteratorType = typename G::template AdjacentVertexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = typename G::AdjacentVertexIndexConstIteratorType<Direction>;
+    using AdjacentVertexIndexConstIteratorType = typename G::template AdjacentVertexIndexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = typename G::AdjacentEdgeConstIteratorType<Direction>;
+    using AdjacentEdgeConstIteratorType = typename G::template AdjacentEdgeConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = typename G::AdjacentEdgeIndexConstIteratorType<Direction>;
+    using AdjacentEdgeIndexConstIteratorType = typename G::template AdjacentEdgeIndexConstIteratorType<Direction>;
 
     explicit StaticBidirectionalGraph(G graph);
 
