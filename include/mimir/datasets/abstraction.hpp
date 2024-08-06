@@ -106,7 +106,6 @@ private:
     };
 
     template<IsAbstraction A>
-    requires IsStaticGraph<typename A::GraphType>
     class AbstractionModel : public AbstractionConcept
     {
     private:
@@ -184,9 +183,8 @@ private:
 
 public:
     template<IsAbstraction A>
-    explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction)))
-    {
-    }
+    requires IsStaticGraph<typename A::GraphType>
+    explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction))) {}
 
     // Copy operations
     Abstraction(const Abstraction& other) : m_pimpl { other.m_pimpl->clone() } {}

@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_STATIC_GRAPH_BOOST_ADAPTER_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/graphs/boost_adapter_utils.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/static_graph.hpp"
@@ -37,30 +38,16 @@
 namespace boost
 {
 
-/// A tag for a graph that is both a vertex list graph and an incidence graph.
-struct vertex_list_and_incidence_graph_and_edge_list_graph_and_adjacency_graph_and_bidirectional_graph_tag :
-    public vertex_list_graph_tag,
-    // public incidence_graph_tag,  // is included in bidirectional_graph_tag
-    public edge_list_graph_tag,
-    public adjacency_graph_tag,
-    public bidirectional_graph_tag
-{
-};
-
 /// Traits for a graph that are needed for the boost graph library.
 template<mimir::IsStaticGraph Graph, mimir::IsTraversalDirection Direction>
 struct graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>
 {
-    using VertexType = typename Graph::VertexType;
-    using EdgeType = typename Graph::EdgeType;
-    using EdgeList = typename Graph::EdgeList;
-
     // boost::GraphConcept
     using vertex_descriptor = mimir::VertexIndex;
     using edge_descriptor = mimir::EdgeIndex;
     using directed_category = directed_tag;
     using edge_parallel_category = allow_parallel_edge_tag;
-    using traversal_category = vertex_list_and_incidence_graph_and_edge_list_graph_and_adjacency_graph_and_bidirectional_graph_tag;
+    using traversal_category = vertex_list_and_incidence_and_edge_list_and_adjacency_and_bidirectional_graph_tag;
     // boost::VertexListGraph
     using vertex_iterator = typename Graph::VertexIndexConstIteratorType;
     using vertices_size_type = size_t;
@@ -251,108 +238,6 @@ BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<TraversalDirectionTaggedType<
 BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
 BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// BasicMatrix
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-template<typename I, typename V>
-class VectorBasicMatrix
-{
-public:
-    VectorBasicMatrix(std::size_t num_vertices, V init_value = std::numeric_limits<V>::max()) : m_matrix(num_vertices, std::vector<V>(num_vertices, init_value))
-    {
-    }
-
-    std::vector<V>& operator[](I i) { return m_matrix[i]; }
-
-    const std::vector<V>& operator[](I i) const { return m_matrix[i]; }
-
-    const std::vector<std::vector<V>>& get_matrix() const { return m_matrix; }
-
-private:
-    std::vector<std::vector<V>> m_matrix;
-};
-
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// PropertyMaps
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-/// @brief A property map that returns its key as value.
-///
-/// boost requires a vertex_index that translates vertex->index, where the index is an index into the vertex list.
-/// In our case, the vertex is described with a StateIndex and so vertex and index are the same.
-/// To avoid storing a map of the size of the graph, we use TrivialReadPropertyMap that just returns the key.
-template<typename Key, typename Value>
-struct TrivialReadPropertyMap
-{
-    using value_type = Value;
-    using key_type = Key;
-    using reference = Value;
-    using category = boost::read_write_property_map_tag;
-};
-
-/// @brief Get the index of a state.
-/// @param key the state.
-/// @return the index of the state, which is just the input key.
-template<typename Key, typename Value>
-inline Value get(const TrivialReadPropertyMap<Key, Value>&, Key key)
-{
-    return key;
-}
-
-template<IsUnsignedIntegral Key, typename Value>
-class VectorReadPropertyMap
-{
-public:
-    using value_type = Value;
-    using key_type = Key;
-    using reference = Value;
-    using category = boost::read_write_property_map_tag;
-
-    explicit VectorReadPropertyMap(const std::vector<Value>& distances) : m_distances(distances) {}
-
-    Value get(Key key) const { return m_distances.get().at(key); }
-
-private:
-    std::reference_wrapper<const std::vector<Value>> m_distances;
-};
-
-template<typename Key, typename Value>
-inline Value get(const VectorReadPropertyMap<Key, Value>& m, Key key)
-{
-    return m.get(key);
-}
-
-template<IsUnsignedIntegral Key, typename Value>
-class VectorReadWritePropertyMap
-{
-public:
-    using value_type = Value;
-    using key_type = Key;
-    using reference = Value;
-    using category = boost::read_write_property_map_tag;
-
-    explicit VectorReadWritePropertyMap(std::vector<Value>& distances) : m_distances(distances) {}
-
-    Value get(Key key) const { return m_distances.get().at(key); }
-    void set(Key key, Value value) { m_distances.get().at(key) = value; }
-
-private:
-    std::reference_wrapper<std::vector<Value>> m_distances;
-};
-
-template<typename Key, typename Value>
-inline Value get(const VectorReadWritePropertyMap<Key, Value>& m, Key key)
-{
-    return m.get(key);
-}
-
-template<typename Key, typename Value>
-inline void put(VectorReadWritePropertyMap<Key, Value>& m, Key key, Value value)
-{
-    m.set(key, value);
-}
 
 }
 
