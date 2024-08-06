@@ -34,8 +34,8 @@ struct DynamicGraphTag
 template<typename T>
 concept IsDynamicGraph = requires(T a)
 {
-    typename T::GraphType;
-    requires std::same_as<typename T::GraphType, DynamicGraphTag>;
+    typename T::GraphTag;
+    requires std::same_as<typename T::GraphTag, DynamicGraphTag>;
 
     requires IsVertexListGraph<T>;
     requires IsEdgeListGraph<T>;

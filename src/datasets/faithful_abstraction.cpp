@@ -81,7 +81,7 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          std::shared_ptr<PDDLFactories> factories,
                                          std::shared_ptr<IAAG> aag,
                                          std::shared_ptr<SuccessorStateGenerator> ssg,
-                                         StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>> graph,
+                                         typename FaithfulAbstraction::GraphType graph,
                                          std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                                          StateMap<StateIndex> concrete_to_abstract_state,
                                          StateIndex initial_state,
@@ -380,7 +380,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     {
         graph.add_directed_edge(abstract_transition.get_source(), abstract_transition.get_target(), abstract_transition.get_actions());
     }
-    auto bidirectional_graph = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>(std::move(graph));
+    auto bidirectional_graph = typename FaithfulAbstraction::GraphType(std::move(graph));
 
     /* Compute abstract goal distances */
 
@@ -570,7 +570,7 @@ const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag
 const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
 /* Graph */
-const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& FaithfulAbstraction::get_graph() const { return m_graph; }
+const typename FaithfulAbstraction::GraphType& FaithfulAbstraction::get_graph() const { return m_graph; }
 
 /* States */
 const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }

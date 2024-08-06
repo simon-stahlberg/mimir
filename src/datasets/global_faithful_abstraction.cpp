@@ -244,10 +244,7 @@ const std::shared_ptr<SuccessorStateGenerator>& GlobalFaithfulAbstraction::get_s
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 
 /* Graph */
-const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& GlobalFaithfulAbstraction::get_graph() const
-{
-    return m_abstractions->at(m_index).get_graph();
-}
+const typename GlobalFaithfulAbstraction::GraphType& GlobalFaithfulAbstraction::get_graph() const { return m_abstractions->at(m_index).get_graph(); }
 
 /* States */
 const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }

@@ -62,7 +62,7 @@ struct graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>
     using edge_parallel_category = allow_parallel_edge_tag;
     using traversal_category = vertex_list_and_incidence_graph_and_edge_list_graph_and_adjacency_graph_and_bidirectional_graph_tag;
     // boost::VertexListGraph
-    using vertex_iterator = std::ranges::iterator_t<std::ranges::iota_view<vertex_descriptor, vertex_descriptor>>;
+    using vertex_iterator = typename Graph::VertexIndexConstIteratorType;
     using vertices_size_type = size_t;
     // boost::IncidenceGraph
     using out_edge_iterator = typename Graph::template AdjacentEdgeIndexConstIteratorType<Direction>;
@@ -96,12 +96,7 @@ std::pair<typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph
           typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_iterator>
 vertices(const mimir::TraversalDirectionTaggedType<Graph, Direction>& g)
 {
-    std::ranges::iota_view<typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor,
-                           typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>
-        range(0, g.get().get_num_vertices());
-    // Make sure we can return dangling iterators.
-    static_assert(std::ranges::borrowed_range<decltype(range)>);
-    return std::make_pair(range.begin(), range.end());
+    return { g.get().get_vertex_indices().begin(), g.get().get_vertex_indices().end() };
 }
 
 /// @brief Get the number of vertices in the graph.

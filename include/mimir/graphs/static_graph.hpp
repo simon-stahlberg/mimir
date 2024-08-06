@@ -62,23 +62,23 @@ template<IsVertex Vertex, IsEdge Edge>
 class StaticGraph
 {
 public:
-    using GraphType = StaticGraphTag;
+    using GraphTag = StaticGraphTag;
     using VertexType = Vertex;
     using VertexList = std::vector<Vertex>;
     using EdgeType = Edge;
     using EdgeList = std::vector<Edge>;
 
-    using VertexIndexConstIteratorType = VertexIndexConstIterator<Vertex>;
-    using EdgeIndexConstIteratorType = EdgeIndexConstIterator<Edge>;
+    using VertexIndexConstIteratorType = std::ranges::iterator_t<std::ranges::iota_view<VertexIndex, VertexIndex>>;
+    using EdgeIndexConstIteratorType = std::ranges::iterator_t<std::ranges::iota_view<EdgeIndex, EdgeIndex>>;
 
     template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<Vertex, Edge, Direction>;
+    using AdjacentVertexConstIteratorType = StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = AdjacentVertexIndexConstIterator<Edge, Direction>;
+    using AdjacentVertexIndexConstIteratorType = StaticAdjacentVertexIndexConstIterator<Edge, Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = AdjacentEdgeConstIterator<Edge, Direction>;
+    using AdjacentEdgeConstIteratorType = StaticAdjacentEdgeConstIterator<Edge, Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = AdjacentEdgeIndexConstIterator<Edge, Direction>;
+    using AdjacentEdgeIndexConstIteratorType = StaticAdjacentEdgeIndexConstIterator<Edge, Direction>;
 
     /// @brief Construct an empty graph.
     StaticGraph();
@@ -176,23 +176,23 @@ template<IsStaticGraph G>
 class StaticForwardGraph
 {
 public:
-    using GraphType = typename G::GraphType;
+    using GraphTag = typename G::GraphTag;
     using VertexType = typename G::VertexType;
     using EdgeType = typename G::EdgeType;
     using VertexList = std::vector<VertexType>;
     using EdgeList = std::vector<EdgeType>;
 
-    using VertexIndexConstIteratorType = VertexIndexConstIterator<VertexType>;
-    using EdgeIndexConstIteratorType = EdgeIndexConstIterator<EdgeType>;
+    using VertexIndexConstIteratorType = typename G::VertexIndexConstIteratorType;
+    using EdgeIndexConstIteratorType = typename G::EdgeIndexConstIteratorType;
 
     template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
+    using AdjacentVertexConstIteratorType = typename G::AdjacentVertexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = AdjacentVertexIndexConstIterator<EdgeType, Direction>;
+    using AdjacentVertexIndexConstIteratorType = typename G::AdjacentVertexIndexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = AdjacentEdgeConstIterator<EdgeType, Direction>;
+    using AdjacentEdgeConstIteratorType = typename G::AdjacentEdgeConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = AdjacentEdgeIndexConstIterator<EdgeType, Direction>;
+    using AdjacentEdgeIndexConstIteratorType = typename G::AdjacentEdgeIndexConstIteratorType<Direction>;
 
     explicit StaticForwardGraph(G graph);
 
@@ -245,23 +245,23 @@ template<IsStaticGraph G>
 class StaticBidirectionalGraph
 {
 public:
-    using GraphType = typename G::GraphType;
+    using GraphTag = typename G::GraphTag;
     using VertexType = typename G::VertexType;
     using EdgeType = typename G::EdgeType;
     using VertexList = std::vector<VertexType>;
     using EdgeList = std::vector<EdgeType>;
 
-    using VertexIndexConstIteratorType = VertexIndexConstIterator<VertexType>;
-    using EdgeIndexConstIteratorType = EdgeIndexConstIterator<EdgeType>;
+    using VertexIndexConstIteratorType = typename G::VertexIndexConstIteratorType;
+    using EdgeIndexConstIteratorType = typename G::EdgeIndexConstIteratorType;
 
     template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = AdjacentVertexConstIterator<VertexType, EdgeType, Direction>;
+    using AdjacentVertexConstIteratorType = typename G::AdjacentVertexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = AdjacentVertexIndexConstIterator<EdgeType, Direction>;
+    using AdjacentVertexIndexConstIteratorType = typename G::AdjacentVertexIndexConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = AdjacentEdgeConstIterator<EdgeType, Direction>;
+    using AdjacentEdgeConstIteratorType = typename G::AdjacentEdgeConstIteratorType<Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = AdjacentEdgeIndexConstIterator<EdgeType, Direction>;
+    using AdjacentEdgeIndexConstIteratorType = typename G::AdjacentEdgeIndexConstIteratorType<Direction>;
 
     explicit StaticBidirectionalGraph(G graph);
 
@@ -370,15 +370,17 @@ void StaticGraph<Vertex, Edge>::clear()
 template<IsVertex Vertex, IsEdge Edge>
 std::ranges::subrange<typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType> StaticGraph<Vertex, Edge>::get_vertex_indices() const
 {
-    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType(m_vertices, true),
-                                 typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType(m_vertices, false));
+    auto range = std::ranges::iota_view<VertexIndex, VertexIndex>(0, get_num_vertices());
+    static_assert(std::ranges::borrowed_range<decltype(range)>);
+    return std::ranges::subrange<VertexIndexConstIteratorType>(range.begin(), range.end());
 }
 
 template<IsVertex Vertex, IsEdge Edge>
 std::ranges::subrange<typename StaticGraph<Vertex, Edge>::EdgeIndexConstIteratorType> StaticGraph<Vertex, Edge>::get_edge_indices() const
 {
-    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::EdgeIndexConstIteratorType(m_edges, true),
-                                 typename StaticGraph<Vertex, Edge>::EdgeIndexConstIteratorType(m_edges, false));
+    auto range = std::ranges::iota_view<EdgeIndex, EdgeIndex>(0, get_num_edges());
+    static_assert(std::ranges::borrowed_range<decltype(range)>);
+    return std::ranges::subrange<EdgeIndexConstIteratorType>(range.begin(), range.end());
 }
 
 template<IsVertex Vertex, IsEdge Edge>

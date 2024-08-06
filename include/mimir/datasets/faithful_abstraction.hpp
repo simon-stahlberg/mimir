@@ -93,36 +93,22 @@ using CertificateToStateIndexMap = std::unordered_map<std::shared_ptr<const Cert
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
 class FaithfulAbstraction
 {
+public:
+    using GraphType = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>;
+
+    using VertexIndexConstIteratorType = typename GraphType::VertexIndexConstIteratorType;
+    using EdgeIndexConstIteratorType = typename GraphType::EdgeIndexConstIteratorType;
+
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexConstIteratorType = typename GraphType::AdjacentVertexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType = typename GraphType::AdjacentVertexIndexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = typename GraphType::AdjacentEdgeConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType = typename GraphType::AdjacentEdgeIndexConstIteratorType<Direction>;
+
 private:
-    /* Meta data */
-    Problem m_problem;
-    bool m_mark_true_goal_literals;
-    bool m_use_unit_cost_one;
-
-    /* Memory */
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
-    std::shared_ptr<IAAG> m_aag;
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
-
-    /* States */
-    StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>> m_graph;
-    // Persistent and sorted to store slices in the abstract states.
-    std::shared_ptr<const StateList> m_concrete_states_by_abstract_state;
-    StateMap<StateIndex> m_concrete_to_abstract_state;
-    StateIndex m_initial_state;
-    StateIndexSet m_goal_states;
-    StateIndexSet m_deadend_states;
-
-    /* Transitions */
-    // Persistent and sorted to store slices in the abstract transitions.
-    std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
-
-    /* Distances */
-    DistanceList m_goal_distances;
-
-    /* Additional */
-    std::map<Distance, StateIndexList> m_states_by_goal_distance;
-
     /// @brief Constructs a state state from data.
     /// The create function calls this constructor and ensures that
     /// the state space is in a legal state allowing other parts of
@@ -133,7 +119,7 @@ private:
                         std::shared_ptr<PDDLFactories> factories,
                         std::shared_ptr<IAAG> aag,
                         std::shared_ptr<SuccessorStateGenerator> ssg,
-                        StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>> graph,
+                        GraphType graph,
                         std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                         StateMap<StateIndex> concrete_to_abstract_state,
                         StateIndex initial_state,
@@ -143,24 +129,6 @@ private:
                         DistanceList goal_distances);
 
 public:
-    using StateType = FaithfulAbstractState;
-    using TransitionType = AbstractTransition;
-
-    using VertexIndexConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::VertexIndexConstIteratorType;
-    using EdgeIndexConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::EdgeIndexConstIteratorType;
-
-    template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType =
-        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentVertexConstIteratorType<Direction>;
-    template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType =
-        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentVertexIndexConstIteratorType<Direction>;
-    template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentEdgeConstIteratorType<Direction>;
-    template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType =
-        typename StaticBidirectionalGraph<StaticGraph<StateType, TransitionType>>::AdjacentEdgeIndexConstIteratorType<Direction>;
-
     static std::optional<FaithfulAbstraction>
     create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
@@ -239,7 +207,7 @@ public:
     const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
 
     /* Graph */
-    const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
+    const GraphType& get_graph() const;
 
     /* States */
     const FaithfulAbstractStateList& get_states() const;
@@ -272,10 +240,39 @@ public:
 
     /* Additional */
     const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
+
+private:
+    /* Meta data */
+    Problem m_problem;
+    bool m_mark_true_goal_literals;
+    bool m_use_unit_cost_one;
+
+    /* Memory */
+    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<IAAG> m_aag;
+    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+
+    /* States */
+    GraphType m_graph;
+    // Persistent and sorted to store slices in the abstract states.
+    std::shared_ptr<const StateList> m_concrete_states_by_abstract_state;
+    StateMap<StateIndex> m_concrete_to_abstract_state;
+    StateIndex m_initial_state;
+    StateIndexSet m_goal_states;
+    StateIndexSet m_deadend_states;
+
+    /* Transitions */
+    // Persistent and sorted to store slices in the abstract transitions.
+    std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
+
+    /* Distances */
+    DistanceList m_goal_distances;
+
+    /* Additional */
+    std::map<Distance, StateIndexList> m_states_by_goal_distance;
 };
 
 static_assert(IsAbstraction<FaithfulAbstraction>);
-static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
 
 using FaithfulAbstractionList = std::vector<FaithfulAbstraction>;
 

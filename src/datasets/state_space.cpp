@@ -35,7 +35,7 @@ StateSpace::StateSpace(Problem problem,
                        std::shared_ptr<PDDLFactories> pddl_factories,
                        std::shared_ptr<IAAG> aag,
                        std::shared_ptr<SuccessorStateGenerator> ssg,
-                       StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>> graph,
+                       typename StateSpace::GraphType graph,
                        StateMap<StateIndex> state_to_index,
                        StateIndex initial_state,
                        StateIndexSet goal_states,
@@ -143,7 +143,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    auto bidirectional_graph = StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>(std::move(graph));
+    auto bidirectional_graph = typename StateSpace::GraphType(std::move(graph));
 
     auto goal_distances = DistanceList {};
     if (options.use_unit_cost_one
@@ -309,7 +309,7 @@ const std::shared_ptr<IAAG>& StateSpace::get_aag() const { return m_aag; }
 const std::shared_ptr<SuccessorStateGenerator>& StateSpace::get_ssg() const { return m_ssg; }
 
 /* Graph */
-const StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>& StateSpace::get_graph() const { return m_graph; }
+const typename StateSpace::GraphType& StateSpace::get_graph() const { return m_graph; }
 
 /* States */
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }

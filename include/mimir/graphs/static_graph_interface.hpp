@@ -34,8 +34,8 @@ struct StaticGraphTag
 template<typename T>
 concept IsStaticGraph = requires(T a)
 {
-    typename T::GraphType;
-    requires std::same_as<typename T::GraphType, StaticGraphTag>;
+    typename T::GraphTag;
+    requires std::same_as<typename T::GraphTag, StaticGraphTag>;
 
     requires IsVertexListGraph<T>;
     requires IsEdgeListGraph<T>;

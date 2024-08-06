@@ -59,7 +59,7 @@ template<IsVertex Vertex, IsEdge Edge>
 class DynamicGraph
 {
 public:
-    using GraphType = DynamicGraphTag;
+    using GraphTag = DynamicGraphTag;
     using VertexType = Vertex;
     using VertexMap = std::unordered_map<VertexIndex, Vertex>;
     using EdgeType = Edge;

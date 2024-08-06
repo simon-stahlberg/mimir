@@ -70,23 +70,22 @@ using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>
 
 class GlobalFaithfulAbstraction
 {
+public:
+    using GraphType = typename FaithfulAbstraction::GraphType;
+
+    using VertexIndexConstIteratorType = typename GraphType::VertexIndexConstIteratorType;
+    using EdgeIndexConstIteratorType = typename GraphType::EdgeIndexConstIteratorType;
+
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexConstIteratorType = typename GraphType::AdjacentVertexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentVertexIndexConstIteratorType = typename GraphType::AdjacentVertexIndexConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeConstIteratorType = typename GraphType::AdjacentEdgeConstIteratorType<Direction>;
+    template<IsTraversalDirection Direction>
+    using AdjacentEdgeIndexConstIteratorType = typename GraphType::AdjacentEdgeIndexConstIteratorType<Direction>;
+
 private:
-    /* Meta data */
-    bool m_mark_true_goal_literals;
-    bool m_use_unit_cost_one;
-    AbstractionIndex m_index;
-
-    /* Memory */
-    std::shared_ptr<const FaithfulAbstractionList> m_abstractions;
-
-    /* States */
-    GlobalFaithfulAbstractStateList m_states;
-    size_t m_num_isomorphic_states;
-    size_t m_num_non_isomorphic_states;
-
-    /* Additional */
-    std::unordered_map<StateIndex, StateIndex> m_global_state_index_to_state_index;
-
     GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                               bool use_unit_cost_one,
                               AbstractionIndex index,
@@ -96,21 +95,6 @@ private:
                               size_t num_non_isomorphic_states);
 
 public:
-    using StateType = GlobalFaithfulAbstractState;
-    using TransitionType = AbstractTransition;
-
-    using VertexIndexConstIteratorType = typename FaithfulAbstraction::VertexIndexConstIteratorType;
-    using EdgeIndexConstIteratorType = typename FaithfulAbstraction::EdgeIndexConstIteratorType;
-
-    template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = typename FaithfulAbstraction::AdjacentVertexConstIteratorType<Direction>;
-    template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = typename FaithfulAbstraction::AdjacentVertexIndexConstIteratorType<Direction>;
-    template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>;
-    template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = typename FaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<Direction>;
-
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
                                                          const std::vector<fs::path>& problem_filepaths,
                                                          const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
@@ -160,7 +144,7 @@ public:
     const FaithfulAbstractionList& get_abstractions() const;
 
     /* Graph */
-    const StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>& get_graph() const;
+    const GraphType& get_graph() const;
 
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
@@ -196,6 +180,23 @@ public:
 
     /* Additional */
     const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
+
+private:
+    /* Meta data */
+    bool m_mark_true_goal_literals;
+    bool m_use_unit_cost_one;
+    AbstractionIndex m_index;
+
+    /* Memory */
+    std::shared_ptr<const FaithfulAbstractionList> m_abstractions;
+
+    /* States */
+    GlobalFaithfulAbstractStateList m_states;
+    size_t m_num_isomorphic_states;
+    size_t m_num_non_isomorphic_states;
+
+    /* Additional */
+    std::unordered_map<StateIndex, StateIndex> m_global_state_index_to_state_index;
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
