@@ -91,7 +91,7 @@ private:
 public:
     explicit BrFSAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_generate_state(const Problem problem, const GroundAction action, const State successor_state, const PDDLFactories& pddl_factories) override
+    void on_generate_state(Problem problem, GroundAction action, State successor_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
@@ -114,7 +114,7 @@ public:
         }
     }
 
-    void on_expand_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) override
+    void on_expand_state(Problem problem, State state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
@@ -124,7 +124,7 @@ public:
         }
     }
 
-    void on_prune_state(const Problem problem, const State state, const PDDLFactories& pddl_factories) override
+    void on_prune_state(Problem problem, State state, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_pruned();
 
@@ -134,7 +134,7 @@ public:
         }
     }
 
-    void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
+    void on_start_search(Problem problem, State initial_state, const PDDLFactories& pddl_factories) override
     {
         m_statistics = BrFSAlgorithmStatistics();
 

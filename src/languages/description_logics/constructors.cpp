@@ -60,6 +60,7 @@ template<PredicateCategory P>
 void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
 {
     auto& bitset = context.get_denotation_builder<Concept>().get_bitset();
+    bitset.unset_all();
     for (const auto& atom : context.get_state_atoms<P>())
     {
         if (atom->get_predicate() == m_predicate)
