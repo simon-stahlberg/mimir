@@ -36,6 +36,13 @@ public:
     virtual bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) = 0;
 };
 
+class NoStatePruning : public IPruningStrategy
+{
+public:
+    bool test_prune_initial_state(const State state) override;
+    bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;
+};
+
 class DuplicateStatePruning : public IPruningStrategy
 {
 public:

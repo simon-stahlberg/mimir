@@ -44,16 +44,16 @@ public:
                    std::shared_ptr<StateRepository> successor_state_generator,
                    std::shared_ptr<IHeuristic> heuristic);
 
-    SearchStatus find_solution(std::vector<GroundAction>& out_plan) override;
+    SearchStatus find_solution(GroundActionList& out_plan) override;
 
-    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan) override;
+    SearchStatus find_solution(State start_state, GroundActionList& out_plan) override;
 
-    SearchStatus find_solution(State start_state, std::vector<GroundAction>& out_plan, std::optional<State>& out_goal_state) override;
+    SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override;
 
     SearchStatus find_solution(State start_state,
                                std::unique_ptr<IGoalStrategy>&& goal_strategy,
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                               std::vector<GroundAction>& out_plan,
+                               GroundActionList& out_plan,
                                std::optional<State>& out_goal_state);
 
 private:

@@ -49,6 +49,8 @@ public:
 
     void pop() { self().pop_impl(); }
 
+    void clear() { self().clear_impl(); }
+
     bool empty() const { return self().empty_impl(); }
     std::size_t size() const { return self().size_impl(); }
 };

@@ -31,22 +31,38 @@ namespace mimir
 template<typename T>
 class PriorityQueue : public IOpenList<PriorityQueue<T>>
 {
-    // Implement configuration specific functionality.
 private:
-    std::priority_queue<std::pair<double, T>, std::vector<std::pair<double, T>>, std::greater<std::pair<double, T>>> priority_queue_;
+    struct Entry
+    {
+        double priority;
+        T element;
+    };
+
+    struct EntryComparator
+    {
+        bool operator()(const Entry& l, const Entry& r) { return l.priority > r.priority; }
+    };
 
     /* Implement IOpenList interface */
     friend class IOpenList<PriorityQueue>;
 
-    void insert_impl(double priority, const T& item) { priority_queue_.emplace(priority, item); }
+    void insert_impl(double priority, const T& item) { m_priority_queue.emplace(priority, item); }
 
-    const T& top_impl() const { return priority_queue_.top().second; }
+    const T& top_impl() const { return m_priority_queue.top().element; }
 
-    void pop_impl() { priority_queue_.pop(); }
+    void pop_impl() { m_priority_queue.pop(); }
 
-    bool empty_impl() const { return priority_queue_.empty(); }
+    void clear_impl()
+    {
+        auto tmp = std::priority_queue<Entry, std::vector<Entry>, EntryComparator> {};
+        std::swap(m_priority_queue, tmp);
+    }
 
-    std::size_t size_impl() const { return priority_queue_.size(); }
+    bool empty_impl() const { return m_priority_queue.empty(); }
+
+    std::size_t size_impl() const { return m_priority_queue.size(); }
+
+    std::priority_queue<Entry, std::vector<Entry>, EntryComparator> m_priority_queue;
 };
 
 }  // namespace mimir

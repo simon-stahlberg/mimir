@@ -31,7 +31,7 @@ class IHeuristic
 public:
     virtual ~IHeuristic() = default;
 
-    [[nodiscard]] virtual double compute_heuristic(State state) = 0;
+    virtual double compute_heuristic(State state) = 0;
 };
 
 }

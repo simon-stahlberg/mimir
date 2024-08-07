@@ -19,6 +19,13 @@
 
 namespace mimir
 {
+
+/* NoStatePruning */
+bool NoStatePruning::test_prune_initial_state(const State state) { return false; }
+
+bool NoStatePruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return false; }
+
+/* DuplicateStatePruning */
 bool DuplicateStatePruning::test_prune_initial_state(const State state) { return false; };
 
 bool DuplicateStatePruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return !is_new_succ; }
