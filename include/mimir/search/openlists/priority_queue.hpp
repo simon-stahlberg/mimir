@@ -36,6 +36,8 @@ private:
     {
         double priority;
         T element;
+
+        Entry(double priority, T element) : priority(priority), element(std::move(element)) {}
     };
 
     struct EntryComparator
