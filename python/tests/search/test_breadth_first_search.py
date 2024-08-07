@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT_DIR = (Path(__file__).parent.parent.parent.parent).absolute()
 
 
-def test_breath_first_search():
+def test_breadth_first_search():
     """ Test parsing a PDDL domain and problem file.
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
