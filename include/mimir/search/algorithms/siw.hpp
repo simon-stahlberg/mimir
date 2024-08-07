@@ -26,20 +26,6 @@ namespace mimir
 
 class SerializedIterativeWidthAlgorithm : public IAlgorithm
 {
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    int m_max_arity;
-
-    std::shared_ptr<StateRepository> m_ssg;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
-
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
-
-    State m_initial_state;
-    IWAlgorithm m_iw;
-
 public:
     /// @brief Simplest construction
     SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity);
@@ -57,6 +43,20 @@ public:
     SearchStatus find_solution(State start_state, GroundActionList& out_plan) override;
 
     SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override;
+
+private:
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    int m_max_arity;
+
+    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
+    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+    std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
+
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+
+    State m_initial_state;
+    IWAlgorithm m_iw;
 };
 
 using SIWAlgorithm = SerializedIterativeWidthAlgorithm;

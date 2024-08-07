@@ -30,19 +30,6 @@ namespace mimir
 
 class IterativeWidthAlgorithm : public IAlgorithm
 {
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    int m_max_arity;
-
-    std::shared_ptr<StateRepository> m_ssg;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
-
-    State m_initial_state;
-    BrFSAlgorithm m_brfs;
-
 public:
     /// @brief Simplest construction
     IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity);
@@ -62,6 +49,19 @@ public:
 
     SearchStatus
     find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, GroundActionList& out_plan, std::optional<State>& out_goal_state);
+
+private:
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    int m_max_arity;
+
+    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
+    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+
+    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
+
+    State m_initial_state;
+    BrFSAlgorithm m_brfs;
 };
 
 using IWAlgorithm = IterativeWidthAlgorithm;

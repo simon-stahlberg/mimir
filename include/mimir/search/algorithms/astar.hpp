@@ -21,7 +21,7 @@
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
-#include "mimir/search/search_nodes/informed.hpp"
+#include "mimir/search/search_node.hpp"
 #include "mimir/search/state.hpp"
 
 #include <memory>
@@ -35,15 +35,6 @@ namespace mimir
  */
 class AStarAlgorithm : public IAlgorithm
 {
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
-    State m_initial_state;
-    std::shared_ptr<IHeuristic> m_heuristic;
-
-    FlatInformedSearchNodeVector m_search_nodes;
-    PriorityQueue<State> m_openlist;
-
 public:
     /// @brief Simplest construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic);
@@ -64,6 +55,15 @@ public:
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
                                std::vector<GroundAction>& out_plan,
                                std::optional<State>& out_goal_state);
+
+private:
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<StateRepository> m_ssg;
+    State m_initial_state;
+    std::shared_ptr<IHeuristic> m_heuristic;
+
+    FlatSearchNodeVector<double, double> m_search_nodes;
+    PriorityQueue<State> m_openlist;
 };
 
 }

@@ -1,0 +1,179 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
+#define MIMIR_SEARCH_SEARCH_NODE_HPP_
+
+#include "mimir/search/action.hpp"
+#include "mimir/search/state.hpp"
+
+#include <cassert>
+#include <flatmemory/flatmemory.hpp>
+
+namespace mimir
+{
+
+enum SearchNodeStatus
+{
+    NEW = 0,
+    OPEN = 1,
+    CLOSED = 2,
+    DEAD_END = 3,
+    UNKNOWN = 4,
+};
+
+template<typename... SearchNodeProperties>
+using FlatSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus,  //
+                                               std::optional<State>,
+                                               std::optional<GroundAction>,
+                                               SearchNodeProperties...>;
+
+template<typename... SearchNodeProperties>
+using FlatSearchNodeBuilder = flatmemory::Builder<FlatSearchNodeLayout<SearchNodeProperties...>>;
+template<typename... SearchNodeProperties>
+using FlatSearchNode = flatmemory::View<FlatSearchNodeLayout<SearchNodeProperties...>>;
+template<typename... SearchNodeProperties>
+using FlatConstSearchNode = flatmemory::ConstView<FlatSearchNodeLayout<SearchNodeProperties...>>;
+
+template<typename... SearchNodeProperties>
+using FlatSearchNodeVector = flatmemory::FixedSizedTypeVector<FlatSearchNodeLayout<SearchNodeProperties...>>;
+
+/**
+ * Proxy for more meaningful access
+ */
+
+template<typename... SearchNodeProperties>
+class SearchNodeBuilder
+{
+public:
+    SearchNodeBuilder() : m_builder() { finish(); }
+    explicit SearchNodeBuilder(FlatSearchNodeBuilder<SearchNodeProperties...> builder) : m_builder(std::move(builder)) { finish(); }
+    SearchNodeBuilder(SearchNodeStatus status,
+                      std::optional<State> parent_state,
+                      std::optional<GroundAction> creating_action,
+                      SearchNodeProperties&&... properties)
+    {
+        set_status(status);
+        set_parent_state(parent_state);
+        set_creating_action(creating_action);
+        set_properties(std::make_index_sequence<sizeof...(SearchNodeProperties)> {}, std::forward<SearchNodeProperties>(properties)...);
+        finish();
+    }
+
+    void finish() { m_builder.finish(); }
+    uint8_t* get_data() { return m_builder.buffer().data(); }
+    size_t get_size() { return m_builder.buffer().size(); }
+    FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() { return m_builder; }
+    const FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() const { return m_builder; }
+
+    void set_status(SearchNodeStatus status) { m_builder.template get<0>() = status; }
+    void set_parent_state(std::optional<State> parent_state) { m_builder.template get<1>() = parent_state; }
+    void set_creating_action(std::optional<GroundAction> creating_action) { m_builder.template get<2>() = creating_action; }
+
+    /// @brief Return a reference to the I-th `SearchNodeProperties`.
+    /// @tparam I the index of the property in the parameter pack.
+    /// @return a reference to the I-th property.
+    template<int I>
+    auto& get_property()
+    {
+        static_assert(I < sizeof...(SearchNodeProperties));
+        return m_builder.template get<I + 3>();
+    }
+
+private:
+    FlatSearchNodeBuilder<SearchNodeProperties...> m_builder;
+
+    // Helper function to set properties using an index sequence.
+    template<std::size_t... Is>
+    void set_properties(std::index_sequence<Is...>, SearchNodeProperties&&... properties)
+    {
+        // This uses a fold expression to set each property.
+        ((m_builder.template get<3 + Is>() = std::forward<SearchNodeProperties>(properties)), ...);
+    }
+};
+
+template<typename... SearchNodeProperties>
+class SearchNode
+{
+private:
+    FlatSearchNode<SearchNodeProperties...> m_view;
+
+public:
+    SearchNode(FlatSearchNode<SearchNodeProperties...> view) : m_view(view) {}
+
+    SearchNodeStatus& get_status() { return m_view.template get<0>(); }
+    std::optional<State>& get_parent_state() { return m_view.template get<1>(); }
+    std::optional<GroundAction>& get_creating_action() { return m_view.template get<2>(); }
+
+    template<int I>
+    auto& get_property()
+    {
+        static_assert(I < sizeof...(SearchNodeProperties));
+        return m_view.template get<I + 3>();
+    }
+};
+
+template<typename... SearchNodeProperties>
+class ConstSearchNode
+{
+private:
+    FlatConstSearchNode<SearchNodeProperties...> m_view;
+
+public:
+    ConstSearchNode(FlatConstSearchNode<SearchNodeProperties...> view) : m_view(view) {}
+
+    SearchNodeStatus get_status() const { return m_view.template get<0>(); }
+    std::optional<State> get_parent_state() const { return m_view.template get<1>(); }
+    std::optional<GroundAction> get_creating_action() const { return m_view.template get<2>(); }
+
+    template<int I>
+    const auto& get_property() const
+    {
+        static_assert(I < sizeof...(SearchNodeProperties));
+        return m_view.template get<I + 3>();
+    }
+};
+
+/// @brief Compute the plan consisting of ground actions by collecting the creating actions
+///        and reversing them.
+/// @param search_nodes The collection of all search nodes.
+/// @param search_node The search node from which to start backtracking.
+/// @param[out] out_plan The sequence of ground actions that leads from the initial state to
+///                      the to the state underlying the search node.
+template<typename... SearchNodeProperties>
+void set_plan(const FlatSearchNodeVector<SearchNodeProperties...>& search_nodes,  //
+              const ConstSearchNode<SearchNodeProperties...>& search_node,
+              GroundActionList& out_plan)
+{
+    out_plan.clear();
+    auto cur_search_node = search_node;
+
+    while (cur_search_node.get_parent_state().has_value())
+    {
+        assert(cur_search_node.get_creating_action().has_value());
+
+        out_plan.push_back(cur_search_node.get_creating_action().value());
+
+        cur_search_node = ConstSearchNode<SearchNodeProperties...>(search_nodes.at(cur_search_node.get_parent_state().value().get_index()));
+    }
+
+    std::reverse(out_plan.begin(), out_plan.end());
+}
+
+}
+
+#endif

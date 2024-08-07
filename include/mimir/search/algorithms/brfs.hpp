@@ -23,7 +23,7 @@
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/search_nodes/uninformed.hpp"
+#include "mimir/search/search_node.hpp"
 
 #include <deque>
 #include <functional>
@@ -40,14 +40,6 @@ namespace mimir
  */
 class BrFSAlgorithm : public IAlgorithm
 {
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
-    State m_initial_state;
-    std::deque<State> m_queue;
-    FlatUninformedSearchNodeVector m_search_nodes;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
-
 public:
     /// @brief Simplest construction
     explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);
@@ -68,6 +60,14 @@ public:
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
                                GroundActionList& out_plan,
                                std::optional<State>& out_goal_state);
+
+private:
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<StateRepository> m_ssg;
+    State m_initial_state;
+    std::deque<State> m_queue;
+    FlatSearchNodeVector<uint32_t> m_search_nodes;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
 };
 
 }
