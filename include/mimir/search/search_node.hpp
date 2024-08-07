@@ -101,7 +101,7 @@ public:
     /// @brief Return a reference to the I-th `SearchNodeProperties`.
     /// @tparam I the index of the property in the parameter pack.
     /// @return a reference to the I-th property.
-    template<int I>
+    template<size_t I>
     auto& get_property()
     {
         static_assert(I < sizeof...(SearchNodeProperties));
@@ -138,7 +138,7 @@ public:
     std::optional<State>& get_parent_state() { return m_view.template get<1>(); }
     std::optional<GroundAction>& get_creating_action() { return m_view.template get<2>(); }
 
-    template<int I>
+    template<size_t I>
     auto& get_property()
     {
         static_assert(I < sizeof...(SearchNodeProperties));
@@ -164,7 +164,7 @@ public:
     std::optional<State> get_parent_state() const { return m_view.template get<1>(); }
     std::optional<GroundAction> get_creating_action() const { return m_view.template get<2>(); }
 
-    template<int I>
+    template<size_t I>
     const auto& get_property() const
     {
         static_assert(I < sizeof...(SearchNodeProperties));

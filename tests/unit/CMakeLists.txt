@@ -44,5 +44,5 @@ add_gtest(search_grounded_test                             "search/applicable_ac
 add_gtest(search_lifted_test                               "search/applicable_action_generators/lifted.cpp")
 add_gtest(search_priority_queue_test                       "search/openlists/priority_queue.cpp")
 add_gtest(search_single_test                               "search/planners/single.cpp")
-add_gtest(search_uninformed_test                           "search/search_nodes/uninformed.cpp")
+add_gtest(search_search_node_test                          "search/search_node.cpp")
 add_gtest(search_successor_state_generators_test           "search/successor_state_generator.cpp")

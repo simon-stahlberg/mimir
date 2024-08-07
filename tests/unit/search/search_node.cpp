@@ -23,7 +23,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchSearchNodesUninformedBuilderTest)
+TEST(MimirTests, SearchSearchNodeBuilderTest)
 {
     // Build a search node.
     auto search_node_builder = SearchNodeBuilder<double>();
@@ -49,7 +49,7 @@ TEST(MimirTests, SearchSearchNodesUninformedBuilderTest)
     EXPECT_EQ(search_node_view.get_property<0>(), 40);
 }
 
-TEST(MimirTests, SearchSearchNodesUninformedVectorTest)
+TEST(MimirTests, SearchSearchNodeVectorTest)
 {
     /* A vector that automatically resizes when accessing elements at index i
        and creating default constructed objects.
