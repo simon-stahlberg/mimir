@@ -98,12 +98,13 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
 std::vector<GlobalFaithfulAbstraction>
 GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
-    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    auto memories =
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
         auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
-        auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+        auto ssg = std::make_shared<StateRepository>(aag);
         memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
@@ -111,7 +112,8 @@ GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::ve
 }
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+        memories,
     const FaithfulAbstractionsOptions& options)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
@@ -237,9 +239,9 @@ AbstractionIndex GlobalFaithfulAbstraction::get_index() const { return m_index; 
 /* Memory */
 const std::shared_ptr<PDDLFactories>& GlobalFaithfulAbstraction::get_pddl_factories() const { return m_abstractions->at(m_index).get_pddl_factories(); }
 
-const std::shared_ptr<IAAG>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_index).get_aag(); }
+const std::shared_ptr<IApplicableActionGenerator>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_index).get_aag(); }
 
-const std::shared_ptr<SuccessorStateGenerator>& GlobalFaithfulAbstraction::get_ssg() const { return m_abstractions->at(m_index).get_ssg(); }
+const std::shared_ptr<StateRepository>& GlobalFaithfulAbstraction::get_ssg() const { return m_abstractions->at(m_index).get_ssg(); }
 
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 

@@ -15,10 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/successor_state_generator.hpp"
-
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
 
@@ -33,7 +32,7 @@ TEST(MimirTests, SearchSuccessorStateGeneratorTest)
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
     auto lifted_aag = std::make_shared<LiftedAAG>(problem, parser.get_factories());
-    auto ssg = SuccessorStateGenerator(lifted_aag);
+    auto ssg = StateRepository(lifted_aag);
     auto initial_state = ssg.get_or_create_initial_state();
 }
 

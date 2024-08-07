@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
-#define MIMIR_SEARCH_SUCCESSOR_STATE_GENERATOR_HPP_
+#ifndef MIMIR_SEARCH_STATE_REPOSITORY_HPP_
+#define MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
@@ -30,7 +30,7 @@ namespace mimir
 /**
  * Implementation class
  */
-class SuccessorStateGenerator
+class StateRepository
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
@@ -42,12 +42,12 @@ private:
     FlatBitsetBuilder<Derived> m_reached_derived_atoms;
 
 public:
-    explicit SuccessorStateGenerator(std::shared_ptr<IApplicableActionGenerator> aag);
+    explicit StateRepository(std::shared_ptr<IApplicableActionGenerator> aag);
 
-    SuccessorStateGenerator(const SuccessorStateGenerator& other) = delete;
-    SuccessorStateGenerator& operator=(const SuccessorStateGenerator& other) = delete;
-    SuccessorStateGenerator(SuccessorStateGenerator&& other) = delete;
-    SuccessorStateGenerator& operator=(SuccessorStateGenerator&& other) = delete;
+    StateRepository(const StateRepository& other) = delete;
+    StateRepository& operator=(const StateRepository& other) = delete;
+    StateRepository(StateRepository&& other) = delete;
+    StateRepository& operator=(StateRepository&& other) = delete;
 
     State get_or_create_initial_state();
 
@@ -61,7 +61,7 @@ public:
 
     const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const;
 
-    std::shared_ptr<IAAG> get_aag() const;
+    std::shared_ptr<IApplicableActionGenerator> get_aag() const;
 };
 
 }

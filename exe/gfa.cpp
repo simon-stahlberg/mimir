@@ -64,7 +64,8 @@ int main(int argc, char** argv)
     std::cout << "Num ss ground actions: " << num_ss_ground_actions << std::endl;
     std::cout << "Num ss ground axioms: " << num_ss_ground_axioms << std::endl;
 
-    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    auto memories =
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& state_space : state_spaces)
     {
         memories.emplace_back(state_space.get_problem(), state_space.get_pddl_factories(), state_space.get_aag(), state_space.get_ssg());

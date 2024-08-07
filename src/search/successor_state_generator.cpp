@@ -15,17 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/successor_state_generator.hpp"
-
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/state_repository.hpp"
 
 namespace mimir
 {
-SuccessorStateGenerator::SuccessorStateGenerator(std::shared_ptr<IApplicableActionGenerator> aag) : m_aag(std::move(aag)) {}
+StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> aag) : m_aag(std::move(aag)) {}
 
-State SuccessorStateGenerator::get_or_create_initial_state()
+State StateRepository::get_or_create_initial_state()
 {
     auto ground_atoms = GroundAtomList<Fluent> {};
 
@@ -42,7 +41,7 @@ State SuccessorStateGenerator::get_or_create_initial_state()
     return get_or_create_state(ground_atoms);
 }
 
-State SuccessorStateGenerator::get_or_create_state(const GroundAtomList<Fluent>& atoms)
+State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 {
     /* Fetch member references for non extended construction. */
 
@@ -94,7 +93,7 @@ State SuccessorStateGenerator::get_or_create_state(const GroundAtomList<Fluent>&
     return State(*iter2);
 }
 
-State SuccessorStateGenerator::get_or_create_successor_state(State state, GroundAction action)
+State StateRepository::get_or_create_successor_state(State state, GroundAction action)
 {
     /* Fetch member references for non extended construction. */
 
@@ -168,11 +167,11 @@ State SuccessorStateGenerator::get_or_create_successor_state(State state, Ground
     return State(*iter2);
 }
 
-size_t SuccessorStateGenerator::get_state_count() const { return m_states.size(); }
+size_t StateRepository::get_state_count() const { return m_states.size(); }
 
-const FlatBitsetBuilder<Fluent>& SuccessorStateGenerator::get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
+const FlatBitsetBuilder<Fluent>& StateRepository::get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
 
-const FlatBitsetBuilder<Derived>& SuccessorStateGenerator::get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
+const FlatBitsetBuilder<Derived>& StateRepository::get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
 
-std::shared_ptr<IAAG> SuccessorStateGenerator::get_aag() const { return m_aag; }
+std::shared_ptr<IApplicableActionGenerator> StateRepository::get_aag() const { return m_aag; }
 }

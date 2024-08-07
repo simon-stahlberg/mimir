@@ -37,7 +37,7 @@ class AStarAlgorithm : public IAlgorithm
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+    std::shared_ptr<StateRepository> m_ssg;
     State m_initial_state;
     std::shared_ptr<IHeuristic> m_heuristic;
 
@@ -50,7 +50,7 @@ public:
 
     /// @brief Complete construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                   std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                   std::shared_ptr<StateRepository> successor_state_generator,
                    std::shared_ptr<IHeuristic> heuristic);
 
     SearchStatus find_solution(std::vector<GroundAction>& out_plan) override;

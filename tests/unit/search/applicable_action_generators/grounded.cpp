@@ -18,7 +18,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
 
@@ -32,7 +32,7 @@ TEST(MimirTests, SearchAAGsDenseGroundedTest)
     PDDLParser parser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultGroundedAAGEventHandler>();
     auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories(), aag_event_handler);
-    auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+    auto ssg = std::make_shared<StateRepository>(aag);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(aag, ssg, brfs_event_handler);
     auto ground_actions = GroundActionList {};

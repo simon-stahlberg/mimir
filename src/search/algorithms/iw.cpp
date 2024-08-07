@@ -26,7 +26,7 @@
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <sstream>
 
@@ -949,7 +949,7 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity) :
     IterativeWidthAlgorithm(applicable_action_generator,
                             max_arity,
-                            std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
+                            std::make_shared<StateRepository>(applicable_action_generator),
                             std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
                             std::make_shared<DefaultIWAlgorithmEventHandler>())
 {
@@ -957,7 +957,7 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
 
 IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                                  int max_arity,
-                                                 std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                                                 std::shared_ptr<StateRepository> successor_state_generator,
                                                  std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                  std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
     m_aag(applicable_action_generator),

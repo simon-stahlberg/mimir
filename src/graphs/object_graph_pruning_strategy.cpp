@@ -204,8 +204,8 @@ void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitsetBuil
 
 std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningStrategy::create(Problem problem,
                                                                                                std::shared_ptr<PDDLFactories> factories,
-                                                                                               std::shared_ptr<IAAG> aag,
-                                                                                               std::shared_ptr<SuccessorStateGenerator> ssg,
+                                                                                               std::shared_ptr<IApplicableActionGenerator> aag,
+                                                                                               std::shared_ptr<StateRepository> ssg,
                                                                                                const StateSpaceOptions& options)
 {
     // TODO: check assumptions

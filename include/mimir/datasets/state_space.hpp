@@ -28,7 +28,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <cstddef>
 #include <loki/loki.hpp>
@@ -89,8 +89,8 @@ private:
     StateSpace(Problem problem,
                bool use_unit_cost_one,
                std::shared_ptr<PDDLFactories> pddl_factories,
-               std::shared_ptr<IAAG> aag,
-               std::shared_ptr<SuccessorStateGenerator> ssg,
+               std::shared_ptr<IApplicableActionGenerator> aag,
+               std::shared_ptr<StateRepository> ssg,
                GraphType graph,
                StateMap<StateIndex> state_to_index,
                StateIndex initial_state,
@@ -108,8 +108,8 @@ public:
     /// @return StateSpace if construction is within the given options, and otherwise nullptr.
     static std::optional<StateSpace> create(Problem problem,
                                             std::shared_ptr<PDDLFactories> factories,
-                                            std::shared_ptr<IAAG> aag,
-                                            std::shared_ptr<SuccessorStateGenerator> ssg,
+                                            std::shared_ptr<IApplicableActionGenerator> aag,
+                                            std::shared_ptr<StateRepository> ssg,
                                             const StateSpaceOptions& options = StateSpaceOptions());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
@@ -124,9 +124,10 @@ public:
     /// @param memories External memory to problems, parsers, aags, ssgs.
     /// @param options the options.
     /// @return `StateSpaceList` contains the `StateSpace`s for which the construction was successful.
-    static std::vector<StateSpace>
-    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           const StateSpacesOptions& options = StateSpacesOptions());
+    static std::vector<StateSpace> create(
+        const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+            memories,
+        const StateSpacesOptions& options = StateSpacesOptions());
 
     /**
      * Extended functionality
@@ -155,8 +156,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
-    const std::shared_ptr<IAAG>& get_aag() const;
-    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
+    const std::shared_ptr<StateRepository>& get_ssg() const;
 
     /* Graph */
     const GraphType& get_graph() const;
@@ -203,8 +204,8 @@ private:
 
     /* Memory */
     std::shared_ptr<PDDLFactories> m_pddl_factories;
-    std::shared_ptr<IAAG> m_aag;
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<StateRepository> m_ssg;
 
     /* States */
     GraphType m_graph;

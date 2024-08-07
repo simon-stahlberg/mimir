@@ -21,18 +21,18 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/openlists/interface.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 namespace mimir
 {
 
 AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic) :
-    AStarAlgorithm(applicable_action_generator, std::make_shared<SuccessorStateGenerator>(applicable_action_generator), std::move(heuristic))
+    AStarAlgorithm(applicable_action_generator, std::make_shared<StateRepository>(applicable_action_generator), std::move(heuristic))
 {
 }
 
 AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                               std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                               std::shared_ptr<StateRepository> successor_state_generator,
                                std::shared_ptr<IHeuristic> heuristic) :
     m_aag(std::move(applicable_action_generator)),
     m_ssg(std::move(successor_state_generator)),

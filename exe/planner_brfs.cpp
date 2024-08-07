@@ -64,10 +64,10 @@ int main(int argc, char** argv)
     }
 
     auto applicable_action_generator =
-        (grounded) ? std::shared_ptr<IAAG> { std::make_shared<GroundedAAG>(parser.get_problem(),
-                                                                           parser.get_factories(),
-                                                                           std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
-                     std::shared_ptr<IAAG> {
+        (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedAAG>(parser.get_problem(),
+                                                                                                 parser.get_factories(),
+                                                                                                 std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
+                     std::shared_ptr<IApplicableActionGenerator> {
                          std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
                      };
 
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
         }
     }
 
-    auto successor_state_generator = std::make_shared<SuccessorStateGenerator>(applicable_action_generator);
+    auto successor_state_generator = std::make_shared<StateRepository>(applicable_action_generator);
 
     auto event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
                                    std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };

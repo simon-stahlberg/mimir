@@ -79,8 +79,8 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          bool mark_true_goal_literals,
                                          bool use_unit_cost_one,
                                          std::shared_ptr<PDDLFactories> factories,
-                                         std::shared_ptr<IAAG> aag,
-                                         std::shared_ptr<SuccessorStateGenerator> ssg,
+                                         std::shared_ptr<IApplicableActionGenerator> aag,
+                                         std::shared_ptr<StateRepository> ssg,
                                          typename FaithfulAbstraction::GraphType graph,
                                          std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                                          StateMap<StateIndex> concrete_to_abstract_state,
@@ -131,15 +131,15 @@ FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& pro
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
     auto aag = std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories());
-    auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+    auto ssg = std::make_shared<StateRepository>(aag);
 
     return FaithfulAbstraction::create(parser.get_problem(), parser.get_factories(), aag, ssg, options);
 }
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                                std::shared_ptr<PDDLFactories> factories,
-                                                               std::shared_ptr<IAAG> aag,
-                                                               std::shared_ptr<SuccessorStateGenerator> ssg,
+                                                               std::shared_ptr<IApplicableActionGenerator> aag,
+                                                               std::shared_ptr<StateRepository> ssg,
                                                                const FaithfulAbstractionOptions& options)
 {
     auto stop_watch = StopWatch(options.timeout_ms);
@@ -440,12 +440,13 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 std::vector<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
-    auto memories = std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>> {};
+    auto memories =
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
         auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
-        auto ssg = std::make_shared<SuccessorStateGenerator>(aag);
+        auto ssg = std::make_shared<StateRepository>(aag);
         memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
     }
 
@@ -453,7 +454,8 @@ FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<f
 }
 
 std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+        memories,
     const FaithfulAbstractionsOptions& options)
 {
     auto abstractions_data = std::vector<FaithfulAbstraction> {};
@@ -566,9 +568,9 @@ bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost
 /* Memory */
 const std::shared_ptr<PDDLFactories>& FaithfulAbstraction::get_pddl_factories() const { return m_pddl_factories; }
 
-const std::shared_ptr<IAAG>& FaithfulAbstraction::get_aag() const { return m_aag; }
+const std::shared_ptr<IApplicableActionGenerator>& FaithfulAbstraction::get_aag() const { return m_aag; }
 
-const std::shared_ptr<SuccessorStateGenerator>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
+const std::shared_ptr<StateRepository>& FaithfulAbstraction::get_ssg() const { return m_ssg; }
 
 /* Graph */
 const typename FaithfulAbstraction::GraphType& FaithfulAbstraction::get_graph() const { return m_graph; }

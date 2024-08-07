@@ -60,7 +60,7 @@
 #include "mimir/search/planners.hpp"
 #include "mimir/search/search_nodes.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 /**
  * DataSet

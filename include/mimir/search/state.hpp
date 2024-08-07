@@ -83,9 +83,9 @@ public:
 
     /// @brief Return true iff two states are equal.
     ///
-    /// For states in same SuccessorStateGenerator, we know they are already unique.
+    /// For states in same StateRepository, we know they are already unique.
     /// Hence, comparison of the buffer pointer suffices.
-    /// For states in different SuccessorStateGenerator, buffer pointers are always different.
+    /// For states in different StateRepository, buffer pointers are always different.
     /// Hence, comparison always returns false.
     bool operator==(State other) const;
 

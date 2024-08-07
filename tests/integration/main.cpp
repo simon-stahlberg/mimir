@@ -56,10 +56,10 @@ int main(int argc, char** argv)
     std::cout << *parser.get_problem() << std::endl;
 
     auto applicable_action_generator =
-        (grounded) ? std::shared_ptr<IAAG> { std::make_shared<GroundedAAG>(parser.get_problem(),
-                                                                           parser.get_factories(),
-                                                                           std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
-                     std::shared_ptr<IAAG> {
+        (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedAAG>(parser.get_problem(),
+                                                                                                 parser.get_factories(),
+                                                                                                 std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
+                     std::shared_ptr<IApplicableActionGenerator> {
                          std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
                      };
 

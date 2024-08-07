@@ -30,7 +30,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <loki/details/utils/filesystem.hpp>
 #include <memory>
@@ -120,8 +120,8 @@ private:
                         bool mark_true_goal_literals,
                         bool use_unit_cost_one,
                         std::shared_ptr<PDDLFactories> factories,
-                        std::shared_ptr<IAAG> aag,
-                        std::shared_ptr<SuccessorStateGenerator> ssg,
+                        std::shared_ptr<IApplicableActionGenerator> aag,
+                        std::shared_ptr<StateRepository> ssg,
                         GraphType graph,
                         std::shared_ptr<const StateList> concrete_states_by_abstract_state,
                         StateMap<StateIndex> concrete_to_abstract_state,
@@ -144,8 +144,8 @@ public:
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(Problem problem,
                                                      std::shared_ptr<PDDLFactories> factories,
-                                                     std::shared_ptr<IAAG> aag,
-                                                     std::shared_ptr<SuccessorStateGenerator> ssg,
+                                                     std::shared_ptr<IApplicableActionGenerator> aag,
+                                                     std::shared_ptr<StateRepository> ssg,
                                                      const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
@@ -157,9 +157,10 @@ public:
     /// @param memories External memory to problem, factories, aags, ssgs.
     /// @param options the options.
     /// @return `FaithfulAbstractionList` contains the `FaithfulAbstraction`s for which the construction was successful.
-    static std::vector<FaithfulAbstraction>
-    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
+    static std::vector<FaithfulAbstraction> create(
+        const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+            memories,
+        const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**
      * Abstraction functionality
@@ -195,8 +196,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
-    const std::shared_ptr<IAAG>& get_aag() const;
-    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
+    const std::shared_ptr<StateRepository>& get_ssg() const;
 
     /* Graph */
     const GraphType& get_graph() const;
@@ -242,8 +243,8 @@ private:
 
     /* Memory */
     std::shared_ptr<PDDLFactories> m_pddl_factories;
-    std::shared_ptr<IAAG> m_aag;
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<StateRepository> m_ssg;
 
     /* States */
     GraphType m_graph;

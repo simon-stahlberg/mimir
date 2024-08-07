@@ -27,7 +27,6 @@ namespace mimir
 
 /* Algorithms */
 class IApplicableActionGenerator;
-using IAAG = IApplicableActionGenerator;
 
 class IAlgorithm;
 
@@ -56,7 +55,7 @@ using StateIndex = uint32_t;
 using StateIndexList = std::vector<StateIndex>;
 using StateIndexSet = std::unordered_set<StateIndex>;
 
-class SuccessorStateGenerator;
+class StateRepository;
 
 }
 

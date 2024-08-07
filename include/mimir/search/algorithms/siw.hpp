@@ -30,7 +30,7 @@ private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     int m_max_arity;
 
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+    std::shared_ptr<StateRepository> m_ssg;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
@@ -47,7 +47,7 @@ public:
     /// @brief Complete construction
     SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                       int max_arity,
-                                      std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                                      std::shared_ptr<StateRepository> successor_state_generator,
                                       std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                       std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
                                       std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler);

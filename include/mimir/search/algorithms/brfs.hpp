@@ -42,7 +42,7 @@ class BrFSAlgorithm : public IAlgorithm
 {
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<SuccessorStateGenerator> m_ssg;
+    std::shared_ptr<StateRepository> m_ssg;
     State m_initial_state;
     std::deque<State> m_queue;
     FlatUninformedSearchNodeVector m_search_nodes;
@@ -54,7 +54,7 @@ public:
 
     /// @brief Complete construction
     BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                  std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                  std::shared_ptr<StateRepository> successor_state_generator,
                   std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler);
 
     SearchStatus find_solution(GroundActionList& out_plan) override;

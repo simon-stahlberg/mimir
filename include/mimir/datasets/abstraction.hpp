@@ -67,8 +67,8 @@ private:
 
         /* Memory */
         virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
-        virtual const std::shared_ptr<IAAG>& get_aag() const = 0;
-        virtual const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const = 0;
+        virtual const std::shared_ptr<IApplicableActionGenerator>& get_aag() const = 0;
+        virtual const std::shared_ptr<StateRepository>& get_ssg() const = 0;
 
         /* States */
         virtual StateIndex get_initial_state() const = 0;
@@ -123,8 +123,8 @@ private:
 
         /* Memory */
         const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override { return m_abstraction.get_pddl_factories(); }
-        const std::shared_ptr<IAAG>& get_aag() const override { return m_abstraction.get_aag(); }
-        const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const override { return m_abstraction.get_ssg(); }
+        const std::shared_ptr<IApplicableActionGenerator>& get_aag() const override { return m_abstraction.get_aag(); }
+        const std::shared_ptr<StateRepository>& get_ssg() const override { return m_abstraction.get_ssg(); }
 
         /* States */
         StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
@@ -210,8 +210,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const { return m_pimpl->get_pddl_factories(); }
-    const std::shared_ptr<IAAG>& get_aag() const { return m_pimpl->get_aag(); }
-    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const { return m_pimpl->get_ssg(); }
+    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const { return m_pimpl->get_aag(); }
+    const std::shared_ptr<StateRepository>& get_ssg() const { return m_pimpl->get_ssg(); }
 
     /* States */
     StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }

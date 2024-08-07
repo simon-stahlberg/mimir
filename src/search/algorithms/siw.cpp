@@ -21,7 +21,7 @@
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <sstream>
 
@@ -61,7 +61,7 @@ bool ProblemGoalCounter::test_dynamic_goal(const State state) { return count_uns
 SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity) :
     SerializedIterativeWidthAlgorithm(applicable_action_generator,
                                       max_arity,
-                                      std::make_shared<SuccessorStateGenerator>(applicable_action_generator),
+                                      std::make_shared<StateRepository>(applicable_action_generator),
                                       std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
                                       std::make_shared<DefaultIWAlgorithmEventHandler>(),
                                       std::make_shared<DefaultSIWAlgorithmEventHandler>())
@@ -70,7 +70,7 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
 
 SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                                                      int max_arity,
-                                                                     std::shared_ptr<SuccessorStateGenerator> successor_state_generator,
+                                                                     std::shared_ptr<StateRepository> successor_state_generator,
                                                                      std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                                      std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
                                                                      std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler) :

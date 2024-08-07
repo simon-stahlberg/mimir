@@ -963,19 +963,19 @@ void init_pymimir(py::module_& m)
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
     /* AAGs */
 
-    py::class_<IAAG, std::shared_ptr<IAAG>>(m, "IAAG")  //
+    py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(m, "IApplicableActionGenerator")  //
         .def(
             "compute_applicable_actions",
-            [](IAAG& self, State state)
+            [](IApplicableActionGenerator& self, State state)
             {
                 auto applicable_actions = GroundActionList();
                 self.generate_applicable_actions(state, applicable_actions);
                 return applicable_actions;
             },
             py::keep_alive<0, 1>())
-        .def("get_action", &IAAG::get_action, py::keep_alive<0, 1>())
-        .def("get_problem", &IAAG::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &IAAG::get_pddl_factories);
+        .def("get_action", &IApplicableActionGenerator::get_action, py::keep_alive<0, 1>())
+        .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_factories", &IApplicableActionGenerator::get_pddl_factories);
 
     // Lifted
     py::class_<ILiftedAAGEventHandler, std::shared_ptr<ILiftedAAGEventHandler>>(m, "ILiftedAAGEventHandler");  //
@@ -984,7 +984,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<DebugLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DebugLiftedAAGEventHandler>>(m, "DebugLiftedAAGEventHandler")  //
         .def(py::init<>());
-    py::class_<LiftedAAG, IAAG, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
+    py::class_<LiftedAAG, IApplicableActionGenerator, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedAAGEventHandler>>());
 
@@ -995,25 +995,25 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<DebugGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DebugGroundedAAGEventHandler>>(m, "DebugGroundedAAGEventHandler")  //
         .def(py::init<>());
-    py::class_<GroundedAAG, IAAG, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
+    py::class_<GroundedAAG, IApplicableActionGenerator, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedAAGEventHandler>>());
 
-    /* SuccessorStateGenerator */
-    py::class_<SuccessorStateGenerator, std::shared_ptr<SuccessorStateGenerator>>(m, "SuccessorStateGenerator")  //
-        .def(py::init<std::shared_ptr<IAAG>>())
-        .def("get_or_create_initial_state", &SuccessorStateGenerator::get_or_create_initial_state, py::keep_alive<0, 1>())      // keep_alive because value type
-        .def("get_or_create_state", &SuccessorStateGenerator::get_or_create_state, py::keep_alive<0, 1>())                      // keep_alive because value type
-        .def("get_or_create_successor_state", &SuccessorStateGenerator::get_or_create_successor_state, py::keep_alive<0, 1>())  // keep_alive because value type
-        .def("get_state_count", &SuccessorStateGenerator::get_state_count)
+    /* StateRepository */
+    py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>())
+        .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::keep_alive<0, 1>())      // keep_alive because value type
+        .def("get_or_create_state", &StateRepository::get_or_create_state, py::keep_alive<0, 1>())                      // keep_alive because value type
+        .def("get_or_create_successor_state", &StateRepository::get_or_create_successor_state, py::keep_alive<0, 1>())  // keep_alive because value type
+        .def("get_state_count", &StateRepository::get_state_count)
         .def("get_reached_fluent_ground_atoms",
-             [](const SuccessorStateGenerator& self)
+             [](const StateRepository& self)
              {
                  const auto& atoms = self.get_reached_fluent_ground_atoms();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
         .def("get_reached_derived_ground_atoms",
-             [](const SuccessorStateGenerator& self)
+             [](const StateRepository& self)
              {
                  const auto& atoms = self.get_reached_derived_ground_atoms();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
@@ -1035,8 +1035,8 @@ void init_pymimir(py::module_& m)
 
     // AStar
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<IHeuristic>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>, std::shared_ptr<IHeuristic>>());
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<IHeuristic>>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IHeuristic>>());
 
     // BrFS
     py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler");
@@ -1049,8 +1049,8 @@ void init_pymimir(py::module_& m)
         "DebugBrFSAlgorithmEventHandler")  //
         .def(py::init<>());
     py::class_<BrFSAlgorithm, IAlgorithm, std::shared_ptr<BrFSAlgorithm>>(m, "BrFSAlgorithm")
-        .def(py::init<std::shared_ptr<IAAG>>())
-        .def(py::init<std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
 
     // IW
     py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
@@ -1103,10 +1103,10 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IAAG>, int>())
-        .def(py::init<std::shared_ptr<IAAG>,
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
                       int,
-                      std::shared_ptr<SuccessorStateGenerator>,
+                      std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>>());
 
@@ -1116,10 +1116,10 @@ void init_pymimir(py::module_& m)
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IAAG>, int>())
-        .def(py::init<std::shared_ptr<IAAG>,
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
                       int,
-                      std::shared_ptr<SuccessorStateGenerator>,
+                      std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,
                       std::shared_ptr<ISIWAlgorithmEventHandler>>());
@@ -1199,8 +1199,8 @@ void init_pymimir(py::module_& m)
             "create",
             [](Problem problem,
                std::shared_ptr<PDDLFactories> factories,
-               std::shared_ptr<IAAG> aag,
-               std::shared_ptr<SuccessorStateGenerator> ssg,
+               std::shared_ptr<IApplicableActionGenerator> aag,
+               std::shared_ptr<StateRepository> ssg,
                const StateSpaceOptions& options) { return StateSpace::create(problem, factories, aag, ssg, options); },
             py::arg("problem"),
             py::arg("factories"),
@@ -1219,7 +1219,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = StateSpacesOptions())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
+            [](const std::vector<
+                   std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
                    memories,
                const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
             py::arg("memories"),
@@ -1386,8 +1387,8 @@ void init_pymimir(py::module_& m)
             "create",
             [](Problem problem,
                std::shared_ptr<PDDLFactories> factories,
-               std::shared_ptr<IAAG> aag,
-               std::shared_ptr<SuccessorStateGenerator> ssg,
+               std::shared_ptr<IApplicableActionGenerator> aag,
+               std::shared_ptr<StateRepository> ssg,
                const FaithfulAbstractionOptions& options) { return FaithfulAbstraction::create(problem, factories, aag, ssg, options); },
             py::arg("problem"),
             py::arg("factories"),
@@ -1406,7 +1407,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
+            [](const std::vector<
+                   std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
                    memories,
                const FaithfulAbstractionsOptions& options) { return FaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
@@ -1530,7 +1532,8 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
-            [](const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>&
+            [](const std::vector<
+                   std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
                    memories,
                const FaithfulAbstractionsOptions& options) { return GlobalFaithfulAbstraction::create(memories, options); },
             py::arg("memories"),

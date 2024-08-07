@@ -26,7 +26,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <deque>
 #include <memory>
@@ -100,7 +100,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     // m_problem = to_pnf_grounded_transformer.run(*m_problem);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
     auto delete_free_lifted_aag = std::make_shared<LiftedAAG>(delete_free_problem, m_pddl_factories);
-    auto delete_free_ssg = SuccessorStateGenerator(delete_free_lifted_aag);
+    auto delete_free_ssg = StateRepository(delete_free_lifted_aag);
 
     auto state_builder = StateBuilder();
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();

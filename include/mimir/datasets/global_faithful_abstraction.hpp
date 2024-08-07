@@ -25,7 +25,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/successor_state_generator.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <loki/details/utils/filesystem.hpp>
 #include <memory>
@@ -106,9 +106,10 @@ public:
     /// @param memories External memory to problem, factories, aags, ssgs.
     /// @param options the options.
     /// @return `GlobalFaithfulAbstractionList` contains the `GlobalFaithfulAbstraction`s for which the construction was successful.
-    static std::vector<GlobalFaithfulAbstraction>
-    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
+    static std::vector<GlobalFaithfulAbstraction> create(
+        const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+            memories,
+        const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**
      * Abstraction functionality
@@ -146,8 +147,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
-    const std::shared_ptr<IAAG>& get_aag() const;
-    const std::shared_ptr<SuccessorStateGenerator>& get_ssg() const;
+    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
+    const std::shared_ptr<StateRepository>& get_ssg() const;
     const FaithfulAbstractionList& get_abstractions() const;
 
     /* Graph */
