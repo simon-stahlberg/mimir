@@ -68,6 +68,8 @@ public:
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
 
+/// @brief A `GlobalFaithfulAbstraction` is a wrapper around a collection of `FaithfulAbstraction`s
+/// representing one of the `FaithfulAbstraction` with additional isomorphism reduction applied across the collection.
 class GlobalFaithfulAbstraction
 {
 public:
@@ -95,10 +97,15 @@ private:
                               size_t num_non_isomorphic_states);
 
 public:
+    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
                                                          const std::vector<fs::path>& problem_filepaths,
                                                          const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
+    /// @brief Try to create a `GlobalFaithfulAbstractionList` from the given data and the given options.
+    /// @param memories External memory to problem, factories, aags, ssgs.
+    /// @param options the options.
+    /// @return `GlobalFaithfulAbstractionList` contains the `GlobalFaithfulAbstraction`s for which the construction was successful.
     static std::vector<GlobalFaithfulAbstraction>
     create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
@@ -125,7 +132,7 @@ public:
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    std::vector<DistanceList> compute_pairwise_shortest_state_distances() const;
+    DistanceMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      * Getters
@@ -177,6 +184,7 @@ public:
 
     /* Distances */
     const DistanceList& get_goal_distances() const;
+    Distance get_goal_distance(StateIndex state) const;
 
     /* Additional */
     const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;

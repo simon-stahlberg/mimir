@@ -153,7 +153,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     auto concrete_to_abstract_state = StateMap<StateIndex> {};
-    auto abstract_states_by_certificate = CertificateToStateIndexMap {};
+    auto abstract_states_by_certificate =
+        std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>> {};
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
@@ -529,7 +530,7 @@ template DistanceList FaithfulAbstraction::compute_shortest_distances_from_state
 template DistanceList FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
 
 template<IsTraversalDirection Direction>
-std::vector<DistanceList> FaithfulAbstraction::compute_pairwise_shortest_state_distances() const
+DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances() const
 {
     auto transition_costs = TransitionCostList {};
     if (m_use_unit_cost_one)
@@ -548,8 +549,8 @@ std::vector<DistanceList> FaithfulAbstraction::compute_pairwise_shortest_state_d
     return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
 
-template std::vector<DistanceList> FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template std::vector<DistanceList> FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  * Getters
@@ -655,6 +656,8 @@ size_t FaithfulAbstraction::get_num_transitions() const { return m_graph.get_num
 
 /* Distances */
 const DistanceList& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
+
+Distance FaithfulAbstraction::get_goal_distance(StateIndex state) const { return m_goal_distances.at(state); }
 
 /* Additional */
 const std::map<Distance, StateIndexList>& FaithfulAbstraction::get_states_by_goal_distance() const { return m_states_by_goal_distance; }

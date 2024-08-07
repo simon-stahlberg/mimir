@@ -40,6 +40,7 @@
 namespace mimir
 {
 
+/// @brief StateSpaceOptions encapsulates options to create a single state space with default parameters.
 struct StateSpaceOptions
 {
     bool use_unit_cost_one = true;
@@ -48,6 +49,7 @@ struct StateSpaceOptions
     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
 };
 
+/// @brief StateSpacesOptions encapsulates options to create a collection of state spaces with default parameters.
 struct StateSpacesOptions
 {
     StateSpaceOptions state_space_options = StateSpaceOptions();
@@ -55,8 +57,13 @@ struct StateSpacesOptions
     uint32_t num_threads = std::thread::hardware_concurrency();
 };
 
-/// @brief A StateSpace encapsulates the complete dynamics of a PDDL problem.
-/// To keep the memory consumption small, we do not store information dependent on the initial state.
+/// @brief A `StateSpace` encapsulates the complete dynamics of a PDDL problem.
+///
+/// The underlying graph type is a `StaticBidirectionalGraph` over `ConcreteState` and `ConcreteTransition`.
+/// The `StateSpace` stores additional external properties on vertices such as initial state, goal states, deadend states.
+/// The getters are simple adapters to follow the notion of states and transitions from the literature.
+///
+/// Graph algorithms should be applied on the underlying graph, see e.g., `compute_pairwise_shortest_state_distances()`.
 class StateSpace
 {
 public:
@@ -75,9 +82,9 @@ public:
     using AdjacentEdgeIndexConstIteratorType = typename GraphType::AdjacentEdgeIndexConstIteratorType<Direction>;
 
 private:
-    /// @brief Constructs a state state from data.
+    /// @brief Constructs a `StateSpace` from data.
     /// The create function calls this constructor and ensures that
-    /// the state space is in a legal state allowing other parts of
+    /// the `StateSpace` is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
     StateSpace(Problem problem,
                bool use_unit_cost_one,
@@ -92,14 +99,13 @@ private:
                DistanceList goal_distances);
 
 public:
-    /// @brief Try to create a StateSpace from the given input files with the given resource limits.
+    /// @brief Try to create a `StateSpace` from the given input files with the given options.
     /// @param problem The problem from which to create the state space.
     /// @param parser External memory to PDDLFactories.
     /// @param aag External memory to aag.
     /// @param ssg External memory to ssg.
-    /// @param max_num_states The maximum number of states allowed in the StateSpace.
-    /// @param timeout_ms The maximum time spent on creating the StateSpace.
-    /// @return StateSpace if construction is within the given resource limits, and otherwise nullptr.
+    /// @param options the options.
+    /// @return StateSpace if construction is within the given options, and otherwise nullptr.
     static std::optional<StateSpace> create(Problem problem,
                                             std::shared_ptr<PDDLFactories> factories,
                                             std::shared_ptr<IAAG> aag,
@@ -110,22 +116,17 @@ public:
     static std::optional<StateSpace>
     create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options = StateSpaceOptions());
 
-    /// @brief Try to create a StateSpaceList from the given data and the given resource limits.
-    /// @param memories External memory to problems, parsers, aags, ssgs.
-    /// @param use_unit_cost_one whether to use unit cost one or action costs.
-    /// @param remove_if_unsolvable whether to remove state spaces of unsolvable problems.
-    /// @param sort_ascending_by_num_states whether the state spaces should be sorted ascending by the number of states.
-    /// @param max_num_states The maximum number of states allowed in a StateSpace.
-    /// @param timeout_ms The maximum time spent on creating a StateSpace.
-    /// @param num_threads The number of threads used for construction.
-    /// @return StateSpaceList contains the StateSpaces for which the construction is within the given resource limits.
-    static std::vector<StateSpace>
-    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
-           const StateSpacesOptions& options = StateSpacesOptions());
-
     /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
     static std::vector<StateSpace>
     create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options = StateSpacesOptions());
+
+    /// @brief Try to create a `StateSpaceList` from the given data and the given options.
+    /// @param memories External memory to problems, parsers, aags, ssgs.
+    /// @param options the options.
+    /// @return `StateSpaceList` contains the `StateSpace`s for which the construction was successful.
+    static std::vector<StateSpace>
+    create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
+           const StateSpacesOptions& options = StateSpacesOptions());
 
     /**
      * Extended functionality
@@ -142,7 +143,7 @@ public:
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    std::vector<DistanceList> compute_pairwise_shortest_state_distances() const;
+    DistanceMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      *  Getters
@@ -188,6 +189,7 @@ public:
 
     /* Distances */
     const DistanceList& get_goal_distances() const;
+    Distance get_goal_distance(StateIndex state) const;
     Distance get_max_goal_distance() const;
 
     /* Additional */

@@ -213,13 +213,13 @@ template DistanceList GlobalFaithfulAbstraction::compute_shortest_distances_from
 template DistanceList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& abstract_states) const;
 
 template<IsTraversalDirection Direction>
-std::vector<DistanceList> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances() const
+DistanceMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances() const
 {
     return m_abstractions->at(m_index).compute_pairwise_shortest_state_distances<Direction>();
 }
 
-template std::vector<DistanceList> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template std::vector<DistanceList> GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template DistanceMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template DistanceMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  * Getters
@@ -341,6 +341,8 @@ size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstrac
 
 /* Distances */
 const DistanceList& GlobalFaithfulAbstraction::get_goal_distances() const { return m_abstractions->at(m_index).get_goal_distances(); }
+
+Distance GlobalFaithfulAbstraction::get_goal_distance(StateIndex state) const { return m_abstractions->at(m_index).get_goal_distance(state); }
 
 /* Additional */
 const std::map<Distance, StateIndexList>& GlobalFaithfulAbstraction::get_states_by_goal_distance() const

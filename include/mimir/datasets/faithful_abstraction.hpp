@@ -43,7 +43,7 @@
 namespace mimir
 {
 
-/// @brief FaithfulAbstractionOptions enscapsulates options for creation of a single faithful abstraction with default arguments.
+/// @brief FaithfulAbstractionOptions enscapsulates options to create a single faithful abstraction with default arguments.
 struct FaithfulAbstractionOptions
 {
     bool mark_true_goal_literals = false;
@@ -56,7 +56,7 @@ struct FaithfulAbstractionOptions
     ObjectGraphPruningStrategyEnum pruning_strategy = ObjectGraphPruningStrategyEnum::None;
 };
 
-/// @brief FaithfulAbstractionOptions enscapsulates options for creation of a collection of faithful abstractions with default arguments.
+/// @brief FaithfulAbstractionOptions enscapsulates options to create a collection of faithful abstractions with default arguments.
 struct FaithfulAbstractionsOptions
 {
     FaithfulAbstractionOptions fa_options;
@@ -85,12 +85,15 @@ private:
 };
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
-template<typename T>
-using FaithfulAbstractStateMap = std::unordered_map<FaithfulAbstractState, T, loki::Hash<FaithfulAbstractState>, loki::EqualTo<FaithfulAbstractState>>;
-using CertificateToStateIndexMap = std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>>;
 
-/// @brief FaithfulAbstraction implements abstractions based on isomorphism testing.
+/// @brief A `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
+///
+/// The underlying graph type is a `StaticBidirectionalGraph` over `FaithfulAbstractState` and `AbstractTransition`.
+/// The `FaithfulAbstraction` stores additional external properties on vertices such as initial state, goal states, deadend states.
+/// The getters are simple adapters to follow the notion of states and transitions from the literature.
+///
+/// Graph algorithms should be applied on the underlying graph, see e.g., `compute_pairwise_shortest_state_distances()`.
 class FaithfulAbstraction
 {
 public:
@@ -109,9 +112,9 @@ public:
     using AdjacentEdgeIndexConstIteratorType = typename GraphType::AdjacentEdgeIndexConstIteratorType<Direction>;
 
 private:
-    /// @brief Constructs a state state from data.
+    /// @brief Constructs a `FaithfulAbstraction` from the given data.
     /// The create function calls this constructor and ensures that
-    /// the state space is in a legal state allowing other parts of
+    /// the `FaithfulAbstraction` is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
     FaithfulAbstraction(Problem problem,
                         bool mark_true_goal_literals,
@@ -132,17 +135,12 @@ public:
     static std::optional<FaithfulAbstraction>
     create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
-    /// @brief Compute a faithful abstraction if within resource limits.
+    /// @brief Try to create a `FaithfulAbstraction` from the given input files with the given options.
     /// @param problem is the problem.
     /// @param factories is the external PDDL factories.
     /// @param aag is the external applicable action generator.
     /// @param ssg is the external successor state generator.
-    /// @param mark_true_goal_literals whether satisfied goal literals should be marked.
-    /// @param use_unit_cost_one whether to use unit cost one or action costs.
-    /// @param remove_if_unsolvable whether an abstraction should be discared if unsolvable.
-    /// @param compute_complete_abstraction_mapping whether an to compute the complete abstraction mapping.
-    /// @param max_num_concrete_states the maximum number of abstract states.
-    /// @param timeout_ms the maximum time to compute the abstraction.
+    /// @param options the options.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(Problem problem,
                                                      std::shared_ptr<PDDLFactories> factories,
@@ -155,16 +153,10 @@ public:
                                                    const std::vector<fs::path>& problem_filepaths,
                                                    const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
-    /// @brief Try to create a FaithfulAbstractionList from the given data and the given resource limits.
+    /// @brief Try to create a FaithfulAbstractionList from the given data and the given options.
     /// @param memories External memory to problem, factories, aags, ssgs.
-    /// @param mark_true_goal_literals whether satisfied goal literals should be marked.
-    /// @param use_unit_cost_one whether to use unit cost one or action costs.
-    /// @param remove_if_unsolvable whether to remove abstractions of unsolvable problems.
-    /// @param sort_ascending_by_num_states whether the abstractions should be sorted ascending by the number of states.
-    /// @param max_num_concrete_states The maximum number of states allowed in an abstraction.
-    /// @param timeout_ms The maximum time spent on creating an abstraction.
-    /// @param num_threads The number of threads used for construction.
-    /// @return FaithfulAbstractionList contains the FaithfulAbstractions for which the construction is within the given resource limits.
+    /// @param options the options.
+    /// @return `FaithfulAbstractionList` contains the `FaithfulAbstraction`s for which the construction was successful.
     static std::vector<FaithfulAbstraction>
     create(const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IAAG>, std::shared_ptr<SuccessorStateGenerator>>>& memories,
            const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
@@ -190,7 +182,7 @@ public:
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    std::vector<DistanceList> compute_pairwise_shortest_state_distances() const;
+    DistanceMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      * Getters.
@@ -237,6 +229,7 @@ public:
 
     /* Distances */
     const DistanceList& get_goal_distances() const;
+    Distance get_goal_distance(StateIndex state) const;
 
     /* Additional */
     const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;

@@ -271,7 +271,7 @@ template DistanceList StateSpace::compute_shortest_distances_from_states<Forward
 template DistanceList StateSpace::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
 
 template<IsTraversalDirection Direction>
-std::vector<DistanceList> StateSpace::compute_pairwise_shortest_state_distances() const
+DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances() const
 {
     auto transition_costs = TransitionCostList {};
     if (m_use_unit_cost_one)
@@ -290,8 +290,8 @@ std::vector<DistanceList> StateSpace::compute_pairwise_shortest_state_distances(
     return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
 
-template std::vector<DistanceList> StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template std::vector<DistanceList> StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  *  Getters
@@ -390,6 +390,8 @@ size_t StateSpace::get_num_transitions() const { return m_graph.get_num_edges();
 
 /* Distances */
 const DistanceList& StateSpace::get_goal_distances() const { return m_goal_distances; }
+
+Distance StateSpace::get_goal_distance(StateIndex state) const { return m_goal_distances.at(state); }
 
 Distance StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
