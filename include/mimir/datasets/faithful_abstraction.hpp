@@ -172,7 +172,7 @@ public:
      * Extended functionality
      */
 
-    /// @brief Compute the shortest distances from the given states.
+    /// @brief Compute the shortest distances from the given states using Breadth-first search (unit cost 1) or Dijkstra.
     /// @tparam Direction the direction of traversal.
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.

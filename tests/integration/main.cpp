@@ -64,12 +64,12 @@ int main(int argc, char** argv)
                                                         parser.get_pddl_factories(),
                                                         std::make_shared<DebugLiftedApplicableActionGeneratorEventHandler>(false)) };
 
-    auto successor_state_generator = std::make_shared<SuccessorStateGenerator>(applicable_action_generator);
+    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
 
     auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
                                         std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
-    auto brfs = std::make_shared<BrFSAlgorithm>(applicable_action_generator, successor_state_generator, brfs_event_handler);
+    auto brfs = std::make_shared<BrFSAlgorithm>(applicable_action_generator, state_repository, brfs_event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(brfs));
 
