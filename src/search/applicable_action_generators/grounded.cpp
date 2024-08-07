@@ -79,13 +79,13 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories) :
-    GroundedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultGroundedAAGEventHandler>())
+    GroundedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
                                                                      std::shared_ptr<PDDLFactories> pddl_factories,
-                                                                     std::shared_ptr<IGroundedAAGEventHandler> event_handler) :
+                                                                     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),
     m_event_handler(std::move(event_handler)),
@@ -99,7 +99,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     // auto to_pnf_grounded_transformer = ToPositiveNormalFormGroundTransformer(m_pddl_factories);
     // m_problem = to_pnf_grounded_transformer.run(*m_problem);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
-    auto delete_free_lifted_aag = std::make_shared<LiftedAAG>(delete_free_problem, m_pddl_factories);
+    auto delete_free_lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(delete_free_problem, m_pddl_factories);
     auto delete_free_ssg = StateRepository(delete_free_lifted_aag);
 
     auto state_builder = StateBuilder();

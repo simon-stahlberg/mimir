@@ -23,11 +23,12 @@
 namespace mimir
 {
 
-class DefaultGroundedAAGEventHandler : public GroundedAAGEventHandlerBase<DefaultGroundedAAGEventHandler>
+class DefaultGroundedApplicableActionGeneratorEventHandler :
+    public GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>
 {
 private:
-    /* Implement GroundedAAGEventHandlerBase interface */
-    friend class GroundedAAGEventHandlerBase<DefaultGroundedAAGEventHandler>;
+    /* Implement GroundedApplicableActionGeneratorEventHandlerBase interface */
+    friend class GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>;
 
     void on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                                 const GroundAtomList<Derived>& reached_derived_atoms,
@@ -47,7 +48,10 @@ private:
     void on_end_search_impl() const;
 
 public:
-    explicit DefaultGroundedAAGEventHandler(bool quiet = true) : GroundedAAGEventHandlerBase<DefaultGroundedAAGEventHandler>(quiet) {}
+    explicit DefaultGroundedApplicableActionGeneratorEventHandler(bool quiet = true) :
+        GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>(quiet)
+    {
+    }
 };
 
 }

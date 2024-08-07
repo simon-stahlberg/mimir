@@ -38,8 +38,8 @@ class LiftedIWPlanner
 private:
     PDDLParser m_parser;
 
-    std::shared_ptr<ILiftedAAGEventHandler> m_aag_event_handler;
-    std::shared_ptr<LiftedAAG> m_aag;
+    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_aag_event_handler;
+    std::shared_ptr<LiftedApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
@@ -48,8 +48,8 @@ private:
 public:
     LiftedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_aag_event_handler(std::make_shared<DefaultLiftedAAGEventHandler>()),
-        m_aag(std::make_shared<LiftedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
+        m_aag_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
+        m_aag(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<StateRepository>(m_aag)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
@@ -65,7 +65,7 @@ public:
     }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
-    const LiftedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
+    const LiftedApplicableActionGeneratorStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };
 
 /// @brief Instantiate a grounded IW search
@@ -74,8 +74,8 @@ class GroundedIWPlanner
 private:
     PDDLParser m_parser;
 
-    std::shared_ptr<IGroundedAAGEventHandler> m_aag_event_handler;
-    std::shared_ptr<GroundedAAG> m_aag;
+    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_aag_event_handler;
+    std::shared_ptr<GroundedApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
@@ -84,8 +84,8 @@ private:
 public:
     GroundedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_aag_event_handler(std::make_shared<DefaultGroundedAAGEventHandler>()),
-        m_aag(std::make_shared<GroundedAAG>(m_parser.get_problem(), m_parser.get_factories(), m_aag_event_handler)),
+        m_aag_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
+        m_aag(std::make_shared<GroundedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<StateRepository>(m_aag)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
@@ -101,7 +101,7 @@ public:
     }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
-    const GroundedAAGStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
+    const GroundedApplicableActionGeneratorStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
 };
 
 TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth0Test)

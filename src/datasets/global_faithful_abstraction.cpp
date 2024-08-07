@@ -103,9 +103,9 @@ GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::ve
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
+        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
         auto ssg = std::make_shared<StateRepository>(aag);
-        memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
+        memories.emplace_back(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
     }
 
     return GlobalFaithfulAbstraction::create(memories, options);

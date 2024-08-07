@@ -27,6 +27,8 @@ namespace mimir
 
 /* Algorithms */
 class IApplicableActionGenerator;
+class GroundedApplicableActionGenerator;
+class LiftedApplicableActionGenerator;
 
 class IAlgorithm;
 

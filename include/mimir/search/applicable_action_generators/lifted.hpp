@@ -49,7 +49,7 @@ private:
 
     // Memory
     std::shared_ptr<PDDLFactories> m_pddl_factories;
-    std::shared_ptr<ILiftedAAGEventHandler> m_event_handler;
+    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     AxiomEvaluator m_axiom_evaluator;
 
@@ -71,7 +71,9 @@ public:
     LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler);
+    LiftedApplicableActionGenerator(Problem problem,
+                                    std::shared_ptr<PDDLFactories> ref_pddl_factories,
+                                    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
@@ -117,12 +119,6 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag);
-
-/**
- * Types
- */
-
-using LiftedAAG = LiftedApplicableActionGenerator;
 
 }  // namespace mimir
 

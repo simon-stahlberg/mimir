@@ -33,10 +33,10 @@ class MatchTree;
 /**
  * Interface class
  */
-class ILiftedAAGEventHandler
+class ILiftedApplicableActionGeneratorEventHandler
 {
 public:
-    virtual ~ILiftedAAGEventHandler() = default;
+    virtual ~ILiftedApplicableActionGeneratorEventHandler() = default;
 
     virtual void on_start_generating_applicable_actions() = 0;
 
@@ -62,7 +62,7 @@ public:
 
     virtual void on_finish_f_layer() = 0;
 
-    virtual const LiftedAAGStatistics& get_statistics() const = 0;
+    virtual const LiftedApplicableActionGeneratorStatistics& get_statistics() const = 0;
 };
 
 /**
@@ -71,14 +71,14 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class LiftedAAGEventHandlerBase : public ILiftedAAGEventHandler
+class LiftedApplicableActionGeneratorEventHandlerBase : public ILiftedApplicableActionGeneratorEventHandler
 {
 protected:
-    LiftedAAGStatistics m_statistics;
+    LiftedApplicableActionGeneratorStatistics m_statistics;
     bool m_quiet;
 
 private:
-    LiftedAAGEventHandlerBase() = default;
+    LiftedApplicableActionGeneratorEventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived_.
@@ -86,7 +86,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit LiftedAAGEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit LiftedApplicableActionGeneratorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_start_generating_applicable_actions() override
     {
@@ -194,7 +194,7 @@ public:
         }
     }
 
-    const LiftedAAGStatistics& get_statistics() const override { return m_statistics; }
+    const LiftedApplicableActionGeneratorStatistics& get_statistics() const override { return m_statistics; }
 };
 }
 

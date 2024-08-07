@@ -360,13 +360,13 @@ void LiftedApplicableActionGenerator::on_finish_f_layer() const { m_event_handle
 void LiftedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories) :
-    LiftedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultLiftedAAGEventHandler>())
+    LiftedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
 {
 }
 
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem,
                                                                  std::shared_ptr<PDDLFactories> pddl_factories,
-                                                                 std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
+                                                                 std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),
     m_event_handler(std::move(event_handler)),

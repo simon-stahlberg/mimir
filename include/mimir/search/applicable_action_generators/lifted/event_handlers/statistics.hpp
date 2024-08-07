@@ -25,7 +25,7 @@
 namespace mimir
 {
 
-class LiftedAAGStatistics
+class LiftedApplicableActionGeneratorStatistics
 {
 private:
     uint64_t m_num_ground_action_cache_hits;
@@ -42,7 +42,7 @@ private:
     std::vector<uint64_t> m_num_ground_axiom_cache_misses_until_f_value;
 
 public:
-    LiftedAAGStatistics() :
+    LiftedApplicableActionGeneratorStatistics() :
         m_num_ground_action_cache_hits(0),
         m_num_ground_action_cache_misses(0),
         m_num_ground_axiom_cache_hits(0),
@@ -89,26 +89,26 @@ public:
  * Pretty printing
  */
 
-inline std::ostream& operator<<(std::ostream& os, const LiftedAAGStatistics& statistics)
+inline std::ostream& operator<<(std::ostream& os, const LiftedApplicableActionGeneratorStatistics& statistics)
 {
-    os << "[LiftedAAG] Number of grounded action cache hits: " << statistics.get_num_ground_action_cache_hits() << std::endl
-       << "[LiftedAAG] Number of grounded action cache hits until last f-layer: "
+    os << "[LiftedApplicableActionGenerator] Number of grounded action cache hits: " << statistics.get_num_ground_action_cache_hits() << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded action cache hits until last f-layer: "
        << (statistics.get_num_ground_action_cache_hits_until_f_value().empty() ? 0 : statistics.get_num_ground_action_cache_hits_until_f_value().back())
        << std::endl
-       << "[LiftedAAG] Number of grounded action cache misses: " << statistics.get_num_ground_action_cache_misses() << std::endl
-       << "[LiftedAAG] Number of grounded action cache misses until last f-layer: "
+       << "[LiftedApplicableActionGenerator] Number of grounded action cache misses: " << statistics.get_num_ground_action_cache_misses() << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded action cache misses until last f-layer: "
        << (statistics.get_num_ground_action_cache_misses_until_f_value().empty() ? 0 : statistics.get_num_ground_action_cache_misses_until_f_value().back())
        << std::endl
-       << "[LiftedAAG] Number of generated inapplicable grounded actions until last f-layer: "
+       << "[LiftedApplicableActionGenerator] Number of generated inapplicable grounded actions until last f-layer: "
        << (statistics.get_num_inapplicable_grounded_actions_until_f_value().empty() ? 0 :
                                                                                       statistics.get_num_inapplicable_grounded_actions_until_f_value().back())
        << std::endl
-       << "[LiftedAAG] Number of grounded axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << std::endl
-       << "[LiftedAAG] Number of grounded axiom cache hits until last f-layer: "
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache hits until last f-layer: "
        << (statistics.get_num_ground_axiom_cache_hits_until_f_value().empty() ? 0 : statistics.get_num_ground_axiom_cache_hits_until_f_value().back())
        << std::endl
-       << "[LiftedAAG] Number of grounded axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << std::endl
-       << "[LiftedAAG] Number of grounded axiom cache misses until last f-layer: "
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache misses until last f-layer: "
        << (statistics.get_num_ground_axiom_cache_misses_until_f_value().empty() ? 0 : statistics.get_num_ground_axiom_cache_misses_until_f_value().back());
 
     return os;

@@ -21,56 +21,58 @@
 
 namespace mimir
 {
-void DebugLiftedAAGEventHandler::on_start_generating_applicable_actions_impl() const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_start_generating_applicable_actions_impl() const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_action_impl(Action action, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_impl(Action action, const ObjectList& binding) const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions,
+                                                                                                 const PDDLFactories& pddl_factories) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_start_generating_applicable_axioms_impl() const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_start_generating_applicable_axioms_impl() const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms,
+                                                                                                const PDDLFactories& pddl_factories) const
 {
     //
 }
 
-void DebugLiftedAAGEventHandler::on_finish_f_layer_impl() const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_finish_f_layer_impl() const
 {  //
 }
 
-void DebugLiftedAAGEventHandler::on_end_search_impl() const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_end_search_impl() const
 {  //
     std::cout << get_statistics() << std::endl;
 }

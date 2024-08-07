@@ -23,11 +23,12 @@
 namespace mimir
 {
 
-class DebugLiftedAAGEventHandler : public LiftedAAGEventHandlerBase<DebugLiftedAAGEventHandler>
+class DebugLiftedApplicableActionGeneratorEventHandler :
+    public LiftedApplicableActionGeneratorEventHandlerBase<DebugLiftedApplicableActionGeneratorEventHandler>
 {
 private:
-    /* Implement LiftedAAGEventHandlerBase interface */
-    friend class LiftedAAGEventHandlerBase<DebugLiftedAAGEventHandler>;
+    /* Implement LiftedApplicableActionGeneratorEventHandlerBase interface */
+    friend class LiftedApplicableActionGeneratorEventHandlerBase<DebugLiftedApplicableActionGeneratorEventHandler>;
 
     void on_start_generating_applicable_actions_impl() const;
 
@@ -54,7 +55,10 @@ private:
     void on_end_search_impl() const;
 
 public:
-    explicit DebugLiftedAAGEventHandler(bool quiet = true) : LiftedAAGEventHandlerBase<DebugLiftedAAGEventHandler>(quiet) {}
+    explicit DebugLiftedApplicableActionGeneratorEventHandler(bool quiet = true) :
+        LiftedApplicableActionGeneratorEventHandlerBase<DebugLiftedApplicableActionGeneratorEventHandler>(quiet)
+    {
+    }
 };
 
 }

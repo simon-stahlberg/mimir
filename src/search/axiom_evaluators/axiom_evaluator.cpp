@@ -120,7 +120,9 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& 
     m_event_handler->on_end_generating_applicable_axioms(applicable_axioms, *m_pddl_factories);
 }
 
-AxiomEvaluator::AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<ILiftedAAGEventHandler> event_handler) :
+AxiomEvaluator::AxiomEvaluator(Problem problem,
+                               std::shared_ptr<PDDLFactories> pddl_factories,
+                               std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),
     m_event_handler(std::move(event_handler)),

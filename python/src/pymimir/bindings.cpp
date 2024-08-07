@@ -861,7 +861,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::string, std::string>())
         .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference_internal)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference_internal)
-        .def("get_factories", &PDDLParser::get_factories);
+        .def("get_pddl_factories", &PDDLParser::get_pddl_factories);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Search
@@ -961,7 +961,8 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundActionList>(m, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
-    /* AAGs */
+
+    /* ApplicableActionGenerators */
 
     py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(m, "IApplicableActionGenerator")  //
         .def(
@@ -978,26 +979,42 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_factories", &IApplicableActionGenerator::get_pddl_factories);
 
     // Lifted
-    py::class_<ILiftedAAGEventHandler, std::shared_ptr<ILiftedAAGEventHandler>>(m, "ILiftedAAGEventHandler");  //
-    py::class_<DefaultLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DefaultLiftedAAGEventHandler>>(m,
-                                                                                                                    "DefaultLiftedAAGEventHandler")  //
+    py::class_<ILiftedApplicableActionGeneratorEventHandler, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(
+        m,
+        "ILiftedApplicableActionGeneratorEventHandler");  //
+    py::class_<DefaultLiftedApplicableActionGeneratorEventHandler,
+               ILiftedApplicableActionGeneratorEventHandler,
+               std::shared_ptr<DefaultLiftedApplicableActionGeneratorEventHandler>>(m,
+                                                                                    "DefaultLiftedApplicableActionGeneratorEventHandler")  //
         .def(py::init<>());
-    py::class_<DebugLiftedAAGEventHandler, ILiftedAAGEventHandler, std::shared_ptr<DebugLiftedAAGEventHandler>>(m, "DebugLiftedAAGEventHandler")  //
+    py::class_<DebugLiftedApplicableActionGeneratorEventHandler,
+               ILiftedApplicableActionGeneratorEventHandler,
+               std::shared_ptr<DebugLiftedApplicableActionGeneratorEventHandler>>(m, "DebugLiftedApplicableActionGeneratorEventHandler")  //
         .def(py::init<>());
-    py::class_<LiftedAAG, IApplicableActionGenerator, std::shared_ptr<LiftedAAG>>(m, "LiftedAAG")  //
+    py::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<LiftedApplicableActionGenerator>>(
+        m,
+        "LiftedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedAAGEventHandler>>());
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>());
 
     // Grounded
-    py::class_<IGroundedAAGEventHandler, std::shared_ptr<IGroundedAAGEventHandler>>(m, "IGroundedAAGEventHandler");  //
-    py::class_<DefaultGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DefaultGroundedAAGEventHandler>>(m,
-                                                                                                                          "DefaultGroundedAAGEventHandler")  //
+    py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
+        m,
+        "IGroundedApplicableActionGeneratorEventHandler");  //
+    py::class_<DefaultGroundedApplicableActionGeneratorEventHandler,
+               IGroundedApplicableActionGeneratorEventHandler,
+               std::shared_ptr<DefaultGroundedApplicableActionGeneratorEventHandler>>(m,
+                                                                                      "DefaultGroundedApplicableActionGeneratorEventHandler")  //
         .def(py::init<>());
-    py::class_<DebugGroundedAAGEventHandler, IGroundedAAGEventHandler, std::shared_ptr<DebugGroundedAAGEventHandler>>(m, "DebugGroundedAAGEventHandler")  //
+    py::class_<DebugGroundedApplicableActionGeneratorEventHandler,
+               IGroundedApplicableActionGeneratorEventHandler,
+               std::shared_ptr<DebugGroundedApplicableActionGeneratorEventHandler>>(m, "DebugGroundedApplicableActionGeneratorEventHandler")  //
         .def(py::init<>());
-    py::class_<GroundedAAG, IApplicableActionGenerator, std::shared_ptr<GroundedAAG>>(m, "GroundedAAG")  //
+    py::class_<GroundedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<GroundedApplicableActionGenerator>>(
+        m,
+        "GroundedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedAAGEventHandler>>());
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>());
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //

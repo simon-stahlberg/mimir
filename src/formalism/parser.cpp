@@ -77,7 +77,7 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_domain = m_problem->get_domain();
 }
 
-const std::shared_ptr<PDDLFactories>& PDDLParser::get_factories() const { return m_factories; }
+const std::shared_ptr<PDDLFactories>& PDDLParser::get_pddl_factories() const { return m_factories; }
 
 const loki::Domain PDDLParser::get_original_domain() const { return m_loki_domain_parser.get_domain(); }
 

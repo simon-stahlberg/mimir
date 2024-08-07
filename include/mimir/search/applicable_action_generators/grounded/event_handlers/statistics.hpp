@@ -25,7 +25,7 @@
 namespace mimir
 {
 
-class GroundedAAGStatistics
+class GroundedApplicableActionGeneratorStatistics
 {
 private:
     uint64_t m_num_delete_free_reachable_fluent_ground_atoms;
@@ -40,7 +40,7 @@ private:
     uint64_t m_num_nodes_in_axiom_match_tree;
 
 public:
-    GroundedAAGStatistics() :
+    GroundedApplicableActionGeneratorStatistics() :
         m_num_delete_free_reachable_fluent_ground_atoms(0),
         m_num_delete_free_reachable_derived_ground_atoms(0),
         m_num_delete_free_actions(0),

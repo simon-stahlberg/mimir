@@ -55,13 +55,14 @@ int main(int argc, char** argv)
     std::cout << "Problem:" << std::endl;
     std::cout << *parser.get_problem() << std::endl;
 
-    auto applicable_action_generator =
-        (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedAAG>(parser.get_problem(),
-                                                                                                 parser.get_factories(),
-                                                                                                 std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
-                     std::shared_ptr<IApplicableActionGenerator> {
-                         std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
-                     };
+    auto applicable_action_generator = (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedApplicableActionGenerator>(
+                                           parser.get_problem(),
+                                           parser.get_pddl_factories(),
+                                           std::make_shared<DebugGroundedApplicableActionGeneratorEventHandler>(false)) } :
+                                                    std::shared_ptr<IApplicableActionGenerator> { std::make_shared<LiftedApplicableActionGenerator>(
+                                                        parser.get_problem(),
+                                                        parser.get_pddl_factories(),
+                                                        std::make_shared<DebugLiftedApplicableActionGeneratorEventHandler>(false)) };
 
     auto successor_state_generator = std::make_shared<SuccessorStateGenerator>(applicable_action_generator);
 

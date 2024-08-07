@@ -63,17 +63,18 @@ int main(int argc, char** argv)
         std::cout << std::endl;
     }
 
-    auto applicable_action_generator =
-        (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedAAG>(parser.get_problem(),
-                                                                                                 parser.get_factories(),
-                                                                                                 std::make_shared<DebugGroundedAAGEventHandler>(false)) } :
-                     std::shared_ptr<IApplicableActionGenerator> {
-                         std::make_shared<LiftedAAG>(parser.get_problem(), parser.get_factories(), std::make_shared<DebugLiftedAAGEventHandler>(false))
-                     };
+    auto applicable_action_generator = (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedApplicableActionGenerator>(
+                                           parser.get_problem(),
+                                           parser.get_pddl_factories(),
+                                           std::make_shared<DebugGroundedApplicableActionGeneratorEventHandler>(false)) } :
+                                                    std::shared_ptr<IApplicableActionGenerator> { std::make_shared<LiftedApplicableActionGenerator>(
+                                                        parser.get_problem(),
+                                                        parser.get_pddl_factories(),
+                                                        std::make_shared<DebugLiftedApplicableActionGeneratorEventHandler>(false)) };
 
     if (debug)
     {
-        std::shared_ptr<LiftedAAG> lifted_aag = std::dynamic_pointer_cast<LiftedAAG>(applicable_action_generator);
+        std::shared_ptr<LiftedApplicableActionGenerator> lifted_aag = std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
 
         if (lifted_aag)
         {

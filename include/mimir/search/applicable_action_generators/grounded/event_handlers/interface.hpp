@@ -33,10 +33,10 @@ class MatchTree;
 /**
  * Interface class
  */
-class IGroundedAAGEventHandler
+class IGroundedApplicableActionGeneratorEventHandler
 {
 public:
-    virtual ~IGroundedAAGEventHandler() = default;
+    virtual ~IGroundedApplicableActionGeneratorEventHandler() = default;
 
     /// @brief React on finishing delete-free exploration
     virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
@@ -56,7 +56,7 @@ public:
 
     virtual void on_end_search() = 0;
 
-    virtual const GroundedAAGStatistics& get_statistics() const = 0;
+    virtual const GroundedApplicableActionGeneratorStatistics& get_statistics() const = 0;
 };
 
 /**
@@ -65,14 +65,14 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class GroundedAAGEventHandlerBase : public IGroundedAAGEventHandler
+class GroundedApplicableActionGeneratorEventHandlerBase : public IGroundedApplicableActionGeneratorEventHandler
 {
 protected:
-    GroundedAAGStatistics m_statistics;
+    GroundedApplicableActionGeneratorStatistics m_statistics;
     bool m_quiet;
 
 private:
-    GroundedAAGEventHandlerBase() = default;
+    GroundedApplicableActionGeneratorEventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -80,7 +80,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit GroundedAAGEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit GroundedApplicableActionGeneratorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                            const GroundAtomList<Derived>& reached_derived_atoms,
@@ -154,7 +154,7 @@ public:
         }
     }
 
-    const GroundedAAGStatistics& get_statistics() const override { return m_statistics; }
+    const GroundedApplicableActionGeneratorStatistics& get_statistics() const override { return m_statistics; }
 };
 }
 

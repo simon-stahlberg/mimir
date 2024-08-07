@@ -39,9 +39,9 @@ private:
 
     // Memory
     std::shared_ptr<PDDLFactories> m_pddl_factories;
-    std::shared_ptr<IGroundedAAGEventHandler> m_event_handler;
+    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
 
-    LiftedAAG m_lifted_aag;
+    LiftedApplicableActionGenerator m_lifted_aag;
 
     MatchTree<GroundAction> m_action_match_tree;
     MatchTree<GroundAxiom> m_axiom_match_tree;
@@ -51,7 +51,9 @@ public:
     GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<IGroundedAAGEventHandler> event_handler);
+    GroundedApplicableActionGenerator(Problem problem,
+                                      std::shared_ptr<PDDLFactories> pddl_factories,
+                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;
@@ -81,12 +83,6 @@ public:
 
     size_t get_num_ground_axioms() const override;
 };
-
-/**
- * Types
- */
-
-using GroundedAAG = GroundedApplicableActionGenerator;
 
 }
 

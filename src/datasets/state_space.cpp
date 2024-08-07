@@ -63,9 +63,9 @@ StateSpace::StateSpace(Problem problem,
 std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
+    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
     auto ssg = std::make_shared<StateRepository>(aag);
-    return StateSpace::create(parser.get_problem(), parser.get_factories(), aag, ssg, options);
+    return StateSpace::create(parser.get_problem(), parser.get_pddl_factories(), aag, ssg, options);
 }
 
 std::optional<StateSpace> StateSpace::create(Problem problem,
@@ -199,9 +199,9 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::ve
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedAAG>(parser.get_problem(), parser.get_factories());
+        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
         auto ssg = std::make_shared<StateRepository>(aag);
-        memories.emplace_back(parser.get_problem(), parser.get_factories(), aag, ssg);
+        memories.emplace_back(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
     }
 
     return StateSpace::create(memories, options);
