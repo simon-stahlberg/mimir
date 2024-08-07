@@ -33,7 +33,6 @@ enum SearchNodeStatus
     OPEN = 1,
     CLOSED = 2,
     DEAD_END = 3,
-    UNKNOWN = 4,
 };
 
 template<typename... SearchNodeProperties>
@@ -56,12 +55,22 @@ using FlatSearchNodeVector = flatmemory::FixedSizedTypeVector<FlatSearchNodeLayo
  * Proxy for more meaningful access
  */
 
+/// @brief `SearchNodeBuilder` is a wrapper around `FlatSearchNodeBuilder` to create byte sequences
+/// that can be zero-cost deserialized with a `SearchNode` or `ConstSearchNode`.
+/// @tparam ...SearchNodeProperties the properties stored in a search node which must be serializable by flatmemory.
+/// For example, BrFs stores a uint32_t to track the g-value, and AStar stores two doubles to track the g-value and h-value.
 template<typename... SearchNodeProperties>
 class SearchNodeBuilder
 {
 public:
+    /// Create a default initialized `SearchNodeBuilder`.
     SearchNodeBuilder() : m_builder() { finish(); }
-    explicit SearchNodeBuilder(FlatSearchNodeBuilder<SearchNodeProperties...> builder) : m_builder(std::move(builder)) { finish(); }
+
+    /// @brief Create a `SearchNodeBuilder` with given arguments.
+    /// @param status
+    /// @param parent_state
+    /// @param creating_action
+    /// @param ...properties
     SearchNodeBuilder(SearchNodeStatus status,
                       std::optional<State> parent_state,
                       std::optional<GroundAction> creating_action,
@@ -75,6 +84,11 @@ public:
     }
 
     void finish() { m_builder.finish(); }
+
+    /**
+     * Mutable getters
+     */
+
     uint8_t* get_data() { return m_builder.buffer().data(); }
     size_t get_size() { return m_builder.buffer().size(); }
     FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() { return m_builder; }
@@ -106,6 +120,7 @@ private:
     }
 };
 
+/// @brief `SearchNode` is a mutable wrapper around `FlatSearchNode` to read and write the data.
 template<typename... SearchNodeProperties>
 class SearchNode
 {
@@ -114,6 +129,10 @@ private:
 
 public:
     SearchNode(FlatSearchNode<SearchNodeProperties...> view) : m_view(view) {}
+
+    /**
+     * Mutable getters
+     */
 
     SearchNodeStatus& get_status() { return m_view.template get<0>(); }
     std::optional<State>& get_parent_state() { return m_view.template get<1>(); }
@@ -127,6 +146,7 @@ public:
     }
 };
 
+/// @brief `ConstSearchNode` is a immutable wrapper around `FlatConstSearchNode` to read the data.
 template<typename... SearchNodeProperties>
 class ConstSearchNode
 {
@@ -135,6 +155,10 @@ private:
 
 public:
     ConstSearchNode(FlatConstSearchNode<SearchNodeProperties...> view) : m_view(view) {}
+
+    /**
+     * Immutable getters
+     */
 
     SearchNodeStatus get_status() const { return m_view.template get<0>(); }
     std::optional<State> get_parent_state() const { return m_view.template get<1>(); }

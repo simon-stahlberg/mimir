@@ -36,7 +36,8 @@ using FlatBitsetBuilder = flatmemory::Builder<FlatBitsetLayout<Tag>>;
 template<typename Tag = void>
 using FlatBitset = flatmemory::ConstView<FlatBitsetLayout<Tag>>;
 
-inline std::ostream& operator<<(std::ostream& os, const FlatBitset<>& set)
+template<typename Tag>
+inline std::ostream& operator<<(std::ostream& os, const FlatBitset<Tag>& set)
 {
     os << "[";
     size_t i = 0;
