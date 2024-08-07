@@ -40,7 +40,7 @@
 namespace mimir
 {
 
-/// @brief StateSpaceOptions encapsulates options to create a single state space with default parameters.
+/// @brief `StateSpaceOptions` encapsulates options to create a single state space with default parameters.
 struct StateSpaceOptions
 {
     bool use_unit_cost_one = true;
@@ -49,7 +49,7 @@ struct StateSpaceOptions
     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
 };
 
-/// @brief StateSpacesOptions encapsulates options to create a collection of state spaces with default parameters.
+/// @brief `StateSpacesOptions` encapsulates options to create a collection of state spaces with default parameters.
 struct StateSpacesOptions
 {
     StateSpaceOptions state_space_options = StateSpaceOptions();
@@ -57,7 +57,7 @@ struct StateSpacesOptions
     uint32_t num_threads = std::thread::hardware_concurrency();
 };
 
-/// @brief A `StateSpace` encapsulates the complete dynamics of a PDDL problem.
+/// @brief `StateSpace` encapsulates the complete dynamics of a PDDL problem.
 ///
 /// The underlying graph type is a `StaticBidirectionalGraph` over `ConcreteState` and `ConcreteTransition`.
 /// The `StateSpace` stores additional external properties on vertices such as initial state, goal states, deadend states.

@@ -26,7 +26,6 @@
 
 #include <iostream>
 #include <ranges>
-#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -40,7 +39,7 @@ namespace mimir
 
 /* DynamicGraph */
 
-/// @brief A `DynamicGraph` G implements a dynamic version of a directed graph with vertices V
+/// @brief `DynamicGraph` G implements a dynamic version of a directed graph with vertices V
 /// and edges E satisfying the graph concepts:
 ///   1) VertexListGraph,
 ///   2) EdgeListGraph,
@@ -51,7 +50,7 @@ namespace mimir
 /// Due to the removal functionality, the implementation uses less efficient hash sets and
 /// hash maps compared to a `StaticGraph`.
 ///
-/// A `DynamicGraph` supports efficient traversal of adjacent vertices and edges in forward and
+/// `DynamicGraph` supports efficient traversal of adjacent vertices and edges in forward and
 /// backward directions.
 /// @tparam Vertex is vertex type.
 /// @tparam Edge is the edge type.

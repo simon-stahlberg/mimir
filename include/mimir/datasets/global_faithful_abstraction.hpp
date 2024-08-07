@@ -38,16 +38,16 @@
 namespace mimir
 {
 
-/// @brief GlobalFaithfulAbstractState encapsulates data to access
+/// @brief `GlobalFaithfulAbstractState` encapsulates data to access
 /// the representative abstract state of a faithful abstraction.
 class GlobalFaithfulAbstractState
 {
 private:
-    // The index within a GlobalFaithfulAbstraction.
+    // The index within a `GlobalFaithfulAbstraction`.
     StateIndex m_index;
-    // The index within a GlobalFaithfulAbstractionList.
+    // The index within a `GlobalFaithfulAbstractionList`.
     StateIndex m_global_index;
-    // The indices to access the corresponding FaithfulAbstractState.
+    // The indices to access the corresponding `FaithfulAbstractState`.
     AbstractionIndex m_faithful_abstraction_index;
     StateIndex m_faithful_abstract_state_index;
 
@@ -68,7 +68,7 @@ public:
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
 
-/// @brief A `GlobalFaithfulAbstraction` is a wrapper around a collection of `FaithfulAbstraction`s
+/// @brief `GlobalFaithfulAbstraction` is a wrapper around a collection of `FaithfulAbstraction`s
 /// representing one of the `FaithfulAbstraction` with additional isomorphism reduction applied across the collection.
 class GlobalFaithfulAbstraction
 {

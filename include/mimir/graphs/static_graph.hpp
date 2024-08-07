@@ -38,7 +38,7 @@ namespace mimir
 
 /* StaticGraph */
 
-/// @brief A `StaticGraph` G implements a static version of a directed graph with vertices V and
+/// @brief `StaticGraph` G implements a static version of a directed graph with vertices V and
 /// edges E satisfying the graph concepts:
 ///   1) VertexListGraph,
 ///   2) EdgeListGraph,
@@ -49,7 +49,7 @@ namespace mimir
 /// Due to the restriction to addition functionality, the implementation uses more efficient vector
 /// data structures compared to `DynamicGraph`.
 ///
-/// A `StaticGraph` supports traversal of adjacent vertices and edges in forward and backward
+/// `StaticGraph` supports traversal of adjacent vertices and edges in forward and backward
 /// directions. The iterators filter adjacent vertices or edges of a vertex from all edges.
 /// This is not efficient and unavoidable because adjacent edges cannot be grouped efficiently
 /// when allowing for the addition of edges.
@@ -171,7 +171,7 @@ private:
 
 /* StaticForwardGraph */
 
-/// @brief StaticForwardGraph is a translated StaticGraph for more efficient forward traversal.
+/// @brief `StaticForwardGraph` is a translated `StaticGraph` for more efficient forward traversal.
 template<IsStaticGraph G>
 class StaticForwardGraph
 {
@@ -240,7 +240,7 @@ private:
 
 /* BidirectionalGraph */
 
-/// @brief BidirectionalGraph is a translated StaticGraph for more efficient bidirectional traversal.
+/// @brief `BidirectionalGraph` is a translated `StaticGraph` for more efficient bidirectional traversal.
 template<IsStaticGraph G>
 class StaticBidirectionalGraph
 {

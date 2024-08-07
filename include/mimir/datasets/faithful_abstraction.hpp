@@ -43,7 +43,7 @@
 namespace mimir
 {
 
-/// @brief FaithfulAbstractionOptions enscapsulates options to create a single faithful abstraction with default arguments.
+/// @brief `FaithfulAbstractionOptions` enscapsulates options to create a single `FaithfulAbstraction` with default arguments.
 struct FaithfulAbstractionOptions
 {
     bool mark_true_goal_literals = false;
@@ -56,7 +56,7 @@ struct FaithfulAbstractionOptions
     ObjectGraphPruningStrategyEnum pruning_strategy = ObjectGraphPruningStrategyEnum::None;
 };
 
-/// @brief FaithfulAbstractionOptions enscapsulates options to create a collection of faithful abstractions with default arguments.
+/// @brief `FaithfulAbstractionOptions` enscapsulates options to create a `FaithfulAbstractionList` with default arguments.
 struct FaithfulAbstractionsOptions
 {
     FaithfulAbstractionOptions fa_options;
@@ -64,7 +64,7 @@ struct FaithfulAbstractionsOptions
     uint32_t num_threads = std::thread::hardware_concurrency();
 };
 
-/// @brief FaithfulAbstractState encapsulates data of an abstract state in a faithful abstraction.
+/// @brief `FaithfulAbstractState` encapsulates data of an abstract state in a `FaithfulAbstraction`.
 class FaithfulAbstractState : public BaseVertex<FaithfulAbstractState>
 {
 public:
@@ -86,7 +86,7 @@ private:
 
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
 
-/// @brief A `FaithfulAbstraction` implements abstractions based on isomorphism testing.
+/// @brief `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
 ///
 /// The underlying graph type is a `StaticBidirectionalGraph` over `FaithfulAbstractState` and `AbstractTransition`.

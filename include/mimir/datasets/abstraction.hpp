@@ -47,7 +47,7 @@ concept IsAbstraction = requires(T a, State concrete_state)
  * External inheritance hierarchy using type erasure.
  */
 
-/// @brief Abstraction erases the type of a concrete implementation of an abstraction with type A.
+/// @brief `Abstraction` erases the type of a concrete implementation of an abstraction with type A.
 /// The concrete abstraction type A is required to have an underlying static graph to ensure that the static iterators can be used.
 /// The requirement is usually not an issue since abstraction do not require vertex or edge removal after construction.
 class Abstraction
