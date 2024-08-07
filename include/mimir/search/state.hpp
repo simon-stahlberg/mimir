@@ -33,6 +33,7 @@ namespace mimir
 /**
  * Flatmemory types
  */
+
 using FlatStateLayout = flatmemory::Tuple<StateIndex, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
 using FlatStateBuilder = flatmemory::Builder<FlatStateLayout>;
 using FlatState = flatmemory::ConstView<FlatStateLayout>;
@@ -53,8 +54,11 @@ using FlatStateSet = flatmemory::UnorderedSet<FlatStateLayout, FlatStateHash, Fl
 using FlatStateVector = flatmemory::FixedSizedTypeVector<FlatStateLayout>;
 
 /**
- * StateBuilder
+ * Mimir types
  */
+
+/// @brief `StateBuilder` is a wrapper around `FlatState` to create byte sequences
+/// that can be zero-cost deserialized with a `State`.
 class StateBuilder
 {
 private:
@@ -70,9 +74,7 @@ public:
     FlatBitsetBuilder<P>& get_atoms();
 };
 
-/**
- * State
- */
+/// @brief `State` is a immutable wrapper around `FlatState` to read the data.
 class State
 {
 private:
@@ -113,10 +115,6 @@ public:
 };
 
 static_assert(std::is_trivially_copyable_v<std::optional<State>>);
-
-/**
- * Mimir types
- */
 
 using StateList = std::vector<State>;
 

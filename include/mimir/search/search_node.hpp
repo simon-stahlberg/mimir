@@ -35,6 +35,10 @@ enum SearchNodeStatus
     DEAD_END = 3,
 };
 
+/**
+ * Flatmemory types
+ */
+
 template<typename... SearchNodeProperties>
 using FlatSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus,  //
                                                std::optional<State>,
@@ -52,7 +56,7 @@ template<typename... SearchNodeProperties>
 using FlatSearchNodeVector = flatmemory::FixedSizedTypeVector<FlatSearchNodeLayout<SearchNodeProperties...>>;
 
 /**
- * Proxy for more meaningful access
+ * Mimir types
  */
 
 /// @brief `SearchNodeBuilder` is a wrapper around `FlatSearchNodeBuilder` to create byte sequences
@@ -104,7 +108,7 @@ public:
     template<size_t I>
     auto& get_property()
     {
-        static_assert(I < sizeof...(SearchNodeProperties));
+        static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
         return m_builder.template get<I + 3>();
     }
 
@@ -141,7 +145,7 @@ public:
     template<size_t I>
     auto& get_property()
     {
-        static_assert(I < sizeof...(SearchNodeProperties));
+        static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
         return m_view.template get<I + 3>();
     }
 };
@@ -167,7 +171,7 @@ public:
     template<size_t I>
     const auto& get_property() const
     {
-        static_assert(I < sizeof...(SearchNodeProperties));
+        static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
         return m_view.template get<I + 3>();
     }
 };

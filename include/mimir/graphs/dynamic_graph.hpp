@@ -87,10 +87,6 @@ public:
      */
 
     /// @brief Add a vertex to the graph with vertex properties args.
-    ///
-    /// Semantics depending on the value category of a `VertexProperties` property:
-    ///   - lvalue: property is copied once
-    ///   - xvalue or prvalue: property is not copied.
     /// @tparam ...VertexProperties the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
     /// @param ...properties the vertex properties.
     /// @return the index of the newly created vertex.
@@ -98,10 +94,6 @@ public:
     VertexIndex add_vertex(VertexProperties&&... properties);
 
     /// @brief Add a directed edge from source to target to the graph with edge properties args.
-    ///
-    /// Semantics depending on the value category of a `EdgeProperties` property:
-    ///   - lvalue: property is copied once
-    ///   - xvalue or prvalue: property is not copied.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.
@@ -114,8 +106,8 @@ public:
     ///
     /// Semantics depending on the value category of a `EdgeProperties` property:
     ///   - lvalue: property is copied twice.
-    ///   - xvalue or prvalue: property is copied once.
-    /// If `EdgeProperties` are heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
+    ///   - rvalue: property is copied once.
+    /// Therefore, if an `EdgeProperties` is heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.

@@ -39,7 +39,7 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
     m_ssg(std::move(successor_state_generator)),
     m_initial_state(m_ssg->get_or_create_initial_state()),
     m_heuristic(std::move(heuristic)),
-    m_search_nodes(FlatSearchNodeVector<double, double>(SearchNodeBuilder<double, double>(SearchNodeStatus::CLOSED,
+    m_search_nodes(FlatSearchNodeVector<double, double>(SearchNodeBuilder<double, double>(SearchNodeStatus::NEW,
                                                                                           std::optional<State>(std::nullopt),
                                                                                           std::optional<GroundAction>(std::nullopt),
                                                                                           (double) std::numeric_limits<double>::max(),
@@ -110,8 +110,15 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         // We need this before goal test for correct statistics reporting.
         auto search_node = SearchNode<double, double>(this->m_search_nodes[state.get_index()]);
-        search_node.get_status() = SearchNodeStatus::CLOSED;
+        auto& status = search_node.get_status();
+        if (status == SearchNodeStatus::CLOSED)
+        {
+            // Optimal cost to reach state was already proven.
+            continue;
+        }
+        status = SearchNodeStatus::CLOSED;
 
+        // TODO: how to report progress properly?
         if (search_node.get_property<0>() > g_value)
         {
             g_value = search_node.get_property<0>();
@@ -139,38 +146,35 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         for (const auto& action : applicable_actions)
         {
-            const auto state_count = m_ssg->get_state_count();
-            const auto& successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-
+            const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
             // m_event_handler->on_generate_state(problem, action, successor_state, pddl_factories);
 
-            bool is_new_successor_state = (state_count != m_ssg->get_state_count());
-
+            auto successor_search_node = SearchNode<double, double>(this->m_search_nodes[successor_state.get_index()]);
+            bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
             /* Customization point 1: pruning strategy, default never prunes. */
             if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                const auto new_successor_g_value = search_node.get_property<0>() + action.get_cost();
-                auto successor_search_node = SearchNode<double, double>(this->m_search_nodes[successor_state.get_index()]);
-                if (new_successor_g_value < successor_search_node.get_property<0>())
-                {
-                    successor_search_node.get_status() = SearchNodeStatus::OPEN;
-                    successor_search_node.get_parent_state() = state;
-                    successor_search_node.get_creating_action() = action;
-                    successor_search_node.get_property<0>() = new_successor_g_value;
-                    if (is_new_successor_state)
-                    {
-                        /* Compute heuristic if state is new. */
-                        successor_search_node.get_property<1>() = m_heuristic->compute_heuristic(successor_state);
-                    }
-
-                    /* Reopen search node with updated f_value. */
-                    const auto successor_f_value = successor_search_node.get_property<0>() + successor_search_node.get_property<1>();
-                    m_openlist.insert(successor_f_value, successor_state);
-                }
-            }
-            else
-            {
                 // m_event_handler->on_prune_state(problem, successor_state, pddl_factories);
+                continue;
+            }
+
+            const auto new_successor_g_value = search_node.get_property<0>() + action.get_cost();
+            if (new_successor_g_value < successor_search_node.get_property<0>())
+            {
+                successor_search_node.get_status() = SearchNodeStatus::OPEN;
+                successor_search_node.get_parent_state() = state;
+                successor_search_node.get_creating_action() = action;
+                successor_search_node.get_property<0>() = new_successor_g_value;
+                if (is_new_successor_state)
+                {
+                    /* Compute heuristic if state is new. */
+                    successor_search_node.get_property<1>() = m_heuristic->compute_heuristic(successor_state);
+                }
+
+                /* Reopen search node with updated f_value. */
+                const auto successor_f_value = successor_search_node.get_property<0>() + successor_search_node.get_property<1>();
+                // m_event_handler->on_reopen_state(successor_f_value, problem, action, successor_state, pddl_factories);
+                m_openlist.insert(successor_f_value, successor_state);
             }
         }
     }
