@@ -54,7 +54,7 @@ namespace mimir
 /// This is not efficient and unavoidable because adjacent edges cannot be grouped efficiently
 /// when allowing for the addition of edges.
 /// The iteration in forward or backward directions by translating a `StaticGraph` to a
-/// StaticForwardGraph, optimized for forward traversal, or a StaticBidirectionalGraph, optimized
+/// `StaticForwardGraph`, optimized for forward traversal, or a `StaticBidirectionalGraph`, optimized
 /// for forward and backward traversal, both in O(|V|+|E|*Log2(|E|)) with minimal memory overhead.
 /// @tparam Vertex is vertex type.
 /// @tparam Edge is the edge type.

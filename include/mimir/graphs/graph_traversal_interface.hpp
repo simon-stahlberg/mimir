@@ -27,7 +27,10 @@ namespace mimir
 
 /**
  * We traverse graphs in forward and backward direction.
+ * This is the most significant difference to existing graph libraries,
+ * which usually support only traversal in forward direction.
  * The direction is chosen by adding a traversal direction tag to the graph before passing it to the graph algorithm.
+ * Our choice of using tags come from the fact that the traversal direction is usually known at compile time.
  */
 
 /// @brief ForwardTraversal represents traversal of edges in forward direction.
@@ -46,7 +49,10 @@ concept IsTraversalDirection = std::same_as<T, ForwardTraversal> || std::same_as
  * Type trait to obtain the opposite traversal direction.
  */
 
-template<typename Direction>
+/// @brief `InverseTraversalDirection` is a type trait to obtain the inverse of a `IsTraversalDirection`, where
+/// the inverse of `ForwardTraversal` is `BackwardTraversal`, and the inverse of `BackwardTraversal` is `ForwardTraversal`.
+/// @tparam Direction is the input traversal direction.
+template<IsTraversalDirection Direction>
 struct InverseTraversalDirection;
 
 template<>
@@ -61,7 +67,7 @@ struct InverseTraversalDirection<BackwardTraversal>
     using type = ForwardTraversal;
 };
 
-/// @brief TraversalDirectionTaggedType associates a type T with a traversal direction.
+/// @brief `TraversalDirectionTaggedType` associates a type `T` with a `IsTraversalDirection`.
 /// @tparam T is the type to be associated.
 /// @tparam Direction is the associated traversal direction.
 template<typename T, IsTraversalDirection Direction>
@@ -79,8 +85,8 @@ private:
     std::reference_wrapper<T> m_data;
 };
 
-/// @brief TraversalDirectionContainer contains a type T for forward and backward traversal.
-/// @tparam T is the type that we want to store for forward and backward traversal.
+/// @brief `TraversalDirectionContainer` contains a type `T` for `ForwardTraversal` and `BackwardTraversal`.
+/// @tparam T is the type that we want to store for `ForwardTraversal` and `BackwardTraversal`.
 template<typename T>
 class TraversalDirectionStorage
 {

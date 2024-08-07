@@ -29,7 +29,7 @@ namespace mimir
  * Declarations
  */
 
-/// @brief BaseVertex implements the IsVertex concept and acts as a common base class for concrete vertex types.
+/// @brief `BaseVertex` implements the `IsVertex` concept and acts as a common base class for concrete vertex types.
 /// @tparam Derived_ the concrete vertex type.
 template<typename Derived_>
 class BaseVertex

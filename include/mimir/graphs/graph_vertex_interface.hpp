@@ -25,7 +25,6 @@
 namespace mimir
 {
 
-/// @brief Each vertex must be associated with an index.
 template<typename T>
 concept IsVertex = requires(T a)
 {

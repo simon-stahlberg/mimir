@@ -29,7 +29,7 @@ namespace mimir
  * Declarations
  */
 
-/// @brief BaseEdge implements the IsEdge concept and acts as a common base class for concrete edge types.
+/// @brief `BaseEdge` implements the `IsEdge` concept and acts as a common base class for concrete edge types.
 /// @tparam Derived_ the concrete edge type.
 template<typename Derived_>
 class BaseEdge

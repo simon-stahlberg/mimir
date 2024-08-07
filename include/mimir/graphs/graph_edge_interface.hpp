@@ -25,7 +25,6 @@
 namespace mimir
 {
 
-/// @brief Each vertex must be associated with an index, source index, and target index.
 template<typename T>
 concept IsEdge = requires(T a)
 {
