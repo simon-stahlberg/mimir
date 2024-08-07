@@ -98,7 +98,11 @@ public:
     VertexIndex add_vertex(VertexProperties&&... properties);
 
     /// @brief Add a directed edge from source to target to the graph with edge properties args.
-    /// @tparam ...Args the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    ///
+    /// Semantics depending on the value category of `EdgeProperties` of a property:
+    ///   - lvalue: property is copied once
+    ///   - xvalue or prvalue: property is not copied.
+    /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.
     /// @param ...properties the edge properties.
@@ -107,12 +111,18 @@ public:
     EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
 
     /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
-    /// If the edge properties are heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
+    ///
+    /// Semantics depending on the value category of `EdgeProperties` of a property:
+    ///   - lvalue: property is copied twice.
+    ///   - xvalue or prvalue: property is copied once.
+    /// If the `EdgeProperties` are heavy weight, we suggest externalizing the properties and storing an index to the properties instead.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
     /// @param target the target vertex.
     /// @param ...properties the edge properties.
     /// @return the index pair of the two newly created edges.
+
+    /// @brief
     template<typename... EdgeProperties>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
 
@@ -350,9 +360,15 @@ template<IsVertex Vertex, IsEdge Edge>
 template<typename... EdgeProperties>
 std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
 {
-    // Need to copy properties to keep them in valid state.
-    const auto forward_edge_index = add_directed_edge(source, target, properties...);
-    const auto backward_edge_index = add_directed_edge(target, source, std::forward<EdgeProperties>(properties)...);
+    auto properties_tuple = std::make_tuple(std::forward<EdgeProperties>(properties)...);
+    auto properties_tuple_copy = properties_tuple;
+
+    const auto forward_edge_index =
+        std::apply([this, source, target](auto&&... args) { return add_directed_edge(source, target, std::forward<decltype(args)>(args)...); },
+                   std::move(properties_tuple_copy));
+    const auto backward_edge_index =
+        std::apply([this, source, target](auto&&... args) { return add_directed_edge(target, source, std::forward<decltype(args)>(args)...); },
+                   std::move(properties_tuple));
 
     return std::make_pair(forward_edge_index, backward_edge_index);
 }

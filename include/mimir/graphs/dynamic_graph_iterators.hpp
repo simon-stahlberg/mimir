@@ -25,7 +25,6 @@
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <cassert>
-#include <functional>
 #include <unordered_map>
 #include <unordered_set>
 

@@ -24,7 +24,6 @@
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <cassert>
-#include <functional>
 #include <span>
 #include <vector>
 
@@ -52,10 +51,10 @@ public:
 
     StaticAdjacentVertexConstIterator();
     StaticAdjacentVertexConstIterator(VertexIndex vertex,
-                                const std::vector<Vertex>& vertices,
-                                const std::vector<Edge>& edges,
-                                std::span<const EdgeIndex> slice,
-                                bool begin);
+                                      const std::vector<Vertex>& vertices,
+                                      const std::vector<Edge>& edges,
+                                      std::span<const EdgeIndex> slice,
+                                      bool begin);
     reference operator*() const;
     StaticAdjacentVertexConstIterator& operator++();
     StaticAdjacentVertexConstIterator operator++(int);
@@ -187,16 +186,21 @@ void StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentV
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
-StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator() : m_pos(-1), m_vertex(-1), m_vertices(nullptr), m_edges(nullptr), m_slice()
+StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator() :
+    m_pos(-1),
+    m_vertex(-1),
+    m_vertices(nullptr),
+    m_edges(nullptr),
+    m_slice()
 {
 }
 
 template<IsVertex Vertex, IsEdge Edge, IsTraversalDirection Direction>
 StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>::StaticAdjacentVertexConstIterator(VertexIndex vertex,
-                                                                                  const std::vector<Vertex>& vertices,
-                                                                                  const std::vector<Edge>& edges,
-                                                                                  std::span<const EdgeIndex> slice,
-                                                                                  bool begin) :
+                                                                                              const std::vector<Vertex>& vertices,
+                                                                                              const std::vector<Edge>& edges,
+                                                                                              std::span<const EdgeIndex> slice,
+                                                                                              bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_vertices(&vertices),
@@ -329,9 +333,9 @@ StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexInd
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 StaticAdjacentVertexIndexConstIterator<Edge, Direction>::StaticAdjacentVertexIndexConstIterator(VertexIndex vertex,
-                                                                                    const std::vector<Edge>& edges,
-                                                                                    std::span<const EdgeIndex> slice,
-                                                                                    bool begin) :
+                                                                                                const std::vector<Edge>& edges,
+                                                                                                std::span<const EdgeIndex> slice,
+                                                                                                bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_edges(&edges),
@@ -461,9 +465,9 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterato
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(VertexIndex vertex,
-                                                                      const std::vector<Edge>& edges,
-                                                                      std::span<const EdgeIndex> slice,
-                                                                      bool begin) :
+                                                                                  const std::vector<Edge>& edges,
+                                                                                  std::span<const EdgeIndex> slice,
+                                                                                  bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_edges(&edges),
@@ -489,8 +493,9 @@ StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterato
         }
         else
         {
-            static_assert(dependent_false<Direction>::value,
-                          "StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(...): Missing implementation for IsTraversalDirection.");
+            static_assert(
+                dependent_false<Direction>::value,
+                "StaticAdjacentEdgeConstIterator<Edge, Direction>::StaticAdjacentEdgeConstIterator(...): Missing implementation for IsTraversalDirection.");
         }
 
         advance();
@@ -592,9 +597,9 @@ StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexCo
 
 template<IsEdge Edge, IsTraversalDirection Direction>
 StaticAdjacentEdgeIndexConstIterator<Edge, Direction>::StaticAdjacentEdgeIndexConstIterator(VertexIndex vertex,
-                                                                                const std::vector<Edge>& edges,
-                                                                                std::span<const EdgeIndex> slice,
-                                                                                bool begin) :
+                                                                                            const std::vector<Edge>& edges,
+                                                                                            std::span<const EdgeIndex> slice,
+                                                                                            bool begin) :
     m_pos(begin ? 0 : slice.size()),
     m_vertex(vertex),
     m_edges(&edges),
