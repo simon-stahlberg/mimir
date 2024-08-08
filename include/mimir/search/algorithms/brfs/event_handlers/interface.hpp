@@ -40,8 +40,8 @@ public:
     /// @brief React on generating a successor_state by applying an action.
     virtual void on_generate_state(Problem problem, GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
 
-    /// @brief React on finishing expanding a f-layer.
-    virtual void on_finish_f_layer() = 0;
+    /// @brief React on finishing expanding a g-layer.
+    virtual void on_finish_g_layer() = 0;
 
     /// @brief React on expanding a state.
     virtual void on_expand_state(Problem problem, State state, const PDDLFactories& pddl_factories) = 0;
@@ -101,14 +101,14 @@ public:
         }
     }
 
-    void on_finish_f_layer() override
+    void on_finish_g_layer() override
     {
-        m_statistics.on_finish_f_layer();
+        m_statistics.on_finish_g_layer();
 
         if (!m_quiet)
         {
             assert(!m_statistics.get_num_expanded_until_f_value().empty());
-            self().on_finish_f_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
+            self().on_finish_g_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
                                           m_statistics.get_num_expanded_until_f_value().back(),
                                           m_statistics.get_num_generated_until_f_value().back());
         }

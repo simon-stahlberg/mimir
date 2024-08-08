@@ -355,7 +355,7 @@ void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitset
     m_axiom_evaluator.generate_and_apply_axioms(fluent_state_atoms, ref_derived_state_atoms);
 }
 
-void LiftedApplicableActionGenerator::on_finish_f_layer() const { m_event_handler->on_finish_f_layer(); }
+void LiftedApplicableActionGenerator::on_finish_g_layer() const { m_event_handler->on_finish_g_layer(); }
 
 void LiftedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 

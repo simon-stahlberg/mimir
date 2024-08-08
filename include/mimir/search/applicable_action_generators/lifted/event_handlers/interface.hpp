@@ -60,7 +60,7 @@ public:
 
     virtual void on_end_search() = 0;
 
-    virtual void on_finish_f_layer() = 0;
+    virtual void on_finish_g_layer() = 0;
 
     virtual const LiftedApplicableActionGeneratorStatistics& get_statistics() const = 0;
 };
@@ -176,13 +176,13 @@ public:
         }
     }
 
-    void on_finish_f_layer() override
+    void on_finish_g_layer() override
     {
-        m_statistics.on_finish_f_layer();
+        m_statistics.on_finish_g_layer();
 
         if (!m_quiet)
         {
-            self().on_finish_f_layer_impl();
+            self().on_finish_g_layer_impl();
         }
     }
 

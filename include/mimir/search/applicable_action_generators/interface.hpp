@@ -41,7 +41,7 @@ public:
     virtual void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) = 0;
 
     // Notify that a new f-layer was reached
-    virtual void on_finish_f_layer() const = 0;
+    virtual void on_finish_g_layer() const = 0;
 
     /// @brief Notify that the search has finished
     virtual void on_end_search() const = 0;

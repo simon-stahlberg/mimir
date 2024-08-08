@@ -42,7 +42,8 @@ public:
     /// @brief Complete construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                    std::shared_ptr<StateRepository> successor_state_generator,
-                   std::shared_ptr<IHeuristic> heuristic);
+                   std::shared_ptr<IHeuristic> heuristic,
+                   std::shared_ptr<IAStarAlgorithmEventHandler> event_handler);
 
     SearchStatus find_solution(GroundActionList& out_plan) override;
 
@@ -59,8 +60,8 @@ public:
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
-    State m_initial_state;
     std::shared_ptr<IHeuristic> m_heuristic;
+    std::shared_ptr<IAStarAlgorithmEventHandler> m_event_handler;
 
     FlatSearchNodeVector<double, double> m_search_nodes;
     PriorityQueue<State> m_openlist;

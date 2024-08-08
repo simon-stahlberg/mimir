@@ -86,7 +86,7 @@ public:
 
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
 
-    void on_finish_f_layer() const override;
+    void on_finish_g_layer() const override;
 
     void on_end_search() const override;
 

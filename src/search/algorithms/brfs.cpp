@@ -37,15 +37,14 @@ BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applica
                              std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
     m_aag(std::move(applicable_action_generator)),
     m_ssg(std::move(successor_state_generator)),
-    m_initial_state(m_ssg->get_or_create_initial_state()),
+    m_event_handler(std::move(event_handler)),
     m_search_nodes(FlatSearchNodeVector<uint32_t>(
         SearchNodeBuilder<uint32_t>(SearchNodeStatus::NEW, std::optional<State>(std::nullopt), std::optional<GroundAction>(std::nullopt), (uint32_t) 0)
-            .get_flatmemory_builder())),
-    m_event_handler(std::move(event_handler))
+            .get_flatmemory_builder()))
 {
 }
 
-SearchStatus BrFSAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_initial_state, out_plan); }
+SearchStatus BrFSAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_ssg->get_or_create_initial_state(), out_plan); }
 
 SearchStatus BrFSAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
 {
@@ -106,8 +105,8 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         if (static_cast<uint64_t>(search_node.get_property<0>()) > g_value)
         {
             g_value = search_node.get_property<0>();
-            m_aag->on_finish_f_layer();
-            m_event_handler->on_finish_f_layer();
+            m_aag->on_finish_g_layer();
+            m_event_handler->on_finish_g_layer();
         }
 
         if (goal_strategy->test_dynamic_goal(state))

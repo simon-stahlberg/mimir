@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_STATISTICS_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_BRFS_EVENT_HANDLERS_STATISTICS_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_STATISTICS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_STATISTICS_HPP_
 
 #include <chrono>
 #include <cstdint>
@@ -26,7 +26,7 @@
 namespace mimir
 {
 
-class BrFSAlgorithmStatistics
+class AStarAlgorithmStatistics
 {
 private:
     uint64_t m_num_generated;
@@ -42,7 +42,7 @@ private:
     std::vector<uint64_t> m_num_pruned_until_f_value;
 
 public:
-    BrFSAlgorithmStatistics() :
+    AStarAlgorithmStatistics() :
         m_num_generated(0),
         m_num_expanded(0),
         m_num_deadends(0),
@@ -90,13 +90,13 @@ public:
  * Types
  */
 
-using BrFSAlgorithmStatisticsList = std::vector<BrFSAlgorithmStatistics>;
+using AStarAlgorithmStatisticsList = std::vector<AStarAlgorithmStatistics>;
 
 /**
  * Pretty printing
  */
 
-inline std::ostream& operator<<(std::ostream& os, const BrFSAlgorithmStatistics& statistics)
+inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics& statistics)
 {
     os << "[BrFS] Search time: " << statistics.get_search_time_ms().count() << "ms"
        << "\n"

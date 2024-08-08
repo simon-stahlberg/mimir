@@ -68,7 +68,7 @@ void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_appli
     //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_finish_f_layer_impl() const
+void DefaultLiftedApplicableActionGeneratorEventHandler::on_finish_g_layer_impl() const
 {  //
 }
 

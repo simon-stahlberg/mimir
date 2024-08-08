@@ -57,18 +57,18 @@ class IAlgorithm;
 class IPruningStrategy;
 class IGoalStrategy;
 
+// AStar
+class IAStarAlgorithmEventHandler;
+
 // Breadth-first search
 class IBrFSAlgorithmEventHandler;
-using BrFSAlgorithmEventHandler = std::shared_ptr<IBrFSAlgorithmEventHandler>;
 
 // Iterative width search
 class IIWAlgorithmEventHandler;
-using IWAlgorithmEventHandler = std::shared_ptr<IIWAlgorithmEventHandler>;
 class FluentAndDerivedMapper;
 
 // Serialized iterative width search
 class ISIWAlgorithmEventHandler;
-using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
 
 // AStar search
 

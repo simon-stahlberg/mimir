@@ -52,7 +52,7 @@ public:
 
     virtual void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) = 0;
 
-    virtual void on_finish_f_layer() = 0;
+    virtual void on_finish_g_layer() = 0;
 
     virtual void on_end_search() = 0;
 
@@ -138,11 +138,11 @@ public:
         }
     }
 
-    void on_finish_f_layer() override
+    void on_finish_g_layer() override
     {  //
         if (!m_quiet)
         {
-            self().on_finish_f_layer_impl();
+            self().on_finish_g_layer_impl();
         }
     }
 

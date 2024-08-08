@@ -56,7 +56,7 @@ public:
     }
 
     /// @brief Store information for the layer
-    void on_finish_f_layer()
+    void on_finish_g_layer()
     {
         m_num_ground_action_cache_hits_until_f_value.push_back(m_num_ground_action_cache_hits);
         m_num_ground_action_cache_misses_until_f_value.push_back(m_num_ground_action_cache_misses);

@@ -29,9 +29,9 @@ void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(Problem problem,
 {
 }
 
-void DefaultBrFSAlgorithmEventHandler::on_finish_f_layer_impl(uint64_t f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DefaultBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
-    std::cout << "[BrFS] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
+    std::cout << "[BrFS] Finished state expansion until g-layer " << g_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << std::endl;
 }
 

@@ -64,10 +64,10 @@ public:
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
-    State m_initial_state;
+    std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
+
     std::deque<State> m_queue;
     FlatSearchNodeVector<uint32_t> m_search_nodes;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
 };
 
 }
