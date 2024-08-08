@@ -257,7 +257,7 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBits
     }
 }
 
-void GroundedApplicableActionGenerator::on_finish_g_layer() const { m_event_handler->on_finish_g_layer(); }
+void GroundedApplicableActionGenerator::on_finish_search_layer() const { m_event_handler->on_finish_search_layer(); }
 
 void GroundedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 

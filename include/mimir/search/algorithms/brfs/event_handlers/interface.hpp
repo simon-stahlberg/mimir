@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
+#include "mimir/search/search_node.hpp"
 #include "mimir/search/state.hpp"
 
 #include <chrono>
@@ -37,20 +38,27 @@ class IBrFSAlgorithmEventHandler
 public:
     virtual ~IBrFSAlgorithmEventHandler() = default;
 
-    /// @brief React on generating a successor_state by applying an action.
-    virtual void on_generate_state(Problem problem, GroundAction action, State successor_state, const PDDLFactories& pddl_factories) = 0;
+    /// @brief React on expanding a state.
+    virtual void on_expand_state(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+
+    /// @brief React on generating a state by applying an action.
+    virtual void on_generate_state(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+
+    /// @brief React on generating a state in the search tree by applying an action.
+    virtual void on_generate_state_in_search_tree(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+
+    /// @brief React on generating a state not in the search tree by applying an action.
+    virtual void
+    on_generate_state_not_in_search_tree(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer() = 0;
 
-    /// @brief React on expanding a state.
-    virtual void on_expand_state(Problem problem, State state, const PDDLFactories& pddl_factories) = 0;
-
     /// @brief React on pruning a state.
-    virtual void on_prune_state(Problem problem, State state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(Problem problem, State initial_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
@@ -91,13 +99,39 @@ private:
 public:
     explicit BrFSAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_generate_state(Problem problem, GroundAction action, State successor_state, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        m_statistics.increment_num_expanded();
+
+        if (!m_quiet)
+        {
+            self().on_expand_state_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_generate_state(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(problem, action, successor_state, pddl_factories);
+            self().on_generate_state_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_generate_state_in_search_tree(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        if (!m_quiet)
+        {
+            self().on_generate_state_in_search_tree_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_generate_state_not_in_search_tree(State state, ConstSearchNode<uint32_t> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        if (!m_quiet)
+        {
+            self().on_generate_state_not_in_search_tree_impl(state, search_node, problem, pddl_factories);
         }
     }
 
@@ -107,34 +141,24 @@ public:
 
         if (!m_quiet)
         {
-            assert(!m_statistics.get_num_expanded_until_f_value().empty());
-            self().on_finish_g_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
-                                          m_statistics.get_num_expanded_until_f_value().back(),
-                                          m_statistics.get_num_generated_until_f_value().back());
+            assert(!m_statistics.get_num_expanded_until_g_value().empty());
+            self().on_finish_g_layer_impl(m_statistics.get_num_expanded_until_g_value().size() - 1,
+                                          m_statistics.get_num_expanded_until_g_value().back(),
+                                          m_statistics.get_num_generated_until_g_value().back());
         }
     }
 
-    void on_expand_state(Problem problem, State state, const PDDLFactories& pddl_factories) override
-    {
-        m_statistics.increment_num_expanded();
-
-        if (!m_quiet)
-        {
-            self().on_expand_state_impl(problem, state, pddl_factories);
-        }
-    }
-
-    void on_prune_state(Problem problem, State state, const PDDLFactories& pddl_factories) override
+    void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_pruned();
 
         if (!m_quiet)
         {
-            self().on_prune_state_impl(problem, state, pddl_factories);
+            self().on_prune_state_impl(state, problem, pddl_factories);
         }
     }
 
-    void on_start_search(Problem problem, State initial_state, const PDDLFactories& pddl_factories) override
+    void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics = BrFSAlgorithmStatistics();
 
@@ -142,7 +166,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(problem, initial_state, pddl_factories);
+            self().on_start_search_impl(start_state, problem, pddl_factories);
         }
     }
 

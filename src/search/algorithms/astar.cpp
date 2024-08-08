@@ -105,7 +105,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
     m_openlist.insert(start_f_value, start_state);
 
-    auto g_value = double();
+    auto f_value = double();
 
     while (!m_openlist.empty())
     {
@@ -124,11 +124,12 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         /* Report search progress. */
 
-        if (search_node.get_property<0>() > g_value)
+        const auto search_node_f_value = search_node.get_property<0>() + search_node.get_property<1>();
+        if (search_node_f_value > f_value)
         {
-            g_value = search_node.get_property<0>();
-            m_aag->on_finish_g_layer();
-            m_event_handler->on_finish_g_layer();
+            f_value = search_node_f_value;
+            m_aag->on_finish_search_layer();
+            m_event_handler->on_finish_f_layer(search_node_f_value);
         }
 
         /* Test whether state achieves the dynamic goal. */

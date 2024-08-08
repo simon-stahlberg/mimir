@@ -53,8 +53,8 @@ TEST(MimirTests, SearchAAGsDenseGroundedTest)
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
 }
 
 }

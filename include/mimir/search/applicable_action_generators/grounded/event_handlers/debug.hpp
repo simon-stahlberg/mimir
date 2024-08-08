@@ -43,7 +43,7 @@ private:
 
     void on_finish_build_axiom_match_tree_impl(const MatchTree<GroundAxiom>& axiom_match_tree);
 
-    void on_finish_g_layer_impl() const;
+    void on_finish_search_layer_impl() const;
 
     void on_end_search_impl() const;
 

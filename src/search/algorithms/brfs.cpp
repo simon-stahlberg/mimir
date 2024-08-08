@@ -69,11 +69,11 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
     const auto problem = m_aag->get_problem();
     const auto& pddl_factories = *m_aag->get_pddl_factories();
-    m_event_handler->on_start_search(problem, start_state, pddl_factories);
+    m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
-    auto initial_search_node = SearchNode<uint32_t>(this->m_search_nodes[start_state.get_index()]);
-    initial_search_node.get_status() = SearchNodeStatus::OPEN;
-    initial_search_node.get_property<0>() = 0;
+    auto start_search_node = SearchNode<uint32_t>(this->m_search_nodes[start_state.get_index()]);
+    start_search_node.get_status() = SearchNodeStatus::OPEN;
+    start_search_node.get_property<0>() = 0;
 
     if (!goal_strategy->test_static_goal())
     {
@@ -99,13 +99,15 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         m_queue.pop_front();
 
         // We need this before goal test for correct statistics reporting.
-        auto search_node = SearchNode<uint32_t>(this->m_search_nodes[state.get_index()]);
+        const auto flat_search_node = this->m_search_nodes[state.get_index()];
+        auto search_node = SearchNode<uint32_t>(flat_search_node);
+        const auto const_search_node = ConstSearchNode<uint32_t>(flat_search_node);
         search_node.get_status() = SearchNodeStatus::CLOSED;
 
         if (static_cast<uint64_t>(search_node.get_property<0>()) > g_value)
         {
             g_value = search_node.get_property<0>();
-            m_aag->on_finish_g_layer();
+            m_aag->on_finish_search_layer();
             m_event_handler->on_finish_g_layer();
         }
 
@@ -123,20 +125,23 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             return SearchStatus::SOLVED;
         }
 
-        m_event_handler->on_expand_state(problem, state, pddl_factories);
+        m_event_handler->on_expand_state(state, const_search_node, problem, pddl_factories);
 
         this->m_aag->generate_applicable_actions(state, applicable_actions);
 
         for (const auto& action : applicable_actions)
         {
             const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-            m_event_handler->on_generate_state(problem, action, successor_state, pddl_factories);
+            const auto flat_successor_search_node = this->m_search_nodes[successor_state.get_index()];
+            auto successor_search_node = SearchNode<uint32_t>(flat_successor_search_node);
+            const auto const_successor_search_node = ConstSearchNode<uint32_t>(flat_successor_search_node);
 
-            auto successor_search_node = SearchNode<uint32_t>(this->m_search_nodes[successor_state.get_index()]);
+            m_event_handler->on_generate_state(successor_state, const_successor_search_node, problem, pddl_factories);
+
             bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                m_event_handler->on_prune_state(problem, successor_state, pddl_factories);
+                m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
                 continue;
             }
 

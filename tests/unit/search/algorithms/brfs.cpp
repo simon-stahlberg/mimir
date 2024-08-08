@@ -132,8 +132,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAssemblyTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 3);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 1);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 3);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 1);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedAssemblyTest)
@@ -145,16 +145,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedAssemblyTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 3);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 3);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 4);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 2);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 4);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 2);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 3);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 1);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 3);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 1);
 }
 
 /**
@@ -183,8 +183,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 20);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 18);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 20);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 18);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedAirportTest)
@@ -196,16 +196,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedAirportTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 20);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 20);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 322);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 350);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 322);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 350);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 20);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 18);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 20);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 18);
 }
 
 /**
@@ -234,8 +234,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 708);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 230);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 708);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 230);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedBarmanTest)
@@ -247,16 +247,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedBarmanTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 668);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 40);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 668);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 40);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 708);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 230);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 708);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 230);
 }
 
 /**
@@ -285,8 +285,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks3opsTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 68);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 21);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 68);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 21);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks3opsTest)
@@ -298,16 +298,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks3opsTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 41);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 27);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 41);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 27);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 68);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 21);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 68);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 21);
 }
 
 /**
@@ -336,8 +336,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks4opsTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 21);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 9);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 21);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 9);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks4opsTest)
@@ -349,16 +349,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedBlocks4opsTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 6);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 15);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 6);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 15);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 21);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 9);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 21);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 9);
 }
 
 /**
@@ -388,8 +388,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedChildsnackTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 16);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 6);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 16);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 6);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedChildsnackTest)
@@ -401,16 +401,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedChildsnackTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 9);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 7);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 9);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 7);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 16);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 6);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 16);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 6);
 }
 
 /**
@@ -439,8 +439,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDeliveryTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 18);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 7);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedDeliveryTest)
@@ -452,16 +452,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedDeliveryTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 6);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 12);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 6);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 12);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 18);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 7);
 }
 
 /**
@@ -490,8 +490,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDriverlogTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 57);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 23);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 57);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 23);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedDriverlogTest)
@@ -503,16 +503,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedDriverlogTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 43);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 14);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 43);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 14);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 57);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 23);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 57);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 23);
 }
 
 /**
@@ -541,8 +541,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 28);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 14);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 28);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 14);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedFerryTest)
@@ -554,16 +554,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedFerryTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 18);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 10);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 18);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 28);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 14);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 28);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 14);
 }
 
 /**
@@ -592,8 +592,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 18);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 7);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedGridTest)
@@ -605,16 +605,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedGridTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 5);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 13);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 5);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 13);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 18);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 7);
 }
 
 /**
@@ -643,8 +643,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 44);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 12);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 44);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 12);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedGripperTest)
@@ -656,16 +656,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedGripperTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 28);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 16);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 28);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 16);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 44);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 12);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 44);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 12);
 }
 
 /**
@@ -694,8 +694,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedHikingTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 145);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 24);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 145);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 24);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedHikingTest)
@@ -707,16 +707,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedHikingTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 104);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 41);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 104);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 41);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 145);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 24);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 145);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 24);
 }
 
 /**
@@ -745,8 +745,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 43);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 8);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 43);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 8);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedLogisticsTest)
@@ -758,16 +758,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedLogisticsTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 30);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 13);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 30);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 13);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 43);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 8);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 43);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 8);
 }
 
 /**
@@ -796,8 +796,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 26);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 14);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 26);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 14);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
@@ -809,16 +809,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 20);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 6);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 20);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 6);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 26);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 14);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 26);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 14);
 }
 
 /**
@@ -848,8 +848,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFullAdlTest)
@@ -862,16 +862,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFullAdlTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 84);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 10);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 84);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 377);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 16);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 377);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
 }
 
 /**
@@ -901,8 +901,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleAdlTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 8);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 4);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 8);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 4);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicSimpleAdlTest)
@@ -915,16 +915,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicSimpleAdlTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 4);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 4);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 4);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 4);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 8);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 4);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 8);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 4);
 }
 
 /**
@@ -954,8 +954,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 210);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 125);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 210);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 125);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedPhilosophersTest)
@@ -968,16 +968,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedPhilosophersTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 184);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 26);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 184);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 26);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 1414);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 22);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 1414);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 22);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 210);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 125);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 210);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 125);
 }
 
 /**
@@ -1006,8 +1006,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRewardTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 12);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 12);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 7);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedRewardTest)
@@ -1019,16 +1019,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedRewardTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 6);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 6);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 6);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 6);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 12);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 12);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 7);
 }
 
 /**
@@ -1057,8 +1057,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 24);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 10);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 24);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 10);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedRoversTest)
@@ -1070,16 +1070,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedRoversTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 17);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 7);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 17);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 7);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 24);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 10);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 24);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 10);
 }
 
 /**
@@ -1108,8 +1108,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 303);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 56);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 303);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 56);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedSatelliteTest)
@@ -1121,16 +1121,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedSatelliteTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 285);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 18);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 285);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 18);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 303);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 56);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 303);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 56);
 }
 
 /**
@@ -1159,8 +1159,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedScheduleTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 884);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 45);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 884);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 45);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedScheduleTest)
@@ -1172,16 +1172,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedScheduleTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 839);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 45);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 839);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 45);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 884);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 45);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 884);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 45);
 }
 
 /**
@@ -1210,8 +1210,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSpannerTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 5);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 5);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 5);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 5);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedSpannerTest)
@@ -1223,16 +1223,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedSpannerTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 1);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 4);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 1);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 4);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 5);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 5);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 5);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 5);
 }
 
 /**
@@ -1261,8 +1261,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTransportTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 384);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 85);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 384);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 85);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedTransportTest)
@@ -1274,16 +1274,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedTransportTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 332);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 52);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 332);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 52);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 384);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 85);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 384);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 85);
 }
 
 /**
@@ -1312,8 +1312,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedVisitallTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 77);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 41);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 77);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedVisitallTest)
@@ -1325,16 +1325,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedVisitallTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 65);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 12);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 65);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 12);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 77);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 41);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 77);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
 
 /**
@@ -1364,8 +1364,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 10);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 3);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 10);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 3);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedWoodworkingTest)
@@ -1378,16 +1378,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedWoodworkingTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 1);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 9);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 1);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 9);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 10);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 3);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 10);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 3);
 }
 
 }

@@ -36,10 +36,10 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_start_time_point;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_end_time_point;
 
-    std::vector<uint64_t> m_num_generated_until_f_value;
-    std::vector<uint64_t> m_num_expanded_until_f_value;
-    std::vector<uint64_t> m_num_deadends_until_f_value;
-    std::vector<uint64_t> m_num_pruned_until_f_value;
+    std::vector<uint64_t> m_num_generated_until_g_value;
+    std::vector<uint64_t> m_num_expanded_until_g_value;
+    std::vector<uint64_t> m_num_deadends_until_g_value;
+    std::vector<uint64_t> m_num_pruned_until_g_value;
 
 public:
     BrFSAlgorithmStatistics() :
@@ -47,20 +47,20 @@ public:
         m_num_expanded(0),
         m_num_deadends(0),
         m_num_pruned(0),
-        m_num_generated_until_f_value(),
-        m_num_expanded_until_f_value(),
-        m_num_deadends_until_f_value(),
-        m_num_pruned_until_f_value()
+        m_num_generated_until_g_value(),
+        m_num_expanded_until_g_value(),
+        m_num_deadends_until_g_value(),
+        m_num_pruned_until_g_value()
     {
     }
 
     /// @brief Store information for the layer
     void on_finish_g_layer()
     {
-        m_num_generated_until_f_value.push_back(m_num_generated);
-        m_num_expanded_until_f_value.push_back(m_num_expanded);
-        m_num_deadends_until_f_value.push_back(m_num_deadends);
-        m_num_pruned_until_f_value.push_back(m_num_pruned);
+        m_num_generated_until_g_value.push_back(m_num_generated);
+        m_num_expanded_until_g_value.push_back(m_num_expanded);
+        m_num_deadends_until_g_value.push_back(m_num_deadends);
+        m_num_pruned_until_g_value.push_back(m_num_pruned);
     }
 
     void increment_num_generated() { ++m_num_generated; }
@@ -80,10 +80,10 @@ public:
         return std::chrono::duration_cast<std::chrono::milliseconds>(m_search_end_time_point - m_search_start_time_point);
     }
 
-    const std::vector<uint64_t>& get_num_generated_until_f_value() const { return m_num_generated_until_f_value; }
-    const std::vector<uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }
-    const std::vector<uint64_t>& get_num_deadends_until_f_value() const { return m_num_deadends_until_f_value; }
-    const std::vector<uint64_t>& get_num_pruned_until_f_value() const { return m_num_pruned_until_f_value; }
+    const std::vector<uint64_t>& get_num_generated_until_g_value() const { return m_num_generated_until_g_value; }
+    const std::vector<uint64_t>& get_num_expanded_until_g_value() const { return m_num_expanded_until_g_value; }
+    const std::vector<uint64_t>& get_num_deadends_until_g_value() const { return m_num_deadends_until_g_value; }
+    const std::vector<uint64_t>& get_num_pruned_until_g_value() const { return m_num_pruned_until_g_value; }
 };
 
 /**
@@ -104,11 +104,11 @@ inline std::ostream& operator<<(std::ostream& os, const BrFSAlgorithmStatistics&
        << "[BrFS] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[BrFS] Number of pruned states: " << statistics.get_num_pruned() << "\n"
        << "[BrFS] Number of generated states until last f-layer: "
-       << (statistics.get_num_generated_until_f_value().empty() ? 0 : statistics.get_num_generated_until_f_value().back()) << "\n"
+       << (statistics.get_num_generated_until_g_value().empty() ? 0 : statistics.get_num_generated_until_g_value().back()) << "\n"
        << "[BrFS] Number of expanded states until last f-layer: "
-       << (statistics.get_num_expanded_until_f_value().empty() ? 0 : statistics.get_num_expanded_until_f_value().back()) << "\n"
+       << (statistics.get_num_expanded_until_g_value().empty() ? 0 : statistics.get_num_expanded_until_g_value().back()) << "\n"
        << "[BrFS] Number of pruned states until last f-layer: "
-       << (statistics.get_num_pruned_until_f_value().empty() ? 0 : statistics.get_num_pruned_until_f_value().back());
+       << (statistics.get_num_pruned_until_g_value().empty() ? 0 : statistics.get_num_pruned_until_g_value().back());
 
     return os;
 }

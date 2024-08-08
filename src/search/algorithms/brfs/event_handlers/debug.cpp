@@ -22,14 +22,39 @@
 
 namespace mimir
 {
-void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(Problem problem,
-                                                            GroundAction action,
-                                                            State successor_state,
+void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state,
+                                                          ConstSearchNode<uint32_t> search_node,
+                                                          Problem problem,
+                                                          const PDDLFactories& pddl_factories) const
+{
+    std::cout << "[BrFS] ----------------------------------------\n"
+              << "[BrFS] State: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << std::endl
+              << std::endl;
+}
+
+void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
+                                                            ConstSearchNode<uint32_t> search_node,
+                                                            Problem problem,
                                                             const PDDLFactories& pddl_factories) const
 {
-    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_factories)) << "\n"
-              << "[BrFS] Successor: " << std::make_tuple(problem, successor_state, std::cref(pddl_factories)) << "\n"
+    assert(search_node.get_creating_action().has_value());
+    std::cout << "[BrFS] Action: " << std::make_tuple(search_node.get_creating_action().value(), std::cref(pddl_factories)) << "\n"
+              << "[BrFS] Successor: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << "\n"
               << std::endl;
+}
+
+void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
+                                                                           ConstSearchNode<uint32_t> search_node,
+                                                                           Problem problem,
+                                                                           const PDDLFactories& pddl_factories) const
+{
+}
+
+void DebugBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
+                                                                               ConstSearchNode<uint32_t> search_node,
+                                                                               Problem problem,
+                                                                               const PDDLFactories& pddl_factories) const
+{
 }
 
 void DebugBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
@@ -38,19 +63,12 @@ void DebugBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, ui
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const
-{
-    std::cout << "[BrFS] ----------------------------------------\n"
-              << "[BrFS] State: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << std::endl
-              << std::endl;
-}
+void DebugBrFSAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
-void DebugBrFSAlgorithmEventHandler::on_prune_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const {}
-
-void DebugBrFSAlgorithmEventHandler::on_start_search_impl(Problem problem, State initial_state, const PDDLFactories& pddl_factories) const
+void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[BrFS] Search started.\n"
-              << "[BrFS] Initial: " << std::make_tuple(problem, initial_state, std::cref(pddl_factories)) << std::endl;
+              << "[BrFS] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_factories)) << std::endl;
 }
 
 void DebugBrFSAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl; }

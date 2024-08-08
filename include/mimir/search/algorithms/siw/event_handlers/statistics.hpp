@@ -106,9 +106,9 @@ public:
                                [](int sum, const auto& item)
                                {
                                    return sum
-                                          + ((item.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().empty()) ?
+                                          + ((item.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().empty()) ?
                                                  0 :
-                                                 item.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back());
+                                                 item.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back());
                                });
     }
 
@@ -120,9 +120,9 @@ public:
                                [](int sum, const auto& item)
                                {
                                    return sum
-                                          + ((item.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().empty()) ?
+                                          + ((item.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().empty()) ?
                                                  0 :
-                                                 item.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back());
+                                                 item.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back());
                                });
     }
 
@@ -134,9 +134,9 @@ public:
                                [](int sum, const auto& item)
                                {
                                    return sum
-                                          + ((item.get_brfs_statistics_by_arity().back().get_num_pruned_until_f_value().empty()) ?
+                                          + ((item.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().empty()) ?
                                                  0 :
-                                                 item.get_brfs_statistics_by_arity().back().get_num_pruned_until_f_value().back());
+                                                 item.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().back());
                                });
     }
 

@@ -73,19 +73,19 @@ inline std::ostream& operator<<(std::ostream& os, const IWAlgorithmStatistics& s
        << "[IW] Number of expanded states: " << statistics.get_brfs_statistics_by_arity().back().get_num_expanded() << "\n"
        << "[IW] Number of pruned states: " << statistics.get_brfs_statistics_by_arity().back().get_num_pruned() << "\n"
        << "[IW] Number of generated states until last f-layer: "
-       << (statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().empty() ?
+       << (statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().empty() ?
                0 :
-               statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back())
+               statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back())
        << "\n"
        << "[IW] Number of expanded states until last f-layer: "
-       << (statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().empty() ?
+       << (statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().empty() ?
                0 :
-               statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back())
+               statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back())
        << "\n"
        << "[IW] Number of pruned states until last f-layer: "
-       << (statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_f_value().empty() ?
+       << (statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().empty() ?
                0 :
-               statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_f_value().back());
+               statistics.get_brfs_statistics_by_arity().back().get_num_pruned_until_g_value().back());
 
     return os;
 }

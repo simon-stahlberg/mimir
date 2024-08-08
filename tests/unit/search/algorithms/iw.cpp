@@ -322,8 +322,8 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
 
     const auto& iw_statistics = iw.get_iw_statistics();
 
-    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 18);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 7);
     EXPECT_EQ(iw_statistics.get_effective_width(), 2);
 }
 
@@ -336,16 +336,16 @@ TEST(MimirTests, SearchAlgorithmsIWLiftedDeliveryTest)
 
     const auto& aag_statistics = iw.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 25);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 12);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 25);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 12);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& iw_statistics = iw.get_iw_statistics();
 
-    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_f_value().back(), 18);
-    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_f_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 18);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 7);
     EXPECT_EQ(iw_statistics.get_effective_width(), 2);
 }
 

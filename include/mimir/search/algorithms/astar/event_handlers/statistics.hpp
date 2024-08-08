@@ -36,6 +36,7 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_start_time_point;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_end_time_point;
 
+    std::vector<double> m_f_values;
     std::vector<uint64_t> m_num_generated_until_f_value;
     std::vector<uint64_t> m_num_expanded_until_f_value;
     std::vector<uint64_t> m_num_deadends_until_f_value;
@@ -47,6 +48,7 @@ public:
         m_num_expanded(0),
         m_num_deadends(0),
         m_num_pruned(0),
+        m_f_values(),
         m_num_generated_until_f_value(),
         m_num_expanded_until_f_value(),
         m_num_deadends_until_f_value(),
@@ -55,8 +57,9 @@ public:
     }
 
     /// @brief Store information for the layer
-    void on_finish_g_layer()
+    void on_finish_f_layer(double f_value)
     {
+        m_f_values.push_back(f_value);
         m_num_generated_until_f_value.push_back(m_num_generated);
         m_num_expanded_until_f_value.push_back(m_num_expanded);
         m_num_deadends_until_f_value.push_back(m_num_deadends);

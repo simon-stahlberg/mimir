@@ -65,18 +65,18 @@ void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state,
 {
 }
 
-void DebugAStarAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
+void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
-    std::cout << "[AStar] Finished state expansion until g-layer " << g_value << " with num expanded states " << num_expanded_states
+    std::cout << "[AStar] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
               << " and num generated states " << num_generated_states << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
-void DebugAStarAlgorithmEventHandler::on_start_search_impl(State initial_state, Problem problem, const PDDLFactories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[AStar] Search started.\n"
-              << "[AStar] Initial: " << std::make_tuple(problem, initial_state, std::cref(pddl_factories)) << std::endl;
+              << "[AStar] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_factories)) << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }

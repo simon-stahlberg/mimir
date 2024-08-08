@@ -64,7 +64,7 @@ private:
     GroundFunctionToValue m_ground_function_value_costs;
 
     /// @brief Ground the precondition of an action and return a view onto it.
-    [[nodiscard]] GroundAction ground_action_precondition(Action action, const ObjectList& binding);
+    GroundAction ground_action_precondition(Action action, const ObjectList& binding);
 
 public:
     /// @brief Simplest construction
@@ -86,7 +86,7 @@ public:
 
     void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
 
-    void on_finish_g_layer() const override;
+    void on_finish_search_layer() const override;
 
     void on_end_search() const override;
 

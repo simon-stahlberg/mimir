@@ -41,16 +41,16 @@ TEST(MimirTests, SearchAAGsDenseLiftedTest)
 
     const auto& aag_statistics = aag_event_handler->get_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_until_f_value().back(), 84);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_until_f_value().back(), 10);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 84);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_until_f_value().back(), 377);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_until_f_value().back(), 16);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 377);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_f_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_f_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
 }
 
 }

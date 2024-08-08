@@ -22,10 +22,32 @@
 
 namespace mimir
 {
-void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(Problem problem,
-                                                              GroundAction action,
-                                                              State successor_state,
+
+void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state,
+                                                            ConstSearchNode<uint32_t> search_node,
+                                                            Problem problem,
+                                                            const PDDLFactories& pddl_factories) const
+{
+}
+
+void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
+                                                              ConstSearchNode<uint32_t> search_node,
+                                                              Problem problem,
                                                               const PDDLFactories& pddl_factories) const
+{
+}
+
+void DefaultBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
+                                                                             ConstSearchNode<uint32_t> search_node,
+                                                                             Problem problem,
+                                                                             const PDDLFactories& pddl_factories) const
+{
+}
+
+void DefaultBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
+                                                                                 ConstSearchNode<uint32_t> search_node,
+                                                                                 Problem problem,
+                                                                                 const PDDLFactories& pddl_factories) const
 {
 }
 
@@ -35,11 +57,9 @@ void DefaultBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, 
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const {}
+void DefaultBrFSAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
-void DefaultBrFSAlgorithmEventHandler::on_prune_state_impl(Problem problem, State state, const PDDLFactories& pddl_factories) const {}
-
-void DefaultBrFSAlgorithmEventHandler::on_start_search_impl(Problem problem, State initial_state, const PDDLFactories& pddl_factories) const
+void DefaultBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) const
 {  //
     std::cout << "[BrFS] Search started." << std::endl;
 }

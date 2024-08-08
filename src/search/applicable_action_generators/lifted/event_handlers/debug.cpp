@@ -68,7 +68,7 @@ void DebugLiftedApplicableActionGeneratorEventHandler::on_end_generating_applica
     //
 }
 
-void DebugLiftedApplicableActionGeneratorEventHandler::on_finish_g_layer_impl() const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_finish_search_layer_impl() const
 {  //
 }
 

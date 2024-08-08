@@ -60,13 +60,13 @@ public:
     virtual void on_close_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a g-layer.
-    virtual void on_finish_g_layer() = 0;
+    virtual void on_finish_f_layer(double f_value) = 0;
 
     /// @brief React on pruning a state.
     virtual void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State initial_state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
@@ -151,16 +151,14 @@ public:
         }
     }
 
-    void on_finish_g_layer() override
+    void on_finish_f_layer(double f_value) override
     {
-        m_statistics.on_finish_g_layer();
+        m_statistics.on_finish_f_layer(f_value);
 
         if (!m_quiet)
         {
             assert(!m_statistics.get_num_expanded_until_f_value().empty());
-            self().on_finish_g_layer_impl(m_statistics.get_num_expanded_until_f_value().size() - 1,
-                                          m_statistics.get_num_expanded_until_f_value().back(),
-                                          m_statistics.get_num_generated_until_f_value().back());
+            self().on_finish_f_layer_impl(f_value, m_statistics.get_num_expanded_until_f_value().back(), m_statistics.get_num_generated_until_f_value().back());
         }
     }
 
@@ -174,7 +172,7 @@ public:
         }
     }
 
-    void on_start_search(State initial_state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics = AStarAlgorithmStatistics();
 
@@ -182,7 +180,7 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(initial_state, problem, pddl_factories);
+            self().on_start_search_impl(start_state, problem, pddl_factories);
         }
     }
 

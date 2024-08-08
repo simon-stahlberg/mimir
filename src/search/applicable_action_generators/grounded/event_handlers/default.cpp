@@ -56,7 +56,7 @@ void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_build_axiom
     std::cout << "[GroundedApplicableActionGenerator] Number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
 }
 
-void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_g_layer_impl() const
+void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_search_layer_impl() const
 {  //
 }
 

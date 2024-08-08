@@ -45,11 +45,11 @@ private:
 
     void on_close_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) const;
 
-    void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
+    void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const;
 
     void on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const;
 
-    void on_start_search_impl(State initial_state, Problem problem, const PDDLFactories& pddl_factories) const;
+    void on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) const;
 
     void on_end_search_impl() const;
 
