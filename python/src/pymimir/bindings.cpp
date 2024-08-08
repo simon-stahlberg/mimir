@@ -1051,9 +1051,21 @@ void init_pymimir(py::module_& m)
              });
 
     // AStar
+    py::class_<IAStarAlgorithmEventHandler, std::shared_ptr<IAStarAlgorithmEventHandler>>(m, "IAStarAlgorithmEventHandler");
+    py::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DefaultAStarAlgorithmEventHandler>>(
+        m,
+        "DefaultAStarAlgorithmEventHandler")  //
+        .def(py::init<>());
+    py::class_<DebugAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DebugAStarAlgorithmEventHandler>>(
+        m,
+        "DebugAStarAlgorithmEventHandler")  //
+        .def(py::init<>());
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<IHeuristic>>())
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IHeuristic>>());
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
+                      std::shared_ptr<StateRepository>,
+                      std::shared_ptr<IHeuristic>,
+                      std::shared_ptr<IAStarAlgorithmEventHandler>>());
 
     // BrFS
     py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler");

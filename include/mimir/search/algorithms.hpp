@@ -21,7 +21,9 @@
 /**
  * Include all specializations here
  */
+
 #include "mimir/search/algorithms/astar.hpp"
+#include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw.hpp"
