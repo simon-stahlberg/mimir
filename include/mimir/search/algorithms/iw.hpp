@@ -19,11 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_IW_HPP_
 
 #include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
-#include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
-#include "mimir/search/algorithms/iw/types.hpp"
 
 namespace mimir
 {

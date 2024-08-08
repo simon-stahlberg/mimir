@@ -25,39 +25,52 @@
 namespace mimir
 {
 
-/* Algorithms */
-class IApplicableActionGenerator;
-class GroundedApplicableActionGenerator;
-class LiftedApplicableActionGenerator;
+// StateRepository
+class StateRepository;
 
-class IAlgorithm;
-
-class IPruningStrategy;
-class IGoalStrategy;
-
-class IBrFSAlgorithmEventHandler;
-using BrFSAlgorithmEventHandler = std::shared_ptr<IBrFSAlgorithmEventHandler>;
-class IIWAlgorithmEventHandler;
-using IWAlgorithmEventHandler = std::shared_ptr<IIWAlgorithmEventHandler>;
-class ISIWAlgorithmEventHandler;
-using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
-
-/* Heuristics */
-class IHeuristic;
-
+// GroundACtion
 class GroundAction;
 using GroundActionIndex = uint32_t;
 using GroundActionCost = double;
 
+// Axiom
 class GroundAxiom;
 using GroundAxiomIndex = uint32_t;
 
+// State
 class State;
 using StateIndex = uint32_t;
 using StateIndexList = std::vector<StateIndex>;
 using StateIndexSet = std::unordered_set<StateIndex>;
 
-class StateRepository;
+/* ApplicableActionGenerators */
+class IApplicableActionGenerator;
+class GroundedApplicableActionGenerator;
+class LiftedApplicableActionGenerator;
+
+/* Heuristics */
+class IHeuristic;
+
+/* Algorithms */
+class IAlgorithm;
+
+class IPruningStrategy;
+class IGoalStrategy;
+
+// Breadth-first search
+class IBrFSAlgorithmEventHandler;
+using BrFSAlgorithmEventHandler = std::shared_ptr<IBrFSAlgorithmEventHandler>;
+
+// Iterative width search
+class IIWAlgorithmEventHandler;
+using IWAlgorithmEventHandler = std::shared_ptr<IIWAlgorithmEventHandler>;
+class FluentAndDerivedMapper;
+
+// Serialized iterative width search
+class ISIWAlgorithmEventHandler;
+using SIWAlgorithmEventHandler = std::shared_ptr<ISIWAlgorithmEventHandler>;
+
+// AStar search
 
 }
 

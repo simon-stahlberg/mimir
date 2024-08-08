@@ -25,6 +25,7 @@
 #include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+#include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/state_repository.hpp"
 

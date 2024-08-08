@@ -21,6 +21,8 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
+#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
