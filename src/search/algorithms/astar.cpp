@@ -129,7 +129,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         {
             f_value = search_node_f_value;
             m_aag->on_finish_search_layer();
-            m_event_handler->on_finish_f_layer(search_node_f_value);
+            m_event_handler->on_finish_f_layer(f_value);
         }
 
         /* Test whether state achieves the dynamic goal. */
@@ -185,8 +185,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                 successor_search_node.get_property<0>() = new_successor_g_value;
                 if (is_new_successor_state)
                 {
-                    /* Compute heuristic if state is new. */
-
+                    // Compute heuristic if state is new.
                     successor_search_node.get_property<1>() = m_heuristic->compute_heuristic(successor_state);
                 }
                 m_event_handler->on_generate_state_relaxed(successor_state, const_successor_search_node, problem, pddl_factories);
