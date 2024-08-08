@@ -112,23 +112,26 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         const auto state = m_openlist.top();
         m_openlist.pop();
 
-        // We need this before goal test for correct statistics reporting.
         auto search_node = SearchNode<double, double>(this->m_search_nodes[state.get_index()]);
         auto const_search_node = ConstSearchNode<double, double>(this->m_search_nodes[state.get_index()]);
         auto& search_node_status = search_node.get_status();
+
+        /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
         if (search_node_status == SearchNodeStatus::CLOSED)
         {
-            // Optimal cost to reach state was already proven.
             continue;
         }
 
-        // TODO: how to report progress properly?
+        /* Report search progress. */
+
         if (search_node.get_property<0>() > g_value)
         {
             g_value = search_node.get_property<0>();
             m_aag->on_finish_g_layer();
             m_event_handler->on_finish_g_layer();
         }
+
+        /* Test whether state achieves the dynamic goal. */
 
         if (goal_strategy->test_dynamic_goal(state))
         {
@@ -144,6 +147,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             return SearchStatus::SOLVED;
         }
 
+        /* Expand the successors of the state. */
+
         m_event_handler->on_expand_state(state, const_search_node, problem, pddl_factories);
 
         this->m_aag->generate_applicable_actions(state, applicable_actions);
@@ -157,12 +162,16 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             m_event_handler->on_generate_state(successor_state, const_successor_search_node, problem, pddl_factories);
 
             bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
+
             /* Customization point 1: pruning strategy, default never prunes. */
+
             if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
                 m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
                 continue;
             }
+
+            /* Check whether state must be reopened or not. */
 
             const auto new_successor_g_value = search_node.get_property<0>() + action.get_cost();
             if (new_successor_g_value < successor_search_node.get_property<0>())
@@ -176,6 +185,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                 if (is_new_successor_state)
                 {
                     /* Compute heuristic if state is new. */
+
                     successor_search_node.get_property<1>() = m_heuristic->compute_heuristic(successor_state);
                 }
                 m_event_handler->on_generate_state_relaxed(successor_state, const_successor_search_node, problem, pddl_factories);
