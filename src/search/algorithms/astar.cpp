@@ -112,8 +112,9 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         const auto state = m_openlist.top();
         m_openlist.pop();
 
-        auto search_node = SearchNode<double, double>(this->m_search_nodes[state.get_index()]);
-        auto const_search_node = ConstSearchNode<double, double>(this->m_search_nodes[state.get_index()]);
+        const auto flat_search_node = this->m_search_nodes[state.get_index()];
+        auto search_node = SearchNode<double, double>(flat_search_node);
+        const auto const_search_node = ConstSearchNode<double, double>(flat_search_node);
         auto& search_node_status = search_node.get_status();
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
@@ -157,12 +158,13 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         for (const auto& action : applicable_actions)
         {
             const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-            auto successor_search_node = SearchNode<double, double>(this->m_search_nodes[successor_state.get_index()]);
-            auto const_successor_search_node = ConstSearchNode<double, double>(this->m_search_nodes[successor_state.get_index()]);
+            const auto flat_successors_search_node = this->m_search_nodes[successor_state.get_index()];
+            auto successor_search_node = SearchNode<double, double>(flat_successors_search_node);
+            const auto const_successor_search_node = ConstSearchNode<double, double>(flat_successors_search_node);
 
             m_event_handler->on_generate_state(successor_state, const_successor_search_node, problem, pddl_factories);
 
-            bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
+            const bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
 
             /* Customization point 1: pruning strategy, default never prunes. */
 

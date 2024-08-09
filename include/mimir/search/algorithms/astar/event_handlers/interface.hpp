@@ -46,14 +46,15 @@ public:
     /// This is happens immediately before on_generate_state for successors of `state`.
     virtual void on_expand_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
-    /// @brief React on generating a successor_state by applying an action.
+    /// @brief React on generating a successor `state` by applying an action.
     virtual void on_generate_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
-    /// @brief React on generating a relaxed successor state by applying an action where
+    /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
     virtual void on_generate_state_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
+    /// a successors state is unrelaxed iff it is not relaxed.
     virtual void
     on_generate_state_not_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
