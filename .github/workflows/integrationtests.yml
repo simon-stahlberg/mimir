@@ -3,7 +3,7 @@ name: Integration Tests
 on:
   push:
     branches:
-      - dynamic
+      - v2
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
     - name: Checkout Mimir
       uses: actions/checkout@v2
       with:
-        ref: dynamic
+        ref: v2
 
     - name: Configure, Build, and Install Dependencies
       run: |

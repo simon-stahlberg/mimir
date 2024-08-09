@@ -3,7 +3,7 @@ name: Googletest Unit Tests
 on:
   push:
     branches:
-      - dynamic
+      - v2
 
 jobs:
   build:
@@ -15,6 +15,8 @@ jobs:
     steps:
     - name: Checkout Mimir
       uses: actions/checkout@v2
+      with:
+        ref: v2
 
     - name: Configure, Build, and Install Dependencies
       run: |
